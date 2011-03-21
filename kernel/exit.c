@@ -26,7 +26,7 @@
 #include <linux/ptrace.h>
 #include <linux/profile.h>
 #include <linux/mount.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/kthread.h>
 #include <linux/mempolicy.h>
 #include <linux/taskstats_kern.h>

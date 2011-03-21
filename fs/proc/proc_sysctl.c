@@ -3,7 +3,7 @@
  */
 #include <linux/init.h>
 #include <linux/sysctl.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/security.h>
 #include <linux/namei.h>
 #include "internal.h"

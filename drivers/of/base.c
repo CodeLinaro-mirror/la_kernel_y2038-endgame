@@ -21,7 +21,7 @@
 #include <linux/of.h>
 #include <linux/spinlock.h>
 #include <linux/slab.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 
 struct device_node *allnodes;
 struct device_node *of_chosen;

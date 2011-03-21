@@ -24,7 +24,7 @@
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/completion.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/module.h>
 
 #include <asm/firmware.h>

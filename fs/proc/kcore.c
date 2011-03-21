@@ -10,7 +10,7 @@
  */
 
 #include <linux/mm.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/user.h>
 #include <linux/capability.h>
 #include <linux/elf.h>

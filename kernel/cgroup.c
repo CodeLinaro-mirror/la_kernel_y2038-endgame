@@ -36,7 +36,7 @@
 #include <linux/mutex.h>
 #include <linux/mount.h>
 #include <linux/pagemap.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/rcupdate.h>
 #include <linux/sched.h>
 #include <linux/backing-dev.h>

@@ -60,7 +60,7 @@
 #include <linux/tty.h>
 #include <linux/string.h>
 #include <linux/mman.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/ioport.h>
 #include <linux/uaccess.h>
 #include <linux/io.h>

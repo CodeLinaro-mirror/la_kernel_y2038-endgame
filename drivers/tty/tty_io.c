@@ -85,7 +85,7 @@
 #include <linux/string.h>
 #include <linux/slab.h>
 #include <linux/poll.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/device.h>

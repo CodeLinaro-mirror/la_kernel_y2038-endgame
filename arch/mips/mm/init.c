@@ -25,7 +25,7 @@
 #include <linux/bootmem.h>
 #include <linux/highmem.h>
 #include <linux/swap.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/pfn.h>
 #include <linux/hardirq.h>
 #include <linux/gfp.h>

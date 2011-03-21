@@ -14,7 +14,7 @@
 #include <linux/kernel.h>
 #include <linux/kref.h>
 #include <linux/notifier.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/slab.h>
 
 #include <asm/prom.h>

@@ -9,7 +9,7 @@
 #include <linux/init.h>
 #include <linux/errno.h>
 #include <linux/time.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/stat.h>
 #include <linux/tty.h>
 #include <linux/seq_file.h>

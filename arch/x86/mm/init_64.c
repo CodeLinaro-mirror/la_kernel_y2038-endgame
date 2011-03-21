@@ -22,7 +22,7 @@
 #include <linux/pagemap.h>
 #include <linux/bootmem.h>
 #include <linux/memblock.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/pci.h>
 #include <linux/pfn.h>
 #include <linux/poison.h>

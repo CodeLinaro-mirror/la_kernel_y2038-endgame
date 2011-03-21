@@ -1,35 +1,17 @@
+/*
+ * The proc filesystem interface for device drivers
+ */
+
 #ifndef _LINUX_PROC_FS_H
 #define _LINUX_PROC_FS_H
 
 #include <linux/slab.h>
 #include <linux/fs.h>
 #include <linux/spinlock.h>
-#include <linux/magic.h>
 #include <asm/atomic.h>
 
 struct net;
 struct completion;
-struct mm_struct;
-
-/*
- * The proc filesystem constants/structures
- */
-
-/*
- * Offset of the first process in the /proc root directory..
- */
-#define FIRST_PROCESS_ENTRY 256
-
-/* Worst case buffer size needed for holding an integer. */
-#define PROC_NUMBUF 13
-
-/*
- * We always define these enumerators
- */
-
-enum {
-	PROC_ROOT_INO = 1,
-};
 
 /*
  * This is not completely implemented yet. The idea is to
@@ -78,34 +60,7 @@ struct proc_dir_entry {
 	struct list_head pde_openers;	/* who did ->open, but not ->release */
 };
 
-enum kcore_type {
-	KCORE_TEXT,
-	KCORE_VMALLOC,
-	KCORE_RAM,
-	KCORE_VMEMMAP,
-	KCORE_OTHER,
-};
-
-struct kcore_list {
-	struct list_head list;
-	unsigned long addr;
-	size_t size;
-	int type;
-};
-
-struct vmcore {
-	struct list_head list;
-	unsigned long long paddr;
-	unsigned long long size;
-	loff_t offset;
-};
-
 #ifdef CONFIG_PROC_FS
-
-extern void proc_root_init(void);
-
-void proc_flush_task(struct task_struct *task);
-
 extern struct proc_dir_entry *create_proc_entry(const char *name, mode_t mode,
 						struct proc_dir_entry *parent);
 struct proc_dir_entry *proc_create_data(const char *name, mode_t mode,
@@ -113,35 +68,6 @@ struct proc_dir_entry *proc_create_data(const char *name, mode_t mode,
 				const struct file_operations *proc_fops,
 				void *data);
 extern void remove_proc_entry(const char *name, struct proc_dir_entry *parent);
-
-struct pid_namespace;
-
-extern int pid_ns_prepare_proc(struct pid_namespace *ns);
-extern void pid_ns_release_proc(struct pid_namespace *ns);
-
-/*
- * proc_tty.c
- */
-struct tty_driver;
-extern void proc_tty_init(void);
-extern void proc_tty_register_driver(struct tty_driver *driver);
-extern void proc_tty_unregister_driver(struct tty_driver *driver);
-
-/*
- * proc_devtree.c
- */
-#ifdef CONFIG_PROC_DEVICETREE
-struct device_node;
-struct property;
-extern void proc_device_tree_init(void);
-extern void proc_device_tree_add_node(struct device_node *, struct proc_dir_entry *);
-extern void proc_device_tree_add_prop(struct proc_dir_entry *pde, struct property *prop);
-extern void proc_device_tree_remove_prop(struct proc_dir_entry *pde,
-					 struct property *prop);
-extern void proc_device_tree_update_prop(struct proc_dir_entry *pde,
-					 struct property *newprop,
-					 struct property *oldprop);
-#endif /* CONFIG_PROC_DEVICETREE */
 
 extern struct proc_dir_entry *proc_symlink(const char *,
 		struct proc_dir_entry *, const char *);
@@ -180,10 +106,6 @@ extern struct file *proc_ns_fget(int fd);
 #define proc_net_fops_create(net, name, mode, fops)  ({ (void)(mode), NULL; })
 static inline void proc_net_remove(struct net *net, const char *name) {}
 
-static inline void proc_flush_task(struct task_struct *task)
-{
-}
-
 static inline struct proc_dir_entry *create_proc_entry(const char *name,
 	mode_t mode, struct proc_dir_entry *parent) { return NULL; }
 static inline struct proc_dir_entry *proc_create(const char *name,
@@ -211,34 +133,12 @@ static inline struct proc_dir_entry *create_proc_read_entry(const char *name,
 	mode_t mode, struct proc_dir_entry *base, 
 	read_proc_t *read_proc, void * data) { return NULL; }
 
-struct tty_driver;
-static inline void proc_tty_register_driver(struct tty_driver *driver) {};
-static inline void proc_tty_unregister_driver(struct tty_driver *driver) {};
-
-static inline int pid_ns_prepare_proc(struct pid_namespace *ns)
-{
-	return 0;
-}
-
-static inline void pid_ns_release_proc(struct pid_namespace *ns)
-{
-}
-
 static inline struct file *proc_ns_fget(int fd)
 {
 	return ERR_PTR(-EINVAL);
 }
 
 #endif /* CONFIG_PROC_FS */
-
-#if !defined(CONFIG_PROC_KCORE)
-static inline void
-kclist_add(struct kcore_list *new, void *addr, size_t size, int type)
-{
-}
-#else
-extern void kclist_add(struct kcore_list *, void *, size_t, int type);
-#endif
 
 struct nsproxy;
 struct proc_ns_operations {
@@ -283,11 +183,6 @@ static inline struct proc_inode *PROC_I(const struct inode *inode)
 static inline struct proc_dir_entry *PDE(const struct inode *inode)
 {
 	return PROC_I(inode)->pde;
-}
-
-static inline struct net *PDE_NET(struct proc_dir_entry *pde)
-{
-	return pde->parent->data;
 }
 
 #endif /* _LINUX_PROC_FS_H */
