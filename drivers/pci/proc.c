@@ -47,8 +47,7 @@ static ssize_t
 proc_bus_pci_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
 {
 	const struct inode *ino = file->f_path.dentry->d_inode;
-	const struct proc_dir_entry *dp = PDE(ino);
-	struct pci_dev *dev = dp->data;
+	struct pci_dev *dev = ino->i_private;
 	unsigned int pos = *ppos;
 	unsigned int cnt, size;
 
@@ -59,7 +58,7 @@ proc_bus_pci_read(struct file *file, char __user *buf, size_t nbytes, loff_t *pp
 	 */
 
 	if (capable(CAP_SYS_ADMIN))
-		size = dp->size;
+		size = ino->i_size;
 	else if (dev->hdr_type == PCI_HEADER_TYPE_CARDBUS)
 		size = 128;
 	else
@@ -129,10 +128,9 @@ static ssize_t
 proc_bus_pci_write(struct file *file, const char __user *buf, size_t nbytes, loff_t *ppos)
 {
 	struct inode *ino = file->f_path.dentry->d_inode;
-	const struct proc_dir_entry *dp = PDE(ino);
-	struct pci_dev *dev = dp->data;
+	struct pci_dev *dev = ino->i_private;
 	int pos = *ppos;
-	int size = dp->size;
+	int size = ino->i_size;
 	int cnt;
 
 	if (pos >= size)
@@ -192,7 +190,7 @@ proc_bus_pci_write(struct file *file, const char __user *buf, size_t nbytes, lof
 	}
 
 	*ppos = pos;
-	i_size_write(ino, dp->size);
+	i_size_write(ino, ino->i_size);
 	return nbytes;
 }
 
@@ -204,8 +202,7 @@ struct pci_filp_private {
 static long proc_bus_pci_ioctl(struct file *file, unsigned int cmd,
 			       unsigned long arg)
 {
-	const struct proc_dir_entry *dp = PDE(file->f_dentry->d_inode);
-	struct pci_dev *dev = dp->data;
+	struct pci_dev *dev = file->f_dentry->d_inode->i_private;
 #ifdef HAVE_PCI_MMAP
 	struct pci_filp_private *fpriv = file->private_data;
 #endif /* HAVE_PCI_MMAP */
@@ -245,9 +242,8 @@ static long proc_bus_pci_ioctl(struct file *file, unsigned int cmd,
 #ifdef HAVE_PCI_MMAP
 static int proc_bus_pci_mmap(struct file *file, struct vm_area_struct *vma)
 {
-	struct inode *inode = file->f_path.dentry->d_inode;
-	const struct proc_dir_entry *dp = PDE(inode);
-	struct pci_dev *dev = dp->data;
+	struct inode *ino = file->f_path.dentry->d_inode;
+	struct pci_dev *dev = ino->i_private;
 	struct pci_filp_private *fpriv = file->private_data;
 	int i, ret;
 

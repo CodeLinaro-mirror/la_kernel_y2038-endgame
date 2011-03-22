@@ -427,8 +427,7 @@ static void r_stop(struct seq_file *m, void *v)
 
 static int r_show(struct seq_file *m, void *v)
 {
-	struct proc_dir_entry *de = m->private;
-	int (*show) (struct seq_file *, struct super_block *) = de->data;
+	int (*show) (struct seq_file *, struct super_block *) = m->private;
 	return show(m, v);
 }
 
@@ -445,7 +444,7 @@ static int r_open(struct inode *inode, struct file *file)
 
 	if (!ret) {
 		struct seq_file *m = file->private_data;
-		m->private = PDE(inode);
+		m->private = inode->i_private;
 	}
 	return ret;
 }

@@ -573,7 +573,7 @@ static int acpi_battery_read_info(struct seq_file *seq, void *offset)
 
 static int acpi_battery_info_open_fs(struct inode *inode, struct file *file)
 {
-	return single_open(file, acpi_battery_read_info, PDE(inode)->data);
+	return single_open(file, acpi_battery_read_info, inode->i_private);
 }
 
 static int acpi_battery_read_state(struct seq_file *seq, void *offset)
@@ -612,7 +612,7 @@ static int acpi_battery_read_state(struct seq_file *seq, void *offset)
 
 static int acpi_battery_state_open_fs(struct inode *inode, struct file *file)
 {
-	return single_open(file, acpi_battery_read_state, PDE(inode)->data);
+	return single_open(file, acpi_battery_read_state, inode->i_private);
 }
 
 static int acpi_battery_read_alarm(struct seq_file *seq, void *offset)
@@ -677,7 +677,7 @@ acpi_battery_write_alarm(struct file *file, const char __user * buffer,
 
 static int acpi_battery_alarm_open_fs(struct inode *inode, struct file *file)
 {
-	return single_open(file, acpi_battery_read_alarm, PDE(inode)->data);
+	return single_open(file, acpi_battery_read_alarm, inode->i_private);
 }
 
 static const struct file_operations acpi_battery_info_fops = {
@@ -725,7 +725,7 @@ static int acpi_ac_read_state(struct seq_file *seq, void *offset)
 
 static int acpi_ac_state_open_fs(struct inode *inode, struct file *file)
 {
-	return single_open(file, acpi_ac_read_state, PDE(inode)->data);
+	return single_open(file, acpi_ac_read_state, inode->i_private);
 }
 
 static const struct file_operations acpi_ac_state_fops = {

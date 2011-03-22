@@ -908,7 +908,7 @@ static int mf_cmdline_proc_show(struct seq_file *m, void *v)
 
 static int mf_cmdline_proc_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, mf_cmdline_proc_show, PDE(inode)->data);
+	return single_open(file, mf_cmdline_proc_show, inode->i_private);
 }
 
 #if 0
@@ -1093,7 +1093,7 @@ static const struct file_operations mf_src_proc_fops = {
 static ssize_t mf_cmdline_proc_write(struct file *file, const char __user *buffer,
 				     size_t count, loff_t *pos)
 {
-	void *data = PDE(file->f_path.dentry->d_inode)->data;
+	void *data = file->f_path.dentry->d_inode->i_private;
 	struct vsp_cmd_data vsp_cmd;
 	dma_addr_t dma_addr;
 	char *page;
@@ -1141,7 +1141,7 @@ static ssize_t proc_mf_change_vmlinux(struct file *file,
 				      const char __user *buf,
 				      size_t count, loff_t *ppos)
 {
-	struct proc_dir_entry *dp = PDE(file->f_path.dentry->d_inode);
+	void *data = file->f_path.dentry->d_inode->i_private;
 	ssize_t rc;
 	dma_addr_t dma_addr;
 	char *page;
@@ -1166,7 +1166,7 @@ static ssize_t proc_mf_change_vmlinux(struct file *file,
 	vsp_cmd.cmd = 30;
 	vsp_cmd.sub_data.kern.token = dma_addr;
 	vsp_cmd.sub_data.kern.address_type = HvLpDma_AddressType_TceIndex;
-	vsp_cmd.sub_data.kern.side = (u64)dp->data;
+	vsp_cmd.sub_data.kern.side = (u64)data;
 	vsp_cmd.sub_data.kern.offset = *ppos;
 	vsp_cmd.sub_data.kern.length = count;
 	mb();

@@ -1818,7 +1818,7 @@ static int nfs_server_list_open(struct inode *inode, struct file *file)
 		return ret;
 
 	m = file->private_data;
-	m->private = PDE(inode)->data;
+	m->private = inode->i_private;
 
 	return 0;
 }
@@ -1888,7 +1888,7 @@ static int nfs_volume_list_open(struct inode *inode, struct file *file)
 		return ret;
 
 	m = file->private_data;
-	m->private = PDE(inode)->data;
+	m->private = inode->i_private;
 
 	return 0;
 }

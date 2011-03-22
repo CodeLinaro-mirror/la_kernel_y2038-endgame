@@ -139,7 +139,7 @@ static int alignment_proc_open(struct inode *inode, struct file *file)
 static ssize_t alignment_proc_write(struct file *file,
 		const char __user *buffer, size_t count, loff_t *pos)
 {
-	int *data = PDE(file->f_path.dentry->d_inode)->data;
+	int *data = file->f_path.dentry->d_inode->i_private;
 	char mode;
 
 	if (count > 0) {

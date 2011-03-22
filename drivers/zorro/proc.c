@@ -47,8 +47,7 @@ static ssize_t
 proc_bus_zorro_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
 {
 	struct inode *ino = file->f_path.dentry->d_inode;
-	struct proc_dir_entry *dp = PDE(ino);
-	struct zorro_dev *z = dp->data;
+	struct zorro_dev *z = ino->i_private;
 	struct ConfigDev cd;
 	loff_t pos = *ppos;
 

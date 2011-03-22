@@ -172,14 +172,14 @@ static int led_proc_show(struct seq_file *m, void *v)
 
 static int led_proc_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, led_proc_show, PDE(inode)->data);
+	return single_open(file, led_proc_show, inode->i_private);
 }
 
 
 static ssize_t led_proc_write(struct file *file, const char *buf,
 	size_t count, loff_t *pos)
 {
-	void *data = PDE(file->f_path.dentry->d_inode)->data;
+	void *data = file->f_path.dentry->d_inode->i_private;
 	char *cur, lbuf[32];
 	int d;
 

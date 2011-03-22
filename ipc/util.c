@@ -975,7 +975,7 @@ static int sysvipc_proc_open(struct inode *inode, struct file *file)
 	seq = file->private_data;
 	seq->private = iter;
 
-	iter->iface = PDE(inode)->data;
+	iter->iface = inode->i_private;
 	iter->ns    = get_ipc_ns(current->nsproxy->ipc_ns);
 out:
 	return ret;

@@ -56,8 +56,7 @@ static ssize_t isapnp_proc_bus_read(struct file *file, char __user * buf,
 				    size_t nbytes, loff_t * ppos)
 {
 	struct inode *ino = file->f_path.dentry->d_inode;
-	struct proc_dir_entry *dp = PDE(ino);
-	struct pnp_dev *dev = dp->data;
+	struct pnp_dev *dev = ino->i_private;
 	int pos = *ppos;
 	int cnt, size = 256;
 

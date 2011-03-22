@@ -2687,7 +2687,7 @@ static int pkt_seq_show(struct seq_file *m, void *p)
 
 static int pkt_seq_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, pkt_seq_show, PDE(inode)->data);
+	return single_open(file, pkt_seq_show, inode->i_private);
 }
 
 static const struct file_operations pkt_proc_fops = {

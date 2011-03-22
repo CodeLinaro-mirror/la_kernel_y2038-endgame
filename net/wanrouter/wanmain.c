@@ -357,7 +357,6 @@ long wanrouter_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	struct inode *inode = file->f_path.dentry->d_inode;
 	int err = 0;
-	struct proc_dir_entry *dent;
 	struct wan_device *wandev;
 	void __user *data = (void __user *)arg;
 
@@ -367,11 +366,7 @@ long wanrouter_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	if ((cmd >> 8) != ROUTER_IOCTL)
 		return -EINVAL;
 
-	dent = PDE(inode);
-	if ((dent == NULL) || (dent->data == NULL))
-		return -EINVAL;
-
-	wandev = dent->data;
+	wandev = inode->i_private;
 	if (wandev->magic != ROUTER_MAGIC)
 		return -EINVAL;
 

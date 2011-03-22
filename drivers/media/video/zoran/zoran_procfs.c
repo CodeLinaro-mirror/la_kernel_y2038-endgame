@@ -130,14 +130,14 @@ static int zoran_show(struct seq_file *p, void *v)
 
 static int zoran_open(struct inode *inode, struct file *file)
 {
-	struct zoran *data = PDE(inode)->data;
+	struct zoran *data = inode->i_private;
 	return single_open(file, zoran_show, data);
 }
 
 static ssize_t zoran_write(struct file *file, const char __user *buffer,
 			size_t count, loff_t *ppos)
 {
-	struct zoran *zr = PDE(file->f_path.dentry->d_inode)->data;
+	struct zoran *zr = file->f_path.dentry->d_inode->i_private;
 	char *string, *sp;
 	char *line, *ldelim, *varname, *svar, *tdelim;
 

@@ -272,7 +272,7 @@ static int wandev_show(struct seq_file *m, void *v)
 
 static int wandev_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, wandev_show, PDE(inode)->data);
+	return single_open(file, wandev_show, inode->i_private);
 }
 
 static const struct file_operations wandev_fops = {
@@ -330,11 +330,10 @@ int wanrouter_proc_add(struct wan_device* wandev)
 	if (wandev->magic != ROUTER_MAGIC)
 		return -EINVAL;
 
-	wandev->dent = proc_create(wandev->name, S_IRUGO,
-				   proc_router, &wandev_fops);
+	wandev->dent = proc_create_data(wandev->name, S_IRUGO,
+				   proc_router, &wandev_fops, wandev);
 	if (!wandev->dent)
 		return -ENOMEM;
-	wandev->dent->data	= wandev;
 	return 0;
 }
 
