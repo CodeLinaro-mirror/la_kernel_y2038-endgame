@@ -5873,8 +5873,6 @@ static void __devexit rtl8192_usb_disconnect(struct usb_interface *intf)
 }
 
 /* fun with the built-in ieee80211 stack... */
-extern int ieee80211_debug_init(void);
-extern void ieee80211_debug_exit(void);
 extern int ieee80211_crypto_init(void);
 extern void ieee80211_crypto_deinit(void);
 extern int ieee80211_crypto_tkip_init(void);
@@ -5888,13 +5886,6 @@ static int __init rtl8192_usb_module_init(void)
 {
 	int ret;
 
-#ifdef CONFIG_IEEE80211_DEBUG
-	ret = ieee80211_debug_init();
-	if (ret) {
-		printk(KERN_ERR "ieee80211_debug_init() failed %d\n", ret);
-		return ret;
-	}
-#endif
 	ret = ieee80211_crypto_init();
 	if (ret) {
 		printk(KERN_ERR "ieee80211_crypto_init() failed %d\n", ret);

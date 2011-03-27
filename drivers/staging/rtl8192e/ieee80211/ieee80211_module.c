@@ -218,8 +218,7 @@ void free_ieee80211(struct net_device *dev)
 
 #ifdef CONFIG_IEEE80211_DEBUG
 
-u32 ieee80211_debug_level = 0;
-static int debug =
+u32 ieee80211_debug_level =
 	/* IEEE80211_DL_INFO	| */
 	/* IEEE80211_DL_WX	| */
 	/* IEEE80211_DL_SCAN	| */
@@ -239,40 +238,10 @@ static int debug =
 	/* IEEE80211_DL_DATA	| */
 	IEEE80211_DL_ERR	/* always open this flag to show error out */
 	;
-struct proc_dir_entry *ieee80211_proc = NULL;
 
-static int show_debug_level(char *page, char **start, off_t offset,
-			int count, int *eof, void *data)
-{
-	return snprintf(page, count, "0x%08X\n", ieee80211_debug_level);
-}
-
-static int store_debug_level(struct file *file, const char *buffer,
-			unsigned long count, void *data)
-{
-	char buf[] = "0x00000000";
-	unsigned long len = min(sizeof(buf) - 1, (u32)count);
-	char *p = (char *)buf;
-	unsigned long val;
-
-	if (copy_from_user(buf, buffer, len))
-		return count;
-	buf[len] = 0;
-	if (p[1] == 'x' || p[1] == 'X' || p[0] == 'x' || p[0] == 'X') {
-		p++;
-		if (p[0] == 'x' || p[0] == 'X')
-			p++;
-		val = simple_strtoul(p, &p, 16);
-	} else
-		val = simple_strtoul(p, &p, 10);
-	if (p == buf)
-		printk(KERN_INFO DRV_NAME
-			": %s is not in hex or decimal form.\n", buf);
-	else
-		ieee80211_debug_level = val;
-
-	return strnlen(buf, count);
-}
+#include <linux/moduleparam.h>
+module_param_named(debug, ieee80211_debug_level, uint, 0644);
+MODULE_PARM_DESC(debug, "debug output mask");
 
 extern int ieee80211_crypto_init(void);
 extern void ieee80211_crypto_deinit(void);
@@ -285,7 +254,6 @@ extern void ieee80211_crypto_wep_exit(void);
 
 int __init ieee80211_rtl_init(void)
 {
-	struct proc_dir_entry *e;
 	int retval;
 
 	retval = ieee80211_crypto_init();
@@ -310,44 +278,16 @@ int __init ieee80211_rtl_init(void)
 		return retval;
 	}
 
-	ieee80211_debug_level = debug;
-	ieee80211_proc = create_proc_entry(DRV_NAME, S_IFDIR, init_net.proc_net);
-	if (ieee80211_proc == NULL) {
-		IEEE80211_ERROR("Unable to create " DRV_NAME
-				" proc directory\n");
-		return -EIO;
-	}
-	e = create_proc_entry("debug_level", S_IFREG | S_IRUGO | S_IWUSR,
-			ieee80211_proc);
-	if (!e) {
-		remove_proc_entry(DRV_NAME, init_net.proc_net);
-		ieee80211_proc = NULL;
-		return -EIO;
-	}
-	e->read_proc = show_debug_level;
-	e->write_proc = store_debug_level;
-	e->data = NULL;
-
 	return 0;
 }
 
 void __exit ieee80211_rtl_exit(void)
 {
-	if (ieee80211_proc) {
-		remove_proc_entry("debug_level", ieee80211_proc);
-		remove_proc_entry(DRV_NAME, init_net.proc_net);
-		ieee80211_proc = NULL;
-	}
 	ieee80211_crypto_wep_exit();
 	ieee80211_crypto_ccmp_exit();
 	ieee80211_crypto_tkip_exit();
 	ieee80211_crypto_deinit();
 }
-
-#include <linux/moduleparam.h>
-module_param(debug, int, 0444);
-MODULE_PARM_DESC(debug, "debug output mask");
-
 
 #endif
 
