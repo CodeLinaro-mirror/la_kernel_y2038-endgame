@@ -572,8 +572,6 @@ static int proc_register(struct proc_dir_entry * dir, struct proc_dir_entry * dp
 		if (dp->pde_iops == NULL)
 			dp->pde_iops = &proc_link_inode_operations;
 	} else if (S_ISREG(dp->mode)) {
-		if (dp->pde_fops == NULL)
-			dp->pde_fops = &proc_file_operations;
 		if (dp->pde_iops == NULL)
 			dp->pde_iops = &proc_file_inode_operations;
 	}
@@ -721,6 +719,7 @@ struct proc_dir_entry *create_proc_read_entry(const char *name,
 
 	ent = __proc_create(&parent, name, mode, nlink);
 	if (ent) {
+		ent->pde_fops = &proc_file_operations;
 		ent->pde_read_proc = read_proc;
 		ent->data = data;
 		if (proc_register(parent, ent) < 0) {
