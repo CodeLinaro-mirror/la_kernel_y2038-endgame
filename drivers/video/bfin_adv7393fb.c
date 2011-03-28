@@ -509,16 +509,15 @@ static int __devinit bfin_adv7393_fb_probe(struct i2c_client *client,
 	       fbdev->info.node, fbdev->info.fix.id);
 	dev_info(&client->dev, "fb memory address : 0x%p\n", fbdev->fb_mem);
 
-	entry = create_proc_entry("driver/adv7393", 0, NULL);
+	entry = create_proc_read_entry("driver/adv7393", 0, NULL,
+				       adv7393_read_proc, fbdev);
 	if (!entry) {
 		dev_err(&client->dev, "unable to create /proc entry\n");
 		ret = -EFAULT;
 		goto out_0;
 	}
 
-	entry->read_proc = adv7393_read_proc;
 	entry->write_proc = adv7393_write_proc;
-	entry->data = fbdev;
 
 	return 0;
 

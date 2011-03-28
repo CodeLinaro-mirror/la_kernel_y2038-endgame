@@ -67,17 +67,17 @@ void msm_init_last_radio_log(struct module *owner)
 		return;
 	}
 
-	entry = create_proc_entry("last_radio_log", S_IFREG | S_IRUGO, NULL);
+	last_radio_log_fops.owner = owner;
+	entry = proc_create("last_radio_log", S_IFREG | S_IRUGO, NULL, &last_radio_log_fops);
 	if (!entry) {
 		pr_err("%s: could not create proc entry for radio log\n",
 				__func__);
+		last_radio_log_fops.owner = NULL;
 		return;
 	}
 
 	pr_err("%s: last radio log is %d bytes long\n", __func__,
 		radio_log_size);
-	last_radio_log_fops.owner = owner;
-	entry->proc_fops = &last_radio_log_fops;
 	entry->size = radio_log_size;
 }
 EXPORT_SYMBOL(msm_init_last_radio_log);

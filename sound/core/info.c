@@ -529,7 +529,7 @@ int __init snd_info_init(void)
 {
 	struct proc_dir_entry *p;
 
-	p = create_proc_entry("asound", S_IFDIR | S_IRUGO | S_IXUGO, NULL);
+	p = proc_mkdir("asound", NULL);
 	if (p == NULL)
 		return -ENOMEM;
 	snd_proc_root = p;
@@ -956,15 +956,17 @@ int snd_info_register(struct snd_info_entry * entry)
 		return -ENXIO;
 	root = entry->parent == NULL ? snd_proc_root : entry->parent->p;
 	mutex_lock(&info_mutex);
-	p = create_proc_entry(entry->name, entry->mode, root);
+	if (S_ISDIR(entry->mode))
+		p = proc_mkdir(entry->name, root);
+	else
+		p = proc_create_data(entry->name, entry->mode, root,
+				     &snd_info_entry_operations, entry);
+
 	if (!p) {
 		mutex_unlock(&info_mutex);
 		return -ENOMEM;
 	}
-	if (!S_ISDIR(entry->mode))
-		p->proc_fops = &snd_info_entry_operations;
 	p->size = entry->size;
-	p->data = entry;
 	entry->p = p;
 	if (entry->parent)
 		list_add_tail(&entry->list, &entry->parent->children);

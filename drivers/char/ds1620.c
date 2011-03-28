@@ -15,11 +15,6 @@
 #include <asm/uaccess.h>
 #include <asm/therm.h>
 
-#ifdef CONFIG_PROC_FS
-/* define for /proc interface */
-#define THERM_USE_PROC
-#endif
-
 /* Definitions for DS1620 chip */
 #define THERM_START_CONVERT	0xee
 #define THERM_RESET		0xaf
@@ -328,7 +323,6 @@ ds1620_unlocked_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	return ret;
 }
 
-#ifdef THERM_USE_PROC
 static int
 proc_therm_ds1620_read(char *buf, char **start, off_t offset,
 		       int len, int *eof, void *unused)
@@ -349,9 +343,6 @@ proc_therm_ds1620_read(char *buf, char **start, off_t offset,
 	return len;
 }
 
-static struct proc_dir_entry *proc_therm_ds1620;
-#endif
-
 static const struct file_operations ds1620_fops = {
 	.owner		= THIS_MODULE,
 	.open		= ds1620_open,
@@ -370,6 +361,7 @@ static int __init ds1620_init(void)
 {
 	int ret;
 	struct therm th, th_start;
+	struct proc_dir_entry *proc_therm_ds1620;
 
 	if (!machine_is_netwinder())
 		return -ENODEV;
@@ -396,13 +388,10 @@ static int __init ds1620_init(void)
 	if (ret < 0)
 		return ret;
 
-#ifdef THERM_USE_PROC
-	proc_therm_ds1620 = create_proc_entry("therm", 0, NULL);
-	if (proc_therm_ds1620)
-		proc_therm_ds1620->read_proc = proc_therm_ds1620_read;
-	else
+	proc_therm_ds1620 = create_proc_read_entry("therm", 0, NULL,
+					 proc_therm_ds1620_read, NULL);
+	if (!proc_therm_ds1620)
 		printk(KERN_ERR "therm: unable to register /proc/therm\n");
-#endif
 
 	ds1620_read_state(&th);
 	ret = cvt_9_to_int(ds1620_in(THERM_READ_TEMP, 9));
@@ -419,9 +408,7 @@ static int __init ds1620_init(void)
 
 static void __exit ds1620_exit(void)
 {
-#ifdef THERM_USE_PROC
 	remove_proc_entry("therm", NULL);
-#endif
 	misc_deregister(&ds1620_miscdev);
 }
 
