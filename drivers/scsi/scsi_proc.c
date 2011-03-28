@@ -160,7 +160,7 @@ void scsi_proc_host_add(struct Scsi_Host *shost)
 		return;
 	} 
 
-	p->write_proc = proc_scsi_write_proc;
+	p->pde_write_proc = proc_scsi_write_proc;
 }
 
 /**

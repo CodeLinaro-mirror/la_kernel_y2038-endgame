@@ -135,7 +135,7 @@ static loff_t proc_reg_llseek(struct file *file, loff_t offset, int whence)
 	 * remove_proc_entry() is going to delete PDE (as part of module
 	 * cleanup sequence). No new callers into module allowed.
 	 */
-	if (!pde->proc_fops) {
+	if (!pde->pde_fops) {
 		spin_unlock(&pde->pde_unload_lock);
 		return rv;
 	}
@@ -145,10 +145,10 @@ static loff_t proc_reg_llseek(struct file *file, loff_t offset, int whence)
 	 */
 	pde->pde_users++;
 	/*
-	 * Save function pointer under lock, to protect against ->proc_fops
+	 * Save function pointer under lock, to protect against ->pde_fops
 	 * NULL'ifying right after ->pde_unload_lock is dropped.
 	 */
-	llseek = pde->proc_fops->llseek;
+	llseek = pde->pde_fops->llseek;
 	spin_unlock(&pde->pde_unload_lock);
 
 	if (!llseek)
@@ -166,12 +166,12 @@ static ssize_t proc_reg_read(struct file *file, char __user *buf, size_t count, 
 	ssize_t (*read)(struct file *, char __user *, size_t, loff_t *);
 
 	spin_lock(&pde->pde_unload_lock);
-	if (!pde->proc_fops) {
+	if (!pde->pde_fops) {
 		spin_unlock(&pde->pde_unload_lock);
 		return rv;
 	}
 	pde->pde_users++;
-	read = pde->proc_fops->read;
+	read = pde->pde_fops->read;
 	spin_unlock(&pde->pde_unload_lock);
 
 	if (read)
@@ -188,12 +188,12 @@ static ssize_t proc_reg_write(struct file *file, const char __user *buf, size_t 
 	ssize_t (*write)(struct file *, const char __user *, size_t, loff_t *);
 
 	spin_lock(&pde->pde_unload_lock);
-	if (!pde->proc_fops) {
+	if (!pde->pde_fops) {
 		spin_unlock(&pde->pde_unload_lock);
 		return rv;
 	}
 	pde->pde_users++;
-	write = pde->proc_fops->write;
+	write = pde->pde_fops->write;
 	spin_unlock(&pde->pde_unload_lock);
 
 	if (write)
@@ -210,12 +210,12 @@ static unsigned int proc_reg_poll(struct file *file, struct poll_table_struct *p
 	unsigned int (*poll)(struct file *, struct poll_table_struct *);
 
 	spin_lock(&pde->pde_unload_lock);
-	if (!pde->proc_fops) {
+	if (!pde->pde_fops) {
 		spin_unlock(&pde->pde_unload_lock);
 		return rv;
 	}
 	pde->pde_users++;
-	poll = pde->proc_fops->poll;
+	poll = pde->pde_fops->poll;
 	spin_unlock(&pde->pde_unload_lock);
 
 	if (poll)
@@ -232,12 +232,12 @@ static long proc_reg_unlocked_ioctl(struct file *file, unsigned int cmd, unsigne
 	long (*ioctl)(struct file *, unsigned int, unsigned long);
 
 	spin_lock(&pde->pde_unload_lock);
-	if (!pde->proc_fops) {
+	if (!pde->pde_fops) {
 		spin_unlock(&pde->pde_unload_lock);
 		return rv;
 	}
 	pde->pde_users++;
-	ioctl = pde->proc_fops->unlocked_ioctl;
+	ioctl = pde->pde_fops->unlocked_ioctl;
 	spin_unlock(&pde->pde_unload_lock);
 
 	if (ioctl)
@@ -255,12 +255,12 @@ static long proc_reg_compat_ioctl(struct file *file, unsigned int cmd, unsigned 
 	long (*compat_ioctl)(struct file *, unsigned int, unsigned long);
 
 	spin_lock(&pde->pde_unload_lock);
-	if (!pde->proc_fops) {
+	if (!pde->pde_fops) {
 		spin_unlock(&pde->pde_unload_lock);
 		return rv;
 	}
 	pde->pde_users++;
-	compat_ioctl = pde->proc_fops->compat_ioctl;
+	compat_ioctl = pde->pde_fops->compat_ioctl;
 	spin_unlock(&pde->pde_unload_lock);
 
 	if (compat_ioctl)
@@ -278,12 +278,12 @@ static int proc_reg_mmap(struct file *file, struct vm_area_struct *vma)
 	int (*mmap)(struct file *, struct vm_area_struct *);
 
 	spin_lock(&pde->pde_unload_lock);
-	if (!pde->proc_fops) {
+	if (!pde->pde_fops) {
 		spin_unlock(&pde->pde_unload_lock);
 		return rv;
 	}
 	pde->pde_users++;
-	mmap = pde->proc_fops->mmap;
+	mmap = pde->pde_fops->mmap;
 	spin_unlock(&pde->pde_unload_lock);
 
 	if (mmap)
@@ -303,7 +303,7 @@ static int proc_reg_open(struct inode *inode, struct file *file)
 
 	/*
 	 * What for, you ask? Well, we can have open, rmmod, remove_proc_entry
-	 * sequence. ->release won't be called because ->proc_fops will be
+	 * sequence. ->release won't be called because ->pde_fops will be
 	 * cleared. Depending on complexity of ->release, consequences vary.
 	 *
 	 * We can't wait for mercy when close will be done for real, it's
@@ -316,14 +316,14 @@ static int proc_reg_open(struct inode *inode, struct file *file)
 		return -ENOMEM;
 
 	spin_lock(&pde->pde_unload_lock);
-	if (!pde->proc_fops) {
+	if (!pde->pde_fops) {
 		spin_unlock(&pde->pde_unload_lock);
 		kfree(pdeo);
 		return -EINVAL;
 	}
 	pde->pde_users++;
-	open = pde->proc_fops->open;
-	release = pde->proc_fops->release;
+	open = pde->pde_fops->open;
+	release = pde->pde_fops->release;
 	spin_unlock(&pde->pde_unload_lock);
 
 	if (open)
@@ -365,7 +365,7 @@ static int proc_reg_release(struct inode *inode, struct file *file)
 
 	spin_lock(&pde->pde_unload_lock);
 	pdeo = find_pde_opener(pde, inode, file);
-	if (!pde->proc_fops) {
+	if (!pde->pde_fops) {
 		/*
 		 * Can't simply exit, __fput() will think that everything is OK,
 		 * and move on to freeing struct file. remove_proc_entry() will
@@ -384,7 +384,7 @@ static int proc_reg_release(struct inode *inode, struct file *file)
 		return rv;
 	}
 	pde->pde_users++;
-	release = pde->proc_fops->release;
+	release = pde->pde_fops->release;
 	if (pdeo) {
 		list_del(&pdeo->lh);
 		kfree(pdeo);
@@ -429,7 +429,7 @@ struct inode *proc_get_inode(struct super_block *sb, struct proc_dir_entry *de)
 {
 	struct inode * inode;
 
-	inode = iget_locked(sb, de->low_ino);
+	inode = iget_locked(sb, de->pde_ino);
 	if (!inode)
 		return NULL;
 	if (inode->i_state & I_NEW) {
@@ -444,23 +444,23 @@ struct inode *proc_get_inode(struct super_block *sb, struct proc_dir_entry *de)
 		}
 		if (de->size)
 			inode->i_size = de->size;
-		if (de->nlink)
-			inode->i_nlink = de->nlink;
-		if (de->proc_iops)
-			inode->i_op = de->proc_iops;
+		if (de->pde_nlink)
+			inode->i_nlink = de->pde_nlink;
+		if (de->pde_iops)
+			inode->i_op = de->pde_iops;
 		if (de->data)
 			inode->i_private = de->data;
-		if (de->proc_fops) {
+		if (de->pde_fops) {
 			if (S_ISREG(inode->i_mode)) {
 #ifdef CONFIG_COMPAT
-				if (!de->proc_fops->compat_ioctl)
+				if (!de->pde_fops->compat_ioctl)
 					inode->i_fop =
 						&proc_reg_file_ops_no_compat;
 				else
 #endif
 					inode->i_fop = &proc_reg_file_ops;
 			} else {
-				inode->i_fop = de->proc_fops;
+				inode->i_fop = de->pde_fops;
 			}
 		}
 		unlock_new_inode(inode);

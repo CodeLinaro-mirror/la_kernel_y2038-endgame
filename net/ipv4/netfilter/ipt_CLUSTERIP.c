@@ -105,7 +105,7 @@ clusterip_config_entry_put(struct clusterip_config *c)
 		 * functions are also incrementing the refcount on their own,
 		 * so it's safe to remove the entry even if it's in use. */
 #ifdef CONFIG_PROC_FS
-		remove_proc_entry(c->pde->name, c->pde->parent);
+		remove_proc_entry(c->pde->name, c->pde->pde_parent);
 #endif
 		return;
 	}
@@ -733,7 +733,7 @@ static void __exit clusterip_tg_exit(void)
 {
 	pr_info("ClusterIP Version %s unloading\n", CLUSTERIP_VERSION);
 #ifdef CONFIG_PROC_FS
-	remove_proc_entry(clusterip_procdir->name, clusterip_procdir->parent);
+	remove_proc_entry("ipt_CLUSTERIP", init_net.proc_net);
 #endif
 	nf_unregister_hook(&cip_arp_ops);
 	xt_unregister_target(&clusterip_tg_reg);

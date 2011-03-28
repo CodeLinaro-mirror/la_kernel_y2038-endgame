@@ -110,7 +110,7 @@ void task_mem(struct seq_file *, struct mm_struct *);
 
 static inline struct proc_dir_entry *pde_get(struct proc_dir_entry *pde)
 {
-	atomic_inc(&pde->count);
+	atomic_inc(&pde->pde_count);
 	return pde;
 }
 void pde_put(struct proc_dir_entry *pde);

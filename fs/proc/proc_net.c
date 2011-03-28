@@ -144,7 +144,7 @@ static int proc_tgid_net_getattr(struct vfsmount *mnt, struct dentry *dentry,
 	generic_fillattr(inode, stat);
 
 	if (net != NULL) {
-		stat->nlink = net->proc_net->nlink;
+		stat->nlink = net->proc_net->pde_nlink;
 		put_net(net);
 	}
 
@@ -202,10 +202,10 @@ static __net_init int proc_net_ns_init(struct net *net)
 		goto out;
 
 	netd->data = net;
-	netd->nlink = 2;
+	netd->pde_nlink = 2;
 	netd->name = "net";
-	netd->namelen = 3;
-	netd->parent = &proc_root;
+	netd->pde_namelen = 3;
+	netd->pde_parent = &proc_root;
 
 	err = -EEXIST;
 	net_statd = proc_net_mkdir(net, "stat", netd);

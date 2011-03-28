@@ -101,7 +101,7 @@ void proc_device_tree_update_prop(struct proc_dir_entry *pde,
 {
 	struct proc_dir_entry *ent;
 
-	for (ent = pde->subdir; ent != NULL; ent = ent->next)
+	for (ent = pde->pde_subdir; ent != NULL; ent = ent->pde_next)
 		if (ent->data == oldprop)
 			break;
 	if (ent == NULL) {
@@ -126,7 +126,7 @@ static int duplicate_name(struct proc_dir_entry *de, const char *name)
 
 	spin_lock(&proc_subdir_lock);
 
-	for (ent = de->subdir; ent != NULL; ent = ent->next) {
+	for (ent = de->pde_subdir; ent != NULL; ent = ent->pde_next) {
 		if (strcmp(ent->name, name) == 0) {
 			found = 1;
 			break;

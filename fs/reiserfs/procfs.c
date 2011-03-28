@@ -398,7 +398,7 @@ static int set_sb(struct super_block *sb, void *data)
 static void *r_start(struct seq_file *m, loff_t * pos)
 {
 	struct proc_dir_entry *de = m->private;
-	struct super_block *s = de->parent->data;
+	struct super_block *s = de->pde_parent->data;
 	loff_t l = *pos;
 
 	if (l)

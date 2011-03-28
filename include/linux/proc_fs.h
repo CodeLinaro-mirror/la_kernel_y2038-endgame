@@ -31,15 +31,25 @@ typedef	int (write_proc_t)(struct file *file, const char __user *buffer,
 			   unsigned long count, void *data);
 
 struct proc_dir_entry {
-	unsigned int low_ino;
-	unsigned int namelen;
-	const char *name;
-	mode_t mode;
-	nlink_t nlink;
-	uid_t uid;
-	gid_t gid;
-	loff_t size;
-	const struct inode_operations *proc_iops;
+	const char	*name;
+	void		*data;
+	loff_t		size;
+	mode_t		mode;
+	uid_t		uid;
+	gid_t		gid;
+
+	/* No user-serviceable parts below */
+	unsigned int		pde_namelen;
+	nlink_t			pde_nlink;
+	unsigned int		pde_ino;
+	struct proc_dir_entry	*pde_next, *pde_parent, *pde_subdir;
+	read_proc_t		*pde_read_proc;
+	write_proc_t		*pde_write_proc;
+	atomic_t		pde_count;	/* use count */
+	int			pde_users;	/* number of callers into module in progress */
+	spinlock_t		pde_unload_lock; /* proc_fops checks and pde_users bumps */
+	struct completion 	*pde_unload_completion;
+	struct list_head	pde_openers;	/* who did ->open, but not ->release */
 	/*
 	 * NULL ->proc_fops means "PDE is going away RSN" or
 	 * "PDE is just created". In either case, e.g. ->read_proc won't be
@@ -48,16 +58,8 @@ struct proc_dir_entry {
 	 * If you're allocating ->proc_fops dynamically, save a pointer
 	 * somewhere.
 	 */
-	const struct file_operations *proc_fops;
-	struct proc_dir_entry *next, *parent, *subdir;
-	void *data;
-	read_proc_t *read_proc;
-	write_proc_t *write_proc;
-	atomic_t count;		/* use count */
-	int pde_users;	/* number of callers into module in progress */
-	spinlock_t pde_unload_lock; /* proc_fops checks and pde_users bumps */
-	struct completion *pde_unload_completion;
-	struct list_head pde_openers;	/* who did ->open, but not ->release */
+	const struct file_operations	*pde_fops;
+	const struct inode_operations	*pde_iops;
 };
 
 #ifdef CONFIG_PROC_FS

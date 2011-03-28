@@ -803,7 +803,7 @@ static int __init lparcfg_init(void)
 static void __exit lparcfg_cleanup(void)
 {
 	if (proc_ppc64_lparcfg)
-		remove_proc_entry("lparcfg", proc_ppc64_lparcfg->parent);
+		remove_proc_entry("powerpc/lparcfg", NULL);
 }
 
 module_init(lparcfg_init);

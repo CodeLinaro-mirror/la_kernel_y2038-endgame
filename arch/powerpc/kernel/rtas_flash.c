@@ -214,7 +214,7 @@ static int rtas_flash_release(struct inode *inode, struct file *file)
 		uf->flist = NULL;
 	}
 
-	atomic_dec(&dp->count);
+	atomic_dec(&dp->pde_count);
 	return 0;
 }
 
@@ -339,12 +339,12 @@ static int rtas_excl_open(struct inode *inode, struct file *file)
 
 	/* Enforce exclusive open with use count of PDE */
 	spin_lock(&flash_file_open_lock);
-	if (atomic_read(&dp->count) > 2) {
+	if (atomic_read(&dp->pde_count) > 2) {
 		spin_unlock(&flash_file_open_lock);
 		return -EBUSY;
 	}
 
-	atomic_inc(&dp->count);
+	atomic_inc(&dp->pde_count);
 	spin_unlock(&flash_file_open_lock);
 	
 	return 0;
@@ -354,7 +354,7 @@ static int rtas_excl_release(struct inode *inode, struct file *file)
 {
 	struct proc_dir_entry *dp = PDE(inode);
 
-	atomic_dec(&dp->count);
+	atomic_dec(&dp->pde_count);
 
 	return 0;
 }
@@ -537,7 +537,7 @@ static int validate_flash_release(struct inode *inode, struct file *file)
 	}
 
 	/* The matching atomic_inc was in rtas_excl_open() */
-	atomic_dec(&dp->count);
+	atomic_dec(&dp->pde_count);
 
 	return 0;
 }
@@ -632,7 +632,7 @@ static void remove_flash_pde(struct proc_dir_entry *dp)
 {
 	if (dp) {
 		kfree(dp->data);
-		remove_proc_entry(dp->name, dp->parent);
+		remove_proc_entry(dp->name, dp->pde_parent);
 	}
 }
 

@@ -201,7 +201,7 @@ static void __exit scanlog_cleanup(void)
 {
 	if (proc_ppc64_scan_log_dump) {
 		kfree(proc_ppc64_scan_log_dump->data);
-		remove_proc_entry("scan-log-dump", proc_ppc64_scan_log_dump->parent);
+		remove_proc_entry("powerpc/rtas/scan-log-dump", NULL);
 	}
 }
 
