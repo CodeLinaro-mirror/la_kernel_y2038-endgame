@@ -781,37 +781,8 @@ void pde_put(struct proc_dir_entry *pde)
 		free_proc_entry(pde);
 }
 
-/*
- * Remove a /proc entry and free it if it's not currently in use.
- */
-void remove_proc_entry(const char *name, struct proc_dir_entry *parent)
+static void __proc_remove(struct proc_dir_entry *de)
 {
-	struct proc_dir_entry **p;
-	struct proc_dir_entry *de = NULL;
-	const char *fn = name;
-	unsigned int len;
-
-	spin_lock(&proc_subdir_lock);
-	if (__xlate_proc_name(name, &parent, &fn) != 0) {
-		spin_unlock(&proc_subdir_lock);
-		return;
-	}
-	len = strlen(fn);
-
-	for (p = &parent->pde_subdir; *p; p=&(*p)->pde_next ) {
-		if (proc_match(len, fn, *p)) {
-			de = *p;
-			*p = de->pde_next;
-			de->pde_next = NULL;
-			break;
-		}
-	}
-	spin_unlock(&proc_subdir_lock);
-	if (!de) {
-		WARN(1, "name '%s'\n", name);
-		return;
-	}
-
 	spin_lock(&de->pde_unload_lock);
 	/*
 	 * Stop accepting new callers into module. If you're
@@ -845,11 +816,70 @@ void remove_proc_entry(const char *name, struct proc_dir_entry *parent)
 	spin_unlock(&de->pde_unload_lock);
 
 	if (S_ISDIR(de->mode))
-		parent->pde_nlink--;
+		de->pde_parent->pde_nlink--;
 	de->pde_nlink = 0;
 	WARN(de->pde_subdir, KERN_WARNING "%s: removing non-empty directory "
 			"'%s/%s', leaking at least '%s'\n", __func__,
 			de->pde_parent->name, de->name, de->pde_subdir->name);
 	pde_put(de);
+}
+
+/*
+ * Remove a /proc entry and free it if it's not currently in use.
+ */
+void proc_remove(struct proc_dir_entry *pde)
+{
+	struct proc_dir_entry **p;
+
+	spin_lock(&proc_subdir_lock);
+	for (p = &pde->pde_parent->pde_subdir; *p; p=&(*p)->pde_next ) {
+		if (pde == *p) {
+			*p = pde->pde_next;
+			pde->pde_next = NULL;
+			break;
+		}
+	}
+	spin_unlock(&proc_subdir_lock);
+
+	if (!*p) {
+		WARN(1, "name '%s'\n", pde->name);
+		return;
+	}
+	__proc_remove(pde);
+}
+EXPORT_SYMBOL_GPL(proc_remove);
+
+/*
+ * Remove a /proc entry and free it if it's not currently in use.
+ */
+void remove_proc_entry(const char *name, struct proc_dir_entry *parent)
+{
+	struct proc_dir_entry **p;
+	struct proc_dir_entry *de = NULL;
+	const char *fn = name;
+	unsigned int len;
+
+	spin_lock(&proc_subdir_lock);
+	if (__xlate_proc_name(name, &parent, &fn) != 0) {
+		spin_unlock(&proc_subdir_lock);
+		return;
+	}
+	len = strlen(fn);
+
+	for (p = &parent->pde_subdir; *p; p=&(*p)->pde_next ) {
+		if (proc_match(len, fn, *p)) {
+			de = *p;
+			*p = de->pde_next;
+			de->pde_next = NULL;
+			break;
+		}
+	}
+	spin_unlock(&proc_subdir_lock);
+
+	if (!de) {
+		WARN(1, "name '%s'\n", name);
+		return;
+	}
+	__proc_remove(de);
 }
 EXPORT_SYMBOL(remove_proc_entry);

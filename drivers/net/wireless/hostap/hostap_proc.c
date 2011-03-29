@@ -448,7 +448,7 @@ void hostap_remove_proc(local_info_t *local)
 		remove_proc_entry("debug", local->proc);
 #endif /* PRISM2_NO_PROCFS_DEBUG */
 		if (hostap_proc != NULL)
-			remove_proc_entry(local->proc->name, hostap_proc);
+			proc_remove(local->proc);
 	}
 }
 

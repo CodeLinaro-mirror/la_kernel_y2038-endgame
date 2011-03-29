@@ -1914,7 +1914,7 @@ static void i2o_proc_subdir_remove(struct proc_dir_entry *dir)
 	while (pe) {
 		tmp = pe->next;
 		i2o_proc_subdir_remove(pe);
-		remove_proc_entry(pe->name, dir);
+		proc_remove(pe);
 		pe = tmp;
 	}
 };
@@ -2011,7 +2011,7 @@ static void i2o_proc_iop_remove(struct proc_dir_entry *dir,
 		tmp = pe->next;
 		if (pe->data == c) {
 			i2o_proc_subdir_remove(pe);
-			remove_proc_entry(pe->name, dir);
+			proc_remove(pe);
 		}
 		osm_debug("removing IOP /proc/i2o/%s\n", c->name);
 		pe = tmp;

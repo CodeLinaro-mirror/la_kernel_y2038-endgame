@@ -322,7 +322,7 @@ static void htable_destroy(struct xt_hashlimit_htable *hinfo)
 		parent = hashlimit_net->ipt_hashlimit;
 	else
 		parent = hashlimit_net->ip6t_hashlimit;
-	remove_proc_entry(hinfo->pde->name, parent);
+	proc_remove(hinfo->pde);
 	htable_selective_cleanup(hinfo, select_all);
 	vfree(hinfo);
 }

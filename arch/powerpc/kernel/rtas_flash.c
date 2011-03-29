@@ -632,7 +632,7 @@ static void remove_flash_pde(struct proc_dir_entry *dp)
 {
 	if (dp) {
 		kfree(dp->data);
-		remove_proc_entry(dp->name, dp->pde_parent);
+		proc_remove(dp);
 	}
 }
 

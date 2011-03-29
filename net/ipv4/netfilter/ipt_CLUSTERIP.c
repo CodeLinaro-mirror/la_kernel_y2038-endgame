@@ -105,7 +105,7 @@ clusterip_config_entry_put(struct clusterip_config *c)
 		 * functions are also incrementing the refcount on their own,
 		 * so it's safe to remove the entry even if it's in use. */
 #ifdef CONFIG_PROC_FS
-		remove_proc_entry(c->pde->name, c->pde->pde_parent);
+		proc_remove(c->pde);
 #endif
 		return;
 	}

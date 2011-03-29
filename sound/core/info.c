@@ -156,7 +156,7 @@ static void snd_remove_proc_entry(struct proc_dir_entry *parent,
 				  struct proc_dir_entry *de)
 {
 	if (de)
-		remove_proc_entry(de->name, parent);
+		proc_remove(de);
 }
 
 static loff_t snd_info_entry_llseek(struct file *file, loff_t offset, int orig)

@@ -81,6 +81,8 @@ static inline struct proc_dir_entry *proc_create(const char *name, mode_t mode,
 	return proc_create_data(name, mode, parent, proc_fops, NULL);
 }
 
+extern void proc_remove(struct proc_dir_entry *pde);
+
 extern struct proc_dir_entry *create_proc_read_entry(const char *name,
 	mode_t mode, struct proc_dir_entry *base, 
 	read_proc_t *read_proc, void * data);
@@ -118,6 +120,8 @@ static inline struct proc_dir_entry *proc_mkdir(const char *name,
 	struct proc_dir_entry *parent) {return NULL;}
 static inline struct proc_dir_entry *proc_mkdir_mode(const char *name,
 	mode_t mode, struct proc_dir_entry *parent) { return NULL; }
+
+static inline void proc_remove(struct proc_dir_entry *pde) { return NULL; }
 
 static inline struct proc_dir_entry *create_proc_read_entry(const char *name,
 	mode_t mode, struct proc_dir_entry *base, 

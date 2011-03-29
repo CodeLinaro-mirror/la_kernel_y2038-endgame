@@ -1017,13 +1017,13 @@ remove_palinfo_proc_entries(unsigned int hcpu)
 	*pdir++=NULL;
 	for (j=0; j < (NR_PALINFO_ENTRIES); j++) {
 		if ((*pdir)) {
-			remove_proc_entry ((*pdir)->name, cpu_dir);
+			proc_remove(*pdir);
 			*pdir ++= NULL;
 		}
 	}
 
 	if (cpu_dir) {
-		remove_proc_entry(cpu_dir->name, palinfo_dir);
+		proc_remove(cpu_dir);
 	}
 }
 
@@ -1083,7 +1083,7 @@ palinfo_exit(void)
 	/*
 	 * Remove the top level entry finally
 	 */
-	remove_proc_entry(palinfo_dir->name, NULL);
+	proc_remove(palinfo_dir);
 
 	/*
 	 * Unregister from cpu notifier callbacks

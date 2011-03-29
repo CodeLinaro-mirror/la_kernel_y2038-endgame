@@ -294,7 +294,7 @@ int dlpar_detach_node(struct device_node *dn)
 	}
 
 	if (dn->pde)
-		remove_proc_entry(dn->pde->name, parent->pde);
+		proc_remove(dn->pde);
 #endif
 
 	blocking_notifier_call_chain(&pSeries_reconfig_chain,
