@@ -76,9 +76,9 @@ __proc_device_tree_add_prop(struct proc_dir_entry *de, struct property *pp,
 		return NULL;
 
 	if (!strncmp(name, "security-", 9))
-		ent->size = 0; /* don't leak number of password chars */
+		ent->pde_size = 0; /* don't leak number of password chars */
 	else
-		ent->size = pp->length;
+		ent->pde_size = pp->length;
 
 	return ent;
 }
@@ -102,14 +102,14 @@ void proc_device_tree_update_prop(struct proc_dir_entry *pde,
 	struct proc_dir_entry *ent;
 
 	for (ent = pde->pde_subdir; ent != NULL; ent = ent->pde_next)
-		if (ent->data == oldprop)
+		if (ent->pde_data == oldprop)
 			break;
 	if (ent == NULL) {
 		printk(KERN_WARNING "device-tree: property \"%s\" "
 		       " does not exist\n", oldprop->name);
 	} else {
-		ent->data = newprop;
-		ent->size = newprop->length;
+		ent->pde_data = newprop;
+		ent->pde_size = newprop->length;
 	}
 }
 
@@ -127,7 +127,7 @@ static int duplicate_name(struct proc_dir_entry *de, const char *name)
 	spin_lock(&proc_subdir_lock);
 
 	for (ent = de->pde_subdir; ent != NULL; ent = ent->pde_next) {
-		if (strcmp(ent->name, name) == 0) {
+		if (strcmp(ent->pde_name, name) == 0) {
 			found = 1;
 			break;
 		}

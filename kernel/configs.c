@@ -79,7 +79,7 @@ static int __init ikconfig_init(void)
 	if (!entry)
 		return -ENOMEM;
 
-	entry->size = kernel_config_data_size;
+	entry->pde_size = kernel_config_data_size;
 
 	return 0;
 }

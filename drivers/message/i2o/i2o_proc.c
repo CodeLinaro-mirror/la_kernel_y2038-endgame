@@ -1910,9 +1910,9 @@ static int i2o_proc_create_entries(struct proc_dir_entry *dir,
 static void i2o_proc_subdir_remove(struct proc_dir_entry *dir)
 {
 	struct proc_dir_entry *pe, *tmp;
-	pe = dir->subdir;
+	pe = dir->pde_subdir;
 	while (pe) {
-		tmp = pe->next;
+		tmp = pe->pde_next;
 		i2o_proc_subdir_remove(pe);
 		proc_remove(pe);
 		pe = tmp;
@@ -1944,7 +1944,7 @@ static void i2o_proc_device_add(struct proc_dir_entry *dir,
 		return;
 	}
 
-	devdir->data = dev;
+	devdir->pde_data = dev;
 
 	i2o_proc_create_entries(devdir, generic_dev_entries, dev);
 
@@ -1983,7 +1983,7 @@ static int i2o_proc_iop_add(struct proc_dir_entry *dir,
 	if (!iopdir)
 		return -1;
 
-	iopdir->data = c;
+	iopdir->pde_data = c;
 
 	i2o_proc_create_entries(iopdir, i2o_proc_generic_iop_entries, c);
 
@@ -2008,8 +2008,8 @@ static void i2o_proc_iop_remove(struct proc_dir_entry *dir,
 
 	pe = dir->subdir;
 	while (pe) {
-		tmp = pe->next;
-		if (pe->data == c) {
+		tmp = pe->pde_next;
+		if (pe->pde_data == c) {
 			i2o_proc_subdir_remove(pe);
 			proc_remove(pe);
 		}

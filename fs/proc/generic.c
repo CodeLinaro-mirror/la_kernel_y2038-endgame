@@ -32,7 +32,7 @@ static int proc_match(unsigned int len, const char *name, struct proc_dir_entry 
 {
 	if (de->pde_namelen != len)
 		return 0;
-	return !memcmp(name, de->name, len);
+	return !memcmp(name, de->pde_name, len);
 }
 
 /* buffer size is one page but our output routines use some slack for overruns */
@@ -119,7 +119,7 @@ __proc_file_read(struct file *file, char __user *buf, size_t nbytes,
 			 *    absorbed.
 			 */
 			n = dp->pde_read_proc(page, &start, *ppos,
-					  count, &eof, dp->data);
+					  count, &eof, dp->pde_data);
 		} else
 			break;
 
@@ -222,7 +222,7 @@ proc_file_write(struct file *file, const char __user *buffer,
 		spin_unlock(&pde->pde_unload_lock);
 
 		/* FIXME: does this routine need ppos?  probably... */
-		rv = pde->pde_write_proc(file, buffer, count, pde->data);
+		rv = pde->pde_write_proc(file, buffer, count, pde->pde_data);
 		pde_users_dec(pde);
 	}
 	return rv;
@@ -271,9 +271,9 @@ static int proc_notify_change(struct dentry *dentry, struct iattr *iattr)
 	setattr_copy(inode, iattr);
 	mark_inode_dirty(inode);
 	
-	de->uid = inode->i_uid;
-	de->gid = inode->i_gid;
-	de->mode = inode->i_mode;
+	de->pde_uid = inode->i_uid;
+	de->pde_gid = inode->i_gid;
+	de->pde_mode = inode->i_mode;
 	return 0;
 }
 
@@ -385,7 +385,7 @@ static void release_inode_number(unsigned int inum)
 
 static void *proc_follow_link(struct dentry *dentry, struct nameidata *nd)
 {
-	nd_set_link(nd, PDE(dentry->d_inode)->data);
+	nd_set_link(nd, PDE(dentry->d_inode)->pde_data);
 	return NULL;
 }
 
@@ -424,7 +424,7 @@ struct dentry *proc_lookup_de(struct proc_dir_entry *de, struct inode *dir,
 	for (de = de->pde_subdir; de ; de = de->pde_next) {
 		if (de->pde_namelen != dentry->d_name.len)
 			continue;
-		if (!memcmp(dentry->d_name.name, de->name, de->pde_namelen)) {
+		if (!memcmp(dentry->d_name.name, de->pde_name, de->pde_namelen)) {
 			pde_get(de);
 			spin_unlock(&proc_subdir_lock);
 			error = -EINVAL;
@@ -507,8 +507,8 @@ int proc_readdir_de(struct proc_dir_entry *de, struct file *filp, void *dirent,
 				/* filldir passes info to user space */
 				pde_get(de);
 				spin_unlock(&proc_subdir_lock);
-				if (filldir(dirent, de->name, de->pde_namelen, filp->f_pos,
-					    de->pde_ino, de->mode >> 12) < 0) {
+				if (filldir(dirent, de->pde_name, de->pde_namelen, filp->f_pos,
+					    de->pde_ino, de->pde_mode >> 12) < 0) {
 					pde_put(de);
 					goto out;
 				}
@@ -562,16 +562,16 @@ static int proc_register(struct proc_dir_entry * dir, struct proc_dir_entry * dp
 		return -EAGAIN;
 	dp->pde_ino = i;
 
-	if (S_ISDIR(dp->mode)) {
+	if (S_ISDIR(dp->pde_mode)) {
 		if (dp->pde_iops == NULL) {
 			dp->pde_fops = &proc_dir_operations;
 			dp->pde_iops = &proc_dir_inode_operations;
 		}
 		dir->pde_nlink++;
-	} else if (S_ISLNK(dp->mode)) {
+	} else if (S_ISLNK(dp->pde_mode)) {
 		if (dp->pde_iops == NULL)
 			dp->pde_iops = &proc_link_inode_operations;
-	} else if (S_ISREG(dp->mode)) {
+	} else if (S_ISREG(dp->pde_mode)) {
 		if (dp->pde_iops == NULL)
 			dp->pde_iops = &proc_file_inode_operations;
 	}
@@ -579,9 +579,9 @@ static int proc_register(struct proc_dir_entry * dir, struct proc_dir_entry * dp
 	spin_lock(&proc_subdir_lock);
 
 	for (tmp = dir->pde_subdir; tmp; tmp = tmp->pde_next)
-		if (strcmp(tmp->name, dp->name) == 0) {
+		if (strcmp(tmp->pde_name, dp->pde_name) == 0) {
 			WARN(1, KERN_WARNING "proc_dir_entry '%s/%s' already registered\n",
-				dir->name, dp->name);
+				dir->pde_name, dp->pde_name);
 			break;
 		}
 
@@ -619,9 +619,9 @@ static struct proc_dir_entry *__proc_create(struct proc_dir_entry **parent,
 
 	memset(ent, 0, sizeof(struct proc_dir_entry));
 	memcpy(((char *) ent) + sizeof(struct proc_dir_entry), fn, len + 1);
-	ent->name = ((char *) ent) + sizeof(*ent);
+	ent->pde_name = ((char *) ent) + sizeof(*ent);
 	ent->pde_namelen = len;
-	ent->mode = mode;
+	ent->pde_mode = mode;
 	ent->pde_nlink = nlink;
 	atomic_set(&ent->pde_count, 1);
 	ent->pde_users = 0;
@@ -641,11 +641,12 @@ struct proc_dir_entry *proc_symlink(const char *name,
 			  (S_IFLNK | S_IRUGO | S_IWUGO | S_IXUGO),1);
 
 	if (ent) {
-		ent->data = kmalloc((ent->size=strlen(dest))+1, GFP_KERNEL);
-		if (ent->data) {
-			strcpy((char*)ent->data,dest);
+		ent->pde_data = kmalloc((ent->pde_size=strlen(dest))+1,
+					GFP_KERNEL);
+		if (ent->pde_data) {
+			strcpy((char*)ent->pde_data,dest);
 			if (proc_register(parent, ent) < 0) {
-				kfree(ent->data);
+				kfree(ent->pde_data);
 				kfree(ent);
 				ent = NULL;
 			}
@@ -681,7 +682,7 @@ struct proc_dir_entry *proc_net_mkdir(struct net *net, const char *name,
 
 	ent = __proc_create(&parent, name, S_IFDIR | S_IRUGO | S_IXUGO, 2);
 	if (ent) {
-		ent->data = net;
+		ent->pde_data = net;
 		if (proc_register(parent, ent) < 0) {
 			kfree(ent);
 			ent = NULL;
@@ -721,7 +722,7 @@ struct proc_dir_entry *create_proc_read_entry(const char *name,
 	if (ent) {
 		ent->pde_fops = &proc_file_operations;
 		ent->pde_read_proc = read_proc;
-		ent->data = data;
+		ent->pde_data = data;
 		if (proc_register(parent, ent) < 0) {
 			kfree(ent);
 			ent = NULL;
@@ -755,7 +756,7 @@ struct proc_dir_entry *proc_create_data(const char *name, mode_t mode,
 	if (!pde)
 		goto out;
 	pde->pde_fops = proc_fops;
-	pde->data = data;
+	pde->pde_data = data;
 	if (proc_register(parent, pde) < 0)
 		goto out_free;
 	return pde;
@@ -770,8 +771,8 @@ static void free_proc_entry(struct proc_dir_entry *de)
 {
 	release_inode_number(de->pde_ino);
 
-	if (S_ISLNK(de->mode))
-		kfree(de->data);
+	if (S_ISLNK(de->pde_mode))
+		kfree(de->pde_data);
 	kfree(de);
 }
 
@@ -815,12 +816,13 @@ static void __proc_remove(struct proc_dir_entry *de)
 	}
 	spin_unlock(&de->pde_unload_lock);
 
-	if (S_ISDIR(de->mode))
+	if (S_ISDIR(de->pde_mode))
 		de->pde_parent->pde_nlink--;
 	de->pde_nlink = 0;
 	WARN(de->pde_subdir, KERN_WARNING "%s: removing non-empty directory "
 			"'%s/%s', leaking at least '%s'\n", __func__,
-			de->pde_parent->name, de->name, de->pde_subdir->name);
+			de->pde_parent->pde_name, de->pde_name,
+			de->pde_subdir->pde_name);
 	pde_put(de);
 }
 
@@ -842,7 +844,7 @@ void proc_remove(struct proc_dir_entry *pde)
 	spin_unlock(&proc_subdir_lock);
 
 	if (!*p) {
-		WARN(1, "name '%s'\n", pde->name);
+		WARN(1, "name '%s'\n", pde->pde_name);
 		return;
 	}
 	__proc_remove(pde);

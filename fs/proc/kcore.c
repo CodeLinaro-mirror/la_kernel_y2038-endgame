@@ -123,7 +123,7 @@ static void __kcore_update_ram(struct list_head *list)
 	} else
 		list_splice(list, &garbage);
 	kcore_need_update = 0;
-	proc_root_kcore->size = get_kcore_size(&nphdr, &size);
+	proc_root_kcore->pde_size = get_kcore_size(&nphdr, &size);
 	write_unlock(&kclist_lock);
 
 	free_kclist_ents(&garbage);
@@ -546,9 +546,9 @@ static int open_kcore(struct inode *inode, struct file *filp)
 		return -EPERM;
 	if (kcore_need_update)
 		kcore_update_ram();
-	if (i_size_read(inode) != proc_root_kcore->size) {
+	if (i_size_read(inode) != proc_root_kcore->pde_size) {
 		mutex_lock(&inode->i_mutex);
-		i_size_write(inode, proc_root_kcore->size);
+		i_size_write(inode, proc_root_kcore->pde_size);
 		mutex_unlock(&inode->i_mutex);
 	}
 	return 0;

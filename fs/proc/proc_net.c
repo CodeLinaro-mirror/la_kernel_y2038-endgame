@@ -201,9 +201,9 @@ static __net_init int proc_net_ns_init(struct net *net)
 	if (!netd)
 		goto out;
 
-	netd->data = net;
+	netd->pde_data = net;
 	netd->pde_nlink = 2;
-	netd->name = "net";
+	netd->pde_name = "net";
 	netd->pde_namelen = 3;
 	netd->pde_parent = &proc_root;
 

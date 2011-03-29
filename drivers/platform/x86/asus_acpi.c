@@ -1064,8 +1064,8 @@ asus_proc_add(char *name, const struct file_operations *proc_fops, mode_t mode,
 		pr_warn("  Unable to create %s fs entry\n", name);
 		return -1;
 	}
-	proc->uid = asus_uid;
-	proc->gid = asus_gid;
+	proc->pde_uid = asus_uid;
+	proc->pde_gid = asus_gid;
 	return 0;
 }
 
@@ -1089,8 +1089,8 @@ static int asus_hotk_add_fs(struct acpi_device *device)
 	proc = proc_create(PROC_INFO, mode, acpi_device_dir(device),
 			   &asus_info_proc_fops);
 	if (proc) {
-		proc->uid = asus_uid;
-		proc->gid = asus_gid;
+		proc->pde_uid = asus_uid;
+		proc->pde_gid = asus_gid;
 	} else {
 		pr_warn("  Unable to create " PROC_INFO " fs entry\n");
 	}

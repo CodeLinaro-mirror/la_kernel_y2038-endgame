@@ -546,14 +546,10 @@ static const struct file_operations ofdt_fops = {
 /* create /proc/powerpc/ofdt write-only by root */
 static int proc_ppc64_create_ofdt(void)
 {
-	struct proc_dir_entry *ent;
-
 	if (!machine_is(pseries))
 		return 0;
 
-	ent = proc_create("powerpc/ofdt", S_IWUSR, NULL, &ofdt_fops);
-	if (ent)
-		ent->size = 0;
+	proc_create("powerpc/ofdt", S_IWUSR, NULL, &ofdt_fops);
 
 	return 0;
 }

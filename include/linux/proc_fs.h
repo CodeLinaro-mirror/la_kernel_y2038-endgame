@@ -31,12 +31,12 @@ typedef	int (write_proc_t)(struct file *file, const char __user *buffer,
 			   unsigned long count, void *data);
 
 struct proc_dir_entry {
-	const char	*name;
-	void		*data;
-	loff_t		size;
-	mode_t		mode;
-	uid_t		uid;
-	gid_t		gid;
+	const char	*pde_name;
+	void		*pde_data;
+	loff_t		pde_size;
+	mode_t		pde_mode;
+	uid_t		pde_uid;
+	gid_t		pde_gid;
 
 	/* No user-serviceable parts below */
 	unsigned int		pde_namelen;

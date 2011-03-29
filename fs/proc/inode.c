@@ -437,19 +437,19 @@ struct inode *proc_get_inode(struct super_block *sb, struct proc_dir_entry *de)
 		PROC_I(inode)->fd = 0;
 		PROC_I(inode)->pde = de;
 
-		if (de->mode) {
-			inode->i_mode = de->mode;
-			inode->i_uid = de->uid;
-			inode->i_gid = de->gid;
+		if (de->pde_mode) {
+			inode->i_mode = de->pde_mode;
+			inode->i_uid = de->pde_uid;
+			inode->i_gid = de->pde_gid;
 		}
-		if (de->size)
-			inode->i_size = de->size;
+		if (de->pde_size)
+			inode->i_size = de->pde_size;
 		if (de->pde_nlink)
 			inode->i_nlink = de->pde_nlink;
 		if (de->pde_iops)
 			inode->i_op = de->pde_iops;
-		if (de->data)
-			inode->i_private = de->data;
+		if (de->pde_data)
+			inode->i_private = de->pde_data;
 		if (de->pde_fops) {
 			if (S_ISREG(inode->i_mode)) {
 #ifdef CONFIG_COMPAT

@@ -194,7 +194,7 @@ static int rtas_flash_release(struct inode *inode, struct file *file)
 	struct proc_dir_entry *dp = PDE(file->f_path.dentry->d_inode);
 	struct rtas_update_flash_t *uf;
 	
-	uf = (struct rtas_update_flash_t *) dp->data;
+	uf = (struct rtas_update_flash_t *) dp->pde_data;
 	if (uf->flist) {    
 		/* File was opened in write mode for a new flash attempt */
 		/* Clear saved list */
@@ -257,9 +257,9 @@ static ssize_t rtas_flash_read(struct file *file, char __user *buf,
 	struct rtas_update_flash_t *uf;
 	char msg[RTAS_MSG_MAXLEN];
 
-	uf = dp->data;
+	uf = dp->pde_data;
 
-	if (!strcmp(dp->name, FIRMWARE_FLASH_NAME)) {
+	if (!strcmp(dp->pde_name, FIRMWARE_FLASH_NAME)) {
 		get_flash_status_msg(uf->status, msg);
 	} else {	   /* FIRMWARE_UPDATE_NAME */
 		sprintf(msg, "%d\n", uf->status);
@@ -288,7 +288,7 @@ static ssize_t rtas_flash_write(struct file *file, const char __user *buffer,
 	int next_free;
 	struct flash_block_list *fl;
 
-	uf = (struct rtas_update_flash_t *) dp->data;
+	uf = (struct rtas_update_flash_t *) dp->pde_data;
 
 	if (uf->status == FLASH_AUTH || count == 0)
 		return count;	/* discard data */
@@ -379,7 +379,7 @@ static ssize_t manage_flash_read(struct file *file, char __user *buf,
 	char msg[RTAS_MSG_MAXLEN];
 	int msglen;
 
-	args_buf = dp->data;
+	args_buf = dp->pde_data;
 	if (args_buf == NULL)
 		return 0;
 
@@ -398,7 +398,7 @@ static ssize_t manage_flash_write(struct file *file, const char __user *buf,
 	char stkbuf[10];
 	int op;
 
-	args_buf = (struct rtas_manage_flash_t *) dp->data;
+	args_buf = (struct rtas_manage_flash_t *) dp->pde_data;
 	if ((args_buf->status == MANAGE_AUTH) || (count == 0))
 		return count;
 		
@@ -467,7 +467,7 @@ static ssize_t validate_flash_read(struct file *file, char __user *buf,
 	char msg[RTAS_MSG_MAXLEN];
 	int msglen;
 
-	args_buf = dp->data;
+	args_buf = dp->pde_data;
 
 	msglen = get_validate_flash_msg(args_buf, msg);
 
@@ -481,12 +481,12 @@ static ssize_t validate_flash_write(struct file *file, const char __user *buf,
 	struct rtas_validate_flash_t *args_buf;
 	int rc;
 
-	args_buf = (struct rtas_validate_flash_t *) dp->data;
+	args_buf = (struct rtas_validate_flash_t *) dp->pde_data;
 
-	if (dp->data == NULL) {
-		dp->data = kmalloc(sizeof(struct rtas_validate_flash_t), 
+	if (dp->pde_data == NULL) {
+		dp->pde_data = kmalloc(sizeof(struct rtas_validate_flash_t), 
 				GFP_KERNEL);
-		if (dp->data == NULL) 
+		if (dp->pde_data == NULL) 
 			return -ENOMEM;
 	}
 
@@ -518,8 +518,8 @@ static ssize_t validate_flash_write(struct file *file, const char __user *buf,
 	rc = count;
 done:
 	if (rc < 0) {
-		kfree(dp->data);
-		dp->data = NULL;
+		kfree(dp->pde_data);
+		dp->pde_data = NULL;
 	}
 	return rc;
 }
@@ -529,7 +529,7 @@ static int validate_flash_release(struct inode *inode, struct file *file)
 	struct proc_dir_entry *dp = PDE(file->f_path.dentry->d_inode);
 	struct rtas_validate_flash_t *args_buf;
 
-	args_buf = (struct rtas_validate_flash_t *) dp->data;
+	args_buf = (struct rtas_validate_flash_t *) dp->pde_data;
 
 	if (args_buf->status == VALIDATE_READY) {
 		args_buf->buf_size = VALIDATE_BUF_SIZE;
@@ -631,7 +631,7 @@ static void rtas_flash_firmware(int reboot_type)
 static void remove_flash_pde(struct proc_dir_entry *dp)
 {
 	if (dp) {
-		kfree(dp->data);
+		kfree(dp->pde_data);
 		proc_remove(dp);
 	}
 }
@@ -643,8 +643,8 @@ static int initialize_flash_pde_data(const char *rtas_call_name,
 	int *status;
 	int token;
 
-	dp->data = kzalloc(buf_size, GFP_KERNEL);
-	if (dp->data == NULL) {
+	dp->pde_data = kzalloc(buf_size, GFP_KERNEL);
+	if (dp->pde_data == NULL) {
 		remove_flash_pde(dp);
 		return -ENOMEM;
 	}
@@ -653,7 +653,7 @@ static int initialize_flash_pde_data(const char *rtas_call_name,
 	 * This code assumes that the status int is the first member of the
 	 * struct 
 	 */
-	status = (int *) dp->data;
+	status = (int *) dp->pde_data;
 	token = rtas_token(rtas_call_name);
 	if (token == RTAS_UNKNOWN_SERVICE)
 		*status = FLASH_AUTH;

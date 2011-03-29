@@ -966,7 +966,7 @@ int snd_info_register(struct snd_info_entry * entry)
 		mutex_unlock(&info_mutex);
 		return -ENOMEM;
 	}
-	p->size = entry->size;
+	p->pde_size = entry->size;
 	entry->p = p;
 	if (entry->parent)
 		list_add_tail(&entry->list, &entry->parent->children);

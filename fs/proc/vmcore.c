@@ -695,7 +695,7 @@ static int __init vmcore_init(void)
 
 	proc_vmcore = proc_create("vmcore", S_IRUSR, NULL, &proc_vmcore_operations);
 	if (proc_vmcore)
-		proc_vmcore->size = vmcore_size;
+		proc_vmcore->pde_size = vmcore_size;
 	return 0;
 }
 module_init(vmcore_init)
