@@ -107,7 +107,7 @@
 #include <linux/in.h>
 #include <linux/ioport.h>
 #include <linux/string.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/ptrace.h>
 #include <linux/skbuff.h>
 #include <linux/interrupt.h>
@@ -262,8 +262,8 @@ static int __devinit streamer_init_one(struct pci_dev *pdev,
 #if STREAMER_NETWORK_MONITOR
 #ifdef CONFIG_PROC_FS
 	if (!dev_streamer)
-		create_proc_read_entry("streamer_tr", 0, init_net.proc_net,
-					streamer_proc_info, NULL); 
+		proc_create("streamer_tr", 0, init_net.proc_net,
+					streamer_proc_fops); 
 	streamer_priv->next = dev_streamer;
 	dev_streamer = streamer_priv;
 #endif
@@ -1826,6 +1826,20 @@ static int streamer_proc_info(char *buffer, char **start, off_t offset,
 		len = length;	/* Ending slop */
 	return len;
 }
+
+static int streamer_proc_open(struct inode *inode, struct file *file)
+{
+	/* prepare private_data for proc_file_read consumption */
+	file->private_data = streamer_read_proc;
+	return 0;
+}
+
+/* FIXME: This should really be a seq_file */
+static struct file_operations streamer_proc_fops = {
+	.owner = THIS_MODULE,
+	.read  = proc_file_read,
+	.open  = streamer_proc_open,
+};
 
 static int sprintf_info(char *buffer, struct net_device *dev)
 {

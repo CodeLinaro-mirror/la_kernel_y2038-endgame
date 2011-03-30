@@ -20,7 +20,7 @@
 #include <linux/init.h>
 #include <linux/string.h>
 #include <linux/mm.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/errno.h>
 #include <linux/blkdev.h>
 #include <linux/seq_file.h>
@@ -74,10 +74,10 @@ static int proc_scsi_read(char *buffer, char **start, off_t offset,
  * @count: number of bytes (at most PROC_BLOCK_SIZE) to write.
  * @data: pointer to &struct Scsi_Host
  */
-static int proc_scsi_write_proc(struct file *file, const char __user *buf,
-                           unsigned long count, void *data)
+static ssize_t proc_scsi_write_proc(struct file *file, const char __user *buf,
+                           size_t count, loff_t *ppos)
 {
-	struct Scsi_Host *shost = data;
+	struct Scsi_Host *shost = file->f_path.dentry->d_inode->i_private;
 	ssize_t ret = -ENOMEM;
 	char *page;
 	char *start;
@@ -96,6 +96,20 @@ out:
 	free_page((unsigned long)page);
 	return ret;
 }
+
+static int proc_scsi_info_open(struct inode *inode, struct file *file)
+{
+	/* prepare private_data for proc_file_read consumption */
+	file->private_data = proc_scsi_read;
+	return 0;
+}
+
+static struct file_operations proc_scsi_fops = {
+	.owner = THIS_MODULE,
+	.read  = proc_file_read,
+	.write = proc_scsi_write_proc,
+	.open  = proc_scsi_info_open,
+};
 
 /**
  * scsi_proc_hostdir_add - Create directory in /proc for a scsi host
@@ -151,16 +165,14 @@ void scsi_proc_host_add(struct Scsi_Host *shost)
 		return;
 
 	sprintf(name,"%d", shost->host_no);
-	p = create_proc_read_entry(name, S_IFREG | S_IRUGO | S_IWUSR,
-			sht->proc_dir, proc_scsi_read, shost);
+	p = proc_create_data(name, S_IFREG | S_IRUGO | S_IWUSR,
+			sht->proc_dir, &proc_scsi_fops, shost);
 	if (!p) {
 		printk(KERN_ERR "%s: Failed to register host %d in"
 		       "%s\n", __func__, shost->host_no,
 		       sht->proc_name);
 		return;
 	} 
-
-	p->pde_write_proc = proc_scsi_write_proc;
 }
 
 /**

@@ -9,23 +9,18 @@ struct buffer {
 	char data[];
 };
 
-static int
-read_buffer(char* page, char** start, off_t off, int count,
-	int* eof, void* data)
+static ssize_t read_buffer(struct file *file, char __user *data,
+			   size_t len, loff_t *pos)
 {
-	struct buffer *buffer = (struct buffer *)data;
-
-	if (off >= buffer->size) {
-		*eof = 1;
-		return 0;
-	}
-
-	count = min((int) (buffer->size - off), count);
-
-	memcpy(page, &buffer->data[off], count);
-
-	return count;
+	struct buffer *buffer = file->f_path.dentry->d_inode->i_private;
+	return simple_read_from_buffer(data, len, pos,
+					buffer->data, buffer->size);
 }
+
+static const struct file_operations atags_fops = {
+	.owner = THIS_MODULE,
+	.read = read_buffer,
+};
 
 #define BOOT_PARAMS_SIZE 1536
 static char __initdata atags_copy[BOOT_PARAMS_SIZE];
@@ -66,8 +61,7 @@ static int __init init_atags_procfs(void)
 	b->size = size;
 	memcpy(b->data, atags_copy, size);
 
-	tags_entry = create_proc_read_entry("atags", 0400,
-			NULL, read_buffer, b);
+	tags_entry = proc_create_data("atags", 0400, NULL, atags_fops, b);
 
 	if (!tags_entry)
 		goto nomem;

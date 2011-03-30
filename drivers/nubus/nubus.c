@@ -16,11 +16,11 @@
 #include <linux/delay.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+#include <linux/procfs_internal.h>
 #include <asm/setup.h>
 #include <asm/system.h>
 #include <asm/page.h>
 #include <asm/hwtest.h>
-#include <linux/proc_fs.h>
 #include <asm/mac_via.h>
 #include <asm/mac_oss.h>
 
@@ -1003,6 +1003,19 @@ static int nubus_read_proc(char *page, char **start, off_t off,
 		len = 0;
 	return len;
 }
+
+static int nubus_proc_open(struct inode *inode, struct file *file)
+{
+	file->private_data = nubus_read_proc;
+	return 0;
+}
+
+/* FIXME: This should use seq_file instead of read_proc */
+static struct file_operations nubus_proc_fops = {
+	.owner = THIS_MODULE,
+	.open = nubus_proc_open,
+	.read = proc_file_read,
+}
 #endif
 
 void __init nubus_scan_bus(void)
@@ -1044,7 +1057,7 @@ static int __init nubus_init(void)
 	nubus_scan_bus();
 
 #ifdef CONFIG_PROC_FS
-	create_proc_read_entry("nubus", 0, NULL, nubus_read_proc, NULL);
+	proc_create("nubus", 0, NULL, nubus_proc_fops);
 	nubus_proc_init();
 #endif
 	return 0;

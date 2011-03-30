@@ -16,6 +16,7 @@
 #include <linux/interrupt.h>
 #include <linux/time.h>
 #include <linux/delay.h>
+#include <linux/procfs_internal.h>
 
 #include <asm/segment.h>
 #include <asm/io.h>
@@ -26,7 +27,6 @@
 
 #include <arch/svinto.h>
 #include <asm/fasttimer.h>
-#include <linux/proc_fs.h>
 
 
 #define DEBUG_LOG_INCLUDED
@@ -681,6 +681,21 @@ static int proc_fasttimer_read(char *buf, char **start, off_t offset, int len
 
   return len;
 }
+
+static int fasttimer_proc_open(struct inode *inode, struct file *file)
+{
+	/* prepare private_data for proc_file_read consumption */
+	file->private_data = proc_fasttimer_read;
+	return 0;
+}
+
+/* FIXME: This should really be a seq_file */
+static struct file_operations fasttimer_proc_fops = {
+	.owner = THIS_MODULE,
+	.read  = proc_file_read,
+	.open  = fasttimer_proc_open,
+};
+
 #endif /* PROC_FS */
 
 #ifdef FAST_TIMER_TEST
@@ -858,7 +873,7 @@ int fast_timer_init(void)
     }
 #endif
 #ifdef CONFIG_PROC_FS
-    create_proc_read_entry( "fasttimer", 0, NULL, proc_fasttimer_read, NULL);
+    proc_create( "fasttimer", 0, NULL, &fasttimer_proc_fops);
 #endif /* PROC_FS */
     if(request_irq(TIMER1_IRQ_NBR, timer1_handler, 0,
                    "fast timer int", NULL))

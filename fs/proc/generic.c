@@ -50,6 +50,8 @@ __proc_file_read(struct file *file, char __user *buf, size_t nbytes,
 	char	*start;
 	struct proc_dir_entry * dp;
 	unsigned long long pos;
+	int (*read_proc)(char *page, char **start, off_t off,
+		  int count, int *eof, void *data) = file->private_data;
 
 	/*
 	 * Gaah, please just use "seq_file" instead. The legacy /proc
@@ -70,7 +72,11 @@ __proc_file_read(struct file *file, char __user *buf, size_t nbytes,
 		count = min_t(size_t, PROC_BLOCK_SIZE, nbytes);
 
 		start = NULL;
-		if (dp->pde_read_proc) {
+
+		if (!read_proc)
+			read_proc = dp->pde_read_proc;
+
+		if (read_proc) {
 			/*
 			 * How to be a proc read function
 			 * ------------------------------
@@ -118,8 +124,8 @@ __proc_file_read(struct file *file, char __user *buf, size_t nbytes,
 			 *    requested offset advanced by the number of bytes
 			 *    absorbed.
 			 */
-			n = dp->pde_read_proc(page, &start, *ppos,
-					  count, &eof, dp->pde_data);
+			n = read_proc(page, &start, *ppos, count, &eof,
+					dp->pde_data);
 		} else
 			break;
 
@@ -184,7 +190,7 @@ __proc_file_read(struct file *file, char __user *buf, size_t nbytes,
 	return retval;
 }
 
-static ssize_t
+ssize_t
 proc_file_read(struct file *file, char __user *buf, size_t nbytes,
 	       loff_t *ppos)
 {
@@ -204,30 +210,7 @@ proc_file_read(struct file *file, char __user *buf, size_t nbytes,
 	pde_users_dec(pde);
 	return rv;
 }
-
-static ssize_t
-proc_file_write(struct file *file, const char __user *buffer,
-		size_t count, loff_t *ppos)
-{
-	struct proc_dir_entry *pde = PDE(file->f_path.dentry->d_inode);
-	ssize_t rv = -EIO;
-
-	if (pde->pde_write_proc) {
-		spin_lock(&pde->pde_unload_lock);
-		if (!pde->pde_fops) {
-			spin_unlock(&pde->pde_unload_lock);
-			return rv;
-		}
-		pde->pde_users++;
-		spin_unlock(&pde->pde_unload_lock);
-
-		/* FIXME: does this routine need ppos?  probably... */
-		rv = pde->pde_write_proc(file, buffer, count, pde->pde_data);
-		pde_users_dec(pde);
-	}
-	return rv;
-}
-
+EXPORT_SYMBOL_GPL(proc_file_read);
 
 static loff_t
 proc_file_lseek(struct file *file, loff_t offset, int orig)
@@ -248,7 +231,6 @@ proc_file_lseek(struct file *file, loff_t offset, int orig)
 static const struct file_operations proc_file_operations = {
 	.llseek		= proc_file_lseek,
 	.read		= proc_file_read,
-	.write		= proc_file_write,
 };
 
 static int proc_notify_change(struct dentry *dentry, struct iattr *iattr)

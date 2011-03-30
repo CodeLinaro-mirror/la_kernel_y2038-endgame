@@ -82,6 +82,9 @@ extern void proc_device_tree_update_prop(struct proc_dir_entry *pde,
 					 struct property *oldprop);
 #endif /* CONFIG_PROC_DEVICETREE */
 
+/* Legacy read_proc implementations, don't use in new code */
+extern ssize_t proc_file_read(struct file *file, char __user *buf,
+				 size_t nbytes, loff_t *ppos);
 #else
 
 static inline void proc_flush_task(struct task_struct *task)
@@ -101,6 +104,11 @@ struct tty_driver;
 static inline void proc_tty_register_driver(struct tty_driver *driver) {};
 static inline void proc_tty_unregister_driver(struct tty_driver *driver) {};
 
+static inline ssize_t proc_file_read(struct file *file, char __user *buf,
+				     size_t nbytes, loff_t *ppos)
+{
+	return 0;
+}
 #endif
 
 #if !defined(CONFIG_PROC_KCORE)
