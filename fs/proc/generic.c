@@ -22,6 +22,7 @@
 #include <linux/bitops.h>
 #include <linux/spinlock.h>
 #include <linux/completion.h>
+#include <linux/ratelimit.h>
 #include <asm/uaccess.h>
 
 #include "internal.h"
@@ -231,6 +232,78 @@ proc_file_lseek(struct file *file, loff_t offset, int orig)
 static const struct file_operations proc_file_operations = {
 	.llseek		= proc_file_lseek,
 	.read		= proc_file_read,
+};
+
+
+#define PROC_SIMPLE_DATA_LEN (PAGE_SIZE - sizeof(unsigned int))
+struct proc_simple_data {
+	char buf[PROC_SIMPLE_DATA_LEN];
+	unsigned int len;
+};
+
+ssize_t proc_simple_read(struct file *file, char __user *buf,
+			 size_t nbytes, loff_t *ppos)
+{
+	struct proc_dir_entry *pde = PDE(file->f_path.dentry->d_inode);
+	struct proc_simple_data *priv = file->private_data;
+	ssize_t rv;
+
+	/* protect against module unload */
+	spin_lock(&pde->pde_unload_lock);
+	if (!pde->pde_fops) {
+		spin_unlock(&pde->pde_unload_lock);
+		return -EIO;
+	}
+	pde->pde_users++;
+	spin_unlock(&pde->pde_unload_lock);
+
+	/* fill page buffer on first read. */
+	if (priv->len == 0) {
+		rv = pde->pde_show(priv->buf, pde->pde_data);
+		
+		if (rv > PAGE_SIZE) {
+			pr_err_ratelimited("proc file %s read returned %ld "
+					   "bytes, possible data corruption\n",
+					   pde->pde_name, rv);
+			rv = -EIO;
+		}
+		if (rv <= 0)
+			goto out;
+		priv->len = min_t(size_t, rv, PROC_SIMPLE_DATA_LEN);
+	}
+
+	/* read data from page */
+	rv = simple_read_from_buffer(buf, nbytes, ppos, priv->buf, priv->len);
+
+	/*
+	 * end of file: clear buffer so user can seek to start and read
+	 * new contents
+	 */
+	if (!rv)
+		memset(priv, 0, sizeof (*priv));
+
+out:
+	pde_users_dec(pde);
+	return rv;
+}
+
+static int proc_simple_open(struct inode *inode, struct file *file)
+{
+	file->private_data = (void *)get_zeroed_page(GFP_KERNEL);
+	return 0;
+}
+
+static int proc_simple_close(struct inode *inode, struct file *file)
+{
+	free_page((unsigned long)file->private_data);
+	return 0;
+}
+
+static const struct file_operations proc_simple_operations = {
+	.llseek		= proc_file_lseek,
+	.read		= proc_simple_read,
+	.open		= proc_simple_open,
+	.release	= proc_simple_close,
 };
 
 static int proc_notify_change(struct dentry *dentry, struct iattr *iattr)
@@ -713,6 +786,29 @@ struct proc_dir_entry *create_proc_read_entry(const char *name,
 	return ent;
 }
 EXPORT_SYMBOL(create_proc_read_entry);
+
+struct proc_dir_entry *proc_create_simple(const char *name,
+			mode_t mode, struct proc_dir_entry *parent, 
+			proc_show_t *proc_show, void *data)
+{
+	struct proc_dir_entry *ent;
+
+	if ((mode & S_IALLUGO) == 0)
+		mode |= S_IRUGO;
+
+	ent = __proc_create(&parent, name, mode | S_IFREG, 1);
+	if (ent) {
+		ent->pde_fops = &proc_simple_operations;
+		ent->pde_show = proc_show;
+		ent->pde_data = data;
+		if (proc_register(parent, ent) < 0) {
+			kfree(ent);
+			ent = NULL;
+		}
+	}
+	return ent;
+}
+EXPORT_SYMBOL_GPL(proc_create_simple);
 
 struct proc_dir_entry *proc_create_size(const char *name, mode_t mode,
 					struct proc_dir_entry *parent,

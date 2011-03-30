@@ -14,6 +14,8 @@ struct proc_dir_entry;
 typedef	int (read_proc_t)(char *page, char **start, off_t off,
 			  int count, int *eof, void *data);
 
+typedef	int (proc_show_t)(char *page, void *data);
+
 #ifdef CONFIG_PROC_FS
 struct proc_dir_entry *proc_create_size(const char *name, mode_t mode,
 				struct proc_dir_entry *parent,
@@ -40,6 +42,10 @@ static inline struct proc_dir_entry *proc_create_data(const char *name,
 	return proc_create_size(name, mode, parent, proc_fops, data, 0);
 }
 
+extern struct proc_dir_entry *proc_create_simple(const char *name,
+	mode_t mode, struct proc_dir_entry *base, 
+	proc_show_t *proc_show, void * data);
+ 
 extern void proc_remove(struct proc_dir_entry *pde);
 
 extern struct proc_dir_entry *create_proc_read_entry(const char *name,
@@ -88,6 +94,13 @@ static inline struct proc_dir_entry *proc_mkdir_mode(const char *name,
 
 static inline void proc_remove(struct proc_dir_entry *pde) { return NULL; }
 
+static inline struct proc_dir_entry *proc_create_simple(const char *name,
+	mode_t mode, struct proc_dir_entry *base, 
+	proc_show_t *proc_show, void * data)
+{
+	return NULL;
+}
+ 
 static inline struct proc_dir_entry *create_proc_read_entry(const char *name,
 	mode_t mode, struct proc_dir_entry *base, 
 	read_proc_t *read_proc, void * data) { return NULL; }
