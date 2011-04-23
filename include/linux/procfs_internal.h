@@ -14,6 +14,50 @@ struct mm_struct;
 struct pid_namespace;
 
 /*
+ * This is not completely implemented yet. The idea is to
+ * create an in-memory tree (like the actual /proc filesystem
+ * tree) of these proc_dir_entries, so that we can dynamically
+ * add new files to /proc.
+ *
+ * The "next" pointer creates a linked list of one /proc directory,
+ * while parent/subdir create the directory structure (every
+ * /proc file has a parent, but "subdir" is NULL for all
+ * non-directory entries).
+ */
+
+struct proc_dir_entry {
+	const char	*pde_name;
+	void		*pde_data;
+	loff_t		pde_size;
+	mode_t		pde_mode;
+	uid_t		pde_uid;
+	gid_t		pde_gid;
+
+	/* No user-serviceable parts below */
+	unsigned int		pde_namelen;
+	nlink_t			pde_nlink;
+	unsigned int		pde_ino;
+	struct proc_dir_entry	*pde_next, *pde_parent, *pde_subdir;
+	read_proc_t		*pde_read_proc;
+	atomic_t		pde_count;	/* use count */
+	int			pde_users;	/* number of callers into module in progress */
+	spinlock_t		pde_unload_lock; /* proc_fops checks and pde_users bumps */
+	struct completion 	*pde_unload_completion;
+	struct list_head	pde_openers;	/* who did ->open, but not ->release */
+	/*
+	 * NULL ->proc_fops means "PDE is going away RSN" or
+	 * "PDE is just created". In either case, e.g. ->read_proc won't be
+	 * called because it's too late or too early, respectively.
+	 *
+	 * If you're allocating ->proc_fops dynamically, save a pointer
+	 * somewhere.
+	 */
+	const struct file_operations	*pde_fops;
+	const struct inode_operations	*pde_iops;
+};
+
+
+/*
  * Offset of the first process in the /proc root directory..
  */
 #define FIRST_PROCESS_ENTRY 256

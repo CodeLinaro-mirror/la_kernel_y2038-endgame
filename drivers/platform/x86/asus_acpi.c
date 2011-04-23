@@ -37,7 +37,7 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/types.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/seq_file.h>
 #include <linux/backlight.h>
 #include <acpi/acpi_drivers.h>

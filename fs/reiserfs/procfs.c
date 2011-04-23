@@ -15,7 +15,7 @@
 #include <linux/reiserfs_fs.h>
 #include <linux/reiserfs_fs_sb.h>
 #include <linux/init.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 
 /*
  * LOCKING:

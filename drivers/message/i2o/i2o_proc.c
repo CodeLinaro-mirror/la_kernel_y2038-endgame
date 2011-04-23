@@ -41,7 +41,7 @@
 #include <linux/pci.h>
 #include <linux/i2o.h>
 #include <linux/slab.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/seq_file.h>
 #include <linux/init.h>
 #include <linux/module.h>
