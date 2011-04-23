@@ -102,11 +102,10 @@ static int isapnp_proc_attach_device(struct pnp_dev *dev)
 			return -ENOMEM;
 	}
 	sprintf(name, "%02x", dev->number);
-	e = dev->procent = proc_create_data(name, S_IFREG | S_IRUGO, de,
-			&isapnp_proc_bus_file_operations, dev);
+	e = dev->procent = proc_create_size(name, S_IFREG | S_IRUGO, de,
+			&isapnp_proc_bus_file_operations, dev, 256);
 	if (!e)
 		return -ENOMEM;
-	e->pde_size = 256;
 	return 0;
 }
 

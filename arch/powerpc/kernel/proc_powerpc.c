@@ -83,11 +83,10 @@ static int __init proc_ppc64_init(void)
 {
 	struct proc_dir_entry *pde;
 
-	pde = proc_create_data("powerpc/systemcfg", S_IFREG|S_IRUGO, NULL,
-			       &page_map_fops, vdso_data);
+	pde = proc_create_size("powerpc/systemcfg", S_IFREG|S_IRUGO, NULL,
+			       &page_map_fops, vdso_data, PAGE_SIZE);
 	if (!pde)
 		return 1;
-	pde->pde_size = PAGE_SIZE;
 
 	return 0;
 }

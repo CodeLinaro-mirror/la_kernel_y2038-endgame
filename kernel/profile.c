@@ -619,11 +619,11 @@ int __ref create_proc_profile(void) /* false positive from hotcpu_notifier */
 		return 0;
 	if (create_hash_tables())
 		return -ENOMEM;
-	entry = proc_create("profile", S_IWUSR | S_IRUGO,
-			    NULL, &proc_profile_operations);
+	entry = proc_create_size("profile", S_IWUSR | S_IRUGO,
+			    NULL, &proc_profile_operations,
+			    NULL, (1+prof_len) * sizeof(atomic_t));
 	if (!entry)
 		return 0;
-	entry->pde_size = (1+prof_len) * sizeof(atomic_t);
 	hotcpu_notifier(profile_cpu_callback, 0);
 	return 0;
 }

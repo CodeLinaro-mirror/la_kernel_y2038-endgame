@@ -714,10 +714,10 @@ struct proc_dir_entry *create_proc_read_entry(const char *name,
 }
 EXPORT_SYMBOL(create_proc_read_entry);
 
-struct proc_dir_entry *proc_create_data(const char *name, mode_t mode,
+struct proc_dir_entry *proc_create_size(const char *name, mode_t mode,
 					struct proc_dir_entry *parent,
 					const struct file_operations *proc_fops,
-					void *data)
+					void *data, size_t size)
 {
 	struct proc_dir_entry *pde;
 	nlink_t nlink;
@@ -739,6 +739,7 @@ struct proc_dir_entry *proc_create_data(const char *name, mode_t mode,
 		goto out;
 	pde->pde_fops = proc_fops;
 	pde->pde_data = data;
+	pde->pde_size = size;
 	if (proc_register(parent, pde) < 0)
 		goto out_free;
 	return pde;
@@ -747,7 +748,7 @@ out_free:
 out:
 	return NULL;
 }
-EXPORT_SYMBOL(proc_create_data);
+EXPORT_SYMBOL(proc_create_size);
 
 static void free_proc_entry(struct proc_dir_entry *de)
 {

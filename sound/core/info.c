@@ -959,14 +959,14 @@ int snd_info_register(struct snd_info_entry * entry)
 	if (S_ISDIR(entry->mode))
 		p = proc_mkdir(entry->name, root);
 	else
-		p = proc_create_data(entry->name, entry->mode, root,
-				     &snd_info_entry_operations, entry);
+		p = proc_create_size(entry->name, entry->mode, root,
+				     &snd_info_entry_operations, entry,
+				     entry->size);
 
 	if (!p) {
 		mutex_unlock(&info_mutex);
 		return -ENOMEM;
 	}
-	p->pde_size = entry->size;
 	entry->p = p;
 	if (entry->parent)
 		list_add_tail(&entry->list, &entry->parent->children);

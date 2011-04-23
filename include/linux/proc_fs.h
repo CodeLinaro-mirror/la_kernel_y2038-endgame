@@ -62,10 +62,10 @@ struct proc_dir_entry {
 };
 
 #ifdef CONFIG_PROC_FS
-struct proc_dir_entry *proc_create_data(const char *name, mode_t mode,
+struct proc_dir_entry *proc_create_size(const char *name, mode_t mode,
 				struct proc_dir_entry *parent,
 				const struct file_operations *proc_fops,
-				void *data);
+				void *data, size_t size);
 extern void remove_proc_entry(const char *name, struct proc_dir_entry *parent);
 
 extern struct proc_dir_entry *proc_symlink(const char *,
@@ -77,7 +77,14 @@ extern struct proc_dir_entry *proc_mkdir_mode(const char *name, mode_t mode,
 static inline struct proc_dir_entry *proc_create(const char *name, mode_t mode,
 	struct proc_dir_entry *parent, const struct file_operations *proc_fops)
 {
-	return proc_create_data(name, mode, parent, proc_fops, NULL);
+	return proc_create_size(name, mode, parent, proc_fops, NULL, 0);
+}
+
+static inline struct proc_dir_entry *proc_create_data(const char *name,
+	mode_t mode, struct proc_dir_entry *parent,
+	const struct file_operations *proc_fops, void *data)
+{
+	return proc_create_size(name, mode, parent, proc_fops, data, 0);
 }
 
 extern void proc_remove(struct proc_dir_entry *pde);
@@ -108,6 +115,12 @@ static inline struct proc_dir_entry *proc_create(const char *name,
 static inline struct proc_dir_entry *proc_create_data(const char *name,
 	mode_t mode, struct proc_dir_entry *parent,
 	const struct file_operations *proc_fops, void *data)
+{
+	return NULL;
+}
+static inline struct proc_dir_entry *proc_create_size(const char *name,
+	mode_t mode, struct proc_dir_entry *parent,
+	const struct file_operations *proc_fops, void *data, size_t size)
 {
 	return NULL;
 }

@@ -134,12 +134,12 @@ static int __init zorro_proc_attach_device(unsigned int slot)
 	char name[4];
 
 	sprintf(name, "%02x", slot);
-	entry = proc_create_data(name, 0, proc_bus_zorro_dir,
+	entry = proc_create_size(name, 0, proc_bus_zorro_dir,
 				 &proc_bus_zorro_operations,
-				 &zorro_autocon[slot]);
+				 &zorro_autocon[slot],
+				 sizeof(struct zorro_dev));
 	if (!entry)
 		return -ENOMEM;
-	entry->pde_size = sizeof(struct zorro_dev);
 	return 0;
 }
 

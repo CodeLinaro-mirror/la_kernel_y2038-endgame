@@ -64,21 +64,17 @@ __proc_device_tree_add_prop(struct proc_dir_entry *de, struct property *pp,
 		const char *name)
 {
 	struct proc_dir_entry *ent;
+	bool secure = !strncmp(name, "security-", 9);
 
 	/*
 	 * Unfortunately proc_register puts each new entry
 	 * at the beginning of the list.  So we rearrange them.
 	 */
-	ent = proc_create_data(name,
-			       strncmp(name, "security-", 9) ? S_IRUGO : S_IRUSR,
-			       de, &property_proc_fops, pp);
+	ent = proc_create_data(name, secure ? S_IRUSR : S_IRUGO,
+			       de, &property_proc_fops, pp,
+			       secure ? 0 : pp->length);
 	if (ent == NULL)
 		return NULL;
-
-	if (!strncmp(name, "security-", 9))
-		ent->pde_size = 0; /* don't leak number of password chars */
-	else
-		ent->pde_size = pp->length;
 
 	return ent;
 }

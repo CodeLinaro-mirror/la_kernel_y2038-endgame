@@ -409,11 +409,10 @@ int pci_proc_attach_device(struct pci_dev *dev)
 	}
 
 	sprintf(name, "%02x.%x", PCI_SLOT(dev->devfn), PCI_FUNC(dev->devfn));
-	e = proc_create_data(name, S_IFREG | S_IRUGO | S_IWUSR, bus->procdir,
-			     &proc_bus_pci_operations, dev);
+	e = proc_create_size(name, S_IFREG | S_IRUGO | S_IWUSR, bus->procdir,
+			     &proc_bus_pci_operations, dev, dev->cfg_size);
 	if (!e)
 		return -ENOMEM;
-	e->pde_size = dev->cfg_size;
 	dev->procent = e;
 
 	return 0;
