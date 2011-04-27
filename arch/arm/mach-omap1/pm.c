@@ -428,18 +428,10 @@ void omap1_pm_suspend(void)
 }
 
 #if defined(DEBUG) && defined(CONFIG_PROC_FS)
-static int g_read_completed;
-
 /*
  * Read system PM registers for debugging
  */
-static int omap_pm_read_proc(
-	char *page_buffer,
-	char **my_first_byte,
-	off_t virtual_start,
-	int length,
-	int *eof,
-	void *data)
+static int omap_pm_read_proc(char *page_buffer, void *data)
 {
 	int my_buffer_offset = 0;
 	char * const my_base = page_buffer;
@@ -484,99 +476,88 @@ static int omap_pm_read_proc(
 		MPUI1610_SAVE(EMIFS_CONFIG);
 	}
 
-	if (virtual_start == 0) {
-		g_read_completed = 0;
+	my_buffer_offset += sprintf(my_base + my_buffer_offset,
+	   "ARM_CKCTL_REG:            0x%-8x     \n"
+	   "ARM_IDLECT1_REG:          0x%-8x     \n"
+	   "ARM_IDLECT2_REG:          0x%-8x     \n"
+	   "ARM_IDLECT3_REG:	      0x%-8x     \n"
+	   "ARM_EWUPCT_REG:           0x%-8x     \n"
+	   "ARM_RSTCT1_REG:           0x%-8x     \n"
+	   "ARM_RSTCT2_REG:           0x%-8x     \n"
+	   "ARM_SYSST_REG:            0x%-8x     \n"
+	   "ULPD_IT_STATUS_REG:       0x%-4x     \n"
+	   "ULPD_CLOCK_CTRL_REG:      0x%-4x     \n"
+	   "ULPD_SOFT_REQ_REG:        0x%-4x     \n"
+	   "ULPD_DPLL_CTRL_REG:       0x%-4x     \n"
+	   "ULPD_STATUS_REQ_REG:      0x%-4x     \n"
+	   "ULPD_POWER_CTRL_REG:      0x%-4x     \n",
+	   ARM_SHOW(ARM_CKCTL),
+	   ARM_SHOW(ARM_IDLECT1),
+	   ARM_SHOW(ARM_IDLECT2),
+	   ARM_SHOW(ARM_IDLECT3),
+	   ARM_SHOW(ARM_EWUPCT),
+	   ARM_SHOW(ARM_RSTCT1),
+	   ARM_SHOW(ARM_RSTCT2),
+	   ARM_SHOW(ARM_SYSST),
+	   ULPD_SHOW(ULPD_IT_STATUS),
+	   ULPD_SHOW(ULPD_CLOCK_CTRL),
+	   ULPD_SHOW(ULPD_SOFT_REQ),
+	   ULPD_SHOW(ULPD_DPLL_CTRL),
+	   ULPD_SHOW(ULPD_STATUS_REQ),
+	   ULPD_SHOW(ULPD_POWER_CTRL));
 
+	if (cpu_is_omap7xx()) {
 		my_buffer_offset += sprintf(my_base + my_buffer_offset,
-		   "ARM_CKCTL_REG:            0x%-8x     \n"
-		   "ARM_IDLECT1_REG:          0x%-8x     \n"
-		   "ARM_IDLECT2_REG:          0x%-8x     \n"
-		   "ARM_IDLECT3_REG:	      0x%-8x     \n"
-		   "ARM_EWUPCT_REG:           0x%-8x     \n"
-		   "ARM_RSTCT1_REG:           0x%-8x     \n"
-		   "ARM_RSTCT2_REG:           0x%-8x     \n"
-		   "ARM_SYSST_REG:            0x%-8x     \n"
-		   "ULPD_IT_STATUS_REG:       0x%-4x     \n"
-		   "ULPD_CLOCK_CTRL_REG:      0x%-4x     \n"
-		   "ULPD_SOFT_REQ_REG:        0x%-4x     \n"
-		   "ULPD_DPLL_CTRL_REG:       0x%-4x     \n"
-		   "ULPD_STATUS_REQ_REG:      0x%-4x     \n"
-		   "ULPD_POWER_CTRL_REG:      0x%-4x     \n",
-		   ARM_SHOW(ARM_CKCTL),
-		   ARM_SHOW(ARM_IDLECT1),
-		   ARM_SHOW(ARM_IDLECT2),
-		   ARM_SHOW(ARM_IDLECT3),
-		   ARM_SHOW(ARM_EWUPCT),
-		   ARM_SHOW(ARM_RSTCT1),
-		   ARM_SHOW(ARM_RSTCT2),
-		   ARM_SHOW(ARM_SYSST),
-		   ULPD_SHOW(ULPD_IT_STATUS),
-		   ULPD_SHOW(ULPD_CLOCK_CTRL),
-		   ULPD_SHOW(ULPD_SOFT_REQ),
-		   ULPD_SHOW(ULPD_DPLL_CTRL),
-		   ULPD_SHOW(ULPD_STATUS_REQ),
-		   ULPD_SHOW(ULPD_POWER_CTRL));
-
-		if (cpu_is_omap7xx()) {
-			my_buffer_offset += sprintf(my_base + my_buffer_offset,
-			   "MPUI7XX_CTRL_REG	     0x%-8x \n"
-			   "MPUI7XX_DSP_STATUS_REG:      0x%-8x \n"
-			   "MPUI7XX_DSP_BOOT_CONFIG_REG: 0x%-8x \n"
-			   "MPUI7XX_DSP_API_CONFIG_REG:  0x%-8x \n"
-			   "MPUI7XX_SDRAM_CONFIG_REG:    0x%-8x \n"
-			   "MPUI7XX_EMIFS_CONFIG_REG:    0x%-8x \n",
-			   MPUI7XX_SHOW(MPUI_CTRL),
-			   MPUI7XX_SHOW(MPUI_DSP_STATUS),
-			   MPUI7XX_SHOW(MPUI_DSP_BOOT_CONFIG),
-			   MPUI7XX_SHOW(MPUI_DSP_API_CONFIG),
-			   MPUI7XX_SHOW(EMIFF_SDRAM_CONFIG),
-			   MPUI7XX_SHOW(EMIFS_CONFIG));
-		} else if (cpu_is_omap15xx()) {
-			my_buffer_offset += sprintf(my_base + my_buffer_offset,
-			   "MPUI1510_CTRL_REG             0x%-8x \n"
-			   "MPUI1510_DSP_STATUS_REG:      0x%-8x \n"
-			   "MPUI1510_DSP_BOOT_CONFIG_REG: 0x%-8x \n"
-			   "MPUI1510_DSP_API_CONFIG_REG:  0x%-8x \n"
-			   "MPUI1510_SDRAM_CONFIG_REG:    0x%-8x \n"
-			   "MPUI1510_EMIFS_CONFIG_REG:    0x%-8x \n",
-			   MPUI1510_SHOW(MPUI_CTRL),
-			   MPUI1510_SHOW(MPUI_DSP_STATUS),
-			   MPUI1510_SHOW(MPUI_DSP_BOOT_CONFIG),
-			   MPUI1510_SHOW(MPUI_DSP_API_CONFIG),
-			   MPUI1510_SHOW(EMIFF_SDRAM_CONFIG),
-			   MPUI1510_SHOW(EMIFS_CONFIG));
-		} else if (cpu_is_omap16xx()) {
-			my_buffer_offset += sprintf(my_base + my_buffer_offset,
-			   "MPUI1610_CTRL_REG             0x%-8x \n"
-			   "MPUI1610_DSP_STATUS_REG:      0x%-8x \n"
-			   "MPUI1610_DSP_BOOT_CONFIG_REG: 0x%-8x \n"
-			   "MPUI1610_DSP_API_CONFIG_REG:  0x%-8x \n"
-			   "MPUI1610_SDRAM_CONFIG_REG:    0x%-8x \n"
-			   "MPUI1610_EMIFS_CONFIG_REG:    0x%-8x \n",
-			   MPUI1610_SHOW(MPUI_CTRL),
-			   MPUI1610_SHOW(MPUI_DSP_STATUS),
-			   MPUI1610_SHOW(MPUI_DSP_BOOT_CONFIG),
-			   MPUI1610_SHOW(MPUI_DSP_API_CONFIG),
-			   MPUI1610_SHOW(EMIFF_SDRAM_CONFIG),
-			   MPUI1610_SHOW(EMIFS_CONFIG));
-		}
-
-		g_read_completed++;
-	} else if (g_read_completed >= 1) {
-		 *eof = 1;
-		 return 0;
+		   "MPUI7XX_CTRL_REG	     0x%-8x \n"
+		   "MPUI7XX_DSP_STATUS_REG:      0x%-8x \n"
+		   "MPUI7XX_DSP_BOOT_CONFIG_REG: 0x%-8x \n"
+		   "MPUI7XX_DSP_API_CONFIG_REG:  0x%-8x \n"
+		   "MPUI7XX_SDRAM_CONFIG_REG:    0x%-8x \n"
+		   "MPUI7XX_EMIFS_CONFIG_REG:    0x%-8x \n",
+		   MPUI7XX_SHOW(MPUI_CTRL),
+		   MPUI7XX_SHOW(MPUI_DSP_STATUS),
+		   MPUI7XX_SHOW(MPUI_DSP_BOOT_CONFIG),
+		   MPUI7XX_SHOW(MPUI_DSP_API_CONFIG),
+		   MPUI7XX_SHOW(EMIFF_SDRAM_CONFIG),
+		   MPUI7XX_SHOW(EMIFS_CONFIG));
+	} else if (cpu_is_omap15xx()) {
+		my_buffer_offset += sprintf(my_base + my_buffer_offset,
+		   "MPUI1510_CTRL_REG             0x%-8x \n"
+		   "MPUI1510_DSP_STATUS_REG:      0x%-8x \n"
+		   "MPUI1510_DSP_BOOT_CONFIG_REG: 0x%-8x \n"
+		   "MPUI1510_DSP_API_CONFIG_REG:  0x%-8x \n"
+		   "MPUI1510_SDRAM_CONFIG_REG:    0x%-8x \n"
+		   "MPUI1510_EMIFS_CONFIG_REG:    0x%-8x \n",
+		   MPUI1510_SHOW(MPUI_CTRL),
+		   MPUI1510_SHOW(MPUI_DSP_STATUS),
+		   MPUI1510_SHOW(MPUI_DSP_BOOT_CONFIG),
+		   MPUI1510_SHOW(MPUI_DSP_API_CONFIG),
+		   MPUI1510_SHOW(EMIFF_SDRAM_CONFIG),
+		   MPUI1510_SHOW(EMIFS_CONFIG));
+	} else if (cpu_is_omap16xx()) {
+		my_buffer_offset += sprintf(my_base + my_buffer_offset,
+		   "MPUI1610_CTRL_REG             0x%-8x \n"
+		   "MPUI1610_DSP_STATUS_REG:      0x%-8x \n"
+		   "MPUI1610_DSP_BOOT_CONFIG_REG: 0x%-8x \n"
+		   "MPUI1610_DSP_API_CONFIG_REG:  0x%-8x \n"
+		   "MPUI1610_SDRAM_CONFIG_REG:    0x%-8x \n"
+		   "MPUI1610_EMIFS_CONFIG_REG:    0x%-8x \n",
+		   MPUI1610_SHOW(MPUI_CTRL),
+		   MPUI1610_SHOW(MPUI_DSP_STATUS),
+		   MPUI1610_SHOW(MPUI_DSP_BOOT_CONFIG),
+		   MPUI1610_SHOW(MPUI_DSP_API_CONFIG),
+		   MPUI1610_SHOW(EMIFF_SDRAM_CONFIG),
+		   MPUI1610_SHOW(EMIFS_CONFIG));
 	}
-	g_read_completed++;
 
-	*my_first_byte = page_buffer;
-	return  my_buffer_offset;
+	return my_buffer_offset;
 }
 
 static void omap_pm_init_proc(void)
 {
 	struct proc_dir_entry *entry;
 
-	entry = create_proc_read_entry("driver/omap_pm",
+	entry = proc_create_simple("driver/omap_pm",
 				       S_IWUSR | S_IRUGO, NULL,
 				       omap_pm_read_proc, NULL);
 }

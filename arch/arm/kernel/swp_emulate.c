@@ -78,8 +78,7 @@ static unsigned long abtcounter;
 static pid_t         previous_pid;
 
 #ifdef CONFIG_PROC_FS
-static int proc_read_status(char *page, char **start, off_t off, int count,
-			    int *eof, void *data)
+static int proc_read_status(char *page, void *data)
 {
 	char *p = page;
 	int len;
@@ -90,12 +89,7 @@ static int proc_read_status(char *page, char **start, off_t off, int count,
 	if (previous_pid != 0)
 		p += sprintf(p, "Last process:\t\t%d\n", previous_pid);
 
-	len = (p - page) - off;
-	if (len < 0)
-		len = 0;
-
-	*eof = (len <= count) ? 1 : 0;
-	*start = page + off;
+	len = (p - page);
 
 	return len;
 }
@@ -250,7 +244,7 @@ static int __init swp_emulation_init(void)
 #ifdef CONFIG_PROC_FS
 	struct proc_dir_entry *res;
 
-	res = create_proc_read_entry("cpu/swp_emulation", S_IRUGO, NULL,
+	res = proc_create_simple("cpu/swp_emulation", S_IRUGO, NULL,
 				     proc_read_status, NULL);
 
 	if (!res)

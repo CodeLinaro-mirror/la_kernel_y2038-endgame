@@ -81,8 +81,7 @@ static atomic_t gDmaStatMemTypeCoherent = ATOMIC_INIT(0);
 */
 /****************************************************************************/
 
-static int dma_proc_read_mem_type(char *buf, char **start, off_t offset,
-				  int count, int *eof, void *data)
+static int dma_proc_read_mem_type(char *buf, void *data)
 {
 	int len = 0;
 
@@ -109,12 +108,11 @@ static int dma_proc_read_mem_type(char *buf, char **start, off_t offset,
 */
 /****************************************************************************/
 
-static int dma_proc_read_channels(char *buf, char **start, off_t offset,
-				  int count, int *eof, void *data)
+static int dma_proc_read_channels(char *buf, void *data)
 {
 	int controllerIdx;
 	int channelIdx;
-	int limit = count - 200;
+	int limit = PAGE_SIZE - 200;
 	int len = 0;
 	DMA_Channel_t *channel;
 
@@ -184,7 +182,6 @@ static int dma_proc_read_channels(char *buf, char **start, off_t offset,
 		}
 	}
 	up(&gDMA.lock);
-	*eof = 1;
 
 	return len;
 }
@@ -195,10 +192,9 @@ static int dma_proc_read_channels(char *buf, char **start, off_t offset,
 */
 /****************************************************************************/
 
-static int dma_proc_read_devices(char *buf, char **start, off_t offset,
-				 int count, int *eof, void *data)
+static int dma_proc_read_devices(char *buf, void *data)
 {
-	int limit = count - 200;
+	int limit = PAGE_SIZE - 200;
 	int len = 0;
 	int devIdx;
 
@@ -251,7 +247,6 @@ static int dma_proc_read_devices(char *buf, char **start, off_t offset,
 	}
 
 	up(&gDMA.lock);
-	*eof = 1;
 
 	return len;
 }
@@ -840,11 +835,11 @@ int dma_init(void)
 	if (gDmaDir == NULL) {
 		printk(KERN_ERR "Unable to create /proc/dma\n");
 	} else {
-		create_proc_read_entry("channels", 0, gDmaDir,
+		proc_create_simple("channels", 0, gDmaDir,
 				       dma_proc_read_channels, NULL);
-		create_proc_read_entry("devices", 0, gDmaDir,
+		proc_create_simple("devices", 0, gDmaDir,
 				       dma_proc_read_devices, NULL);
-		create_proc_read_entry("mem-type", 0, gDmaDir,
+		proc_create_simple("mem-type", 0, gDmaDir,
 				       dma_proc_read_mem_type, NULL);
 	}
 
