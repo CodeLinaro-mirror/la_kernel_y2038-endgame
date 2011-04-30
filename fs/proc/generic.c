@@ -74,9 +74,6 @@ __proc_file_read(struct file *file, char __user *buf, size_t nbytes,
 
 		start = NULL;
 
-		if (!read_proc)
-			read_proc = dp->pde_read_proc;
-
 		if (read_proc) {
 			/*
 			 * How to be a proc read function
@@ -228,12 +225,6 @@ proc_file_lseek(struct file *file, loff_t offset, int orig)
 	}
 	return retval;
 }
-
-static const struct file_operations proc_file_operations = {
-	.llseek		= proc_file_lseek,
-	.read		= proc_file_read,
-};
-
 
 #define PROC_SIMPLE_DATA_LEN (PAGE_SIZE - sizeof(unsigned int))
 struct proc_simple_data {
@@ -753,39 +744,6 @@ struct proc_dir_entry *proc_mkdir(const char *name,
 	return proc_mkdir_mode(name, S_IRUGO | S_IXUGO, parent);
 }
 EXPORT_SYMBOL(proc_mkdir);
-
-struct proc_dir_entry *create_proc_read_entry(const char *name,
-			mode_t mode, struct proc_dir_entry *parent, 
-			read_proc_t *read_proc, void *data)
-{
-	struct proc_dir_entry *ent;
-	nlink_t nlink;
-
-	if (S_ISDIR(mode)) {
-		if ((mode & S_IALLUGO) == 0)
-			mode |= S_IRUGO | S_IXUGO;
-		nlink = 2;
-	} else {
-		if ((mode & S_IFMT) == 0)
-			mode |= S_IFREG;
-		if ((mode & S_IALLUGO) == 0)
-			mode |= S_IRUGO;
-		nlink = 1;
-	}
-
-	ent = __proc_create(&parent, name, mode, nlink);
-	if (ent) {
-		ent->pde_fops = &proc_file_operations;
-		ent->pde_read_proc = read_proc;
-		ent->pde_data = data;
-		if (proc_register(parent, ent) < 0) {
-			kfree(ent);
-			ent = NULL;
-		}
-	}
-	return ent;
-}
-EXPORT_SYMBOL(create_proc_read_entry);
 
 struct proc_dir_entry *proc_create_simple(const char *name,
 			mode_t mode, struct proc_dir_entry *parent, 

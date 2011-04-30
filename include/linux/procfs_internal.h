@@ -38,7 +38,6 @@ struct proc_dir_entry {
 	nlink_t			pde_nlink;
 	unsigned int		pde_ino;
 	struct proc_dir_entry	*pde_next, *pde_parent, *pde_subdir;
-	read_proc_t		*pde_read_proc;
 	proc_show_t		*pde_show;
 	atomic_t		pde_count;	/* use count */
 	int			pde_users;	/* number of callers into module in progress */
