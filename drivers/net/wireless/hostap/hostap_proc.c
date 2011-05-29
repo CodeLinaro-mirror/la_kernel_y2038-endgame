@@ -11,17 +11,11 @@
 
 
 #ifndef PRISM2_NO_PROCFS_DEBUG
-static int prism2_debug_proc_read(char *page, char **start, off_t off,
-				  int count, int *eof, void *data)
+static int prism2_debug_proc_read(char *page, void *data)
 {
 	char *p = page;
 	local_info_t *local = (local_info_t *) data;
 	int i;
-
-	if (off != 0) {
-		*eof = 1;
-		return 0;
-	}
 
 	p += sprintf(p, "next_txfid=%d next_alloc=%d\n",
 		     local->next_txfid, local->next_alloc);
@@ -52,18 +46,12 @@ static int prism2_debug_proc_read(char *page, char **start, off_t off,
 #endif /* PRISM2_NO_PROCFS_DEBUG */
 
 
-static int prism2_stats_proc_read(char *page, char **start, off_t off,
-				  int count, int *eof, void *data)
+static int prism2_stats_proc_read(char *page, void *data)
 {
 	char *p = page;
 	local_info_t *local = (local_info_t *) data;
 	struct comm_tallies_sums *sums = (struct comm_tallies_sums *)
 		&local->comm_tallies;
-
-	if (off != 0) {
-		*eof = 1;
-		return 0;
-	}
 
 	p += sprintf(p, "TxUnicastFrames=%u\n", sums->tx_unicast_frames);
 	p += sprintf(p, "TxMulticastframes=%u\n", sums->tx_multicast_frames);
@@ -100,18 +88,12 @@ static int prism2_stats_proc_read(char *page, char **start, off_t off,
 }
 
 
-static int prism2_wds_proc_read(char *page, char **start, off_t off,
-				int count, int *eof, void *data)
+static int prism2_wds_proc_read(char *page, void *data)
 {
 	char *p = page;
 	local_info_t *local = (local_info_t *) data;
 	struct list_head *ptr;
 	struct hostap_interface *iface;
-
-	if (off > PROC_LIMIT) {
-		*eof = 1;
-		return 0;
-	}
 
 	read_lock_bh(&local->iface_lock);
 	list_for_each(ptr, &local->hostap_interfaces) {
@@ -129,30 +111,17 @@ static int prism2_wds_proc_read(char *page, char **start, off_t off,
 	}
 	read_unlock_bh(&local->iface_lock);
 
-	if ((p - page) <= off) {
-		*eof = 1;
-		return 0;
-	}
-
-	*start = page + off;
-
-	return (p - page - off);
+	return (p - page);
 }
 
 
-static int prism2_bss_list_proc_read(char *page, char **start, off_t off,
-				     int count, int *eof, void *data)
+static int prism2_bss_list_proc_read(char *page, void *data)
 {
 	char *p = page;
 	local_info_t *local = (local_info_t *) data;
 	struct list_head *ptr;
 	struct hostap_bss_info *bss;
 	int i;
-
-	if (off > PROC_LIMIT) {
-		*eof = 1;
-		return 0;
-	}
 
 	p += sprintf(p, "#BSSID\tlast_update\tcount\tcapab_info\tSSID(txt)\t"
 		     "SSID(hex)\tWPA IE\n");
@@ -184,28 +153,15 @@ static int prism2_bss_list_proc_read(char *page, char **start, off_t off,
 	}
 	spin_unlock_bh(&local->lock);
 
-	if ((p - page) <= off) {
-		*eof = 1;
-		return 0;
-	}
-
-	*start = page + off;
-
-	return (p - page - off);
+	return (p - page);
 }
 
 
-static int prism2_crypt_proc_read(char *page, char **start, off_t off,
-				  int count, int *eof, void *data)
+static int prism2_crypt_proc_read(char *page, void *data)
 {
 	char *p = page;
 	local_info_t *local = (local_info_t *) data;
 	int i;
-
-	if (off > PROC_LIMIT) {
-		*eof = 1;
-		return 0;
-	}
 
 	p += sprintf(p, "tx_keyidx=%d\n", local->crypt_info.tx_keyidx);
 	for (i = 0; i < WEP_KEYS; i++) {
@@ -217,38 +173,26 @@ static int prism2_crypt_proc_read(char *page, char **start, off_t off,
 		}
 	}
 
-	if ((p - page) <= off) {
-		*eof = 1;
-		return 0;
-	}
-
-	*start = page + off;
-
-	return (p - page - off);
+	return (p - page);
 }
 
 
-static int prism2_pda_proc_read(char *page, char **start, off_t off,
-				int count, int *eof, void *data)
+static int prism2_pda_proc_read(char *page, void *data)
 {
 	local_info_t *local = (local_info_t *) data;
 
-	if (local->pda == NULL || off >= PRISM2_PDA_SIZE) {
-		*eof = 1;
-		return 0;
-	}
-
-	if (off + count > PRISM2_PDA_SIZE)
-		count = PRISM2_PDA_SIZE - off;
-
-	memcpy(page, local->pda + off, count);
-	return count;
+	memcpy(page, local->pda, PRISM2_PDA_SIZE);
+	return PRISM2_PDA_SIZE;
 }
 
 
-static int prism2_aux_dump_proc_read(char *page, char **start, off_t off,
-				     int count, int *eof, void *data)
+static int prism2_aux_dump_proc_read(char *page, void *data)
 {
+	/*
+	 * read_aux is not implemented anywhere!
+	 * To reactivate this code, convert read_aux first.
+	 */
+#if 0
 	local_info_t *local = (local_info_t *) data;
 
 	if (local->func->read_aux == NULL) {
@@ -263,10 +207,13 @@ static int prism2_aux_dump_proc_read(char *page, char **start, off_t off,
 	*start = page;
 
 	return count;
+#endif
+	return 0;
 }
 
 
 #ifdef PRISM2_IO_DEBUG
+/* FIXME: dead code, to reactivate this, convert to simple_read_from_buffer */
 static int prism2_io_debug_proc_read(char *page, char **start, off_t off,
 				     int count, int *eof, void *data)
 {
@@ -306,6 +253,7 @@ static int prism2_io_debug_proc_read(char *page, char **start, off_t off,
 
 
 #ifndef PRISM2_NO_STATION_MODES
+/* FIXME: dead code, to reactivate this, convert to seq_file */
 static int prism2_scan_results_proc_read(char *page, char **start, off_t off,
 					 int count, int *eof, void *data)
 {
@@ -403,27 +351,27 @@ void hostap_init_proc(local_info_t *local)
 	}
 
 #ifndef PRISM2_NO_PROCFS_DEBUG
-	create_proc_read_entry("debug", 0, local->proc,
+	proc_create_simple("debug", 0, local->proc,
 			       prism2_debug_proc_read, local);
 #endif /* PRISM2_NO_PROCFS_DEBUG */
-	create_proc_read_entry("stats", 0, local->proc,
+	proc_create_simple("stats", 0, local->proc,
 			       prism2_stats_proc_read, local);
-	create_proc_read_entry("wds", 0, local->proc,
+	proc_create_simple("wds", 0, local->proc,
 			       prism2_wds_proc_read, local);
-	create_proc_read_entry("pda", 0, local->proc,
+	proc_create_simple("pda", 0, local->proc,
 			       prism2_pda_proc_read, local);
-	create_proc_read_entry("aux_dump", 0, local->proc,
+	proc_create_simple("aux_dump", 0, local->proc,
 			       prism2_aux_dump_proc_read, local);
-	create_proc_read_entry("bss_list", 0, local->proc,
+	proc_create_simple("bss_list", 0, local->proc,
 			       prism2_bss_list_proc_read, local);
-	create_proc_read_entry("crypt", 0, local->proc,
+	proc_create_simple("crypt", 0, local->proc,
 			       prism2_crypt_proc_read, local);
 #ifdef PRISM2_IO_DEBUG
-	create_proc_read_entry("io_debug", 0, local->proc,
+	proc_create_simple("io_debug", 0, local->proc,
 			       prism2_io_debug_proc_read, local);
 #endif /* PRISM2_IO_DEBUG */
 #ifndef PRISM2_NO_STATION_MODES
-	create_proc_read_entry("scan_results", 0, local->proc,
+	proc_create_simple("scan_results", 0, local->proc,
 			       prism2_scan_results_proc_read, local);
 #endif /* PRISM2_NO_STATION_MODES */
 }

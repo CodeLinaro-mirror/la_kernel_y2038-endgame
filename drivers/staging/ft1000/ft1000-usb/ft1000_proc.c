@@ -56,8 +56,7 @@ int ft1000_read_dpram16 (struct ft1000_device *ft1000dev, u16 indx,
 
 
 static int
-ft1000ReadProc(char *page, char **start, off_t off, int count, int *eof,
-		void *data)
+ft1000ReadProc(char *page, void *data)
 {
 	struct net_device *dev;
 	int len;
@@ -86,12 +85,6 @@ ft1000ReadProc(char *page, char **start, off_t off, int count, int *eof,
 
 	dev = (struct net_device *) data;
 	info = netdev_priv(dev);
-
-	if (off > 0) {
-		*eof = 1;
-		return 0;
-	}
-
 
 	if (info->ProgConStat != 0xFF) {
 		ft1000_read_dpram16(info->pFt1000Dev, FT1000_MAG_DSP_LED,
@@ -186,7 +179,7 @@ ft1000NotifyProc(struct notifier_block *this, unsigned long event, void *ptr)
 	switch (event) {
 	case NETDEV_CHANGENAME:
 		remove_proc_entry(info->netdevname, info->ft1000_proc_dir);
-		ft1000_proc_file = create_proc_read_entry(dev->name, 0644,
+		ft1000_proc_file = proc_create_simple(dev->name, 0644,
 					info->ft1000_proc_dir,
 					ft1000ReadProc, dev);
 		snprintf(info->netdevname, IFNAMSIZ, "%s", dev->name);
@@ -218,7 +211,7 @@ int ft1000_init_proc(struct net_device *dev)
 	}
 
 	ft1000_proc_file =
-		create_proc_read_entry(dev->name, 0644,
+		proc_create_simple(dev->name, 0644,
 			info->ft1000_proc_dir, ft1000ReadProc, dev);
 
 	if (ft1000_proc_file == NULL) {

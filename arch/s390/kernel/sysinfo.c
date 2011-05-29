@@ -239,9 +239,7 @@ static int stsi_3_2_2(struct sysinfo_3_2_2 *info, char *page, int len)
 	return len;
 }
 
-static int proc_read_sysinfo(char *page, char **start,
-			     off_t off, int count,
-			     int *eof, void *data)
+static int proc_read_sysinfo(char *page, void *data)
 {
 	unsigned long info = get_zeroed_page(GFP_KERNEL);
 	int level, len;
@@ -272,7 +270,7 @@ static int proc_read_sysinfo(char *page, char **start,
 
 static __init int create_proc_sysinfo(void)
 {
-	create_proc_read_entry("sysinfo", 0444, NULL,
+	proc_create_simple("sysinfo", 0444, NULL,
 			       proc_read_sysinfo, NULL);
 	return 0;
 }

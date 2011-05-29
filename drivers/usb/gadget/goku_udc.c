@@ -1060,20 +1060,16 @@ dump_intmask(const char *label, u32 mask, char **next, unsigned *size)
 
 
 static int
-udc_proc_read(char *buffer, char **start, off_t off, int count,
-		int *eof, void *_dev)
+udc_proc_read(char *buffer, void *_dev)
 {
 	char				*buf = buffer;
 	struct goku_udc			*dev = _dev;
 	struct goku_udc_regs __iomem	*regs = dev->regs;
 	char				*next = buf;
-	unsigned			size = count;
+	unsigned			size = PAGE_SIZE;
 	unsigned long			flags;
 	int				i, t, is_usb_connected;
 	u32				tmp;
-
-	if (off != 0)
-		return 0;
 
 	local_irq_save(flags);
 
@@ -1223,8 +1219,7 @@ udc_proc_read(char *buffer, char **start, off_t off, int count,
 
 done:
 	local_irq_restore(flags);
-	*eof = 1;
-	return count - size;
+	return PAGE_SIZE - size;
 }
 
 #endif	/* CONFIG_USB_GADGET_DEBUG_FILES */
@@ -1844,7 +1839,7 @@ static int goku_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 
 #ifdef CONFIG_USB_GADGET_DEBUG_FILES
-	create_proc_read_entry(proc_node_name, 0, NULL, udc_proc_read, dev);
+	proc_create_simple(proc_node_name, 0, NULL, udc_proc_read, dev);
 #endif
 
 	the_controller = dev;

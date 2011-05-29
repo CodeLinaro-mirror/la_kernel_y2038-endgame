@@ -74,8 +74,7 @@ static unsigned int hp_sdc_rtc_poll(struct file *file, poll_table *wait);
 static int hp_sdc_rtc_open(struct inode *inode, struct file *file);
 static int hp_sdc_rtc_fasync (int fd, struct file *filp, int on);
 
-static int hp_sdc_rtc_read_proc(char *page, char **start, off_t off,
-				int count, int *eof, void *data);
+static int hp_sdc_rtc_read_proc(char *page, void *data);
 
 static void hp_sdc_rtc_isr (int irq, void *dev_id, 
 			    uint8_t status, uint8_t data) 
@@ -502,16 +501,9 @@ static int hp_sdc_rtc_proc_output (char *buf)
 #undef NY
 }
 
-static int hp_sdc_rtc_read_proc(char *page, char **start, off_t off,
-                         int count, int *eof, void *data)
+static int hp_sdc_rtc_read_proc(char *page, void *data)
 {
-	int len = hp_sdc_rtc_proc_output (page);
-        if (len <= off+count) *eof = 1;
-        *start = page + off;
-        len -= off;
-        if (len>count) len = count;
-        if (len<0) len = 0;
-        return len;
+	return hp_sdc_rtc_proc_output(page);
 }
 
 static int hp_sdc_rtc_ioctl(struct file *file, 
@@ -706,7 +698,7 @@ static int __init hp_sdc_rtc_init(void)
 	if (misc_register(&hp_sdc_rtc_dev) != 0)
 		printk(KERN_INFO "Could not register misc. dev for i8042 rtc\n");
 
-        create_proc_read_entry ("driver/rtc", 0, NULL,
+        proc_create_simple ("driver/rtc", 0, NULL,
 				hp_sdc_rtc_read_proc, NULL);
 
 	printk(KERN_INFO "HP i8042 SDC + MSM-58321 RTC support loaded "

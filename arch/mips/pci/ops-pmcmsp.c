@@ -61,18 +61,12 @@ static void pci_proc_init(void);
  *               /proc filesystem.
  *
  *  INPUTS:      page    - part of STDOUT calculation
- *               off     - part of STDOUT calculation
- *               count   - part of STDOUT calculation
  *               data    - unused
- *
- *  OUTPUTS:     start   - new start location
- *               eof     - end of file pointer
  *
  *  RETURNS:     len     - STDOUT length
  *
  ****************************************************************************/
-static int read_msp_pci_counts(char *page, char **start, off_t off,
-				int count, int *eof, void *data)
+static int read_msp_pci_counts(char *page, void *data)
 {
 	int i;
 	int len = 0;
@@ -87,15 +81,6 @@ static int read_msp_pci_counts(char *page, char **start, off_t off,
 	}
 
 	len += sprintf(page + len, "total = %u\n", total);
-	if (len <= off+count)
-		*eof = 1;
-
-	*start = page + off;
-	len -= off;
-	if (len > count)
-		len = count;
-	if (len < 0)
-		len = 0;
 
 	return len;
 }
@@ -113,18 +98,12 @@ static int read_msp_pci_counts(char *page, char **start, off_t off,
  *               the /proc filesystem.
  *
  *  INPUTS:      page    - part of STDOUT calculation
- *               off     - part of STDOUT calculation
- *               count   - part of STDOUT calculation
  *               data    - unused
- *
- *  OUTPUTS:     start   - new start location
- *               eof     - end of file pointer
  *
  *  RETURNS:     len     - STDOUT length
  *
  ****************************************************************************/
-static int gen_pci_cfg_wr(char *page, char **start, off_t off,
-				int count, int *eof, void *data)
+static int gen_pci_cfg_wr(char *page, void *data)
 {
 	unsigned char where = 0; /* Write to static Device/Vendor ID */
 	unsigned char bus_num = 0; /* Bus 0 */
@@ -170,16 +149,6 @@ static int gen_pci_cfg_wr(char *page, char **start, off_t off,
 
 	len += sprintf(page + len, "PMC MSP PCI: After Cfg Wr\n");
 
-	/* Handle STDOUT calculations */
-	if (len <= off+count)
-		*eof = 1;
-	*start = page + off;
-	len -= off;
-	if (len > count)
-		len = count;
-	if (len < 0)
-		len = 0;
-
 	return len;
 }
 
@@ -199,9 +168,9 @@ static int gen_pci_cfg_wr(char *page, char **start, off_t off,
  ****************************************************************************/
 static void pci_proc_init(void)
 {
-	create_proc_read_entry("pmc_msp_pci_rd_cnt", 0, NULL,
+	proc_create_simple("pmc_msp_pci_rd_cnt", 0, NULL,
 				read_msp_pci_counts, NULL);
-	create_proc_read_entry("pmc_msp_pci_cfg_wr", 0, NULL,
+	proc_create_simple("pmc_msp_pci_cfg_wr", 0, NULL,
 				gen_pci_cfg_wr, NULL);
 }
 #endif /* CONFIG_PROC_FS && PCI_COUNTERS */

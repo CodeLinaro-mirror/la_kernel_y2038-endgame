@@ -2898,16 +2898,10 @@ static void hostap_tick_timer(unsigned long data)
 
 
 #ifndef PRISM2_NO_PROCFS_DEBUG
-static int prism2_registers_proc_read(char *page, char **start, off_t off,
-				      int count, int *eof, void *data)
+static int prism2_registers_proc_read(char *page, void *data)
 {
 	char *p = page;
 	local_info_t *local = (local_info_t *) data;
-
-	if (off != 0) {
-		*eof = 1;
-		return 0;
-	}
 
 #define SHOW_REG(n) \
 p += sprintf(p, #n "=%04x\n", hfa384x_read_reg(local->dev, HFA384X_##n##_OFF))
@@ -3280,7 +3274,7 @@ static int hostap_hw_ready(struct net_device *dev)
 		}
 		hostap_init_proc(local);
 #ifndef PRISM2_NO_PROCFS_DEBUG
-		create_proc_read_entry("registers", 0, local->proc,
+		proc_create_simple("registers", 0, local->proc,
 				       prism2_registers_proc_read, local);
 #endif /* PRISM2_NO_PROCFS_DEBUG */
 		hostap_init_ap_proc(local);

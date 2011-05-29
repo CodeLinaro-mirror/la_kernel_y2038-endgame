@@ -363,16 +363,9 @@ efi_rtc_get_status(char *buf)
 }
 
 static int
-efi_rtc_read_proc(char *page, char **start, off_t off,
-                                 int count, int *eof, void *data)
+efi_rtc_read_proc(char *page, void *data)
 {
-        int len = efi_rtc_get_status(page);
-        if (len <= off+count) *eof = 1;
-        *start = page + off;
-        len -= off;
-        if (len>count) len = count;
-        if (len<0) len = 0;
-        return len;
+        return efi_rtc_get_status(page);
 }
 
 static int __init 
@@ -390,7 +383,7 @@ efi_rtc_init(void)
 		return ret;
 	}
 
-	dir = create_proc_read_entry ("driver/efirtc", 0, NULL,
+	dir = proc_create_simple ("driver/efirtc", 0, NULL,
 			              efi_rtc_read_proc, NULL);
 	if (dir == NULL) {
 		printk(KERN_ERR "efirtc: can't create /proc/driver/efirtc.\n");

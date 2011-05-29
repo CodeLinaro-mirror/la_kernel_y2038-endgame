@@ -363,13 +363,12 @@ void rtl8192e_SetHwReg(struct ieee80211_device *ieee80211, u8 variable, u8 *val)
 
 static struct proc_dir_entry *rtl8192_proc = NULL;
 
-static int proc_get_stats_ap(char *page, char **start,
-			  off_t offset, int count,
-			  int *eof, void *data)
+static int proc_get_stats_ap(char *page, void *data)
 {
 	struct r8192_priv *priv = data;
 	struct ieee80211_device *ieee = priv->ieee80211;
 	struct ieee80211_network *target;
+	int count = PAGE_SIZE;
 	int len = 0;
 
         list_for_each_entry(target, &ieee->network_list, list) {
@@ -388,18 +387,16 @@ static int proc_get_stats_ap(char *page, char **start,
 
         }
 
-	*eof = 1;
 	return len;
 }
 
-static int proc_get_registers(char *page, char **start,
-			  off_t offset, int count,
-			  int *eof, void *data)
+static int proc_get_registers(char *page, void *data)
 {
 	struct r8192_priv *priv = data;
 	int len = 0;
 	int i,n;
 	int max=0xff;
+	int count = PAGE_SIZE;
 
 	/* This dump the current register page */
 	len += snprintf(page + len, count - len,
@@ -439,20 +436,17 @@ static int proc_get_registers(char *page, char **start,
                         "%2x ",read_nic_byte(priv,0x300|n));
         }
 
-	*eof = 1;
 	return len;
 
 }
 
-static int proc_get_stats_tx(char *page, char **start,
-			  off_t offset, int count,
-			  int *eof, void *data)
+static int proc_get_stats_tx(char *page, void *data)
 {
 	struct r8192_priv *priv = data;
 
 	int len = 0;
 
-	len += snprintf(page + len, count - len,
+	len += snprintf(page + len, PAGE_SIZE - len,
 		"TX VI priority ok int: %lu\n"
 		"TX VO priority ok int: %lu\n"
 		"TX BE priority ok int: %lu\n"
@@ -478,20 +472,17 @@ static int proc_get_stats_tx(char *page, char **start,
 		priv->ieee80211->stats.tx_packets,
 		priv->ieee80211->stats.tx_bytes);
 
-	*eof = 1;
 	return len;
 }
 
 
 
-static int proc_get_stats_rx(char *page, char **start,
-			  off_t offset, int count,
-			  int *eof, void *data)
+static int proc_get_stats_rx(char *page, void *data)
 {
 	struct r8192_priv *priv = data;
 	int len = 0;
 
-	len += snprintf(page + len, count - len,
+	len += snprintf(page + len, PAGE_SIZE - len,
 		"RX packets: %lu\n"
 		"RX desc err: %lu\n"
 		"RX rx overflow error: %lu\n",
@@ -499,7 +490,6 @@ static int proc_get_stats_rx(char *page, char **start,
 		priv->stats.rxrdu,
 		priv->stats.rxoverflow);
 
-	*eof = 1;
 	return len;
 }
 
@@ -544,7 +534,7 @@ static void rtl8192_proc_init_one(struct r8192_priv *priv)
 		      dev->name);
 		return;
 	}
-	e = create_proc_read_entry("stats-rx", S_IFREG | S_IRUGO,
+	e = proc_create_simple("stats-rx", S_IFREG | S_IRUGO,
 				   priv->dir_dev, proc_get_stats_rx, priv);
 
 	if (!e) {
@@ -554,7 +544,7 @@ static void rtl8192_proc_init_one(struct r8192_priv *priv)
 	}
 
 
-	e = create_proc_read_entry("stats-tx", S_IFREG | S_IRUGO,
+	e = proc_create_simple("stats-tx", S_IFREG | S_IRUGO,
 				   priv->dir_dev, proc_get_stats_tx, priv);
 
 	if (!e) {
@@ -563,7 +553,7 @@ static void rtl8192_proc_init_one(struct r8192_priv *priv)
 		      dev->name);
 	}
 
-	e = create_proc_read_entry("stats-ap", S_IFREG | S_IRUGO,
+	e = proc_create_simple("stats-ap", S_IFREG | S_IRUGO,
 				   priv->dir_dev, proc_get_stats_ap, priv);
 
 	if (!e) {
@@ -572,7 +562,7 @@ static void rtl8192_proc_init_one(struct r8192_priv *priv)
 		      dev->name);
 	}
 
-	e = create_proc_read_entry("registers", S_IFREG | S_IRUGO,
+	e = proc_create_simple("registers", S_IFREG | S_IRUGO,
 				   priv->dir_dev, proc_get_registers, priv);
 	if (!e) {
 		RT_TRACE(COMP_ERR, "Unable to initialize "

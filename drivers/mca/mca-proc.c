@@ -43,8 +43,7 @@ static int get_mca_info_helper(struct mca_device *mca_dev, char *page, int len)
 	return len;
 }
 
-static int get_mca_info(char *page, char **start, off_t off,
-			int count, int *eof, void *data)
+static int get_mca_info(char *page, void *data)
 {
 	int i, len = 0;
 
@@ -82,11 +81,6 @@ static int get_mca_info(char *page, char **start, off_t off,
 		 */
 	}
 
-	if (len <= off+count) *eof = 1;
-	*start = page + off;
-	len -= off;
-	if (len>count) len = count;
-	if (len<0) len = 0;
 	return len;
 }
 
@@ -133,8 +127,7 @@ static int mca_default_procfn(char* buf, struct mca_device *mca_dev)
 	return len;
 } /* mca_default_procfn() */
 
-static int get_mca_machine_info(char* page, char **start, off_t off,
-				 int count, int *eof, void *data)
+static int get_mca_machine_info(char* page, void *data)
 {
 	int len = 0;
 
@@ -142,16 +135,10 @@ static int get_mca_machine_info(char* page, char **start, off_t off,
 	len += sprintf(page+len, "Submodel Id: 0x%x\n", machine_submodel_id);
 	len += sprintf(page+len, "BIOS Revision: 0x%x\n", BIOS_revision);
 
-	if (len <= off+count) *eof = 1;
-	*start = page + off;
-	len -= off;
-	if (len>count) len = count;
-	if (len<0) len = 0;
 	return len;
 }
 
-static int mca_read_proc(char *page, char **start, off_t off,
-				 int count, int *eof, void *data)
+static int mca_read_proc(char *page, void *data)
 {
 	struct mca_device *mca_dev = (struct mca_device *)data;
 	int len = 0;
@@ -166,11 +153,6 @@ static int mca_read_proc(char *page, char **start, off_t off,
 		len += mca_dev->procfn(page+len, mca_dev->slot,
 				       mca_dev->proc_dev);
 	}
-	if (len <= off+count) *eof = 1;
-	*start = page + off;
-	len -= off;
-	if (len>count) len = count;
-	if (len<0) len = 0;
 	return len;
 } /* mca_read_proc() */
 
@@ -184,8 +166,8 @@ void __init mca_do_proc_init(void)
 	struct mca_device *mca_dev;
 
 	proc_mca = proc_mkdir("mca", NULL);
-	create_proc_read_entry("pos",0,proc_mca,get_mca_info,NULL);
-	create_proc_read_entry("machine",0,proc_mca,get_mca_machine_info,NULL);
+	proc_create_simple("pos",0,proc_mca,get_mca_info,NULL);
+	proc_create_simple("machine",0,proc_mca,get_mca_machine_info,NULL);
 
 	/* Initialize /proc/mca entries for existing adapters */
 
@@ -207,7 +189,7 @@ void __init mca_do_proc_init(void)
 		    status != MCA_ADAPTER_DISABLED)
 			continue;
 
-		node = create_proc_read_entry(mca_dev->procname, 0, proc_mca,
+		node = proc_create_simple(mca_dev->procname, 0, proc_mca,
 					      mca_read_proc, (void *)mca_dev);
 
 		if(node == NULL) {

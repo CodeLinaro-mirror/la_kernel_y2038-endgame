@@ -941,7 +941,7 @@ int palinfo_handle_smp(pal_func_cpu_u_t *f, char *page)
  * Entry point routine: all calls go through this function
  */
 static int
-palinfo_read_entry(char *page, char **start, off_t off, int count, int *eof, void *data)
+palinfo_read_entry(char *page, void *data)
 {
 	int len=0;
 	pal_func_cpu_u_t *f = (pal_func_cpu_u_t *)&data;
@@ -956,14 +956,6 @@ palinfo_read_entry(char *page, char **start, off_t off, int count, int *eof, voi
 		len = palinfo_handle_smp(f, page);
 
 	put_cpu();
-
-	if (len <= off+count) *eof = 1;
-
-	*start = page + off;
-	len   -= off;
-
-	if (len>count) len = count;
-	if (len<0) len = 0;
 
 	return len;
 }
@@ -999,7 +991,7 @@ create_palinfo_proc_entries(unsigned int cpu)
 	*pdir++ = cpu_dir;
 	for (j=0; j < NR_PALINFO_ENTRIES; j++) {
 		f.func_id = j;
-		*pdir = create_proc_read_entry(
+		*pdir = proc_create_simple(
 				palinfo_entries[j].name, 0, cpu_dir,
 				palinfo_read_entry, (void *)f.value);
 		pdir++;

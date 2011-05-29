@@ -480,14 +480,14 @@ void watch_dog_timer_callback(unsigned long data);
 
 static struct proc_dir_entry *rtl8192_proc;
 
-static int proc_get_stats_ap(char *page, char **start, off_t offset, int count,
-							int *eof, void *data)
+static int proc_get_stats_ap(char *page, void *data)
 {
 	struct net_device *dev = data;
 	struct r8192_priv *priv = (struct r8192_priv *)ieee80211_priv(dev);
 	struct ieee80211_device *ieee = priv->ieee80211;
 	struct ieee80211_network *target;
 
+	int count = PAGE_SIZE;
 	int len = 0;
 
 	list_for_each_entry(target, &ieee->network_list, list) {
@@ -500,17 +500,15 @@ static int proc_get_stats_ap(char *page, char **start, off_t offset, int count,
 			len += snprintf(page + len, count - len, "non_WPA\n");
 	}
 
-	*eof = 1;
 	return len;
 }
 
-static int proc_get_registers(char *page, char **start,
-			  off_t offset, int count,
-			  int *eof, void *data)
+static int proc_get_registers(char *page, void *data)
 {
 	struct net_device *dev = data;
 //	struct r8192_priv *priv = (struct r8192_priv *)ieee80211_priv(dev);
 
+	int count = PAGE_SIZE;
 	int len = 0;
 	int i,n;
 
@@ -563,25 +561,16 @@ len += snprintf(page + len, count - len,
 
 
 	len += snprintf(page + len, count - len,"\n");
-	*eof = 1;
 	return len;
 
 }
 
-
-
-
-
-static int proc_get_stats_tx(char *page, char **start,
-			  off_t offset, int count,
-			  int *eof, void *data)
+static int proc_get_stats_tx(char *page, void *data)
 {
 	struct net_device *dev = data;
 	struct r8192_priv *priv = (struct r8192_priv *)ieee80211_priv(dev);
 
-	int len = 0;
-
-	len += snprintf(page + len, count - len,
+	return snprintf(page, PAGE_SIZE,
 		"TX VI priority ok int: %lu\n"
 		"TX VI priority error int: %lu\n"
 		"TX VO priority ok int: %lu\n"
@@ -641,33 +630,24 @@ static int proc_get_stats_tx(char *page, char **start,
 		priv->stats.txdatapkt
 //		priv->stats.txbeaconerr
 		);
-
-	*eof = 1;
-	return len;
 }
 
 
 
-static int proc_get_stats_rx(char *page, char **start,
-			  off_t offset, int count,
-			  int *eof, void *data)
+static int proc_get_stats_rx(char *page, void *data)
 {
 	struct net_device *dev = data;
 	struct r8192_priv *priv = (struct r8192_priv *)ieee80211_priv(dev);
 
-	int len = 0;
-
-	len += snprintf(page + len, count - len,
+	return snprintf(page, PAGE_SIZE,
 		"RX packets: %lu\n"
 		"RX urb status error: %lu\n"
 		"RX invalid urb error: %lu\n",
 		priv->stats.rxoktotal,
 		priv->stats.rxstaterr,
 		priv->stats.rxurberr);
-
-	*eof = 1;
-	return len;
 }
+
 void rtl8192_proc_module_init(void)
 {
 	RT_TRACE(COMP_INIT, "Initializing proc filesystem");
@@ -712,7 +692,7 @@ void rtl8192_proc_init_one(struct net_device *dev)
 		      dev->name);
 		return;
 	}
-	e = create_proc_read_entry("stats-rx", S_IFREG | S_IRUGO,
+	e = proc_create_simple("stats-rx", S_IFREG | S_IRUGO,
 				   priv->dir_dev, proc_get_stats_rx, dev);
 
 	if (!e) {
@@ -722,7 +702,7 @@ void rtl8192_proc_init_one(struct net_device *dev)
 	}
 
 
-	e = create_proc_read_entry("stats-tx", S_IFREG | S_IRUGO,
+	e = proc_create_simple("stats-tx", S_IFREG | S_IRUGO,
 				   priv->dir_dev, proc_get_stats_tx, dev);
 
 	if (!e) {
@@ -731,7 +711,7 @@ void rtl8192_proc_init_one(struct net_device *dev)
 		      dev->name);
 	}
 
-	e = create_proc_read_entry("stats-ap", S_IFREG | S_IRUGO,
+	e = proc_create_simple("stats-ap", S_IFREG | S_IRUGO,
 				   priv->dir_dev, proc_get_stats_ap, dev);
 
 	if (!e) {
@@ -740,7 +720,7 @@ void rtl8192_proc_init_one(struct net_device *dev)
 		      dev->name);
 	}
 
-	e = create_proc_read_entry("registers", S_IFREG | S_IRUGO,
+	e = proc_create_simple("registers", S_IFREG | S_IRUGO,
 				   priv->dir_dev, proc_get_registers, dev);
 	if (!e) {
 		RT_TRACE(COMP_ERR, "Unable to initialize "

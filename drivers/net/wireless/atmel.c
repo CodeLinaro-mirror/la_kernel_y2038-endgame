@@ -1494,20 +1494,9 @@ static int atmel_proc_output (char *buf, struct atmel_private *priv)
 	return p - buf;
 }
 
-static int atmel_read_proc(char *page, char **start, off_t off,
-			   int count, int *eof, void *data)
+static int atmel_read_proc(char *page, void *data)
 {
-	struct atmel_private *priv = data;
-	int len = atmel_proc_output (page, priv);
-	if (len <= off+count)
-		*eof = 1;
-	*start = page + off;
-	len -= off;
-	if (len > count)
-		len = count;
-	if (len < 0)
-		len = 0;
-	return len;
+	return atmel_proc_output(page, data);
 }
 
 static const struct net_device_ops atmel_netdev_ops = {
@@ -1631,7 +1620,7 @@ struct net_device *init_atmel_card(unsigned short irq, unsigned long port,
 
 	netif_carrier_off(dev);
 
-	ent = create_proc_read_entry ("driver/atmel", 0, NULL, atmel_read_proc, priv);
+	ent = proc_create_simple ("driver/atmel", 0, NULL, atmel_read_proc, priv);
 	if (!ent)
 		printk(KERN_WARNING "atmel: unable to create /proc entry.\n");
 

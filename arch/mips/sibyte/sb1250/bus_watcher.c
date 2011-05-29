@@ -134,28 +134,16 @@ static int bw_print_buffer(char *page, struct bw_stats_struct *stats)
 
 #ifdef CONFIG_PROC_FS
 
-/* For simplicity, I want to assume a single read is required each
-   time */
-static int bw_read_proc(char *page, char **start, off_t off,
-			int count, int *eof, void *data)
+static int bw_read_proc(char *page, void *data)
 {
-	int len;
-
-	if (off == 0) {
-		len = bw_print_buffer(page, data);
-		*start = page;
-	} else {
-		len = 0;
-		*eof = 1;
-	}
-	return len;
+	return bw_print_buffer(page, data);
 }
 
 static void create_proc_decoder(struct bw_stats_struct *stats)
 {
 	struct proc_dir_entry *ent;
 
-	ent = create_proc_read_entry("bus_watcher", S_IWUSR | S_IRUGO, NULL,
+	ent = proc_create_simple("bus_watcher", S_IWUSR | S_IRUGO, NULL,
 				     bw_read_proc, stats);
 	if (!ent) {
 		printk(KERN_INFO "Unable to initialize bus_watcher /proc entry\n");

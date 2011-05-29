@@ -53,7 +53,7 @@ MODULE_AUTHOR("Jesse Barnes <jbarnes@sgi.com>");
 MODULE_DESCRIPTION("/proc interface to IA-64 SAL features");
 MODULE_LICENSE("GPL");
 
-static int salinfo_read(char *page, char **start, off_t off, int count, int *eof, void *data);
+static int salinfo_read(char *page, void *data);
 
 typedef struct {
 	const char		*name;		/* name of the proc entry */
@@ -632,7 +632,7 @@ salinfo_init(void)
 
 	for (i=0; i < NR_SALINFO_ENTRIES; i++) {
 		/* pass the feature bit in question as misc data */
-		*sdir++ = create_proc_read_entry (salinfo_entries[i].name, 0, salinfo_dir,
+		*sdir++ = proc_create_simple (salinfo_entries[i].name, 0, salinfo_dir,
 						  salinfo_read, (void *)salinfo_entries[i].feature);
 	}
 
@@ -680,21 +680,9 @@ salinfo_init(void)
  * testing
  */
 static int
-salinfo_read(char *page, char **start, off_t off, int count, int *eof, void *data)
+salinfo_read(char *page, void *data)
 {
-	int len = 0;
-
-	len = sprintf(page, (sal_platform_features & (unsigned long)data) ? "1\n" : "0\n");
-
-	if (len <= off+count) *eof = 1;
-
-	*start = page + off;
-	len   -= off;
-
-	if (len>count) len = count;
-	if (len<0) len = 0;
-
-	return len;
+	return sprintf(page, (sal_platform_features & (unsigned long)data) ? "1\n" : "0\n");
 }
 
 module_init(salinfo_init);

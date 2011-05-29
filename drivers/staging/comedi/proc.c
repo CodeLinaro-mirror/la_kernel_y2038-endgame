@@ -35,8 +35,7 @@
 #include <linux/string.h>
 
 #ifdef CONFIG_PROC_FS
-static int comedi_read(char *buf, char **start, off_t offset, int len,
-		       int *eof, void *data)
+static int comedi_read(char *buf, void *data)
 {
 	int i;
 	int devices_q = 0;
@@ -85,7 +84,7 @@ static int comedi_read(char *buf, char **start, off_t offset, int len,
 
 void comedi_proc_init(void)
 {
-	create_proc_read_entry("comedi", S_IFREG | S_IRUGO, NULL,
+	proc_create_simple("comedi", S_IFREG | S_IRUGO, NULL,
 			       comedi_read, NULL);
 }
 

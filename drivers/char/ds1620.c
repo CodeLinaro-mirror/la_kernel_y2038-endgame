@@ -324,11 +324,11 @@ ds1620_unlocked_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 }
 
 static int
-proc_therm_ds1620_read(char *buf, char **start, off_t offset,
-		       int len, int *eof, void *unused)
+proc_therm_ds1620_read(char *buf, void *unused)
 {
 	struct therm th;
 	int temp;
+	int len;
 
 	ds1620_read_state(&th);
 	temp =  cvt_9_to_int(ds1620_in(THERM_READ_TEMP, 9));
@@ -388,7 +388,7 @@ static int __init ds1620_init(void)
 	if (ret < 0)
 		return ret;
 
-	proc_therm_ds1620 = create_proc_read_entry("therm", 0, NULL,
+	proc_therm_ds1620 = proc_create_simple("therm", 0, NULL,
 					 proc_therm_ds1620_read, NULL);
 	if (!proc_therm_ds1620)
 		printk(KERN_ERR "therm: unable to register /proc/therm\n");

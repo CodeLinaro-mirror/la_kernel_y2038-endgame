@@ -138,10 +138,9 @@ static char *port_status(int portno)
 	return result;
 }
 
-static int gpio_proc_read(char *buf, char **start, off_t offset, 
-                          int len, int *unused_i, void *unused_v)
+static int gpio_proc_read(char *buf, void *unused_v)
 {
-	int c,outlen;
+	int c,len,outlen;
 	static const char port_name[]="123456789ABCDEFGH";
 	outlen = 0;
 	for (c = 0; c < MAX_PORT; c++) {
@@ -158,7 +157,7 @@ static __init int register_proc(void)
 {
 	struct proc_dir_entry *proc_gpio;
 
-	proc_gpio = create_proc_read_entry("gpio", S_IRUGO, NULL,
+	proc_gpio = proc_create_simple("gpio", S_IRUGO, NULL,
 					 gpio_proc_read, NULL);
 	return proc_gpio != NULL;
 }

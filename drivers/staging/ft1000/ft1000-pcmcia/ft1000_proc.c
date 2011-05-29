@@ -47,8 +47,7 @@
 	} \
 	len += snprintf(page+len, PAGE_SIZE - len, "%d\n", var[i])
 
-int ft1000ReadProc(char *page, char **start, off_t off,
-		   int count, int *eof, void *data)
+int ft1000ReadProc(char *page, void *data)
 {
 	struct net_device *dev;
 	int len;
@@ -66,11 +65,6 @@ int ft1000ReadProc(char *page, char **start, off_t off,
 
 	dev = (struct net_device *)data;
 	info = netdev_priv(dev);
-
-	if (off > 0) {
-		*eof = 1;
-		return 0;
-	}
 
 	/* Wrap-around */
 
@@ -179,7 +173,7 @@ static int ft1000NotifyProc(struct notifier_block *this, unsigned long event,
 	switch (event) {
 	case NETDEV_CHANGENAME:
 		remove_proc_entry(info->netdevname, info->proc_ft1000);
-		create_proc_read_entry(dev->name, 0644, info->proc_ft1000,
+		proc_create_simple(dev->name, 0644, info->proc_ft1000,
 					   ft1000ReadProc, dev);
 		snprintf(info->netdevname, IFNAMSIZ, "%s", dev->name);
 		break;
@@ -198,7 +192,7 @@ void ft1000InitProc(struct net_device *dev)
 	info = netdev_priv(dev);
 
 	info->proc_ft1000 = proc_mkdir(FT1000_PROC, init_net.proc_net);
-	create_proc_read_entry(dev->name, 0644, info->proc_ft1000,
+	proc_create_simple(dev->name, 0644, info->proc_ft1000,
 				   ft1000ReadProc, dev);
 	snprintf(info->netdevname, IFNAMSIZ, "%s", dev->name);
 	register_netdevice_notifier(&ft1000_netdev_notifier);

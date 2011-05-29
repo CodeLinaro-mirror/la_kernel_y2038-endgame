@@ -52,8 +52,7 @@ sbecom_proc_brd_cleanup (ci_t * ci)
 
 
 static int
-sbecom_proc_get_sbe_info (char *buffer, char **start, off_t offset,
-                          int length, int *eof, void *priv)
+sbecom_proc_get_sbe_info (char *buffer, void *priv)
 {
     ci_t       *ci = (ci_t *) priv;
     int         len = 0;
@@ -190,111 +189,6 @@ sbecom_proc_get_sbe_info (char *buffer, char **start, off_t offset,
 
     OS_kfree (bip);                 /* cleanup */
 
-    /***
-     * How to be a proc read function
-     * ------------------------------
-     * Prototype:
-     *    int f(char *buffer, char **start, off_t offset,
-     *          int count, int *peof, void *dat)
-     *
-     * Assume that the buffer is "count" bytes in size.
-     *
-     * If you know you have supplied all the data you
-     * have, set *peof.
-     *
-     * You have three ways to return data:
-     * 0) Leave *start = NULL.  (This is the default.)
-     *    Put the data of the requested offset at that
-     *    offset within the buffer.  Return the number (n)
-     *    of bytes there are from the beginning of the
-     *    buffer up to the last byte of data.  If the
-     *    number of supplied bytes (= n - offset) is
-     *    greater than zero and you didn't signal eof
-     *    and the reader is prepared to take more data
-     *    you will be called again with the requested
-     *    offset advanced by the number of bytes
-     *    absorbed.  This interface is useful for files
-     *    no larger than the buffer.
-     * 1) Set *start = an unsigned long value less than
-     *    the buffer address but greater than zero.
-     *    Put the data of the requested offset at the
-     *    beginning of the buffer.  Return the number of
-     *    bytes of data placed there.  If this number is
-     *    greater than zero and you didn't signal eof
-     *    and the reader is prepared to take more data
-     *    you will be called again with the requested
-     *    offset advanced by *start.  This interface is
-     *    useful when you have a large file consisting
-     *    of a series of blocks which you want to count
-     *    and return as wholes.
-     *    (Hack by Paul.Russell@rustcorp.com.au)
-     * 2) Set *start = an address within the buffer.
-     *    Put the data of the requested offset at *start.
-     *    Return the number of bytes of data placed there.
-     *    If this number is greater than zero and you
-     *    didn't signal eof and the reader is prepared to
-     *    take more data you will be called again with the
-     *    requested offset advanced by the number of bytes
-     *    absorbed.
-     */
-
-#if 1
-    /* #4 - interpretation of above = set EOF, return len */
-    *eof = 1;
-#endif
-
-#if 0
-    /*
-     * #1 - from net/wireless/atmel.c RLD NOTE -there's something wrong with
-     * this plagarized code which results in this routine being called TWICE.
-     * The second call returns ZERO, resulting in hidden failure, but at
-     * least only a single message set is being displayed.
-     */
-    if (len <= offset + length)
-        *eof = 1;
-    *start = buffer + offset;
-    len -= offset;
-    if (len > length)
-        len = length;
-    if (len < 0)
-        len = 0;
-#endif
-
-#if 0                               /* #2 from net/tokenring/olympic.c +
-                                     * lanstreamer.c */
-    {
-        off_t       begin = 0;
-        int         size = 0;
-        off_t       pos = 0;
-
-        size = len;
-        pos = begin + size;
-        if (pos < offset)
-        {
-            len = 0;
-            begin = pos;
-        }
-        *start = buffer + (offset - begin);     /* Start of wanted data */
-        len -= (offset - begin);    /* Start slop */
-        if (len > length)
-            len = length;           /* Ending slop */
-    }
-#endif
-
-#if 0                               /* #3 from
-                                     * char/ftape/lowlevel/ftape-proc.c */
-    len = strlen (buffer);
-    *start = NULL;
-    if (offset + length >= len)
-        *eof = 1;
-    else
-        *eof = 0;
-#endif
-
-#if 0
-    pr_info(">> proc_fs: returned len = %d., start %p\n", len, start);  /* RLD DEBUG */
-#endif
-
 /***
    using NONE: returns = 314.314.314.
    using #1  : returns = 314, 0.
@@ -322,7 +216,7 @@ sbecom_proc_brd_init (ci_t * ci)
         pr_err("Unable to create directory /proc/driver/%s\n", ci->devname);
         goto fail;
     }
-    e = create_proc_read_entry ("info", S_IFREG | S_IRUGO,
+    e = proc_create_simple ("info", S_IFREG | S_IRUGO,
                                 ci->dir_dev, sbecom_proc_get_sbe_info, ci);
     if (!e)
     {

@@ -169,45 +169,18 @@ dump_version(char *page, unsigned long nasid)
 	return len;
 }
 
-/* same as in proc_misc.c */
 static int
-proc_calc_metrics(char *page, char **start, off_t off, int count, int *eof,
-		  int len)
+read_version_entry(char *page, void *data)
 {
-	if (len <= off + count)
-		*eof = 1;
-	*start = page + off;
-	len -= off;
-	if (len > count)
-		len = count;
-	if (len < 0)
-		len = 0;
-	return len;
+	/* data holds the NASID of the node */
+	return dump_version(page, (unsigned long)data);
 }
 
 static int
-read_version_entry(char *page, char **start, off_t off, int count, int *eof,
-		   void *data)
+read_fit_entry(char *page, void *data)
 {
-	int len;
-
 	/* data holds the NASID of the node */
-	len = dump_version(page, (unsigned long)data);
-	len = proc_calc_metrics(page, start, off, count, eof, len);
-	return len;
-}
-
-static int
-read_fit_entry(char *page, char **start, off_t off, int count, int *eof,
-	       void *data)
-{
-	int len;
-
-	/* data holds the NASID of the node */
-	len = dump_fit(page, (unsigned long)data);
-	len = proc_calc_metrics(page, start, off, count, eof, len);
-
-	return len;
+	return dump_fit(page, (unsigned long)data);
 }
 
 /* module entry points */
@@ -245,9 +218,9 @@ int __init prominfo_init(void)
 		sprintf(name, "node%d", cnodeid);
 		*entp = proc_mkdir(name, sgi_prominfo_entry);
 		nasid = cnodeid_to_nasid(cnodeid);
-		create_proc_read_entry("fit", 0, *entp, read_fit_entry,
+		proc_create_simple("fit", 0, *entp, read_fit_entry,
 					   (void *)nasid);
-		create_proc_read_entry("version", 0, *entp,
+		proc_create_simple("version", 0, *entp,
 					   read_version_entry, (void *)nasid);
 		entp++;
 	}

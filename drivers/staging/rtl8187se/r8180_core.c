@@ -212,11 +212,10 @@ void rtl8180_start_tx_beacon(struct net_device *dev);
 
 static struct proc_dir_entry *rtl8180_proc = NULL;
 
-static int proc_get_registers(char *page, char **start,
-			  off_t offset, int count,
-			  int *eof, void *data)
+static int proc_get_registers(char *page, void *data)
 {
 	struct net_device *dev = data;
+	int count = PAGE_SIZE;
 	int len = 0;
 	int i, n;
 	int max = 0xff;
@@ -231,32 +230,24 @@ static int proc_get_registers(char *page, char **start,
 	}
 	len += snprintf(page + len, count - len, "\n");
 
-	*eof = 1;
 	return len;
 }
 
 int get_curr_tx_free_desc(struct net_device *dev, int priority);
 
-static int proc_get_stats_hw(char *page, char **start,
-			  off_t offset, int count,
-			  int *eof, void *data)
+static int proc_get_stats_hw(char *page, void *data)
 {
-	int len = 0;
-
-	*eof = 1;
-	return len;
+	return 0;
 }
 
-static int proc_get_stats_rx(char *page, char **start,
-			  off_t offset, int count,
-			  int *eof, void *data)
+static int proc_get_stats_rx(char *page, void *data)
 {
 	struct net_device *dev = data;
 	struct r8180_priv *priv = (struct r8180_priv *)ieee80211_priv(dev);
 
 	int len = 0;
 
-	len += snprintf(page + len, count - len,
+	len += snprintf(page + len, PAGE_SIZE - len,
 		"RX OK: %lu\n"
 		"RX Retry: %lu\n"
 		"RX CRC Error(0-500): %lu\n"
@@ -271,13 +262,10 @@ static int proc_get_stats_rx(char *page, char **start,
 		priv->stats.rxicverr
 		);
 
-	*eof = 1;
 	return len;
 }
 
-static int proc_get_stats_tx(char *page, char **start,
-			  off_t offset, int count,
-			  int *eof, void *data)
+static int proc_get_stats_tx(char *page, void *data)
 {
 	struct net_device *dev = data;
 	struct r8180_priv *priv = (struct r8180_priv *)ieee80211_priv(dev);
@@ -286,7 +274,7 @@ static int proc_get_stats_tx(char *page, char **start,
 	unsigned long totalOK;
 
 	totalOK = priv->stats.txnpokint+priv->stats.txhpokint+priv->stats.txlpokint;
-	len += snprintf(page + len, count - len,
+	len += snprintf(page + len, PAGE_SIZE - len,
 		"TX OK: %lu\n"
 		"TX Error: %lu\n"
 		"TX Retry: %lu\n"
@@ -299,7 +287,6 @@ static int proc_get_stats_tx(char *page, char **start,
 		priv->stats.txbeaconerr
 	);
 
-	*eof = 1;
 	return len;
 }
 
@@ -339,7 +326,7 @@ void rtl8180_proc_init_one(struct net_device *dev)
 		return;
 	}
 
-	e = create_proc_read_entry("stats-hw", S_IFREG | S_IRUGO,
+	e = proc_create_simple("stats-hw", S_IFREG | S_IRUGO,
 				   priv->dir_dev, proc_get_stats_hw, dev);
 	if (!e) {
 		DMESGE("Unable to initialize "
@@ -347,7 +334,7 @@ void rtl8180_proc_init_one(struct net_device *dev)
 		      dev->name);
 	}
 
-	e = create_proc_read_entry("stats-rx", S_IFREG | S_IRUGO,
+	e = proc_create_simple("stats-rx", S_IFREG | S_IRUGO,
 				   priv->dir_dev, proc_get_stats_rx, dev);
 	if (!e) {
 		DMESGE("Unable to initialize "
@@ -356,7 +343,7 @@ void rtl8180_proc_init_one(struct net_device *dev)
 	}
 
 
-	e = create_proc_read_entry("stats-tx", S_IFREG | S_IRUGO,
+	e = proc_create_simple("stats-tx", S_IFREG | S_IRUGO,
 				   priv->dir_dev, proc_get_stats_tx, dev);
 	if (!e) {
 		DMESGE("Unable to initialize "
@@ -364,7 +351,7 @@ void rtl8180_proc_init_one(struct net_device *dev)
 		      dev->name);
 	}
 
-	e = create_proc_read_entry("registers", S_IFREG | S_IRUGO,
+	e = proc_create_simple("registers", S_IFREG | S_IRUGO,
 				   priv->dir_dev, proc_get_registers, dev);
 	if (!e) {
 		DMESGE("Unable to initialize "

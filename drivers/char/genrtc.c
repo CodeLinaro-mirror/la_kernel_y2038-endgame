@@ -459,23 +459,16 @@ static int gen_rtc_proc_output(char *buf)
 	return p - buf;
 }
 
-static int gen_rtc_read_proc(char *page, char **start, off_t off,
-			     int count, int *eof, void *data)
+static int gen_rtc_read_proc(char *page, void *data)
 {
-	int len = gen_rtc_proc_output (page);
-        if (len <= off+count) *eof = 1;
-	*start = page + off;
-	len -= off;
-        if (len>count) len = count;
-        if (len<0) len = 0;
-	return len;
+	return gen_rtc_proc_output (page);
 }
 
 static int __init gen_rtc_proc_init(void)
 {
 	struct proc_dir_entry *r;
 
-	r = create_proc_read_entry("driver/rtc", 0, NULL, gen_rtc_read_proc, NULL);
+	r = proc_create_simple("driver/rtc", 0, NULL, gen_rtc_read_proc, NULL);
 	if (!r)
 		return -ENOMEM;
 	return 0;

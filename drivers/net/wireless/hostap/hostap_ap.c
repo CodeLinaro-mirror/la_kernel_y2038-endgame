@@ -62,16 +62,10 @@ static void prism2_send_mgmt(struct net_device *dev,
 
 
 #ifndef PRISM2_NO_PROCFS_DEBUG
-static int ap_debug_proc_read(char *page, char **start, off_t off,
-			      int count, int *eof, void *data)
+static int ap_debug_proc_read(char *page, void *data)
 {
 	char *p = page;
 	struct ap_data *ap = (struct ap_data *) data;
-
-	if (off != 0) {
-		*eof = 1;
-		return 0;
-	}
 
 	p += sprintf(p, "BridgedUnicastFrames=%u\n", ap->bridged_unicast);
 	p += sprintf(p, "BridgedMulticastFrames=%u\n", ap->bridged_multicast);
@@ -323,18 +317,12 @@ void hostap_deauth_all_stas(struct net_device *dev, struct ap_data *ap,
 }
 
 
-static int ap_control_proc_read(char *page, char **start, off_t off,
-				int count, int *eof, void *data)
+static int ap_control_proc_read(char *page, void *data)
 {
 	char *p = page;
 	struct ap_data *ap = (struct ap_data *) data;
 	char *policy_txt;
 	struct mac_entry *entry;
-
-	if (off != 0) {
-		*eof = 1;
-		return 0;
-	}
 
 	switch (ap->mac_restrictions.policy) {
 	case MAC_POLICY_OPEN:
@@ -508,20 +496,12 @@ void ap_control_kickall(struct ap_data *ap)
 
 #ifndef PRISM2_NO_KERNEL_IEEE80211_MGMT
 
-#define PROC_LIMIT (PAGE_SIZE - 80)
-
-static int prism2_ap_proc_read(char *page, char **start, off_t off,
-			       int count, int *eof, void *data)
+static int prism2_ap_proc_read(char *page, void *data)
 {
 	char *p = page;
 	struct ap_data *ap = (struct ap_data *) data;
 	struct sta_info *sta;
 	int i;
-
-	if (off > PROC_LIMIT) {
-		*eof = 1;
-		return 0;
-	}
 
 	p += sprintf(p, "# BSSID CHAN SIGNAL NOISE RATE SSID FLAGS\n");
 	spin_lock_bh(&ap->sta_table_lock);
@@ -553,13 +533,6 @@ static int prism2_ap_proc_read(char *page, char **start, off_t off,
 		}
 	}
 	spin_unlock_bh(&ap->sta_table_lock);
-
-	if ((p - page) <= off) {
-		*eof = 1;
-		return 0;
-	}
-
-	*start = page + off;
 
 	return (p - page - off);
 }
@@ -834,14 +807,14 @@ void hostap_init_ap_proc(local_info_t *local)
 		return;
 
 #ifndef PRISM2_NO_PROCFS_DEBUG
-	create_proc_read_entry("ap_debug", 0, ap->proc,
+	proc_create_simple("ap_debug", 0, ap->proc,
 			       ap_debug_proc_read, ap);
 #endif /* PRISM2_NO_PROCFS_DEBUG */
 
 #ifndef PRISM2_NO_KERNEL_IEEE80211_MGMT
-	create_proc_read_entry("ap_control", 0, ap->proc,
+	proc_create_simple("ap_control", 0, ap->proc,
 			       ap_control_proc_read, ap);
-	create_proc_read_entry("ap", 0, ap->proc,
+	proc_create_simple("ap", 0, ap->proc,
 			       prism2_ap_proc_read, ap);
 #endif /* PRISM2_NO_KERNEL_IEEE80211_MGMT */
 
@@ -980,8 +953,7 @@ static void prism2_send_mgmt(struct net_device *dev,
 #endif /* PRISM2_NO_KERNEL_IEEE80211_MGMT */
 
 
-static int prism2_sta_proc_read(char *page, char **start, off_t off,
-				int count, int *eof, void *data)
+static int prism2_sta_proc_read(char *page, void *data)
 {
 	char *p = page;
 	struct sta_info *sta = (struct sta_info *) data;
@@ -990,11 +962,6 @@ static int prism2_sta_proc_read(char *page, char **start, off_t off,
 	/* FIX: possible race condition.. the STA data could have just expired,
 	 * but proc entry was still here so that the read could have started;
 	 * some locking should be done here.. */
-
-	if (off != 0) {
-		*eof = 1;
-		return 0;
-	}
 
 	p += sprintf(p, "%s=%pM\nusers=%d\naid=%d\n"
 		     "flags=0x%04x%s%s%s%s%s%s%s\n"
@@ -1074,7 +1041,7 @@ static void handle_add_proc_queue(struct work_struct *work)
 
 		if (sta) {
 			sprintf(name, "%pM", sta->addr);
-			sta->proc = create_proc_read_entry(
+			sta->proc = proc_create_simple(
 				name, 0, ap->proc,
 				prism2_sta_proc_read, sta);
 

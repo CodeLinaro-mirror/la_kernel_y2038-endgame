@@ -244,8 +244,7 @@ int pdc_chassis_send_status(int message)
 
 #ifdef CONFIG_PDC_CHASSIS_WARN
 #ifdef CONFIG_PROC_FS
-static int pdc_chassis_warn_pread(char *page, char **start, off_t off,
-		int count, int *eof, void *data)
+static int pdc_chassis_warn_pread(char *page, void *data)
 {
 	char *out = page;
 	int len, ret;
@@ -265,14 +264,6 @@ static int pdc_chassis_warn_pread(char *page, char **start, off_t off,
 	out += sprintf(out, "Temp low: %s\n", (warnreg & 0x02) ? "Exceeded!" : "OK");
 	out += sprintf(out, "Temp mid: %s\n", (warnreg & 0x01) ? "Exceeded!" : "OK");
 
-	len = out - page - off;
-	if (len < count) {
-		*eof = 1;
-		if (len <= 0) return 0;
-	} else {
-		len = count;
-	}
-	*start = page + off;
 	return len;
 }
 
@@ -290,7 +281,7 @@ static int __init pdc_chassis_create_procfs(void)
 
 	printk(KERN_INFO "Enabling PDC chassis warnings support v%s\n",
 			PDC_CHASSIS_VER);
-	create_proc_read_entry("chassis", 0400, NULL, pdc_chassis_warn_pread,
+	proc_create_simple("chassis", 0400, NULL, pdc_chassis_warn_pread,
 				NULL);
 	return 0;
 }

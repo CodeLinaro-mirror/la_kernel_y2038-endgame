@@ -25,7 +25,7 @@
 #include <uart.h>
 
 
-static int pnx8550_timers_read(char* page, char** start, off_t offset, int count, int* eof, void* data)
+static int pnx8550_timers_read(char* page, void* data)
 {
         int len = 0;
 	int configPR = read_c0_config7();
@@ -46,7 +46,7 @@ static int pnx8550_timers_read(char* page, char** start, off_t offset, int count
         return len;
 }
 
-static int pnx8550_registers_read(char* page, char** start, off_t offset, int count, int* eof, void* data)
+static int pnx8550_registers_read(char* page, void* data)
 {
         int len = 0;
 
@@ -83,7 +83,7 @@ static int pnx8550_proc_init( void )
         }
 
 	// Create /proc/pnx8550/timers
-        pnx8550_timers = create_proc_read_entry(
+        pnx8550_timers = proc_create_simple(
 		"timers",
 		0,
 		pnx8550_dir,
@@ -94,7 +94,7 @@ static int pnx8550_proc_init( void )
                 printk(KERN_ERR "Can't create pnx8550 timers proc file\n");
 
 	// Create /proc/pnx8550/registers
-        pnx8550_registers = create_proc_read_entry(
+        pnx8550_registers = proc_create_simple(
 		"registers",
 		0,
 		pnx8550_dir,

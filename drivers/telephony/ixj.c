@@ -7406,18 +7406,10 @@ static int ixj_get_status_proc(char *buf)
 	return len;
 }
 
-static int ixj_read_proc(char *page, char **start, off_t off,
-                              int count, int *eof, void *data)
+static int ixj_read_proc(char *page, void *data)
 {
-        int len = ixj_get_status_proc(page);
-        if (len <= off+count) *eof = 1;
-        *start = page + off;
-        len -= off;
-        if (len>count) len = count;
-        if (len<0) len = 0;
-        return len;
+        return ixj_get_status_proc(page);
 }
-
 
 static void cleanup(void)
 {
@@ -7741,7 +7733,7 @@ static int __init ixj_init(void)
 		return probe;
 	}
 	printk(KERN_INFO "ixj driver initialized.\n");
-	create_proc_read_entry ("ixj", 0, NULL, ixj_read_proc, NULL);
+	proc_create_simple ("ixj", 0, NULL, ixj_read_proc, NULL);
 	return probe;
 }
 

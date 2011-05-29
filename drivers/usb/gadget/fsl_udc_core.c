@@ -2033,12 +2033,11 @@ EXPORT_SYMBOL(usb_gadget_unregister_driver);
 
 static const char proc_filename[] = "driver/fsl_usb2_udc";
 
-static int fsl_proc_read(char *page, char **start, off_t off, int count,
-		int *eof, void *_dev)
+static int fsl_proc_read(char *page, void *_dev)
 {
 	char *buf = page;
 	char *next = buf;
-	unsigned size = count;
+	unsigned size = PAGE_SIZE;
 	unsigned long flags;
 	int t, i;
 	u32 tmp_reg;
@@ -2046,8 +2045,6 @@ static int fsl_proc_read(char *page, char **start, off_t off, int count,
 	struct fsl_req *req;
 
 	struct fsl_udc *udc = udc_controller;
-	if (off != 0)
-		return 0;
 
 	spin_lock_irqsave(&udc->lock, flags);
 
@@ -2281,11 +2278,10 @@ static int fsl_proc_read(char *page, char **start, off_t off, int count,
 
 	spin_unlock_irqrestore(&udc->lock, flags);
 
-	*eof = 1;
-	return count - size;
+	return PAGE_SIZE - size;
 }
 
-#define create_proc_file()	create_proc_read_entry(proc_filename, \
+#define create_proc_file()	proc_create_simple(proc_filename, \
 				0, NULL, fsl_proc_read, NULL)
 
 #define remove_proc_file()	remove_proc_entry(proc_filename, NULL)

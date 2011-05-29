@@ -308,8 +308,7 @@ int dma_extend(unsigned int chan, unsigned long op, void *param)
 }
 EXPORT_SYMBOL(dma_extend);
 
-static int dma_read_proc(char *buf, char **start, off_t off,
-			 int len, int *eof, void *data)
+static int dma_read_proc(char *buf, void *data)
 {
 	struct dma_info *info;
 	char *p = buf;
@@ -412,7 +411,7 @@ EXPORT_SYMBOL(unregister_dmac);
 static int __init dma_api_init(void)
 {
 	printk(KERN_NOTICE "DMA: Registering DMA API.\n");
-	return create_proc_read_entry("dma", 0, 0, dma_read_proc, 0)
+	return proc_create_simple("dma", 0, 0, dma_read_proc, 0)
 		    ? 0 : -ENOMEM;
 }
 subsys_initcall(dma_api_init);

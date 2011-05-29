@@ -35,8 +35,7 @@ static struct proc_dir_entry *smtc_stats;
 
 atomic_t smtc_fpu_recoveries;
 
-static int proc_read_smtc(char *page, char **start, off_t off,
-                          int count, int *eof, void *data)
+static int proc_read_smtc(char *page, void *data)
 {
 	int totalen = 0;
 	int len;
@@ -87,6 +86,6 @@ void init_smtc_stats(void)
 
 	atomic_set(&smtc_fpu_recoveries, 0);
 
-	smtc_stats = create_proc_read_entry("smtc", 0444, NULL,
+	smtc_stats = proc_create_simple("smtc", 0444, NULL,
 	                                    proc_read_smtc, NULL);
 }

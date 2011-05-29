@@ -2067,7 +2067,7 @@ mega_free_inquiry(void *inquiry, dma_addr_t dma_handle, struct pci_dev *pdev)
 #ifdef CONFIG_PROC_FS
 /* Following code handles /proc fs  */
 
-#define CREATE_READ_PROC(string, func)	create_proc_read_entry(string,	\
+#define CREATE_READ_PROC(string, func)	proc_create_simple(string,	\
 					S_IRUSR | S_IFREG,		\
 					controller_proc_dir_entry,	\
 					func, adapter)
@@ -2134,17 +2134,12 @@ mega_create_proc_entry(int index, struct proc_dir_entry *parent)
 /**
  * proc_read_config()
  * @page - buffer to write the data in
- * @start - where the actual data has been written in page
- * @offset - same meaning as the read system call
- * @count - same meaning as the read system call
- * @eof - set if no more data needs to be returned
  * @data - pointer to our soft state
  *
  * Display configuration information about the controller.
  */
 static int
-proc_read_config(char *page, char **start, off_t offset, int count, int *eof,
-		void *data)
+proc_read_config(char *page, void *data)
 {
 
 	adapter_t *adapter = (adapter_t *)data;
@@ -2224,8 +2219,6 @@ proc_read_config(char *page, char **start, off_t offset, int count, int *eof,
 	len += sprintf(page+len, "max_sectors_per_io = %d\n",
 			max_sectors_per_io);
 
-	*eof = 1;
-
 	return len;
 }
 
@@ -2234,17 +2227,12 @@ proc_read_config(char *page, char **start, off_t offset, int count, int *eof,
 /**
  * proc_read_stat()
  * @page - buffer to write the data in
- * @start - where the actual data has been written in page
- * @offset - same meaning as the read system call
- * @count - same meaning as the read system call
- * @eof - set if no more data needs to be returned
  * @data - pointer to our soft state
  *
  * Diaplay statistical information about the I/O activity.
  */
 static int
-proc_read_stat(char *page, char **start, off_t offset, int count, int *eof,
-		void *data)
+proc_read_stat(char *page, void *data)
 {
 	adapter_t	*adapter;
 	int	len;
@@ -2278,8 +2266,6 @@ proc_read_stat(char *page, char **start, off_t offset, int count, int *eof,
 			"IO and error counters not compiled in driver.\n");
 #endif
 
-	*eof = 1;
-
 	return len;
 }
 
@@ -2287,18 +2273,13 @@ proc_read_stat(char *page, char **start, off_t offset, int count, int *eof,
 /**
  * proc_read_mbox()
  * @page - buffer to write the data in
- * @start - where the actual data has been written in page
- * @offset - same meaning as the read system call
- * @count - same meaning as the read system call
- * @eof - set if no more data needs to be returned
  * @data - pointer to our soft state
  *
  * Display mailbox information for the last command issued. This information
  * is good for debugging.
  */
 static int
-proc_read_mbox(char *page, char **start, off_t offset, int count, int *eof,
-		void *data)
+proc_read_mbox(char *page, void *data)
 {
 
 	adapter_t	*adapter = (adapter_t *)data;
@@ -2325,8 +2306,6 @@ proc_read_mbox(char *page, char **start, off_t offset, int count, int *eof,
 	len += sprintf(page+len, "  Status       = 0x%02x\n", 
 			mbox->m_in.status);
 
-	*eof = 1;
-
 	return len;
 }
 
@@ -2334,17 +2313,12 @@ proc_read_mbox(char *page, char **start, off_t offset, int count, int *eof,
 /**
  * proc_rebuild_rate()
  * @page - buffer to write the data in
- * @start - where the actual data has been written in page
- * @offset - same meaning as the read system call
- * @count - same meaning as the read system call
- * @eof - set if no more data needs to be returned
  * @data - pointer to our soft state
  *
  * Display current rebuild rate
  */
 static int
-proc_rebuild_rate(char *page, char **start, off_t offset, int count, int *eof,
-		void *data)
+proc_rebuild_rate(char *page, void *data)
 {
 	adapter_t	*adapter = (adapter_t *)data;
 	dma_addr_t	dma_handle;
@@ -2353,13 +2327,11 @@ proc_rebuild_rate(char *page, char **start, off_t offset, int count, int *eof,
 	int	len = 0;
 
 	if( make_local_pdev(adapter, &pdev) != 0 ) {
-		*eof = 1;
 		return len;
 	}
 
 	if( (inquiry = mega_allocate_inquiry(&dma_handle, pdev)) == NULL ) {
 		free_local_pdev(pdev);
-		*eof = 1;
 		return len;
 	}
 
@@ -2372,8 +2344,6 @@ proc_rebuild_rate(char *page, char **start, off_t offset, int count, int *eof,
 		mega_free_inquiry(inquiry, dma_handle, pdev);
 
 		free_local_pdev(pdev);
-
-		*eof = 1;
 
 		return len;
 	}
@@ -2393,8 +2363,6 @@ proc_rebuild_rate(char *page, char **start, off_t offset, int count, int *eof,
 
 	free_local_pdev(pdev);
 
-	*eof = 1;
-
 	return len;
 }
 
@@ -2402,17 +2370,12 @@ proc_rebuild_rate(char *page, char **start, off_t offset, int count, int *eof,
 /**
  * proc_battery()
  * @page - buffer to write the data in
- * @start - where the actual data has been written in page
- * @offset - same meaning as the read system call
- * @count - same meaning as the read system call
- * @eof - set if no more data needs to be returned
  * @data - pointer to our soft state
  *
  * Display information about the battery module on the controller.
  */
 static int
-proc_battery(char *page, char **start, off_t offset, int count, int *eof,
-		void *data)
+proc_battery(char *page, void *data)
 {
 	adapter_t	*adapter = (adapter_t *)data;
 	dma_addr_t	dma_handle;
@@ -2423,13 +2386,11 @@ proc_battery(char *page, char **start, off_t offset, int count, int *eof,
 	int	len = 0;
 
 	if( make_local_pdev(adapter, &pdev) != 0 ) {
-		*eof = 1;
 		return len;
 	}
 
 	if( (inquiry = mega_allocate_inquiry(&dma_handle, pdev)) == NULL ) {
 		free_local_pdev(pdev);
-		*eof = 1;
 		return len;
 	}
 
@@ -2442,8 +2403,6 @@ proc_battery(char *page, char **start, off_t offset, int count, int *eof,
 		mega_free_inquiry(inquiry, dma_handle, pdev);
 
 		free_local_pdev(pdev);
-
-		*eof = 1;
 
 		return len;
 	}
@@ -2492,8 +2451,6 @@ proc_battery(char *page, char **start, off_t offset, int count, int *eof,
 
 	free_local_pdev(pdev);
 
-	*eof = 1;
-
 	return len;
 }
 
@@ -2501,21 +2458,14 @@ proc_battery(char *page, char **start, off_t offset, int count, int *eof,
 /**
  * proc_pdrv_ch0()
  * @page - buffer to write the data in
- * @start - where the actual data has been written in page
- * @offset - same meaning as the read system call
- * @count - same meaning as the read system call
- * @eof - set if no more data needs to be returned
  * @data - pointer to our soft state
  *
  * Display information about the physical drives on physical channel 0.
  */
 static int
-proc_pdrv_ch0(char *page, char **start, off_t offset, int count, int *eof,
-		void *data)
+proc_pdrv_ch0(char *page, void *data)
 {
 	adapter_t *adapter = (adapter_t *)data;
-
-	*eof = 1;
 
 	return (proc_pdrv(adapter, page, 0));
 }
@@ -2524,21 +2474,14 @@ proc_pdrv_ch0(char *page, char **start, off_t offset, int count, int *eof,
 /**
  * proc_pdrv_ch1()
  * @page - buffer to write the data in
- * @start - where the actual data has been written in page
- * @offset - same meaning as the read system call
- * @count - same meaning as the read system call
- * @eof - set if no more data needs to be returned
  * @data - pointer to our soft state
  *
  * Display information about the physical drives on physical channel 1.
  */
 static int
-proc_pdrv_ch1(char *page, char **start, off_t offset, int count, int *eof,
-		void *data)
+proc_pdrv_ch1(char *page, void *data)
 {
 	adapter_t *adapter = (adapter_t *)data;
-
-	*eof = 1;
 
 	return (proc_pdrv(adapter, page, 1));
 }
@@ -2547,21 +2490,14 @@ proc_pdrv_ch1(char *page, char **start, off_t offset, int count, int *eof,
 /**
  * proc_pdrv_ch2()
  * @page - buffer to write the data in
- * @start - where the actual data has been written in page
- * @offset - same meaning as the read system call
- * @count - same meaning as the read system call
- * @eof - set if no more data needs to be returned
  * @data - pointer to our soft state
  *
  * Display information about the physical drives on physical channel 2.
  */
 static int
-proc_pdrv_ch2(char *page, char **start, off_t offset, int count, int *eof,
-		void *data)
+proc_pdrv_ch2(char *page, void *data)
 {
 	adapter_t *adapter = (adapter_t *)data;
-
-	*eof = 1;
 
 	return (proc_pdrv(adapter, page, 2));
 }
@@ -2570,21 +2506,14 @@ proc_pdrv_ch2(char *page, char **start, off_t offset, int count, int *eof,
 /**
  * proc_pdrv_ch3()
  * @page - buffer to write the data in
- * @start - where the actual data has been written in page
- * @offset - same meaning as the read system call
- * @count - same meaning as the read system call
- * @eof - set if no more data needs to be returned
  * @data - pointer to our soft state
  *
  * Display information about the physical drives on physical channel 3.
  */
 static int
-proc_pdrv_ch3(char *page, char **start, off_t offset, int count, int *eof,
-		void *data)
+proc_pdrv_ch3(char *page, void *data)
 {
 	adapter_t *adapter = (adapter_t *)data;
-
-	*eof = 1;
 
 	return (proc_pdrv(adapter, page, 3));
 }
@@ -2773,21 +2702,14 @@ mega_print_inquiry(char *page, char *scsi_inq)
 /**
  * proc_rdrv_10()
  * @page - buffer to write the data in
- * @start - where the actual data has been written in page
- * @offset - same meaning as the read system call
- * @count - same meaning as the read system call
- * @eof - set if no more data needs to be returned
  * @data - pointer to our soft state
  *
  * Display real time information about the logical drives 0 through 9.
  */
 static int
-proc_rdrv_10(char *page, char **start, off_t offset, int count, int *eof,
-		void *data)
+proc_rdrv_10(char *page, void *data)
 {
 	adapter_t *adapter = (adapter_t *)data;
-
-	*eof = 1;
 
 	return (proc_rdrv(adapter, page, 0, 9));
 }
@@ -2796,21 +2718,14 @@ proc_rdrv_10(char *page, char **start, off_t offset, int count, int *eof,
 /**
  * proc_rdrv_20()
  * @page - buffer to write the data in
- * @start - where the actual data has been written in page
- * @offset - same meaning as the read system call
- * @count - same meaning as the read system call
- * @eof - set if no more data needs to be returned
  * @data - pointer to our soft state
  *
  * Display real time information about the logical drives 0 through 9.
  */
 static int
-proc_rdrv_20(char *page, char **start, off_t offset, int count, int *eof,
-		void *data)
+proc_rdrv_20(char *page, void *data)
 {
 	adapter_t *adapter = (adapter_t *)data;
-
-	*eof = 1;
 
 	return (proc_rdrv(adapter, page, 10, 19));
 }
@@ -2819,21 +2734,14 @@ proc_rdrv_20(char *page, char **start, off_t offset, int count, int *eof,
 /**
  * proc_rdrv_30()
  * @page - buffer to write the data in
- * @start - where the actual data has been written in page
- * @offset - same meaning as the read system call
- * @count - same meaning as the read system call
- * @eof - set if no more data needs to be returned
  * @data - pointer to our soft state
  *
  * Display real time information about the logical drives 0 through 9.
  */
 static int
-proc_rdrv_30(char *page, char **start, off_t offset, int count, int *eof,
-		void *data)
+proc_rdrv_30(char *page, void *data)
 {
 	adapter_t *adapter = (adapter_t *)data;
-
-	*eof = 1;
 
 	return (proc_rdrv(adapter, page, 20, 29));
 }
@@ -2842,21 +2750,14 @@ proc_rdrv_30(char *page, char **start, off_t offset, int count, int *eof,
 /**
  * proc_rdrv_40()
  * @page - buffer to write the data in
- * @start - where the actual data has been written in page
- * @offset - same meaning as the read system call
- * @count - same meaning as the read system call
- * @eof - set if no more data needs to be returned
  * @data - pointer to our soft state
  *
  * Display real time information about the logical drives 0 through 9.
  */
 static int
-proc_rdrv_40(char *page, char **start, off_t offset, int count, int *eof,
-		void *data)
+proc_rdrv_40(char *page, void *data)
 {
 	adapter_t *adapter = (adapter_t *)data;
-
-	*eof = 1;
 
 	return (proc_rdrv(adapter, page, 30, 39));
 }
