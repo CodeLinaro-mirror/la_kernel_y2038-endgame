@@ -8,7 +8,7 @@
 #include <linux/idr.h>
 #include <linux/rculist.h>
 #include <linux/nsproxy.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/file.h>
 #include <net/net_namespace.h>
 #include <net/netns/generic.h>

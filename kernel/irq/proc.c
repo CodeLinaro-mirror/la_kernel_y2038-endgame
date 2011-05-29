@@ -136,7 +136,7 @@ static int irq_affinity_proc_open(struct inode *inode, struct file *file)
 
 static int irq_affinity_list_proc_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, irq_affinity_list_proc_show, PDE(inode)->data);
+	return single_open(file, irq_affinity_list_proc_show, inode->i_private);
 }
 
 static int irq_affinity_hint_proc_open(struct inode *inode, struct file *file)

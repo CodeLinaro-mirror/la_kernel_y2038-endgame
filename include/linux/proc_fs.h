@@ -152,37 +152,4 @@ extern const struct proc_ns_operations netns_operations;
 extern const struct proc_ns_operations utsns_operations;
 extern const struct proc_ns_operations ipcns_operations;
 
-union proc_op {
-	int (*proc_get_link)(struct inode *, struct path *);
-	int (*proc_read)(struct task_struct *task, char *page);
-	int (*proc_show)(struct seq_file *m,
-		struct pid_namespace *ns, struct pid *pid,
-		struct task_struct *task);
-};
-
-struct ctl_table_header;
-struct ctl_table;
-
-struct proc_inode {
-	struct pid *pid;
-	int fd;
-	union proc_op op;
-	struct proc_dir_entry *pde;
-	struct ctl_table_header *sysctl;
-	struct ctl_table *sysctl_entry;
-	void *ns;
-	const struct proc_ns_operations *ns_ops;
-	struct inode vfs_inode;
-};
-
-static inline struct proc_inode *PROC_I(const struct inode *inode)
-{
-	return container_of(inode, struct proc_inode, vfs_inode);
-}
-
-static inline struct proc_dir_entry *PDE(const struct inode *inode)
-{
-	return PROC_I(inode)->pde;
-}
-
 #endif /* _LINUX_PROC_FS_H */

@@ -22,7 +22,7 @@
 #include <linux/pid_namespace.h>
 #include <net/net_namespace.h>
 #include <linux/ipc_namespace.h>
-#include <linux/proc_fs.h>
+#include <linux/procfs_internal.h>
 #include <linux/file.h>
 #include <linux/syscalls.h>
 
