@@ -43,7 +43,6 @@
 #include <linux/ioport.h>
 #include <linux/list.h>
 #include <linux/jiffies.h>
-#include <linux/semaphore.h>
 
 #include <asm/io.h>
 #include <asm/uaccess.h>
@@ -918,17 +917,26 @@ void acpi_os_wait_events_complete(void *context)
 
 EXPORT_SYMBOL(acpi_os_wait_events_complete);
 
+/*
+ * Linux semaphores are not compatible with the way that ACPI
+ * semaphores are defined, so it's easier to build our own here.
+ */
+struct acpi_os_semaphore {
+	wait_queue_head_t wq;
+	atomic_t count;
+};
+
 acpi_status
 acpi_os_create_semaphore(u32 max_units, u32 initial_units, acpi_handle * handle)
 {
-	struct semaphore *sem = NULL;
+	struct acpi_os_semaphore *sem = NULL;
 
-	sem = acpi_os_allocate(sizeof(struct semaphore));
+	sem = acpi_os_allocate(sizeof(struct acpi_os_semaphore));
 	if (!sem)
 		return AE_NO_MEMORY;
-	memset(sem, 0, sizeof(struct semaphore));
 
-	sema_init(sem, initial_units);
+	init_waitqueue_head(&sem->wq);
+	atomic_set(&sem->count, initial_units);
 
 	*handle = (acpi_handle *) sem;
 
@@ -947,14 +955,14 @@ acpi_os_create_semaphore(u32 max_units, u32 initial_units, acpi_handle * handle)
 
 acpi_status acpi_os_delete_semaphore(acpi_handle handle)
 {
-	struct semaphore *sem = (struct semaphore *)handle;
+	struct acpi_os_semaphore *sem = (struct acpi_os_semaphore *)handle;
 
 	if (!sem)
 		return AE_BAD_PARAMETER;
 
 	ACPI_DEBUG_PRINT((ACPI_DB_MUTEX, "Deleting semaphore[%p].\n", handle));
 
-	BUG_ON(!list_empty(&sem->wait_list));
+	BUG_ON(!list_empty(&sem->wq.task_list));
 	kfree(sem);
 	sem = NULL;
 
@@ -967,7 +975,7 @@ acpi_status acpi_os_delete_semaphore(acpi_handle handle)
 acpi_status acpi_os_wait_semaphore(acpi_handle handle, u32 units, u16 timeout)
 {
 	acpi_status status = AE_OK;
-	struct semaphore *sem = (struct semaphore *)handle;
+	struct acpi_os_semaphore *sem = (struct acpi_os_semaphore *)handle;
 	long jiffies;
 	int ret = 0;
 
@@ -985,9 +993,17 @@ acpi_status acpi_os_wait_semaphore(acpi_handle handle, u32 units, u16 timeout)
 	else
 		jiffies = msecs_to_jiffies(timeout);
 	
-	ret = down_timeout(sem, jiffies);
-	if (ret)
-		status = AE_TIME;
+	if (timeout == ACPI_DO_NOT_WAIT) {
+		ret = atomic_add_unless(&sem->count, -1, 0);
+		if (!ret)
+			status = AE_TIME;
+	} else {
+		ret = wait_event_timeout(sem->wq,
+					 atomic_add_unless(&sem->count, -1, 0),
+					 jiffies);
+		if (ret == 0)
+			status = AE_TIME;
+	}
 
 	if (ACPI_FAILURE(status)) {
 		ACPI_DEBUG_PRINT((ACPI_DB_MUTEX,
@@ -1008,7 +1024,7 @@ acpi_status acpi_os_wait_semaphore(acpi_handle handle, u32 units, u16 timeout)
  */
 acpi_status acpi_os_signal_semaphore(acpi_handle handle, u32 units)
 {
-	struct semaphore *sem = (struct semaphore *)handle;
+	struct acpi_os_semaphore *sem = (struct acpi_os_semaphore *)handle;
 
 	if (!sem || (units < 1))
 		return AE_BAD_PARAMETER;
@@ -1019,7 +1035,8 @@ acpi_status acpi_os_signal_semaphore(acpi_handle handle, u32 units)
 	ACPI_DEBUG_PRINT((ACPI_DB_MUTEX, "Signaling semaphore[%p|%d]\n", handle,
 			  units));
 
-	up(sem);
+	if (atomic_inc_return(&sem->count) == 1)
+		wake_up(&sem->wq);
 
 	return AE_OK;
 }
