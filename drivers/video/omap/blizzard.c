@@ -177,7 +177,8 @@ struct blizzard_struct {
 	struct blizzard_request	req_pool[REQ_POOL_SIZE];
 	struct list_head	pending_req_list;
 	struct list_head	free_req_list;
-	struct semaphore	req_sema;
+	atomic_t		num_free_req;
+	wait_queue_head_t	req_wq;
 	spinlock_t		req_lock;
 
 	unsigned long		sys_ck_rate;
@@ -374,7 +375,9 @@ static inline struct blizzard_request *alloc_req(void)
 	int req_flags = 0;
 
 	if (!in_interrupt())
-		down(&blizzard.req_sema);
+		wait_event(blizzard.req_wq,
+			   atomic_add_unless(&blizzard.num_free_req, -1,
+					     IRQ_REQ_POOL_SIZE));
 	else
 		req_flags = REQ_FROM_IRQ_POOL;
 
@@ -398,8 +401,10 @@ static inline void free_req(struct blizzard_request *req)
 	spin_lock_irqsave(&blizzard.req_lock, flags);
 
 	list_move(&req->entry, &blizzard.free_req_list);
-	if (!(req->flags & REQ_FROM_IRQ_POOL))
-		up(&blizzard.req_sema);
+	if (!(req->flags & REQ_FROM_IRQ_POOL)) {
+		atomic_inc(&blizzard.num_free_req);
+		wake_up(&blizzard.req_wq);
+	}
 
 	spin_unlock_irqrestore(&blizzard.req_lock, flags);
 }
@@ -1606,7 +1611,8 @@ static int blizzard_init(struct omapfb_device *fbdev, int ext_mode,
 	for (i = 0; i < ARRAY_SIZE(blizzard.req_pool); i++)
 		list_add(&blizzard.req_pool[i].entry, &blizzard.free_req_list);
 	BUG_ON(i <= IRQ_REQ_POOL_SIZE);
-	sema_init(&blizzard.req_sema, i - IRQ_REQ_POOL_SIZE);
+	init_waitqueue_head(&blizzard.req_wq);
+	atomic_set(&blizzard.num_free_req, i);
 
 	return 0;
 err3:

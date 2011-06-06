@@ -115,7 +115,8 @@ struct {
 	struct hwa742_request	req_pool[REQ_POOL_SIZE];
 	struct list_head	pending_req_list;
 	struct list_head	free_req_list;
-	struct semaphore	req_sema;
+	atomic_t		num_free_req;
+	wait_queue_head_t	req_wq;
 	spinlock_t		req_lock;
 
 	struct extif_timings	reg_timings, lut_timings;
@@ -246,7 +247,9 @@ static inline struct hwa742_request *alloc_req(void)
 	int req_flags = 0;
 
 	if (!in_interrupt())
-		down(&hwa742.req_sema);
+		wait_event(hwa742.req_wq,
+			   atomic_add_unless(&hwa742.num_free_req, -1,
+					     IRQ_REQ_POOL_SIZE));
 	else
 		req_flags = REQ_FROM_IRQ_POOL;
 
@@ -270,8 +273,10 @@ static inline void free_req(struct hwa742_request *req)
 	spin_lock_irqsave(&hwa742.req_lock, flags);
 
 	list_move(&req->entry, &hwa742.free_req_list);
-	if (!(req->flags & REQ_FROM_IRQ_POOL))
-		up(&hwa742.req_sema);
+	if (!(req->flags & REQ_FROM_IRQ_POOL)) {
+		atomic_inc(&hwa742.num_free_req);
+		wake_up(&hwa742.req_wq);
+	}
 
 	spin_unlock_irqrestore(&hwa742.req_lock, flags);
 }
@@ -1028,7 +1033,8 @@ static int hwa742_init(struct omapfb_device *fbdev, int ext_mode,
 	for (i = 0; i < ARRAY_SIZE(hwa742.req_pool); i++)
 		list_add(&hwa742.req_pool[i].entry, &hwa742.free_req_list);
 	BUG_ON(i <= IRQ_REQ_POOL_SIZE);
-	sema_init(&hwa742.req_sema, i - IRQ_REQ_POOL_SIZE);
+	init_waitqueue_head(&hwa742.req_wq);
+	atomic_set(&hwa742.num_free_req, i);
 
 	conf = hwa742_read_reg(HWA742_CONFIG_REG);
 	dev_info(fbdev->dev, ": Epson HWA742 LCD controller rev %d "
