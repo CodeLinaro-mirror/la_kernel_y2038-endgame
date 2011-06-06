@@ -4,10 +4,15 @@
  *
  * Distributed under the terms of the GNU GPL, version 2
  *
- * This file implements counting semaphores.
- * A counting semaphore may be acquired 'n' times before sleeping.
+ * This file implements legacy semaphores. We used to support
+ * counting semaphores that may be acquired 'n' times before sleeping,
+ * but now only binary semaphores are allowed, which can serve
+ * either as a mutex or as a completion. Do not use them in new
+ * code.
+ *
  * See mutex.c for single-acquisition sleeping locks which enforce
  * rules which allow code to be debugged more easily.
+ * See sched.c for simple completions.
  */
 
 /*
@@ -22,7 +27,8 @@
  * too.
  *
  * The ->count variable represents how many more tasks can acquire this
- * semaphore.  If it's zero, there may be tasks waiting on the wait_list.
+ * semaphore, at most one.  If it's zero, there may be tasks waiting on
+ * the wait_list.
  */
 
 #include <linux/compiler.h>
@@ -180,6 +186,8 @@ void up(struct semaphore *sem)
 	unsigned long flags;
 
 	raw_spin_lock_irqsave(&sem->lock, flags);
+	WARN_ON(sem->count > 0);
+
 	if (likely(list_empty(&sem->wait_list)))
 		sem->count++;
 	else

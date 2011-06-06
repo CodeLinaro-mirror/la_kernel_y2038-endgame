@@ -32,6 +32,7 @@ struct semaphore {
 static inline void sema_init(struct semaphore *sem, int val)
 {
 	static struct lock_class_key __key;
+	BUILD_BUG_ON(val > 1 || val < 0);
 	*sem = (struct semaphore) __SEMAPHORE_INITIALIZER(*sem, val);
 	lockdep_init_map(&sem->lock.dep_map, "semaphore->lock", &__key, 0);
 }
