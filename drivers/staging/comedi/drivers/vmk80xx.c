@@ -232,7 +232,6 @@ struct vmk80xx_usb {
 	struct usb_anchor tx_anchor;
 	struct vmk80xx_board board;
 	struct firmware_version fw;
-	struct semaphore limit_sem;
 	wait_queue_head_t read_wait;
 	wait_queue_head_t write_wait;
 	unsigned char *usb_rx_buf;
@@ -594,7 +593,6 @@ static int vmk80xx_ai_rinsn(struct comedi_device *cdev,
 	if (n)
 		return n;
 
-	down(&dev->limit_sem);
 	chan = CR_CHAN(insn->chanspec);
 
 	switch (dev->board.model) {
@@ -626,8 +624,6 @@ static int vmk80xx_ai_rinsn(struct comedi_device *cdev,
 		    dev->usb_rx_buf[reg[1]];
 	}
 
-	up(&dev->limit_sem);
-
 	return n;
 }
 
@@ -647,7 +643,6 @@ static int vmk80xx_ao_winsn(struct comedi_device *cdev,
 	if (n)
 		return n;
 
-	down(&dev->limit_sem);
 	chan = CR_CHAN(insn->chanspec);
 
 	switch (dev->board.model) {
@@ -672,8 +667,6 @@ static int vmk80xx_ao_winsn(struct comedi_device *cdev,
 			break;
 	}
 
-	up(&dev->limit_sem);
-
 	return n;
 }
 
@@ -692,7 +685,6 @@ static int vmk80xx_ao_rinsn(struct comedi_device *cdev,
 	if (n)
 		return n;
 
-	down(&dev->limit_sem);
 	chan = CR_CHAN(insn->chanspec);
 
 	reg = VMK8061_AO_REG - 1;
@@ -705,8 +697,6 @@ static int vmk80xx_ao_rinsn(struct comedi_device *cdev,
 
 		data[n] = dev->usb_rx_buf[reg + chan];
 	}
-
-	up(&dev->limit_sem);
 
 	return n;
 }
@@ -725,8 +715,6 @@ static int vmk80xx_di_bits(struct comedi_device *cdev,
 	retval = rudimentary_check(dev, DIR_IN);
 	if (retval)
 		return retval;
-
-	down(&dev->limit_sem);
 
 	rx_buf = dev->usb_rx_buf;
 
@@ -750,8 +738,6 @@ static int vmk80xx_di_bits(struct comedi_device *cdev,
 		retval = 2;
 	}
 
-	up(&dev->limit_sem);
-
 	return retval;
 }
 
@@ -772,7 +758,6 @@ static int vmk80xx_di_rinsn(struct comedi_device *cdev,
 	if (n)
 		return n;
 
-	down(&dev->limit_sem);
 	chan = CR_CHAN(insn->chanspec);
 
 	rx_buf = dev->usb_rx_buf;
@@ -797,8 +782,6 @@ static int vmk80xx_di_rinsn(struct comedi_device *cdev,
 		data[n] = (inp >> chan) & 1;
 	}
 
-	up(&dev->limit_sem);
-
 	return n;
 }
 
@@ -819,7 +802,6 @@ static int vmk80xx_do_winsn(struct comedi_device *cdev,
 	if (n)
 		return n;
 
-	down(&dev->limit_sem);
 	chan = CR_CHAN(insn->chanspec);
 
 	tx_buf = dev->usb_tx_buf;
@@ -847,8 +829,6 @@ static int vmk80xx_do_winsn(struct comedi_device *cdev,
 			break;
 	}
 
-	up(&dev->limit_sem);
-
 	return n;
 }
 
@@ -867,7 +847,6 @@ static int vmk80xx_do_rinsn(struct comedi_device *cdev,
 	if (n)
 		return n;
 
-	down(&dev->limit_sem);
 	chan = CR_CHAN(insn->chanspec);
 
 	reg = VMK8061_DO_REG;
@@ -880,8 +859,6 @@ static int vmk80xx_do_rinsn(struct comedi_device *cdev,
 
 		data[n] = (dev->usb_rx_buf[reg] >> chan) & 1;
 	}
-
-	up(&dev->limit_sem);
 
 	return n;
 }
@@ -908,8 +885,6 @@ static int vmk80xx_do_bits(struct comedi_device *cdev,
 	retval = rudimentary_check(dev, dir);
 	if (retval)
 		return retval;
-
-	down(&dev->limit_sem);
 
 	rx_buf = dev->usb_rx_buf;
 	tx_buf = dev->usb_tx_buf;
@@ -948,8 +923,6 @@ static int vmk80xx_do_bits(struct comedi_device *cdev,
 	}
 
 out:
-	up(&dev->limit_sem);
-
 	return retval;
 }
 
@@ -968,7 +941,6 @@ static int vmk80xx_cnt_rinsn(struct comedi_device *cdev,
 	if (n)
 		return n;
 
-	down(&dev->limit_sem);
 	chan = CR_CHAN(insn->chanspec);
 
 	switch (dev->board.model) {
@@ -996,8 +968,6 @@ static int vmk80xx_cnt_rinsn(struct comedi_device *cdev,
 			    + 256 * dev->usb_rx_buf[reg[1] * 2 + 2];
 	}
 
-	up(&dev->limit_sem);
-
 	return n;
 }
 
@@ -1017,8 +987,6 @@ static int vmk80xx_cnt_cinsn(struct comedi_device *cdev,
 	n = rudimentary_check(dev, DIR_OUT);
 	if (n)
 		return n;
-
-	down(&dev->limit_sem);
 
 	insn_cmd = data[0];
 	if (insn_cmd != INSN_CONFIG_RESET && insn_cmd != GPCT_RESET)
@@ -1044,8 +1012,6 @@ static int vmk80xx_cnt_cinsn(struct comedi_device *cdev,
 		if (vmk80xx_write_packet(dev, cmd))
 			break;
 
-	up(&dev->limit_sem);
-
 	return n;
 }
 
@@ -1066,7 +1032,6 @@ static int vmk80xx_cnt_winsn(struct comedi_device *cdev,
 	if (n)
 		return n;
 
-	down(&dev->limit_sem);
 	chan = CR_CHAN(insn->chanspec);
 
 	if (!chan)
@@ -1093,8 +1058,6 @@ static int vmk80xx_cnt_winsn(struct comedi_device *cdev,
 			break;
 	}
 
-	up(&dev->limit_sem);
-
 	return n;
 }
 
@@ -1112,8 +1075,6 @@ static int vmk80xx_pwm_rinsn(struct comedi_device *cdev,
 	if (n)
 		return n;
 
-	down(&dev->limit_sem);
-
 	reg[0] = VMK8061_PWM_REG1;
 	reg[1] = VMK8061_PWM_REG2;
 
@@ -1125,8 +1086,6 @@ static int vmk80xx_pwm_rinsn(struct comedi_device *cdev,
 
 		data[n] = dev->usb_rx_buf[reg[0]] + 4 * dev->usb_rx_buf[reg[1]];
 	}
-
-	up(&dev->limit_sem);
 
 	return n;
 }
@@ -1146,8 +1105,6 @@ static int vmk80xx_pwm_winsn(struct comedi_device *cdev,
 	n = rudimentary_check(dev, DIR_OUT);
 	if (n)
 		return n;
-
-	down(&dev->limit_sem);
 
 	tx_buf = dev->usb_tx_buf;
 
@@ -1177,8 +1134,6 @@ static int vmk80xx_pwm_winsn(struct comedi_device *cdev,
 			break;
 	}
 
-	up(&dev->limit_sem);
-
 	return n;
 }
 
@@ -1206,8 +1161,6 @@ static int vmk80xx_attach(struct comedi_device *cdev,
 
 	dev = &vmb[i];
 
-	down(&dev->limit_sem);
-
 	cdev->board_name = dev->board.name;
 	cdev->private = dev;
 
@@ -1217,7 +1170,6 @@ static int vmk80xx_attach(struct comedi_device *cdev,
 		n_subd = 6;
 
 	if (alloc_subdevices(cdev, n_subd) < 0) {
-		up(&dev->limit_sem);
 		mutex_unlock(&glb_mutex);
 		return -ENOMEM;
 	}
@@ -1301,7 +1253,6 @@ static int vmk80xx_attach(struct comedi_device *cdev,
 	       "comedi%d: vmk80xx: board #%d [%s] attached to comedi\n",
 	       minor, dev->count, dev->board.name);
 
-	up(&dev->limit_sem);
 	mutex_unlock(&glb_mutex);
 
 	return 0;
@@ -1321,8 +1272,6 @@ static int vmk80xx_detach(struct comedi_device *cdev)
 	if (!dev)
 		return -EFAULT;
 
-	down(&dev->limit_sem);
-
 	cdev->private = NULL;
 	dev->attached = 0;
 
@@ -1331,8 +1280,6 @@ static int vmk80xx_detach(struct comedi_device *cdev)
 	printk(KERN_INFO
 	       "comedi%d: vmk80xx: board #%d [%s] detached from comedi\n",
 	       minor, dev->count, dev->board.name);
-
-	up(&dev->limit_sem);
 
 	return 0;
 }
@@ -1413,7 +1360,6 @@ static int vmk80xx_probe(struct usb_interface *intf,
 	dev->udev = interface_to_usbdev(intf);
 	dev->intf = intf;
 
-	sema_init(&dev->limit_sem, 8);
 	init_waitqueue_head(&dev->read_wait);
 	init_waitqueue_head(&dev->write_wait);
 
@@ -1503,8 +1449,6 @@ static void vmk80xx_disconnect(struct usb_interface *intf)
 	comedi_usb_auto_unconfig(dev->udev);
 
 	mutex_lock(&glb_mutex);
-	down(&dev->limit_sem);
-
 	dev->probed = 0;
 	usb_set_intfdata(dev->intf, NULL);
 
@@ -1517,7 +1461,6 @@ static void vmk80xx_disconnect(struct usb_interface *intf)
 	printk(KERN_INFO "comedi#: vmk80xx: board #%d [%s] now detached\n",
 	       dev->count, dev->board.name);
 
-	up(&dev->limit_sem);
 	mutex_unlock(&glb_mutex);
 }
 
