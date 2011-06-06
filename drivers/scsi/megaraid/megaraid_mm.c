@@ -578,32 +578,20 @@ mraid_mm_attach_buf(mraid_mmadp_t *adp, uioc_t *kioc, int xferlen)
 	return 0;
 }
 
-/**
- * mraid_mm_alloc_kioc - Returns a uioc_t from free list
- * @adp	: Adapter softstate for this module
- *
- * The kioc_semaphore is initialized with number of kioc nodes in the
- * free kioc pool. If the kioc pool is empty, this function blocks till
- * a kioc becomes free.
- */
+
 static uioc_t *
-mraid_mm_alloc_kioc(mraid_mmadp_t *adp)
+__mraid_mm_alloc_kioc(mraid_mmadp_t *adp)
 {
 	uioc_t			*kioc;
 	struct list_head*	head;
 	unsigned long		flags;
-
-	down(&adp->kioc_semaphore);
 
 	spin_lock_irqsave(&adp->kioc_pool_lock, flags);
 
 	head = &adp->kioc_pool;
 
 	if (list_empty(head)) {
-		up(&adp->kioc_semaphore);
 		spin_unlock_irqrestore(&adp->kioc_pool_lock, flags);
-
-		con_log(CL_ANN, ("megaraid cmm: kioc list empty!\n"));
 		return NULL;
 	}
 
@@ -611,6 +599,23 @@ mraid_mm_alloc_kioc(mraid_mmadp_t *adp)
 	list_del_init(&kioc->list);
 
 	spin_unlock_irqrestore(&adp->kioc_pool_lock, flags);
+
+	return kioc;
+}
+
+/**
+ * mraid_mm_alloc_kioc - Returns a uioc_t from free list
+ * @adp	: Adapter softstate for this module
+ *
+ * If the kioc pool is empty, this function blocks till
+ * a kioc becomes free.
+ */
+static uioc_t *
+mraid_mm_alloc_kioc(mraid_mmadp_t *adp)
+{
+	uioc_t *kioc;
+
+	wait_event(adp->kioc_wq, (kioc = __mraid_mm_alloc_kioc(adp)));
 
 	memset((caddr_t)(unsigned long)kioc->cmdbuf, 0, sizeof(mbox64_t));
 	memset((caddr_t) kioc->pthru32, 0, sizeof(mraid_passthru_t));
@@ -665,8 +670,8 @@ mraid_mm_dealloc_kioc(mraid_mmadp_t *adp, uioc_t *kioc)
 	list_add(&kioc->list, &adp->kioc_pool);
 	spin_unlock_irqrestore(&adp->kioc_pool_lock, flags);
 
-	/* increment the free kioc count */
-	up(&adp->kioc_semaphore);
+	/* wake up potential threads waiting for a free element */
+	wake_up(&adp->kioc_wq);
 
 	return;
 }
@@ -956,7 +961,7 @@ mraid_mm_register_adp(mraid_mmadp_t *lld_adp)
 	 */
 	INIT_LIST_HEAD(&adapter->kioc_pool);
 	spin_lock_init(&adapter->kioc_pool_lock);
-	sema_init(&adapter->kioc_semaphore, lld_adp->max_kioc);
+	init_waitqueue_head(&adapter->kioc_wq);
 
 	mbox_list	= (mbox64_t *)adapter->mbox_list;
 

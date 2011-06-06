@@ -4140,9 +4140,10 @@ megasas_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	if ((instance->pdev->device == PCI_DEVICE_ID_LSI_SAS0073SKINNY) ||
 		(instance->pdev->device == PCI_DEVICE_ID_LSI_SAS0071SKINNY)) {
 		instance->flag_ieee = 1;
-		sema_init(&instance->ioctl_sem, MEGASAS_SKINNY_INT_CMDS);
+		atomic_set(&instance->ioctl_count, MEGASAS_SKINNY_INT_CMDS);
 	} else
-		sema_init(&instance->ioctl_sem, MEGASAS_INT_CMDS);
+		atomic_set(&instance->ioctl_count, MEGASAS_INT_CMDS);
+	init_waitqueue_head(&instance->ioctl_wq);
 
 	megasas_dbg_lvl = 0;
 	instance->flag = 0;
@@ -4937,7 +4938,8 @@ static int megasas_mgmt_ioctl_fw(struct file *file, unsigned long arg)
 	/*
 	 * We will allow only MEGASAS_INT_CMDS number of parallel ioctl cmds
 	 */
-	if (down_interruptible(&instance->ioctl_sem)) {
+	if (wait_event_interruptible(instance->ioctl_wq,
+			 atomic_add_unless(&instance->ioctl_count, -1, 0))) {
 		error = -ERESTARTSYS;
 		goto out_kfree_ioc;
 	}
@@ -4971,7 +4973,8 @@ static int megasas_mgmt_ioctl_fw(struct file *file, unsigned long arg)
 	spin_unlock_irqrestore(&instance->hba_lock, flags);
 
 	error = megasas_mgmt_fw_ioctl(instance, user_ioc, ioc);
-	up(&instance->ioctl_sem);
+	atomic_inc(&instance->ioctl_count);
+	wake_up(&instance->ioctl_wq);
 
       out_kfree_ioc:
 	kfree(ioc);

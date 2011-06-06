@@ -285,7 +285,7 @@ typedef struct mraid_mmadp {
 	uioc_t			*kioc_list;
 	struct list_head	kioc_pool;
 	spinlock_t		kioc_pool_lock;
-	struct semaphore	kioc_semaphore;
+	wait_queue_head_t	kioc_wq;
 
 	mbox64_t		*mbox_list;
 	struct dma_pool		*pthru_dma_pool;

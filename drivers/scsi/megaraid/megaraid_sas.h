@@ -1325,7 +1325,8 @@ struct megasas_instance {
 	dma_addr_t evt_detail_h;
 	struct megasas_cmd *aen_cmd;
 	struct mutex aen_mutex;
-	struct semaphore ioctl_sem;
+	wait_queue_head_t ioctl_wq;
+	atomic_t ioctl_count;
 
 	struct Scsi_Host *host;
 
