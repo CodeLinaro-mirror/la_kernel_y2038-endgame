@@ -52,9 +52,11 @@ struct usb_lcd {
 	__u8			bulk_out_endpointAddr;	/* the address of the
 							   bulk out endpoint */
 	struct kref		kref;
-	struct semaphore	limit_sem;		/* to stop writes at
+	atomic_t		writes_pending;		/* number of writes
+							   to finish */
+	wait_queue_head_t	wait_pending;		/* to stop writes at
 							   full throttle from
-							   using up all RAM */
+							 * using up all RAM */
 	struct usb_anchor	submitted;		/* URBs to wait for
 							   before suspend */
 };
@@ -216,7 +218,8 @@ static void lcd_write_bulk_callback(struct urb *urb)
 	/* free up our allocated buffer */
 	usb_free_coherent(urb->dev, urb->transfer_buffer_length,
 			  urb->transfer_buffer, urb->transfer_dma);
-	up(&dev->limit_sem);
+	atomic_dec(&dev->writes_pending);
+	wake_up(&dev->wait_pending);
 }
 
 static ssize_t lcd_write(struct file *file, const char __user * user_buffer,
@@ -233,7 +236,9 @@ static ssize_t lcd_write(struct file *file, const char __user * user_buffer,
 	if (count == 0)
 		goto exit;
 
-	r = down_interruptible(&dev->limit_sem);
+	r = wait_event_interruptible(dev->wait_pending,
+			atomic_add_unless(&dev->writes_pending, 1,
+					  USB_LCD_CONCURRENT_WRITES));
 	if (r < 0)
 		return -EINTR;
 
@@ -285,7 +290,8 @@ error:
 	usb_free_coherent(dev->udev, count, buf, urb->transfer_dma);
 	usb_free_urb(urb);
 err_no_buf:
-	up(&dev->limit_sem);
+	atomic_dec(&dev->writes_pending);
+	wake_up(&dev->wait_pending);
 	return retval;
 }
 
@@ -326,7 +332,8 @@ static int lcd_probe(struct usb_interface *interface,
 		goto error;
 	}
 	kref_init(&dev->kref);
-	sema_init(&dev->limit_sem, USB_LCD_CONCURRENT_WRITES);
+	atomic_set(&dev->writes_pending, 0);
+	init_waitqueue_head(&dev->wait_pending);
 	init_usb_anchor(&dev->submitted);
 
 	dev->udev = usb_get_dev(interface_to_usbdev(interface));
