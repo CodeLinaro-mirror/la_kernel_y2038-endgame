@@ -684,8 +684,8 @@ c4_init (ci_t * ci, u_char *func0, u_char *func1)
         pi->p.port_mode = CFG_FRAME_SF; /* T1 B8ZS, the default */
         pi->p.portP = (CFG_CLK_PORT_EXTERNAL | CFG_LBO_LH0);    /* T1 defaults */
 
-        OS_sem_init (&pi->sr_sem_busy, SEM_AVAILABLE);
-        OS_sem_init (&pi->sr_sem_wait, SEM_TAKEN);
+        mutex_init(&pi->sr_mutex);
+	init_completion(&pi->sr_completion);
 
         for (j = 0; j < 32; j++)
         {
@@ -973,12 +973,12 @@ c4_get_port (ci_t * ci, int portnum)
     if (portnum >= ci->max_port)    /* sanity check */
         return ENXIO;
 
-    SD_SEM_TAKE (&ci->sem_wdbusy, "_wd_");      /* only 1 thru here, per
+    mutex_lock(&ci->wdbusy);      /* only 1 thru here, per
                                                  * board */
     checkPorts (ci);
     ci->port[portnum].p.portStatus = (u_int8_t) ci->alarmed[portnum];
     ci->alarmed[portnum] &= 0xdf;
-    SD_SEM_GIVE (&ci->sem_wdbusy);  /* release per-board hold */
+    mutex_unlock(&ci->wdbusy);  /* release per-board hold */
     return 0;
 }
 
@@ -1540,8 +1540,8 @@ void
 c4_stopwd (ci_t * ci)
 {
     OS_stop_watchdog (&ci->wd);
-    SD_SEM_TAKE (&ci->sem_wdbusy, "_stop_");    /* ensure WD not running */
-    SD_SEM_GIVE (&ci->sem_wdbusy);
+    mutex_lock(&ci->wdbusy);    /* ensure WD not running */
+    mutex_unlock(&ci->wdbusy);
 }
 
 

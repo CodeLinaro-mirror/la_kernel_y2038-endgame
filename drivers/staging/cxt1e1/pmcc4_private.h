@@ -142,10 +142,8 @@ struct c4_port_info
      */
 
     struct workqueue_struct *wq_port;   /* chan restart work queue */
-    struct semaphore sr_sem_busy;       /* service request exclusion
-                                         * semaphore */
-    struct semaphore sr_sem_wait;       /* service request handshake
-                                         * semaphore */
+    struct mutex sr_mutex;	        /* service request exclusion */
+    struct completion sr_completion;    /* service request handshake */
     u_int32_t   sr_last;
     short       openchans;
     char        portnum;
@@ -187,7 +185,7 @@ struct sbe_card_info
                                  * when freeing. */
     unsigned int iqp_headx, iqp_tailx;
 
-    struct semaphore sem_wdbusy;/* watchdog exclusion semaphore */
+    struct mutex wdbusy;	/* watchdog exclusion semaphore */
     struct watchdog wd;         /* statically allocated watchdog structure */
     atomic_t    bh_pending;     /* bh queued, but not yet running */
     u_int32_t   brd_id;         /* unique PCI ID */

@@ -569,8 +569,8 @@ musycc_serv_req (mpi_t * pi, u_int32_t req)
      * acknowledged."
      */
 
-    SD_SEM_TAKE (&pi->sr_sem_busy, "serv");     /* only 1 thru here, per
-                                                 * group */
+    mutex_lock(&pi->sr_mutex);     /* only 1 thru here, per group */
+    init_completion(&pi->sr_completion);
 
     if (pi->sr_last == req)
     {
@@ -593,9 +593,9 @@ musycc_serv_req (mpi_t * pi, u_int32_t req)
 #ifdef RLD_TRANS_DEBUG
             pr_info(">> same CHAN ACT SR, Port %d Req %x => issue SR_NOOP CMD\n", pi->portnum, req);
 #endif
-            SD_SEM_GIVE (&pi->sr_sem_busy);     /* allow this next request */
+            mutex_unlock(&pi->sr_mutex);     /* allow this next request */
             musycc_serv_req (pi, SR_NOOP);
-            SD_SEM_TAKE (&pi->sr_sem_busy, "serv");     /* relock & continue w/
+            mutex_lock(&pi->sr_mutex);     /* relock & continue w/
                                                          * original req */
         } else if (req == SR_NOOP)
         {
@@ -603,7 +603,7 @@ musycc_serv_req (mpi_t * pi, u_int32_t req)
 #ifdef RLD_TRANS_DEBUG
             pr_info(">> same Port SR_NOOP skipped, Port %d\n", pi->portnum);
 #endif
-            SD_SEM_GIVE (&pi->sr_sem_busy);     /* allow this next request */
+            mutex_unlock(&pi->sr_mutex);     /* allow this next request */
             return;
         }
     }
@@ -639,7 +639,7 @@ rewrite:
     {
         pr_warning("%s: failed service request (#%d)= %x, group %d.\n",
                    pi->up->devname, MUSYCC_SR_RETRY_CNT, req, pi->portnum);
-        SD_SEM_GIVE (&pi->sr_sem_busy); /* allow any next request */
+        mutex_unlock(&pi->sr_mutex); /* allow any next request */
         return;
     }
     if (req == SR_CHIP_RESET)
@@ -655,10 +655,10 @@ rewrite:
     } else
     {
         FLUSH_MEM_READ ();
-        SD_SEM_TAKE (&pi->sr_sem_wait, "sakack");       /* sleep until SACK
-                                                         * interrupt occurs */
+	/* sleep until SACK interrupt occurs */
+        wait_for_completion(&pi->sr_completion);
     }
-    SD_SEM_GIVE (&pi->sr_sem_busy); /* allow any next request */
+    mutex_unlock(&pi->sr_mutex); /* allow any next request */
 }
 
 
@@ -838,7 +838,7 @@ musycc_init (ci_t * ci)
     char       *regaddr;        /* temp for address boundary calculations */
     int         i, gchan;
 
-    OS_sem_init (&ci->sem_wdbusy, SEM_AVAILABLE);       /* watchdog exclusion */
+    mutex_init(&ci->wdbusy);       /* watchdog exclusion */
 
     /*
      * Per MUSYCC manual, Section 6.3.4 - "The host must allocate a dword
@@ -1504,7 +1504,7 @@ musycc_intr_bh_tasklet (ci_t * ci)
                 r = pci_read_32 ((u_int32_t *) &pi->reg->srd);
                 pr_info("- SACK cmd: %08x (hdw= %08x)\n", pi->sr_last, r);
             }
-            SD_SEM_GIVE (&pi->sr_sem_wait);     /* wake up waiting process */
+            complete(&pi->sr_completion);     /* wake up waiting process */
             break;
         case EVE_CHABT:     /* Change To Abort Code (0x7e -> 0xff) */
         case EVE_CHIC:              /* Change To Idle Code (0xff -> 0x7e) */

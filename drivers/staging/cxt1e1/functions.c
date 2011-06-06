@@ -177,26 +177,6 @@ OS_uwait_dummy (void)
 #endif
 }
 
-
-void
-OS_sem_init (void *sem, int state)
-{
-    switch (state)
-    {
-        case SEM_TAKEN:
-		sema_init((struct semaphore *) sem, 0);
-        break;
-    case SEM_AVAILABLE:
-	    sema_init((struct semaphore *) sem, 1);
-        break;
-    default:                        /* otherwise, set sem.count to state's
-                                     * value */
-        sema_init (sem, state);
-        break;
-    }
-}
-
-
 int
 sd_line_is_ok (void *user)
 {

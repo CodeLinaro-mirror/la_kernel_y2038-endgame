@@ -158,29 +158,6 @@ OS_vtophys (void *addr)
     return __pa (addr);
 }
 
-
-/**********/
-/* semops */
-/**********/
-
-void        OS_sem_init (void *, int);
-
-
-static inline void
-OS_sem_free (void *sem)
-{
-    /*
-     * NOOP - since semaphores structures predeclared w/in structures, no
-     * longer malloc'd
-     */
-}
-
-#define SD_SEM_TAKE(sem,desc)  down(sem)
-#define SD_SEM_GIVE(sem)       up(sem)
-#define SEM_AVAILABLE     1
-#define SEM_TAKEN         0
-
-
 /**********************/
 /* watchdog functions */
 /**********************/
