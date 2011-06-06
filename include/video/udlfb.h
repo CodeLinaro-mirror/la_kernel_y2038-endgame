@@ -26,7 +26,7 @@ struct urb_node {
 struct urb_list {
 	struct list_head list;
 	spinlock_t lock;
-	struct semaphore limit_sem;
+	wait_queue_head_t limit_wq;
 	int available;
 	int count;
 	size_t size;

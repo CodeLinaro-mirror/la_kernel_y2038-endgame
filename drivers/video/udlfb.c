@@ -937,7 +937,7 @@ static void dlfb_release_urb_work(struct work_struct *work)
 	struct urb_node *unode = container_of(work, struct urb_node,
 					      release_urb_work.work);
 
-	up(&unode->dev->urbs.limit_sem);
+	wake_up(&unode->dev->urbs.limit_wq);
 }
 
 static void dlfb_free_framebuffer_work(struct work_struct *work)
@@ -1807,47 +1807,59 @@ static void dlfb_urb_completion(struct urb *urb)
 	/*
 	 * When using fb_defio, we deadlock if up() is called
 	 * while another is waiting. So queue to another process.
+	 * -- is this still true after converting from semaphore
+	 *    to wq?
 	 */
 	if (fb_defio)
 		schedule_delayed_work(&unode->release_urb_work, 0);
 	else
-		up(&dev->urbs.limit_sem);
+		wake_up(&dev->urbs.limit_wq);
+}
+
+static struct urb_node *__dlfb_get_urb(struct dlfb_data *dev)
+{
+	struct list_head *entry;
+	struct urb_node *unode = NULL;
+	unsigned long flags;
+
+	spin_lock_irqsave(&dev->urbs.lock, flags);
+	if (!dev->urbs.available)
+		goto error;
+
+	BUG_ON(list_empty(&dev->urbs.list)); /* was marked as available. */
+	entry = dev->urbs.list.next;
+	list_del_init(entry);
+	dev->urbs.available--;
+
+	unode = list_entry(entry, struct urb_node, entry);
+error:
+	spin_unlock_irqrestore(&dev->urbs.lock, flags);
+	return unode;
 }
 
 static void dlfb_free_urb_list(struct dlfb_data *dev)
 {
 	int count = dev->urbs.count;
-	struct list_head *node;
 	struct urb_node *unode;
 	struct urb *urb;
 	int ret;
-	unsigned long flags;
 
 	pr_notice("Waiting for completes and freeing all render urbs\n");
 
 	/* keep waiting and freeing, until we've got 'em all */
 	while (count--) {
-
 		/* Getting interrupted means a leak, but ok at shutdown*/
-		ret = down_interruptible(&dev->urbs.limit_sem);
+		ret = wait_event_interruptible(dev->urbs.limit_wq,
+				(unode = __dlfb_get_urb(dev)) != NULL);
 		if (ret)
 			break;
 
-		spin_lock_irqsave(&dev->urbs.lock, flags);
-
-		node = dev->urbs.list.next; /* have reserved one with sem */
-		list_del_init(node);
-
-		spin_unlock_irqrestore(&dev->urbs.lock, flags);
-
-		unode = list_entry(node, struct urb_node, entry);
 		urb = unode->urb;
-
 		/* Free each separately allocated piece */
 		usb_free_coherent(urb->dev, dev->urbs.size,
 				  urb->transfer_buffer, urb->transfer_dma);
 		usb_free_urb(urb);
-		kfree(node);
+		kfree(unode);
 	}
 
 }
@@ -1898,7 +1910,7 @@ static int dlfb_alloc_urb_list(struct dlfb_data *dev, int count, size_t size)
 		i++;
 	}
 
-	sema_init(&dev->urbs.limit_sem, i);
+	init_waitqueue_head(&dev->urbs.limit_wq);
 	dev->urbs.count = i;
 	dev->urbs.available = i;
 
@@ -1909,35 +1921,21 @@ static int dlfb_alloc_urb_list(struct dlfb_data *dev, int count, size_t size)
 
 static struct urb *dlfb_get_urb(struct dlfb_data *dev)
 {
-	int ret = 0;
-	struct list_head *entry;
+	int ret;
 	struct urb_node *unode;
-	struct urb *urb = NULL;
-	unsigned long flags;
 
 	/* Wait for an in-flight buffer to complete and get re-queued */
-	ret = down_timeout(&dev->urbs.limit_sem, GET_URB_TIMEOUT);
-	if (ret) {
+	ret = wait_event_timeout(dev->urbs.limit_wq,
+				 (unode = __dlfb_get_urb(dev)) != NULL,
+				 GET_URB_TIMEOUT);
+
+	if (ret == 0) {
 		atomic_set(&dev->lost_pixels, 1);
 		pr_warn("wait for urb interrupted: %x available: %d\n",
 		       ret, dev->urbs.available);
-		goto error;
 	}
 
-	spin_lock_irqsave(&dev->urbs.lock, flags);
-
-	BUG_ON(list_empty(&dev->urbs.list)); /* reserved one with limit_sem */
-	entry = dev->urbs.list.next;
-	list_del_init(entry);
-	dev->urbs.available--;
-
-	spin_unlock_irqrestore(&dev->urbs.lock, flags);
-
-	unode = list_entry(entry, struct urb_node, entry);
-	urb = unode->urb;
-
-error:
-	return urb;
+	return unode ? unode->urb : NULL;
 }
 
 static int dlfb_submit_urb(struct dlfb_data *dev, struct urb *urb, size_t len)
