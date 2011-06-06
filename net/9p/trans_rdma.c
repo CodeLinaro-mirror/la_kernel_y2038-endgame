@@ -39,7 +39,8 @@
 #include <linux/idr.h>
 #include <linux/file.h>
 #include <linux/parser.h>
-#include <linux/semaphore.h>
+#include <linux/wait.h>
+#include <linux/atomic.h>
 #include <linux/slab.h>
 #include <net/9p/9p.h>
 #include <net/9p/client.h>
@@ -71,7 +72,8 @@
  * @lkey: The local access only memory region key
  * @timeout: Number of uSecs to wait for connection management events
  * @sq_depth: The depth of the Send Queue
- * @sq_sem: Semaphore for the SQ
+ * @sq_count: Count of requests in the Send Queue.
+ * @sq_wq: Wait for sq_count to drop below sq_depth
  * @rq_depth: The depth of the Receive Queue.
  * @rq_count: Count of requests in the Receive Queue.
  * @addr: The remote peer's address
@@ -96,7 +98,8 @@ struct p9_trans_rdma {
 	u32 lkey;
 	long timeout;
 	int sq_depth;
-	struct semaphore sq_sem;
+	wait_queue_head_t sq_wq;
+	atomic_t sq_count;
 	int rq_depth;
 	atomic_t rq_count;
 	struct sockaddr_in addr;
@@ -341,7 +344,8 @@ static void cq_comp_handler(struct ib_cq *cq, void *cq_context)
 
 		case IB_WC_SEND:
 			handle_send(client, rdma, c, wc.status, wc.byte_len);
-			up(&rdma->sq_sem);
+			atomic_dec(&rdma->sq_count);
+			wake_up(&rdma->sq_wq);
 			break;
 
 		default:
@@ -491,7 +495,8 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
 	wr.sg_list = &sge;
 	wr.num_sge = 1;
 
-	if (down_interruptible(&rdma->sq_sem))
+	if (wait_event_interruptible(rdma->sq_wq,
+			atomic_add_unless(&rdma->sq_count, 1, rdma->sq_depth)))
 		goto error;
 
 	return ib_post_send(rdma->qp, &wr, &bad_wr);
@@ -550,7 +555,8 @@ static struct p9_trans_rdma *alloc_rdma(struct p9_rdma_opts *opts)
 	rdma->timeout = opts->timeout;
 	spin_lock_init(&rdma->req_lock);
 	init_completion(&rdma->cm_done);
-	sema_init(&rdma->sq_sem, rdma->sq_depth);
+	init_waitqueue_head(&rdma->sq_wq);
+	atomic_set(&rdma->sq_count, 0);
 	atomic_set(&rdma->rq_count, 0);
 
 	return rdma;
