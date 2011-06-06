@@ -50,7 +50,8 @@ MODULE_DEVICE_TABLE(usb, skel_table);
 struct usb_skel {
 	struct usb_device	*udev;			/* the usb device for this device */
 	struct usb_interface	*interface;		/* the interface for this device */
-	struct semaphore	limit_sem;		/* limiting the number of writes in progress */
+	wait_queue_head_t	write_wq;		/* limiting the number of writes in progress */
+	atomic_t		writes_pending;		/* number of writes in progress */
 	struct usb_anchor	submitted;		/* in case we need to retract our submissions */
 	struct urb		*bulk_in_urb;		/* the urb to read data with */
 	unsigned char           *bulk_in_buffer;	/* the buffer to receive data */
@@ -389,7 +390,8 @@ static void skel_write_bulk_callback(struct urb *urb)
 	/* free up our allocated buffer */
 	usb_free_coherent(urb->dev, urb->transfer_buffer_length,
 			  urb->transfer_buffer, urb->transfer_dma);
-	up(&dev->limit_sem);
+	atomic_dec(&dev->writes_pending);
+	wake_up(&dev->write_wq);
 }
 
 static ssize_t skel_write(struct file *file, const char *user_buffer,
@@ -411,16 +413,14 @@ static ssize_t skel_write(struct file *file, const char *user_buffer,
 	 * limit the number of URBs in flight to stop a user from using up all
 	 * RAM
 	 */
-	if (!(file->f_flags & O_NONBLOCK)) {
-		if (down_interruptible(&dev->limit_sem)) {
-			retval = -ERESTARTSYS;
+	if (!atomic_add_unless(&dev->writes_pending, 1, WRITES_IN_FLIGHT)) {
+		retval = -EAGAIN;
+		if (!(file->f_flags & O_NONBLOCK))
+			retval = wait_event_interruptible(dev->write_wq,
+				  atomic_add_unless(&dev->writes_pending, 1,
+						  WRITES_IN_FLIGHT));
+		if (retval)
 			goto exit;
-		}
-	} else {
-		if (down_trylock(&dev->limit_sem)) {
-			retval = -EAGAIN;
-			goto exit;
-		}
 	}
 
 	spin_lock_irq(&dev->err_lock);
@@ -494,7 +494,8 @@ error:
 		usb_free_coherent(dev->udev, writesize, buf, urb->transfer_dma);
 		usb_free_urb(urb);
 	}
-	up(&dev->limit_sem);
+	atomic_dec(&dev->writes_pending);
+	wake_up(&dev->write_wq);
 
 exit:
 	return retval;
@@ -537,7 +538,8 @@ static int skel_probe(struct usb_interface *interface,
 		goto error;
 	}
 	kref_init(&dev->kref);
-	sema_init(&dev->limit_sem, WRITES_IN_FLIGHT);
+	atomic_set(&dev->writes_pending, 0);
+	init_waitqueue_head(&dev->write_wq);
 	mutex_init(&dev->io_mutex);
 	spin_lock_init(&dev->err_lock);
 	init_usb_anchor(&dev->submitted);
