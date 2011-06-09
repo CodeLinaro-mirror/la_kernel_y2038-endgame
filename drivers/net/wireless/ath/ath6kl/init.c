@@ -599,7 +599,7 @@ struct ath6kl *ath6kl_core_alloc(struct device *sdev)
 
 	ath6kl_init_control_info(ar);
 	init_waitqueue_head(&ar->event_wq);
-	sema_init(&ar->sem, 1);
+	mutex_init(&ar->mutex);
 	clear_bit(DESTROY_IN_PROGRESS, &ar->flag);
 
 	INIT_LIST_HEAD(&ar->amsdu_rx_buffer_queue);
@@ -1658,7 +1658,7 @@ void ath6kl_stop_txrx(struct ath6kl *ar)
 
 	set_bit(DESTROY_IN_PROGRESS, &ar->flag);
 
-	if (down_interruptible(&ar->sem)) {
+	if (mutex_lock_interruptible(&ar->mutex)) {
 		ath6kl_err("down_interruptible failed\n");
 		return;
 	}

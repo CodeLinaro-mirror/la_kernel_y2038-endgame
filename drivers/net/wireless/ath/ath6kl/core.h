@@ -409,7 +409,7 @@ struct ath6kl {
 	struct htc_target *htc_target;
 	void *hif_priv;
 	spinlock_t lock;
-	struct semaphore sem;
+	struct mutex mutex;
 	int ssid_len;
 	u8 ssid[IEEE80211_MAX_SSID_LEN];
 	u8 next_mode;

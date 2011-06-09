@@ -43,7 +43,7 @@ static const struct nla_policy ath6kl_tm_policy[ATH6KL_TM_ATTR_MAX + 1] = {
 
 void ath6kl_tm_rx_report_event(struct ath6kl *ar, void *buf, size_t buf_len)
 {
-	if (down_interruptible(&ar->sem))
+	if (mutex_lock_interruptible(&ar->mutex))
 		return;
 
 	kfree(ar->tm.rx_report);
@@ -51,7 +51,7 @@ void ath6kl_tm_rx_report_event(struct ath6kl *ar, void *buf, size_t buf_len)
 	ar->tm.rx_report = kmemdup(buf, buf_len, GFP_KERNEL);
 	ar->tm.rx_report_len = buf_len;
 
-	up(&ar->sem);
+	mutex_unlock(&ar->mutex);
 
 	wake_up(&ar->event_wq);
 }
@@ -62,7 +62,7 @@ static int ath6kl_tm_rx_report(struct ath6kl *ar, void *buf, size_t buf_len,
 	int ret = 0;
 	long left;
 
-	if (down_interruptible(&ar->sem))
+	if (mutex_lock_interruptible(&ar->mutex))
 		return -ERESTARTSYS;
 
 	if (!test_bit(WMI_READY, &ar->flag)) {
@@ -76,7 +76,7 @@ static int ath6kl_tm_rx_report(struct ath6kl *ar, void *buf, size_t buf_len,
 	}
 
 	if (ath6kl_wmi_test_cmd(ar->wmi, buf, buf_len) < 0) {
-		up(&ar->sem);
+		mutex_unlock(&ar->mutex);
 		return -EIO;
 	}
 
@@ -104,7 +104,7 @@ static int ath6kl_tm_rx_report(struct ath6kl *ar, void *buf, size_t buf_len,
 	ar->tm.rx_report = NULL;
 
 out:
-	up(&ar->sem);
+	mutex_unlock(&ar->mutex);
 
 	return ret;
 

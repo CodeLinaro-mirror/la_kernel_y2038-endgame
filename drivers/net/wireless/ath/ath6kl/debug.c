@@ -408,7 +408,7 @@ static ssize_t read_file_tgt_stats(struct file *file, char __user *user_buf,
 	if (!buf)
 		return -ENOMEM;
 
-	if (down_interruptible(&ar->sem)) {
+	if (mutex_lock_interruptible(&ar->mutex)) {
 		kfree(buf);
 		return -EBUSY;
 	}
@@ -416,7 +416,7 @@ static ssize_t read_file_tgt_stats(struct file *file, char __user *user_buf,
 	set_bit(STATS_UPDATE_PEND, &ar->flag);
 
 	if (ath6kl_wmi_get_stats_cmd(ar->wmi)) {
-		up(&ar->sem);
+		mutex_unlock(&ar->mutex);
 		kfree(buf);
 		return -EIO;
 	}
@@ -425,7 +425,7 @@ static ssize_t read_file_tgt_stats(struct file *file, char __user *user_buf,
 						!test_bit(STATS_UPDATE_PEND,
 						&ar->flag), WMI_TIMEOUT);
 
-	up(&ar->sem);
+	mutex_unlock(&ar->mutex);
 
 	if (left <= 0) {
 		kfree(buf);

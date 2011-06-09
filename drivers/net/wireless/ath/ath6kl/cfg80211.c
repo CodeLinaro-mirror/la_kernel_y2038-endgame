@@ -262,14 +262,14 @@ static int ath6kl_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 		return -EINVAL;
 	}
 
-	if (down_interruptible(&ar->sem)) {
+	if (mutex_lock_interruptible(&ar->mutex)) {
 		ath6kl_err("busy, couldn't get access\n");
 		return -ERESTARTSYS;
 	}
 
 	if (test_bit(DESTROY_IN_PROGRESS, &ar->flag)) {
 		ath6kl_err("busy, destroy in progress\n");
-		up(&ar->sem);
+		mutex_unlock(&ar->mutex);
 		return -EBUSY;
 	}
 
@@ -282,7 +282,7 @@ static int ath6kl_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 			WMI_TIMEOUT);
 		if (signal_pending(current)) {
 			ath6kl_err("cmd queue drain timeout\n");
-			up(&ar->sem);
+			mutex_unlock(&ar->mutex);
 			return -EINTR;
 		}
 	}
@@ -294,7 +294,7 @@ static int ath6kl_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 		status = ath6kl_wmi_reconnect_cmd(ar->wmi, ar->req_bssid,
 						  ar->ch_hint);
 
-		up(&ar->sem);
+		mutex_unlock(&ar->mutex);
 		if (status) {
 			ath6kl_err("wmi_reconnect_cmd failed\n");
 			return -EIO;
@@ -320,7 +320,7 @@ static int ath6kl_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 
 	status = ath6kl_set_auth_type(ar, sme->auth_type);
 	if (status) {
-		up(&ar->sem);
+		mutex_unlock(&ar->mutex);
 		return status;
 	}
 
@@ -342,7 +342,7 @@ static int ath6kl_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 		    sme->key_idx > WMI_MAX_KEY_INDEX) {
 			ath6kl_err("key index %d out of bounds\n",
 				   sme->key_idx);
-			up(&ar->sem);
+			mutex_unlock(&ar->mutex);
 			return -ENOENT;
 		}
 
@@ -365,7 +365,7 @@ static int ath6kl_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 		clear_bit(CLEAR_BSSFILTER_ON_BEACON, &ar->flag);
 		if (ath6kl_wmi_bssfilter_cmd(ar->wmi, ALL_BSS_FILTER, 0) != 0) {
 			ath6kl_err("couldn't set bss filtering\n");
-			up(&ar->sem);
+			mutex_unlock(&ar->mutex);
 			return -EIO;
 		}
 	}
@@ -391,7 +391,7 @@ static int ath6kl_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
 					ar->req_bssid, ar->ch_hint,
 					ar->connect_ctrl_flags);
 
-	up(&ar->sem);
+	mutex_unlock(&ar->mutex);
 
 	if (status == -EINVAL) {
 		memset(ar->ssid, 0, sizeof(ar->ssid));
@@ -555,7 +555,7 @@ static int ath6kl_cfg80211_disconnect(struct wiphy *wiphy,
 		return -EBUSY;
 	}
 
-	if (down_interruptible(&ar->sem)) {
+	if (mutex_lock_interruptible(&ar->mutex)) {
 		ath6kl_err("busy, couldn't get access\n");
 		return -ERESTARTSYS;
 	}
@@ -568,7 +568,7 @@ static int ath6kl_cfg80211_disconnect(struct wiphy *wiphy,
 	if (!test_bit(SKIP_SCAN, &ar->flag))
 		memset(ar->req_bssid, 0, sizeof(ar->req_bssid));
 
-	up(&ar->sem);
+	mutex_unlock(&ar->mutex);
 
 	ar->sme_state = SME_DISCONNECTED;
 
@@ -1302,7 +1302,7 @@ static int ath6kl_get_station(struct wiphy *wiphy, struct net_device *dev,
 	if (memcmp(mac, ar->bssid, ETH_ALEN) != 0)
 		return -ENOENT;
 
-	if (down_interruptible(&ar->sem))
+	if (mutex_lock_interruptible(&ar->mutex))
 		return -EBUSY;
 
 	set_bit(STATS_UPDATE_PEND, &ar->flag);
@@ -1310,7 +1310,7 @@ static int ath6kl_get_station(struct wiphy *wiphy, struct net_device *dev,
 	ret = ath6kl_wmi_get_stats_cmd(ar->wmi);
 
 	if (ret != 0) {
-		up(&ar->sem);
+		mutex_unlock(&ar->mutex);
 		return -EIO;
 	}
 
@@ -1319,7 +1319,7 @@ static int ath6kl_get_station(struct wiphy *wiphy, struct net_device *dev,
 							  &ar->flag),
 						WMI_TIMEOUT);
 
-	up(&ar->sem);
+	mutex_unlock(&ar->mutex);
 
 	if (left == 0)
 		return -ETIMEDOUT;
