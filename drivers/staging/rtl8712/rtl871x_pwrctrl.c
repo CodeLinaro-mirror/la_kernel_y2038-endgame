@@ -100,7 +100,6 @@ void r8712_cpwm_int_hdl(struct _adapter *padapter,
 {
 	struct pwrctrl_priv *pwrpriv = &(padapter->pwrctrlpriv);
 	struct cmd_priv	*pcmdpriv = &(padapter->cmdpriv);
-	struct xmit_priv *pxmitpriv = &(padapter->xmitpriv);
 
 	if (pwrpriv->cpwm_tog == ((preportpwrstate->state) & 0x80))
 		return;
@@ -110,8 +109,6 @@ void r8712_cpwm_int_hdl(struct _adapter *padapter,
 	if (pwrpriv->cpwm >= PS_STATE_S2) {
 		if (pwrpriv->alives & CMD_ALIVE)
 			up(&(pcmdpriv->cmd_queue_sema));
-		if (pwrpriv->alives & XMIT_ALIVE)
-			up(&(pxmitpriv->xmit_sema));
 	}
 	pwrpriv->cpwm_tog = (preportpwrstate->state) & 0x80;
 	up(&pwrpriv->lock);
