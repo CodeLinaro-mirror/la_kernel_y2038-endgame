@@ -21,8 +21,6 @@
 
 #define DM_MSG_PREFIX "raid1"
 
-#define MAX_RECOVERY 1	/* Maximum number of regions recovered in parallel. */
-
 #define DM_RAID1_HANDLE_ERRORS 0x01
 #define errors_handled(p)	((p)->features & DM_RAID1_HANDLE_ERRORS)
 
@@ -895,8 +893,8 @@ static struct mirror_set *alloc_context(unsigned int nr_mirrors,
 
 	ms->rh = dm_region_hash_create(ms, dispatch_bios, wakeup_mirrord,
 				       wakeup_all_recovery_waiters,
-				       ms->ti->begin, MAX_RECOVERY,
-				       dl, region_size, ms->nr_regions);
+				       ms->ti->begin, dl, region_size,
+				       ms->nr_regions);
 	if (IS_ERR(ms->rh)) {
 		ti->error = "Error creating dirty region hash";
 		dm_io_client_destroy(ms->io_client);

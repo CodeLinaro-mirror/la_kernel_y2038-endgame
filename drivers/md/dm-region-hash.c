@@ -70,8 +70,6 @@ struct dm_region_hash {
 	unsigned shift;
 	struct list_head *buckets;
 
-	unsigned max_recovery; /* Max # of regions to recover in parallel */
-
 	spinlock_t region_lock;
 	atomic_t recovery_in_flight;
 	struct semaphore recovery_count;
@@ -161,9 +159,8 @@ struct dm_region_hash *dm_region_hash_create(
 						     struct bio_list *bios),
 		void (*wakeup_workers)(void *context),
 		void (*wakeup_all_recovery_waiters)(void *context),
-		sector_t target_begin, unsigned max_recovery,
-		struct dm_dirty_log *log, uint32_t region_size,
-		region_t nr_regions)
+		sector_t target_begin, struct dm_dirty_log *log,
+		uint32_t region_size, region_t nr_regions)
 {
 	struct dm_region_hash *rh;
 	unsigned nr_buckets, max_buckets;
@@ -189,7 +186,6 @@ struct dm_region_hash *dm_region_hash_create(
 	rh->wakeup_workers = wakeup_workers;
 	rh->wakeup_all_recovery_waiters = wakeup_all_recovery_waiters;
 	rh->target_begin = target_begin;
-	rh->max_recovery = max_recovery;
 	rh->log = log;
 	rh->region_size = region_size;
 	rh->region_shift = ffs(region_size) - 1;
@@ -699,8 +695,7 @@ void dm_rh_stop_recovery(struct dm_region_hash *rh)
 	int i;
 
 	/* wait for any recovering regions */
-	for (i = 0; i < rh->max_recovery; i++)
-		down(&rh->recovery_count);
+	down(&rh->recovery_count);
 }
 EXPORT_SYMBOL_GPL(dm_rh_stop_recovery);
 
@@ -708,8 +703,7 @@ void dm_rh_start_recovery(struct dm_region_hash *rh)
 {
 	int i;
 
-	for (i = 0; i < rh->max_recovery; i++)
-		up(&rh->recovery_count);
+	up(&rh->recovery_count);
 
 	rh->wakeup_workers(rh->context);
 }
