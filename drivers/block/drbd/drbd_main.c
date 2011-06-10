@@ -2991,8 +2991,8 @@ void drbd_init_set_defaults(struct drbd_conf *mdev)
 	mutex_init(&mdev->md_io_mutex);
 	mutex_init(&mdev->data.mutex);
 	mutex_init(&mdev->meta.mutex);
-	sema_init(&mdev->data.work.s, 0);
-	sema_init(&mdev->meta.work.s, 0);
+	init_completion(&mdev->data.work.s);
+	init_completion(&mdev->meta.work.s);
 	mutex_init(&mdev->state_mutex);
 
 	spin_lock_init(&mdev->data.work.q_lock);

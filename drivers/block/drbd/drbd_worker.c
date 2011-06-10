@@ -1625,13 +1625,13 @@ int drbd_worker(struct drbd_thread *thi)
 	while (get_t_state(thi) == Running) {
 		drbd_thread_current_set_cpu(mdev);
 
-		if (down_trylock(&mdev->data.work.s)) {
+		if (try_wait_for_completion(&mdev->data.work.s)) {
 			mutex_lock(&mdev->data.mutex);
 			if (mdev->data.socket && !mdev->net_conf->no_cork)
 				drbd_tcp_uncork(mdev->data.socket);
 			mutex_unlock(&mdev->data.mutex);
 
-			intr = down_interruptible(&mdev->data.work.s);
+			intr = wait_for_completion_interruptible(&mdev->data.work.s);
 
 			mutex_lock(&mdev->data.mutex);
 			if (mdev->data.socket  && !mdev->net_conf->no_cork)
@@ -1640,7 +1640,7 @@ int drbd_worker(struct drbd_thread *thi)
 		}
 
 		if (intr) {
-			D_ASSERT(intr == -EINTR);
+			D_ASSERT(intr == -ERESTARTSYS);
 			flush_signals(current);
 			ERR_IF (get_t_state(thi) == Running)
 				continue;
@@ -1699,9 +1699,9 @@ int drbd_worker(struct drbd_thread *thi)
 
 		spin_lock_irq(&mdev->data.work.q_lock);
 	}
-	sema_init(&mdev->data.work.s, 0);
+	init_completion(&mdev->data.work.s);
 	/* DANGEROUS race: if someone did queue his work within the spinlock,
-	 * but up() ed outside the spinlock, we could get an up() on the
+	 * but complete()d outside the spinlock, we could get an complete() on the
 	 * semaphore without corresponding list entry.
 	 * So don't do that.
 	 */
