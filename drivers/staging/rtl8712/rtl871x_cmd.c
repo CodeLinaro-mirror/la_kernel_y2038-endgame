@@ -59,8 +59,8 @@ No irqsave is necessary.
 
 static sint _init_cmd_priv(struct cmd_priv *pcmdpriv)
 {
-	sema_init(&(pcmdpriv->cmd_queue_sema), 0);
-	sema_init(&(pcmdpriv->terminate_cmdthread_sema), 0);
+	init_completion(&(pcmdpriv->cmd_queue_sema));
+	init_completion(&(pcmdpriv->terminate_cmdthread_sema));
 
 	_init_queue(&(pcmdpriv->cmd_queue));
 
@@ -176,7 +176,7 @@ u32 r8712_enqueue_cmd(struct cmd_priv *pcmdpriv, struct cmd_obj *obj)
 	if (pcmdpriv->padapter->eeprompriv.bautoload_fail_flag == true)
 		return _FAIL;
 	res = _enqueue_cmd(&pcmdpriv->cmd_queue, obj);
-	up(&pcmdpriv->cmd_queue_sema);
+	complete(&pcmdpriv->cmd_queue_sema);
 	return res;
 }
 
@@ -193,7 +193,7 @@ u32 r8712_enqueue_cmd_ex(struct cmd_priv *pcmdpriv, struct cmd_obj *obj)
 	spin_lock_irqsave(&queue->lock, irqL);
 	list_insert_tail(&obj->list, &queue->queue);
 	spin_unlock_irqrestore(&queue->lock, irqL);
-	up(&pcmdpriv->cmd_queue_sema);
+	complete(&pcmdpriv->cmd_queue_sema);
 	return _SUCCESS;
 }
 

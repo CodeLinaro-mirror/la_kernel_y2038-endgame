@@ -53,7 +53,7 @@ uint r8712_usb_init_intf_priv(struct intf_priv *pintfpriv)
 	pintfpriv->piorw_urb = usb_alloc_urb(0, GFP_ATOMIC);
 	if (!pintfpriv->piorw_urb)
 		return _FAIL;
-	sema_init(&(pintfpriv->io_retevt), 0);
+	init_completion(&pintfpriv->io_retevt);
 	return _SUCCESS;
 }
 
@@ -165,7 +165,7 @@ static void usb_write_mem_complete(struct urb *purb)
 		else
 			padapter->bSurpriseRemoved = true;
 	}
-	up(&pintfpriv->io_retevt);
+	complete(&pintfpriv->io_retevt);
 }
 
 void r8712_usb_write_mem(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
@@ -190,7 +190,7 @@ void r8712_usb_write_mem(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *wmem)
 			  wmem, cnt, usb_write_mem_complete,
 			  pio_queue);
 	status = usb_submit_urb(piorw_urb, GFP_ATOMIC);
-	_down_sema(&pintfpriv->io_retevt);
+	wait_for_completion(&pintfpriv->io_retevt);
 }
 
 static void r8712_usb_read_port_complete(struct urb *purb)
