@@ -41,13 +41,7 @@
  * It will be useful to call this from an interrupt handler. */
 static void parport_ieee1284_wakeup (struct parport *port)
 {
-	up (&port->physport->ieee1284.irq);
-}
-
-static struct parport *port_from_cookie[PARPORT_MAX];
-static void timeout_waiting_on_port (unsigned long cookie)
-{
-	parport_ieee1284_wakeup (port_from_cookie[cookie % PARPORT_MAX]);
+	complete(&port->physport->ieee1284.irq);
 }
 
 /**
@@ -68,29 +62,11 @@ static void timeout_waiting_on_port (unsigned long cookie)
 
 int parport_wait_event (struct parport *port, signed long timeout)
 {
-	int ret;
-	struct timer_list timer;
-
 	if (!port->physport->cad->timeout)
-		/* Zero timeout is special, and we can't down() the
-		   semaphore. */
+		/* Zero timeout is special, and we can't sleep here */
 		return 1;
 
-	init_timer_on_stack(&timer);
-	timer.expires = jiffies + timeout;
-	timer.function = timeout_waiting_on_port;
-	port_from_cookie[port->number % PARPORT_MAX] = port;
-	timer.data = port->number;
-
-	add_timer (&timer);
-	ret = down_interruptible (&port->physport->ieee1284.irq);
-	if (!del_timer_sync(&timer) && !ret)
-		/* Timed out. */
-		ret = 1;
-
-	destroy_timer_on_stack(&timer);
-
-	return ret;
+	return wait_for_completion_interruptible_timeout(&port->physport->ieee1284.irq, timeout);
 }
 
 /**
