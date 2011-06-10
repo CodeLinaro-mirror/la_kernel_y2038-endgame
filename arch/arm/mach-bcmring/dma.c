@@ -30,6 +30,7 @@
 #include <linux/irqreturn.h>
 #include <linux/proc_fs.h>
 #include <linux/slab.h>
+#include <linux/mutex.h>
 
 #include <mach/timer.h>
 
@@ -120,7 +121,7 @@ static int dma_proc_read_channels(char *buf, char **start, off_t offset,
 	int len = 0;
 	DMA_Channel_t *channel;
 
-	if (down_interruptible(&gDMA.lock) < 0) {
+	if (mutex_lock_interruptible(&gDMA.lock) < 0) {
 		return -ERESTARTSYS;
 	}
 
@@ -185,7 +186,7 @@ static int dma_proc_read_channels(char *buf, char **start, off_t offset,
 			len += sprintf(buf + len, "\n");
 		}
 	}
-	up(&gDMA.lock);
+	mutex_unlock(&gDMA.lock);
 	*eof = 1;
 
 	return len;
@@ -204,7 +205,7 @@ static int dma_proc_read_devices(char *buf, char **start, off_t offset,
 	int len = 0;
 	int devIdx;
 
-	if (down_interruptible(&gDMA.lock) < 0) {
+	if (mutex_lock_interruptible(&gDMA.lock) < 0) {
 		return -ERESTARTSYS;
 	}
 
@@ -252,7 +253,7 @@ static int dma_proc_read_devices(char *buf, char **start, off_t offset,
 
 	}
 
-	up(&gDMA.lock);
+	mutex_unlock(&gDMA.lock);
 	*eof = 1;
 
 	return len;
@@ -693,11 +694,12 @@ int dma_init(void)
 
 	memset(&gDMA, 0, sizeof(gDMA));
 
-	sema_init(&gDMA.lock, 0);
+	mutex_init(&gDMA.lock);
 	init_waitqueue_head(&gDMA.freeChannelQ);
 
 	/* Initialize the Hardware */
 
+	mutex_lock(&gDMA.lock);
 	dmacHw_initDma();
 
 	/* Start off by marking all of the DMA channels as shared. */
@@ -852,7 +854,7 @@ int dma_init(void)
 
 out:
 
-	up(&gDMA.lock);
+	mutex_unlock(&gDMA.lock);
 
 	return rc;
 }
@@ -884,7 +886,7 @@ DMA_Handle_t dma_request_channel(DMA_Device_t dev)
 	int controllerIdx2;
 	int channelIdx;
 
-	if (down_interruptible(&gDMA.lock) < 0) {
+	if (mutex_lock_interruptible(&gDMA.lock) < 0) {
 		return -ERESTARTSYS;
 	}
 
@@ -1022,7 +1024,7 @@ DMA_Handle_t dma_request_channel(DMA_Device_t dev)
 
 			prepare_to_wait(&gDMA.freeChannelQ, &wait,
 					TASK_INTERRUPTIBLE);
-			up(&gDMA.lock);
+			mutex_unlock(&gDMA.lock);
 			schedule();
 			finish_wait(&gDMA.freeChannelQ, &wait);
 
@@ -1033,13 +1035,13 @@ DMA_Handle_t dma_request_channel(DMA_Device_t dev)
 			}
 		}
 
-		if (down_interruptible(&gDMA.lock)) {
+		if (mutex_lock_interruptible(&gDMA.lock)) {
 			return -ERESTARTSYS;
 		}
 	}
 
 out:
-	up(&gDMA.lock);
+	mutex_unlock(&gDMA.lock);
 
 	return handle;
 }
@@ -1069,7 +1071,7 @@ int dma_free_channel(DMA_Handle_t handle	/* DMA handle. */
 	DMA_Channel_t *channel;
 	DMA_DeviceAttribute_t *devAttr;
 
-	if (down_interruptible(&gDMA.lock) < 0) {
+	if (mutex_lock_interruptible(&gDMA.lock) < 0) {
 		return -ERESTARTSYS;
 	}
 
@@ -1089,7 +1091,7 @@ int dma_free_channel(DMA_Handle_t handle	/* DMA handle. */
 	devAttr->flags &= ~DMA_DEVICE_FLAG_IN_USE;
 
 out:
-	up(&gDMA.lock);
+	mutex_unlock(&gDMA.lock);
 
 	wake_up_interruptible(&gDMA.freeChannelQ);
 
@@ -1591,11 +1593,11 @@ EXPORT_SYMBOL(dma_init_mem_map);
 
 int dma_term_mem_map(DMA_MemMap_t *memMap)
 {
-	down(&memMap->lock);	/* Just being paranoid */
+	mutex_lock(&memMap->lock);	/* Just being paranoid */
 
 	/* Free up any allocated memory */
 
-	up(&memMap->lock);
+	mutex_unlock(&memMap->lock);
 	memset(memMap, 0, sizeof(*memMap));
 
 	return 0;
@@ -1684,7 +1686,7 @@ int dma_map_start(DMA_MemMap_t *memMap,	/* Stores state information about the ma
     ) {
 	int rc;
 
-	down(&memMap->lock);
+	mutex_lock(&memMap->lock);
 
 	DMA_MAP_PRINT("memMap: %p\n", memMap);
 
@@ -1705,7 +1707,7 @@ out:
 
 	DMA_MAP_PRINT("returning %d", rc);
 
-	up(&memMap->lock);
+	mutex_unlock(&memMap->lock);
 
 	return rc;
 }
@@ -1813,7 +1815,7 @@ int dma_map_add_region(DMA_MemMap_t *memMap,	/* Stores state information about t
 	DMA_Region_t *region;
 	dma_addr_t physAddr;
 
-	down(&memMap->lock);
+	mutex_lock(&memMap->lock);
 
 	DMA_MAP_PRINT("memMap:%p va:%p #:%d\n", memMap, mem, numBytes);
 
@@ -2046,7 +2048,7 @@ out:
 
 	DMA_MAP_PRINT("returning %d\n", rc);
 
-	up(&memMap->lock);
+	mutex_unlock(&memMap->lock);
 
 	return rc;
 }
@@ -2112,7 +2114,7 @@ int dma_map_create_descriptor_ring(DMA_Device_t dev,	/* DMA device (where the ri
 
 	devAttr = &DMA_gDeviceAttribute[dev];
 
-	down(&memMap->lock);
+	mutex_lock(&memMap->lock);
 
 	/* Figure out how many descriptors we need */
 
@@ -2206,7 +2208,7 @@ int dma_map_create_descriptor_ring(DMA_Device_t dev,	/* DMA device (where the ri
 
 out:
 
-	up(&memMap->lock);
+	mutex_unlock(&memMap->lock);
 	return rc;
 }
 
@@ -2230,7 +2232,7 @@ int dma_unmap(DMA_MemMap_t *memMap,	/* Stores state information about the map */
 	DMA_Region_t *region;
 	DMA_Segment_t *segment;
 
-	down(&memMap->lock);
+	mutex_lock(&memMap->lock);
 
 	for (regionIdx = 0; regionIdx < memMap->numRegionsUsed; regionIdx++) {
 		region = &memMap->region[regionIdx];
@@ -2323,7 +2325,7 @@ int dma_unmap(DMA_MemMap_t *memMap,	/* Stores state information about the map */
 	memMap->inUse = 0;
 
 out:
-	up(&memMap->lock);
+	mutex_unlock(&memMap->lock);
 
 	return rc;
 }
