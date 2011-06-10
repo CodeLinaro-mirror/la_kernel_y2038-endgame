@@ -132,14 +132,6 @@ static inline void list_insert_tail(struct list_head *plist,
 	list_add_tail(plist, phead);
 }
 
-static inline u32 _down_sema(struct semaphore *sema)
-{
-	if (down_interruptible(sema))
-		return _FAIL;
-	else
-		return _SUCCESS;
-}
-
 static inline void _init_listhead(struct list_head *list)
 {
 	INIT_LIST_HEAD(list);

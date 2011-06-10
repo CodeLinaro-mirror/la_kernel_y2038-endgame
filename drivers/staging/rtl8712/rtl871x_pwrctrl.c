@@ -104,14 +104,14 @@ void r8712_cpwm_int_hdl(struct _adapter *padapter,
 	if (pwrpriv->cpwm_tog == ((preportpwrstate->state) & 0x80))
 		return;
 	_cancel_timer_ex(&padapter->pwrctrlpriv. rpwm_check_timer);
-	_enter_pwrlock(&pwrpriv->lock);
+	mutex_lock(&pwrpriv->lock);
 	pwrpriv->cpwm = (preportpwrstate->state) & 0xf;
 	if (pwrpriv->cpwm >= PS_STATE_S2) {
 		if (pwrpriv->alives & CMD_ALIVE)
 			complete(&pcmdpriv->cmd_queue_sema);
 	}
 	pwrpriv->cpwm_tog = (preportpwrstate->state) & 0x80;
-	up(&pwrpriv->lock);
+	mutex_unlock(&pwrpriv->lock);
 }
 
 static inline void register_task_alive(struct pwrctrl_priv *pwrctrl, uint tag)
@@ -142,12 +142,12 @@ static void SetPSModeWorkItemCallback(struct work_struct *work)
 				       struct pwrctrl_priv, SetPSModeWorkItem);
 	struct _adapter *padapter = container_of(pwrpriv,
 				    struct _adapter, pwrctrlpriv);
-	_enter_pwrlock(&pwrpriv->lock);
+	mutex_lock(&pwrpriv->lock);
 	if (!pwrpriv->bSleep) {
 		if (pwrpriv->pwr_mode == PS_MODE_ACTIVE)
 			r8712_set_rpwm(padapter, PS_STATE_S4);
 	}
-	up(&pwrpriv->lock);
+	mutex_unlock(&pwrpriv->lock);
 }
 
 static void rpwm_workitem_callback(struct work_struct *work)
@@ -157,13 +157,13 @@ static void rpwm_workitem_callback(struct work_struct *work)
 	struct _adapter *padapter = container_of(pwrpriv,
 				    struct _adapter, pwrctrlpriv);
 	u8 cpwm = pwrpriv->cpwm;
-	_enter_pwrlock(&pwrpriv->lock);
+	mutex_lock(&pwrpriv->lock);
 	if (pwrpriv->cpwm != pwrpriv->rpwm) {
 		cpwm = r8712_read8(padapter, SDIO_HCPWM);
 		pwrpriv->rpwm_retry = 1;
 		r8712_set_rpwm(padapter, pwrpriv->rpwm);
 	}
-	up(&pwrpriv->lock);
+	mutex_unlock(&pwrpriv->lock);
 }
 
 static void rpwm_check_handler (void *FunctionContext)
@@ -177,7 +177,7 @@ void r8712_init_pwrctrl_priv(struct _adapter *padapter)
 	struct pwrctrl_priv *pwrctrlpriv = &padapter->pwrctrlpriv;
 
 	memset((unsigned char *)pwrctrlpriv, 0, sizeof(struct pwrctrl_priv));
-	sema_init(&pwrctrlpriv->lock, 1);
+	mutex_init(&pwrctrlpriv->lock);
 	pwrctrlpriv->cpwm = PS_STATE_S4;
 	pwrctrlpriv->pwr_mode = PS_MODE_ACTIVE;
 	pwrctrlpriv->smart_ps = 0;
@@ -211,13 +211,13 @@ sint r8712_register_cmd_alive(struct _adapter *padapter)
 	uint res = _SUCCESS;
 	struct pwrctrl_priv *pwrctrl = &padapter->pwrctrlpriv;
 
-	_enter_pwrlock(&pwrctrl->lock);
+	mutex_lock(&pwrctrl->lock);
 	register_task_alive(pwrctrl, CMD_ALIVE);
 	if (pwrctrl->cpwm < PS_STATE_S2) {
 		r8712_set_rpwm(padapter, PS_STATE_S3);
 		res = _FAIL;
 	}
-	up(&pwrctrl->lock);
+	mutex_unlock(&pwrctrl->lock);
 	return res;
 }
 
@@ -233,7 +233,7 @@ void r8712_unregister_cmd_alive(struct _adapter *padapter)
 {
 	struct pwrctrl_priv *pwrctrl = &padapter->pwrctrlpriv;
 
-	_enter_pwrlock(&pwrctrl->lock);
+	mutex_lock(&pwrctrl->lock);
 	unregister_task_alive(pwrctrl, CMD_ALIVE);
 	if ((pwrctrl->cpwm > PS_STATE_S2) &&
 	   (pwrctrl->pwr_mode > PS_MODE_ACTIVE)) {
@@ -243,5 +243,5 @@ void r8712_unregister_cmd_alive(struct _adapter *padapter)
 			r8712_set_rpwm(padapter, PS_STATE_S0);
 		}
 	}
-	up(&pwrctrl->lock);
+	mutex_unlock(&pwrctrl->lock);
 }
