@@ -191,7 +191,7 @@ static int open_getadapter_fib(struct aac_dev * dev, void __user *arg)
 		/*
 		 *	Initialize the mutex used to wait for the next AIF.
 		 */
-		sema_init(&fibctx->wait_sem, 0);
+		init_completion(&fibctx->wait_sem);
 		fibctx->wait = 0;
 		/*
 		 *	Initialize the fibs and set the count of fibs on
@@ -322,7 +322,7 @@ return_fib:
 			ssleep(1);
 		}
 		if (f.wait) {
-			if(down_interruptible(&fibctx->wait_sem) < 0) {
+			if(wait_for_completion_interruptible(&fibctx->wait_sem)) {
 				status = -ERESTARTSYS;
 			} else {
 				/* Lock again and retry */
