@@ -1798,7 +1798,7 @@ int mwifiex_ret_802_11_scan(struct mwifiex_private *priv,
 			priv->report_scan_result = false;
 		if (priv->scan_pending_on_block) {
 			priv->scan_pending_on_block = false;
-			up(&priv->async_sem);
+			complete(&priv->async_sem);
 		}
 
 	} else {
@@ -1909,7 +1909,7 @@ int mwifiex_request_scan(struct mwifiex_private *priv,
 {
 	int ret;
 
-	if (down_interruptible(&priv->async_sem)) {
+	if (wait_for_completion_interruptible(&priv->async_sem)) {
 		dev_err(priv->adapter->dev, "%s: acquire semaphore\n",
 						__func__);
 		return -1;
@@ -1930,7 +1930,7 @@ int mwifiex_request_scan(struct mwifiex_private *priv,
 
 	if (ret == -1) {
 		priv->scan_pending_on_block = false;
-		up(&priv->async_sem);
+		complete(&priv->async_sem);
 	}
 
 	return ret;

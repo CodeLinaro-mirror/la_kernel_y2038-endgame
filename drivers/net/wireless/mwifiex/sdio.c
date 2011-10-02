@@ -48,7 +48,7 @@ static u8 user_rmmod;
 
 static struct mwifiex_if_ops sdio_ops;
 
-static struct semaphore add_remove_card_sem;
+static DEFINE_MUTEX(add_remove_card_sem);
 
 static int mwifiex_sdio_resume(struct device *dev);
 
@@ -1738,8 +1738,6 @@ static struct mwifiex_if_ops sdio_ops = {
 static int
 mwifiex_sdio_init_module(void)
 {
-	sema_init(&add_remove_card_sem, 1);
-
 	/* Clear the flag in case user removes the card. */
 	user_rmmod = 0;
 
@@ -1758,8 +1756,8 @@ mwifiex_sdio_init_module(void)
 static void
 mwifiex_sdio_cleanup_module(void)
 {
-	if (!down_interruptible(&add_remove_card_sem))
-		up(&add_remove_card_sem);
+	if (!mutex_lock_interruptible(&add_remove_card_sem))
+		mutex_unlock(&add_remove_card_sem);
 
 	/* Set the flag as user is removing this module. */
 	user_rmmod = 1;

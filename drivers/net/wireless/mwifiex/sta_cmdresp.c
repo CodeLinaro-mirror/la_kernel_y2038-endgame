@@ -87,7 +87,7 @@ mwifiex_process_cmdresp_error(struct mwifiex_private *priv,
 			priv->report_scan_result = false;
 		if (priv->scan_pending_on_block) {
 			priv->scan_pending_on_block = false;
-			up(&priv->async_sem);
+			complete(&priv->async_sem);
 		}
 		break;
 

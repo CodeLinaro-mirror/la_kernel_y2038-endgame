@@ -660,14 +660,14 @@ mwifiex_terminate_workqueue(struct mwifiex_adapter *adapter)
  *      - Add logical interfaces
  */
 int
-mwifiex_add_card(void *card, struct semaphore *sem,
+mwifiex_add_card(void *card, struct mutex *mutex,
 		 struct mwifiex_if_ops *if_ops, u8 iface_type)
 {
 	struct mwifiex_adapter *adapter;
 	char fmt[64];
 	struct mwifiex_private *priv;
 
-	if (down_interruptible(sem))
+	if (mutex_lock_interruptible(mutex))
 		goto exit_sem_err;
 
 	if (mwifiex_register(card, if_ops, (void **)&adapter)) {
@@ -726,7 +726,7 @@ mwifiex_add_card(void *card, struct semaphore *sem,
 
 	rtnl_unlock();
 
-	up(sem);
+	mutex_unlock(mutex);
 
 	mwifiex_drv_get_driver_version(adapter, fmt, sizeof(fmt) - 1);
 	dev_notice(adapter->dev, "driver_version = %s\n", fmt);
@@ -757,7 +757,7 @@ err_kmalloc:
 	mwifiex_free_adapter(adapter);
 
 err_init_sw:
-	up(sem);
+	mutex_unlock(mutex);
 
 exit_sem_err:
 	return -1;
@@ -775,12 +775,12 @@ EXPORT_SYMBOL_GPL(mwifiex_add_card);
  *      - Unregister the device
  *      - Free the adapter structure
  */
-int mwifiex_remove_card(struct mwifiex_adapter *adapter, struct semaphore *sem)
+int mwifiex_remove_card(struct mwifiex_adapter *adapter, struct mutex *mutex)
 {
 	struct mwifiex_private *priv = NULL;
 	int i;
 
-	if (down_interruptible(sem))
+	if (mutex_lock_interruptible(mutex))
 		goto exit_sem_err;
 
 	if (!adapter)
@@ -845,7 +845,7 @@ int mwifiex_remove_card(struct mwifiex_adapter *adapter, struct semaphore *sem)
 	mwifiex_free_adapter(adapter);
 
 exit_remove:
-	up(sem);
+	mutex_unlock(mutex);
 exit_sem_err:
 	return 0;
 }

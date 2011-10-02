@@ -280,7 +280,7 @@ struct dsi_data {
 	} vc[4];
 
 	struct mutex lock;
-	struct semaphore bus_lock;
+	struct mutex bus_lock;
 
 	unsigned pll_locked;
 
@@ -385,7 +385,7 @@ void dsi_bus_lock(struct omap_dss_device *dssdev)
 	struct platform_device *dsidev = dsi_get_dsidev_from_dssdev(dssdev);
 	struct dsi_data *dsi = dsi_get_dsidrv_data(dsidev);
 
-	down(&dsi->bus_lock);
+	mutex_lock(&dsi->bus_lock);
 }
 EXPORT_SYMBOL(dsi_bus_lock);
 
@@ -394,7 +394,7 @@ void dsi_bus_unlock(struct omap_dss_device *dssdev)
 	struct platform_device *dsidev = dsi_get_dsidev_from_dssdev(dssdev);
 	struct dsi_data *dsi = dsi_get_dsidrv_data(dsidev);
 
-	up(&dsi->bus_lock);
+	mutex_unlock(&dsi->bus_lock);
 }
 EXPORT_SYMBOL(dsi_bus_unlock);
 
@@ -402,7 +402,7 @@ static bool dsi_bus_is_locked(struct platform_device *dsidev)
 {
 	struct dsi_data *dsi = dsi_get_dsidrv_data(dsidev);
 
-	return dsi->bus_lock.count == 0;
+	mutex_is_locked(&dsi->bus_lock);
 }
 
 static void dsi_completion_handler(void *data, u32 mask)
@@ -4712,7 +4712,7 @@ static int omap_dsihw_probe(struct platform_device *dsidev)
 #endif
 
 	mutex_init(&dsi->lock);
-	sema_init(&dsi->bus_lock, 1);
+	mutex_init(&dsi->bus_lock);
 
 	r = dsi_get_clocks(dsidev);
 	if (r)

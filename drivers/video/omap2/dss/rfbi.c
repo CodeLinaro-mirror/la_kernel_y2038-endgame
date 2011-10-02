@@ -109,8 +109,6 @@ static struct {
 	void *framedone_callback_data;
 
 	struct omap_dss_device *dssdev[2];
-
-	struct semaphore bus_lock;
 } rfbi;
 
 static inline void rfbi_write_reg(const struct rfbi_reg idx, u32 val)
@@ -143,18 +141,6 @@ static void rfbi_runtime_put(void)
 	r = pm_runtime_put(&rfbi.pdev->dev);
 	WARN_ON(r < 0);
 }
-
-void rfbi_bus_lock(void)
-{
-	down(&rfbi.bus_lock);
-}
-EXPORT_SYMBOL(rfbi_bus_lock);
-
-void rfbi_bus_unlock(void)
-{
-	up(&rfbi.bus_lock);
-}
-EXPORT_SYMBOL(rfbi_bus_unlock);
 
 void omap_rfbi_write_command(const void *buf, u32 len)
 {
@@ -918,7 +904,6 @@ static int omap_rfbihw_probe(struct platform_device *pdev)
 
 	rfbi.pdev = pdev;
 
-	sema_init(&rfbi.bus_lock, 1);
 
 	rfbi_mem = platform_get_resource(rfbi.pdev, IORESOURCE_MEM, 0);
 	if (!rfbi_mem) {

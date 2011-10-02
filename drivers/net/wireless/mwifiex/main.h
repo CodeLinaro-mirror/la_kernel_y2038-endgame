@@ -449,7 +449,7 @@ struct mwifiex_private {
 	u8 nick_name[16];
 	u8 qual_level, qual_noise;
 	u16 current_key_index;
-	struct semaphore async_sem;
+	struct completion async_sem;
 	u8 scan_pending_on_block;
 	u8 report_scan_result;
 	struct cfg80211_scan_request *scan_request;
@@ -884,8 +884,8 @@ struct mwifiex_private *mwifiex_bss_index_to_priv(struct mwifiex_adapter
 						*adapter, u8 bss_index);
 int mwifiex_init_shutdown_fw(struct mwifiex_private *priv,
 			     u32 func_init_shutdown);
-int mwifiex_add_card(void *, struct semaphore *, struct mwifiex_if_ops *, u8);
-int mwifiex_remove_card(struct mwifiex_adapter *, struct semaphore *);
+int mwifiex_add_card(void *, struct mutex *, struct mwifiex_if_ops *, u8);
+int mwifiex_remove_card(struct mwifiex_adapter *, struct mutex *);
 
 void mwifiex_get_version(struct mwifiex_adapter *adapter, char *version,
 			 int maxlen);

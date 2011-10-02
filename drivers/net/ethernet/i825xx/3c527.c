@@ -522,7 +522,7 @@ static int __init mc32_probe1(struct net_device *dev, int slot)
 	lp->tx_len 		= lp->exec_box->data[9];   /* Transmit list count */
 	lp->rx_len 		= lp->exec_box->data[11];  /* Receive list count */
 
-	sema_init(&lp->cmd_mutex, 0);
+	sema_init(&lp->cmd_mutex, 1);
 	init_completion(&lp->execution_cmd);
 	init_completion(&lp->xceiver_cmd);
 
@@ -533,6 +533,7 @@ static int __init mc32_probe1(struct net_device *dev, int slot)
 	dev->watchdog_timeo	= HZ*5;	/* Board does all the work */
 	dev->ethtool_ops	= &netdev_ethtool_ops;
 
+	down(&lp->cmd_mutex);
 	return 0;
 
 err_exit_irq:

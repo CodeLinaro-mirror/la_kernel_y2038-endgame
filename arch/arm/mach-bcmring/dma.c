@@ -1578,7 +1578,7 @@ int dma_init_mem_map(DMA_MemMap_t *memMap)
 {
 	memset(memMap, 0, sizeof(*memMap));
 
-	sema_init(&memMap->lock, 1);
+	mutex_init(&memMap->lock);
 
 	return 0;
 }
