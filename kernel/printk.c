@@ -77,23 +77,29 @@ int oops_in_progress;
 EXPORT_SYMBOL(oops_in_progress);
 
 /*
- * console_sem protects the console_drivers list, and also
+ * The console lock protects the console_drivers list, and also
  * provides serialisation for access to the entire console
  * driver system.
+ * The lock can be in one of four states, depending on whether
+ * the console is locked and/or suspended. In suspended state,
+ * it is not possible to acquire the lock for output to the
+ * console, but it can still be locked for other purposes.
  */
-static DEFINE_SEMAPHORE(console_sem);
+enum {
+	CONSOLE_UNLOCKED	 = 0,
+	CONSOLE_LOCKED		 = 1,
+	CONSOLE_SUSPENDED	 = 2,
+	CONSOLE_LOCKED_SUSPENDED = 3,
+};
+static atomic_t console_state = ATOMIC_INIT(CONSOLE_UNLOCKED);
+static bool console_set_state(unsigned int old, unsigned int new)
+{
+	return atomic_cmpxchg(&console_state, old, new) == old;
+}
+static DECLARE_WAIT_QUEUE_HEAD(console_wq);
+
 struct console *console_drivers;
 EXPORT_SYMBOL_GPL(console_drivers);
-
-/*
- * This is used for debugging the mess that is the VT code by
- * keeping track if we have the console semaphore held. It's
- * definitely not the perfect debug tool (we don't know if _WE_
- * hold it are racing, but it helps tracking those weird code
- * path in the console code where we end up in places I want
- * locked without the console sempahore held
- */
-static int console_locked, console_suspended;
 
 /*
  * logbuf_lock protects log_buf, log_start, log_end, con_start and logged_chars
@@ -691,7 +697,7 @@ static void zap_locks(void)
 	/* If a crash is occurring, make sure we can't deadlock */
 	raw_spin_lock_init(&logbuf_lock);
 	/* And make sure that we print immediately */
-	sema_init(&console_sem, 1);
+	atomic_set(&console_state, CONSOLE_UNLOCKED);
 }
 
 #if defined(CONFIG_PRINTK_TIME)
@@ -796,15 +802,14 @@ static int console_trylock_for_printk(unsigned int cpu)
 		 * in order to do this test safely.
 		 */
 		if (!can_use_console(cpu)) {
-			console_locked = 0;
+			atomic_set(&console_state, CONSOLE_UNLOCKED);
 			wake = 1;
 			retval = 0;
 		}
 	}
 	printk_cpu = UINT_MAX;
 	if (wake)
-		up(&console_sem);
-	raw_spin_unlock(&logbuf_lock);
+		wake_up(&console_wq);
 	return retval;
 }
 static const char recursion_bug_msg [] =
@@ -1123,17 +1128,16 @@ void suspend_console(void)
 	if (!console_suspend_enabled)
 		return;
 	printk("Suspending console(s) (use no_console_suspend to debug)\n");
-	console_lock();
-	console_suspended = 1;
-	up(&console_sem);
+	wait_event(console_wq,
+		   console_set_state(CONSOLE_UNLOCKED, CONSOLE_SUSPENDED));
 }
 
 void resume_console(void)
 {
 	if (!console_suspend_enabled)
 		return;
-	down(&console_sem);
-	console_suspended = 0;
+	wait_event(console_wq,
+		   console_set_state(CONSOLE_SUSPENDED, CONSOLE_LOCKED));
 	console_unlock();
 }
 
@@ -1173,12 +1177,17 @@ static int __cpuinit console_cpu_notify(struct notifier_block *self,
  */
 void console_lock(void)
 {
+	unsigned int state;
 	BUG_ON(in_interrupt());
-	down(&console_sem);
-	if (console_suspended)
-		return;
-	console_locked = 1;
-	console_may_schedule = 1;
+
+	/* wait until we transition from unlocked to locked state */
+	state = CONSOLE_UNLOCKED;
+	wait_event(console_wq, !(state = atomic_cmpxchg(&console_state,
+				  state & ~CONSOLE_LOCKED,
+				  state | CONSOLE_LOCKED)) & CONSOLE_LOCKED);
+	smp_rmb(); /* XXX does atomic_cmpxchg always imply an smp_rmb? */
+	if (state != CONSOLE_SUSPENDED)
+		console_may_schedule = 1;
 }
 EXPORT_SYMBOL(console_lock);
 
@@ -1192,21 +1201,26 @@ EXPORT_SYMBOL(console_lock);
  */
 int console_trylock(void)
 {
-	if (down_trylock(&console_sem))
+	if (!console_set_state(CONSOLE_UNLOCKED, CONSOLE_LOCKED))
 		return 0;
-	if (console_suspended) {
-		up(&console_sem);
-		return 0;
-	}
-	console_locked = 1;
+	smp_rmb();
+
 	console_may_schedule = 0;
 	return 1;
 }
 EXPORT_SYMBOL(console_trylock);
 
+/*
+ * This is used for debugging the mess that is the VT code by
+ * keeping track if we have the console semaphore held. It's
+ * definitely not the perfect debug tool (we don't know if _WE_
+ * hold it are racing, but it helps tracking those weird code
+ * path in the console code where we end up in places I want
+ * locked without the console sempahore held
+ */
 int is_console_locked(void)
 {
-	return console_locked;
+	return atomic_read(&console_state) != CONSOLE_UNLOCKED;
 }
 
 static DEFINE_PER_CPU(int, printk_pending);
@@ -1235,7 +1249,7 @@ void wake_up_klogd(void)
 /**
  * console_unlock - unlock the console system
  *
- * Releases the console_lock which the caller holds on the console system
+ * Releases the console lock which the caller holds on the console system
  * and the console driver list.
  *
  * While the console_lock was held, console output may have been buffered
@@ -1252,8 +1266,9 @@ void console_unlock(void)
 	unsigned _con_start, _log_end;
 	unsigned wake_klogd = 0, retry = 0;
 
-	if (console_suspended) {
-		up(&console_sem);
+	if (atomic_read(&console_state) == CONSOLE_LOCKED_SUSPENDED) {
+		atomic_set(&console_state, CONSOLE_SUSPENDED);
+		wake_up(&console_wq);
 		return;
 	}
 
@@ -1274,15 +1289,16 @@ again:
 		start_critical_timings();
 		local_irq_restore(flags);
 	}
-	console_locked = 0;
 
 	/* Release the exclusive_console once it is used */
 	if (unlikely(exclusive_console))
 		exclusive_console = NULL;
 
+	atomic_set(&console_state, CONSOLE_UNLOCKED);
+
 	raw_spin_unlock(&logbuf_lock);
 
-	up(&console_sem);
+	wake_up(&console_wq);
 
 	/*
 	 * Someone could have filled up the buffer again, so re-check if there's
@@ -1328,12 +1344,13 @@ void console_unblank(void)
 	 * oops_in_progress is set to 1..
 	 */
 	if (oops_in_progress) {
-		if (down_trylock(&console_sem) != 0)
+		if (!console_set_state(CONSOLE_UNLOCKED, CONSOLE_LOCKED) &&
+		    !console_set_state(CONSOLE_SUSPENDED, CONSOLE_LOCKED_SUSPENDED))
 			return;
+		smp_rmb();
 	} else
 		console_lock();
 
-	console_locked = 1;
 	console_may_schedule = 0;
 	for_each_console(c)
 		if ((c->flags & CON_ENABLED) && c->unblank)
