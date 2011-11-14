@@ -273,7 +273,8 @@ static int mlx4_cmd_wait(struct mlx4_dev *dev, u64 in_param, u64 *out_param,
 	struct mlx4_cmd_context *context;
 	int err = 0;
 
-	down(&cmd->event_sem);
+	wait_event(cmd->event_wait,
+		   atomic_add_unless(&cmd->commands, -1, 0));
 
 	spin_lock(&cmd->context_lock);
 	BUG_ON(cmd->free_head < 0);
@@ -305,7 +306,8 @@ out:
 	cmd->free_head = context - cmd->context;
 	spin_unlock(&cmd->context_lock);
 
-	up(&cmd->event_sem);
+	atomic_inc(&cmd->commands);
+	wake_up(&cmd->event_wait);
 	return err;
 }
 
@@ -380,7 +382,8 @@ int mlx4_cmd_use_events(struct mlx4_dev *dev)
 	priv->cmd.context[priv->cmd.max_cmds - 1].next = -1;
 	priv->cmd.free_head = 0;
 
-	sema_init(&priv->cmd.event_sem, priv->cmd.max_cmds);
+	init_waitqueue_head(&priv->cmd.event_wait);
+	atomic_set(&priv->cmd.commands, priv->cmd.max_cmds);
 	spin_lock_init(&priv->cmd.context_lock);
 
 	for (priv->cmd.token_mask = 1;
@@ -407,7 +410,8 @@ void mlx4_cmd_use_polling(struct mlx4_dev *dev)
 	priv->cmd.use_events = 0;
 
 	for (i = 0; i < priv->cmd.max_cmds; ++i)
-		down(&priv->cmd.event_sem);
+		wait_event(priv->cmd.event_wait,
+			   atomic_add_unless(&priv->cmd.commands, -1, 0));
 
 	kfree(priv->cmd.context);
 
