@@ -5,13 +5,11 @@
 CPPFLAGS_vmlinux.lds := -DTEXT_OFFSET=$(TEXT_OFFSET)
 AFLAGS_head.o        := -DTEXT_OFFSET=$(TEXT_OFFSET)
 
-ifdef CONFIG_FUNCTION_TRACER
-CFLAGS_REMOVE_ftrace.o = -pg
-CFLAGS_REMOVE_insn.o = -pg
-CFLAGS_REMOVE_patch.o = -pg
-endif
-
-CFLAGS_REMOVE_return_address.o = -pg
+CFLAGS_REMOVE_ftrace.o		= -pg
+CFLAGS_REMOVE_insn.o		= -pg
+CFLAGS_REMOVE_patch.o		= -pg
+CFLAGS_REMOVE_unwind.o		= -pg
+CFLAGS_REMOVE_return_address.o	= -pg
 
 # Object file lists.
 
