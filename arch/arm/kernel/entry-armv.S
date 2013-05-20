@@ -223,7 +223,9 @@ ENDPROC(__irq_svc)
 #ifdef CONFIG_PREEMPT
 svc_preempt:
 	mov	r8, lr
-1:	bl	preempt_schedule_irq		@ irq en/disable is done inside
+1:	ldr	ip, =preempt_schedule_irq		@ irq en/disable is done inside
+	mov	lr, pc
+	mov	pc, ip
 	ldr	r0, [tsk, #TI_FLAGS]		@ get new tasks TI_FLAGS
 	tst	r0, #_TIF_NEED_RESCHED
 	reteq	r8				@ go again

@@ -319,7 +319,7 @@ do {									\
 	"	.align	2\n"					\
 	"3:	mov	%0, %3\n"				\
 	"	mov	%1, #0\n"				\
-	"	b	2b\n"					\
+	"	ldr	pc, =2b\n"				\
 	"	.popsection\n"					\
 	"	.pushsection __ex_table,\"a\"\n"		\
 	"	.align	3\n"					\
@@ -355,7 +355,7 @@ do {									\
 	"	.align	2\n"					\
 	"3:	mov	%0, %3\n"				\
 	"	mov	%1, #0\n"				\
-	"	b	2b\n"					\
+	"	ldr	pc, =2b\n"				\
 	"	.popsection\n"					\
 	"	.pushsection __ex_table,\"a\"\n"		\
 	"	.align	3\n"					\
@@ -400,7 +400,7 @@ do {									\
 	"	.pushsection .fixup,\"ax\"\n"			\
 	"	.align	2\n"					\
 	"3:	mov	%0, %3\n"				\
-	"	b	2b\n"					\
+	"	ldr	pc,=2b\n"				\
 	"	.popsection\n"					\
 	"	.pushsection __ex_table,\"a\"\n"		\
 	"	.align	3\n"					\
@@ -433,7 +433,7 @@ do {									\
 	"	.pushsection .fixup,\"ax\"\n"			\
 	"	.align	2\n"					\
 	"3:	mov	%0, %3\n"				\
-	"	b	2b\n"					\
+	"	ldr	pc, =2b\n"				\
 	"	.popsection\n"					\
 	"	.pushsection __ex_table,\"a\"\n"		\
 	"	.align	3\n"					\
@@ -461,8 +461,8 @@ do {									\
 	"	.pushsection .fixup,\"ax\"\n"			\
 	"	.align	2\n"					\
 	"4:	mov	%0, %3\n"				\
-	"	b	3b\n"					\
-	"	.popsection\n"					\
+	"       ldr	pc, =2b\n"                              \
+	"	.previous\n"					\
 	"	.pushsection __ex_table,\"a\"\n"		\
 	"	.align	3\n"					\
 	"	.long	1b, 4b\n"				\
