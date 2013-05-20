@@ -139,7 +139,7 @@ __arm740_proc_info:
 	.long	0xfffffff0
 	.long	0
 	.long	0
-	b	__arm740_setup
+	ldr	pc, =__arm740_setup
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP | HWCAP_HALF | HWCAP_THUMB | HWCAP_26BIT

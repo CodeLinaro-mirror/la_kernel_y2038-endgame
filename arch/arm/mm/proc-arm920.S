@@ -406,7 +406,7 @@ ENTRY(cpu_arm920_do_resume)
 	mcr	p15, 0, r5, c3, c0, 0	@ Domain ID
 	mcr	p15, 0, r1, c2, c0, 0	@ TTB address
 	mov	r0, r6			@ control register
-	b	cpu_resume_mmu
+	ldr	pc, =cpu_resume_mmu
 ENDPROC(cpu_arm920_do_resume)
 #endif
 
@@ -464,7 +464,7 @@ __arm920_proc_info:
 		PMD_BIT4 | \
 		PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ
-	b	__arm920_setup
+	ldr	pc, =__arm920_setup
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP | HWCAP_HALF | HWCAP_THUMB

@@ -148,7 +148,7 @@ ENTRY(cpu_v7_do_resume)
 	isb
 	dsb
 	mov	r0, r8			@ control register
-	b	cpu_resume_mmu
+	ldr	pc, =cpu_resume_mmu
 ENDPROC(cpu_v7_do_resume)
 #endif
 
@@ -262,7 +262,7 @@ __v7_ca17mp_setup:
 	orreq	r0, r0, r10			@ Enable CPU-specific SMP bits
 	mcreq	p15, 0, r0, c1, c0, 1
 #endif
-	b	__v7_setup
+	ldr	pc, =__v7_setup
 
 __v7_pj4b_setup:
 #ifdef CONFIG_CPU_PJ4B
@@ -476,7 +476,7 @@ __v7_setup_stack:
 			PMD_SECT_AF | PMD_FLAGS_UP | \mm_mmuflags)
 	.long	PMD_TYPE_SECT | PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ | PMD_SECT_AF | \io_mmuflags
-	W(b)	\initfunc
+	ldr	pc, =\initfunc
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP | HWCAP_HALF | HWCAP_THUMB | HWCAP_FAST_MULT | \

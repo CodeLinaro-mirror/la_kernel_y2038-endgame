@@ -203,7 +203,7 @@ __\name\()_proc_info:
 			PMD_BIT4 | \
 			PMD_SECT_AP_WRITE | \
 			PMD_SECT_AP_READ
-		b	\cpu_flush				@ cpu_flush
+		ldr	pc,=\cpu_flush				@ cpu_flush
 		.long	cpu_arch_name				@ arch_name
 		.long	cpu_elf_name				@ elf_name
 		.long	HWCAP_SWP | HWCAP_HALF | HWCAP_THUMB	@ elf_hwcap
