@@ -416,7 +416,7 @@ __arm946_proc_info:
 	.long	0xff00fff0
 	.long	0
 	.long	0
-	b	__arm946_setup
+	ldr	pc, =__arm946_setup
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP | HWCAP_HALF | HWCAP_THUMB

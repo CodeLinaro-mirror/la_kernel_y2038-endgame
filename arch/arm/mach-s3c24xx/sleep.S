@@ -80,4 +80,4 @@ ENTRY(s3c_cpu_resume)
 	beq	1001b
 #endif /* CONFIG_DEBUG_RESUME */
 
-	b	cpu_resume
+	ldr	pc, =cpu_resume

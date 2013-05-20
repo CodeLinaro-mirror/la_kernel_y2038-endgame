@@ -361,7 +361,7 @@ __arm940_proc_info:
 	.long	0x41009400
 	.long	0xff00fff0
 	.long	0
-	b	__arm940_setup
+	ldr	pc, =__arm940_setup
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP | HWCAP_HALF | HWCAP_THUMB

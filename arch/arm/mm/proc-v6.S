@@ -172,7 +172,7 @@ ENTRY(cpu_v6_do_resume)
 	mcr	p15, 0, r8, c1, c0, 2	@ co-processor access control
 	mcr	p15, 0, ip, c7, c5, 4	@ ISB
 	mov	r0, r9			@ control register
-	b	cpu_resume_mmu
+	ldr	pc, =cpu_resume_mmu
 ENDPROC(cpu_v6_do_resume)
 #endif
 
@@ -287,7 +287,7 @@ __v6_proc_info:
 		PMD_SECT_XN | \
 		PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ
-	b	__v6_setup
+	ldr	pc, =__v6_setup
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	/* See also feat_v6_fixup() for HWCAP_TLS */
