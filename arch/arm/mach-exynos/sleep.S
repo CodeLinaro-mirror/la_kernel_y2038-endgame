@@ -56,7 +56,8 @@ ENTRY(exynos_cpu_resume)
 	cmp	r0, r1
 	bleq	l2c310_early_resume
 #endif
-	b	cpu_resume
+2:
+	ldr	pc, =cpu_resume
 ENDPROC(exynos_cpu_resume)
 
 	.align

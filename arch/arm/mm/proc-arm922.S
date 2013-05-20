@@ -388,6 +388,7 @@ ENTRY(cpu_arm922_set_pte_ext)
 #endif /* CONFIG_MMU */
 	ret	lr
 
+	__INIT
 	.type	__arm922_setup, #function
 __arm922_setup:
 	mov	r0, #0
@@ -442,7 +443,7 @@ __arm922_proc_info:
 		PMD_BIT4 | \
 		PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ
-	b	__arm922_setup
+	ldr	pc, =__arm922_setup
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP | HWCAP_HALF | HWCAP_THUMB

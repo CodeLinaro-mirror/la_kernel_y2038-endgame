@@ -379,7 +379,7 @@ ENTRY(cpu_mohawk_do_resume)
 	mcr	p15, 0, r1, c2, c0, 0	@ translation table base addr
 	mcr	p15, 0, r8, c1, c0, 1	@ auxiliary control reg
 	mov	r0, r9			@ control register
-	b	cpu_resume_mmu
+	ldr	pc, =cpu_resume_mmu
 ENDPROC(cpu_mohawk_do_resume)
 #endif
 
@@ -443,7 +443,7 @@ __88sv331x_proc_info:
 		PMD_BIT4 | \
 		PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ
-	b	__mohawk_setup
+	ldr	pc, =__mohawk_setup
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP|HWCAP_HALF|HWCAP_THUMB|HWCAP_FAST_MULT|HWCAP_EDSP
