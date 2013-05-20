@@ -79,7 +79,7 @@ __\name\()_proc_info:
 		.long	\cpu_mask
 		.long	0
 		.long	0
-		b	__arm9tdmi_setup
+		ldr	pc, =__arm9tdmi_setup
 		.long	cpu_arch_name
 		.long	cpu_elf_name
 		.long	HWCAP_SWP | HWCAP_THUMB | HWCAP_26BIT

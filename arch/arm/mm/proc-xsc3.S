@@ -442,7 +442,7 @@ ENTRY(cpu_xsc3_do_resume)
 	mcr	p15, 0, r1, c2, c0, 0	@ translation table base addr
 	mcr	p15, 0, r8, c1, c0, 1	@ auxiliary control reg
 	mov	r0, r9			@ control register
-	b	cpu_resume_mmu
+	ldr	pc, =cpu_resume_mmu
 ENDPROC(cpu_xsc3_do_resume)
 #endif
 
@@ -514,7 +514,7 @@ __\name\()_proc_info:
 	.long	PMD_TYPE_SECT | \
 		PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ
-	b	__xsc3_setup
+	ldr	pc, =__xsc3_setup
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP|HWCAP_HALF|HWCAP_THUMB|HWCAP_FAST_MULT|HWCAP_EDSP

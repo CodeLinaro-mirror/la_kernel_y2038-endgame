@@ -441,7 +441,7 @@ __enable_mmu:
 	mcr	p15, 0, r5, c3, c0, 0		@ load domain access register
 	mcr	p15, 0, r4, c2, c0, 0		@ load page table pointer
 #endif
-	b	__turn_mmu_on
+	ldr	pc, =__turn_mmu_on
 ENDPROC(__enable_mmu)
 
 /*
