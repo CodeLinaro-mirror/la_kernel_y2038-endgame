@@ -96,14 +96,14 @@ SECTIONS
 			*(.exception.text)
 			__exception_text_end = .;
 			IRQENTRY_TEXT
+#ifdef CONFIG_MMU
+			*(.fixup)
+#endif
 			TEXT_TEXT
 			SCHED_TEXT
 			LOCK_TEXT
 			KPROBES_TEXT
 			IDMAP_TEXT
-#ifdef CONFIG_MMU
-			*(.fixup)
-#endif
 			*(.gnu.warning)
 			*(.glue_7)
 			*(.glue_7t)

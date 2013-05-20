@@ -82,7 +82,7 @@ static inline unsigned long load_unaligned_zeropad(const void *addr)
 #else
 	"	lsl	%0, %0, %1\n"
 #endif
-	"	b	2b\n"
+	"	ldr	pc, =2b\n"
 	"	.popsection\n"
 	"	.pushsection __ex_table,\"a\"\n"
 	"	.align	3\n"

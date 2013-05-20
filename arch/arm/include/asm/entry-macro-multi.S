@@ -11,7 +11,7 @@
 	@ routine called with r0 = irq number, r1 = struct pt_regs *
 	@
 	adrne	lr, BSYM(1b)
-	bne	asm_do_IRQ
+	ldrne	pc, =asm_do_IRQ
 
 #ifdef CONFIG_SMP
 	/*
