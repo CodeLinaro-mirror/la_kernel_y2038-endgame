@@ -67,7 +67,7 @@ static void __init pj4_cp_access_write(u32 value)
 		"mcr	p15, 0, %1, c1, c0, 2\n\t"
 		"mrc	p15, 0, %0, c1, c0, 2\n\t"
 		"mov	%0, %0\n\t"
-		"sub	pc, pc, #4\n\t"
+		"isb\n\t"
 		: "=r" (temp) : "r" (value));
 }
 
