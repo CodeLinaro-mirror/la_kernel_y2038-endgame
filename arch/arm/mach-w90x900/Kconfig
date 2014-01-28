@@ -47,4 +47,8 @@ config MACH_W90N960EVB
 
 endmenu
 
+config MACH_W90X900_AUTO
+	def_bool y
+	select MACH_W90P910EVB if !(MACH_W90P950EVB || MACH_W90N960EVB)
+
 endif
