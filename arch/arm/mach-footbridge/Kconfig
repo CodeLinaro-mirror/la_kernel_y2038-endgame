@@ -82,6 +82,7 @@ endmenu
 # Footbridge support
 config FOOTBRIDGE
 	bool
+	select ARCH_CATS if !(ARCH_PERSONAL_SERVER || ARCH_EBSA285_ADDIN || ARCH_EBSA285_HOST || ARCH_NETWINDER)
 
 # Footbridge in host mode
 config FOOTBRIDGE_HOST
