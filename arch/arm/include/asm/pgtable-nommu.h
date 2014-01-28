@@ -100,6 +100,7 @@ extern unsigned int kobjsize(const void *objp);
 #define v4_tlb_fns	(0)
 #define v4wb_tlb_fns	(0)
 #define v4wbi_tlb_fns	(0)
+#define fa_tlb_fns	(0)
 #define v6wbi_tlb_fns	(0)
 #define v7wbi_tlb_fns	(0)
 
@@ -108,6 +109,8 @@ extern unsigned int kobjsize(const void *objp);
 #define v4_mc_user_fns	(0)
 #define v4wb_user_fns	(0)
 #define v4wt_user_fns	(0)
+#define fa_user_fns	(0)
+#define feroceon_user_fns (0)
 #define v6_user_fns	(0)
 #define xscale_mc_user_fns (0)
 

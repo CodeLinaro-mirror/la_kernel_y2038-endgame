@@ -92,7 +92,9 @@ void __init davinci_common_init(struct davinci_soc_info *soc_info)
 	 * mdesc->map_io(), but we must also do it here because of the CPU
 	 * revision check below.
 	 */
+#ifdef CONFIG_MMU
 	local_flush_tlb_all();
+#endif
 	flush_cache_all();
 
 	/*

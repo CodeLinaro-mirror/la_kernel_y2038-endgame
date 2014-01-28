@@ -225,7 +225,7 @@ static void kgdb_flush_swbreak_addr(unsigned long addr)
 	if (!CACHE_FLUSH_IS_SAFE)
 		return;
 
-	if (current->mm) {
+	if (IS_ENABLED(CONFIG_MMU) && current->mm) {
 		int i;
 
 		for (i = 0; i < VMACACHE_SIZE; i++) {
