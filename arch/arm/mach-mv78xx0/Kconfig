@@ -20,6 +20,10 @@ config MACH_TERASTATION_WXL
 	  Say 'Y' here if you want your kernel to support the
 	  Buffalo WXL Nas.
 
+config MV78XX0_AUTO
+	def_bool y
+	select MACH_DB78X00_BP if (!MACH_RD78X00_MASA || MACH_TERASTATION_WXL)
+
 endmenu
 
 endif

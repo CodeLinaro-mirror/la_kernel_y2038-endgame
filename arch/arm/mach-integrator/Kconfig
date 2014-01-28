@@ -7,9 +7,11 @@ choice
 
 config ARCH_INTEGRATOR_V4_V5
 	bool "ARMv4 or ARMv5 CPUs"
+	select CPU_ARM926T if !CPU_32v4 && !CPU_32v4T
 
 config ARCH_INTEGRATOR_V6_V7
 	bool "ARMv6 or ARMv7 CPUs"
+	select CPU_V7 if !CPU_V6 && !CPU_V6K
 
 endchoice
 
@@ -33,6 +35,10 @@ config ARCH_INTEGRATOR_CP
 	select SOC_BUS
 	help
 	  Include support for the ARM(R) Integrator CP platform.
+
+config ARCH_INTEGRATOR_AUTO
+	def_bool y
+	select ARCH_INTEGRATOR_AP if !ARCH_INTEGRATOR_CP
 
 config ARCH_CINTEGRATOR
 	bool

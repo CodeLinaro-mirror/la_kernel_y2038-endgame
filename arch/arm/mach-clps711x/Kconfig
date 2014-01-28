@@ -33,6 +33,10 @@ config ARCH_P720T
 	  Say Y here if you intend to run this kernel on the ARM Prospector
 	  720T.
 
+config ARCH_CLPS711X_AUTO
+	def_bool y
+	select ARCH_EDB7211 if !(ARCH_AUTCPU12 || ARCH_CDB89712 || ARCH_CLEP7312 || ARCH_P720T)
+
 endmenu
 
 endif

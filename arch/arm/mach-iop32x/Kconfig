@@ -43,4 +43,8 @@ config MACH_EM7210
 
 endmenu
 
+config ARCH_IOP32X_AUTO
+	def_bool y
+	select ARCH_IQ80321 if !(MACH_GLANTANK || ARCH_IQ31244 || MACH_N2100 || MACH_EM7210)
+
 endif
