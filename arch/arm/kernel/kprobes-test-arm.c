@@ -215,10 +215,12 @@ void kprobe_arm_test_cases(void)
 	TEST_BB_R("bx	r",7,2f,"")
 	TEST_BF_R("bxeq	r",14,2f,"")
 
+#if __LINUX_ARM_ARCH__ >= 5
 	TEST_R("clz	r0, r",0, 0x0,"")
 	TEST_R("clzeq	r7, r",14,0x1,"")
 	TEST_R("clz	lr, r",7, 0xffffffff,"")
 	TEST(  "clz	r4, sp")
+#endif
 	TEST_UNSUPPORTED(".word 0x016fff10	@ clz pc, r0")
 	TEST_UNSUPPORTED(".word 0x016f0f1f	@ clz r0, pc")
 
@@ -226,11 +228,14 @@ void kprobe_arm_test_cases(void)
 	TEST_UNSUPPORTED("bxj	r0")
 #endif
 
+#if __LINUX_ARM_ARCH__ >= 5
 	TEST_BF_R("blx	r",0,2f,"")
 	TEST_BB_R("blx	r",7,2f,"")
 	TEST_BF_R("blxeq	r",14,2f,"")
+#endif
 	TEST_UNSUPPORTED(".word 0x0120003f	@ blx pc")
 
+#if __LINUX_ARM_ARCH__ >= 5
 	TEST_RR(   "qadd	r0, r",1, VAL1,", r",2, VAL2,"")
 	TEST_RR(   "qaddvs	lr, r",9, VAL2,", r",8, VAL1,"")
 	TEST_R(    "qadd	lr, r",9, VAL2,", r13")
@@ -243,6 +248,7 @@ void kprobe_arm_test_cases(void)
 	TEST_RR(   "qdsub	r0, r",1, VAL1,", r",2, VAL2,"")
 	TEST_RR(   "qdsubvs	lr, r",9, VAL2,", r",8, VAL1,"")
 	TEST_R(    "qdsub	lr, r",9, VAL2,", r13")
+#endif
 	TEST_UNSUPPORTED(".word 0xe101f050	@ qadd pc, r0, r1")
 	TEST_UNSUPPORTED(".word 0xe121f050	@ qsub pc, r0, r1")
 	TEST_UNSUPPORTED(".word 0xe141f050	@ qdadd pc, r0, r1")
@@ -250,13 +256,16 @@ void kprobe_arm_test_cases(void)
 	TEST_UNSUPPORTED(".word 0xe16f2050	@ qdsub r2, r0, pc")
 	TEST_UNSUPPORTED(".word 0xe161205f	@ qdsub r2, pc, r1")
 
+#if __LINUX_ARM_ARCH__ >= 5
 	TEST_UNSUPPORTED("bkpt	0xffff")
 	TEST_UNSUPPORTED("bkpt	0x0000")
+#endif
 
 	TEST_UNSUPPORTED(".word 0xe1600070 @ smc #0")
 
 	TEST_GROUP("Halfword multiply and multiply-accumulate")
 
+#if __LINUX_ARM_ARCH__ >= 5
 	TEST_RRR(    "smlabb	r0, r",1, VAL1,", r",2, VAL2,", r",3,  VAL3,"")
 	TEST_RRR(    "smlabbge	r7, r",8, VAL3,", r",9, VAL1,", r",10, VAL2,"")
 	TEST_RR(     "smlabb	lr, r",1, VAL2,", r",2, VAL3,", r13")
@@ -336,6 +345,7 @@ void kprobe_arm_test_cases(void)
 	TEST_UNSUPPORTED(".word 0xe16f02e1 @ smultt pc, r1, r2")
 	TEST_UNSUPPORTED(".word 0xe16002ef @ smultt r0, pc, r2")
 	TEST_UNSUPPORTED(".word 0xe1600fe1 @ smultt r0, r1, pc")
+#endif
 
 	TEST_GROUP("Multiply and multiply-accumulate")
 
@@ -557,7 +567,7 @@ void kprobe_arm_test_cases(void)
 	TEST_UNSUPPORTED("ldrsht	r1, [r2], r3")
 	TEST_UNSUPPORTED("ldrsht	r1, [r2], #48")
 #endif
-
+#if __LINUX_ARM_ARCH__ >= 5
 	TEST_RPR(  "strd	r",0, VAL1,", [r",1, 48,", -r",2,24,"]")
 	TEST_RPR(  "strccd	r",8, VAL2,", [r",13,0, ", r",12,48,"]")
 	TEST_RPR(  "strd	r",4, VAL1,", [r",2, 24,", r",3, 48,"]!")
@@ -594,6 +604,7 @@ void kprobe_arm_test_cases(void)
 	TEST_UNSUPPORTED(".word 0xe1efc3d0	@ ldrd r12, [pc, #48]!")
 	TEST_UNSUPPORTED(".word 0xe0c9f3d0	@ ldrd pc, [r9], #48")
 	TEST_UNSUPPORTED(".word 0xe0c9e3d0	@ ldrd lr, [r9], #48")
+#endif
 
 	TEST_GROUP("Miscellaneous")
 
@@ -1226,7 +1237,9 @@ void kprobe_arm_test_cases(void)
 	TEST_COPROCESSOR( "mrc"two"	0, 0, r0, cr0, cr0, 0")
 
 	COPROCESSOR_INSTRUCTIONS_ST_LD("","e")
+#if __LINUX_ARM_ARCH__ >= 5
 	COPROCESSOR_INSTRUCTIONS_MC_MR("","e")
+#endif
 	TEST_UNSUPPORTED("svc	0")
 	TEST_UNSUPPORTED("svc	0xffffff")
 
@@ -1286,7 +1299,9 @@ void kprobe_arm_test_cases(void)
 	TEST(	"blx	__dummy_thumb_subroutine_odd")
 #endif /* __LINUX_ARM_ARCH__ >= 6 */
 
+#if __LINUX_ARM_ARCH__ >= 5
 	COPROCESSOR_INSTRUCTIONS_ST_LD("2","f")
+#endif
 #if __LINUX_ARM_ARCH__ >= 6
 	COPROCESSOR_INSTRUCTIONS_MC_MR("2","f")
 #endif
