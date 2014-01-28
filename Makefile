@@ -615,6 +615,7 @@ ifdef CONFIG_CC_STACKPROTECTOR_STRONG
   ifeq ($(call cc-option, $(stackp-flag)),)
     $(warning Cannot use CONFIG_CC_STACKPROTECTOR_STRONG: \
 	      -fstack-protector-strong not supported by compiler)
+    stackp-flag :=
   endif
 else
   # Force off for distro compilers that enable stack protector by default.
