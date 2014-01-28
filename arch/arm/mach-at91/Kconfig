@@ -83,7 +83,7 @@ config SOC_SAM_V4_V5
 	  AT91RM9200 SoC.
 
 config SOC_SAM_V7
-	bool "Cortex A5"
+	bool "Cortex A5 (SAMA5D3 family)"
 	help
 	  Select this if you are using one of Atmel's SAMA5D3 SoC.
 
@@ -93,7 +93,8 @@ comment "Atmel AT91 Processor"
 
 if SOC_SAM_V7
 config SOC_SAMA5D3
-	bool "SAMA5D3 family"
+	def_bool y
+	depends on SOC_SAM_V7
 	select SOC_SAMA5
 	select HAVE_FB_ATMEL
 	select HAVE_AT91_DBGU1
@@ -191,6 +192,9 @@ config SOC_AT91SAM9N12
 # ----------------------------------------------------------
 endif # SOC_SAM_V4_V5
 
+config MACH_AT91_AUTO
+	def_bool SOC_SAM_V4_V5
+	select SOC_AT91SAM9N12 if !(SOC_AT91SAM9X5 || SOC_AT91SAM9G45 || SOC_AT91SAM9RL || SOC_AT91SAM9263 || SOC_AT91RM9200)
 
 if SOC_SAM_V4_V5 || ARCH_AT91X40
 source arch/arm/mach-at91/Kconfig.non_dt
@@ -199,25 +203,21 @@ endif
 comment "Generic Board Type"
 
 config MACH_AT91RM9200_DT
-	bool "Atmel AT91RM9200 Evaluation Kits with device-tree support"
-	depends on SOC_AT91RM9200
+	def_bool SOC_AT91RM9200
 	select USE_OF
 	help
 	  Select this if you want to experiment device-tree with
 	  an Atmel RM9200 Evaluation Kit.
 
 config MACH_AT91SAM9_DT
-	bool "Atmel AT91SAM Evaluation Kits with device-tree support"
-	depends on SOC_AT91SAM9
+	def_bool SOC_AT91SAM9
 	select USE_OF
 	help
 	  Select this if you want to experiment device-tree with
 	  an Atmel Evaluation Kit.
 
 config MACH_SAMA5_DT
-	bool "Atmel SAMA5 Evaluation Kits with device-tree support"
-	depends on SOC_SAMA5
-	select USE_OF
+	def_bool SOC_SAMA5
 	select PHYLIB if NETDEVICES
 	help
 	  Select this if you want to experiment device-tree with

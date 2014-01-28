@@ -195,4 +195,8 @@ config MACH_TORBRECK
 
 endmenu
 
+config ARCH_S5PV210_AUTO
+	def_bool y
+	select MACH_SMDKV210 if !(MACH_AQUILA || MACH_GONI || MACH_SMDKC110 || MACH_TORBRECK)
+
 endif
