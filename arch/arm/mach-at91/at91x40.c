@@ -32,15 +32,46 @@ int clk_enable(struct clk *clk)
 {
 	return 0;
 }
+EXPORT_SYMBOL(clk_enable);
 
 void clk_disable(struct clk *clk)
 {
 }
+EXPORT_SYMBOL(clk_disable);
 
 unsigned long clk_get_rate(struct clk *clk)
 {
 	return AT91X40_MASTER_CLOCK;
 }
+EXPORT_SYMBOL(clk_get_rate);
+
+long clk_round_rate(struct clk *clk, unsigned long rate)
+{
+        WARN_ON(clk);
+        return 0;
+}
+EXPORT_SYMBOL(clk_round_rate);
+
+int clk_set_rate(struct clk *clk, unsigned long rate)
+{
+        WARN_ON(clk);
+        return 0;
+}
+EXPORT_SYMBOL(clk_set_rate);
+
+int clk_set_parent(struct clk *clk, struct clk *parent)
+{
+	WARN_ON(clk);
+        return 0;
+}       
+EXPORT_SYMBOL(clk_set_parent);
+
+struct clk *clk_get_parent(struct clk *clk)
+{
+	WARN_ON(clk);
+        return NULL;
+}       
+EXPORT_SYMBOL(clk_get_parent);
 
 static void at91x40_idle(void)
 {
