@@ -29,9 +29,9 @@ u8  __readb(const volatile void __iomem *addr);
 u16 __readw(const volatile void __iomem *addr);
 u32 __readl(const volatile void __iomem *addr);
 
-void __writeb(u8  val, void __iomem *addr);
-void __writew(u16 val, void __iomem *addr);
-void __writel(u32 val, void __iomem *addr);
+void __writeb(u8  val, volatile void __iomem *addr);
+void __writew(u16 val, volatile void __iomem *addr);
+void __writel(u32 val, volatile void __iomem *addr);
 
 /*
  * Argh, someone forgot the IOCS16 line.  We therefore have to handle
@@ -61,6 +61,9 @@ void __writel(u32 val, void __iomem *addr);
 #define writeb(v,b)		__writeb(v,b)
 #define writew(v,b)		__writew(v,b)
 #define writel(v,b)		__writel(v,b)
+#define writeb_relaxed(v,b)	writeb(v,b)
+#define writew_relaxed(v,b)	writew(v,b)
+#define writel_relaxed(v,b)	writel(v,b)
 
 extern void insb(unsigned int port, void *buf, int sz);
 extern void insw(unsigned int port, void *buf, int sz);
@@ -71,11 +74,19 @@ extern void outsw(unsigned int port, const void *buf, int sz);
 extern void outsl(unsigned int port, const void *buf, int sz);
 
 /* can't support writesb atm */
-extern void writesw(void __iomem *addr, const void *data, int wordlen);
-extern void writesl(void __iomem *addr, const void *data, int longlen);
+extern void writesw(volatile void __iomem *addr, const void *data, int wordlen);
+extern void writesl(volatile void __iomem *addr, const void *data, int longlen);
 
 /* can't support readsb atm */
-extern void readsw(const void __iomem *addr, void *data, int wordlen);
-extern void readsl(const void __iomem *addr, void *data, int longlen);
+extern void readsw(const volatile void __iomem *addr, void *data, int wordlen);
+extern void readsl(const volatile void __iomem *addr, void *data, int longlen);
+
+/* can't support mem*io() */
+extern void _memcpy_fromio(void *, const volatile void __iomem *, size_t);
+extern void _memcpy_toio(volatile void __iomem *, const void *, size_t);
+extern void _memset_io(volatile void __iomem *, int, size_t);
+#define memset_io(c,v,l)        _memset_io(c,(v),(l))
+#define memcpy_fromio(a,c,l)    _memcpy_fromio((a),c,(l))
+#define memcpy_toio(c,a,l)      _memcpy_toio(c,(a),(l))
 
 #endif
