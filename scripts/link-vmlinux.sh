@@ -206,12 +206,48 @@ if [ -n "${CONFIG_KALLSYMS}" ]; then
 
 	# step 2a
 	if [ -n "${KALLSYMS_EXTRA_PASS}" ]; then
-		kallsymso=.tmp_kallsyms3.o
-		kallsyms_vmlinux=.tmp_vmlinux3
+		kallsymso=.tmp_kallsyms5.o
+		kallsyms_vmlinux=.tmp_vmlinux5
 
 		vmlinux_link .tmp_kallsyms2.o .tmp_vmlinux3
-
 		kallsyms .tmp_vmlinux3 .tmp_kallsyms3.o
+
+		vmlinux_link .tmp_kallsyms3.o .tmp_vmlinux4
+		kallsyms .tmp_vmlinux4 .tmp_kallsyms4.o
+
+		vmlinux_link .tmp_kallsyms4.o .tmp_vmlinux5
+		kallsyms .tmp_vmlinux5 .tmp_kallsyms5.o
+	fi
+
+	if [ -n "${KALLSYMS_EXTRA_PASS2}" ]; then
+
+		kallsymso=.tmp_kallsyms12.o
+		kallsyms_vmlinux=.tmp_vmlinux12
+
+
+		# for 0xCF5C873C_defconfig
+		vmlinux_link .tmp_kallsyms5.o .tmp_vmlinux6
+		kallsyms .tmp_vmlinux6 .tmp_kallsyms6.o
+
+		# for 0xC3B27B40_defconfig
+		vmlinux_link .tmp_kallsyms6.o .tmp_vmlinux7
+		kallsyms .tmp_vmlinux7 .tmp_kallsyms7.o
+
+		vmlinux_link .tmp_kallsyms7.o .tmp_vmlinux8
+		kallsyms .tmp_vmlinux8 .tmp_kallsyms8.o
+
+		vmlinux_link .tmp_kallsyms8.o .tmp_vmlinux9
+		kallsyms .tmp_vmlinux9 .tmp_kallsyms9.o
+
+		# for 0xBC148050_defconfig
+		vmlinux_link .tmp_kallsyms9.o .tmp_vmlinux10
+		kallsyms .tmp_vmlinux10 .tmp_kallsyms10.o
+
+		vmlinux_link .tmp_kallsyms10.o .tmp_vmlinux11
+		kallsyms .tmp_vmlinux11 .tmp_kallsyms11.o
+
+		vmlinux_link .tmp_kallsyms11.o .tmp_vmlinux12
+		kallsyms .tmp_vmlinux12 .tmp_kallsyms12.o
 	fi
 fi
 
