@@ -18,4 +18,8 @@ config MACH_IQ80332
 
 endmenu
 
+config MACH_IOP33X_AUTO
+	def_bool y
+	select ARCH_IQ80331 if !MACH_IQ80332
+
 endif
