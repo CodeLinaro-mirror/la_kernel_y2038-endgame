@@ -45,6 +45,7 @@ config ARCH_NETWINDER
 # Footbridge support
 config FOOTBRIDGE
 	def_bool y
+	select ARCH_CATS if !(ARCH_EBSA285_HOST || ARCH_NETWINDER)
 	select ARCH_MIGHT_HAVE_PC_SERIO
 	select ISA_DMA_API
 
