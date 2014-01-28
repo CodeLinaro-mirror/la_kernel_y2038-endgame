@@ -58,6 +58,10 @@ static inline int is_pci_memory(u32 addr)
 #define writew(v, p)			__indirect_writew(v, p)
 #define writel(v, p)			__indirect_writel(v, p)
 
+#define writeb_relaxed(v, p)		__raw_writeb(v, p)
+#define writew_relaxed(v, p)		__raw_writew(v, p)
+#define writel_relaxed(v, p)		__raw_writel(v, p)
+
 #define writesb(p, v, l)		__indirect_writesb(p, v, l)
 #define writesw(p, v, l)		__indirect_writesw(p, v, l)
 #define writesl(p, v, l)		__indirect_writesl(p, v, l)
@@ -65,6 +69,10 @@ static inline int is_pci_memory(u32 addr)
 #define readb(p)			__indirect_readb(p)
 #define readw(p)			__indirect_readw(p)
 #define readl(p)			__indirect_readl(p)
+
+#define readb_relaxed(p)		__raw_readb(p)
+#define readw_relaxed(p)		__raw_readw(p)
+#define readl_relaxed(p)		__raw_readl(p)
 
 #define readsb(p, v, l)			__indirect_readsb(p, v, l)
 #define readsw(p, v, l)			__indirect_readsw(p, v, l)
@@ -76,7 +84,7 @@ static inline void __indirect_writeb(u8 value, volatile void __iomem *p)
 	u32 n, byte_enables, data;
 
 	if (!is_pci_memory(addr)) {
-		__raw_writeb(value, addr);
+		__raw_writeb(value, p);
 		return;
 	}
 
@@ -99,7 +107,7 @@ static inline void __indirect_writew(u16 value, volatile void __iomem *p)
 	u32 n, byte_enables, data;
 
 	if (!is_pci_memory(addr)) {
-		__raw_writew(value, addr);
+		__raw_writew(value, p);
 		return;
 	}
 
@@ -141,7 +149,7 @@ static inline unsigned char __indirect_readb(const volatile void __iomem *p)
 	u32 n, byte_enables, data;
 
 	if (!is_pci_memory(addr))
-		return __raw_readb(addr);
+		return __raw_readb(p);
 
 	n = addr % 4;
 	byte_enables = (0xf & ~BIT(n)) << IXP4XX_PCI_NP_CBE_BESL;
@@ -235,10 +243,11 @@ static inline void outb(u8 value, u32 addr)
 	ixp4xx_pci_write(addr, byte_enables | NP_CMD_IOWRITE, data);
 }
 
-static inline void outsb(u32 io_addr, const u8 *vaddr, u32 count)
+static inline void outsb(u32 io_addr, const void *vaddr, u32 count)
 {
+	const u8 *p = vaddr;
 	while (count--)
-		outb(*vaddr++, io_addr);
+		outb(*p++, io_addr);
 }
 
 static inline void outw(u16 value, u32 addr)
@@ -250,10 +259,11 @@ static inline void outw(u16 value, u32 addr)
 	ixp4xx_pci_write(addr, byte_enables | NP_CMD_IOWRITE, data);
 }
 
-static inline void outsw(u32 io_addr, const u16 *vaddr, u32 count)
+static inline void outsw(u32 io_addr, const void *vaddr, u32 count)
 {
+	const u16 *p = vaddr;
 	while (count--)
-		outw(cpu_to_le16(*vaddr++), io_addr);
+		outw(cpu_to_le16(*p++), io_addr);
 }
 
 static inline void outl(u32 value, u32 addr)
@@ -261,10 +271,11 @@ static inline void outl(u32 value, u32 addr)
 	ixp4xx_pci_write(addr, NP_CMD_IOWRITE, value);
 }
 
-static inline void outsl(u32 io_addr, const u32 *vaddr, u32 count)
+static inline void outsl(u32 io_addr, const void *vaddr, u32 count)
 {
+	const u32 *p = vaddr;
 	while (count--)
-		outl(cpu_to_le32(*vaddr++), io_addr);
+		outl(cpu_to_le32(*p++), io_addr);
 }
 
 static inline u8 inb(u32 addr)
@@ -278,10 +289,11 @@ static inline u8 inb(u32 addr)
 	return data >> (8*n);
 }
 
-static inline void insb(u32 io_addr, u8 *vaddr, u32 count)
+static inline void insb(u32 io_addr, void *vaddr, u32 count)
 {
+	u8 *p = vaddr;
 	while (count--)
-		*vaddr++ = inb(io_addr);
+		*p++ = inb(io_addr);
 }
 
 static inline u16 inw(u32 addr)
@@ -295,10 +307,11 @@ static inline u16 inw(u32 addr)
 	return data>>(8*n);
 }
 
-static inline void insw(u32 io_addr, u16 *vaddr, u32 count)
+static inline void insw(u32 io_addr, void *vaddr, u32 count)
 {
+	u16 *p = vaddr;
 	while (count--)
-		*vaddr++ = le16_to_cpu(inw(io_addr));
+		*p++ = le16_to_cpu(inw(io_addr));
 }
 
 static inline u32 inl(u32 addr)
@@ -310,10 +323,11 @@ static inline u32 inl(u32 addr)
 	return data;
 }
 
-static inline void insl(u32 io_addr, u32 *vaddr, u32 count)
+static inline void insl(u32 io_addr, void *vaddr, u32 count)
 {
+	u32 *p = vaddr;
 	while (count--)
-		*vaddr++ = le32_to_cpu(inl(io_addr));
+		*p++ = le32_to_cpu(inl(io_addr));
 }
 
 #define PIO_OFFSET      0x10000UL
@@ -364,6 +378,8 @@ static inline unsigned int ioread16(const void __iomem *addr)
 #endif
 }
 
+#define ioread16be(p)		__swab16(ioread16(p))
+
 #define	ioread16_rep(p, v, c)		ioread16_rep(p, v, c)
 static inline void ioread16_rep(const void __iomem *addr, void *vaddr,
 				u32 count)
@@ -393,6 +409,8 @@ static inline unsigned int ioread32(const void __iomem *addr)
 #endif
 	}
 }
+
+#define ioread32be(p)		__swab32(ioread32(p))
 
 #define	ioread32_rep(p, v, c)		ioread32_rep(p, v, c)
 static inline void ioread32_rep(const void __iomem *addr, void *vaddr,
@@ -452,6 +470,8 @@ static inline void iowrite16(u16 value, void __iomem *addr)
 #endif
 }
 
+#define iowrite16be(v, p) iowrite16(__swab16(v), p)
+
 #define	iowrite16_rep(p, v, c)		iowrite16_rep(p, v, c)
 static inline void iowrite16_rep(void __iomem *addr, const void *vaddr,
 				 u32 count)
@@ -480,6 +500,8 @@ static inline void iowrite32(u32 value, void __iomem *addr)
 		__indirect_writel(value, addr);
 #endif
 }
+
+#define iowrite32be(v, p) iowrite32(__swab32(v), p)
 
 #define	iowrite32_rep(p, v, c)		iowrite32_rep(p, v, c)
 static inline void iowrite32_rep(void __iomem *addr, const void *vaddr,
