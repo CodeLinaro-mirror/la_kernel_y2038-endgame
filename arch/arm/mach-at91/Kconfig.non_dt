@@ -329,6 +329,10 @@ config MACH_AT91EB01
 	  ARM simulator (commonly known as the ARMulator) and the
 	  Skyeye simulator.
 
+config MACH_AT91X40_AUTO
+	def_bool y
+	select MACH_AT91EB01
+
 endif
 
 # ----------------------------------------------------------
