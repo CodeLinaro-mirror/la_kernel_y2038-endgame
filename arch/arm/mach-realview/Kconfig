@@ -170,6 +170,11 @@ config REALVIEW_PBX_V7
 	  Enable support for Cortex-A class ARMv7-A uniprocessor tiles
 	  fitted to the Realview(R) Platform Baseboard Explore.
 
+config MACH_REALVIEW_AUTO
+	def_bool y
+	select MACH_REALVIEW_PBX if !(MACH_REALVIEW_EB || MACH_REALVIEW_PB1176 || MACH_REALVIEW_PB11MP || MACH_REALVIEW_PBA8)
+	select REALVIEW_EB_ARM926 if MACH_REALVIEW_EB && !(CPU_V6 || CPU_V6K || CPU_V7)
+	select REALVIEW_PBX_V7 if MACH_REALVIEW_PBX && !(REALVIEW_PBX_ARM1136 || REALVIEW_PBX_ARM1176)
 
 config REALVIEW_HIGH_PHYS_OFFSET
 	bool "High physical base address for the RealView platform"
