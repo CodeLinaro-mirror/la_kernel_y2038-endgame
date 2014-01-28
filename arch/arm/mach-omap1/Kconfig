@@ -5,6 +5,13 @@ menu "TI OMAP1 specific features"
 comment "OMAP Core Type"
 	depends on ARCH_OMAP1
 
+config ARCH_OMAP1_AUTO
+	def_bool y
+	select ARCH_OMAP15XX if !(ARCH_OMAP730 || ARCH_OMAP850 || ARCH_OMAP16XX)
+	select MACH_OMAP_PERSEUS2 if ARCH_OMAP730 && !MACH_OMAP_FSAMPLE
+	select MACH_HERALD if ARCH_OMAP850
+	select MACH_OMAP_GENERIC if (ARCH_OMAP15XX || ARCH_OMAP16XX)
+
 config ARCH_OMAP730
 	depends on ARCH_OMAP1
 	bool "OMAP730 Based System"
