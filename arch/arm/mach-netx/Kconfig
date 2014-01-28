@@ -18,4 +18,8 @@ config MACH_NXEB500HMI
 	help
 	  Board support for the Hilscher nxeb500hmi Eval Board
 
+config MACH_NX_AUTO
+	def_bool !(MACH_NXDB500 || MACH_NXEB500HMI)
+	select MACH_NXDKN
+
 endmenu
