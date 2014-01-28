@@ -35,6 +35,19 @@ unsigned long clk_get_rate(struct clk *clk)
 }
 EXPORT_SYMBOL(clk_get_rate);
 
+struct clk *clk_get_parent(struct clk *clk)
+{
+	WARN_ON(clk);
+	return NULL;
+}
+EXPORT_SYMBOL(clk_get_parent);
+
+int clk_set_parent(struct clk *clk, struct clk *parent)
+{
+	return -ENOSYS;
+}
+EXPORT_SYMBOL(clk_set_parent);
+
 long clk_round_rate(struct clk *clk, unsigned long rate)
 {
 	long ret = -EIO;
