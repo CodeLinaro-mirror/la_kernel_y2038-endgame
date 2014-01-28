@@ -659,6 +659,7 @@ config ARCH_SHMOBILE_LEGACY
 
 config ARCH_RPC
 	bool "RiscPC"
+	depends on MMU # for ecard
 	select ARCH_ACORN
 	select ARCH_MAY_HAVE_PC_FDC
 	select ARCH_SPARSEMEM_ENABLE
@@ -678,6 +679,7 @@ config ARCH_RPC
 
 config ARCH_SA1100
 	bool "SA1100-based"
+	depends on MMU
 	select ARCH_MTD_XIP
 	select ARCH_REQUIRE_GPIOLIB
 	select ARCH_SPARSEMEM_ENABLE
