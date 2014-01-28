@@ -179,7 +179,14 @@ static inline void __iomem *__typesafe_io(unsigned long addr)
 /* PCI fixed i/o mapping */
 #define PCI_IO_VIRT_BASE	0xfee00000
 
+#ifdef CONFIG_MMU
 extern int pci_ioremap_io(unsigned int offset, phys_addr_t phys_addr);
+#else
+static inline int pci_ioremap_io(unsigned int offset, phys_addr_t phys_addr)
+{
+	return 0;
+}
+#endif
 
 /*
  * Now, pick up the machine-defined IO definitions
