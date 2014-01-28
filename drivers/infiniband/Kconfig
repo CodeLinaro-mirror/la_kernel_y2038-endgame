@@ -4,6 +4,7 @@ menuconfig INFINIBAND
 	depends on INET
 	depends on IPV6 || !IPV6
 	depends on HAS_IOMEM
+	depends on MMU
 	depends on NET
 	depends on INET
 	depends on m || IPV6 != m

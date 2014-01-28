@@ -121,7 +121,7 @@ config MACH_DAVINCI_DM6467TEVM
 config MACH_DAVINCI_DM365_EVM
 	bool "TI DM365 EVM"
 	default ARCH_DAVINCI_DM365
-	depends on ARCH_DAVINCI_DM365
+	depends on ARCH_DAVINCI_DM365 && MMU
 	select EEPROM_AT24
 	select I2C
 	help
