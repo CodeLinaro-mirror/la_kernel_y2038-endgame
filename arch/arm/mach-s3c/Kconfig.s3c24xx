@@ -17,7 +17,15 @@ config PLAT_S3C24XX
 	help
 	  Base platform code for any Samsung S3C24XX device
 
-
+config ARCH_S3C24XX_AUTO
+	def_bool y
+	select CPU_S3C2410 if !(CPU_S3C2412 || CPU_S3C2416 || CPU_S3C2440 || CPU_S3C2442 || CPU_S3C2443)
+	select MACH_TCT_HAMMER if CPU_S3C2410
+	select MACH_SMDK2412 if CPU_S3C2412
+	select MACH_S3C2416_DT if CPU_S3C2416
+	select ARCH_S3C2440 if CPU_S3C2440
+	select MACH_NEO1973_GTA02 if CPU_S3C2442
+	select MACH_SMDK2443 if CPU_S3C2443
 
 menu "Samsung S3C24XX SoCs Support"
 
