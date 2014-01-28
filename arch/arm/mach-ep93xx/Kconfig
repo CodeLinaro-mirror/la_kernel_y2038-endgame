@@ -33,12 +33,14 @@ config EP93XX_SDCE0_PHYS_OFFSET
 
 config EP93XX_SDCE1_PHYS_OFFSET
 	bool "0xd0000000 - SDCE1"
+	depends on BROKEN
 	help
 	  Select this option if you want support for EP93xx boards with the
 	  first SDRAM bank at 0xd0000000.
 
 config EP93XX_SDCE2_PHYS_OFFSET
 	bool "0xe0000000 - SDCE2"
+	depends on BROKEN
 	help
 	  Select this option if you want support for EP93xx boards with the
 	  first SDRAM bank at 0xe0000000.
@@ -194,6 +196,12 @@ config MACH_VISION_EP9307
 	help
 	  Say 'Y' here if you want your kernel to support the
 	  Vision Engraving Systems EP9307 SoM.
+
+config ARCH_EP93XX_AUTO
+	def_bool y
+	select MACH_EDB9302A if EP93XX_SDCE0_PHYS_OFFSET
+	select MACH_EDB9301 if EP93XX_SDCE3_SYNC_PHYS_OFFSET
+	select MACH_MICRO9M if EP93XX_SDCE3_ASYNC_PHYS_OFFSET
 
 endmenu
 

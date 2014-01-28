@@ -46,6 +46,10 @@ config ARCH_INTEGRATOR_CP
 	help
 	  Include support for the ARM(R) Integrator CP platform.
 
+config ARCH_INTEGRATOR_AUTO
+	def_bool y
+	select ARCH_INTEGRATOR_AP if !ARCH_INTEGRATOR_CP
+
 config ARCH_CINTEGRATOR
 	bool
 
