@@ -230,11 +230,6 @@ void __init exynos_cpuidle_init(void)
 	platform_device_register(&exynos_cpuidle);
 }
 
-void __init exynos_cpufreq_init(void)
-{
-	platform_device_register_simple("exynos-cpufreq", -1, NULL, 0);
-}
-
 void __init exynos_init_late(void)
 {
 	if (of_machine_is_compatible("samsung,exynos5440"))
@@ -364,7 +359,7 @@ static void __init exynos_dt_machine_init(void)
 	}
 
 	exynos_cpuidle_init();
-	exynos_cpufreq_init();
+	platform_device_register_simple("cpufreq-cpu0", -1, NULL, 0);
 
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
 }
