@@ -31,6 +31,42 @@
 		mshc0 = &mshc_0;
 	};
 
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a9";
+			reg = <0>;
+			clocks = <&clock 12>;
+			clock-names = "cpu";
+
+			operating-points = <
+				1500000 1350000
+				1400000 1287500
+				1300000 1250000
+				1200000 1187500
+				1100000 1137500
+				1000000 1087500
+				 900000 1037500
+				 800000 1000000
+				 700000  987500
+				 600000  975000
+				 500000  950000
+				 400000  925000
+				 300000  900000
+				 200000  900000
+			>;
+			clock-latency = <200000>;
+			boost-frequency = <1500000 1350000>;
+		};
+		cpu@1 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a9";
+			reg = <1>;
+		};
+	};
+
 	pmu {
 		compatible = "arm,cortex-a9-pmu";
 		interrupt-parent = <&combiner>;

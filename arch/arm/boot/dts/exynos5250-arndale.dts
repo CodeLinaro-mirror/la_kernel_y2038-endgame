@@ -29,6 +29,12 @@
 		status = "okay";
 	};
 
+	cpus {
+		cpu@0 {
+			cpu0-supply = <&buck2_reg>;
+		};
+	};
+
 	codec@11000000 {
 		samsung,mfc-r = <0x43000000 0x800000>;
 		samsung,mfc-l = <0x51000000 0x800000>;
