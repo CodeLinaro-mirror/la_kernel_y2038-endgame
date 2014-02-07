@@ -348,4 +348,9 @@ extern struct samsung_clk_reg_dump *samsung_clk_alloc_reg_dump(
 						const unsigned long *rdump,
 						unsigned long nr_rdump);
 
+int __init samsung_register_arm_clock(unsigned int lookup_id,
+		const char **parent_names, unsigned int num_parents,
+		void __iomem *base, struct device_node *np,
+		struct clk_ops *ops);
+
 #endif /* __SAMSUNG_CLK_H */
