@@ -22,6 +22,12 @@
 		reg = <0x40000000 0x40000000>;
 	};
 
+	cpus {
+		cpu@0 {
+			cpu0-supply = <&buck2_reg>;
+		};
+	};
+
 	leds {
 		compatible = "gpio-leds";
 		led1 {
