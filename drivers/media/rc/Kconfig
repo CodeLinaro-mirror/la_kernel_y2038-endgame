@@ -335,7 +335,7 @@ config IR_GPIO_CIR
 
 config RC_ST
 	tristate "ST remote control receiver"
-	depends on ARCH_STI && RC_CORE
+	depends on ARCH_STI && RC_CORE && RESET_CONTROLLER
 	help
 	 Say Y here if you want support for ST remote control driver
 	 which allows both IR and UHF RX.
