@@ -382,7 +382,8 @@ static void __init imx6sl_clocks_init(struct device_node *ccm_node)
 	clk_set_parent(clks[IMX6SL_CLK_SPDIF0_SEL], clks[IMX6SL_CLK_PLL3_PFD3]);
 
 	/* Set initial power mode */
-	imx6q_set_lpm(WAIT_CLOCKED);
+	if (IS_ENABLED(CONFIG_PM))
+		imx6q_set_lpm(WAIT_CLOCKED);
 
 	np = of_find_compatible_node(NULL, NULL, "fsl,imx6sl-gpt");
 	base = of_iomap(np, 0);

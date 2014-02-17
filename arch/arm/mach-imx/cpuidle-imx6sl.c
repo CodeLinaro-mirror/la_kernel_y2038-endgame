@@ -53,5 +53,8 @@ static struct cpuidle_driver imx6sl_cpuidle_driver = {
 
 int __init imx6sl_cpuidle_init(void)
 {
+	if (!IS_ENABLED(CONFIG_PM))
+		return -ENOSYS;
+
 	return cpuidle_register(&imx6sl_cpuidle_driver, NULL);
 }
