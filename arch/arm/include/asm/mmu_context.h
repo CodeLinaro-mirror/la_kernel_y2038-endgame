@@ -63,6 +63,7 @@ static inline void check_and_switch_context(struct mm_struct *mm,
 
 #define finish_arch_post_lock_switch \
 	finish_arch_post_lock_switch
+#ifndef MODULE
 static inline void finish_arch_post_lock_switch(void)
 {
 	struct mm_struct *mm = current->mm;
@@ -82,7 +83,7 @@ static inline void finish_arch_post_lock_switch(void)
 		preempt_enable_no_resched();
 	}
 }
-
+#endif
 #endif	/* CONFIG_MMU */
 
 #define init_new_context(tsk,mm)	0
