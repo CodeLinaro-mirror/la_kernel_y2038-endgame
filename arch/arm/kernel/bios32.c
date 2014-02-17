@@ -511,6 +511,26 @@ static void pcibios_init_hw(struct device *parent, struct hw_pci *hw,
 	}
 }
 
+static void pci_common_bus_probe(struct pci_bus *bus)
+{
+	if (!pci_has_flag(PCI_PROBE_ONLY)) {
+		/*
+		 * Size the bridge windows.
+		 */
+		pci_bus_size_bridges(bus);
+
+		/*
+		 * Assign resources.
+		 */
+		pci_bus_assign_resources(bus);
+	}
+
+	/*
+	 * Tell drivers about devices found.
+	 */
+	pci_bus_add_devices(bus);
+}
+
 void pci_common_init_dev(struct device *parent, struct hw_pci *hw)
 {
 	struct pci_sys_data *sys;
@@ -525,27 +545,38 @@ void pci_common_init_dev(struct device *parent, struct hw_pci *hw)
 
 	pci_fixup_irqs(pcibios_swizzle, pcibios_map_irq);
 
-	list_for_each_entry(sys, &head, node) {
-		struct pci_bus *bus = sys->bus;
-
-		if (!pci_has_flag(PCI_PROBE_ONLY)) {
-			/*
-			 * Size the bridge windows.
-			 */
-			pci_bus_size_bridges(bus);
-
-			/*
-			 * Assign resources.
-			 */
-			pci_bus_assign_resources(bus);
-		}
-
-		/*
-		 * Tell drivers about devices found.
-		 */
-		pci_bus_add_devices(bus);
-	}
+	list_for_each_entry(sys, &head, node)
+		pci_common_bus_probe(sys->bus);
 }
+
+
+
+
+int pci_host_bridge_register(struct device *parent, struct pci_sys_data *sys, struct pci_ops *ops, int (*setup)(int nr, struct pci_sys_data *))
+{
+	int ret;
+
+	pci_add_flags(PCI_REASSIGN_ALL_RSRC);
+	INIT_LIST_HEAD(&sys->resources);
+
+	ret = setup(0, sys);
+	if (ret)
+		return ret;
+
+	ret = pcibios_init_resources(0, sys);
+	if (ret)
+		return ret;
+
+	sys->bus = pci_scan_root_bus(parent, sys->busnr, ops, sys, &sys->resources);
+	if (!sys->bus)
+		return -ENODEV;
+
+	pci_fixup_irqs(pcibios_swizzle, pcibios_map_irq);
+
+	pci_common_bus_probe(sys->bus);
+	return ret;		
+}
+EXPORT_SYMBOL_GPL(pci_host_bridge_register);
 
 #ifndef CONFIG_PCI_HOST_ITE8152
 void pcibios_set_master(struct pci_dev *dev)
