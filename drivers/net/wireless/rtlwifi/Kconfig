@@ -12,6 +12,7 @@ if RTL_CARDS
 config RTL8192CE
 	tristate "Realtek RTL8192CE/RTL8188CE Wireless Network Adapter"
 	depends on PCI
+	depends on BROKEN # internal compiler error on ARM
 	select RTL8192C_COMMON
 	select RTLWIFI
 	select RTLWIFI_PCI
