@@ -1,6 +1,15 @@
-if ARCH_MV78XX0
+menuconfig ARCH_MV78XX0
+	bool "Marvell MV78xx0" if ARCH_MULTI_V5
+	select ARCH_REQUIRE_GPIOLIB
+	select CPU_FEROCEON
+	select MVEBU_MBUS
+	select PCI
+	select PLAT_ORION_LEGACY
+	help
+	  Support for the following Marvell MV78xx0 series SoCs:
+	  MV781x0, MV782x0.
 
-menu "Marvell MV78xx0 Implementations"
+if ARCH_MV78XX0
 
 config MACH_DB78X00_BP
 	bool "Marvell DB-78x00-BP Development Board"
@@ -23,7 +32,5 @@ config MACH_TERASTATION_WXL
 config MV78XX0_AUTO
 	def_bool y
 	select MACH_DB78X00_BP if (!MACH_RD78X00_MASA || MACH_TERASTATION_WXL)
-
-endmenu
 
 endif

@@ -1,6 +1,15 @@
-if ARCH_DOVE
+menuconfig ARCH_DOVE
+	bool "Marvell Dove" if ARCH_MULTI_V7
+	select ARCH_REQUIRE_GPIOLIB
+	select CPU_PJ4
+	select MVEBU_MBUS
+	select PINCTRL
+	select PINCTRL_DOVE
+	select PLAT_ORION_LEGACY
+	help
+	  Support for the Marvell Dove SoC 88AP510
 
-menu "Marvell Dove Implementations"
+if ARCH_DOVE
 
 config DOVE_LEGACY
 	bool
@@ -23,7 +32,5 @@ config MACH_CM_A510
 config MACH_DOVE_AUTO
 	def_bool y
 	select MACH_CM_A510 if !MACH_DOVE_DB
-
-endmenu
 
 endif
