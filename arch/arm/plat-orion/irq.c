@@ -18,8 +18,10 @@
 #include <asm/exception.h>
 #include <plat/irq.h>
 #include <plat/orion-gpio.h>
+#include <mach/hardware.h>
 #include <mach/bridge-regs.h>
 
+#undef CONFIG_MULTI_IRQ_HANDLER
 #ifdef CONFIG_MULTI_IRQ_HANDLER
 /*
  * Compiling with both non-DT and DT support enabled, will
