@@ -56,6 +56,7 @@ static void orion_nand_read_buf(struct mtd_info *mtd, uint8_t *buf, int len)
 		*buf++ = readb(io_base);
 		len--;
 	}
+#if __LINUX_ARM_ARCH__ >= 5
 	buf64 = (uint64_t *)buf;
 	while (i < len/8) {
 		/*
@@ -68,6 +69,10 @@ static void orion_nand_read_buf(struct mtd_info *mtd, uint8_t *buf, int len)
 		asm volatile ("ldrd\t%0, [%1]" : "=&r" (x) : "r" (io_base));
 		buf64[i++] = x;
 	}
+#else
+	readsl(io_base, buf, len/8);
+	i = len / 8 * 8;
+#endif
 	i *= 8;
 	while (i < len)
 		buf[i++] = readb(io_base);
