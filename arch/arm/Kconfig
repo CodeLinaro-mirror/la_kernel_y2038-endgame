@@ -233,7 +233,7 @@ config VECTORS_BASE
 	  in size.
 
 config ARM_PATCH_PHYS_VIRT
-	bool "Patch physical to virtual translations at runtime" if EMBEDDED
+	bool "Patch physical to virtual translations at runtime" if BROKEN_MULTIPLATFORM
 	default y
 	depends on !XIP_KERNEL && MMU
 	depends on !ARCH_REALVIEW || !SPARSEMEM
@@ -302,15 +302,12 @@ config MMU
 #
 choice
 	prompt "ARM system type"
-	default ARCH_VERSATILE if !MMU
-	default ARCH_MULTIPLATFORM if MMU
+	default ARCH_MULTIPLATFORM
 
 config ARCH_MULTIPLATFORM
 	bool "Allow multiple platforms to be selected"
-	depends on MMU
 	select ARCH_WANT_OPTIONAL_GPIOLIB
 	select ARM_HAS_SG_CHAIN
-	select ARM_PATCH_PHYS_VIRT
 	select AUTO_ZRELADDR
 	select CLKSRC_OF
 	select COMMON_CLK
@@ -865,6 +862,18 @@ config ARCH_OMAP1
 	  Support for older TI OMAP1 (omap7xx, omap15xx or omap16xx)
 
 endchoice
+
+config BROKEN_MULTIPLATFORM
+	bool "Allow multiplatform builds that may be broken" if ARCH_MULTIPLATFORM && EXPERT && MMU
+	def_bool !ARCH_MULTIPLATFORM || !MMU
+	help
+	  This is a meta option that makes other options visible that
+	  are normally hidden when building a kernel with ARCH_MULTIPLATFORM
+	  support.
+	  You have to enable this option in order to select any option
+	  that can cause your kernel to only work on a subset of the
+	  platforms that are enabled. This includes disabling MMU
+	  or ARM_PATCH_PHYS_VIRT, or enabling ZBOOT_ROM.
 
 menu "Multiple platform selection"
 	depends on ARCH_MULTIPLATFORM
@@ -1938,6 +1947,7 @@ config DEPRECATED_PARAM_STRUCT
 # TEXT and BSS so we preserve their values in the config files.
 config ZBOOT_ROM_TEXT
 	hex "Compressed ROM boot loader base address"
+	depends on BROKEN_MULTIPLATFORM
 	default "0"
 	help
 	  The physical address at which the ROM-able zImage is to be
@@ -1949,6 +1959,7 @@ config ZBOOT_ROM_TEXT
 
 config ZBOOT_ROM_BSS
 	hex "Compressed ROM boot loader BSS address"
+	depends on BROKEN_MULTIPLATFORM
 	default "0"
 	help
 	  The base address of an area of read/write memory in the target
@@ -1962,6 +1973,7 @@ config ZBOOT_ROM_BSS
 
 config ZBOOT_ROM
 	bool "Compressed boot loader in ROM/flash"
+	depends on BROKEN_MULTIPLATFORM
 	depends on ZBOOT_ROM_TEXT != ZBOOT_ROM_BSS
 	depends on !ARM_APPENDED_DTB && !XIP_KERNEL && !AUTO_ZRELADDR
 	help
@@ -2087,7 +2099,7 @@ endchoice
 
 config XIP_KERNEL
 	bool "Kernel Execute-In-Place from ROM"
-	depends on !ARM_LPAE && !ARCH_MULTIPLATFORM
+	depends on !ARM_LPAE && BROKEN_MULTIPLATFORM
 	help
 	  Execute-In-Place allows the kernel to run from non-volatile storage
 	  directly addressable by the CPU, such as NOR flash. This saves RAM

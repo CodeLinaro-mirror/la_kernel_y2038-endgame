@@ -80,6 +80,7 @@ config DEBUG_USER
 config DEBUG_LL
 	bool "Kernel low-level debugging functions (read help!)"
 	depends on DEBUG_KERNEL
+	depends on BROKEN_MULTIPLATFORM
 	help
 	  Say Y here to include definitions of printascii, printch, printhex
 	  in the kernel.  This is helpful if you are debugging code that
