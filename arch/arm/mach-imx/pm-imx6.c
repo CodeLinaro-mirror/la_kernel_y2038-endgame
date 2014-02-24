@@ -327,7 +327,9 @@ static int imx6q_suspend_finish(unsigned long val)
 		 * call low level suspend function in ocram,
 		 * as we need to float DDR IO.
 		 */
+#ifdef CONFIG_MMU
 		local_flush_tlb_all();
+#endif
 		imx6_suspend_in_ocram_fn(suspend_ocram_base);
 	}
 
@@ -470,8 +472,12 @@ static int __init imx6q_suspend_init(const struct imx6_pm_socdata *socdata)
 
 	ocram_pbase = gen_pool_virt_to_phys(ocram_pool, ocram_base);
 
+#ifdef CONFIG_MMU
 	suspend_ocram_base = __arm_ioremap_exec(ocram_pbase,
 		MX6Q_SUSPEND_OCRAM_SIZE, false);
+#else
+	suspend_ocram_base = (void __iomem *)ocram_pbase;
+#endif
 
 	pm_info = suspend_ocram_base;
 	pm_info->pbase = ocram_pbase;
