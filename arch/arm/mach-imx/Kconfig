@@ -96,7 +96,7 @@ config SOC_IMX31
 	select CPU_V6
 	select IMX_HAVE_PLATFORM_MXC_RNGA
 	select MXC_AVIC
-	select SMP_ON_UP if SMP
+	select SMP_ON_UP if SMP && !BROKEN_MULTIPLATFORM
 
 config SOC_IMX35
 	bool
@@ -104,7 +104,7 @@ config SOC_IMX35
 	select HAVE_EPIT
 	select MXC_AVIC
 	select PINCTRL_IMX35
-	select SMP_ON_UP if SMP
+	select SMP_ON_UP if SMP && !BROKEN_MULTIPLATFORM
 
 if ARCH_MULTI_V4T
 
