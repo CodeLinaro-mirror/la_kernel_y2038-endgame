@@ -31,6 +31,7 @@
 #include "iomap.h"
 
 static struct map_desc tegra_io_desc[] __initdata = {
+#ifdef CONFIG_MMU
 	{
 		.virtual = (unsigned long)IO_PPSB_VIRT,
 		.pfn = __phys_to_pfn(IO_PPSB_PHYS),
@@ -55,6 +56,7 @@ static struct map_desc tegra_io_desc[] __initdata = {
 		.length = IO_IRAM_SIZE,
 		.type = MT_DEVICE,
 	},
+#endif
 };
 
 void __init tegra_map_common_io(void)
