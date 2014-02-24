@@ -143,7 +143,15 @@ extern void __iomem *__arm_ioremap_caller(phys_addr_t, size_t, unsigned int,
 
 extern void __iomem *__arm_ioremap_pfn(unsigned long, unsigned long, size_t, unsigned int);
 extern void __iomem *__arm_ioremap(phys_addr_t, size_t, unsigned int);
+#ifdef CONFIG_MMU
 extern void __iomem *__arm_ioremap_exec(phys_addr_t, size_t, bool cached);
+#else
+static inline void __iomem *__arm_ioremap_exec(phys_addr_t phys,
+					       size_t size, bool cached)
+{
+	return (void __iomem *)(unsigned long)phys;
+}
+#endif
 extern void __iounmap(volatile void __iomem *addr);
 extern void __arm_iounmap(volatile void __iomem *addr);
 
