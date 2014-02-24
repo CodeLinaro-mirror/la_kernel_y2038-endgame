@@ -199,6 +199,7 @@ static void sgtable_free(struct sg_table *sgt)
 /* map 'sglist' to a contiguous mpu virtual area and return 'va' */
 static void *vmap_sg(const struct sg_table *sgt)
 {
+#ifdef CONFIG_MMU
 	u32 va;
 	size_t total;
 	unsigned int i;
@@ -244,6 +245,9 @@ err_out:
 	WARN_ON(1); /* FIXME: cleanup some mpu mappings */
 	vunmap(new->addr);
 	return ERR_PTR(-EAGAIN);
+#else
+	return ERR_PTR(-EINVAL);
+#endif
 }
 
 static inline void vunmap_sg(const void *va)

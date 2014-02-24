@@ -151,6 +151,10 @@
 		IO_TO_VIRT_XLATE((n), IO_IRAM_PHYS, IO_IRAM_VIRT) :	\
 	NULL)
 
+#ifdef CONFIG_MMU
 #define IO_ADDRESS(n) (IO_TO_VIRT(n))
+#else
+#define IO_ADDRESS(n) (void __iomem *)(n)
+#endif
 
 #endif

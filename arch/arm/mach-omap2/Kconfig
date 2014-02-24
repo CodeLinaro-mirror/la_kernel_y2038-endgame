@@ -104,7 +104,7 @@ config ARCH_OMAP2PLUS_TYPICAL
 	bool "Typical OMAP configuration"
 	default y
 	select AEABI
-	select HIGHMEM
+	select HIGHMEM if MMU
 	select I2C
 	select I2C_OMAP
 	select MENELAUS if ARCH_OMAP2
