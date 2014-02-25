@@ -98,6 +98,7 @@ comment "Renesas ARM SoCs System Type"
 config ARCH_SH7372
 	bool "SH-Mobile AP4 (SH7372)"
 	select ARCH_RMOBILE
+	depends on !AUTO_ZRELADDR
 	select ARCH_WANT_OPTIONAL_GPIOLIB
 	select ARM_CPU_SUSPEND if PM || CPU_IDLE
 	select SH_INTC
@@ -107,6 +108,7 @@ config ARCH_SH73A0
 	select ARCH_RMOBILE
 	select ARCH_WANT_OPTIONAL_GPIOLIB
 	select ARM_GIC
+	select AUTO_ZRELADDR
 	select I2C
 	select SH_INTC
 	select RENESAS_INTC_IRQPIN
@@ -116,6 +118,7 @@ config ARCH_R8A73A4
 	select ARCH_RMOBILE
 	select ARCH_WANT_OPTIONAL_GPIOLIB
 	select ARM_GIC
+	select AUTO_ZRELADDR
 	select RENESAS_IRQC
 
 config ARCH_R8A7740
@@ -123,12 +126,14 @@ config ARCH_R8A7740
 	select ARCH_RMOBILE
 	select ARCH_WANT_OPTIONAL_GPIOLIB
 	select ARM_GIC
+	select AUTO_ZRELADDR
 	select RENESAS_INTC_IRQPIN
 
 config ARCH_R8A7778
 	bool "R-Car M1A (R8A77781)"
 	select ARCH_RCAR_GEN1
 	select ARCH_WANT_OPTIONAL_GPIOLIB
+	select AUTO_ZRELADDR
 	select ARM_GIC
 
 config ARCH_R8A7779
@@ -136,12 +141,14 @@ config ARCH_R8A7779
 	select ARCH_RCAR_GEN1
 	select ARCH_WANT_OPTIONAL_GPIOLIB
 	select ARM_GIC
+	select AUTO_ZRELADDR
 
 config ARCH_R8A7790
 	bool "R-Car H2 (R8A77900)"
 	select ARCH_RCAR_GEN2
 	select ARCH_WANT_OPTIONAL_GPIOLIB
 	select ARM_GIC
+	select AUTO_ZRELADDR
 	select MIGHT_HAVE_PCI
 	select ARCH_DMA_ADDR_T_64BIT if ARM_LPAE
 
@@ -150,6 +157,7 @@ config ARCH_R8A7791
 	select ARCH_RCAR_GEN2
 	select ARCH_WANT_OPTIONAL_GPIOLIB
 	select ARM_GIC
+	select AUTO_ZRELADDR
 	select MIGHT_HAVE_PCI
 	select ARCH_DMA_ADDR_T_64BIT if ARM_LPAE
 
