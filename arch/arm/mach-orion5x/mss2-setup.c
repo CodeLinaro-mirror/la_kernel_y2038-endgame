@@ -184,9 +184,9 @@ static void mss2_power_off(void)
 	reg |= 1 << 2;
 	writel(reg, RSTOUTn_MASK);
 
-	reg = readl(CPU_SOFT_RESET);
+	reg = readl(SYSTEM_SOFT_RESET);
 	reg |= 1;
-	writel(reg, CPU_SOFT_RESET);
+	writel(reg, SYSTEM_SOFT_RESET);
 }
 
 /****************************************************************************
