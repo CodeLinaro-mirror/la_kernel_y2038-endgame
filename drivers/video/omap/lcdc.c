@@ -613,29 +613,11 @@ static void lcdc_dma_handler(u16 status, void *data)
 
 static int mmap_kern(void)
 {
-	struct vm_struct	*kvma;
-	struct vm_area_struct	vma;
-	pgprot_t		pgprot;
-	unsigned long		vaddr;
+	void __iomem *vaddr;
 
-	kvma = get_vm_area(lcdc.vram_size, VM_IOREMAP);
-	if (kvma == NULL) {
-		dev_err(lcdc.fbdev->dev, "can't get kernel vm area\n");
+	vaddr = ioremap_wc(lcdc.vram_phys, lcdc.vram_size);
+	if (!vaddr)
 		return -ENOMEM;
-	}
-	vma.vm_mm = &init_mm;
-
-	vaddr = (unsigned long)kvma->addr;
-	vma.vm_start = vaddr;
-	vma.vm_end = vaddr + lcdc.vram_size;
-
-	pgprot = pgprot_writecombine(pgprot_kernel);
-	if (io_remap_pfn_range(&vma, vaddr,
-			   lcdc.vram_phys >> PAGE_SHIFT,
-			   lcdc.vram_size, pgprot) < 0) {
-		dev_err(lcdc.fbdev->dev, "kernel mmap for FB memory failed\n");
-		return -EAGAIN;
-	}
 
 	lcdc.vram_virt = (void *)vaddr;
 
@@ -644,7 +626,7 @@ static int mmap_kern(void)
 
 static void unmap_kern(void)
 {
-	vunmap(lcdc.vram_virt);
+	iounmap(lcdc.vram_virt);
 }
 
 static int alloc_palette_ram(void)
