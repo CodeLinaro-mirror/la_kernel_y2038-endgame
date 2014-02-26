@@ -385,6 +385,7 @@ config FB_CYBER2000_I2C
 	depends on FB_CYBER2000 && I2C && ARCH_NETWINDER
 	depends on I2C=y || FB_CYBER2000=m
 	select I2C_ALGOBIT
+	depends on I2C=y || FB_CYBER2000=m
 	help
 	  Enable support for the I2C video decoder interface on the
 	  Integraphics CyberPro 20x0 and 5000 VGA chips.  This is used
