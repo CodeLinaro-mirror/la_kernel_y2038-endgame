@@ -482,7 +482,7 @@ config KEYBOARD_PXA930_ROTARY
 
 config KEYBOARD_PMIC8XXX
 	tristate "Qualcomm PMIC8XXX keypad support"
-	depends on MFD_PM8XXX
+	depends on MFD_PM8XXX && BROKEN
 	select INPUT_MATRIXKMAP
 	help
 	  Say Y here if you want to enable the driver for the PMIC8XXX
