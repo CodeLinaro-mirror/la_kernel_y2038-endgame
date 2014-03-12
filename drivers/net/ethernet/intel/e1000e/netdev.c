@@ -6170,7 +6170,6 @@ static void e1000e_disable_aspm(struct pci_dev *pdev, u16 state)
 					   aspm_dis_mask);
 }
 
-#ifdef CONFIG_PM
 static int __e1000_resume(struct pci_dev *pdev)
 {
 	struct net_device *netdev = pci_get_drvdata(pdev);
@@ -6332,7 +6331,6 @@ static int e1000e_pm_runtime_suspend(struct device *dev)
 	return 0;
 }
 #endif /* CONFIG_PM_RUNTIME */
-#endif /* CONFIG_PM */
 
 static void e1000_shutdown(struct pci_dev *pdev)
 {
