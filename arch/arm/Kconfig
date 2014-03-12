@@ -272,7 +272,7 @@ config NEED_MACH_MEMORY_H
 
 config PHYS_OFFSET
 	hex "Physical address of main memory" if MMU
-	depends on !ARM_PATCH_PHYS_VIRT && !NEED_MACH_MEMORY_H
+	depends on (!ARM_PATCH_PHYS_VIRT && !NEED_MACH_MEMORY_H) || !MMU
 	default DRAM_BASE if !MMU
 	default 0
 	help
