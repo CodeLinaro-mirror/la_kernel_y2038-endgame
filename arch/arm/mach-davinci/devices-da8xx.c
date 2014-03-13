@@ -66,6 +66,7 @@
 #define DA850_DMA_MMCSD1_TX	EDMA_CTLR_CHAN(1, 29)
 
 void __iomem *da8xx_syscfg0_base;
+EXPORT_SYMBOL_GPL(da8xx_syscfg0_base); /* used by OHCI_HCD */
 void __iomem *da8xx_syscfg1_base;
 
 static struct plat_serial8250_port da8xx_serial0_pdata[] = {
