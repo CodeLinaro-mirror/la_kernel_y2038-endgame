@@ -324,7 +324,6 @@ config ARCH_MULTIPLATFORM
 config ARCH_INTEGRATOR
 	bool "ARM Ltd. Integrator family"
 	select ARM_AMBA
-	select ARM_PATCH_PHYS_VIRT if MMU
 	select AUTO_ZRELADDR
 	select COMMON_CLK
 	select COMMON_CLK_VERSATILE
@@ -653,7 +652,6 @@ config ARCH_MSM
 config ARCH_SHMOBILE_LEGACY
 	bool "Renesas ARM SoCs (non-multiplatform)"
 	select ARCH_SHMOBILE
-	select ARM_PATCH_PHYS_VIRT if MMU
 	select CLKDEV_LOOKUP
 	select CPU_V7
 	select GENERIC_CLOCKEVENTS
