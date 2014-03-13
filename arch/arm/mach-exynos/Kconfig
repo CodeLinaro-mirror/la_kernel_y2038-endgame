@@ -70,6 +70,8 @@ config CPU_EXYNOS4210
 	bool "SAMSUNG EXYNOS4210"
 	default y
 	depends on ARCH_EXYNOS4
+	help
+	  Enable EXYNOS4210 CPU support
 
 config SOC_EXYNOS4212
 	bool "SAMSUNG EXYNOS4212"
@@ -129,5 +131,9 @@ config EXYNOS5420_MCPM
 	help
 	  This is needed to provide CPU and cluster power management
 	  on Exynos5420 implementing big.LITTLE.
+
+config EXYNOS_CPU_IDLE
+	def_bool PM && CPU_IDLE
+	select ARM_CPU_SUSPEND
 
 endif
