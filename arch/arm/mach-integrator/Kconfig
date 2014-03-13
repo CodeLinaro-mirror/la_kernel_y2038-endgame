@@ -2,6 +2,17 @@ if ARCH_INTEGRATOR
 
 menu "Integrator Options"
 
+choice
+	prompt "CPU architecture level"
+
+config ARCH_INTEGRATOR_V4_V5
+	bool "ARMv4 or ARMv5 CPUs"
+
+config ARCH_INTEGRATOR_V6_V7
+	bool "ARMv6 or ARMv7 CPUs"
+
+endchoice
+
 config ARCH_INTEGRATOR_AP
 	bool "Support Integrator/AP and Integrator/PP2 platforms"
 	select CLKSRC_MMIO
