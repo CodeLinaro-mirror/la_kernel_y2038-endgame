@@ -11,7 +11,11 @@
 #include <linux/linkage.h>
 #include <asm/assembler.h>
 
+#ifdef CONFIG_CPU_V7M
+	.arch	armv7-m
+#else
 	.arch	armv7-a
+#endif
 /*
  * Debugging stuff
  *
@@ -113,6 +117,7 @@
 /*
  * sort out different calling conventions
  */
+#ifndef CONFIG_CPU_V7M
 		.align
 		.arm				@ Always enter in ARM state
 start:
@@ -124,7 +129,14 @@ start:
    ARM(		b	1f		)
  THUMB(		adr	r12, BSYM(1f)	)
  THUMB(		bx	r12		)
-
+#else
+		.align
+start:
+		.type   start,#function
+		.rept	9
+		b	1f
+		.endr
+#endif
 		.word	_magic_sig	@ Magic numbers to help the loader
 		.word	_magic_start	@ absolute load/run zImage address
 		.word	_magic_end	@ zImage end address
@@ -133,13 +145,16 @@ start:
  THUMB(		.thumb			)
 1:
  ARM_BE8(	setend	be )			@ go BE8 if compiled for BE8
+#ifndef CONFIG_CPU_V7M
 		mrs	r9, cpsr
+#endif
 #ifdef CONFIG_ARM_VIRT_EXT
 		bl	__hyp_stub_install	@ get into SVC mode, reversibly
 #endif
 		mov	r7, r1			@ save architecture ID
 		mov	r8, r2			@ save atags pointer
 
+#ifndef CONFIG_CPU_V7M
 		/*
 		 * Booting from Angel - need to enter SVC mode and disable
 		 * FIQs/IRQs (numeric definitions from angel arm.h source).
@@ -155,6 +170,7 @@ not_angel:
 		safe_svcmode_maskall r0
 		msr	spsr_cxsf, r9		@ Save the CPU boot mode in
 						@ SPSR
+#endif
 		/*
 		 * Note that some cache flushing and other stuff may
 		 * be needed here - is there an Angel SWI call for this?
@@ -788,7 +804,7 @@ __common_mmu_cache_on:
  */
 
 call_cache_fn:	adr	r12, proc_types
-#ifdef CONFIG_CPU_CP15
+#if defined(CONFIG_CPU_CP15) || defined(CONFIG_CPU_V7M)
 		mrc	p15, 0, r9, c0, c0	@ get processor ID
 #else
 		ldr	r9, =CONFIG_PROCESSOR_ID
