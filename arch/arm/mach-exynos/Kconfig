@@ -56,7 +56,6 @@ config CPU_EXYNOS4210
 	default y
 	depends on ARCH_EXYNOS4
 	select ARCH_HAS_BANDGAP
-	select ARM_CPU_SUSPEND if PM_SLEEP
 	select PINCTRL_EXYNOS
 	select SAMSUNG_DMADEV
 	help
@@ -117,5 +116,9 @@ config SOC_EXYNOS5440
 	select PM_OPP
 	help
 	  Enable EXYNOS5440 SoC support
+
+config EXYNOS_CPU_IDLE
+	def_bool PM && CPU_IDLE
+	select ARM_CPU_SUSPEND
 
 endif

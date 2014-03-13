@@ -492,6 +492,7 @@ config S5P_PM
 
 config S5P_SLEEP
 	bool
+	select ARM_CPU_SUSPEND
 	help
 	  Internal config node to apply common S5P sleep management code.
 	  Can be selected by S5P and newer SoCs with similar sleep procedure.
