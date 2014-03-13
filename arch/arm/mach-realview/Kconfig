@@ -8,6 +8,38 @@ config MACH_REALVIEW_EB
 	  Include support for the ARM(R) RealView(R) Emulation Baseboard
 	  platform.
 
+config REALVIEW_EB_ARM926
+	bool "Support ARM926EJ-S Tile"
+	depends on MACH_REALVIEW_EB && !(CPU_V6 || CPU_V6K || CPU_V7)
+	select CPU_ARM926T
+	help
+	  Enable support for the ARM926 tile fitted to the
+	  Realview(R) Emulation Baseboard platform.
+
+config REALVIEW_EB_ARM1136
+	bool "Support ARM1136J(F)-S Tile"
+	depends on MACH_REALVIEW_EB
+	select CPU_V6
+	help
+	  Enable support for the ARM1136 tile fitted to the
+	  Realview(R) Emulation Baseboard platform.
+
+config REALVIEW_EB_ARM1176
+	bool "Support ARM1176JZ(F)-S Tile"
+	depends on MACH_REALVIEW_EB
+	select CPU_V6K
+	help
+	  Enable support for the ARM1176 tile fitted to the
+	  Realview(R) Emulation Baseboard platform.
+
+config REALVIEW_EB_V7
+	bool "Support Cortex-A5/A7/A8/A9/A12/A15 Tile"
+	depends on MACH_REALVIEW_EB
+	select CPU_V7
+	help
+	  Enable support for Cortex-A class ARMv7-A uniprocessor tiles
+	  fitted to the Realview(R) Emulation Baseboard platform.
+
 config REALVIEW_EB_A9MP
 	bool "Support Multicore Cortex-A9 Tile"
 	depends on MACH_REALVIEW_EB
@@ -100,6 +132,31 @@ config MACH_REALVIEW_PBX
 	help
 	  Include support for the ARM(R) RealView(R) Platform Baseboard
 	  Explore.
+
+config REALVIEW_PBX_ARM1136
+	bool "Support ARM1136J(F)-S Tile"
+	depends on MACH_REALVIEW_PBX
+	select CPU_V6
+	help
+	  Enable support for the ARM1136 tile fitted to the
+	  Realview(R) Platform Baseboard Explore.
+
+config REALVIEW_PBX_ARM1176
+	bool "Support ARM1176JZ(F)-S Tile"
+	depends on MACH_REALVIEW_PBX
+	select CPU_V6K
+	help
+	  Enable support for the ARM1176 tile fitted to the
+	  Realview(R) Platform Baseboard Explore.
+
+config REALVIEW_PBX_V7
+	bool "Support Cortex-A5/A7/A8/A9/A12/A15 Tile"
+	depends on MACH_REALVIEW_PBX
+	select CPU_V7
+	help
+	  Enable support for Cortex-A class ARMv7-A uniprocessor tiles
+	  fitted to the Realview(R) Platform Baseboard Explore.
+
 
 config REALVIEW_HIGH_PHYS_OFFSET
 	bool "High physical base address for the RealView platform"
