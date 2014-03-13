@@ -275,6 +275,7 @@ config PHYS_OFFSET
 	default 0xd0000000 if EP93XX_SDCE1_PHYS_OFFSET
 	default 0xe0000000 if EP93XX_SDCE2_PHYS_OFFSET
 	default 0xf0000000 if EP93XX_SDCE3_ASYNC_PHYS_OFFSET
+	default 0
 	help
 	  Please provide the physical address corresponding to the
 	  location of main memory in your system.
