@@ -640,13 +640,13 @@ static void __init evm_init_cpld(void)
 		return;
 	clk_prepare_enable(aemif_clk);
 
-	if (request_mem_region(DM365_ASYNC_EMIF_DATA_CE1_BASE, SECTION_SIZE,
+	if (request_mem_region(DM365_ASYNC_EMIF_DATA_CE1_BASE, SZ_1M,
 			"cpld") == NULL)
 		goto fail;
-	cpld = ioremap(DM365_ASYNC_EMIF_DATA_CE1_BASE, SECTION_SIZE);
+	cpld = ioremap(DM365_ASYNC_EMIF_DATA_CE1_BASE, SZ_1M);
 	if (!cpld) {
 		release_mem_region(DM365_ASYNC_EMIF_DATA_CE1_BASE,
-				SECTION_SIZE);
+				SZ_1M);
 fail:
 		pr_err("ERROR: can't map CPLD\n");
 		clk_disable_unprepare(aemif_clk);
