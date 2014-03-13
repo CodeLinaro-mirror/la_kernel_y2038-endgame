@@ -42,6 +42,7 @@ comment "Boot options"
 
 config S3C_BOOT_ERROR_RESET
 	bool "S3C Reboot on decompression error"
+	depends on PLAT_S5P || PLAT_S3C24XX || ARCH_S3C64XX
 	help
 	  Say y here to use the watchdog to reset the system if the
 	  kernel decompressor detects an error during decompression.
