@@ -161,5 +161,10 @@ static inline int arch_irqs_disabled_flags(unsigned long flags)
 	return flags & IRQMASK_I_BIT;
 }
 
+static inline int arch_irqs_disabled(void)
+{
+	return arch_irqs_disabled_flags(arch_local_save_flags());
+}
+
 #endif /* ifdef __KERNEL__ */
 #endif /* ifndef __ASM_ARM_IRQFLAGS_H */
