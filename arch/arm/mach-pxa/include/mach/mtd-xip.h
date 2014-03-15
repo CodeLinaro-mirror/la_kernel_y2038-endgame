@@ -17,11 +17,12 @@
 
 #include <mach/regs-ost.h>
 
-#define xip_irqpending()	(ICIP & ICMR)
+extern bool xip_irqpending(void);
 
 /* we sample OSCR and convert desired delta to usec (1/4 ~= 1000000/3686400) */
-#define xip_currtime()		(OSCR)
-#define xip_elapsed_since(x)	(signed)((OSCR - (x)) / 4)
+#define xip_irqpending()	xip_irqpending()
+#define xip_currtime()		readl(OSCR)
+#define xip_elapsed_since(x)	(signed)((readl(OSCR) - (x)) / 4)
 
 /*
  * xip_cpu_idle() is used when waiting for a delay equal or larger than
