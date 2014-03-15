@@ -293,7 +293,7 @@ struct thermal_trip {
 };
 
 /* Function declarations */
-#ifdef CONFIG_THERMAL_OF
+#if IS_ENABLED(CONFIG_THERMAL_OF)
 struct thermal_zone_device *
 thermal_zone_of_sensor_register(struct device *dev, int id, void *data,
 				const struct thermal_zone_of_device_ops *ops);
