@@ -4,6 +4,7 @@
 
 menuconfig SND_SOC
 	tristate "ALSA for SoC audio support"
+	depends on I2C || !I2C # SND_SOC cannot be built-in if I2C=m
 	select SND_PCM
 	select AC97_BUS if SND_SOC_AC97_BUS
 	select SND_JACK if INPUT=y || INPUT=SND
