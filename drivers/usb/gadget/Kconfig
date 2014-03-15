@@ -302,6 +302,7 @@ config USB_PXA27X
 
 config USB_S3C_HSOTG
 	tristate "Designware/S3C HS/OtG USB Device controller"
+	select GENERIC_PHY
 	help
 	  The Designware USB2.0 high-speed gadget controller
 	  integrated into many SoCs.
