@@ -81,6 +81,14 @@ void pxa_unmask_irq(struct irq_data *d)
 	__raw_writel(icmr, base + ICMR);
 }
 
+#ifdef CONFIG_MTD_XIP
+bool xip_irqpending(void)
+{
+	return readl(pxa_irq_base + ICIP) & readl(pxa_irq_base + ICMR);
+}
+EXPORT_SYMBOL_GPL(xip_irqpending);
+#endif
+
 static struct irq_chip pxa_internal_irq_chip = {
 	.name		= "SC",
 	.irq_ack	= pxa_mask_irq,
