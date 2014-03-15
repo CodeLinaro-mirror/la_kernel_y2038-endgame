@@ -238,7 +238,7 @@ ENTRY(__setup_mpu)
 	set_region_nr r0, #MPU_VECTORS_REGION
 	isb
 	/* Shared, inaccessible to PL0, rw PL1 */
-	mov	r0, #CONFIG_VECTORS_BASE	@ Cover from VECTORS_BASE
+	ldr	r0,=CONFIG_VECTORS_BASE		@ Cover from VECTORS_BASE
 	ldr	r5,=(MPU_AP_PL1RW_PL0NA | MPU_RGN_NORMAL)
 	/* Writing N to bits 5:1 (RSR_SZ) --> region size 2^N+1 */
 	mov	r6, #(((PAGE_SHIFT - 1) << MPU_RSR_SZ) | 1 << MPU_RSR_EN)
