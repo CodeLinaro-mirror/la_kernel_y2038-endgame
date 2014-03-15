@@ -667,7 +667,7 @@ extern void flush_bp_all(void);
 #endif
 
 #ifndef __ASSEMBLY__
-#ifdef CONFIG_ARM_ERRATA_798181
+#if defined(CONFIG_ARM_ERRATA_798181) && IS_ENABLED(CONFIG_MMU)
 extern void erratum_a15_798181_init(void);
 #else
 static inline void erratum_a15_798181_init(void) {}
