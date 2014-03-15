@@ -309,7 +309,11 @@ static int __init omap_l3_init(void)
 {
 	return platform_driver_register(&omap_l3_driver);
 }
+#ifdef MODULE
+module_init(omap_l3_init);
+#else
 postcore_initcall_sync(omap_l3_init);
+#endif
 
 static void __exit omap_l3_exit(void)
 {
