@@ -55,7 +55,7 @@ config DEVTMPFS_MOUNT
 	  on the rootfs is completely empty.
 
 config STANDALONE
-	bool "Select only drivers that don't need compile-time external firmware"
+	bool "Select only drivers that don't need compile-time external firmware" if BROKEN
 	default y
 	help
 	  Select this option if you don't have magic firmware for drivers that
@@ -64,7 +64,7 @@ config STANDALONE
 	  If unsure, say Y.
 
 config PREVENT_FIRMWARE_BUILD
-	bool "Prevent firmware from being built"
+	bool "Prevent firmware from being built" if BROKEN
 	default y
 	help
 	  Say yes to avoid building firmware. Firmware is usually shipped
