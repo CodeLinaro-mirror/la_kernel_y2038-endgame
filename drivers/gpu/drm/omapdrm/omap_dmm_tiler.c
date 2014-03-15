@@ -223,7 +223,8 @@ static void dmm_txn_append(struct dmm_txn *txn, struct pat_area *area,
 			.lut_id = engine->tcm->lut_id,
 		};
 
-	data = alloc_dma(txn, 4*i, &pat->data_pa);
+	data = alloc_dma(txn, 4*i, &pat_pa);
+	pat->data_pa = (u32)pat_pa;
 
 	while (i--) {
 		int n = i + roll;
