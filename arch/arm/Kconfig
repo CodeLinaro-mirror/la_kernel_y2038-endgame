@@ -736,7 +736,7 @@ config ARCH_S3C64XX
 	select S3C_DEV_NAND
 	select S3C_GPIO_TRACK
 	select SAMSUNG_ATAGS
-	select SAMSUNG_WAKEMASK
+	select SAMSUNG_WAKEMASK if PM_SLEEP
 	select SAMSUNG_WDT_RESET
 	help
 	  Samsung S3C64XX series based systems
