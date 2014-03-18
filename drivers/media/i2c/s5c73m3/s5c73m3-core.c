@@ -1615,7 +1615,7 @@ static int s5c73m3_get_platform_data(struct s5c73m3 *state)
 	ret = s5c73m3_parse_gpios(state);
 	if (ret < 0)
 		return -EINVAL;
-
+#if 0
 	node_ep = v4l2_of_get_next_endpoint(node, NULL);
 	if (!node_ep) {
 		dev_warn(dev, "no endpoint defined for node: %s\n",
@@ -1625,7 +1625,6 @@ static int s5c73m3_get_platform_data(struct s5c73m3 *state)
 
 	v4l2_of_parse_endpoint(node_ep, &ep);
 	of_node_put(node_ep);
-
 	if (ep.bus_type != V4L2_MBUS_CSI2) {
 		dev_err(dev, "unsupported bus type\n");
 		return -EINVAL;
@@ -1637,6 +1636,7 @@ static int s5c73m3_get_platform_data(struct s5c73m3 *state)
 	if (ep.bus.mipi_csi2.num_data_lanes != S5C73M3_MIPI_DATA_LANES)
 		dev_info(dev, "falling back to 4 MIPI CSI-2 data lanes\n");
 
+#endif
 	return 0;
 }
 
