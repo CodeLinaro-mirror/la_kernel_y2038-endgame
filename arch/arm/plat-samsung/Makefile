@@ -1,3 +1,6 @@
+ccflags-$(CONFIG_ARCH_EXYNOS) := -I$(srctree)/$(src)/include \
+	-I$(srctree)/arch/arm/mach-exynos/include
+
 # arch/arm/plat-samsung/Makefile
 #
 # Copyright 2009 Simtec Electronics
