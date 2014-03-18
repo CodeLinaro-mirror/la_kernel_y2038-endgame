@@ -510,7 +510,7 @@ static void __init koelsch_init(void)
 
 	irq_set_irq_type(irq_pin(0), IRQ_TYPE_LEVEL_LOW);
 
-	if (IS_ENABLED(CONFIG_PHYLIB))
+	if (IS_BUILTIN(CONFIG_PHYLIB))
 		phy_register_fixup_for_id("r8a7791-ether-ff:01",
 					  koelsch_ksz8041_fixup);
 }
