@@ -643,7 +643,6 @@ config ARCH_PXA
 	select ARCH_HAS_CPUFREQ
 	select ARCH_MTD_XIP
 	select ARCH_REQUIRE_GPIOLIB
-	select ARM_CPU_SUSPEND if PM
 	select AUTO_ZRELADDR
 	select CLKDEV_LOOKUP
 	select CLKSRC_MMIO

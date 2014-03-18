@@ -62,7 +62,7 @@ comment "Renesas ARM SoCs System Type"
 config ARCH_SH7372
 	bool "SH-Mobile AP4 (SH7372)"
 	select ARCH_WANT_OPTIONAL_GPIOLIB
-	select ARM_CPU_SUSPEND if PM || CPU_IDLE
+	select ARM_CPU_SUSPEND if CPU_IDLE
 	select CPU_V7
 	select SH_CLK_CPG
 	select SYS_SUPPORTS_SH_CMT
