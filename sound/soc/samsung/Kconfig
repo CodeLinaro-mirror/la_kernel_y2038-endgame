@@ -170,7 +170,7 @@ config SND_SOC_GONI_AQUILA_WM8994
 
 config SND_SOC_SAMSUNG_SMDK_SPDIF
 	tristate "SoC S/PDIF Audio support for SMDK"
-	depends on SND_SOC_SAMSUNG
+	depends on SND_SOC_SAMSUNG && !ARCH_EXYNOS
 	select SND_SAMSUNG_SPDIF
 	help
 	  Say Y if you want to add support for SoC S/PDIF audio on the SMDK.
@@ -185,7 +185,7 @@ config SND_SOC_SMDK_WM8580_PCM
 
 config SND_SOC_SMDK_WM8994_PCM
 	tristate "SoC PCM Audio support for WM8994 on SMDK"
-	depends on SND_SOC_SAMSUNG
+	depends on SND_SOC_SAMSUNG && !ARCH_EXYNOS
 	depends on I2C=y
 	select MFD_WM8994
 	select SND_SOC_WM8994
