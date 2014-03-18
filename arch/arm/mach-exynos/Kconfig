@@ -7,9 +7,19 @@
 
 # Configuration options for the EXYNOS4
 
-if ARCH_EXYNOS
+menuconfig ARCH_EXYNOS
+	bool "SAMSUNG EXYNOS SoCs Support"
+	depends on ARCH_MULTI_V7
+	select ARCH_HAS_CPUFREQ
+	select ARCH_REQUIRE_GPIOLIB
+	select ARM_GIC
+	select HAVE_S3C2410_I2C if I2C
+	select HAVE_S3C2410_WATCHDOG if WATCHDOG
+	select HAVE_S3C_RTC if RTC_CLASS
+	help
+	  Support for SAMSUNG's EXYNOS SoCs (EXYNOS4/5)
 
-menu "SAMSUNG EXYNOS SoCs Support"
+if ARCH_EXYNOS
 
 config ARCH_EXYNOS4
 	bool "SAMSUNG EXYNOS4"
@@ -107,7 +117,5 @@ config SOC_EXYNOS5440
 	select PM_OPP
 	help
 	  Enable EXYNOS5440 SoC support
-
-endmenu
 
 endif
