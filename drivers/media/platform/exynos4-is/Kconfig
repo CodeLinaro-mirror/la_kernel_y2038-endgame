@@ -55,7 +55,7 @@ endif
 config VIDEO_EXYNOS4_FIMC_IS
 	tristate "EXYNOS4x12 FIMC-IS (Imaging Subsystem) driver"
 	select VIDEOBUF2_DMA_CONTIG
-	depends on OF
+	depends on OF && I2C
 	select FW_LOADER
 	help
 	  This is a V4L2 driver for Samsung EXYNOS4x12 SoC series
