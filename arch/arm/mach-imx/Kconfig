@@ -3,7 +3,6 @@ config ARCH_MXC
 	select ARCH_HAS_CPUFREQ
 	select ARCH_HAS_OPP
 	select ARCH_REQUIRE_GPIOLIB
-	select ARM_CPU_SUSPEND if PM
 	select CLKSRC_MMIO
 	select GENERIC_IRQ_CHIP
 	select PINCTRL
