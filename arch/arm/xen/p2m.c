@@ -148,7 +148,7 @@ EXPORT_SYMBOL_GPL(__mfn_to_pfn);
 
 int set_foreign_p2m_mapping(struct gnttab_map_grant_ref *map_ops,
 			    struct gnttab_map_grant_ref *kmap_ops,
-			    struct page **pages, unsigned int count);
+			    struct page **pages, unsigned int count)
 {
 	int i;
 
@@ -165,7 +165,7 @@ EXPORT_SYMBOL_GPL(set_foreign_p2m_mapping);
 
 int clear_foreign_p2m_mapping(struct gnttab_unmap_grant_ref *unmap_ops,
 			      struct gnttab_map_grant_ref *kmap_ops,
-			      struct page **pages, unsigned int count);
+			      struct page **pages, unsigned int count)
 {
 	int i;
 
