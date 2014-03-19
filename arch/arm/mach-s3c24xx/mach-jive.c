@@ -476,7 +476,7 @@ static struct s3c2410_udc_mach_info jive_udc_cfg __initdata = {
 
 /* Jive power management device */
 
-#ifdef CONFIG_PM
+#ifdef CONFIG_PM_SLEEP
 static int jive_pm_suspend(void)
 {
 	/* Write the magic value u-boot uses to check for resume into
