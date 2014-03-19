@@ -175,6 +175,7 @@ ENDPROC(cpu_pj4b_do_idle)
 
 #endif
 
+	.pushsection ".text.init"
 /*
  *	__v7_setup
  *
@@ -205,7 +206,9 @@ __v7_ca15mp_setup:
 	mcreq	p15, 0, r0, c1, c0, 1
 #endif
 	b	__v7_setup
+	.popsection
 
+	.pushsection ".text.init"
 __v7_pj4b_setup:
 #ifdef CONFIG_CPU_PJ4B
 
@@ -261,6 +264,7 @@ __v7_pj4b_setup:
 	mcr	p15, 1,	r0, c15, c1, 0
 
 #endif /* CONFIG_CPU_PJ4B */
+	.popsection
 
 __v7_setup:
 	adr	r12, __v7_setup_stack		@ the local stack
