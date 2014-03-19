@@ -1,6 +1,8 @@
 menuconfig INFINIBAND
 	tristate "InfiniBand support"
 	depends on PCI || BROKEN
+	depends on INET
+	depends on IPV6 || !IPV6
 	depends on HAS_IOMEM
 	depends on MMU
 	depends on NET
