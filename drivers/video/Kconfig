@@ -1996,8 +1996,8 @@ config FB_FSL_DIU
 	  Framebuffer driver for the Freescale SoC DIU
 
 config FB_W100
-	tristate "W100 frame buffer support"
-	depends on FB && ARCH_PXA
+	bool "W100 frame buffer support"
+	depends on FB=y && ARCH_PXA
  	select FB_CFB_FILLRECT
  	select FB_CFB_COPYAREA
  	select FB_CFB_IMAGEBLIT
