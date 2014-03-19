@@ -16,7 +16,7 @@ obj-y				+= common.o clock.o
 obj-$(CONFIG_CPU_S5P6440)	+= clock-s5p6440.o
 obj-$(CONFIG_CPU_S5P6450)	+= clock-s5p6450.o
 
-obj-$(CONFIG_PM)		+= pm.o irq-pm.o
+obj-$(CONFIG_PM_SLEEP)		+= pm.o irq-pm.o
 
 obj-y				+= dma.o
 

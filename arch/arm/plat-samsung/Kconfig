@@ -29,7 +29,7 @@ config PLAT_S5P
 
 config SAMSUNG_PM
 	bool
-	depends on PM && (PLAT_S3C24XX || ARCH_S3C64XX || ARCH_S5P64X0 || S5P_PM)
+	depends on PM_SLEEP && (PLAT_S3C24XX || ARCH_S3C64XX || ARCH_S5P64X0 || S5P_PM)
 	default y
 	help
 	  Base platform power management code for samsung code
@@ -397,7 +397,7 @@ config S3C_DMA
 
 config S5P_IRQ_PM
 	bool
-	default y if S5P_PM
+	default y if S5P_PM && PM_SLEEP
 	help
 	  Legacy IRQ power management for S5P platforms
 

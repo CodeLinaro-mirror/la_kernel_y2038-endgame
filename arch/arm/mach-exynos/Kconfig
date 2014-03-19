@@ -124,7 +124,7 @@ config SOC_EXYNOS5440
 	  Enable EXYNOS5440 SoC support
 
 config EXYNOS_CPU_IDLE
-	def_bool PM && CPU_IDLE
+	def_bool PM_SLEEP && CPU_IDLE
 	select ARM_CPU_SUSPEND
 
 endif

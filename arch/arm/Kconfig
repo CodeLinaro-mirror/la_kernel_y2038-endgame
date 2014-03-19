@@ -734,7 +734,6 @@ config ARCH_S3C64XX
 	select ARCH_HAS_CPUFREQ
 	select ARCH_REQUIRE_GPIOLIB
 	select ARM_AMBA
-	select ARM_CPU_SUSPEND if PM
 	select ARM_VIC
 	select ATAGS
 	select CLKDEV_LOOKUP

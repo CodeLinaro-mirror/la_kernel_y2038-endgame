@@ -54,7 +54,7 @@ config CPU_S3C2412
 	select CPU_LLSERIAL_S3C2440
 	select S3C2412_COMMON_CLK
 	select S3C2412_DMA if S3C24XX_DMA
-	select S3C2412_PM if PM
+	select S3C2412_PM if PM_SLEEP
 	help
 	  Support for the S3C2412 and S3C2413 SoCs from the S3C24XX line
 
@@ -63,7 +63,7 @@ config CPU_S3C2416
 	select COMMON_CLK
 	select CPU_ARM926T
 	select CPU_LLSERIAL_S3C2440
-	select S3C2416_PM if PM
+	select S3C2416_PM if PM_SLEEP
 	select S3C2443_COMMON_CLK
 	select S3C2443_DMA if S3C24XX_DMA
 	help
@@ -75,7 +75,7 @@ config CPU_S3C2440
 	select CPU_ARM920T
 	select CPU_LLSERIAL_S3C2440
 	select S3C2410_CLOCK
-	select S3C2410_PM if PM
+	select S3C2410_PM if PM_SLEEP
 	select S3C2440_DMA if S3C24XX_DMA
 	help
 	  Support for S3C2440 Samsung Mobile CPU based systems.
@@ -87,7 +87,7 @@ config CPU_S3C2442
 	select CPU_LLSERIAL_S3C2440
 	select S3C2410_CLOCK
 	select S3C2410_DMA if S3C24XX_DMA
-	select S3C2410_PM if PM
+	select S3C2410_PM if PM_SLEEP
 	help
 	  Support for S3C2442 Samsung Mobile CPU based systems.
 
