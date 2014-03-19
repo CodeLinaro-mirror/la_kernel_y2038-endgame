@@ -177,6 +177,7 @@ static struct s3c64xx_pm_domain *s3c64xx_pm_domains[] = {
 	&s3c64xx_pm_f,
 };
 
+#ifdef CONFIG_PM_SLEEP
 #ifdef CONFIG_S3C_PM_DEBUG_LED_SMDK
 void s3c_pm_debug_smdkled(u32 set, u32 clear)
 {
@@ -306,6 +307,11 @@ static void s3c64xx_pm_prepare(void)
 	/* ensure previous wakeup state is cleared before sleeping */
 	__raw_writel(__raw_readl(S3C64XX_WAKEUP_STAT), S3C64XX_WAKEUP_STAT);
 }
+#else
+static inline void s3c64xx_pm_prepare(void)
+{
+}
+#endif
 
 int __init s3c64xx_pm_init(void)
 {
@@ -330,8 +336,10 @@ int __init s3c64xx_pm_init(void)
 
 static __init int s3c64xx_pm_initcall(void)
 {
+#ifdef CONFIG_PM_SLEEP
 	pm_cpu_prep = s3c64xx_pm_prepare;
 	pm_cpu_sleep = s3c64xx_cpu_suspend;
+#endif
 
 #ifdef CONFIG_S3C_PM_DEBUG_LED_SMDK
 	gpio_request(S3C64XX_GPN(12), "DEBUG_LED0");
