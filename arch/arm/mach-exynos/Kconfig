@@ -133,7 +133,7 @@ config EXYNOS5420_MCPM
 	  on Exynos5420 implementing big.LITTLE.
 
 config EXYNOS_CPU_IDLE
-	def_bool PM && CPU_IDLE
+	def_bool PM_SLEEP && CPU_IDLE
 	select ARM_CPU_SUSPEND
 
 endif
