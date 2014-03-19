@@ -108,7 +108,9 @@
 	.macro asm_trace_hardirqs_off
 #if defined(CONFIG_TRACE_IRQFLAGS)
 	stmdb   sp!, {r0-r3, ip, lr}
-	bl	trace_hardirqs_off
+	ldr	r3, =trace_hardirqs_off
+	mov	lr, pc
+	mov	pc, r3
 	ldmia	sp!, {r0-r3, ip, lr}
 #endif
 	.endm
@@ -120,7 +122,9 @@
 	 * after bl the flags are certainly clobbered
 	 */
 	stmdb   sp!, {r0-r3, ip, lr}
-	bl\cond	trace_hardirqs_on
+	ldr	r3, =trace_hardirqs_on
+	mov	lr, pc
+	mov\cond pc,r3
 	ldmia	sp!, {r0-r3, ip, lr}
 #endif
 	.endm
