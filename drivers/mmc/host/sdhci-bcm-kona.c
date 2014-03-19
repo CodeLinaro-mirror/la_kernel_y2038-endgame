@@ -360,7 +360,7 @@ static struct platform_driver sdhci_bcm_kona_driver = {
 		.of_match_table = sdhci_bcm_kona_of_match,
 	},
 	.probe		= sdhci_bcm_kona_probe,
-	.remove		= sdhci_bcm_kona_remove,
+	.remove		= __exit_p(sdhci_bcm_kona_remove),
 };
 module_platform_driver(sdhci_bcm_kona_driver);
 
