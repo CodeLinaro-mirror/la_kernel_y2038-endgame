@@ -14,7 +14,7 @@ obj-				:=
 
 obj-y				+= common.o clock.o
 
-obj-$(CONFIG_PM)		+= pm.o
+obj-$(CONFIG_PM_SLEEP)		+= pm.o
 
 obj-y				+= dma.o
 

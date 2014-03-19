@@ -396,7 +396,7 @@ config S3C_DMA
 
 config S5P_IRQ_PM
 	bool
-	default y if S5P_PM
+	default y if S5P_PM && PM_SLEEP
 	help
 	  Legacy IRQ power management for S5P platforms
 
