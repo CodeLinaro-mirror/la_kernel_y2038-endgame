@@ -123,6 +123,7 @@ config PCMCIA_HERMES
 config PCMCIA_SPECTRUM
 	tristate "Symbol Spectrum24 Trilogy PCMCIA card support"
 	depends on PCMCIA && HERMES
+	depends on HAS_IOPORT
 	---help---
 
 	  This is a driver for 802.11b cards using RAM-loadable Symbol

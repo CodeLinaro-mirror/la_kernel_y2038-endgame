@@ -11,6 +11,7 @@
 #include <linux/err.h>
 #include <linux/gpio.h>
 #include <linux/irq.h>
+#include <mach/irqs.h>
 
 #include <asm/mach-types.h>
 #include <mach/hx4700.h>

@@ -28,9 +28,7 @@ config ARM_VEXPRESS_SPC_CPUFREQ
 config ARM_HIGHBANK_CPUFREQ
 	tristate "Calxeda Highbank-based"
 	depends on ARCH_HIGHBANK
-	select GENERIC_CPUFREQ_CPU0
-	select PM_OPP
-	select REGULATOR
+	depends on GENERIC_CPUFREQ_CPU0
 
 	default m
 	help

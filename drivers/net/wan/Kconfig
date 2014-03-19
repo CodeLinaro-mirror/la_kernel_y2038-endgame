@@ -37,7 +37,7 @@ config HOSTESS_SV11
 # The COSA/SRP driver has not been tested as non-modular yet.
 config COSA
 	tristate "COSA/SRP sync serial boards support"
-	depends on ISA && m && ISA_DMA_API && HDLC
+	depends on ISA && m && ISA_DMA_API && HDLC && VIRT_TO_BUS
 	---help---
 	  Driver for COSA and SRP synchronous serial boards.
 

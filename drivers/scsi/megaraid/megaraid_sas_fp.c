@@ -77,7 +77,7 @@ static u8 mr_spanset_get_phy_params(struct megasas_instance *instance, u32 ld,
 static u64 get_row_from_strip(struct megasas_instance *instance, u32 ld,
 	u64 strip, struct MR_FW_RAID_MAP_ALL *map);
 
-u32 mega_mod64(u64 dividend, u32 divisor)
+static inline u32 mega_mod64(u64 dividend, u32 divisor)
 {
 	u64 d;
 	u32 remainder;
@@ -95,7 +95,7 @@ u32 mega_mod64(u64 dividend, u32 divisor)
  *
  * @return quotient
  **/
-u64 mega_div64_32(uint64_t dividend, uint32_t divisor)
+static inline u64 mega_div64_32(uint64_t dividend, uint32_t divisor)
 {
 	u32 remainder;
 	u64 d;

@@ -43,7 +43,7 @@ config STE_MODEM_RPROC
 
 config DA8XX_REMOTEPROC
 	tristate "DA8xx/OMAP-L13x remoteproc support"
-	depends on ARCH_DAVINCI_DA8XX
+	depends on ARCH_DAVINCI_DA8XX && MMU
 	select CMA
 	select REMOTEPROC
 	select RPMSG

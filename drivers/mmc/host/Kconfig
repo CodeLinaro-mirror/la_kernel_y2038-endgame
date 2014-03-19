@@ -95,7 +95,7 @@ config MMC_SDHCI_ACPI
 
 config MMC_SDHCI_PLTFM
 	tristate "SDHCI platform and OF driver helper"
-	depends on MMC_SDHCI
+	select MMC_SDHCI
 	help
 	  This selects the common helper functions support for Secure Digital
 	  Host Controller Interface based platform and OF drivers.
@@ -419,7 +419,7 @@ config MMC_SPI
 
 config MMC_S3C
 	tristate "Samsung S3C SD/MMC Card Interface support"
-	depends on ARCH_S3C24XX
+	depends on ARCH_S3C24XX && S3C24XX_DMA
 	help
 	  This selects a driver for the MCI interface found in
           Samsung's S3C2410, S3C2412, S3C2440, S3C2442 CPUs.

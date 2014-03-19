@@ -346,7 +346,7 @@ struct lov_user_md_v3 {	   /* LOV EA user data (host-endian) */
 	};
 	char  lmm_pool_name[LOV_MAXPOOLNAME]; /* pool name */
 	struct lov_user_ost_data_v1 lmm_objects[0]; /* per-stripe data */
-} __attribute__((packed));
+};
 
 static inline __u32 lov_user_md_size(__u16 stripes, __u32 lmm_magic)
 {
