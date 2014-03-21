@@ -682,7 +682,7 @@ static void __init z2_pmic_init(void)
 static inline void z2_pmic_init(void) {}
 #endif
 
-#ifdef CONFIG_PM
+#ifdef CONFIG_PM_SLEEP
 static void z2_power_off(void)
 {
 	/* We're using deep sleep as poweroff, so clear PSPR to ensure that

@@ -98,7 +98,7 @@ static struct clk_lookup pxa3xx_clkregs[] = {
 	INIT_CLKREG(&clk_dummy, "sa1100-rtc", NULL),
 };
 
-#ifdef CONFIG_PM
+#ifdef CONFIG_PM_SLEEP
 
 #define ISRAM_START	0x5c000000
 #define ISRAM_SIZE	SZ_256K
