@@ -22,7 +22,6 @@
 #define pr_fmt(fmt)	"(stc): " fmt
 #include <linux/module.h>
 #include <linux/kernel.h>
-#include <linux/init.h>
 #include <linux/tty.h>
 
 #include <linux/seq_file.h>
@@ -343,7 +342,7 @@ void st_int_recv(void *disc_data,
 			/* Unknow packet? */
 		default:
 			type = *ptr;
-			if (st_gdata->list[type] == NULL) {
+			if (type >= ST_MAX_CHANNELS || st_gdata->list[type] == NULL) {
 				pr_err("chip/interface misbehavior dropping"
 					" frame starting with 0x%02x", type);
 				goto done;

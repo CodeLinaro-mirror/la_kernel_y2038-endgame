@@ -177,9 +177,25 @@ config CRC8
 	  when they need to do cyclic redundancy check according CRC8
 	  algorithm. Module will be called crc8.
 
+config CRC64_ECMA
+	tristate "CRC64 ECMA function"
+	help
+	  This option provides CRC64 ECMA function. Drivers may select this
+	  when they need to do cyclic redundancy check according to the CRC64
+	  ECMA algorithm.
+
 config AUDIT_GENERIC
 	bool
 	depends on AUDIT && !AUDIT_ARCH
+	default y
+
+config AUDIT_ARCH_COMPAT_GENERIC
+	bool
+	default n
+
+config AUDIT_COMPAT_GENERIC
+	bool
+	depends on AUDIT_GENERIC && AUDIT_ARCH_COMPAT_GENERIC && COMPAT
 	default y
 
 config RANDOM32_SELFTEST
@@ -342,9 +358,9 @@ config HAS_IOMEM
 	select GENERIC_IO
 	default y
 
-config HAS_IOPORT
+config HAS_IOPORT_MAP
 	boolean
-	depends on HAS_IOMEM && !NO_IOPORT
+	depends on HAS_IOMEM && !NO_IOPORT_MAP
 	default y
 
 config HAS_DMA

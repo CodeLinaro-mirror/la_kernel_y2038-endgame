@@ -693,20 +693,11 @@ blk_init_queue_node(request_fn_proc *rfn, spinlock_t *lock, int node_id)
 	if (!uninit_q)
 		return NULL;
 
-	uninit_q->flush_rq = kzalloc(sizeof(struct request), GFP_KERNEL);
-	if (!uninit_q->flush_rq)
-		goto out_cleanup_queue;
-
 	q = blk_init_allocated_queue(uninit_q, rfn, lock);
 	if (!q)
-		goto out_free_flush_rq;
-	return q;
+		blk_cleanup_queue(uninit_q);
 
-out_free_flush_rq:
-	kfree(uninit_q->flush_rq);
-out_cleanup_queue:
-	blk_cleanup_queue(uninit_q);
-	return NULL;
+	return q;
 }
 EXPORT_SYMBOL(blk_init_queue_node);
 
@@ -715,6 +706,10 @@ blk_init_allocated_queue(struct request_queue *q, request_fn_proc *rfn,
 			 spinlock_t *lock)
 {
 	if (!q)
+		return NULL;
+
+	q->flush_rq = kzalloc(sizeof(struct request), GFP_KERNEL);
+	if (!q->flush_rq)
 		return NULL;
 
 	if (blk_init_rl(&q->root_rl, q, GFP_KERNEL))
@@ -1929,7 +1924,7 @@ EXPORT_SYMBOL(submit_bio);
  *    in some cases below, so export this function.
  *    Request stacking drivers like request-based dm may change the queue
  *    limits while requests are in the queue (e.g. dm's table swapping).
- *    Such request stacking drivers should check those requests agaist
+ *    Such request stacking drivers should check those requests against
  *    the new queue limits again when they dispatch those requests,
  *    although such checkings are also done against the old queue limits
  *    when submitting requests.
@@ -2354,7 +2349,7 @@ bool blk_update_request(struct request *req, int error, unsigned int nr_bytes)
 	if (!req->bio)
 		return false;
 
-	trace_block_rq_complete(req->q, req);
+	trace_block_rq_complete(req->q, req, nr_bytes);
 
 	/*
 	 * For fs requests, rq is just carrier of independent bio's
