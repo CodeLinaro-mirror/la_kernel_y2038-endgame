@@ -70,6 +70,7 @@
 				S3C2410_UFCON_RXTRIG8)
 
 static struct s3c2410_uartcfg smdk6450_uartcfgs[] __initdata = {
+#if IS_ENABLED(CONFIG_SERIAL_SAMSUNG)
 	[0] = {
 		.hwport		= 0,
 		.flags		= 0,
@@ -115,6 +116,7 @@ static struct s3c2410_uartcfg smdk6450_uartcfgs[] __initdata = {
 		.ulcon		= SMDK6450_ULCON_DEFAULT,
 		.ufcon		= SMDK6450_UFCON_DEFAULT,
 	},
+#endif
 #endif
 };
 

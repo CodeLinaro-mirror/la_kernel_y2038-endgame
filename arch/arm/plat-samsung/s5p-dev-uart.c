@@ -24,6 +24,7 @@
 
  /* Serial port registrations */
 
+#if IS_ENABLED(CONFIG_SERIAL_SAMSUNG)
 static struct resource s5p_uart0_resource[] = {
 	[0] = DEFINE_RES_MEM(S5P_PA_UART0, S5P_SZ_UART),
 	[1] = DEFINE_RES_IRQ(IRQ_UART0),
@@ -59,8 +60,10 @@ static struct resource s5p_uart5_resource[] = {
 	[1] = DEFINE_RES_IRQ(IRQ_UART5),
 #endif
 };
+#endif
 
 struct s3c24xx_uart_resources s5p_uart_resources[] __initdata = {
+#if IS_ENABLED(CONFIG_SERIAL_SAMSUNG)
 	[0] = {
 		.resources	= s5p_uart0_resource,
 		.nr_resources	= ARRAY_SIZE(s5p_uart0_resource),
@@ -85,4 +88,5 @@ struct s3c24xx_uart_resources s5p_uart_resources[] __initdata = {
 		.resources	= s5p_uart5_resource,
 		.nr_resources	= ARRAY_SIZE(s5p_uart5_resource),
 	},
+#endif
 };
