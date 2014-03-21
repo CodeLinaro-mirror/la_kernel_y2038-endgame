@@ -219,7 +219,7 @@ static struct clk_lookup pxa25x_clkregs[] = {
 static struct clk_lookup pxa25x_hwuart_clkreg =
 	INIT_CLKREG(&clk_pxa25x_hwuart, "pxa2xx-uart.3", NULL);
 
-#ifdef CONFIG_PM
+#ifdef CONFIG_PM_SLEEP
 
 #define SAVE(x)		sleep_save[SLEEP_SAVE_##x] = x
 #define RESTORE(x)	x = sleep_save[SLEEP_SAVE_##x]

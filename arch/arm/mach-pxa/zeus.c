@@ -684,7 +684,7 @@ static struct platform_device *zeus_devices[] __initdata = {
 	&zeus_ohci_regulator_device,
 };
 
-#ifdef CONFIG_PM
+#ifdef CONFIG_PM_SLEEP
 static void zeus_power_off(void)
 {
 	local_irq_disable();

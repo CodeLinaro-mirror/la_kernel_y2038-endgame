@@ -210,7 +210,7 @@ static void __init palmz72_leds_init(void)
 static inline void palmz72_leds_init(void) {}
 #endif
 
-#ifdef CONFIG_PM
+#ifdef CONFIG_PM_SLEEP
 
 /* We have some black magic here
  * PalmOS ROM on recover expects special struct physical address
