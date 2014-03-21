@@ -241,7 +241,7 @@ static struct clk_lookup pxa27x_clkregs[] = {
 	INIT_CLKREG(&clk_dummy, "sa1100-rtc", NULL),
 };
 
-#ifdef CONFIG_PM
+#ifdef CONFIG_PM_SLEEP
 
 #define SAVE(x)		sleep_save[SLEEP_SAVE_##x] = x
 #define RESTORE(x)	x = sleep_save[SLEEP_SAVE_##x]
@@ -358,6 +358,10 @@ static void __init pxa27x_init_pm(void)
 }
 #else
 static inline void pxa27x_init_pm(void) {}
+int __init pxa27x_set_pwrmode(unsigned int mode)
+{
+	return 0;
+}
 #endif
 
 /* PXA27x:  Various gpios can issue wakeup events.  This logic only

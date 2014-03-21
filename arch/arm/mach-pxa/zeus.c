@@ -677,7 +677,7 @@ static struct pxa2xx_udc_mach_info zeus_udc_info = {
 	.udc_command = zeus_udc_command,
 };
 
-#ifdef CONFIG_PM
+#ifdef CONFIG_PM_SLEEP
 static void zeus_power_off(void)
 {
 	local_irq_disable();
