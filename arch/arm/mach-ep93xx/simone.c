@@ -26,13 +26,13 @@
 #include <linux/platform_data/video-ep93xx.h>
 #include <linux/platform_data/spi-ep93xx.h>
 #include <linux/gpio.h>
-
-#include <mach/hardware.h>
-#include <mach/gpio-ep93xx.h>
+#include <linux/platform_data/video-ep93xx.h>
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 
+#include "hardware.h"
+#include "gpio-ep93xx.h"
 #include "soc.h"
 
 static struct ep93xx_eth_data __initdata simone_eth_data = {
