@@ -25,9 +25,9 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/time.h>
 
-#include <mach/hardware.h>
-#include <mach/global_reg.h>
-
+#include "hardware.h"
+#include "global_reg.h"
+#include "irqs.h"
 #include "common.h"
 
 static struct gpio_led ib4220b_leds[] = {
@@ -98,6 +98,7 @@ static void __init ib4220b_init(void)
 
 MACHINE_START(NAS4220B, "Raidsonic NAS IB-4220-B")
 	.atag_offset	= 0x100,
+	.nr_irqs	= GEMINI_NR_IRQS,
 	.map_io		= gemini_map_io,
 	.init_irq	= gemini_init_irq,
 	.init_time	= gemini_timer_init,

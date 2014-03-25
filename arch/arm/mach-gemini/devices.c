@@ -14,9 +14,9 @@
 #include <linux/serial_8250.h>
 #include <linux/mtd/physmap.h>
 
-#include <mach/irqs.h>
-#include <mach/hardware.h>
-#include <mach/global_reg.h>
+#include "irqs.h"
+#include "hardware.h"
+#include "global_reg.h"
 
 static struct plat_serial8250_port serial_platform_data[] = {
 	{
