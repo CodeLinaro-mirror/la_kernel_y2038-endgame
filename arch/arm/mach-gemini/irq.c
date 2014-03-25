@@ -17,10 +17,12 @@
 #include <linux/sched.h>
 #include <linux/cpu.h>
 
+#include <asm/exception.h>
 #include <asm/irq.h>
 #include <asm/mach/irq.h>
 #include <asm/system_misc.h>
-#include <mach/hardware.h>
+#include "hardware.h"
+#include "irqs.h"
 
 #define IRQ_SOURCE(base_addr)	(base_addr + 0x00)
 #define IRQ_MASK(base_addr)	(base_addr + 0x04)
@@ -71,6 +73,18 @@ static struct resource irq_resource = {
 	.end	= FIQ_STATUS(GEMINI_INTERRUPT_BASE) + 4,
 };
 
+static void __exception_irq_entry gemini_handle_irq(struct pt_regs *regs)
+{
+	unsigned int mask;
+	int irq;
+
+	mask = readl_relaxed(IRQ_STATUS(IO_ADDRESS(GEMINI_INTERRUPT_BASE)));
+
+	irq = fls(mask);
+	if (irq)
+		handle_IRQ(irq, regs);
+}
+
 void __init gemini_init_irq(void)
 {
 	unsigned int i, mode = 0, level = 0;
@@ -102,4 +116,6 @@ void __init gemini_init_irq(void)
 	/* Set interrupt mode */
 	__raw_writel(mode, IRQ_TMODE(IO_ADDRESS(GEMINI_INTERRUPT_BASE)));
 	__raw_writel(level, IRQ_TLEVEL(IO_ADDRESS(GEMINI_INTERRUPT_BASE)));
+
+	set_handle_irq(gemini_handle_irq);
 }
