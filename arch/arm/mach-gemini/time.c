@@ -10,11 +10,12 @@
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/io.h>
-#include <mach/hardware.h>
-#include <mach/global_reg.h>
 #include <asm/mach/time.h>
 #include <linux/clockchips.h>
 #include <linux/clocksource.h>
+#include "irqs.h"
+#include "hardware.h"
+#include "global_reg.h"
 
 /*
  * Register definitions for the timers
