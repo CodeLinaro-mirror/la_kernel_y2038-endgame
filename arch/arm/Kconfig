@@ -405,6 +405,7 @@ config ARCH_EP93XX
 	select CLKSRC_MMIO
 	select CPU_ARM920T
 	select GENERIC_CLOCKEVENTS
+	select SPARSE_IRQ
 	help
 	  This enables support for the Cirrus EP93xx series of CPUs.
 
