@@ -72,7 +72,4 @@
 #define EP93XX_BOARD_IRQ(x)		(NR_EP93XX_IRQS + (x))
 #define EP93XX_BOARD_IRQS		32
 
-#define NR_IRQS				(NR_EP93XX_IRQS + EP93XX_BOARD_IRQS)
-
-
 #endif
