@@ -21,13 +21,13 @@
 #include <linux/i2c.h>
 #include <linux/i2c-gpio.h>
 
-#include <mach/hardware.h>
 #include <linux/platform_data/video-ep93xx.h>
-#include <mach/gpio-ep93xx.h>
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 
+#include "hardware.h"
+#include "gpio-ep93xx.h"
 #include "soc.h"
 
 static struct ep93xx_eth_data __initdata simone_eth_data = {
