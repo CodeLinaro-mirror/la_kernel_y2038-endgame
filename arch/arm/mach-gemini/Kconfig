@@ -1,6 +1,13 @@
-if ARCH_GEMINI
+menuconfig ARCH_GEMINI
+	bool "Cortina Systems Gemini" if ARCH_MULTI_V4
+	select ARCH_REQUIRE_GPIOLIB
+	select CLKSRC_MMIO
+	select CPU_FA526
+	select GENERIC_CLOCKEVENTS
+	help
+	  Support for the Cortina Systems Gemini family SoCs
 
-menu "Cortina Systems Gemini Implementations"
+if ARCH_GEMINI
 
 config MACH_NAS4220B
 	bool "Raidsonic NAS-4220-B"
@@ -33,8 +40,6 @@ config MACH_WBD222
 config MACH_GEMINI_AUTO
 	def_bool y
 	select MACH_NAS4220B if !(MACH_RUT100 || MACH_WBD111 || MACH_WBD222)
-
-endmenu
 
 config GEMINI_MEM_SWAP
 	bool "Gemini memory is swapped"
