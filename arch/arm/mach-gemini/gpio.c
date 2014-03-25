@@ -19,8 +19,8 @@
 #include <linux/irq.h>
 #include <linux/gpio.h>
 
-#include <mach/hardware.h>
-#include <mach/irqs.h>
+#include "hardware.h"
+#include "irqs.h"
 
 #define GPIO_BASE(x)		IO_ADDRESS(GEMINI_GPIO_BASE(x))
 #define irq_to_gpio(x)		((x) - GPIO_IRQ_BASE)
