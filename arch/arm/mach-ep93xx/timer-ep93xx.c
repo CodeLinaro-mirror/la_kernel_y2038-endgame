@@ -8,6 +8,7 @@
 #include <linux/io.h>
 #include <asm/mach/time.h>
 #include "soc.h"
+#include "irqs.h"
 
 /*************************************************************************
  * Timer handling for EP93xx

@@ -9,7 +9,6 @@
  * your option) any later version.
  */
 
-#include <mach/ep93xx-regs.h>
 #include <asm/mach-types.h>
 
 static unsigned char __raw_readb(unsigned int ptr)

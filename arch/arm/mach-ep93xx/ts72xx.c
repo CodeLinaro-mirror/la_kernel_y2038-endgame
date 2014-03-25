@@ -19,7 +19,7 @@
 #include <linux/mtd/nand.h>
 #include <linux/mtd/partitions.h>
 
-#include <mach/hardware.h>
+#include "hardware.h"
 
 #include <asm/mach-types.h>
 #include <asm/mach/map.h>
