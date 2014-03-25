@@ -41,6 +41,7 @@
 #include <asm/mach/arch.h>
 
 #include "soc.h"
+#include "irqs.h"
 
 /*************************************************************************
  * Static I/O mappings for the FPGA
@@ -367,6 +368,7 @@ static void __init vision_init_machine(void)
 MACHINE_START(VISION_EP9307, "Vision Engraving Systems EP9307")
 	/* Maintainer: H Hartley Sweeten <hsweeten@visionengravers.com> */
 	.atag_offset	= 0x100,
+	.nr_irqs	= 120,
 	.map_io		= vision_map_io,
 	.init_irq	= ep93xx_init_irq,
 	.init_time	= ep93xx_timer_init,
