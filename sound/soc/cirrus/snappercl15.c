@@ -18,7 +18,8 @@
 #include <sound/soc.h>
 
 #include <asm/mach-types.h>
-#include <mach/hardware.h>
+
+#include <mach/platform.h>
 
 #include "../codecs/tlv320aic23.h"
 

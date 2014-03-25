@@ -19,7 +19,6 @@
 #include <sound/soc.h>
 
 #include <asm/mach-types.h>
-#include <mach/hardware.h>
 
 static struct snd_soc_dai_link simone_dai = {
 	.name		= "AC97",

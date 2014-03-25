@@ -34,14 +34,14 @@
 
 #include <sound/cs4271.h>
 
-#include <mach/hardware.h>
 #include <linux/platform_data/video-ep93xx.h>
 #include <linux/platform_data/spi-ep93xx.h>
-#include <mach/gpio-ep93xx.h>
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 
+#include "hardware.h"
+#include "gpio-ep93xx.h"
 #include "soc.h"
 
 static void __init edb93xx_register_flash(void)

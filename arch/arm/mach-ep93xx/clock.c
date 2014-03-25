@@ -21,7 +21,7 @@
 #include <linux/spinlock.h>
 #include <linux/clkdev.h>
 
-#include <mach/hardware.h>
+#include "hardware.h"
 
 #include <asm/div64.h>
 

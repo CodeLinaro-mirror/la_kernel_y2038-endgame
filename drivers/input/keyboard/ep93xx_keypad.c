@@ -28,8 +28,9 @@
 #include <linux/input/matrix_keypad.h>
 #include <linux/slab.h>
 
-#include <mach/hardware.h>
 #include <linux/platform_data/keypad-ep93xx.h>
+
+#include <mach/platform.h>
 
 /*
  * Keypad Interface Register offsets
@@ -63,6 +64,10 @@
 #define KEY_REG_KEY1_SHIFT	(0)
 
 #define EP93XX_MATRIX_SIZE	(EP93XX_MATRIX_ROWS * EP93XX_MATRIX_COLS)
+
+#define EP93XX_EXT_CLK_RATE     14745600
+#define EP93XX_KEYTCHCLK_DIV4   (EP93XX_EXT_CLK_RATE / 4)
+#define EP93XX_KEYTCHCLK_DIV16  (EP93XX_EXT_CLK_RATE / 16)
 
 struct ep93xx_keypad {
 	struct ep93xx_keypad_platform_data *pdata;
