@@ -28,6 +28,7 @@
 #include <linux/platform_data/dma-ep93xx.h>
 #include <mach/hardware.h>
 
+#include "irqs.h"
 #include "soc.h"
 
 #define DMA_CHANNEL(_name, _base, _irq) \
