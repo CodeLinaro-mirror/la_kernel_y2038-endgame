@@ -29,10 +29,12 @@
 /*
  * The total size of the data cache.
  */
-#ifdef CONFIG_ARCH_GEMINI
+#ifdef CONFIG_ARCH_MOXART
+#define CACHE_DSIZE	16384 
+#elif defined(CONFIG_ARCH_GEMINI)
 #define CACHE_DSIZE	8192
 #else
-#define CACHE_DSIZE	16384 
+#define CACHE_DSIZE	8192
 #endif 
 
 /* FIXME: put optimal value here. Current one is just estimation */
