@@ -11,8 +11,8 @@
 #define __MACH_SYSTEM_H
 
 #include <linux/io.h>
-#include <mach/hardware.h>
-#include <mach/global_reg.h>
+#include "hardware.h"
+#include "global_reg.h"
 
 void gemini_restart(char mode, const char *cmd)
 {
