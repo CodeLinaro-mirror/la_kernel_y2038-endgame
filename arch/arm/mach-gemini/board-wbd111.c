@@ -21,7 +21,7 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/time.h>
 
-
+#include "irqs.h"
 #include "common.h"
 
 static struct gpio_keys_button wbd111_keys[] = {
@@ -125,6 +125,7 @@ static void __init wbd111_init(void)
 
 MACHINE_START(WBD111, "Wiliboard WBD-111")
 	.atag_offset	= 0x100,
+	.nr_irqs	= GEMINI_NR_IRQS,
 	.map_io		= gemini_map_io,
 	.init_irq	= gemini_init_irq,
 	.init_time	= gemini_timer_init,
