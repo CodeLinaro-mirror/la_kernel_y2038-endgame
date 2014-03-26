@@ -22,6 +22,11 @@
 
 #ifdef CONFIG_SPARSEMEM
 
+/* these can be moved to arm/memory.h when we get to support multiplatform */
+#define MAX_PHYSMEM_BITS	32
+#define SECTION_SIZE_BITS	28
+
+#ifdef CONFIG_REALVIEW_PBX_SPARSEMEM_HACK
 /*
  * Sparsemem definitions for RealView PBX.
  *
@@ -36,13 +41,6 @@
  * 512MB @ 0x20000000 -> PAGE_OFFSET + 0x10000000
  * 256MB @ 0x80000000 -> PAGE_OFFSET + 0x30000000
  */
-#ifdef CONFIG_REALVIEW_HIGH_PHYS_OFFSET
-#error "SPARSEMEM not available with REALVIEW_HIGH_PHYS_OFFSET"
-#endif
-
-#define MAX_PHYSMEM_BITS	32
-#define SECTION_SIZE_BITS	28
-
 /* bank page offsets */
 #define PAGE_OFFSET1	(PAGE_OFFSET + 0x10000000)
 #define PAGE_OFFSET2	(PAGE_OFFSET + 0x30000000)
@@ -58,6 +56,8 @@
 	 ((virt) >= PAGE_OFFSET2 ? (virt) - PAGE_OFFSET2 + 0x80000000 :	\
 	  (virt) >= PAGE_OFFSET1 ? (virt) - PAGE_OFFSET1 + 0x20000000 :	\
 	  (virt) - PAGE_OFFSET)
+
+#endif
 
 #endif	/* CONFIG_SPARSEMEM */
 
