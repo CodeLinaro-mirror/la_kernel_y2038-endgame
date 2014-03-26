@@ -29,7 +29,7 @@ config QLA3XXX
 
 config QLCNIC
 	tristate "QLOGIC QLCNIC 1/10Gb Converged Ethernet NIC Support"
-	depends on PCI
+	depends on PCI && VXLAN
 	select FW_LOADER
 	---help---
 	  This driver supports QLogic QLE8240 and QLE8242 Converged Ethernet
