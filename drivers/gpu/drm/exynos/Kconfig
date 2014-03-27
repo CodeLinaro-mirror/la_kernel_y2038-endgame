@@ -51,6 +51,7 @@ config DRM_EXYNOS_DSI
 config DRM_EXYNOS_DP
 	bool "EXYNOS DRM DP driver support"
 	depends on DRM_EXYNOS && ARCH_EXYNOS
+	depends on DRM_PTN3460=n || DRM_PTN3460=y || DRM_EXYNOS=m
 	default DRM_EXYNOS
 	help
 	  This enables support for DP device.
