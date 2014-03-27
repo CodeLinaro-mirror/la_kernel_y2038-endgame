@@ -17,6 +17,7 @@
 #include <mach/hardware.h>
 #include <mach/at91_ramc.h>
 
+.arm
 
 #ifdef CONFIG_SOC_AT91SAM9263
 /*
