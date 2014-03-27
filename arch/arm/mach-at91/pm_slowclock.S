@@ -17,6 +17,8 @@
 #include <mach/hardware.h>
 #include <mach/at91_ramc.h>
 
+.arm
+
 /*
  * When SLOWDOWN_MASTER_CLOCK is defined we will also slow down the Master
  * clock during suspend by adjusting its prescalar and divisor.
