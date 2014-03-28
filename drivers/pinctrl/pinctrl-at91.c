@@ -28,7 +28,8 @@
 /* Since we request GPIOs from ourself */
 #include <linux/pinctrl/consumer.h>
 
-#include "at91_pio.h"
+#include <mach/hardware.h>
+#include <mach/at91_pio.h>
 
 #include "core.h"
 
