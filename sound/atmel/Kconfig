@@ -1,6 +1,5 @@
 menu "Atmel devices (AVR32 and AT91)"
 	depends on AVR32 || ARCH_AT91
-	depends on !ARCH_MULTIPLATFORM
 
 config SND_ATMEL_ABDAC
 	tristate "Atmel Audio Bitstream DAC (ABDAC) driver"

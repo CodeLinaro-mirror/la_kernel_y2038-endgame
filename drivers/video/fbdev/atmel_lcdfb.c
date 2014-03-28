@@ -27,6 +27,7 @@
 #include <linux/regulator/consumer.h>
 #include <video/videomode.h>
 
+#include <mach/cpu.h>
 #include <asm/gpio.h>
 
 #include <video/atmel_lcdc.h>
