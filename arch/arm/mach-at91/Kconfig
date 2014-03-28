@@ -1,18 +1,3 @@
-config ARCH_SAMA5
-	bool "Atmel SAMA5" if ARCH_MULTI_V7
-	select ARCH_REQUIRE_GPIOLIB
-	select PINCTRL
-	select PINCTRL_AT91 if USE_OF
-	help
-	  This enables support for systems based on Atmel
-	  AT91RM9200 and AT91SAM9* processors.
-
-config ARCH_AT91
-	def_bool ARCH_SAMA5
-
-config SOC_SAM_V7
-	def_bool ARCH_SAMA5
-
 if ARCH_AT91
 
 config HAVE_AT91_UTMI
@@ -77,8 +62,8 @@ config SOC_SAMA5
 menu "Atmel AT91 System-on-Chip"
 
 choice
+
 	prompt "Core type"
-	depends on !ARCH_MULTIPLATFORM
 
 config ARCH_AT91X40
 	bool "ARM7 AT91X40"
@@ -97,6 +82,11 @@ config SOC_SAM_V4_V5
 	  Select this if you are using one of Atmel's AT91SAM9 or
 	  AT91RM9200 SoC.
 
+config SOC_SAM_V7
+	bool "Cortex A5 (SAMA5D3 family)"
+	help
+	  Select this if you are using one of Atmel's SAMA5D3 SoC.
+
 endchoice
 
 comment "Atmel AT91 Processor"
@@ -107,7 +97,7 @@ config SOC_SAMA5D3
 	depends on SOC_SAM_V7
 	select SOC_SAMA5
 	select HAVE_FB_ATMEL
-	select HAVE_AT91_DBGU1 if !ARCH_MULTIPLATFORM
+	select HAVE_AT91_DBGU1
 	select HAVE_AT91_UTMI
 	select HAVE_AT91_SMD
 	select HAVE_AT91_USB_CLK

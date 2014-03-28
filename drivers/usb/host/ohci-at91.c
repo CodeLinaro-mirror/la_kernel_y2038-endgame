@@ -24,7 +24,11 @@
 #include <linux/usb.h>
 #include <linux/usb/hcd.h>
 
+#include <mach/hardware.h>
 #include <asm/gpio.h>
+
+#include <mach/cpu.h>
+
 
 #include "ohci.h"
 

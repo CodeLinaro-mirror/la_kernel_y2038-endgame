@@ -2,17 +2,12 @@
 #define __MACH_ATMEL_MCI_H
 
 #include <linux/platform_data/dma-atmel.h>
-#include <linux/dw_dmac.h>
 
 /**
  * struct mci_dma_data - DMA data for MCI interface
  */
 struct mci_dma_data {
-#ifdef CONFIG_ARM
 	struct at_dma_slave	sdata;
-#else
-	struct dw_dma_slave	sdata;
-#endif
 };
 
 /* accessor macros */
