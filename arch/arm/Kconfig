@@ -369,18 +369,23 @@ config ARCH_VERSATILE
 	help
 	  This enables support for ARM Ltd Versatile board.
 
+config ARCH_AT91X40
+	bool "ARM7 AT91X40"
+	depends on !MMU
+	select CPU_ARM7TDMI
+	select ARCH_USES_GETTIMEOFFSET
+	select OLD_IRQ_AT91
+	select ARCH_AT91
 
-#config ARCH_AT91
-#	bool "Atmel AT91"
-#	select ARCH_REQUIRE_GPIOLIB
-#	select CLKDEV_LOOKUP
-#	select IRQ_DOMAIN
-#	select NEED_MACH_IO_H if PCCARD
-#	select PINCTRL
-#	select PINCTRL_AT91 if USE_OF
-#	help
-#	  This enables support for systems based on Atmel
-#	  AT91RM9200 and AT91SAM9* processors.
+	help
+	  Select this if you are using one of Atmel's AT91X40 SoC.
+
+config ARCH_AT91SAM
+	bool "ARM9 AT91SAM9/AT91RM9200"
+	select ARCH_AT91
+	help
+	  Select this if you are using one of Atmel's AT91SAM9 or
+	  AT91RM9200 SoC.
 
 config ARCH_CLPS711X
 	bool "Cirrus Logic CLPS711x/EP721x/EP731x-based"

@@ -1,17 +1,21 @@
-config ARCH_SAMA5
+menuconfig SOC_SAM_V7
 	bool "Atmel SAMA5" if ARCH_MULTI_V7
 	select ARCH_REQUIRE_GPIOLIB
 	select PINCTRL
 	select PINCTRL_AT91 if USE_OF
+	select ARCH_AT91
 	help
 	  This enables support for systems based on Atmel
 	  AT91RM9200 and AT91SAM9* processors.
 
 config ARCH_AT91
-	def_bool ARCH_SAMA5
-
-config SOC_SAM_V7
-	def_bool ARCH_SAMA5
+	bool
+	select ARCH_REQUIRE_GPIOLIB
+	select CLKDEV_LOOKUP
+	select IRQ_DOMAIN
+	select NEED_MACH_IO_H if PCCARD
+	select PINCTRL
+	select PINCTRL_AT91 if USE_OF
 
 if ARCH_AT91
 
@@ -73,31 +77,6 @@ config SOC_SAMA5
 	select USE_OF
 	select MEMORY
 	select ATMEL_SDRAMC
-
-menu "Atmel AT91 System-on-Chip"
-
-choice
-	prompt "Core type"
-	depends on !ARCH_MULTIPLATFORM
-
-config ARCH_AT91X40
-	bool "ARM7 AT91X40"
-	depends on !MMU
-	select CPU_ARM7TDMI
-	select ARCH_USES_GETTIMEOFFSET
-	select OLD_IRQ_AT91
-
-	help
-	  Select this if you are using one of Atmel's AT91X40 SoC.
-
-config SOC_SAM_V4_V5
-	bool "ARM9 AT91SAM9/AT91RM9200"
-	select SOC_AT91SAM9 if !SOC_AT91RM9200
-	help
-	  Select this if you are using one of Atmel's AT91SAM9 or
-	  AT91RM9200 SoC.
-
-endchoice
 
 comment "Atmel AT91 Processor"
 
@@ -273,7 +252,5 @@ config AT91_TIMER_HZ
 	  On AT91sam926x chips, or otherwise when using a higher precision
 	  system clock (of at least several MHz), rounding is less of a
 	  problem so it can be safer to use a decimal values like 100.
-
-endmenu
 
 endif
