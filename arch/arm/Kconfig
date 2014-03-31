@@ -311,7 +311,7 @@ config ARCH_MULTIPLATFORM
 	select BROKEN_MULTIPLATFORM if !MMU
 	select COMMON_CLK
 	select GENERIC_CLOCKEVENTS
-	select MULTI_IRQ_HANDLER
+	select MULTI_IRQ_HANDLER if !ARCH_MULTI_V7M
 	select SPARSE_IRQ
 	select USE_OF
 
@@ -405,24 +405,6 @@ config ARCH_EBSA110
 	  from Digital. It has limited hardware on-board, including an
 	  Ethernet interface, two PCMCIA sockets, two serial ports and a
 	  parallel port.
-
-config ARCH_EFM32
-	bool "Energy Micro efm32"
-	depends on !MMU
-	select ARCH_REQUIRE_GPIOLIB
-	select AUTO_ZRELADDR
-	select ARM_NVIC
-	select CLKSRC_OF
-	select COMMON_CLK
-	select CPU_V7M
-	select GENERIC_CLOCKEVENTS
-	select NO_DMA
-	select NO_IOPORT_MAP
-	select SPARSE_IRQ
-	select USE_OF
-	help
-	  Support for Energy Micro's (now Silicon Labs) efm32 Giant Gecko
-	  processors.
 
 config ARCH_EP93XX
 	bool "EP93xx-based"
@@ -855,6 +837,14 @@ menu "Multiple platform selection"
 
 comment "CPU Core family selection"
 
+config ARCH_MULTI_V7M
+	bool "ARMv7-M based platforms (Cortex-M)"
+	depends on !MMU && !(ARCH_MULTI_V4_V5 || ARCH_MULTI_V6_V7)
+	select CPU_V7M
+	select ARM_NVIC
+	select NO_DMA # for now
+	select NO_IOPORT_MAP # for now
+
 config ARCH_MULTI_V4
 	bool "ARMv4 based platforms (FA526)"
 	depends on !ARCH_MULTI_V6_V7
@@ -886,7 +876,7 @@ config ARCH_MULTI_V6
 	select CPU_V6K
 
 config ARCH_MULTI_V7
-	bool "ARMv7 based platforms (Cortex-A, PJ4, Scorpion, Krait)"
+	bool "ARMv7-A based platforms (Cortex-A, PJ4, Scorpion, Krait)"
 	default y
 	select ARCH_MULTI_V6_V7
 	select CPU_V7
@@ -908,6 +898,13 @@ config ARCH_VIRT
 	select ARM_GIC
 	select ARM_PSCI
 	select HAVE_ARM_ARCH_TIMER
+
+config ARCH_EFM32
+	bool "Energy Micro efm32" if ARCH_MULTI_V7M
+	depends on !MMU
+	help
+	  Support for Energy Micro's (now Silicon Labs) efm32 Giant Gecko
+	  processors.
 
 #
 # This is sorted alphabetically by mach-* pathname.  However, plat-*
