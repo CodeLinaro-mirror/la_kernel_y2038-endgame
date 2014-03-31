@@ -23,8 +23,8 @@ config MACH_NOMADIK_8815NHK
 	select I2C_ALGOBIT
 	select I2C_NOMADIK
 
-endif
-
 config NOMADIK_8815
 	depends on ARCH_NOMADIK
 	bool
+
+endif
