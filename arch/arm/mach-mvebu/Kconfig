@@ -1,4 +1,4 @@
-config ARCH_MVEBU
+menuconfig ARCH_MVEBU
 	bool "Marvell Engineering Business Unit (MVEBU) SoCs" if (ARCH_MULTI_V7 || ARCH_MULTI_V5)
 	select ARCH_SUPPORTS_BIG_ENDIAN
 	select CLKSRC_MMIO
@@ -14,8 +14,6 @@ config ARCH_MVEBU
 	select OF_ADDRESS_PCI
 
 if ARCH_MVEBU
-
-menu "Marvell EBU SoC variants"
 
 config MACH_MVEBU_V7
 	bool
@@ -103,7 +101,5 @@ config MACH_T5325
 	help
 	  Say 'Y' here if you want your kernel to support the
 	  HP T5325 Thin client
-
-endmenu
 
 endif

@@ -1,5 +1,5 @@
-config ARCH_MXC
-	bool "Freescale i.MX family" if ARCH_MULTI_V4_V5 || ARCH_MULTI_V6_V7
+menuconfig ARCH_MXC
+	bool "Freescale i.MX family" if ARCH_MULTI_V4_V5 || ARCH_MULTI_V6 || ARCH_MULTI_V7
 	select ARCH_HAS_CPUFREQ
 	select ARCH_HAS_OPP
 	select ARCH_REQUIRE_GPIOLIB
@@ -12,8 +12,7 @@ config ARCH_MXC
 	help
 	  Support for Freescale MXC/iMX-based family of processors
 
-menu "Freescale i.MX support"
-	depends on ARCH_MXC
+if ARCH_MXC
 
 config MXC_TZIC
 	bool
@@ -827,4 +826,4 @@ endif
 
 source "arch/arm/mach-imx/devices/Kconfig"
 
-endmenu
+endif

@@ -1,4 +1,4 @@
-config ARCH_BERLIN
+menuconfig ARCH_BERLIN
 	bool "Marvell Berlin SoCs" if ARCH_MULTI_V7
 	select ARM_GIC
 	select GENERIC_IRQ_CHIP
@@ -6,8 +6,6 @@ config ARCH_BERLIN
 	select DW_APB_TIMER_OF
 
 if ARCH_BERLIN
-
-menu "Marvell Berlin SoC variants"
 
 config MACH_BERLIN_BG2
 	bool "Marvell Armada 1500 (BG2)"
@@ -19,7 +17,5 @@ config MACH_BERLIN_BG2CD
 	bool "Marvell Armada 1500-mini (BG2CD)"
 	select CACHE_L2X0
 	select HAVE_ARM_TWD if SMP
-
-endmenu
 
 endif
