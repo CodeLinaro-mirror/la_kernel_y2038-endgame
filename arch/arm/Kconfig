@@ -636,8 +636,7 @@ config ARCH_OMAP1
 
 endchoice
 
-menu "Multiple platform selection"
-	depends on ARCH_MULTIPLATFORM
+if ARCH_MULTIPLATFORM
 
 comment "CPU Core family selection"
 
@@ -686,7 +685,9 @@ config ARCH_MULTI_CPU_AUTO
 	def_bool !(ARCH_MULTI_V4 || ARCH_MULTI_V4T || ARCH_MULTI_V6_V7)
 	select ARCH_MULTI_V5
 
-endmenu
+comment "Multiple platform selection"
+
+endif
 
 config ARCH_VIRT
 	bool "Dummy Virtual Machine"
