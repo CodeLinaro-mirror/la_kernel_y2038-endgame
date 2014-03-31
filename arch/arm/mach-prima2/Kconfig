@@ -1,5 +1,5 @@
 menuconfig ARCH_SIRF
-	bool "CSR SiRF" if ARCH_MULTI_V7
+	bool "CSR SiRF atlas6/primaII/atlas7" if ARCH_MULTI_V7
 	select ARCH_REQUIRE_GPIOLIB
 	select GENERIC_IRQ_CHIP
 	select NO_IOPORT_MAP
@@ -9,8 +9,6 @@ menuconfig ARCH_SIRF
 	  Support for CSR SiRFprimaII/Marco/Polo platforms
 
 if ARCH_SIRF
-
-comment "CSR SiRF atlas6/primaII/Atlas7 Specific Features"
 
 config ARCH_ATLAS6
 	bool "CSR SiRFSoC ATLAS6 ARM Cortex A9 Platform"
