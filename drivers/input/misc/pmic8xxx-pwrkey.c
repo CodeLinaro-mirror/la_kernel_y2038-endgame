@@ -92,7 +92,7 @@ static int pmic8xxx_pwrkey_probe(struct platform_device *pdev)
 	bool pull_up;
 
 	if (of_property_read_u32(pdev->dev.of_node, "debounce", &kpd_delay))
-		kpd_delay = 0;
+		kpd_delay = 15625;
 
 	pull_up = of_property_read_bool(pdev->dev.of_node, "pull-up");
 
