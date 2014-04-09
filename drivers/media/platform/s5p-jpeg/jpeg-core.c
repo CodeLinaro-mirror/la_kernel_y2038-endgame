@@ -2102,7 +2102,6 @@ static const struct dev_pm_ops s5p_jpeg_pm_ops = {
 	SET_RUNTIME_PM_OPS(s5p_jpeg_runtime_suspend, s5p_jpeg_runtime_resume, NULL)
 };
 
-#ifdef CONFIG_OF
 static struct s5p_jpeg_variant s5p_jpeg_drvdata = {
 	.version	= SJPEG_S5P,
 	.jpeg_irq	= s5p_jpeg_irq,
@@ -2141,7 +2140,6 @@ static void *jpeg_get_drv_data(struct platform_device *pdev)
 
 	return driver_data;
 }
-#endif
 
 static struct platform_driver s5p_jpeg_driver = {
 	.probe = s5p_jpeg_probe,
