@@ -1472,7 +1472,7 @@ static int exynos_dsi_remove(struct platform_device *pdev)
 	return 0;
 }
 
-#if CONFIG_PM_SLEEP
+#ifdef CONFIG_PM_SLEEP
 static int exynos_dsi_resume(struct device *dev)
 {
 	struct exynos_dsi *dsi = exynos_dsi_display.ctx;
