@@ -43,6 +43,7 @@ config DRM_IMX_IPUV3_CORE
 	tristate "IPUv3 core support"
 	depends on DRM_IMX
 	depends on RESET_CONTROLLER
+	select GENERIC_IRQ_CHIP
 	help
 	  Choose this if you have a i.MX5/6 system and want
 	  to use the IPU. This option only enables IPU base
