@@ -598,7 +598,7 @@ static int nuc900_i2c_probe(struct platform_device *pdev)
 
 	clk_get_rate(i2c->clk);
 
-	ret = (i2c->clk.apbfreq)/(pdata->bus_freq * 5) - 1;
+	ret = clk_get_rate(i2c->clk)/(pdata->bus_freq * 5) - 1;
 	writel(ret & 0xffff, i2c->regs + DIVIDER);
 
 	/* find the IRQ for this unit (note, this relies on the init call to
