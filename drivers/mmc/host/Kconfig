@@ -106,7 +106,7 @@ config MMC_SDHCI_ACPI
 
 config MMC_SDHCI_PLTFM
 	tristate "SDHCI platform and OF driver helper"
-	select MMC_SDHCI
+	depends on MMC_SDHCI
 	help
 	  This selects the common helper functions support for Secure Digital
 	  Host Controller Interface based platform and OF drivers.
