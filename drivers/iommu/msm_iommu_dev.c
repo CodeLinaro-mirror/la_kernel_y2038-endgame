@@ -188,7 +188,8 @@ static int msm_iommu_probe(struct platform_device *pdev)
 
 	r2 = request_mem_region(r->start, len, r->name);
 	if (!r2) {
-		pr_err("Could not request memory region: start=%pr\n", r);
+		pr_err("Could not request memory region: start=%p, len=%d\n",
+							(void *) r->start, len);
 		ret = -EBUSY;
 		goto fail_clk;
 	}
