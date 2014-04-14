@@ -35,16 +35,42 @@
 #include <linux/bitops.h>
 #include <linux/io.h>
 
+#ifndef CONFIG_ARCH_MULTIPLATFORM
+/* for guessing MMIO resource */
 #include <mach/hardware.h>
-#include <mach/irqs.h>
 
 #if defined(CONFIG_ARCH_PXA) || defined(CONFIG_ARCH_MMP)
 #include <mach/regs-rtc.h>
+#endif
+#endif
+
+/*
+ * We have two different register layouts. Using two separate
+ * #ifdef blocks will helpfully give us a build error if anyone
+ * ever tries to have a multiplatform kernel with both enabled.
+ */
+#ifdef CONFIG_ARCH_SA1100
+#define REG_RTAR		0x00	/* RTC Alarm Register */
+#define REG_RCNR		0x04	/* RTC CouNt Register */
+#define REG_RTTR		0x08	/* RTC Trim Register */
+#define REG_RTSR		0x10	/* RTC Status Register */
+#endif
+
+#if defined (CONFIG_ARCH_PXA) || defined(CONFIG_ARCH_MMP)
+#define REG_RCNR		0x00	/* RTC Count Register */
+#define REG_RTAR		0x04	/* RTC Alarm Register */
+#define REG_RTSR		0x08	/* RTC Status Register */
+#define REG_RTTR		0x0C	/* RTC Timer Trim Register */
 #endif
 
 #define RTC_DEF_DIVIDER		(32768 - 1)
 #define RTC_DEF_TRIM		0
 #define RTC_FREQ		1024
+
+#define REG_RTSR_AL 	0x00000001	/* ALarm detected                  */
+#define REG_RTSR_HZ 	0x00000002	/* 1 Hz clock detected             */
+#define REG_RTSR_ALE	0x00000004	/* ALarm interrupt Enable          */
+#define REG_RTSR_HZE	0x00000008	/* 1 Hz clock interrupt Enable     */
 
 struct sa1100_rtc {
 	spinlock_t		lock;
@@ -52,6 +78,7 @@ struct sa1100_rtc {
 	int			irq_alarm;
 	struct rtc_device	*rtc;
 	struct clk		*clk;
+	void __iomem		*base;
 };
 
 static irqreturn_t sa1100_rtc_interrupt(int irq, void *dev_id)
@@ -63,16 +90,17 @@ static irqreturn_t sa1100_rtc_interrupt(int irq, void *dev_id)
 
 	spin_lock(&info->lock);
 
-	rtsr = RTSR;
+	rtsr = readl_relaxed(info->base + REG_RTSR);
 	/* clear interrupt sources */
-	RTSR = 0;
+	writel_relaxed(0, info->base + REG_RTSR);
 	/* Fix for a nasty initialization problem the in SA11xx RTSR register.
 	 * See also the comments in sa1100_rtc_probe(). */
-	if (rtsr & (RTSR_ALE | RTSR_HZE)) {
+	if (rtsr & (REG_RTSR_ALE | REG_RTSR_HZE)) {
 		/* This is the original code, before there was the if test
 		 * above. This code does not clear interrupts that were not
 		 * enabled. */
-		RTSR = (RTSR_AL | RTSR_HZ) & (rtsr >> 2);
+		writel_relaxed((REG_RTSR_AL | REG_RTSR_HZ) & (rtsr >> 2),
+			       info->base + REG_RTSR);
 	} else {
 		/* For some reason, it is possible to enter this routine
 		 * without interruptions enabled, it has been tested with
@@ -81,18 +109,18 @@ static irqreturn_t sa1100_rtc_interrupt(int irq, void *dev_id)
 		 * This situation leads to an infinite "loop" of interrupt
 		 * routine calling and as a result the processor seems to
 		 * lock on its first call to open(). */
-		RTSR = RTSR_AL | RTSR_HZ;
+		writel_relaxed(REG_RTSR_AL | REG_RTSR_HZ, info->base + REG_RTSR);
 	}
 
 	/* clear alarm interrupt if it has occurred */
-	if (rtsr & RTSR_AL)
-		rtsr &= ~RTSR_ALE;
-	RTSR = rtsr & (RTSR_ALE | RTSR_HZE);
+	if (rtsr & REG_RTSR_AL)
+		rtsr &= ~REG_RTSR_ALE;
+	writel_relaxed(rtsr & (REG_RTSR_ALE | REG_RTSR_HZE), info->base + REG_RTSR);
 
 	/* update irq data & counter */
-	if (rtsr & RTSR_AL)
+	if (rtsr & REG_RTSR_AL)
 		events |= RTC_AF | RTC_IRQF;
-	if (rtsr & RTSR_HZ)
+	if (rtsr & REG_RTSR_HZ)
 		events |= RTC_UF | RTC_IRQF;
 
 	rtc_update_irq(rtc, 1, events);
@@ -135,7 +163,7 @@ static void sa1100_rtc_release(struct device *dev)
 	struct sa1100_rtc *info = dev_get_drvdata(dev);
 
 	spin_lock_irq(&info->lock);
-	RTSR = 0;
+	writel_relaxed(0, info->base + REG_RTSR);
 	spin_unlock_irq(&info->lock);
 
 	free_irq(info->irq_alarm, dev);
@@ -145,40 +173,51 @@ static void sa1100_rtc_release(struct device *dev)
 static int sa1100_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
 {
 	struct sa1100_rtc *info = dev_get_drvdata(dev);
+	unsigned int rtsr;
 
 	spin_lock_irq(&info->lock);
+
+	rtsr = readl_relaxed(info->base + REG_RTSR);
+
 	if (enabled)
-		RTSR |= RTSR_ALE;
+		rtsr |= REG_RTSR_ALE;
 	else
-		RTSR &= ~RTSR_ALE;
+		rtsr &= ~REG_RTSR_ALE;
+
+	writel_relaxed(rtsr, info->base + REG_RTSR);
+
 	spin_unlock_irq(&info->lock);
 	return 0;
 }
 
 static int sa1100_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
-	rtc_time_to_tm(RCNR, tm);
+	struct sa1100_rtc *info = dev_get_drvdata(dev);
+
+	rtc_time_to_tm(readl_relaxed(info->base + REG_RCNR), tm);
 	return 0;
 }
 
 static int sa1100_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
+	struct sa1100_rtc *info = dev_get_drvdata(dev);
 	unsigned long time;
 	int ret;
 
 	ret = rtc_tm_to_time(tm, &time);
 	if (ret == 0)
-		RCNR = time;
+		writel_relaxed(time, info->base + REG_RCNR);
 	return ret;
 }
 
 static int sa1100_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
+	struct sa1100_rtc *info = dev_get_drvdata(dev);
 	u32	rtsr;
 
-	rtsr = RTSR;
-	alrm->enabled = (rtsr & RTSR_ALE) ? 1 : 0;
-	alrm->pending = (rtsr & RTSR_AL) ? 1 : 0;
+	rtsr = readl_relaxed(info->base + REG_RTSR);
+	alrm->enabled = (rtsr & REG_RTSR_ALE) ? 1 : 0;
+	alrm->pending = (rtsr & REG_RTSR_AL) ? 1 : 0;
 	return 0;
 }
 
@@ -186,18 +225,23 @@ static int sa1100_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
 	struct sa1100_rtc *info = dev_get_drvdata(dev);
 	unsigned long time;
+	unsigned int rtsr;
 	int ret;
 
 	spin_lock_irq(&info->lock);
 	ret = rtc_tm_to_time(&alrm->time, &time);
 	if (ret != 0)
 		goto out;
-	RTSR = RTSR & (RTSR_HZE|RTSR_ALE|RTSR_AL);
-	RTAR = time;
+	rtsr = readl_relaxed(info->base + REG_RTSR);
+	rtsr &= (REG_RTSR_HZE|REG_RTSR_ALE|REG_RTSR_AL);
+	writel_relaxed(rtsr, info->base + REG_RTSR);
+	writel_relaxed(time, info->base + REG_RTAR);
+	rtsr = readl_relaxed(info->base + REG_RTSR);
 	if (alrm->enabled)
-		RTSR |= RTSR_ALE;
+		rtsr |= REG_RTSR_ALE;
 	else
-		RTSR &= ~RTSR_ALE;
+		rtsr &= ~REG_RTSR_ALE;
+	writel_relaxed(rtsr, info->base + REG_RTSR);
 out:
 	spin_unlock_irq(&info->lock);
 
@@ -206,8 +250,11 @@ out:
 
 static int sa1100_rtc_proc(struct device *dev, struct seq_file *seq)
 {
-	seq_printf(seq, "trim/divider\t\t: 0x%08x\n", (u32) RTTR);
-	seq_printf(seq, "RTSR\t\t\t: 0x%08x\n", (u32)RTSR);
+	struct sa1100_rtc *info = dev_get_drvdata(dev);
+	seq_printf(seq, "trim/divider\t\t: 0x%08x\n",
+		   readl_relaxed(info->base + REG_RTTR));
+	seq_printf(seq, "RTSR\t\t\t: 0x%08x\n",
+		   readl_relaxed(info->base + REG_RTSR));
 
 	return 0;
 }
@@ -227,6 +274,7 @@ static int sa1100_rtc_probe(struct platform_device *pdev)
 {
 	struct rtc_device *rtc;
 	struct sa1100_rtc *info;
+	struct resource *res;
 	int irq_1hz, irq_alarm, ret = 0;
 
 	irq_1hz = platform_get_irq_byname(pdev, "rtc 1Hz");
@@ -242,6 +290,26 @@ static int sa1100_rtc_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "failed to find rtc clock source\n");
 		return PTR_ERR(info->clk);
 	}
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	if (res)
+		info->base = devm_ioremap_resource(&pdev->dev, res);
+
+	if (!res || IS_ERR(info->base)) {
+#ifdef RTAR
+		/*
+		 * guess the base address from old-style register macros,
+		 * needed for mach-pxa in linux-3.15.
+		 */
+		unsigned long base = ((unsigned long) &RTAR) & ~0xff;
+		info->base = (void __iomem *)base;
+		dev_warn(&pdev->dev, "warning: missing mmio resource, "
+			 "using %p base\n", info->base);
+#else
+		dev_warn(&pdev->dev, "no mmio resource found\n");
+		return -ENODEV;
+#endif
+	}
+
 	info->irq_1hz = irq_1hz;
 	info->irq_alarm = irq_alarm;
 	spin_lock_init(&info->lock);
@@ -257,12 +325,13 @@ static int sa1100_rtc_probe(struct platform_device *pdev)
 	 * If the clock divider is uninitialized then reset it to the
 	 * default value to get the 1Hz clock.
 	 */
-	if (RTTR == 0) {
-		RTTR = RTC_DEF_DIVIDER + (RTC_DEF_TRIM << 16);
+	if (readl_relaxed(info->base + REG_RTTR) == 0) {
+		writel_relaxed(RTC_DEF_DIVIDER + (RTC_DEF_TRIM << 16),
+			       info->base + REG_RTTR);
 		dev_warn(&pdev->dev, "warning: "
 			"initializing default clock divider/trim value\n");
 		/* The current RTC value probably doesn't make sense either */
-		RCNR = 0;
+		writel_relaxed(0, info->base + REG_RCNR);
 	}
 
 	device_init_wakeup(&pdev->dev, 1);
@@ -279,7 +348,7 @@ static int sa1100_rtc_probe(struct platform_device *pdev)
 	/* Fix for a nasty initialization problem the in SA11xx RTSR register.
 	 * See also the comments in sa1100_rtc_interrupt().
 	 *
-	 * Sometimes bit 1 of the RTSR (RTSR_HZ) will wake up 1, which means an
+	 * Sometimes bit 1 of the RTSR (REG_RTSR_HZ) will wake up 1, which means an
 	 * interrupt pending, even though interrupts were never enabled.
 	 * In this case, this bit it must be reset before enabling
 	 * interruptions to avoid a nonexistent interrupt to occur.
@@ -298,7 +367,7 @@ static int sa1100_rtc_probe(struct platform_device *pdev)
 	 *
 	 * Notice that clearing bit 1 and 0 is accomplished by writting ONES to
 	 * the corresponding bits in RTSR. */
-	RTSR = RTSR_AL | RTSR_HZ;
+	writel_relaxed(REG_RTSR_AL | REG_RTSR_HZ, info->base + REG_RTSR);
 
 	return 0;
 err_dev:
