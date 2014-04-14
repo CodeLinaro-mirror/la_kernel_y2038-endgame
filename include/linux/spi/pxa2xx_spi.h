@@ -50,7 +50,7 @@ struct pxa2xx_spi_chip {
 	void (*cs_control)(u32 command);
 };
 
-#if defined(CONFIG_ARCH_PXA) || defined(CONFIG_ARCH_MMP)
+#if defined(CONFIG_ARCH_PXA)
 
 #include <linux/clk.h>
 #include <mach/dma.h>
