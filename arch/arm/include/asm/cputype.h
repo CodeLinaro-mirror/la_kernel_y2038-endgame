@@ -228,10 +228,33 @@ static inline int cpu_is_xsc3(void)
 }
 #endif
 
-#if !defined(CONFIG_CPU_XSCALE) && !defined(CONFIG_CPU_XSC3)
+#if !defined(CONFIG_CPU_XSCALE)
 #define	cpu_is_xscale()	0
 #else
-#define	cpu_is_xscale()	1
+static inline int cpu_is_xscale(void)
+{
+	unsigned int id;
+	id = read_cpuid_id() & 0xffffe000;
+
+	if ((id == 0x69052000) || (id == 0x69054000))
+		return 1;
+
+	return 0;
+}
+#endif
+
+#if !defined(CONFIG_CPU_MOHAWK)
+#define	cpu_is_mohawk()	0
+#else
+static inline int cpu_is_mohawk(void)
+{
+	unsigned int id;
+	id = read_cpuid_id() & 0xffffe000;
+
+	if (id == 0x56158000)
+
+	return 0;
+}
 #endif
 
 /*
