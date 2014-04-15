@@ -441,6 +441,10 @@ struct platform_device pxa_device_rtc = {
 
 static struct resource sa1100_rtc_resources[] = {
 	{
+		.start  = 0x40900000,
+		.end	= 0x40900000 + 0x3b,
+		.flags  = IORESOURCE_MEM,
+	}, {
 		.start  = IRQ_RTC1Hz,
 		.end    = IRQ_RTC1Hz,
 		.name	= "rtc 1Hz",
