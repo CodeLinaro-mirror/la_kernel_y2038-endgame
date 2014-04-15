@@ -28,7 +28,7 @@
 #include <linux/of_device.h>
 #include <linux/of_mtd.h>
 
-#if defined(CONFIG_ARCH_PXA) || defined(CONFIG_ARCH_MMP)
+#if defined(CONFIG_ARCH_PXA)
 #define ARCH_HAS_DMA
 #endif
 
