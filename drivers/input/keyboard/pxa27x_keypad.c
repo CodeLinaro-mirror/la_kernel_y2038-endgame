@@ -31,7 +31,6 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
-#include <mach/hardware.h>
 #include <linux/platform_data/keypad-pxa27x.h>
 /*
  * Keypad Controller registers
