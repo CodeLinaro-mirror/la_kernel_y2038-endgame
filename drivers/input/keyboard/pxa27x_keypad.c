@@ -28,7 +28,6 @@
 #include <linux/input/matrix_keypad.h>
 #include <linux/slab.h>
 #include <linux/of.h>
-
 #include <linux/platform_data/keypad-pxa27x.h>
 /*
  * Keypad Controller registers
