@@ -27,7 +27,9 @@
 #include <linux/syscore_ops.h>
 #include <linux/slab.h>
 
+#if defined(CONFIG_ARCH_PXA)
 #include <mach/irqs.h>
+#endif
 
 /*
  * We handle the GPIOs by banks, each bank covers up to 32 GPIOs with
