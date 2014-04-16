@@ -967,7 +967,6 @@ void __init sh7372_add_standard_devices(void)
 
 void __init sh7372_earlytimer_init(void)
 {
-	sh7372_clock_init();
 	shmobile_earlytimer_init();
 }
 
@@ -991,9 +990,6 @@ void __init sh7372_add_early_devices_dt(void)
 
 void __init sh7372_add_standard_devices_dt(void)
 {
-	/* clocks are setup late during boot in the case of DT */
-	sh7372_clock_init();
-
 	platform_add_devices(sh7372_early_devices,
 			    ARRAY_SIZE(sh7372_early_devices));
 

@@ -755,7 +755,6 @@ void __init __weak sh73a0_register_twd(void) { }
 void __init sh73a0_earlytimer_init(void)
 {
 	sh73a0_init_delay();
-	sh73a0_clock_init();
 	shmobile_earlytimer_init();
 	sh73a0_register_twd();
 }
@@ -776,9 +775,6 @@ void __init sh73a0_add_early_devices(void)
 void __init sh73a0_add_standard_devices_dt(void)
 {
 	struct platform_device_info devinfo = { .name = "cpufreq-cpu0", .id = -1, };
-
-	/* clocks are setup late during boot in the case of DT */
-	sh73a0_clock_init();
 
 	platform_add_devices(sh73a0_devices_dt,
 			     ARRAY_SIZE(sh73a0_devices_dt));

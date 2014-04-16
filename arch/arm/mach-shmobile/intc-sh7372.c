@@ -560,11 +560,6 @@ void __init sh7372_init_irq(void)
 	intevtsa = intcs_ffd2 + 0x100;
 	intcs_ffd5 = ioremap_nocache(0xffd50000, PAGE_SIZE);
 
-	register_intc_controller(&intca_desc);
-	register_intc_controller(&intca_irq_pins_lo_desc);
-	register_intc_controller(&intca_irq_pins_hi_desc);
-	register_intc_controller(&intcs_desc);
-
 	/* setup dummy cascade chip for INTCS */
 	n = evt2irq(0xf80);
 	irq_alloc_desc_at(n, numa_node_id());

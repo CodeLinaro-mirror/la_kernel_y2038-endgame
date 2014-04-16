@@ -18,59 +18,12 @@ if ARCH_SHMOBILE_MULTI
 
 #comment "Renesas ARM SoCs System Type"
 
-config ARCH_EMEV2
-	bool "Emma Mobile EV2"
-	select SYS_SUPPORTS_EM_STI
-
-config ARCH_R7S72100
-	bool "RZ/A1H (R7S72100)"
-	select SYS_SUPPORTS_SH_MTU2
-
-config ARCH_R8A7779
-	bool "R-Car H1 (R8A77790)"
-	select RENESAS_INTC_IRQPIN
-	select SYS_SUPPORTS_SH_TMU
-
-config ARCH_R8A7790
-	bool "R-Car H2 (R8A77900)"
-	select RENESAS_IRQC
-	select SYS_SUPPORTS_SH_CMT
-
-config ARCH_R8A7791
-	bool "R-Car M2 (R8A77910)"
-	select RENESAS_IRQC
-	select SYS_SUPPORTS_SH_CMT
-
-comment "Renesas ARM SoCs Board Type"
-
-config MACH_KOELSCH
-	bool "Koelsch board"
-	depends on ARCH_R8A7791
-	select MICREL_PHY if SH_ETH
-
-config MACH_LAGER
-	bool "Lager board"
-	depends on ARCH_R8A7790
-	select MICREL_PHY if SH_ETH
-
-config MACH_MARZEN
-	bool "MARZEN board"
-	depends on ARCH_R8A7779
-	select REGULATOR_FIXED_VOLTAGE if REGULATOR
-
-comment "Renesas ARM SoCs System Configuration"
-endif
-
-if ARCH_SHMOBILE_LEGACY
-
-comment "Renesas ARM SoCs System Type"
-
 config ARCH_SH7372
 	bool "SH-Mobile AP4 (SH7372)"
-	depends on !AUTO_ZRELADDR
 	select ARCH_WANT_OPTIONAL_GPIOLIB
 	select ARM_CPU_SUSPEND if CPU_IDLE
 	select CPU_V7
+	select PM_GENERIC_DOMAINS if PM
 	select SH_CLK_CPG
 	select SYS_SUPPORTS_SH_CMT
 	select SYS_SUPPORTS_SH_TMU
@@ -105,6 +58,7 @@ config ARCH_R8A7740
 	select ARM_GIC
 	select AUTO_ZRELADDR
 	select CPU_V7
+	select PM_GENERIC_DOMAINS if PM
 	select SH_CLK_CPG
 	select RENESAS_INTC_IRQPIN
 	select SYS_SUPPORTS_SH_CMT
@@ -130,26 +84,21 @@ config ARCH_R8A7779
 	select RENESAS_INTC_IRQPIN
 	select SYS_SUPPORTS_SH_TMU
 
+config ARCH_EMEV2
+	bool "Emma Mobile EV2"
+	select SYS_SUPPORTS_EM_STI
+
+config ARCH_R7S72100
+	bool "RZ/A1H (R7S72100)"
+	select SYS_SUPPORTS_SH_MTU2
+
 config ARCH_R8A7790
 	bool "R-Car H2 (R8A77900)"
-	select ARCH_WANT_OPTIONAL_GPIOLIB
-	select ARM_GIC
-	select AUTO_ZRELADDR
-	select CPU_V7
-	select MIGHT_HAVE_PCI
-	select SH_CLK_CPG
 	select RENESAS_IRQC
 	select SYS_SUPPORTS_SH_CMT
-	select ARCH_DMA_ADDR_T_64BIT if ARM_LPAE
 
 config ARCH_R8A7791
 	bool "R-Car M2 (R8A77910)"
-	select ARCH_WANT_OPTIONAL_GPIOLIB
-	select ARM_GIC
-	select AUTO_ZRELADDR
-	select CPU_V7
-	select MIGHT_HAVE_PCI
-	select SH_CLK_CPG
 	select RENESAS_IRQC
 	select SYS_SUPPORTS_SH_CMT
 	select ARCH_DMA_ADDR_T_64BIT if ARM_LPAE
@@ -159,12 +108,12 @@ comment "Renesas ARM SoCs Board Type"
 config MACH_SHMOBILE_AUTO
 	def_bool y
 	select ARCH_SH7372 if !(ARCH_R8A73A4 || ARCH_R8A7740 || ARCH_R8A7778 || ARCH_R7S72100 || ARCH_R8A7779 || ARCH_R8A7790 || ARCH_R8A7791 || ARCH_EMEV2)
-	select MACH_APE6EVM_REFERENCE if ARCH_R8A73A4 && !MACH_APE6EVM
+	select MACH_APE6EVM if ARCH_R8A73A4 && !MACH_APE6EVM_REFERENCE
 	select MACH_MACKEREL if ARCH_SH7372
-	select MACH_ARMADILLO800EVA_REFERENCE if ARCH_R8A7740 && !MACH_ARMADILLO800EVA
-	select MACH_BOCKW_REFERENCE if ARCH_R8A7778 && !MACH_BOCKW
-	select MACH_GENMAI_REFERENCE if ARCH_R7S72100 && !MACH_GENMAI
-	select MACH_MARZEN_REFERENCE if ARCH_R8A7779 && !MACH_MARZEN
+	select MACH_ARMADILLO800EVA if ARCH_R8A7740 && !MACH_ARMADILLO800EVA_REFERENCE
+	select MACH_BOCKW if ARCH_R8A7778 && !MACH_BOCKW_REFERENCE
+	select MACH_GENMAI if ARCH_R7S72100 && !MACH_GENMAI_REFERENCE
+	select MACH_MARZEN if ARCH_R8A7779
 	select MACH_LAGER if ARCH_R8A7790
 	select MACH_KOELSCH if ARCH_R8A7791
 
@@ -295,8 +244,6 @@ config SH_CLK_CPG
 
 source "drivers/sh/Kconfig"
 
-endif
-
 if ARCH_SHMOBILE
 
 menu "Timer and clock configuration"
@@ -315,4 +262,5 @@ config SHMOBILE_TIMER_HZ
 
 endmenu
 
+endif
 endif

@@ -827,7 +827,6 @@ void __init r8a7740_init_irq_of(void)
 
 static void __init r8a7740_generic_init(void)
 {
-	r8a7740_clock_init(0);
 	r8a7740_add_standard_devices_dt();
 }
 

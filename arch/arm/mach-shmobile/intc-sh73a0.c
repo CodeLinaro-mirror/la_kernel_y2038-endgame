@@ -325,10 +325,6 @@ void __init sh73a0_init_irq(void)
 	gic_init(0, 29, gic_dist_base, gic_cpu_base);
 	gic_arch_extn.irq_set_wake = sh73a0_set_wake;
 
-	register_intc_controller(&intcs_desc);
-	register_intc_controller(&intc_pint0_desc);
-	register_intc_controller(&intc_pint1_desc);
-
 	/* demux using INTEVTSA */
 	sh73a0_intcs_cascade.name = "INTCS cascade";
 	sh73a0_intcs_cascade.handler = sh73a0_intcs_demux;

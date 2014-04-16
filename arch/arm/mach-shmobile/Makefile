@@ -60,6 +60,8 @@ obj-$(CONFIG_ARCH_R8A7791)	+= pm-r8a7791.o pm-rcar.o $(cpu-y)
 # IRQ objects
 obj-$(CONFIG_ARCH_SH7372)	+= entry-intc.o
 
+AFLAGS_sleep-sh7372.o	+= -march=armv7-a
+
 # Board objects
 ifdef CONFIG_ARCH_SHMOBILE_MULTI
 obj-$(CONFIG_MACH_KOELSCH)	+= board-koelsch-reference.o

@@ -317,4 +317,7 @@ struct sh_pfc_soc_info {
 				PORT##nr##_FN6, PORT##nr##_FN7 }	\
 	}
 
+#define IRQPIN_BASE		2000
+#define irq_pin(nr)		((nr) + IRQPIN_BASE)
+
 #endif /* __SH_PFC_H */
