@@ -30,7 +30,7 @@
 #error "Unknown architecture specification"
 #endif
 
-#define NR_IRQS (NR_MSM_IRQS + NR_GPIO_IRQS + NR_BOARD_IRQS)
+#define MSM_NR_IRQS (NR_MSM_IRQS + NR_GPIO_IRQS + NR_BOARD_IRQS)
 #define MSM_GPIO_TO_INT(n) (NR_MSM_IRQS + (n))
 #define MSM_INT_TO_REG(base, irq) (base + irq / 32)
 

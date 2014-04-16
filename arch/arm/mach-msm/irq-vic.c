@@ -28,6 +28,8 @@
 
 #include <mach/msm_iomap.h>
 
+#include <mach/irqs.h>
+
 #include "smd_private.h"
 
 enum {
@@ -160,7 +162,7 @@ static struct {
 static uint32_t msm_irq_idle_disable[VIC_NUM_REGS];
 
 #define SMSM_FAKE_IRQ (0xff)
-static uint8_t msm_irq_to_smsm[NR_IRQS] = {
+static uint8_t msm_irq_to_smsm[MSM_NR_IRQS] = {
 	[INT_MDDI_EXT] = 1,
 	[INT_MDDI_PRI] = 2,
 	[INT_MDDI_CLIENT] = 3,

@@ -30,6 +30,7 @@
 #include <linux/delay.h>
 
 #include <mach/msm_smd.h>
+#include <mach/irqs.h>
 
 #include "smd_private.h"
 #include "proc_comm.h"
@@ -47,14 +48,14 @@ enum {
 
 static int msm_smd_debug_mask;
 
-struct shared_info {
+struct smd_shared_info {
 	int ready;
 	void __iomem *state;
 };
 
 static unsigned dummy_state[SMSM_STATE_COUNT];
 
-static struct shared_info smd_info = {
+static struct smd_shared_info smd_info = {
 	/* FIXME: not a real __iomem pointer */
 	.state = &dummy_state,
 };

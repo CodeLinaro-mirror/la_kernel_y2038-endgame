@@ -1,3 +1,15 @@
+config ARCH_MSM
+	bool "Qualcomm MSM" if ARCH_MULTI_V6_V7
+	select ARCH_REQUIRE_GPIOLIB
+	select COMMON_CLK
+	select GENERIC_CLOCKEVENTS
+	help
+	  Support for Qualcomm MSM/QSD based systems.  This runs on the
+	  apps processor of the MSM/QSD and depends on a shared memory
+	  interface to the modem processor which runs the baseband
+	  stack and controls some vital subsystems
+	  (clock and power control, etc).
+
 if ARCH_MSM
 
 choice
@@ -6,7 +18,7 @@ choice
 	depends on ARCH_MSM
 
 config ARCH_MSM7X00A
-	bool "MSM7x00A / MSM7x01A"
+	bool "MSM7x00A / MSM7x01A" if ARCH_MULTI_V6
 	select ARCH_MSM_ARM11
 	select CPU_V6
 	select GPIO_MSM_V1
@@ -17,7 +29,7 @@ config ARCH_MSM7X00A
 	select MSM_SMD_PKG3
 
 config ARCH_MSM7X30
-	bool "MSM7x30"
+	bool "MSM7x30" if ARCH_MULTI_V7
 	select ARCH_MSM_SCORPION
 	select CPU_V7
 	select GPIO_MSM_V1
@@ -29,7 +41,7 @@ config ARCH_MSM7X30
 	select MSM_VIC
 
 config ARCH_QSD8X50
-	bool "QSD8X50"
+	bool "QSD8X50" if ARCH_MULTI_V7
 	select ARCH_MSM_SCORPION
 	select CPU_V7
 	select GPIO_MSM_V1
