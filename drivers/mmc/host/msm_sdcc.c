@@ -43,8 +43,7 @@
 #include <asm/sizes.h>
 
 #include <linux/platform_data/mmc-msm_sdcc.h>
-#include <mach/dma.h>
-#include <mach/clk.h>
+#include "../../../arch/arm/mach-msm/include/mach/dma.h"
 
 #include "msm_sdcc.h"
 
@@ -137,6 +136,7 @@ static void msmsdcc_reset_and_restore(struct msmsdcc_host *host)
 	mci_clk = readl(host->base + MMCICLOCK);
 	mci_mask0 = readl(host->base + MMCIMASK0);
 
+#if 0
 	/* Reset the controller */
 	ret = clk_reset(host->clk, CLK_RESET_ASSERT);
 	if (ret)
@@ -147,9 +147,9 @@ static void msmsdcc_reset_and_restore(struct msmsdcc_host *host)
 	if (ret)
 		pr_err("%s: Clock deassert failed at %u Hz with err %d\n",
 				mmc_hostname(host->mmc), host->clk_rate, ret);
-
 	pr_info("%s: Controller has been re-initialiazed\n",
 			mmc_hostname(host->mmc));
+#endif
 
 	/* Restore the contoller state */
 	writel(host->pwr, host->base + MMCIPOWER);
