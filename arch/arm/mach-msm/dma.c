@@ -21,6 +21,7 @@
 #include <linux/module.h>
 #include <mach/dma.h>
 #include <mach/msm_iomap.h>
+#include "mach/irqs.h"
 
 #define MSM_DMOV_CHANNEL_COUNT 16
 

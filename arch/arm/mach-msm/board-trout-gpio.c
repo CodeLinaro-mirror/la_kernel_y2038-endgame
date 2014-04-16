@@ -17,7 +17,7 @@
 #include <linux/irq.h>
 #include <linux/interrupt.h>
 #include <linux/gpio.h>
-
+#include <mach/irqs.h>
 #include "board-trout.h"
 
 static uint8_t trout_int_mask[2] = {

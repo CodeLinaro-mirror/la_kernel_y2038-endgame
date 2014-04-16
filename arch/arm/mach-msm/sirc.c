@@ -20,6 +20,8 @@
 #include <linux/irq.h>
 #include <linux/interrupt.h>
 #include <asm/irq.h>
+#include <mach/irqs.h>
+#include <mach/sirc.h>
 
 static unsigned int int_enable;
 static unsigned int wake_enable;
