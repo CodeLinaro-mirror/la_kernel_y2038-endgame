@@ -128,7 +128,6 @@ config USB_GADGET_STORAGE_NUM_BUFFERS
 	   If unsure, say 2.
 
 source "drivers/usb/gadget/udc/Kconfig"
-
 #
 # USB Gadget Drivers
 #

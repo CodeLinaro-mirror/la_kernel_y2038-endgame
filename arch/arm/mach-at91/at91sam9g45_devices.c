@@ -19,8 +19,8 @@
 #include <linux/i2c-gpio.h>
 #include <linux/atmel-mci.h>
 #include <linux/platform_data/crypto-atmel.h>
-
 #include <linux/platform_data/at91_adc.h>
+#include <linux/platform_data/mmc-atmel-mci.h>
 
 #include <linux/fb.h>
 #include <video/atmel_lcdc.h>
@@ -30,7 +30,6 @@
 #include <mach/at91_matrix.h>
 #include <mach/at91sam9_smc.h>
 #include <linux/platform_data/dma-atmel.h>
-#include <mach/atmel-mci.h>
 #include <mach/hardware.h>
 
 #include <media/atmel-isi.h>

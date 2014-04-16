@@ -28,6 +28,7 @@
 
 #include <mach/cpu.h>
 #include <mach/hardware.h>
+#include <mach/gpio.h>
 
 #include "at91_aic.h"
 #include "generic.h"
