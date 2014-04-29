@@ -345,5 +345,5 @@ ENTRY(v7_cpu_resume)
 #ifdef CONFIG_CACHE_L2X0
 	bl	l2c310_early_resume
 #endif
-	b	cpu_resume
+	ldr	pc,=cpu_resume
 ENDPROC(v7_cpu_resume)
