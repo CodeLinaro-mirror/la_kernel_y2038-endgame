@@ -52,9 +52,11 @@ ENTRY(exynos_cpu_resume)
 	and	r0, r0, r1
 	ldr	r1, =CPU_CORTEX_A9
 	cmp	r0, r1
-	bleq	l2c310_early_resume
+	ldreq	r3, =l2c310_early_resume
+	blxeq	r3
 #endif
-	b	cpu_resume
+2:
+	ldr	pc,=cpu_resume
 ENDPROC(exynos_cpu_resume)
 
 	.align
