@@ -515,7 +515,7 @@ logic_l1_restore:
 skipl2reen:
 
 	/* Now branch to the common CPU resume function */
-	b	cpu_resume
+	ldr	pc,=cpu_resume
 ENDPROC(omap3_restore)
 
 	.ltorg
