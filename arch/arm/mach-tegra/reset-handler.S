@@ -49,7 +49,7 @@ ENTRY(tegra_resume)
 	cpu_id	r0
 	cmp	r0, #0				@ CPU0?
  THUMB(	it	ne )
-	bne	cpu_resume			@ no
+	ldrne	pc,=cpu_resume			@ no
 
 	/* Are we on Tegra20? */
 	cmp	r6, #TEGRA20
@@ -87,7 +87,7 @@ end_ca9_scu_l2_resume:
 	cmp	r8, r9
 	bleq	tegra_init_l2_for_a15
 
-	b	cpu_resume
+	ldr	pc,=cpu_resume
 ENDPROC(tegra_resume)
 #endif
 
