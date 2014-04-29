@@ -40,7 +40,7 @@ ARM_BE8(setend	be )			@ go BE8 if entered LE
 	mcr	p15, 0, r1, c1, c0, 0
 	bl	ll_add_cpu_to_smp_group
 	bl	ll_enable_coherency
-	b	cpu_resume
+	ldr	pc, =cpu_resume
 ENDPROC(armada_370_xp_cpu_resume)
 
 ENTRY(armada_38x_cpu_resume)
