@@ -290,7 +290,7 @@ struct thermal_genl_event {
 };
 
 /* Function declarations */
-#if IS_ENABLED(CONFIG_THERMAL_OF)
+#ifdef CONFIG_THERMAL_OF
 struct thermal_zone_device *
 thermal_zone_of_sensor_register(struct device *dev, int id,
 				void *data, int (*get_temp)(void *, long *),
