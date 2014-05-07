@@ -17,7 +17,6 @@
 #include <linux/err.h>
 #include <linux/platform_device.h>
 #include <linux/slab.h>
-#include <linux/module.h>
 #include "../ion.h"
 #include "../ion_priv.h"
 
