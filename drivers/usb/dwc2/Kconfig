@@ -49,7 +49,6 @@ comment "Gadget mode requires USB Gadget support to be enabled"
 config USB_DWC2_PERIPHERAL
 	tristate "Gadget only mode"
 	depends on USB_GADGET
-	select GENERIC_PHY
 	help
 	  The Designware USB2.0 high-speed gadget controller
 	  integrated into many SoCs.
