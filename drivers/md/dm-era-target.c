@@ -1186,7 +1186,7 @@ static dm_block_t get_block(struct era *era, struct bio *bio)
 	sector_t block_nr = bio->bi_iter.bi_sector;
 
 	if (!block_size_is_power_of_two(era))
-		(void) do_div(block_nr, era->sectors_per_block);
+		(void) sector_div(block_nr, era->sectors_per_block);
 	else
 		block_nr >>= era->sectors_per_block_shift;
 
