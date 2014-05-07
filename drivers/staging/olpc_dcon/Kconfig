@@ -3,7 +3,6 @@ config FB_OLPC_DCON
 	depends on OLPC && FB
 	depends on I2C
 	depends on (GPIO_CS5535 || GPIO_CS5535=n)
-	select BACKLIGHT_LCD_SUPPORT
 	select BACKLIGHT_CLASS_DEVICE
 	---help---
 	  In order to support very low power operation, the XO laptop uses a
