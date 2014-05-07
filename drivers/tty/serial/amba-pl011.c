@@ -1974,12 +1974,9 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
 	clk_enable(uap->clk);
 
 	local_irq_save(flags);
-#ifdef SUPPORT_SYSRQ
 	if (uap->port.sysrq)
 		locked = 0;
-	else
-#endif
-	if (oops_in_progress)
+	else if (oops_in_progress)
 		locked = spin_trylock(&uap->port.lock);
 	else
 		spin_lock(&uap->port.lock);
