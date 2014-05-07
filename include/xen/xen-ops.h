@@ -4,7 +4,6 @@
 #include <linux/percpu.h>
 #include <linux/notifier.h>
 #include <asm/xen/interface.h>
-#include <asm/page.h>
 
 DECLARE_PER_CPU(struct vcpu_info *, xen_vcpu);
 
