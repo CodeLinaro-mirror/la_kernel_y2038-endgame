@@ -28,7 +28,7 @@ config FSL_USB2_OTG
 
 config ISP1301_OMAP
 	tristate "Philips ISP1301 with OMAP OTG"
-	depends on I2C && ARCH_OMAP_OTG && TPS65010
+	depends on I2C && ARCH_OMAP_OTG
 	depends on USB
 	select USB_PHY
 	help
