@@ -113,7 +113,6 @@ static int exynos_irq_set_wake(struct irq_data *data, unsigned int state)
 			(sysram_base_addr + 0x20) : \
 			pmu_base_addr + S5P_INFORM1))
 
-#ifdef CONFIG_PM_SLEEP
 #define S5P_CHECK_AFTR  0xFCBA0D10
 #define S5P_CHECK_SLEEP 0x00000BAD
 
@@ -139,6 +138,8 @@ void exynos_enter_aftr(void)
 	/* Set value of power down register for aftr mode */
 	exynos_sys_powerdown_conf(SYS_AFTR);
 }
+
+#ifdef CONFIG_PM_SLEEP
 
 /* For Cortex-A9 Diagnostic and Power control register */
 static unsigned int save_arm_register[2];
