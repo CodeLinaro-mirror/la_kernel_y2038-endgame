@@ -25,6 +25,7 @@ config PINCTRL_SUN6I_A31_R
 	def_bool MACH_SUN6I
 	depends on RESET_CONTROLLER
 	select PINCTRL_SUNXI_COMMON
+	depends on RESET_CONTROLLER
 
 config PINCTRL_SUN7I_A20
 	def_bool MACH_SUN7I
