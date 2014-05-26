@@ -879,7 +879,8 @@ static void __init sunxi_gates_clk_setup(struct device_node *node,
 	reset_data->rcdev.nr_resets = __fls(data->reset_mask) + 1;
 	reset_data->rcdev.ops = &sunxi_gates_reset_ops;
 	reset_data->rcdev.of_node = node;
-	reset_controller_register(&reset_data->rcdev);
+	if (IS_ENABLED(CONFIG_RESET_CONTROLLER))
+		reset_controller_register(&reset_data->rcdev);
 }
 
 
