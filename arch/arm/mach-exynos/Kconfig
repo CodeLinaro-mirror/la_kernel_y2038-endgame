@@ -122,7 +122,7 @@ config SOC_EXYNOS5800
 
 config EXYNOS5420_MCPM
 	bool "Exynos5420 Multi-Cluster PM support"
-	depends on MCPM && SOC_EXYNOS5420
+	depends on MCPM && SOC_EXYNOS5420 && PM_SLEEP
 	select ARM_CCI
 	select ARM_CPU_SUSPEND
 	help
