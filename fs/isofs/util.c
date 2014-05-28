@@ -19,7 +19,7 @@ int iso_date(char * p, int flag)
 	int year, month, day, hour, minute, second, tz;
 	int crtime, days, i;
 
-	year = p[0] - 70;
+	year = (int)(u8)p[0] - 70;
 	month = p[1];
 	day = p[2];
 	hour = p[3];
