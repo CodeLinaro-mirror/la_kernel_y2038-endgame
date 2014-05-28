@@ -613,7 +613,7 @@ int fnic_fc_trace_set_data(u32 host_no, u8 frame_type,
 			fc_trace_entries.rd_idx = 0;
 	}
 
-	fc_buf->time_stamp = CURRENT_TIME;
+	fc_buf->time_stamp = current_kernel_time();
 	fc_buf->host_no = host_no;
 	fc_buf->frame_type = frame_type;
 
