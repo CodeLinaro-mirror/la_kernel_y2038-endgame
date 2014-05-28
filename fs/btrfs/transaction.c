@@ -1133,7 +1133,7 @@ static noinline int create_pending_snapshot(struct btrfs_trans_handle *trans,
 	struct dentry *dentry;
 	struct extent_buffer *tmp;
 	struct extent_buffer *old;
-	struct timespec cur_time = CURRENT_TIME;
+	struct inode_time cur_time = CURRENT_TIME;
 	int ret = 0;
 	u64 to_reserve = 0;
 	u64 index = 0;
