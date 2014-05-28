@@ -1464,7 +1464,7 @@ EXPORT_SYMBOL(bmap);
  * passed since the last atime update.
  */
 static int relatime_need_update(struct vfsmount *mnt, struct inode *inode,
-			     struct timespec now)
+				struct inode_time now)
 {
 
 	if (!(mnt->mnt_flags & MNT_RELATIME))
@@ -1472,12 +1472,12 @@ static int relatime_need_update(struct vfsmount *mnt, struct inode *inode,
 	/*
 	 * Is mtime younger than atime? If yes, update atime:
 	 */
-	if (timespec_compare(&inode->i_mtime, &inode->i_atime) >= 0)
+	if (inode_time_compare(&inode->i_mtime, &inode->i_atime) >= 0)
 		return 1;
 	/*
 	 * Is ctime younger than atime? If yes, update atime:
 	 */
-	if (timespec_compare(&inode->i_ctime, &inode->i_atime) >= 0)
+	if (inode_time_compare(&inode->i_ctime, &inode->i_atime) >= 0)
 		return 1;
 
 	/*
@@ -1496,7 +1496,7 @@ static int relatime_need_update(struct vfsmount *mnt, struct inode *inode,
  * This does the actual work of updating an inodes time or version.  Must have
  * had called mnt_want_write() before calling this.
  */
-static int update_time(struct inode *inode, struct timespec *time, int flags)
+static int update_time(struct inode *inode, struct inode_time *time, int flags)
 {
 	if (inode->i_op->update_time)
 		return inode->i_op->update_time(inode, time, flags);
@@ -1525,7 +1525,7 @@ void touch_atime(const struct path *path)
 {
 	struct vfsmount *mnt = path->mnt;
 	struct inode *inode = path->dentry->d_inode;
-	struct timespec now;
+	struct inode_time now;
 
 	if (inode->i_flags & S_NOATIME)
 		return;
@@ -1544,7 +1544,7 @@ void touch_atime(const struct path *path)
 	if (!relatime_need_update(mnt, inode, now))
 		return;
 
-	if (timespec_equal(&inode->i_atime, &now))
+	if (inode_time_equal(&inode->i_atime, &now))
 		return;
 
 	if (!sb_start_write_trylock(inode->i_sb))
@@ -1653,7 +1653,7 @@ EXPORT_SYMBOL(file_remove_suid);
 int file_update_time(struct file *file)
 {
 	struct inode *inode = file_inode(file);
-	struct timespec now;
+	struct inode_time now;
 	int sync_it = 0;
 	int ret;
 
@@ -1662,10 +1662,10 @@ int file_update_time(struct file *file)
 		return 0;
 
 	now = current_fs_time(inode->i_sb);
-	if (!timespec_equal(&inode->i_mtime, &now))
+	if (!inode_time_equal(&inode->i_mtime, &now))
 		sync_it = S_MTIME;
 
-	if (!timespec_equal(&inode->i_ctime, &now))
+	if (!inode_time_equal(&inode->i_ctime, &now))
 		sync_it |= S_CTIME;
 
 	if (IS_I_VERSION(inode))

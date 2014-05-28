@@ -228,10 +228,15 @@ SYSCALL_DEFINE1(adjtimex, struct timex __user *, txc_p)
  * Return the current time truncated to the time granularity supported by
  * the fs.
  */
-struct timespec current_fs_time(struct super_block *sb)
+struct inode_time current_fs_time(struct super_block *sb)
 {
-	struct timespec now = current_kernel_time();
-	return timespec_trunc(now, sb->s_time_gran);
+	/* FIXME: current_kernel_time may be 32-bit */
+	struct timespec ts = current_kernel_time();
+	struct inode_time now = (struct inode_time) {
+		.tv_sec = ts.tv_sec,
+		.tv_nsec = ts.tv_nsec,
+	};
+	return inode_time_trunc(now, sb->s_time_gran);
 }
 EXPORT_SYMBOL(current_fs_time);
 
@@ -274,8 +279,8 @@ unsigned int jiffies_to_usecs(const unsigned long j)
 EXPORT_SYMBOL(jiffies_to_usecs);
 
 /**
- * timespec_trunc - Truncate timespec to a granularity
- * @t: Timespec
+ * inode_time_trunc - Truncate timespec to a granularity
+ * @t: inode time
  * @gran: Granularity in ns.
  *
  * Truncate a timespec to a granularity. gran must be smaller than a second.
@@ -285,7 +290,7 @@ EXPORT_SYMBOL(jiffies_to_usecs);
  * current_kernel_time() or CURRENT_TIME, not with do_gettimeofday() because
  * it doesn't handle the better resolution of the latter.
  */
-struct timespec timespec_trunc(struct timespec t, unsigned gran)
+struct inode_time inode_time_trunc(struct inode_time t, unsigned gran)
 {
 	/*
 	 * Division is pretty slow so avoid it for common cases.
@@ -301,7 +306,7 @@ struct timespec timespec_trunc(struct timespec t, unsigned gran)
 	}
 	return t;
 }
-EXPORT_SYMBOL(timespec_trunc);
+EXPORT_SYMBOL(inode_time_trunc);
 
 /* Converts Gregorian date to seconds since 1970-01-01 00:00:00.
  * Assumes input in normal date format, i.e. 1980-12-31 23:59:59
@@ -401,6 +406,31 @@ struct timespec ns_to_timespec(const s64 nsec)
 	return ts;
 }
 EXPORT_SYMBOL(ns_to_timespec);
+
+/**
+ * ns_to_inode_time - Convert nanoseconds to inode_time
+ * @nsec:       the nanoseconds value to be converted
+ *
+ * Returns the inode_time representation of the nsec parameter.
+ */
+struct inode_time ns_to_inode_time(const s64 nsec)
+{
+	struct inode_time ts;
+	s32 rem;
+
+	if (!nsec)
+		return (struct inode_time) {0, 0};
+
+	ts.tv_sec = div_s64_rem(nsec, NSEC_PER_SEC, &rem);
+	if (unlikely(rem < 0)) {
+		ts.tv_sec--;
+		rem += NSEC_PER_SEC;
+	}
+	ts.tv_nsec = rem;
+
+	return ts;
+}
+EXPORT_SYMBOL(ns_to_inode_time);
 
 /**
  * ns_to_timeval - Convert nanoseconds to timeval

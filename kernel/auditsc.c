@@ -1544,7 +1544,7 @@ void __audit_syscall_entry(int arch, int major,
 		return;
 
 	context->serial     = 0;
-	context->ctime      = CURRENT_TIME;
+	context->ctime      = current_kernel_time();
 	context->in_syscall = 1;
 	context->current_state  = state;
 	context->ppid       = 0;

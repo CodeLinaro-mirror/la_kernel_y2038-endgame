@@ -6,6 +6,23 @@
 # include <linux/math64.h>
 #include <uapi/linux/time.h>
 
+#ifdef CONFIG_NEW_INODE_TIME
+/*
+ * This is the type we use internally in the kernel to represent
+ * absolute times in file system metadata.
+ * This structure must not leak out to user space, and new interfaces
+ * should be using 64-bit types right away.
+ * marking tv_sec as __packed results in a 12 byte structure, rather
+ * than 16 byte, which helps keep the total inode size down.
+ */
+struct inode_time {
+	long long	tv_sec __packed;
+	int		tv_nsec;
+};
+#else
+#define inode_time timespec
+#endif
+
 extern struct timezone sys_tz;
 
 /* Parameters used to convert the timespec values: */
@@ -25,12 +42,27 @@ static inline int timespec_equal(const struct timespec *a,
 	return (a->tv_sec == b->tv_sec) && (a->tv_nsec == b->tv_nsec);
 }
 
+static inline int inode_time_equal(const struct inode_time *a,
+                                 const struct inode_time *b)
+{
+	return (a->tv_sec == b->tv_sec) && (a->tv_nsec == b->tv_nsec);
+}
+
 /*
  * lhs < rhs:  return <0
  * lhs == rhs: return 0
  * lhs > rhs:  return >0
  */
 static inline int timespec_compare(const struct timespec *lhs, const struct timespec *rhs)
+{
+	if (lhs->tv_sec < rhs->tv_sec)
+		return -1;
+	if (lhs->tv_sec > rhs->tv_sec)
+		return 1;
+	return lhs->tv_nsec - rhs->tv_nsec;
+}
+
+static inline int inode_time_compare(const struct inode_time *lhs, const struct inode_time *rhs)
 {
 	if (lhs->tv_sec < rhs->tv_sec)
 		return -1;
@@ -131,14 +163,15 @@ extern int timekeeping_suspended;
 
 unsigned long get_seconds(void);
 struct timespec current_kernel_time(void);
+struct inode_time current_inode_time(void);
 struct timespec __current_kernel_time(void); /* does not take xtime_lock */
 struct timespec get_monotonic_coarse(void);
 void get_xtime_and_monotonic_and_sleep_offset(struct timespec *xtim,
 				struct timespec *wtom, struct timespec *sleep);
 void timekeeping_inject_sleeptime(struct timespec *delta);
 
-#define CURRENT_TIME		(current_kernel_time())
-#define CURRENT_TIME_SEC	((struct timespec) { get_seconds(), 0 })
+#define CURRENT_TIME		(current_inode_time())
+#define CURRENT_TIME_SEC	((struct inode_time) { get_seconds(), 0 })
 
 /* Some architectures do not supply their own clocksource.
  * This is mainly the case in architectures that get their
@@ -173,7 +206,7 @@ extern void getboottime(struct timespec *ts);
 extern void monotonic_to_bootbased(struct timespec *ts);
 extern void get_monotonic_boottime(struct timespec *ts);
 
-extern struct timespec timespec_trunc(struct timespec t, unsigned gran);
+extern struct inode_time inode_time_trunc(struct inode_time t, unsigned gran);
 extern int timekeeping_valid_for_hres(void);
 extern u64 timekeeping_max_deferment(void);
 extern int timekeeping_inject_offset(struct timespec *ts);
@@ -244,6 +277,14 @@ static inline s64 timeval_to_ns(const struct timeval *tv)
  * Returns the timespec representation of the nsec parameter.
  */
 extern struct timespec ns_to_timespec(const s64 nsec);
+
+/**
+ * ns_to_inode_time - Convert nanoseconds to inode_time
+ * @nsec:	the nanoseconds value to be converted
+ *
+ * Returns the inode_time representation of the nsec parameter.
+ */
+extern struct inode_time ns_to_inode_time(const s64 nsec);
 
 /**
  * ns_to_timeval - Convert nanoseconds to timeval

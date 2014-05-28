@@ -1276,7 +1276,7 @@ static inline void audit_get_stamp(struct audit_context *ctx,
 				   struct timespec *t, unsigned int *serial)
 {
 	if (!ctx || !auditsc_get_stamp(ctx, t, serial)) {
-		*t = CURRENT_TIME;
+		*t = current_kernel_time();
 		*serial = audit_serial();
 	}
 }

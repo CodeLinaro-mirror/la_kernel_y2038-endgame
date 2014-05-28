@@ -1558,6 +1558,22 @@ struct timespec current_kernel_time(void)
 }
 EXPORT_SYMBOL(current_kernel_time);
 
+struct inode_time current_inode_time(void)
+{
+	struct timekeeper *tk = &timekeeper;
+	struct timespec now;
+	unsigned long seq;
+
+	do {
+		seq = read_seqcount_begin(&timekeeper_seq);
+
+		now = tk_xtime(tk);
+	} while (read_seqcount_retry(&timekeeper_seq, seq));
+
+	return (struct inode_time) { now.tv_sec, now.tv_nsec };
+}
+EXPORT_SYMBOL(current_inode_time);
+
 struct timespec get_monotonic_coarse(void)
 {
 	struct timekeeper *tk = &timekeeper;
