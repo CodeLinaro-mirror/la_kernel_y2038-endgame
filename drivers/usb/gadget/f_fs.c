@@ -1094,7 +1094,7 @@ ffs_sb_make_inode(struct super_block *sb, void *data,
 	inode = new_inode(sb);
 
 	if (likely(inode)) {
-		struct timespec current_time = CURRENT_TIME;
+		struct inode_time current_time = CURRENT_TIME;
 
 		inode->i_ino	 = get_next_ino();
 		inode->i_mode    = perms->mode;
