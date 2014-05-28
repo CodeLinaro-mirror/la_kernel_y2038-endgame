@@ -149,26 +149,28 @@ ramoops_get_next_prz(struct persistent_ram_zone *przs[], uint *c, uint max,
 	return prz;
 }
 
-static int ramoops_read_kmsg_hdr(char *buffer, struct timespec *time,
+static int ramoops_read_kmsg_hdr(char *buffer, struct inode_time *time,
 				  bool *compressed)
 {
 	char data_type;
 	int header_length = 0;
+	u64 seconds;
 
-	if (sscanf(buffer, RAMOOPS_KERNMSG_HDR "%lu.%lu-%c\n%n", &time->tv_sec,
+	if (sscanf(buffer, RAMOOPS_KERNMSG_HDR "%llu.%lu-%c\n%n", &seconds,
 			&time->tv_nsec, &data_type, &header_length) == 3) {
 		if (data_type == 'C')
 			*compressed = true;
 		else
 			*compressed = false;
-	} else if (sscanf(buffer, RAMOOPS_KERNMSG_HDR "%lu.%lu\n%n",
-			&time->tv_sec, &time->tv_nsec, &header_length) == 2) {
+	} else if (sscanf(buffer, RAMOOPS_KERNMSG_HDR "%llu.%lu\n%n",
+			&seconds, &time->tv_nsec, &header_length) == 2) {
 			*compressed = false;
 	} else {
-		time->tv_sec = 0;
+		seconds = 0;
 		time->tv_nsec = 0;
 		*compressed = false;
 	}
+	time->tv_sec = seconds;
 	return header_length;
 }
 
@@ -179,7 +181,7 @@ static bool prz_ok(struct persistent_ram_zone *prz)
 }
 
 static ssize_t ramoops_pstore_read(u64 *id, enum pstore_type_id *type,
-				   int *count, struct timespec *time,
+				   int *count, struct inode_time *time,
 				   char **buf, bool *compressed,
 				   struct pstore_info *psi)
 {
@@ -330,7 +332,7 @@ static int notrace ramoops_pstore_write_buf(enum pstore_type_id type,
 }
 
 static int ramoops_pstore_erase(enum pstore_type_id type, u64 id, int count,
-				struct timespec time, struct pstore_info *psi)
+				struct inode_time time, struct pstore_info *psi)
 {
 	struct ramoops_context *cxt = psi->data;
 	struct persistent_ram_zone *prz;
