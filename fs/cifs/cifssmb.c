@@ -482,7 +482,7 @@ decode_lanman_negprot_rsp(struct TCP_Server_Info *server, NEGOTIATE_RSP *pSMBr)
 		 * this requirement.
 		 */
 		int val, seconds, remain, result;
-		struct timespec ts, utc;
+		struct inode_time ts, utc;
 		utc = CURRENT_TIME;
 		ts = cnvrtDosUnixTm(rsp->SrvTime.Date,
 				    rsp->SrvTime.Time, 0);
@@ -3952,7 +3952,8 @@ QInfRetry:
 	if (rc) {
 		cifs_dbg(FYI, "Send error in QueryInfo = %d\n", rc);
 	} else if (data) {
-		struct timespec ts;
+		struct inode_time ts;
+		/* FIXME: 32-bit time? */
 		__u32 time = le32_to_cpu(pSMBr->last_write_time);
 
 		/* decode response */

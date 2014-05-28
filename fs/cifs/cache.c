@@ -221,9 +221,9 @@ const struct fscache_cookie_def cifs_fscache_super_index_def = {
  * Auxiliary data attached to CIFS inode within the cache
  */
 struct cifs_fscache_inode_auxdata {
-	struct timespec	last_write_time;
-	struct timespec	last_change_time;
-	u64		eof;
+	struct inode_time	last_write_time;
+	struct inode_time	last_change_time;
+	u64			eof;
 };
 
 static uint16_t cifs_fscache_inode_get_key(const void *cookie_netfs_data,

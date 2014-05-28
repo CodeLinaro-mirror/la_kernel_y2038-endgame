@@ -918,10 +918,10 @@ smbCalcSize(void *buf)
  * Convert the NT UTC (based 1601-01-01, in hundred nanosecond units)
  * into Unix UTC (based 1970-01-01, in seconds).
  */
-struct timespec
+struct inode_time
 cifs_NTtimeToUnix(__le64 ntutc)
 {
-	struct timespec ts;
+	struct inode_time ts;
 	/* BB what about the timezone? BB */
 
 	/* Subtract the NTFS time offset, then convert to 1s intervals. */
@@ -935,7 +935,7 @@ cifs_NTtimeToUnix(__le64 ntutc)
 
 /* Convert the Unix UTC into NT UTC. */
 u64
-cifs_UnixTimeToNT(struct timespec t)
+cifs_UnixTimeToNT(struct inode_time t)
 {
 	/* Convert to 100ns intervals and then add the NTFS time offset. */
 	return (u64) t.tv_sec * 10000000 + t.tv_nsec/100 + NTFS_TIME_OFFSET;
@@ -944,10 +944,11 @@ cifs_UnixTimeToNT(struct timespec t)
 static int total_days_of_prev_months[] =
 {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
 
-struct timespec cnvrtDosUnixTm(__le16 le_date, __le16 le_time, int offset)
+struct inode_time cnvrtDosUnixTm(__le16 le_date, __le16 le_time, int offset)
 {
-	struct timespec ts;
-	int sec, min, days, month, year;
+	struct inode_time ts;
+	long long sec;
+	int min, days, month, year;
 	u16 date = le16_to_cpu(le_date);
 	u16 time = le16_to_cpu(le_time);
 	SMB_TIME *st = (SMB_TIME *)&time;
@@ -958,7 +959,7 @@ struct timespec cnvrtDosUnixTm(__le16 le_date, __le16 le_time, int offset)
 	sec = 2 * st->TwoSeconds;
 	min = st->Minutes;
 	if ((sec > 59) || (min > 59))
-		cifs_dbg(VFS, "illegal time min %d sec %d\n", min, sec);
+		cifs_dbg(VFS, "illegal time min %d sec %lld\n", min, sec);
 	sec += (min * 60);
 	sec += 60 * 60 * st->Hours;
 	if (st->Hours > 24)

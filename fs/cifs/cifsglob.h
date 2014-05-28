@@ -1342,9 +1342,9 @@ struct cifs_fattr {
 	dev_t		cf_rdev;
 	unsigned int	cf_nlink;
 	unsigned int	cf_dtype;
-	struct timespec	cf_atime;
-	struct timespec	cf_mtime;
-	struct timespec	cf_ctime;
+	struct inode_time cf_atime;
+	struct inode_time cf_mtime;
+	struct inode_time cf_ctime;
 };
 
 static inline void free_dfs_info_param(struct dfs_info3_param *param)
