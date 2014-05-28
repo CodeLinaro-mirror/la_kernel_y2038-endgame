@@ -45,7 +45,7 @@
  * measured as the number of 100-nano-second intervals since 1st January 1601,
  * 00:00:00 UTC.
  */
-static inline sle64 utc2ntfs(const struct timespec ts)
+static inline sle64 utc2ntfs(const struct inode_time ts)
 {
 	/*
 	 * Convert the seconds to 100ns intervals, add the nano-seconds
@@ -63,7 +63,7 @@ static inline sle64 utc2ntfs(const struct timespec ts)
  */
 static inline sle64 get_current_ntfs_time(void)
 {
-	return utc2ntfs(current_kernel_time());
+	return utc2ntfs(CURRENT_TIME);
 }
 
 /**
@@ -82,9 +82,9 @@ static inline sle64 get_current_ntfs_time(void)
  * measured as the number of 100 nano-second intervals since 1st January 1601,
  * 00:00:00 UTC.
  */
-static inline struct timespec ntfs2utc(const sle64 time)
+static inline struct inode_time ntfs2utc(const sle64 time)
 {
-	struct timespec ts;
+	struct inode_time ts;
 
 	/* Subtract the NTFS time offset. */
 	u64 t = (u64)(sle64_to_cpu(time) - NTFS_TIME_OFFSET);
