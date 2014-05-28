@@ -1931,6 +1931,15 @@ struct timespec64 current_kernel_time64(void)
 }
 EXPORT_SYMBOL(current_kernel_time64);
 
+struct inode_time current_inode_time(void)
+{
+	struct timespec64 now;
+
+	now = current_kernel_time64();
+	return (struct inode_time) { now.tv_sec, now.tv_nsec };
+}
+EXPORT_SYMBOL(current_inode_time);
+
 struct timespec64 get_monotonic_coarse64(void)
 {
 	struct timekeeper *tk = &tk_core.timekeeper;

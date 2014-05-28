@@ -239,10 +239,15 @@ SYSCALL_DEFINE1(adjtimex, struct __kernel_timex __user *, txc_p)
  * Return the current time truncated to the time granularity supported by
  * the fs.
  */
-struct timespec current_fs_time(struct super_block *sb)
+struct inode_time current_fs_time(struct super_block *sb)
 {
-	struct timespec now = current_kernel_time();
-	return timespec_trunc(now, sb->s_time_gran);
+	/* FIXME: current_kernel_time may be 32-bit */
+	struct timespec64 ts = current_kernel_time64();
+	struct inode_time now = (struct inode_time) {
+		.tv_sec = ts.tv_sec,
+		.tv_nsec = ts.tv_nsec,
+	};
+	return inode_time_trunc(now, sb->s_time_gran);
 }
 EXPORT_SYMBOL(current_fs_time);
 
@@ -289,14 +294,14 @@ unsigned int jiffies_to_usecs(const unsigned long j)
 EXPORT_SYMBOL(jiffies_to_usecs);
 
 /**
- * timespec_trunc - Truncate timespec to a granularity
- * @t: Timespec
+ * inode_time_trunc - Truncate timespec to a granularity
+ * @t: inode time
  * @gran: Granularity in ns.
  *
  * Truncate a timespec to a granularity. Always rounds down. gran must
  * not be 0 nor greater than a second (NSEC_PER_SEC, or 10^9 ns).
  */
-struct timespec timespec_trunc(struct timespec t, unsigned gran)
+struct inode_time inode_time_trunc(struct inode_time t, unsigned gran)
 {
 	/* Avoid division in the common cases 1 ns and 1 s. */
 	if (gran == 1) {
@@ -310,7 +315,7 @@ struct timespec timespec_trunc(struct timespec t, unsigned gran)
 	}
 	return t;
 }
-EXPORT_SYMBOL(timespec_trunc);
+EXPORT_SYMBOL(inode_time_trunc);
 
 /*
  * mktime64 - Converts date to seconds.
@@ -406,6 +411,31 @@ struct timespec ns_to_timespec(const s64 nsec)
 	return ts;
 }
 EXPORT_SYMBOL(ns_to_timespec);
+
+/**
+ * ns_to_inode_time - Convert nanoseconds to inode_time
+ * @nsec:       the nanoseconds value to be converted
+ *
+ * Returns the inode_time representation of the nsec parameter.
+ */
+struct inode_time ns_to_inode_time(const s64 nsec)
+{
+	struct inode_time ts;
+	s32 rem;
+
+	if (!nsec)
+		return (struct inode_time) {0, 0};
+
+	ts.tv_sec = div_s64_rem(nsec, NSEC_PER_SEC, &rem);
+	if (unlikely(rem < 0)) {
+		ts.tv_sec--;
+		rem += NSEC_PER_SEC;
+	}
+	ts.tv_nsec = rem;
+
+	return ts;
+}
+EXPORT_SYMBOL(ns_to_inode_time);
 
 /**
  * ns_to_timeval - Convert nanoseconds to timeval
