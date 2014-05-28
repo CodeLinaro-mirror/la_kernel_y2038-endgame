@@ -163,7 +163,7 @@ static int ceph_x_proc_ticket_reply(struct ceph_auth_client *ac,
 		void *dp, *dend;
 		int dlen;
 		char is_enc;
-		struct timespec validity;
+		struct inode_time validity;
 		struct ceph_crypto_key old_key;
 		void *tp, *tpend;
 		struct ceph_timespec new_validity;

@@ -988,7 +988,7 @@ static int send_cap_msg(struct ceph_mds_session *session,
 			int caps, int wanted, int dirty,
 			u32 seq, u64 flush_tid, u32 issue_seq, u32 mseq,
 			u64 size, u64 max_size,
-			struct timespec *mtime, struct timespec *atime,
+			struct inode_time *mtime, struct inode_time *atime,
 			u64 time_warp_seq,
 			kuid_t uid, kgid_t gid, umode_t mode,
 			u64 xattr_version,
@@ -1132,7 +1132,7 @@ static int __send_cap(struct ceph_mds_client *mdsc, struct ceph_cap *cap,
 	int held, revoking, dropping, keep;
 	u64 seq, issue_seq, mseq, time_warp_seq, follows;
 	u64 size, max_size;
-	struct timespec mtime, atime;
+	struct inode_time mtime, atime;
 	int wake = 0;
 	umode_t mode;
 	kuid_t uid;
@@ -2416,7 +2416,7 @@ static void handle_cap_grant(struct inode *inode, struct ceph_mds_caps *grant,
 	int issued, implemented, used, wanted, dirty;
 	u64 size = le64_to_cpu(grant->size);
 	u64 max_size = le64_to_cpu(grant->max_size);
-	struct timespec mtime, atime, ctime;
+	struct inode_time mtime, atime, ctime;
 	int check_caps = 0;
 	int wake = 0;
 	int writeback = 0;

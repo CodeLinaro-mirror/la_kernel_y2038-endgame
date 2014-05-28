@@ -558,7 +558,7 @@ ceph_sync_direct_write(struct kiocb *iocb, const struct iovec *iov,
 	int check_caps = 0;
 	int page_align;
 	int ret;
-	struct timespec mtime = CURRENT_TIME;
+	struct inode_time mtime = CURRENT_TIME;
 	loff_t pos = iocb->ki_pos;
 	struct iov_iter i;
 
@@ -679,7 +679,7 @@ static ssize_t ceph_sync_write(struct kiocb *iocb, const struct iovec *iov,
 	int flags;
 	int check_caps = 0;
 	int ret;
-	struct timespec mtime = CURRENT_TIME;
+	struct inode_time mtime = CURRENT_TIME;
 	loff_t pos = iocb->ki_pos;
 	struct iov_iter i;
 

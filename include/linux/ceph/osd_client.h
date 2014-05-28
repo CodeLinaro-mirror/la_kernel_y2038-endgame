@@ -312,7 +312,7 @@ extern struct ceph_osd_request *ceph_osdc_alloc_request(struct ceph_osd_client *
 extern void ceph_osdc_build_request(struct ceph_osd_request *req, u64 off,
 				    struct ceph_snap_context *snapc,
 				    u64 snap_id,
-				    struct timespec *mtime);
+				    struct inode_time *mtime);
 
 extern struct ceph_osd_request *ceph_osdc_new_request(struct ceph_osd_client *,
 				      struct ceph_file_layout *layout,
@@ -361,7 +361,7 @@ extern int ceph_osdc_writepages(struct ceph_osd_client *osdc,
 				struct ceph_snap_context *sc,
 				u64 off, u64 len,
 				u32 truncate_seq, u64 truncate_size,
-				struct timespec *mtime,
+				struct inode_time *mtime,
 				struct page **pages, int nr_pages);
 
 /* watch/notify events */

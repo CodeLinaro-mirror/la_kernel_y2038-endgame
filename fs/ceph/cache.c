@@ -25,7 +25,7 @@
 #include "cache.h"
 
 struct ceph_aux_inode {
-	struct timespec	mtime;
+	struct inode_time mtime;
 	loff_t          size;
 };
 
