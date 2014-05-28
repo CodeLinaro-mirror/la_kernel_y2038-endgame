@@ -654,7 +654,7 @@ xfs_ialloc(
 	xfs_inode_t	*ip;
 	uint		flags;
 	int		error;
-	timespec_t	tv;
+	struct inode_time tv;
 	int		filestreams = 0;
 
 	/*

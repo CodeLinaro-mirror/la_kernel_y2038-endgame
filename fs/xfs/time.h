@@ -21,14 +21,14 @@
 #include <linux/sched.h>
 #include <linux/time.h>
 
-typedef struct timespec timespec_t;
+typedef struct inode_time timespec_t;
 
 static inline void delay(long ticks)
 {
 	schedule_timeout_uninterruptible(ticks);
 }
 
-static inline void nanotime(struct timespec *tvp)
+static inline void nanotime(struct inode_time *tvp)
 {
 	*tvp = CURRENT_TIME;
 }
