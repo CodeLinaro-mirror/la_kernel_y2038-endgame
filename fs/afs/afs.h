@@ -125,8 +125,8 @@ struct afs_file_status {
 	afs_access_t		anon_access;	/* access rights for unauthenticated caller */
 	umode_t			mode;		/* UNIX mode */
 	struct afs_fid		parent;		/* parent dir ID for non-dirs only */
-	time_t			mtime_client;	/* last time client changed data */
-	time_t			mtime_server;	/* last time server changed data */
+	u32			mtime_client;	/* last time client changed data */
+	u32			mtime_server;	/* last time server changed data */
 	s32			lock_count;	/* file lock count (0=UNLK -1=WRLCK +ve=#RDLCK */
 };
 
@@ -144,7 +144,7 @@ struct afs_file_status {
  * AFS volume synchronisation information
  */
 struct afs_volsync {
-	time_t			creation;	/* volume creation time */
+	u32			creation;	/* volume creation time */
 };
 
 /*
