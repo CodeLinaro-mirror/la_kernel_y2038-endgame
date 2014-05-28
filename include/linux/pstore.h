@@ -55,7 +55,7 @@ struct pstore_info {
 	int		(*open)(struct pstore_info *psi);
 	int		(*close)(struct pstore_info *psi);
 	ssize_t		(*read)(u64 *id, enum pstore_type_id *type,
-			int *count, struct timespec *time, char **buf,
+			int *count, struct inode_time *time, char **buf,
 			bool *compressed, struct pstore_info *psi);
 	int		(*write)(enum pstore_type_id type,
 			enum kmsg_dump_reason reason, u64 *id,
@@ -66,7 +66,7 @@ struct pstore_info {
 			unsigned int part, const char *buf, bool compressed,
 			size_t size, struct pstore_info *psi);
 	int		(*erase)(enum pstore_type_id type, u64 id,
-			int count, struct timespec time,
+			int count, struct inode_time time,
 			struct pstore_info *psi);
 	void		*data;
 };

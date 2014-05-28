@@ -277,7 +277,7 @@ int pstore_is_mounted(void)
  */
 int pstore_mkfile(enum pstore_type_id type, char *psname, u64 id, int count,
 		  char *data, bool compressed, size_t size,
-		  struct timespec time, struct pstore_info *psi)
+		  struct inode_time time, struct pstore_info *psi)
 {
 	struct dentry		*root = pstore_sb->s_root;
 	struct dentry		*dentry;
