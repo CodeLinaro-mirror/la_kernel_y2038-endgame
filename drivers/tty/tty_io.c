@@ -1020,9 +1020,9 @@ void start_tty(struct tty_struct *tty)
 }
 EXPORT_SYMBOL(start_tty);
 
-static void tty_update_time(struct timespec *time)
+static void tty_update_time(struct inode_time *time)
 {
-	unsigned long sec = get_seconds();
+	u64 sec = ktime_get_real_seconds();
 
 	/*
 	 * We only care if the two values differ in anything other than the
