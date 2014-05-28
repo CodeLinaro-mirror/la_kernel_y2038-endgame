@@ -1353,7 +1353,7 @@ static void prepare_write_keepalive(struct ceph_connection *con)
 	dout("prepare_write_keepalive %p\n", con);
 	con_out_kvec_reset(con);
 	if (con->peer_features & CEPH_FEATURE_MSGR_KEEPALIVE2) {
-		struct timespec now = CURRENT_TIME;
+		struct inode_time now = CURRENT_TIME;
 
 		con_out_kvec_add(con, sizeof(tag_keepalive2), &tag_keepalive2);
 		ceph_encode_timespec(&con->out_temp_keepalive2, &now);
@@ -3135,11 +3135,15 @@ bool ceph_con_keepalive_expired(struct ceph_connection *con,
 {
 	if (interval > 0 &&
 	    (con->peer_features & CEPH_FEATURE_MSGR_KEEPALIVE2)) {
-		struct timespec now = CURRENT_TIME;
-		struct timespec ts;
-		jiffies_to_timespec(interval, &ts);
-		ts = timespec_add(con->last_keepalive_ack, ts);
-		return timespec_compare(&now, &ts) >= 0;
+		struct inode_time now = CURRENT_TIME;
+		struct inode_time ts = con->last_keepalive_ack;
+		ts.tv_sec += interval / HZ;
+		ts.tv_nsec += jiffies_to_nsecs(interval % HZ);
+		if (ts.tv_nsec > NSEC_PER_SEC) {
+			ts.tv_nsec -= NSEC_PER_SEC;
+			ts.tv_sec += 1;
+		}
+		return inode_time_compare(&now, &ts) >= 0;
 	}
 	return false;
 }

@@ -146,7 +146,7 @@ static int process_one_ticket(struct ceph_auth_client *ac,
 	void *dp, *dend;
 	int dlen;
 	char is_enc;
-	struct timespec validity;
+	struct inode_time validity;
 	struct ceph_crypto_key old_key;
 	void *ticket_buf = NULL;
 	void *tp, *tpend;
@@ -154,7 +154,7 @@ static int process_one_ticket(struct ceph_auth_client *ac,
 	struct ceph_timespec new_validity;
 	struct ceph_crypto_key new_session_key;
 	struct ceph_buffer *new_ticket_blob;
-	unsigned long new_expires, new_renew_after;
+	time64_t new_expires, new_renew_after;
 	u64 new_secret_id;
 	int ret;
 
@@ -194,10 +194,10 @@ static int process_one_ticket(struct ceph_auth_client *ac,
 
 	ceph_decode_copy(&dp, &new_validity, sizeof(new_validity));
 	ceph_decode_timespec(&validity, &new_validity);
-	new_expires = get_seconds() + validity.tv_sec;
+	new_expires = ktime_get_real_seconds() + validity.tv_sec;
 	new_renew_after = new_expires - (validity.tv_sec / 4);
-	dout(" expires=%lu renew_after=%lu\n", new_expires,
-	     new_renew_after);
+	dout(" expires=%llu renew_after=%llu\n", (s64)new_expires,
+	     (s64)new_renew_after);
 
 	/* ticket blob for service */
 	ceph_decode_8_safe(p, end, is_enc, bad);
