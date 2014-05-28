@@ -965,7 +965,7 @@ static int ubifs_rename(struct inode *old_dir, struct dentry *old_dentry,
 					.dirtied_ino = 3 };
 	struct ubifs_budget_req ino_req = { .dirtied_ino = 1,
 			.dirtied_ino_d = ALIGN(old_inode_ui->data_len, 8) };
-	struct timespec time;
+	struct inode_time time;
 	unsigned int uninitialized_var(saved_nlink);
 
 	/*

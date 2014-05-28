@@ -1073,13 +1073,13 @@ static void do_attr_changes(struct inode *inode, const struct iattr *attr)
 	if (attr->ia_valid & ATTR_GID)
 		inode->i_gid = attr->ia_gid;
 	if (attr->ia_valid & ATTR_ATIME)
-		inode->i_atime = timespec_trunc(attr->ia_atime,
+		inode->i_atime = inode_time_trunc(attr->ia_atime,
 						inode->i_sb->s_time_gran);
 	if (attr->ia_valid & ATTR_MTIME)
-		inode->i_mtime = timespec_trunc(attr->ia_mtime,
+		inode->i_mtime = inode_time_trunc(attr->ia_mtime,
 						inode->i_sb->s_time_gran);
 	if (attr->ia_valid & ATTR_CTIME)
-		inode->i_ctime = timespec_trunc(attr->ia_ctime,
+		inode->i_ctime = inode_time_trunc(attr->ia_ctime,
 						inode->i_sb->s_time_gran);
 	if (attr->ia_valid & ATTR_MODE) {
 		umode_t mode = attr->ia_mode;
@@ -1353,10 +1353,10 @@ out:
  * granularity, they are not updated. This is an optimization.
  */
 static inline int mctime_update_needed(const struct inode *inode,
-				       const struct timespec *now)
+				       const struct inode_time *now)
 {
-	if (!timespec_equal(&inode->i_mtime, now) ||
-	    !timespec_equal(&inode->i_ctime, now))
+	if (!inode_time_equal(&inode->i_mtime, now) ||
+	    !inode_time_equal(&inode->i_ctime, now))
 		return 1;
 	return 0;
 }
@@ -1372,7 +1372,7 @@ static inline int mctime_update_needed(const struct inode *inode,
  */
 static int update_mctime(struct ubifs_info *c, struct inode *inode)
 {
-	struct timespec now = ubifs_current_time(inode);
+	struct inode_time now = ubifs_current_time(inode);
 	struct ubifs_inode *ui = ubifs_inode(inode);
 
 	if (mctime_update_needed(inode, &now)) {
@@ -1448,7 +1448,7 @@ static int ubifs_vm_page_mkwrite(struct vm_area_struct *vma,
 	struct page *page = vmf->page;
 	struct inode *inode = file_inode(vma->vm_file);
 	struct ubifs_info *c = inode->i_sb->s_fs_info;
-	struct timespec now = ubifs_current_time(inode);
+	struct inode_time now = ubifs_current_time(inode);
 	struct ubifs_budget_req req = { .new_page = 1 };
 	int err, update_time;
 
