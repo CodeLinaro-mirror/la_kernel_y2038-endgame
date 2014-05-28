@@ -85,7 +85,7 @@ static void xdr_decode_AFSFetchStatus(const __be32 **_bp,
 	}
 	status->mode &= S_IALLUGO;
 
-	_debug("vnode time %lx, %lx",
+	_debug("vnode time %x, %x",
 	       status->mtime_client, status->mtime_server);
 
 	if (vnode) {
