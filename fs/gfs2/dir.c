@@ -835,7 +835,7 @@ static struct gfs2_leaf *new_leaf(struct inode *inode, struct buffer_head **pbh,
 	struct gfs2_leaf *leaf;
 	struct gfs2_dirent *dent;
 	struct qstr name = { .name = "" };
-	struct timespec tv = CURRENT_TIME;
+	struct inode_time tv = CURRENT_TIME;
 
 	error = gfs2_alloc_blocks(ip, &bn, &n, 0, NULL);
 	if (error)
@@ -1716,7 +1716,7 @@ int gfs2_dir_add(struct inode *inode, const struct qstr *name,
 	struct gfs2_inode *ip = GFS2_I(inode);
 	struct buffer_head *bh = da->bh;
 	struct gfs2_dirent *dent = da->dent;
-	struct timespec tv;
+	struct inode_time tv;
 	struct gfs2_leaf *leaf;
 	int error;
 
@@ -1794,7 +1794,7 @@ int gfs2_dir_del(struct gfs2_inode *dip, const struct dentry *dentry)
 	const struct qstr *name = &dentry->d_name;
 	struct gfs2_dirent *dent, *prev = NULL;
 	struct buffer_head *bh;
-	struct timespec tv = CURRENT_TIME;
+	struct inode_time tv = CURRENT_TIME;
 
 	/* Returns _either_ the entry (if its first in block) or the
 	   previous entry otherwise */
