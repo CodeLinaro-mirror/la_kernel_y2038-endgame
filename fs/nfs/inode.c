@@ -1107,14 +1107,14 @@ static unsigned long nfs_wcc_update_inode(struct inode *inode, struct nfs_fattr 
 	/* If we have atomic WCC data, we may update some attributes */
 	if ((fattr->valid & NFS_ATTR_FATTR_PRECTIME)
 			&& (fattr->valid & NFS_ATTR_FATTR_CTIME)
-			&& timespec_equal(&inode->i_ctime, &fattr->pre_ctime)) {
+			&& inode_time_equal(&inode->i_ctime, &fattr->pre_ctime)) {
 		memcpy(&inode->i_ctime, &fattr->ctime, sizeof(inode->i_ctime));
 		ret |= NFS_INO_INVALID_ATTR;
 	}
 
 	if ((fattr->valid & NFS_ATTR_FATTR_PREMTIME)
 			&& (fattr->valid & NFS_ATTR_FATTR_MTIME)
-			&& timespec_equal(&inode->i_mtime, &fattr->pre_mtime)) {
+			&& inode_time_equal(&inode->i_mtime, &fattr->pre_mtime)) {
 		memcpy(&inode->i_mtime, &fattr->mtime, sizeof(inode->i_mtime));
 		if (S_ISDIR(inode->i_mode))
 			nfsi->cache_validity |= NFS_INO_INVALID_DATA;
@@ -1163,7 +1163,7 @@ static int nfs_check_inode_attributes(struct inode *inode, struct nfs_fattr *fat
 		invalid |= NFS_INO_INVALID_ATTR|NFS_INO_REVAL_PAGECACHE;
 
 	/* Verify a few of the more important attributes */
-	if ((fattr->valid & NFS_ATTR_FATTR_MTIME) && !timespec_equal(&inode->i_mtime, &fattr->mtime))
+	if ((fattr->valid & NFS_ATTR_FATTR_MTIME) && !inode_time_equal(&inode->i_mtime, &fattr->mtime))
 		invalid |= NFS_INO_INVALID_ATTR;
 
 	if (fattr->valid & NFS_ATTR_FATTR_SIZE) {
@@ -1185,7 +1185,7 @@ static int nfs_check_inode_attributes(struct inode *inode, struct nfs_fattr *fat
 	if ((fattr->valid & NFS_ATTR_FATTR_NLINK) && inode->i_nlink != fattr->nlink)
 		invalid |= NFS_INO_INVALID_ATTR;
 
-	if ((fattr->valid & NFS_ATTR_FATTR_ATIME) && !timespec_equal(&inode->i_atime, &fattr->atime))
+	if ((fattr->valid & NFS_ATTR_FATTR_ATIME) && !inode_time_equal(&inode->i_atime, &fattr->atime))
 		invalid |= NFS_INO_INVALID_ATIME;
 
 	if (invalid != 0)
@@ -1199,7 +1199,7 @@ static int nfs_ctime_need_update(const struct inode *inode, const struct nfs_fat
 {
 	if (!(fattr->valid & NFS_ATTR_FATTR_CTIME))
 		return 0;
-	return timespec_compare(&fattr->ctime, &inode->i_ctime) > 0;
+	return inode_time_compare(&fattr->ctime, &inode->i_ctime) > 0;
 }
 
 static int nfs_size_need_update(const struct inode *inode, const struct nfs_fattr *fattr)

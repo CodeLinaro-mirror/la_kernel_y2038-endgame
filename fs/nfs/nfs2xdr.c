@@ -222,7 +222,7 @@ out_overflow:
  *		unsigned int useconds;
  *	};
  */
-static __be32 *xdr_encode_time(__be32 *p, const struct timespec *timep)
+static __be32 *xdr_encode_time(__be32 *p, const struct inode_time *timep)
 {
 	*p++ = cpu_to_be32(timep->tv_sec);
 	if (timep->tv_nsec != 0)
@@ -240,14 +240,14 @@ static __be32 *xdr_encode_time(__be32 *p, const struct timespec *timep)
  * Illustrated" by Brent Callaghan, Addison-Wesley, ISBN 0-201-32750-5.
  */
 static __be32 *xdr_encode_current_server_time(__be32 *p,
-					      const struct timespec *timep)
+					      const struct inode_time *timep)
 {
 	*p++ = cpu_to_be32(timep->tv_sec);
 	*p++ = cpu_to_be32(1000000);
 	return p;
 }
 
-static __be32 *xdr_decode_time(__be32 *p, struct timespec *timep)
+static __be32 *xdr_decode_time(__be32 *p, struct inode_time *timep)
 {
 	timep->tv_sec = be32_to_cpup(p++);
 	timep->tv_nsec = be32_to_cpup(p++) * NSEC_PER_USEC;
@@ -315,7 +315,7 @@ static int decode_fattr(struct xdr_stream *xdr, struct nfs_fattr *fattr)
 	p = xdr_decode_time(p, &fattr->atime);
 	p = xdr_decode_time(p, &fattr->mtime);
 	xdr_decode_time(p, &fattr->ctime);
-	fattr->change_attr = nfs_timespec_to_change_attr(&fattr->ctime);
+	fattr->change_attr = nfs_time_to_change_attr(&fattr->ctime);
 
 	return 0;
 out_uid:

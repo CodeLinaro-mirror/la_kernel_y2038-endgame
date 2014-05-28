@@ -28,7 +28,7 @@ struct nfs_net {
 	int cb_users[NFS4_MAX_MINOR_VERSION + 1];
 #endif
 	spinlock_t nfs_client_lock;
-	struct timespec boot_time;
+	struct inode_time boot_time;
 };
 
 extern int nfs_net_id;

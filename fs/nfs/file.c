@@ -803,7 +803,7 @@ do_unlk(struct file *filp, int cmd, struct file_lock *fl, int is_local)
 }
 
 static int
-is_time_granular(struct timespec *ts) {
+is_time_granular(struct inode_time *ts) {
 	return ((ts->tv_sec == 0) && (ts->tv_nsec <= 1000));
 }
 

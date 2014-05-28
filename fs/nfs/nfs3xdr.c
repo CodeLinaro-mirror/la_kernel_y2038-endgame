@@ -477,21 +477,21 @@ static void zero_nfs_fh3(struct nfs_fh *fh)
 }
 
 /*
- * nfstime3
+ * nfstime3 
  *
  *	struct nfstime3 {
  *		uint32	seconds;
  *		uint32	nseconds;
  *	};
  */
-static __be32 *xdr_encode_nfstime3(__be32 *p, const struct timespec *timep)
+static __be32 *xdr_encode_nfstime3(__be32 *p, const struct inode_time *timep)
 {
 	*p++ = cpu_to_be32(timep->tv_sec);
 	*p++ = cpu_to_be32(timep->tv_nsec);
 	return p;
 }
 
-static __be32 *xdr_decode_nfstime3(__be32 *p, struct timespec *timep)
+static __be32 *xdr_decode_nfstime3(__be32 *p, struct inode_time *timep)
 {
 	timep->tv_sec = be32_to_cpup(p++);
 	timep->tv_nsec = be32_to_cpup(p++);
@@ -675,7 +675,7 @@ static int decode_fattr3(struct xdr_stream *xdr, struct nfs_fattr *fattr)
 	p = xdr_decode_nfstime3(p, &fattr->atime);
 	p = xdr_decode_nfstime3(p, &fattr->mtime);
 	xdr_decode_nfstime3(p, &fattr->ctime);
-	fattr->change_attr = nfs_timespec_to_change_attr(&fattr->ctime);
+	fattr->change_attr = nfs_time_to_change_attr(&fattr->ctime);
 
 	fattr->valid |= NFS_ATTR_FATTR_V3;
 	return 0;
@@ -739,7 +739,7 @@ static int decode_wcc_attr(struct xdr_stream *xdr, struct nfs_fattr *fattr)
 	p = xdr_decode_size3(p, &fattr->pre_size);
 	p = xdr_decode_nfstime3(p, &fattr->pre_mtime);
 	xdr_decode_nfstime3(p, &fattr->pre_ctime);
-	fattr->pre_change_attr = nfs_timespec_to_change_attr(&fattr->pre_ctime);
+	fattr->pre_change_attr = nfs_time_to_change_attr(&fattr->pre_ctime);
 
 	return 0;
 out_overflow:
