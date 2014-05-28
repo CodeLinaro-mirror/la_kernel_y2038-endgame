@@ -101,12 +101,12 @@ void logfs_unpack_index(pgoff_t index, u64 *bix, level_t *level)
 /*
  * Time is stored as nanoseconds since the epoch.
  */
-static struct timespec be64_to_timespec(__be64 betime)
+static struct inode_time be64_to_inode_time(__be64 betime)
 {
-	return ns_to_timespec(be64_to_cpu(betime));
+	return ns_to_inode_time(be64_to_cpu(betime));
 }
 
-static __be64 timespec_to_be64(struct timespec tsp)
+static __be64 inode_time_to_be64(struct inode_time tsp)
 {
 	return cpu_to_be64((u64)tsp.tv_sec * NSEC_PER_SEC + tsp.tv_nsec);
 }
@@ -123,9 +123,9 @@ static void logfs_disk_to_inode(struct logfs_disk_inode *di, struct inode*inode)
 	i_gid_write(inode, be32_to_cpu(di->di_gid));
 	inode->i_size	= be64_to_cpu(di->di_size);
 	logfs_set_blocks(inode, be64_to_cpu(di->di_used_bytes));
-	inode->i_atime	= be64_to_timespec(di->di_atime);
-	inode->i_ctime	= be64_to_timespec(di->di_ctime);
-	inode->i_mtime	= be64_to_timespec(di->di_mtime);
+	inode->i_atime	= be64_to_inode_time(di->di_atime);
+	inode->i_ctime	= be64_to_inode_time(di->di_ctime);
+	inode->i_mtime	= be64_to_inode_time(di->di_mtime);
 	set_nlink(inode, be32_to_cpu(di->di_refcount));
 	inode->i_generation = be32_to_cpu(di->di_generation);
 
@@ -160,9 +160,9 @@ static void logfs_inode_to_disk(struct inode *inode, struct logfs_disk_inode*di)
 	di->di_gid	= cpu_to_be32(i_gid_read(inode));
 	di->di_size	= cpu_to_be64(i_size_read(inode));
 	di->di_used_bytes = cpu_to_be64(li->li_used_bytes);
-	di->di_atime	= timespec_to_be64(inode->i_atime);
-	di->di_ctime	= timespec_to_be64(inode->i_ctime);
-	di->di_mtime	= timespec_to_be64(inode->i_mtime);
+	di->di_atime	= inode_time_to_be64(inode->i_atime);
+	di->di_ctime	= inode_time_to_be64(inode->i_ctime);
+	di->di_mtime	= inode_time_to_be64(inode->i_mtime);
 	di->di_refcount	= cpu_to_be32(inode->i_nlink);
 	di->di_generation = cpu_to_be32(inode->i_generation);
 
