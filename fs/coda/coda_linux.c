@@ -110,11 +110,14 @@ void coda_vattr_to_iattr(struct inode *inode, struct coda_vattr *attr)
 	if (attr->va_size != -1)
 		inode->i_blocks = (attr->va_size + 511) >> 9;
 	if (attr->va_atime.tv_sec != -1) 
-	        inode->i_atime = attr->va_atime;
+	        inode->i_atime = (struct inode_time)
+			{ attr->va_atime.tv_sec, attr->va_atime.tv_nsec };
 	if (attr->va_mtime.tv_sec != -1)
-	        inode->i_mtime = attr->va_mtime;
+	        inode->i_mtime = (struct inode_time)
+			{ attr->va_mtime.tv_sec, attr->va_mtime.tv_nsec };
         if (attr->va_ctime.tv_sec != -1)
-	        inode->i_ctime = attr->va_ctime;
+	        inode->i_ctime = (struct inode_time)
+			{ attr->va_ctime.tv_sec, attr->va_ctime.tv_nsec };
 }
 
 
@@ -180,13 +183,16 @@ void coda_iattr_to_vattr(struct iattr *iattr, struct coda_vattr *vattr)
                 vattr->va_size = iattr->ia_size;
 	}
         if ( valid & ATTR_ATIME ) {
-                vattr->va_atime = iattr->ia_atime;
+                vattr->va_atime = (struct timespec)
+			{ iattr->ia_atime.tv_sec, iattr->ia_atime.tv_nsec };
 	}
         if ( valid & ATTR_MTIME ) {
-                vattr->va_mtime = iattr->ia_mtime;
+                vattr->va_mtime = (struct timespec)
+			{ iattr->ia_mtime.tv_sec, iattr->ia_mtime.tv_nsec };
 	}
         if ( valid & ATTR_CTIME ) {
-                vattr->va_ctime = iattr->ia_ctime;
+                vattr->va_ctime = (struct timespec)
+			{ iattr->ia_ctime.tv_sec, iattr->ia_ctime.tv_nsec };
 	}
 }
 
