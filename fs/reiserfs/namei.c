@@ -1215,7 +1215,7 @@ static int reiserfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 	int jbegin_count;
 	umode_t old_inode_mode;
 	unsigned long savelink = 1;
-	struct timespec ctime;
+	struct inode_time ctime;
 
 	/* three balancings: (1) old name removal, (2) new name insertion
 	   and (3) maybe "save" link insertion
