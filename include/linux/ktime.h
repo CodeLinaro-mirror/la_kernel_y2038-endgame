@@ -47,7 +47,7 @@ typedef union ktime ktime_t;		/* Kill this */
  *
  * Return: The ktime_t representation of the value.
  */
-static inline ktime_t ktime_set(const long secs, const unsigned long nsecs)
+static inline ktime_t ktime_set(const s64 secs, const unsigned long nsecs)
 {
 #if (BITS_PER_LONG == 64)
 	if (unlikely(secs >= KTIME_SEC_MAX))
