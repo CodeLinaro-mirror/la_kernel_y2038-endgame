@@ -3,7 +3,18 @@
 
 #include <linux/types.h>
 
-
+/*
+ * time_t, timespec and timeval are not safe to use beyond
+ * 2038 on 32-bit systems, and should be phased out for
+ * in-kernel uses as well as interfaces to user space.
+ *
+ * Inside of the kernel, we can use e.g. inode_time,
+ * ktime_t or timespec64, as appropriate.
+ *
+ * In the long run, we have to stop making these definitions
+ * visibile to user headers, so libc can define its own
+ * 64-bit types.
+ */
 #ifndef _STRUCT_TIMESPEC
 #define _STRUCT_TIMESPEC
 struct timespec {
@@ -17,6 +28,33 @@ struct timeval {
 	__kernel_suseconds_t	tv_usec;	/* microseconds */
 };
 
+/*
+ * __kernel_timespec64 is the general type to be used for
+ * new user space interfaces passing a time argument.
+ * 64-bit nanoseconds is a bit silly, but the advantage is
+ * that it is compatible with the native 'struct timespec'
+ * on 64-bit user space. This simplifies the compat code.
+ */
+struct __kernel_timespec64 {
+	long long tv_sec;
+	long long tv_nsec;
+};
+
+/*
+ * As interfaces get moved over from time_t, timeval and timespec
+ * to __kernel_timespec64, we have to provide backwards compatibility
+ * interfaces. These can use __kernel_timespec32. Other types will
+ * be needed as required.
+ * The compat syscalls and ioctls can also migrate from compat_timespec
+ * to __kernel_timespec32 in order to share the implementation with
+ * the native 32-bit legacy handlers.
+ */
+struct __kernel_timespec32 {
+	int	tv_sec;
+	int	tv_nsec;
+};
+
+/* timezone is safe for use beyond 2038 */
 struct timezone {
 	int	tz_minuteswest;	/* minutes west of Greenwich */
 	int	tz_dsttime;	/* type of dst correction */
