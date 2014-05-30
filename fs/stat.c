@@ -445,6 +445,61 @@ SYSCALL_DEFINE4(fstatat64, int, dfd, const char __user *, filename,
 }
 #endif /* __ARCH_WANT_STAT64 || __ARCH_WANT_COMPAT_STAT64 */
 
+#ifdef __ARCH_HAS_NEWSTAT64
+/*
+ * we only need this for the native 32-bit path, all architectures should
+ * define the 32-bit newstat64 as compatible with the 64-bit stat or
+ * stat64.
+ */
+static long cp_new_newstat64(struct kstat *stat, struct newstat64 __user *statbuf)
+{
+	struct newstat64 tmp;
+
+	memset(&tmp, 0, sizeof(tmp));
+	tmp.st_dev = huge_encode_dev(stat->dev);
+	tmp.st_rdev = huge_encode_dev(stat->rdev);
+	tmp.st_ino = stat->ino;
+	tmp.st_mode = stat->mode;
+	tmp.st_nlink = stat->nlink;
+	tmp.st_uid = from_kuid_munged(current_user_ns(), stat->uid);
+	tmp.st_gid = from_kgid_munged(current_user_ns(), stat->gid);
+	tmp.st_atime = stat->atime.tv_sec;
+	tmp.st_atime_nsec = stat->atime.tv_nsec;
+	tmp.st_mtime = stat->mtime.tv_sec;
+	tmp.st_mtime_nsec = stat->mtime.tv_nsec;
+	tmp.st_ctime = stat->ctime.tv_sec;
+	tmp.st_ctime_nsec = stat->ctime.tv_nsec;
+	tmp.st_size = stat->size;
+	tmp.st_blocks = stat->blocks;
+	tmp.st_blksize = stat->blksize;
+	return copy_to_user(statbuf,&tmp,sizeof(tmp)) ? -EFAULT : 0;
+}
+
+SYSCALL_DEFINE2(newfstat64, unsigned long, fd, struct newstat64 __user *, statbuf)
+{
+	struct kstat stat;
+	int error;
+
+	error = vfs_fstat(fd, &stat);
+	if (error)
+		return error;
+
+	return cp_new_newstat64(&stat, statbuf);
+}
+
+SYSCALL_DEFINE4(newfstatat64, int, dfd, const char __user *, filename,
+		struct newstat64 __user *, statbuf, int, flag)
+{
+	struct kstat stat;
+	int error;
+
+	error = vfs_fstatat(dfd, filename, &stat, flag);
+	if (error)
+		return error;
+	return cp_new_newstat64(&stat, statbuf);
+}
+#endif
+
 /* Caller is here responsible for sufficient locking (ie. inode->i_lock) */
 void __inode_add_bytes(struct inode *inode, loff_t bytes)
 {
