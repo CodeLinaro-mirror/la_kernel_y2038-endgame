@@ -43,8 +43,33 @@ struct stat {
 	unsigned int	__unused5;
 };
 
-/* This matches struct stat64 in glibc2.1. Only used for 32 bit. */
-#if __BITS_PER_LONG != 64 || defined(__ARCH_WANT_STAT64)
+#if __BITS_PER_LONG != 64
+#define __ARCH_HAVE_NEWSTAT64
+struct newstat64 {
+	unsigned long long	st_dev;		/* Device.  */
+	unsigned long long	st_ino;		/* File serial number.  */
+	unsigned int		st_mode;	/* File mode.  */
+	unsigned int		st_nlink;	/* Link count.  */
+	unsigned int		st_uid;		/* User ID of the file's owner.  */
+	unsigned int		st_gid;		/* Group ID of the file's group. */
+	unsigned long long	st_rdev;	/* Device number, if device.  */
+	unsigned long long	__pad1;
+	long long		st_size;	/* Size of file, in bytes.  */
+	int			st_blksize;	/* Optimal block size for I/O.  */
+	int			__pad2;
+	long long		st_blocks;	/* Number 512-byte blocks allocated. */
+	long long		st_atime;	/* Time of last access.  */
+	unsigned long long	st_atime_nsec;
+	long long		st_mtime;	/* Time of last modification.  */
+	unsigned long long	st_mtime_nsec;
+	long long		st_ctime;	/* Time of last status change.  */
+	unsigned long long	st_ctime_nsec;
+	unsigned int		__unused4;
+	unsigned int		__unused5;
+};
+#endif
+
+#if __BITS_PER_LONG != 64 ||  defined(__ARCH_WANT_STAT64)
 struct stat64 {
 	unsigned long long st_dev;	/* Device.  */
 	unsigned long long st_ino;	/* File serial number.  */

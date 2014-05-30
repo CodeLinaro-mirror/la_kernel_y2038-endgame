@@ -71,6 +71,34 @@ struct stat64 {
 	unsigned long long	st_ino;
 };
 
+/*
+ * This matches the native 'struct stat' on x86-64 and
+ * provides 64-bit timestamps on __i386__
+ */
+#define __ARCH_HAS_NEWSTAT64
+struct newstat64 {
+	unsigned long long	st_dev;
+	unsigned long long	st_ino;
+	unsigned long long	st_nlink;
+
+	unsigned int		st_mode;
+	unsigned int		st_uid;
+	unsigned int		st_gid;
+	unsigned int		__pad0;
+	unsigned long long	st_rdev;
+	long long		st_size;
+	long long		st_blksize;
+	long long		st_blocks;	/* Number 512-byte blocks allocated. */
+
+	unsigned long long	st_atime;
+	unsigned long long	st_atime_nsec;
+	unsigned long long	st_mtime;
+	unsigned long long	st_mtime_nsec;
+	unsigned long long	st_ctime;
+	unsigned long long	st_ctime_nsec;
+	long long		__unused[3];
+};
+
 /* We don't need to memset the whole thing just to initialize the padding */
 #define INIT_STRUCT_STAT64_PADDING(st) do {		\
 	memset(&st.__pad0, 0, sizeof(st.__pad0));	\

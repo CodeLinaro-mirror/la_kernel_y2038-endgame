@@ -409,6 +409,9 @@
 #define __NR_sched_setattr		(__NR_SYSCALL_BASE+380)
 #define __NR_sched_getattr		(__NR_SYSCALL_BASE+381)
 #define __NR_renameat2			(__NR_SYSCALL_BASE+382)
+#define __NR_newfstat64			(__NR_SYSCALL_BASE+383)
+#define __NR_newfstatat64		(__NR_SYSCALL_BASE+384)
+#define __NR_utimens64at		(__NR_SYSCALL_BASE+385)
 
 /*
  * This may need to be greater than __NR_last_syscall+1 in order to

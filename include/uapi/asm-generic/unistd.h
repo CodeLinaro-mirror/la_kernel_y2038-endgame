@@ -699,9 +699,15 @@ __SYSCALL(__NR_sched_setattr, sys_sched_setattr)
 __SYSCALL(__NR_sched_getattr, sys_sched_getattr)
 #define __NR_renameat2 276
 __SYSCALL(__NR_renameat2, sys_renameat2)
+#define __NR_newfstat64 277
+__SC_COMP_3264(__NR_newfstat64, sys_newfstat64, sys_newfstat, sys_newfstat)
+#define __NR_newfstatat64 278
+__SC_COMP_3264(__NR_newfstatat64, sys_newfstatat64, sys_newfstatat, sys_newfstatat)
+#define __NR_utimensat64 279
+__SC_COMP_3264(__NR_utimens64at, sys_utimensat, sys_utimensat)
 
 #undef __NR_syscalls
-#define __NR_syscalls 277
+#define __NR_syscalls 280
 
 /*
  * All syscalls below here should go away really,
