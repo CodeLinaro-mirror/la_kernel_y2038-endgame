@@ -75,7 +75,7 @@ int compat_printk(const char *fmt, ...)
 COMPAT_SYSCALL_DEFINE2(utime, const char __user *, filename,
 		       struct compat_utimbuf __user *, t)
 {
-	struct timespec tv[2];
+	struct __kernel_timespec64 tv[2];
 
 	if (t) {
 		if (get_user(tv[0].tv_sec, &t->actime) ||
@@ -87,24 +87,9 @@ COMPAT_SYSCALL_DEFINE2(utime, const char __user *, filename,
 	return do_utimes(AT_FDCWD, filename, t ? tv : NULL, 0);
 }
 
-COMPAT_SYSCALL_DEFINE4(utimensat, unsigned int, dfd, const char __user *, filename, struct compat_timespec __user *, t, int, flags)
-{
-	struct timespec tv[2];
-
-	if  (t) {
-		if (compat_get_timespec(&tv[0], &t[0]) ||
-		    compat_get_timespec(&tv[1], &t[1]))
-			return -EFAULT;
-
-		if (tv[0].tv_nsec == UTIME_OMIT && tv[1].tv_nsec == UTIME_OMIT)
-			return 0;
-	}
-	return do_utimes(dfd, filename, t ? tv : NULL, flags);
-}
-
 COMPAT_SYSCALL_DEFINE3(futimesat, unsigned int, dfd, const char __user *, filename, struct compat_timeval __user *, t)
 {
-	struct timespec tv[2];
+	struct __kernel_timespec64 tv[2];
 
 	if (t) {
 		if (get_user(tv[0].tv_sec, &t[0].tv_sec) ||

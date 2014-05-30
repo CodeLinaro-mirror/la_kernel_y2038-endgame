@@ -770,8 +770,15 @@ asmlinkage long sys_fstatat64(int dfd, const char __user *filename,
 			       struct stat64 __user *statbuf, int flag);
 asmlinkage long sys_readlinkat(int dfd, const char __user *path, char __user *buf,
 			       int bufsiz);
+#ifdef CONFIG_64BIT
 asmlinkage long sys_utimensat(int dfd, const char __user *filename,
-				struct timespec __user *utimes, int flags);
+				struct __kernel_timespec64 __user *utimes, int flags);
+#else
+asmlinkage long sys_utimens64at(int dfd, const char __user *filename,
+				struct __kernel_timespec64 __user *utimes, int flags);
+asmlinkage long sys_utimensat(int dfd, const char __user *filename,
+				struct __kernel_timespec32 __user *utimes, int flags);
+#endif
 asmlinkage long sys_unshare(unsigned long unshare_flags);
 
 asmlinkage long sys_splice(int fd_in, loff_t __user *off_in,

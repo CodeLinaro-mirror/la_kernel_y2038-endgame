@@ -26,7 +26,7 @@
  */
 SYSCALL_DEFINE2(utime, char __user *, filename, struct utimbuf __user *, times)
 {
-	struct timespec tv[2];
+	struct __kernel_timespec64 tv[2];
 
 	if (times) {
 		if (get_user(tv[0].tv_sec, &times->actime) ||
@@ -48,7 +48,7 @@ static bool nsec_valid(long nsec)
 	return nsec >= 0 && nsec <= 999999999;
 }
 
-static int utimes_common(struct path *path, struct timespec *times)
+static int utimes_common(struct path *path, struct __kernel_timespec64 *times)
 {
 	int error;
 	struct iattr newattrs;
@@ -133,8 +133,8 @@ out:
  * must be owner or have write permission.
  * Else, update from *times, must be owner or super user.
  */
-long do_utimes(int dfd, const char __user *filename, struct timespec *times,
-	       int flags)
+long do_utimes(int dfd, const char __user *filename,
+	       struct __kernel_timespec64 *times, int flags)
 {
 	int error = -EINVAL;
 
@@ -182,10 +182,15 @@ out:
 	return error;
 }
 
+#ifdef CONFIG_64BIT
 SYSCALL_DEFINE4(utimensat, int, dfd, const char __user *, filename,
-		struct timespec __user *, utimes, int, flags)
+		struct __kernel_timespec64 __user *, utimes, int, flags)
+#else
+SYSCALL_DEFINE4(utimens64at, int, dfd, const char __user *, filename,
+		struct __kernel_timespec64 __user *, utimes, int, flags)
+#endif
 {
-	struct timespec tstimes[2];
+	struct __kernel_timespec64 tstimes[2];
 
 	if (utimes) {
 		if (copy_from_user(&tstimes, utimes, sizeof(tstimes)))
@@ -200,11 +205,39 @@ SYSCALL_DEFINE4(utimensat, int, dfd, const char __user *, filename,
 	return do_utimes(dfd, filename, utimes ? tstimes : NULL, flags);
 }
 
+#ifdef CONFIG_64BIT
+COMPAT_SYSCALL_DEFINE4(utimensat, unsigned int, dfd, const char __user *, filename,
+		struct __kernel_timespec32 __user *, t, int, flags)
+#else
+SYSCALL_DEFINE4(utimensat, int, dfd, const char __user *, filename,
+		struct __kernel_timespec32 __user *, utimes, int, flags)
+#endif
+{
+	struct __kernel_timespec64 tstimes64[2];
+	struct __kernel_timespec32 tstimes[2];
+
+	if (utimes) {
+		if (copy_from_user(&tstimes, utimes, sizeof(tstimes)))
+			return -EFAULT;
+
+		/* Nothing to do, we must not even check the path.  */
+		if (tstimes[0].tv_nsec == UTIME_OMIT &&
+		    tstimes[1].tv_nsec == UTIME_OMIT)
+			return 0;
+		tstimes64[0].tv_sec = tstimes[0].tv_sec;
+		tstimes64[0].tv_nsec = tstimes[0].tv_nsec;
+		tstimes64[1].tv_sec = tstimes[1].tv_sec;
+		tstimes64[1].tv_nsec = tstimes[1].tv_nsec;
+	}
+
+	return do_utimes(dfd, filename, utimes ? tstimes64 : NULL, flags);
+}
+
 SYSCALL_DEFINE3(futimesat, int, dfd, const char __user *, filename,
 		struct timeval __user *, utimes)
 {
 	struct timeval times[2];
-	struct timespec tstimes[2];
+	struct __kernel_timespec64 tstimes[2];
 
 	if (utimes) {
 		if (copy_from_user(&times, utimes, sizeof(times)))

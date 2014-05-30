@@ -453,7 +453,7 @@ asmlinkage long compat_sys_utime(const char __user *filename,
 				 struct compat_utimbuf __user *t);
 asmlinkage long compat_sys_utimensat(unsigned int dfd,
 				     const char __user *filename,
-				     struct compat_timespec __user *t,
+				     struct __kernel_timespec32 __user *t,
 				     int flags);
 
 asmlinkage long compat_sys_time(compat_time_t __user *tloc);
