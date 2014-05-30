@@ -6,10 +6,10 @@
 # include <linux/math64.h>
 #include <uapi/linux/time.h>
 
-#ifdef CONFIG_NEW_INODE_TIME
 /*
  * This is the type we use internally in the kernel to represent
- * absolute times in file system metadata.
+ * absolute times in file system metadata using 'long long tv_sec'
+ * lets us represent a superset of all file system inode times.
  * This structure must not leak out to user space, and new interfaces
  * should be using 64-bit types right away.
  * marking tv_sec as __packed results in a 12 byte structure, rather
@@ -19,9 +19,6 @@ struct inode_time {
 	long long	tv_sec __packed;
 	int		tv_nsec;
 };
-#else
-#define inode_time timespec
-#endif
 
 extern struct timezone sys_tz;
 
