@@ -135,12 +135,14 @@ static inline int ktime_compare(const ktime_t cmp1, const ktime_t cmp2)
 
 static inline s64 ktime_to_us(const ktime_t kt)
 {
+	/* XXX This could be much better optimized */
 	struct timeval tv = ktime_to_timeval(kt);
 	return (s64) tv.tv_sec * USEC_PER_SEC + tv.tv_usec;
 }
 
 static inline s64 ktime_to_ms(const ktime_t kt)
 {
+	/* XXX This could be much better optimized */
 	struct timeval tv = ktime_to_timeval(kt);
 	return (s64) tv.tv_sec * MSEC_PER_SEC + tv.tv_usec / USEC_PER_MSEC;
 }
