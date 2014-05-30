@@ -12,6 +12,24 @@ struct timespec64 {
 };
 
 
+static inline struct timespec timespec64_to_timespec(const struct timespec64 ts64)
+{
+	struct timespec ret;
+
+	ret.tv_sec = (time_t)ts64.tv_sec;
+	ret.tv_nsec = ts64.tv_nsec;
+	return ret;
+}
+
+static inline struct timespec64 timespec_to_timespec64(const struct timespec ts)
+{
+	struct timespec64 ret;
+
+	ret.tv_sec = ts.tv_sec;
+	ret.tv_nsec = ts.tv_nsec;
+	return ret;
+}
+
 static inline int timespec64_equal(const struct timespec64 *a,
                                  const struct timespec64 *b)
 {
