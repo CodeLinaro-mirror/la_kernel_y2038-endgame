@@ -18,7 +18,7 @@
 #ifndef __OMAP_PCM_H__
 #define __OMAP_PCM_H__
 
-#if IS_ENABLED(CONFIG_SND_OMAP_SOC)
+#if IS_BUILTIN(CONFIG_SND_OMAP_SOC) || (IS_MODULE(CONFIG_SND_OMAP_SOC) && defined(MODULE))
 int omap_pcm_platform_register(struct device *dev);
 #else
 static inline int omap_pcm_platform_register(struct device *dev)
