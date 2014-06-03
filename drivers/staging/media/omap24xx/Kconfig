@@ -4,6 +4,7 @@ config VIDEO_V4L2_INT_DEVICE
 config VIDEO_OMAP2
 	tristate "OMAP2 Camera Capture Interface driver (DEPRECATED)"
 	depends on VIDEO_DEV && ARCH_OMAP2
+	depends on VIDEO_V4L2
 	select VIDEOBUF_DMA_SG
 	select VIDEO_V4L2_INT_DEVICE
 	---help---
