@@ -611,8 +611,8 @@ static int moxart_probe(struct platform_device *pdev)
 	host->timeout = msecs_to_jiffies(1000);
 	host->sysclk = clk_get_rate(clk);
 	host->fifo_width = readl(host->base + REG_FEATURE) << 2;
-	host->dma_chan_tx = of_dma_request_slave_channel(node, "tx");
-	host->dma_chan_rx = of_dma_request_slave_channel(node, "rx");
+	host->dma_chan_tx = dma_request_slave_channel_reason(node, "tx");
+	host->dma_chan_rx = dma_request_slave_channel_reason(node, "rx");
 
 	spin_lock_init(&host->lock);
 
@@ -700,9 +700,6 @@ static int moxart_remove(struct platform_device *pdev)
 		writel(readl(host->base + REG_CLOCK_CONTROL) | CLK_OFF,
 		       host->base + REG_CLOCK_CONTROL);
 	}
-
-	kfree(host);
-
 	return 0;
 }
 
