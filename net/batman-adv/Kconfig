@@ -18,7 +18,6 @@ config BATMAN_ADV
 config BATMAN_ADV_BLA
 	bool "Bridge Loop Avoidance"
 	depends on BATMAN_ADV && INET
-	select CRC16
 	default y
 	help
 	  This option enables BLA (Bridge Loop Avoidance), a mechanism
