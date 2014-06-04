@@ -22,7 +22,7 @@ static void nft_inet_hook_ops_init(struct nf_hook_ops *ops, unsigned int n)
 
 	if (n == 1)
 		afi = &nft_af_ipv4;
-	else if(IS_ENABLED(CONFIG_IPV6))
+	else
 		afi = &nft_af_ipv6;
 
 	ops->pf = afi->family;
