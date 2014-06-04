@@ -441,7 +441,7 @@ config NF_TABLES
 config NF_TABLES_INET
 	depends on NF_TABLES && IPV6
 	select NF_TABLES_IPV4
-	select NF_TABLES_IPV6 if IPV6
+	select NF_TABLES_IPV6
 	tristate "Netfilter nf_tables mixed IPv4/IPv6 tables support"
 	help
 	  This option enables support for a mixed IPv4/IPv6 "inet" table.
@@ -875,9 +875,9 @@ config NETFILTER_XT_TARGET_TPROXY
 	depends on NETFILTER_ADVANCED
 	depends on (IPV6 || IPV6=n)
 	depends on IP_NF_MANGLE
-	depends on (IP6_NF_IPTABLES || !IP6_NF_IPTABLES)
+	depends on (IPV6 || IPV6=n)
 	select NF_DEFRAG_IPV4
-	select NF_DEFRAG_IPV6 if (IP6_NF_IPTABLES=m || IP6_NF_IPTABLES=y)
+	select NF_DEFRAG_IPV6 if IP6_NF_IPTABLES
 	help
 	  This option adds a `TPROXY' target, which is somewhat similar to
 	  REDIRECT.  It can only be used in the mangle table and is useful
@@ -1370,7 +1370,7 @@ config NETFILTER_XT_MATCH_SOCKET
 	depends on (IPV6 || IPV6=n)
 	depends on (IP6_NF_IPTABLES || !IP6_NF_IPTABLES)
 	select NF_DEFRAG_IPV4
-	select NF_DEFRAG_IPV6 if (IP6_NF_IPTABLES=m || IP6_NF_IPTABLES=y)
+	select NF_DEFRAG_IPV6 if IP6_NF_IPTABLES
 	help
 	  This option adds a `socket' match, which can be used to match
 	  packets for which a TCP or UDP socket lookup finds a valid socket.
