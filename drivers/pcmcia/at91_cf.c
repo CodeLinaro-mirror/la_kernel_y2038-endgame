@@ -318,12 +318,10 @@ static int at91_cf_probe(struct platform_device *pdev)
 		cf->socket.pci_irq = nr_irqs + 1;
 
 	/* pcmcia layer only remaps "real" memory not iospace */
-	cf->socket.io_offset = (unsigned long) devm_ioremap(&pdev->dev,
-					cf->phys_baseaddr + CF_IO_PHYS, SZ_2K);
-	if (!cf->socket.io_offset) {
-		status = -ENXIO;
+	cf->socket.io_offset = 0;
+	status = pci_ioremap_io(0, cf->phys_baseaddr + CF_IO_PHYS);
+	if (status)
 		goto fail0a;
-	}
 
 	/* reserve chip-select regions */
 	if (!devm_request_mem_region(&pdev->dev, io->start, resource_size(io), "at91_cf")) {
