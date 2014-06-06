@@ -42,6 +42,8 @@ struct gpio {
 	const char	*label;
 };
 
+#include <linux/gpio/consumer.h>
+
 #ifdef CONFIG_GPIOLIB
 
 #ifdef CONFIG_ARCH_HAVE_CUSTOM_GPIO_H
