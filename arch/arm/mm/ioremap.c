@@ -437,7 +437,7 @@ void __arm_iounmap(volatile void __iomem *io_addr)
 }
 EXPORT_SYMBOL(__arm_iounmap);
 
-#ifdef CONFIG_PCI
+#if IS_ENABLED(CONFIG_PCI) || IS_ENABLED(CONFIG_PCCARD)
 static int pci_ioremap_mem_type = MT_DEVICE;
 
 void pci_ioremap_set_mem_type(int mem_type)

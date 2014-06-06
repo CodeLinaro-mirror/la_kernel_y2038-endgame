@@ -194,15 +194,13 @@ static inline void __iomem *__typesafe_io(unsigned long addr)
 #define PCI_IO_VIRT_BASE	0xfee00000
 #define PCI_IOBASE		((void __iomem *)PCI_IO_VIRT_BASE)
 
-#if defined(CONFIG_PCI)
+#if defined(CONFIG_MMU) && (IS_ENABLED(CONFIG_PCI) || IS_ENABLED(CONFIG_PCCARD))
 void pci_ioremap_set_mem_type(int mem_type);
+int pci_ioremap_io(unsigned int offset, phys_addr_t phys_addr);
 #else
-static inline void pci_ioremap_set_mem_type(int mem_type) {}
-#endif
-
-#ifdef CONFIG_MMU
-extern int pci_ioremap_io(unsigned int offset, phys_addr_t phys_addr);
-#else
+static inline void pci_ioremap_set_mem_type(int mem_type)
+{
+}
 static inline int pci_ioremap_io(unsigned int offset, phys_addr_t phys_addr)
 {
 	return 0;
