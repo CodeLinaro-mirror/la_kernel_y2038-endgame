@@ -36,6 +36,7 @@
 #include "regs-pmu.h"
 #include "regs-sys.h"
 
+#ifdef CONFIG_PM_SLEEP
 /**
  * struct exynos_wkup_irq - Exynos GIC to PMU IRQ mapping
  * @hwirq: Hardware IRQ signal of the GIC
@@ -99,6 +100,7 @@ static int exynos_irq_set_wake(struct irq_data *data, unsigned int state)
 
 	return -ENOENT;
 }
+#endif
 
 #define EXYNOS_BOOT_VECTOR_ADDR	(samsung_rev() == EXYNOS4210_REV_1_1 ? \
 			pmu_base_addr + S5P_INFORM7 : \
@@ -111,6 +113,7 @@ static int exynos_irq_set_wake(struct irq_data *data, unsigned int state)
 			(sysram_base_addr + 0x20) : \
 			pmu_base_addr + S5P_INFORM1))
 
+#ifdef CONFIG_PM_SLEEP
 #define S5P_CHECK_AFTR  0xFCBA0D10
 #define S5P_CHECK_SLEEP 0x00000BAD
 
@@ -128,6 +131,9 @@ static void exynos_cpu_set_boot_vector(long flags)
 
 void exynos_enter_aftr(void)
 {
+	if (!IS_ENABLED(CONFIG_SMP))
+		return;
+
 	exynos_set_wakeupmask(0x0000ff3e);
 	exynos_cpu_set_boot_vector(S5P_CHECK_AFTR);
 	/* Set value of power down register for aftr mode */
@@ -418,3 +424,4 @@ void __init exynos_pm_init(void)
 	register_syscore_ops(&exynos_pm_syscore_ops);
 	suspend_set_ops(&exynos_suspend_ops);
 }
+#endif
