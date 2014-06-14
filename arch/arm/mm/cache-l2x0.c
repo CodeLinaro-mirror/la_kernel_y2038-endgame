@@ -165,6 +165,7 @@ static inline void debug_writel(unsigned long val)
 }
 #endif
 
+#ifdef CONFIG_OF
 static void l2x0_cache_sync(void)
 {
 	unsigned long flags;
@@ -202,6 +203,7 @@ static void l2x0_disable(void)
 	dsb(st);
 	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
 }
+#endif
 
 static void l2c_save(void __iomem *base)
 {
