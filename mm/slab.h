@@ -293,6 +293,7 @@ struct kmem_cache_node {
 
 };
 
+#if defined (CONFIG_SLAB) || defined (CONFIG_SLUB)
 static inline struct kmem_cache_node *get_node(struct kmem_cache *s, int node)
 {
 	return s->node[node];
@@ -305,6 +306,7 @@ static inline struct kmem_cache_node *get_node(struct kmem_cache *s, int node)
 #define for_each_kmem_cache_node(__s, __node, __n) \
 	for (__node = 0; __n = get_node(__s, __node), __node < nr_node_ids; __node++) \
 		 if (__n)
+#endif
 
 #endif
 

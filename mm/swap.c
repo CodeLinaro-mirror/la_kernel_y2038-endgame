@@ -701,6 +701,7 @@ void add_page_to_unevictable_list(struct page *page)
 void lru_cache_add_active_or_unevictable(struct page *page,
 					 struct vm_area_struct *vma)
 {
+#ifdef CONFIG_MMU
 	VM_BUG_ON_PAGE(PageLRU(page), page);
 
 	if (likely((vma->vm_flags & (VM_LOCKED | VM_SPECIAL)) != VM_LOCKED)) {
@@ -720,6 +721,7 @@ void lru_cache_add_active_or_unevictable(struct page *page,
 		count_vm_event(UNEVICTABLE_PGMLOCKED);
 	}
 	add_page_to_unevictable_list(page);
+#endif
 }
 
 /*
