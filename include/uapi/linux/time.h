@@ -79,6 +79,11 @@ struct itimerval {
 	struct timeval it_value;	/* current value */
 };
 
+struct __kernel_itimerspec64 {
+	struct __kernel_timespec64 it_interval;
+	struct __kernel_timespec64 ir_value;
+};
+
 /*
  * The IDs of the various system clocks (for POSIX.1b interval timers):
  */
