@@ -110,6 +110,7 @@ config AHCI_DA850
 config AHCI_ST
 	tristate "ST AHCI SATA support"
 	depends on ARCH_STI
+	depends on RESET_CONTROLLER
 	help
 	  This option enables support for ST AHCI SATA controller.
 
