@@ -55,5 +55,5 @@ ENTRY(exynos_cpu_resume)
 	blxeq	r3
 #endif
 2:
-	ldr	pc,=cpu_resume
+	ldr	pc, =cpu_resume
 ENDPROC(exynos_cpu_resume)

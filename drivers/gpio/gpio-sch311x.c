@@ -283,7 +283,10 @@ exit_err:
 	release_region(pdata->runtime_reg + GP1, 6);
 	/* release already registered chips */
 	for (--i; i >= 0; i--)
-		gpiochip_remove(&priv->blocks[i].chip);
+		if (gpiochip_remove(&priv->blocks[i].chip))
+			dev_err(&pdev->dev,
+				"Could not unregister gpiochip, %d\n", err);
+
 	return err;
 }
 

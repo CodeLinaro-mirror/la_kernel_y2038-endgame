@@ -2494,7 +2494,7 @@ bfa_ioim_send_ioreq(struct bfa_ioim_s *ioim)
 	scsi_for_each_sg(cmnd, sg, ioim->nsges, i) {
 		if (i == 0) {
 			/* build inline IO SG element */
-			addr = bfa_sgaddr_le(sg_dma_address(sg));
+			addr = bfa_sgaddr_le((u64)sg_dma_address(sg));
 			sge->sga = *(union bfi_addr_u *) &addr;
 			pgdlen = sg_dma_len(sg);
 			sge->sg_len = pgdlen;
@@ -2506,7 +2506,7 @@ bfa_ioim_send_ioreq(struct bfa_ioim_s *ioim)
 			if (sge_id == 0)
 				sgpge = sgpg->sgpg->sges;
 
-			addr = bfa_sgaddr_le(sg_dma_address(sg));
+			addr = bfa_sgaddr_le((u64)sg_dma_address(sg));
 			sgpge->sga = *(union bfi_addr_u *) &addr;
 			sgpge->sg_len = sg_dma_len(sg);
 			pgcumsz += sgpge->sg_len;

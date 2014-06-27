@@ -2679,7 +2679,35 @@ static struct net_device_stats *device_get_stats(struct net_device *dev) {
 	return &pDevice->stats;
 }
 
-static int  device_ioctl(struct net_device *dev, struct ifreq *rq, int cmd) {
+static int __iwctl_giwaplist(struct net_device *dev,
+		    struct iw_point *wrq)
+{
+	size_t length = wrq->length * (sizeof(struct sockaddr) + sizeof(struct iw_quality));
+	char *buffer;
+	int rc;
+
+	if (wrq->length > IW_MAX_AP)
+		return -EINVAL;
+
+	if (!wrq->pointer)
+		return 0;
+		
+	buffer = kzalloc(length, GFP_KERNEL);
+
+	rc = iwctl_giwaplist(dev, NULL, wrq, buffer);
+	if (rc)
+		return rc;
+
+	if (copy_to_user(wrq->pointer, buffer,
+	    (wrq->length * (sizeof(struct sockaddr) +  sizeof(struct iw_quality)))))
+		rc = -EFAULT;
+
+	kfree(buffer);
+
+	return rc;
+}
+
+static int device_ioctl(struct net_device *dev, struct ifreq *rq, int cmd) {
 	PSDevice	        pDevice = (PSDevice)netdev_priv(dev);
 
 	struct iwreq *wrq = (struct iwreq *)rq;
@@ -2911,21 +2939,9 @@ static int  device_ioctl(struct net_device *dev, struct ifreq *rq, int cmd) {
 		rc = -EOPNOTSUPP;
 		break;
 
-	case SIOCGIWAPLIST: {
-		char buffer[IW_MAX_AP * (sizeof(struct sockaddr) + sizeof(struct iw_quality))];
-
-		if (wrq->u.data.pointer) {
-			rc = iwctl_giwaplist(dev, NULL, &(wrq->u.data), buffer);
-			if (rc == 0) {
-				if (copy_to_user(wrq->u.data.pointer,
-						 buffer,
-						 (wrq->u.data.length * (sizeof(struct sockaddr) +  sizeof(struct iw_quality)))
-					    ))
-					rc = -EFAULT;
-			}
-		}
-	}
-	break;
+	case SIOCGIWAPLIST:
+		rc = __iwctl_giwaplist(dev, &(wrq->u.data));
+		break;
 
 #ifdef WIRELESS_SPY
 	// Set the spy list

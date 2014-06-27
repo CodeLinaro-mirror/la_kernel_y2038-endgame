@@ -66,6 +66,9 @@ sub check_include
 sub check_declarations
 {
 	# soundcard.h is what it is
+	if ($line =~ m/^\nextern int kexec_load/) {
+		return;
+	}
 	if ($line =~ m/^void seqbuf_dump\(void\);/) {
 		return;
 	}

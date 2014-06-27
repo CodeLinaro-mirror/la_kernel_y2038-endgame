@@ -1029,8 +1029,7 @@ static int bcm2835_pinctrl_probe(struct platform_device *pdev)
 
 	pc->pctl_dev = pinctrl_register(&bcm2835_pinctrl_desc, dev, pc);
 	if (!pc->pctl_dev) {
-		gpiochip_remove(&pc->gpio_chip);
-		return -EINVAL;
+		return gpiochip_remove(&pc->gpio_chip) ? : -EINVAL;
 	}
 
 	pc->gpio_range = bcm2835_pinctrl_gpio_range;
@@ -1046,9 +1045,7 @@ static int bcm2835_pinctrl_remove(struct platform_device *pdev)
 	struct bcm2835_pinctrl *pc = platform_get_drvdata(pdev);
 
 	pinctrl_unregister(pc->pctl_dev);
-	gpiochip_remove(&pc->gpio_chip);
-
-	return 0;
+	return gpiochip_remove(&pc->gpio_chip);
 }
 
 static struct of_device_id bcm2835_pinctrl_match[] = {
