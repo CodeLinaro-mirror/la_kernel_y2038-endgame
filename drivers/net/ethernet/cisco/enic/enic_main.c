@@ -1643,7 +1643,9 @@ static int enic_open(struct net_device *netdev)
 		vnic_intr_unmask(&enic->intr[i]);
 
 	enic_notify_timer_start(enic);
+#ifdef CONFIG_RFS_ACCEL
 	enic_rfs_flw_tbl_init(enic);
+#endif
 
 	return 0;
 
@@ -1670,7 +1672,9 @@ static int enic_stop(struct net_device *netdev)
 	enic_synchronize_irqs(enic);
 
 	del_timer_sync(&enic->notify_timer);
+#ifdef CONFIG_RFS_ACCEL
 	enic_rfs_flw_tbl_free(enic);
+#endif
 
 	enic_dev_disable(enic);
 
