@@ -1202,7 +1202,7 @@ config MFD_TC6387XB
 config MFD_TC6393XB
 	bool "Toshiba TC6393XB"
 	depends on ARM && HAVE_CLK
-	select GPIOLIB
+	depends on GPIOLIB
 	select MFD_CORE
 	select MFD_TMIO
 	help
