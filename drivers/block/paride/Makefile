@@ -11,6 +11,9 @@ obj-$(CONFIG_PARIDE_BPCK)	+= bpck.o
 obj-$(CONFIG_PARIDE_COMM)	+= comm.o
 obj-$(CONFIG_PARIDE_DSTR)	+= dstr.o
 obj-$(CONFIG_PARIDE_KBIC)	+= kbic.o
+ifdef CONFIG_CPU_32v3
+CFLAGS_kbic.o += -O0
+endif
 obj-$(CONFIG_PARIDE_EPAT)	+= epat.o
 obj-$(CONFIG_PARIDE_EPIA)	+= epia.o
 obj-$(CONFIG_PARIDE_FRPW)	+= frpw.o
