@@ -8,3 +8,7 @@ decnet-y += sysctl_net_decnet.o
 
 obj-$(CONFIG_NETFILTER) += netfilter/
 
+ifdef CONFIG_CPU_32v3
+CFLAGS_dn_table.o += -O1
+endif
+
