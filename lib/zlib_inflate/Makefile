@@ -17,3 +17,7 @@ obj-$(CONFIG_ZLIB_INFLATE) += zlib_inflate.o
 
 zlib_inflate-objs := inffast.o inflate.o infutil.o \
 		     inftrees.o inflate_syms.o
+
+ifdef CONFIG_CPU_32v3
+CFLAGS_inffast.o += -O0
+endif

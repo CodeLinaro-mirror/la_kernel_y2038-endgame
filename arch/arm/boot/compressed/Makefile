@@ -9,6 +9,9 @@ OBJS		=
 AFLAGS_head.o += -DTEXT_OFFSET=$(TEXT_OFFSET)
 HEAD	= head.o
 OBJS	+= misc.o decompress.o
+ifdef CONFIG_CPU_32v3
+CFLAGS_decompress.o += -O0
+endif
 ifeq ($(CONFIG_DEBUG_UNCOMPRESS),y)
 OBJS	+= debug.o
 endif
