@@ -19,13 +19,6 @@
 #include <plat/cpu.h>
 
 unsigned long samsung_cpu_id;
-static unsigned int samsung_cpu_rev;
-
-unsigned int samsung_rev(void)
-{
-	return samsung_cpu_rev;
-}
-EXPORT_SYMBOL(samsung_rev);
 
 void __init s3c64xx_init_cpu(void)
 {
@@ -38,16 +31,6 @@ void __init s3c64xx_init_cpu(void)
 		__raw_writel(0x0, S3C_VA_SYS + 0xA1C);
 		samsung_cpu_id = __raw_readl(S3C_VA_SYS + 0xA1C);
 	}
-
-	samsung_cpu_rev = 0;
-
-	pr_info("Samsung CPU ID: 0x%08lx\n", samsung_cpu_id);
-}
-
-void __init s5p_init_cpu(void __iomem *cpuid_addr)
-{
-	samsung_cpu_id = __raw_readl(cpuid_addr);
-	samsung_cpu_rev = samsung_cpu_id & 0xFF;
 
 	pr_info("Samsung CPU ID: 0x%08lx\n", samsung_cpu_id);
 }

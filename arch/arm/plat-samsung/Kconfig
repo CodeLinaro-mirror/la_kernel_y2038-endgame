@@ -5,8 +5,11 @@
 # Licensed under GPLv2
 
 config PLAT_SAMSUNG
+	def_bool PLAT_S3C || PLAT_S5P
+
+config PLAT_S3C
 	bool
-	depends on PLAT_S3C24XX || ARCH_S3C64XX || ARCH_EXYNOS || ARCH_S5PV210
+	depends on PLAT_S3C24XX || ARCH_S3C64XX
 	default y
 	select GENERIC_IRQ_CHIP
 	select NO_IOPORT_MAP
@@ -15,13 +18,13 @@ config PLAT_SAMSUNG
 
 config SAMSUNG_PM
 	bool
-	depends on PM && (PLAT_S3C24XX || ARCH_S3C64XX)
+	depends on PM && PLAT_S3C
 	default y
 	help
 	  Base platform power management code for samsung code
 
-if PLAT_SAMSUNG
-menu "Samsung Common options"
+if PLAT_S3C
+menu "Samsung S3C Common options"
 
 # boot configurations
 
@@ -259,11 +262,6 @@ config SAMSUNG_DMADEV
 	  Use DMA device engine for PL330 DMAC.
 
 endif
-
-config S5P_DEV_MFC
-	bool
-	help
-	  Compile in setup memory (init) code for MFC
 
 comment "Power management"
 

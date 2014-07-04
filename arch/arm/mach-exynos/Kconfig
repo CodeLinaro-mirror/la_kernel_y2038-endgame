@@ -12,12 +12,15 @@ config ARCH_S5PV210
 	select ARCH_HAS_HOLES_MEMORYMODEL
 	select ARCH_REQUIRE_GPIOLIB
 	select ARM_AMBA
+	select ARM_CPU_SUSPEND if PM
 	select ARM_VIC
 	select CLKSRC_SAMSUNG_PWM
 	select COMMON_CLK_SAMSUNG
+	select GENERIC_IRQ_CHIP
 	select HAVE_S3C2410_I2C if I2C
 	select HAVE_S3C2410_WATCHDOG if WATCHDOG
 	select HAVE_S3C_RTC if RTC_CLASS
+	select NO_IOPORT_MAP
 	select PINCTRL
 	select PINCTRL_EXYNOS
 	select PL330_DMA if DMADEVICES
@@ -26,6 +29,9 @@ config ARCH_S5PV210
 
 config CPU_S5PV210
 	def_bool ARCH_S5PV210
+
+config PLAT_S5P
+	def_bool ARCH_S5PV210 || ARCH_EXYNOS
 
 menuconfig ARCH_EXYNOS
 	bool "Samsung EXYNOS" if ARCH_MULTI_V7
@@ -36,14 +42,15 @@ menuconfig ARCH_EXYNOS
 	select ARM_CPU_SUSPEND
 	select ARM_GIC
 	select COMMON_CLK_SAMSUNG
+	select GENERIC_IRQ_CHIP
 	select HAVE_ARM_SCU if SMP
 	select HAVE_S3C2410_I2C if I2C
 	select HAVE_S3C2410_WATCHDOG if WATCHDOG
 	select HAVE_S3C_RTC if RTC_CLASS
+	select NO_IOPORT_MAP
 	select PINCTRL
 	select PINCTRL_EXYNOS
 	select PM_GENERIC_DOMAINS if PM
-	select S5P_DEV_MFC
 	select SRAM
 	select MFD_SYSCON
 	help
@@ -161,4 +168,56 @@ config EXYNOS_CPU_SUSPEND
 	select ARM_CPU_SUSPEND
 	default PM_SLEEP || ARM_EXYNOS_CPUIDLE
 
+endif
+
+config PLAT_S5P
+	def_bool ARCH_EXYNOS || ARCH_S5PV210
+
+if PLAT_S5P
+menu "Samsung Power Management options"
+
+config S5P_PM_DEBUG
+	bool "S3C2410 PM Suspend debug"
+	depends on PM && DEBUG_KERNEL && DEBUG_S5P_UART
+	help
+	  Say Y here if you want verbose debugging from the PM Suspend and
+	  Resume code. See <file:Documentation/arm/Samsung-S3C24XX/Suspend.txt>
+	  for more information.
+
+config S5P_PM_CHECK
+	bool "S3C2410 PM Suspend Memory CRC"
+	depends on PM
+	select CRC32
+	help
+	  Enable the PM code's memory area checksum over sleep. This option
+	  will generate CRCs of all blocks of memory, and store them before
+	  going to sleep. The blocks are then checked on resume for any
+	  errors.
+
+	  Note, this can take several seconds depending on memory size
+	  and CPU speed.
+
+	  See <file:Documentation/arm/Samsung-S3C24XX/Suspend.txt>
+
+config S5P_PM_CHECK_CHUNKSIZE
+	int "S3C2410 PM Suspend CRC Chunksize (KiB)"
+	depends on PM && S5P_PM_CHECK
+	default 64
+	help
+	  Set the chunksize in Kilobytes of the CRC for checking memory
+	  corruption over suspend and resume. A smaller value will mean that
+	  the CRC data block will take more memory, but wil identify any
+	  faults with better precision.
+
+	  See <file:Documentation/arm/Samsung-S3C24XX/Suspend.txt>
+
+config DEBUG_S5P_UART
+	depends on PLAT_S5P
+	int
+	default "0" if DEBUG_S3C_UART0
+	default "1" if DEBUG_S3C_UART1
+	default "2" if DEBUG_S3C_UART2
+	default "3" if DEBUG_S3C_UART3
+
+endmenu
 endif

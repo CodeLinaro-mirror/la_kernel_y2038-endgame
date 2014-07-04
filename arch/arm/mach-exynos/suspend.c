@@ -29,12 +29,12 @@
 #include <asm/smp_scu.h>
 #include <asm/suspend.h>
 
-#include <plat/pm-common.h>
-#include <plat/regs-srom.h>
-
+#include "pm-common.h"
 #include "common.h"
 #include "regs-pmu.h"
 #include "exynos-pmu.h"
+#include "regs-srom.h"
+#include "regs-sys.h"
 
 #define S5P_CHECK_SLEEP 0x00000BAD
 
@@ -238,10 +238,10 @@ static void exynos_pm_prepare(void)
 	/* Set wake-up mask registers */
 	exynos_pm_set_wakeup_mask();
 
-	s3c_pm_do_save(exynos_core_save, ARRAY_SIZE(exynos_core_save));
+	s5p_pm_do_save(exynos_core_save, ARRAY_SIZE(exynos_core_save));
 
 	 if (pm_data->extra_save)
-		s3c_pm_do_save(pm_data->extra_save,
+		s5p_pm_do_save(pm_data->extra_save,
 				pm_data->num_extra_save);
 
 	exynos_pm_enter_sleep_mode();
@@ -363,10 +363,10 @@ static void exynos_pm_resume(void)
 	exynos_pm_release_retention();
 
 	if (pm_data->extra_save)
-		s3c_pm_do_restore_core(pm_data->extra_save,
+		s5p_pm_do_restore_core(pm_data->extra_save,
 					pm_data->num_extra_save);
 
-	s3c_pm_do_restore_core(exynos_core_save, ARRAY_SIZE(exynos_core_save));
+	s5p_pm_do_restore_core(exynos_core_save, ARRAY_SIZE(exynos_core_save));
 
 	if (cpuid == ARM_CPU_PART_CORTEX_A9)
 		scu_enable(S5P_VA_SCU);
@@ -461,7 +461,7 @@ static int exynos_suspend_enter(suspend_state_t state)
 {
 	int ret;
 
-	s3c_pm_debug_init();
+	s5p_pm_debug_init();
 
 	S3C_PMDBG("%s: suspending the system...\n", __func__);
 
@@ -475,11 +475,11 @@ static int exynos_suspend_enter(suspend_state_t state)
 		return -EINVAL;
 	}
 
-	s3c_pm_save_uarts();
+	s5p_pm_save_uarts();
 	if (pm_data->pm_prepare)
 		pm_data->pm_prepare();
 	flush_cache_all();
-	s3c_pm_check_store();
+	s5p_pm_check_store();
 
 	ret = call_firmware_op(suspend);
 	if (ret == -ENOSYS)
@@ -487,14 +487,18 @@ static int exynos_suspend_enter(suspend_state_t state)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	if (pm_data->pm_resume_prepare)
 		pm_data->pm_resume_prepare();
 	s3c_pm_restore_uarts();
+=======
+	s5p_pm_restore_uarts();
+>>>>>>> [EXPERIMENTAL] ARM: exynos: become independent of plat-samsung
 
 	S3C_PMDBG("%s: wakeup stat: %08x\n", __func__,
 			pmu_raw_readl(S5P_WAKEUP_STAT));
 
-	s3c_pm_check_restore();
+	s5p_pm_check_restore();
 
 	S3C_PMDBG("%s: resuming the system...\n", __func__);
 
@@ -503,6 +507,7 @@ static int exynos_suspend_enter(suspend_state_t state)
 
 static int exynos_suspend_prepare(void)
 {
+<<<<<<< HEAD
 	int ret;
 
 	/*
@@ -520,12 +525,16 @@ static int exynos_suspend_prepare(void)
 	}
 
 	s3c_pm_check_prepare();
+=======
+	s5p_pm_check_prepare();
+>>>>>>> [EXPERIMENTAL] ARM: exynos: become independent of plat-samsung
 
 	return 0;
 }
 
 static void exynos_suspend_finish(void)
 {
+<<<<<<< HEAD
 	int ret;
 
 	s3c_pm_check_cleanup();
@@ -533,6 +542,9 @@ static void exynos_suspend_finish(void)
 	ret = regulator_suspend_finish();
 	if (ret)
 		pr_warn("Failed to resume regulators from suspend (%d)\n", ret);
+=======
+	s5p_pm_check_cleanup();
+>>>>>>> [EXPERIMENTAL] ARM: exynos: become independent of plat-samsung
 }
 
 static const struct platform_suspend_ops exynos_suspend_ops = {
