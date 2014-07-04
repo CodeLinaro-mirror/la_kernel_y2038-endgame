@@ -1994,6 +1994,8 @@ config KEXEC
 	bool "Kexec system call (EXPERIMENTAL)"
 	depends on (!SMP || PM_SLEEP_SMP)
 	depends on !CPU_V7M
+	select CRYPTO
+	select CRYPTO_HASH
 	help
 	  kexec is a system call that implements the ability to shutdown your
 	  current kernel, and to start another kernel.  It is like a reboot
