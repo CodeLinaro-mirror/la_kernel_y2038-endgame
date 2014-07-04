@@ -20,8 +20,7 @@
 #include <asm/hardware/cache-l2x0.h>
 #include <asm/suspend.h>
 
-#include <mach/map.h>
-
+#include "map.h"
 #include "common.h"
 #include "smc.h"
 
