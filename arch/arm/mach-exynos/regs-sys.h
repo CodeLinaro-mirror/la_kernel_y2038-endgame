@@ -12,7 +12,7 @@
 #ifndef __ASM_ARCH_REGS_SYS_H
 #define __ASM_ARCH_REGS_SYS_H __FILE__
 
-#include <mach/map.h>
+#include "map.h"
 
 #define S5P_SYSREG(x)                          (S3C_VA_SYS + (x))
 

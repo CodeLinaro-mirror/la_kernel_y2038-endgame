@@ -24,7 +24,6 @@
 #include <asm/suspend.h>
 
 #include <plat/pm-common.h>
-
 #include "common.h"
 #include "regs-pmu.h"
 #include "regs-sys.h"
