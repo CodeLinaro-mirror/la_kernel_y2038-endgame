@@ -12,7 +12,7 @@
 #ifndef __ASM_ARCH_REGS_CLOCK_H
 #define __ASM_ARCH_REGS_CLOCK_H __FILE__
 
-#include <plat/map-base.h>
+#include "map.h"
 
 #define S5P_CLKREG(x)		(S3C_VA_SYS + (x))
 

@@ -1,5 +1,4 @@
-/* linux/arch/arm/plat-samsung/include/plat/regs-srom.h
- *
+/*
  * Copyright (c) 2010 Samsung Electronics Co., Ltd.
  *		http://www.samsung.com
  *
@@ -13,7 +12,7 @@
 #ifndef __PLAT_SAMSUNG_REGS_SROM_H
 #define __PLAT_SAMSUNG_REGS_SROM_H __FILE__
 
-#include <mach/map.h>
+#include "map.h"
 
 #define S5P_SROMREG(x)		(S5P_VA_SROMC + (x))
 
