@@ -16,8 +16,7 @@
 
 #include <asm/firmware.h>
 
-#include <mach/map.h>
-
+#include "map.h"
 #include "common.h"
 #include "smc.h"
 

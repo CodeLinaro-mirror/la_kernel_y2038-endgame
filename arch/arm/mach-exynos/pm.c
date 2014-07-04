@@ -30,8 +30,7 @@
 #include <plat/pm-common.h>
 #include <plat/regs-srom.h>
 
-#include <mach/map.h>
-
+#include "map.h"
 #include "common.h"
 #include "regs-pmu.h"
 #include "regs-sys.h"
