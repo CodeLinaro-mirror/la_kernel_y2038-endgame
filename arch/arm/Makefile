@@ -190,7 +190,7 @@ machine-$(CONFIG_ARCH_ROCKCHIP)		+= rockchip
 machine-$(CONFIG_ARCH_RPC)		+= rpc
 machine-$(CONFIG_ARCH_S3C24XX)		+= s3c24xx
 machine-$(CONFIG_ARCH_S3C64XX)		+= s3c64xx
-machine-$(CONFIG_ARCH_S5PV210)		+= s5pv210
+machine-$(CONFIG_ARCH_S5PV210)		+= exynos
 machine-$(CONFIG_ARCH_SA1100)		+= sa1100
 machine-$(CONFIG_ARCH_SHMOBILE) 	+= shmobile
 machine-$(CONFIG_ARCH_SIRF)		+= prima2
@@ -239,7 +239,7 @@ ifeq ($(CONFIG_ARCH_MULTIPLATFORM),y)
 MACHINE  :=
 endif
 
-machdirs := $(patsubst %,arch/arm/mach-%/,$(machine-y))
+machdirs := $(patsubst %,arch/arm/mach-%/,$(sort $(machine-y)))
 platdirs := $(patsubst %,arch/arm/plat-%/,$(sort $(plat-y)))
 
 ifneq ($(CONFIG_ARCH_MULTIPLATFORM),y)
