@@ -30,12 +30,12 @@
 #define EXYNOS5800_SOC_ID	0xE5422000
 #define EXYNOS5_SOC_MASK	0xFFFFF000
 
-extern unsigned long samsung_cpu_id;
+extern unsigned long exynos_cpu_id;
 
 #define IS_SAMSUNG_CPU(name, id, mask)		\
 static inline int is_samsung_##name(void)	\
 {						\
-	return ((samsung_cpu_id & mask) == (id & mask));	\
+	return ((exynos_cpu_id & mask) == (id & mask));	\
 }
 
 IS_SAMSUNG_CPU(exynos3250, EXYNOS3250_SOC_ID, EXYNOS3_SOC_MASK)
@@ -169,7 +169,7 @@ extern int exynos_pm_central_resume(void);
 extern void exynos_enter_aftr(void);
 
 extern void s5p_init_cpu(void __iomem *cpuid_addr);
-extern unsigned int samsung_rev(void);
+extern unsigned int exynos_rev(void);
 
 static inline void pmu_raw_writel(u32 val, u32 offset)
 {
