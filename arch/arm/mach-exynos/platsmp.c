@@ -27,7 +27,7 @@
 #include <asm/smp_scu.h>
 #include <asm/firmware.h>
 
-#include <mach/map.h>
+#include "map.h"
 
 #include "common.h"
 #include "regs-pmu.h"

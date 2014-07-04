@@ -2,7 +2,7 @@
  * Copyright (c) 2010-2011 Samsung Electronics Co., Ltd.
  *		http://www.samsung.com/
  *
- * EXYNOS4 - Memory map definitions
+ * EXYNOS - Memory map definitions
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -12,7 +12,34 @@
 #ifndef __ASM_ARCH_MAP_H
 #define __ASM_ARCH_MAP_H __FILE__
 
-#include <plat/map-base.h>
+/* Fit all our registers in at 0xF6000000 upwards, trying to use as
+ * little of the VA space as possible so vmalloc and friends have a
+ * better chance of getting memory.
+ *
+ * we try to ensure stuff like the IRQ registers are available for
+ * an single MOVS instruction (ie, only 8 bits of set data)
+ */
+
+#define S3C_ADDR_BASE	0xF6000000
+
+#ifndef __ASSEMBLY__
+#define S3C_ADDR(x)	((void __iomem __force *)S3C_ADDR_BASE + (x))
+#else
+#define S3C_ADDR(x)	(S3C_ADDR_BASE + (x))
+#endif
+
+#define S3C_VA_IRQ	S3C_ADDR(0x00000000)	/* irq controller(s) */
+#define S3C_VA_SYS	S3C_ADDR(0x00100000)	/* system control */
+#define S3C_VA_MEM	S3C_ADDR(0x00200000)	/* memory control */
+#define S3C_VA_TIMER	S3C_ADDR(0x00300000)	/* timer block */
+#define S3C_VA_WATCHDOG	S3C_ADDR(0x00400000)	/* watchdog */
+#define S3C_VA_UART	S3C_ADDR(0x01000000)	/* UART */
+
+/* This is used for the CPU specific mappings that may be needed, so that
+ * they do not need to directly used S3C_ADDR() and thus make it easier to
+ * modify the space for mapping.
+ */
+#define S3C_ADDR_CPU(x)	S3C_ADDR(0x00500000 + (x))
 
 /*
  * EXYNOS4 UART offset is 0x10000 but the older S5P SoCs are 0x400.
@@ -20,7 +47,34 @@
  */
 #define S3C_UART_OFFSET			(0x10000)
 
-#include <plat/map-s5p.h>
+#define S5P_VA_CHIPID		S3C_ADDR(0x02000000)
+#define S5P_VA_CMU		S3C_ADDR(0x02100000)
+
+#define S5P_VA_DMC0		S3C_ADDR(0x02440000)
+#define S5P_VA_DMC1		S3C_ADDR(0x02480000)
+#define S5P_VA_SROMC		S3C_ADDR(0x024C0000)
+
+#define S5P_VA_COREPERI_BASE	S3C_ADDR(0x02800000)
+#define S5P_VA_COREPERI(x)	(S5P_VA_COREPERI_BASE + (x))
+#define S5P_VA_SCU		S5P_VA_COREPERI(0x0)
+#define S5P_VA_TWD		S5P_VA_COREPERI(0x600)
+
+#define S5P_VA_GIC_CPU		S3C_ADDR(0x02810000)
+#define S5P_VA_GIC_DIST		S3C_ADDR(0x02820000)
+
+#define VA_VIC(x)		(S3C_VA_IRQ + ((x) * 0x10000))
+#define VA_VIC0			VA_VIC(0)
+#define VA_VIC1			VA_VIC(1)
+#define VA_VIC2			VA_VIC(2)
+#define VA_VIC3			VA_VIC(3)
+
+#ifndef S3C_UART_OFFSET
+#define S3C_UART_OFFSET		(0x400)
+#endif
+
+#define S3C64XX_VA_USB_HSPHY	S3C_ADDR_CPU(0x00200000)
+
+#define S3C_VA_USB_HSPHY	S3C64XX_VA_USB_HSPHY
 
 #define EXYNOS_PA_CHIPID		0x10000000
 
