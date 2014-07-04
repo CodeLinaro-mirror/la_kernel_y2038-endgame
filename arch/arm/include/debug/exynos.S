@@ -27,9 +27,9 @@
 		ldreq	\rp, =EXYNOS5_PA_UART
 		movne	\rp, #EXYNOS4_PA_UART	@@ EXYNOS4
 		ldr	\rv, =S3C_VA_UART
-#if CONFIG_DEBUG_S3C_UART != 0
-		add	\rp, \rp, #(0x10000 * CONFIG_DEBUG_S3C_UART)
-		add	\rv, \rv, #(0x10000 * CONFIG_DEBUG_S3C_UART)
+#if CONFIG_DEBUG_S5P_UART != 0
+		add	\rp, \rp, #(0x10000 * CONFIG_DEBUG_S5P_UART)
+		add	\rv, \rv, #(0x10000 * CONFIG_DEBUG_S5P_UART)
 #endif
 	.endm
 
