@@ -881,8 +881,6 @@ source "arch/arm/mach-s3c24xx/Kconfig"
 
 source "arch/arm/mach-s3c64xx/Kconfig"
 
-source "arch/arm/mach-s5pv210/Kconfig"
-
 source "arch/arm/mach-exynos/Kconfig"
 source "arch/arm/plat-samsung/Kconfig"
 
