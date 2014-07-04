@@ -28,6 +28,7 @@
 #include <plat/pm-common.h>
 #include "common.h"
 #include "exynos-pmu.h"
+#include "regs-srom.h"
 #include "regs-pmu.h"
 
 static inline void __iomem *exynos_boot_vector_addr(void)
