@@ -22,8 +22,7 @@
 #include <asm/cacheflush.h>
 #include <asm/suspend.h>
 
-#include <plat/pm-common.h>
-
+#include "pm-common.h"
 #include "s5pv210-clock.h"
 #include "s5pv210.h"
 
@@ -86,7 +85,7 @@ static void s5pv210_pm_prepare(void)
 	tmp |= S5P_OTHER_SYSC_INTOFF;
 	__raw_writel(tmp, S5P_OTHERS);
 
-	s3c_pm_do_save(s5pv210_core_save, ARRAY_SIZE(s5pv210_core_save));
+	s5p_pm_do_save(s5pv210_core_save, ARRAY_SIZE(s5pv210_core_save));
 }
 
 /*
@@ -95,8 +94,6 @@ static void s5pv210_pm_prepare(void)
 static int s5pv210_suspend_enter(suspend_state_t state)
 {
 	int ret;
-
-	s3c_pm_debug_init();
 
 	S3C_PMDBG("%s: suspending the system...\n", __func__);
 
@@ -110,21 +107,21 @@ static int s5pv210_suspend_enter(suspend_state_t state)
 		return -EINVAL;
 	}
 
-	s3c_pm_save_uarts();
+	s5p_pm_save_uarts();
 	s5pv210_pm_prepare();
 	flush_cache_all();
-	s3c_pm_check_store();
+	s5p_pm_check_store();
 
 	ret = cpu_suspend(0, s5pv210_cpu_suspend);
 	if (ret)
 		return ret;
 
-	s3c_pm_restore_uarts();
+	s5p_pm_restore_uarts();
 
 	S3C_PMDBG("%s: wakeup stat: %08x\n", __func__,
 			__raw_readl(S5P_WAKEUP_STAT));
 
-	s3c_pm_check_restore();
+	s5p_pm_check_restore();
 
 	S3C_PMDBG("%s: resuming the system...\n", __func__);
 
@@ -133,14 +130,14 @@ static int s5pv210_suspend_enter(suspend_state_t state)
 
 static int s5pv210_suspend_prepare(void)
 {
-	s3c_pm_check_prepare();
+	s5p_pm_check_prepare();
 
 	return 0;
 }
 
 static void s5pv210_suspend_finish(void)
 {
-	s3c_pm_check_cleanup();
+	s5p_pm_check_cleanup();
 }
 
 static const struct platform_suspend_ops s5pv210_suspend_ops = {
@@ -162,7 +159,7 @@ static void s5pv210_pm_resume(void)
 		S5P_OTHERS_RET_MMC | S5P_OTHERS_RET_UART);
 	__raw_writel(tmp , S5P_OTHERS);
 
-	s3c_pm_do_restore_core(s5pv210_core_save, ARRAY_SIZE(s5pv210_core_save));
+	s5p_pm_do_restore_core(s5pv210_core_save, ARRAY_SIZE(s5pv210_core_save));
 }
 
 static struct syscore_ops s5pv210_pm_syscore_ops = {

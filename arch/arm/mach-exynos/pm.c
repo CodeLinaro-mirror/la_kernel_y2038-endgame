@@ -27,8 +27,7 @@
 #include <asm/smp_scu.h>
 #include <asm/suspend.h>
 
-#include <plat/pm-common.h>
-
+#include "pm-common.h"
 #include "map.h"
 #include "common.h"
 #include "regs-srom.h"
@@ -101,14 +100,14 @@ static int exynos_irq_set_wake(struct irq_data *data, unsigned int state)
 }
 #endif
 
-#define EXYNOS_BOOT_VECTOR_ADDR	(samsung_rev() == EXYNOS4210_REV_1_1 ? \
+#define EXYNOS_BOOT_VECTOR_ADDR	(exynos_rev() == EXYNOS4210_REV_1_1 ? \
 			pmu_base_addr + S5P_INFORM7 : \
-			(samsung_rev() == EXYNOS4210_REV_1_0 ? \
+			(exynos_rev() == EXYNOS4210_REV_1_0 ? \
 			(sysram_base_addr + 0x24) : \
 			pmu_base_addr + S5P_INFORM0))
-#define EXYNOS_BOOT_VECTOR_FLAG	(samsung_rev() == EXYNOS4210_REV_1_1 ? \
+#define EXYNOS_BOOT_VECTOR_FLAG	(exynos_rev() == EXYNOS4210_REV_1_1 ? \
 			pmu_base_addr + S5P_INFORM6 : \
-			(samsung_rev() == EXYNOS4210_REV_1_0 ? \
+			(exynos_rev() == EXYNOS4210_REV_1_0 ? \
 			(sysram_base_addr + 0x20) : \
 			pmu_base_addr + S5P_INFORM1))
 
@@ -203,10 +202,10 @@ static void exynos_pm_prepare(void)
 	pmu_raw_writel(exynos_get_eint_wake_mask(), S5P_EINT_WAKEUP_MASK);
 	pmu_raw_writel(exynos_irqwake_intmask & ~(1 << 31), S5P_WAKEUP_MASK);
 
-	s3c_pm_do_save(exynos_core_save, ARRAY_SIZE(exynos_core_save));
+	s5p_pm_do_save(exynos_core_save, ARRAY_SIZE(exynos_core_save));
 
 	if (soc_is_exynos5250()) {
-		s3c_pm_do_save(exynos5_sys_save, ARRAY_SIZE(exynos5_sys_save));
+		s5p_pm_do_save(exynos5_sys_save, ARRAY_SIZE(exynos5_sys_save));
 		/* Disable USE_RETENTION of JPEG_MEM_OPTION */
 		tmp = pmu_raw_readl(EXYNOS5_JPEG_MEM_OPTION);
 		tmp &= ~EXYNOS5_OPTION_USE_RETENTION;
@@ -292,10 +291,10 @@ static void exynos_pm_resume(void)
 	pmu_raw_writel((1 << 28), S5P_PAD_RET_EBIB_OPTION);
 
 	if (soc_is_exynos5250())
-		s3c_pm_do_restore(exynos5_sys_save,
+		s5p_pm_do_restore(exynos5_sys_save,
 			ARRAY_SIZE(exynos5_sys_save));
 
-	s3c_pm_do_restore_core(exynos_core_save, ARRAY_SIZE(exynos_core_save));
+	s5p_pm_do_restore_core(exynos_core_save, ARRAY_SIZE(exynos_core_save));
 
 	if (read_cpuid_part() == ARM_CPU_PART_CORTEX_A9)
 		scu_enable(S5P_VA_SCU);
@@ -321,8 +320,6 @@ static int exynos_suspend_enter(suspend_state_t state)
 {
 	int ret;
 
-	s3c_pm_debug_init();
-
 	S3C_PMDBG("%s: suspending the system...\n", __func__);
 
 	S3C_PMDBG("%s: wakeup masks: %08x,%08x\n", __func__,
@@ -335,21 +332,21 @@ static int exynos_suspend_enter(suspend_state_t state)
 		return -EINVAL;
 	}
 
-	s3c_pm_save_uarts();
+	s5p_pm_save_uarts();
 	exynos_pm_prepare();
 	flush_cache_all();
-	s3c_pm_check_store();
+	s5p_pm_check_store();
 
 	ret = cpu_suspend(0, exynos_cpu_suspend);
 	if (ret)
 		return ret;
 
-	s3c_pm_restore_uarts();
+	s5p_pm_restore_uarts();
 
 	S3C_PMDBG("%s: wakeup stat: %08x\n", __func__,
 			pmu_raw_readl(S5P_WAKEUP_STAT));
 
-	s3c_pm_check_restore();
+	s5p_pm_check_restore();
 
 	S3C_PMDBG("%s: resuming the system...\n", __func__);
 
@@ -358,14 +355,14 @@ static int exynos_suspend_enter(suspend_state_t state)
 
 static int exynos_suspend_prepare(void)
 {
-	s3c_pm_check_prepare();
+	s5p_pm_check_prepare();
 
 	return 0;
 }
 
 static void exynos_suspend_finish(void)
 {
-	s3c_pm_check_cleanup();
+	s5p_pm_check_cleanup();
 }
 
 static const struct platform_suspend_ops exynos_suspend_ops = {
