@@ -79,6 +79,8 @@ extern void __iomem *s3c24xx_va_gpio2;
 #define S3C24XX_VA_GPIO2 S3C24XX_VA_GPIO
 #endif
 
-#include <plat/map-s5p.h>
+#define VA_VIC(x)		(S3C_VA_IRQ + ((x) * 0x10000))
+#define VA_VIC0			VA_VIC(0)
+#define VA_VIC1			VA_VIC(1)
 
 #endif /* __ASM_PLAT_MAP_S3C_H */
