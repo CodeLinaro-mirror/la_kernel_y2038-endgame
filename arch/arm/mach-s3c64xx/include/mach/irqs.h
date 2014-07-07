@@ -174,7 +174,7 @@
 
 /* Set the default NR_IRQS */
 
-#define NR_IRQS	(IRQ_BOARD_END + 1)
+#define S3C64XX_NR_IRQS	(IRQ_BOARD_END + 1)
 
 /* Compatibility */
 
