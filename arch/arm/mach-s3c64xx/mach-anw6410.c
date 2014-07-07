@@ -47,6 +47,7 @@
 
 #include <plat/devs.h>
 #include <plat/cpu.h>
+#include <mach/irqs.h>
 #include <mach/regs-gpio.h>
 #include <mach/gpio-samsung.h>
 #include <plat/samsung-time.h>

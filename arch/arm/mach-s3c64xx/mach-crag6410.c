@@ -51,6 +51,7 @@
 #include <mach/map.h>
 #include <mach/regs-gpio.h>
 #include <mach/gpio-samsung.h>
+#include <mach/irqs.h>
 
 #include <plat/fb.h>
 #include <plat/sdhci.h>

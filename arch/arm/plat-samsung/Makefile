@@ -4,7 +4,8 @@
 #
 # Licensed under GPLv2
 
-ccflags-$(CONFIG_ARCH_MULTI_V7) += -I$(srctree)/$(src)/include
+ccflags-$(CONFIG_ARCH_S3C64XX) := -I$(srctree)/arch/arm/mach-s3c64xx/include
+ccflags-$(CONFIG_ARCH_MULTIPLATFORM) += -I$(srctree)/$(src)/include
 
 # Objects we always build independent of SoC choice
 
@@ -25,6 +26,8 @@ obj-$(CONFIG_S5P_DEV_MFC)	+= s5p-dev-mfc.o
 obj-$(CONFIG_SAMSUNG_DEV_BACKLIGHT)	+= dev-backlight.o
 
 obj-$(CONFIG_S3C_SETUP_CAMIF)	+= setup-camif.o
+
+obj-$(CONFIG_GPIO_SAMSUNG)     += gpio-samsung.o
 
 # PM support
 
