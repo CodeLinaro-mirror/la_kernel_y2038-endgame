@@ -29,6 +29,8 @@
 
 #include <linux/platform_data/spi-s3c64xx.h>
 
+#include <mach/irqs.h>
+
 #include "crag6410.h"
 
 static struct s3c64xx_spi_csinfo wm0010_spi_csinfo = {

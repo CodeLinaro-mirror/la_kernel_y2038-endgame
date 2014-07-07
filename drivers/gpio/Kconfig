@@ -289,13 +289,6 @@ config GPIO_RCAR
 	help
 	  Say yes here to support GPIO on Renesas R-Car SoCs.
 
-config GPIO_SAMSUNG
-	bool
-	depends on PLAT_SAMSUNG
-	help
-	  Legacy GPIO support. Use only for platforms without support for
-	  pinctrl.
-
 config GPIO_SCH311X
 	tristate "SMSC SCH311x SuperI/O GPIO"
 	help
