@@ -134,7 +134,7 @@ config MACH_REALVIEW_PBA8
 
 config MACH_REALVIEW_PBX
 	bool "Support RealView(R) Platform Baseboard Explore"
-	select ARCH_SPARSEMEM_ENABLE if CPU_V7
+	select ARCH_SPARSEMEM_ENABLE if CPU_V7 && !REALVIEW_HIGH_PHYS_OFFSET
 	select ARM_GIC
 	select HAVE_ARM_SCU if SMP
 	select HAVE_ARM_TWD if SMP
@@ -178,7 +178,7 @@ config MACH_REALVIEW_AUTO
 
 config REALVIEW_HIGH_PHYS_OFFSET
 	bool "High physical base address for the RealView platform"
-	depends on MMU && !MACH_REALVIEW_PB1176 && !ARM_PATCH_PHYS_VIRT
+	depends on MMU && !MACH_REALVIEW_PB1176
 	default y
 	help
 	  RealView boards other than PB1176 have the RAM available at
@@ -187,22 +187,5 @@ config REALVIEW_HIGH_PHYS_OFFSET
 	  memory to be accessed contiguously at the high physical
 	  offset. On the PBX board, disabling this option allows 1GB of
 	  RAM to be used with SPARSEMEM.
-
-config REALVIEW_PBX_SPARSEMEM_HACK
-	bool "Hack to avoid highmem on Realview-PBX"
-	depends on SPARSEMEM && MMU
-	depends on MACH_REALVIEW_PBX
-	depends on !(MACH_REALVIEW_EB || MACH_REALVIEW_PB11MP || MACH_REALVIEW_PBA8 || MACH_REALVIEW_DT)
-	depends on !REALVIEW_HIGH_PHYS_OFFSET
-	depends on !ARM_PATCH_PHYS_VIRT
-	help
-	  Realview-PBX uses noncontiguous memory that is spread over
-	  more than 2GB of physical address space, which means that in
-	  order to access it, we have to either enable HIGHMEM or
-	  VMSPLIT_1G, both of which come with a performance impact.
-	  As a third alternative, this rearranges the kernel virtual
-	  memory space to cover all the discontiguous memory on
-	  Realview PBX, with the main cost of breaking support for
-	  any other hardware.
 
 endmenu
