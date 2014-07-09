@@ -12,6 +12,7 @@
 #include <linux/delay.h>
 #include <linux/fb.h>
 #include <linux/gpio.h>
+#include <linux/gpio/machine.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/pwm_backlight.h>
@@ -379,6 +380,15 @@ void __init smartq_map_io(void)
 	smartq_lcd_mode_set();
 }
 
+static struct gpiod_lookup_table smartq_audio_gpios = {
+	.dev_id = "smartq-audio",
+	.table = {
+		GPIO_LOOKUP("GPL", 12, "headphone detect", 0),
+		GPIO_LOOKUP("GPK", 12, "amplifiers shutdown", GPIO_ACTIVE_HIGH),
+		{ },
+	},
+};
+
 void __init smartq_machine_init(void)
 {
 	s3c_i2c0_set_platdata(NULL);
@@ -397,4 +407,7 @@ void __init smartq_machine_init(void)
 	WARN_ON(smartq_wifi_init());
 
 	platform_add_devices(smartq_devices, ARRAY_SIZE(smartq_devices));
+
+	gpiod_add_lookup_table(&smartq_audio_gpios);
+	platform_device_register_simple("smartq-audio", -1, NULL, 0);
 }
