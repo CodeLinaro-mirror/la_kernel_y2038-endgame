@@ -1,5 +1,19 @@
-menu "RealView platform type"
-	depends on ARCH_REALVIEW
+config ARCH_REALVIEW
+	bool "ARM Ltd. RealView family" if ARCH_MULTI_V5 || ARCH_MULTI_V6 || ARCH_MULTI_V7
+	select ARCH_WANT_OPTIONAL_GPIOLIB
+	select ARM_AMBA
+	select ARM_TIMER_SP804
+	select COMMON_CLK
+	select COMMON_CLK_VERSATILE
+	select GENERIC_CLOCKEVENTS
+	select GPIO_PL061 if GPIOLIB
+	select ICST
+	select PLAT_VERSATILE
+	select PLAT_VERSATILE_SCHED_CLOCK
+	help
+	  This enables support for ARM Ltd RealView boards.
+
+if ARCH_REALVIEW
 
 config REALVIEW_DT
 	bool "Support RealView(R) Device Tree based boot"
@@ -23,7 +37,7 @@ config MACH_REALVIEW_EB
 
 config REALVIEW_EB_ARM926
 	bool "Support ARM926EJ-S Tile"
-	depends on MACH_REALVIEW_EB && !(CPU_V6 || CPU_V6K || CPU_V7)
+	depends on MACH_REALVIEW_EB && ARCH_MULTI_V5
 	select CPU_ARM926T
 	help
 	  Enable support for the ARM926 tile fitted to the
@@ -31,7 +45,7 @@ config REALVIEW_EB_ARM926
 
 config REALVIEW_EB_ARM1136
 	bool "Support ARM1136J(F)-S Tile"
-	depends on MACH_REALVIEW_EB
+	depends on MACH_REALVIEW_EB && ARCH_MULTI_V6
 	select CPU_V6
 	help
 	  Enable support for the ARM1136 tile fitted to the
@@ -39,7 +53,7 @@ config REALVIEW_EB_ARM1136
 
 config REALVIEW_EB_ARM1176
 	bool "Support ARM1176JZ(F)-S Tile"
-	depends on MACH_REALVIEW_EB
+	depends on MACH_REALVIEW_EB && ARCH_MULTI_V6
 	select CPU_V6K
 	help
 	  Enable support for the ARM1176 tile fitted to the
@@ -47,7 +61,7 @@ config REALVIEW_EB_ARM1176
 
 config REALVIEW_EB_V7
 	bool "Support Cortex-A5/A7/A8/A9/A12/A15 Tile"
-	depends on MACH_REALVIEW_EB
+	depends on MACH_REALVIEW_EB && ARCH_MULTI_V7
 	select CPU_V7
 	help
 	  Enable support for Cortex-A class ARMv7-A uniprocessor tiles
@@ -55,7 +69,7 @@ config REALVIEW_EB_V7
 
 config REALVIEW_EB_A9MP
 	bool "Support Multicore Cortex-A9 Tile"
-	depends on MACH_REALVIEW_EB
+	depends on MACH_REALVIEW_EB && ARCH_MULTI_V7
 	select CPU_V7
 	select HAVE_ARM_SCU if SMP
 	select HAVE_ARM_TWD if SMP
@@ -67,7 +81,7 @@ config REALVIEW_EB_A9MP
 
 config REALVIEW_EB_ARM11MP
 	bool "Support ARM11MPCore Tile"
-	depends on MACH_REALVIEW_EB
+	depends on MACH_REALVIEW_EB && ARCH_MULTI_V6
 	select CPU_V6K
 	select HAVE_ARM_SCU if SMP
 	select HAVE_ARM_TWD if SMP
@@ -79,7 +93,7 @@ config REALVIEW_EB_ARM11MP
 
 config REALVIEW_EB_ARM11MP_REVB
 	bool "Support ARM11MPCore RevB Tile"
-	depends on REALVIEW_EB_ARM11MP
+	depends on REALVIEW_EB_ARM11MP && ARCH_MULTI_V6
 	help
 	  Enable support for the ARM11MPCore Revision B tile on the
 	  Realview(R) Emulation Baseboard platform. Since there are device
@@ -88,6 +102,7 @@ config REALVIEW_EB_ARM11MP_REVB
 
 config MACH_REALVIEW_PB11MP
 	bool "Support RealView(R) Platform Baseboard for ARM11MPCore"
+	depends on ARCH_MULTI_V6
 	select ARM_GIC
 	select CPU_V6K
 	select HAVE_ARM_SCU if SMP
@@ -103,6 +118,7 @@ config MACH_REALVIEW_PB11MP
 # ARMv6 CPU without K extensions, but does have the new exclusive ops
 config MACH_REALVIEW_PB1176
 	bool "Support RealView(R) Platform Baseboard for ARM1176JZF-S"
+	depends on ARCH_MULTI_V6
 	select ARM_GIC
 	select CPU_V6
 	select HAVE_TCM
@@ -122,8 +138,8 @@ config REALVIEW_PB1176_SECURE_FLASH
 
 config MACH_REALVIEW_PBA8
 	bool "Support RealView(R) Platform Baseboard for Cortex(tm)-A8 platform"
+	depends on ARCH_MULTI_V7
 	select ARM_GIC
-	select CPU_V7
 	select HAVE_PATA_PLATFORM
 	help
 	  Include support for the ARM(R) RealView Platform Baseboard for
@@ -132,6 +148,7 @@ config MACH_REALVIEW_PBA8
 
 config MACH_REALVIEW_PBX
 	bool "Support RealView(R) Platform Baseboard Explore"
+	depends on ARCH_MULTI_V6 || ARCH_MULTI_V7
 	select ARM_GIC
 	select HAVE_ARM_SCU if SMP
 	select HAVE_ARM_TWD if SMP
@@ -145,7 +162,7 @@ config MACH_REALVIEW_PBX
 
 config REALVIEW_PBX_ARM1136
 	bool "Support ARM1136J(F)-S Tile"
-	depends on MACH_REALVIEW_PBX
+	depends on MACH_REALVIEW_PBX && ARCH_MULTI_V6
 	select CPU_V6
 	help
 	  Enable support for the ARM1136 tile fitted to the
@@ -153,7 +170,7 @@ config REALVIEW_PBX_ARM1136
 
 config REALVIEW_PBX_ARM1176
 	bool "Support ARM1176JZ(F)-S Tile"
-	depends on MACH_REALVIEW_PBX
+	depends on MACH_REALVIEW_PBX && ARCH_MULTI_V6
 	select CPU_V6K
 	help
 	  Enable support for the ARM1176 tile fitted to the
@@ -161,7 +178,7 @@ config REALVIEW_PBX_ARM1176
 
 config REALVIEW_PBX_V7
 	bool "Support Cortex-A5/A7/A8/A9/A12/A15 Tile"
-	depends on MACH_REALVIEW_PBX
+	depends on MACH_REALVIEW_PBX && ARCH_MULTI_V7
 	select CPU_V7
 	help
 	  Enable support for Cortex-A class ARMv7-A uniprocessor tiles
@@ -169,8 +186,9 @@ config REALVIEW_PBX_V7
 
 config MACH_REALVIEW_AUTO
 	def_bool y
-	select MACH_REALVIEW_PBX if !(MACH_REALVIEW_EB || MACH_REALVIEW_PB1176 || MACH_REALVIEW_PB11MP || MACH_REALVIEW_PBA8)
-	select REALVIEW_EB_ARM926 if MACH_REALVIEW_EB && !(CPU_V6 || CPU_V6K || CPU_V7)
+	select MACH_REALVIEW_PBX if ARCH_MULTI_V6 || ARCH_MULTI_V7
+	select REALVIEW_EB if ARCH_MULTI_V5
+	select REALVIEW_EB_ARM926 if ARCH_MULTI_V5
 	select REALVIEW_PBX_V7 if MACH_REALVIEW_PBX && !(REALVIEW_PBX_ARM1136 || REALVIEW_PBX_ARM1176)
 
 config REALVIEW_HIGH_PHYS_OFFSET
@@ -185,4 +203,4 @@ config REALVIEW_HIGH_PHYS_OFFSET
 	  offset. On the PBX board, disabling this option allows 1GB of
 	  RAM to be used with HIGHMEM.
 
-endmenu
+endif
