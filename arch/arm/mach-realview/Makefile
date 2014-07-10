@@ -1,6 +1,9 @@
 #
 # Makefile for the linux kernel.
 #
+ccflags-$(CONFIG_ARCH_MULTIPLATFORM) := -I$(srctree)/$(src)/include \
+	-I$(srctree)/arch/arm/plat-versatile/include
+
 
 obj-y					:= core.o
 obj-$(CONFIG_MACH_REALVIEW_EB)		+= realview_eb.o
