@@ -335,20 +335,6 @@ config ARCH_INTEGRATOR
 	help
 	  Support for ARM's Integrator platform.
 
-config ARCH_REALVIEW
-	bool "ARM Ltd. RealView family"
-	select ARCH_WANT_OPTIONAL_GPIOLIB
-	select ARM_AMBA
-	select ARM_TIMER_SP804
-	select COMMON_CLK
-	select COMMON_CLK_VERSATILE
-	select GENERIC_CLOCKEVENTS
-	select GPIO_PL061 if GPIOLIB
-	select ICST
-	select PLAT_VERSATILE
-	help
-	  This enables support for ARM Ltd RealView boards.
-
 config ARCH_VERSATILE
 	bool "ARM Ltd. Versatile family"
 	select ARCH_WANT_OPTIONAL_GPIOLIB
