@@ -11,10 +11,6 @@ ccflags-$(CONFIG_ARCH_MULTIPLATFORM) += -I$(srctree)/$(src)/include
 
 obj-y				+= init.o cpu.o
 
-# ADC
-
-obj-$(CONFIG_S3C_ADC)	+= adc.o
-
 # devices
 
 obj-$(CONFIG_SAMSUNG_ATAGS)	+= platformdata.o

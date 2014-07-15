@@ -22,7 +22,7 @@
 #include <linux/init.h>
 #include <linux/module.h>
 
-#include <plat/adc.h>
+#include <linux/platform_data/touchscreen-s3c2410.h>
 
 #define BAT_POLL_INTERVAL		10000 /* ms */
 #define JITTER_DELAY			500 /* ms */
