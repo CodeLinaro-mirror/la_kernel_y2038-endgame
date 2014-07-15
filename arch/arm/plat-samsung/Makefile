@@ -16,10 +16,6 @@ obj-				:=
 
 obj-y				+= init.o cpu.o
 
-# ADC
-
-obj-$(CONFIG_S3C_ADC)	+= adc.o
-
 # devices
 
 obj-$(CONFIG_SAMSUNG_ATAGS)	+= platformdata.o
