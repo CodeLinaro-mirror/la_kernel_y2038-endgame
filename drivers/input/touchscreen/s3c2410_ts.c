@@ -90,6 +90,58 @@
 #define S3C2410_ADCDAT1_XY_PST		(0x3<<12)
 #define S3C2410_ADCDAT1_YPDATA_MASK	(0x03FF)
 
+#define TSC_SLEEP  (S3C2410_ADCTSC_PULL_UP_DISABLE | S3C2410_ADCTSC_XY_PST(0))
+
+#define INT_DOWN	(0)
+#define INT_UP		(1 << 8)
+
+#define WAIT4INT	(S3C2410_ADCTSC_YM_SEN | \
+			 S3C2410_ADCTSC_YP_SEN | \
+			 S3C2410_ADCTSC_XP_SEN | \
+			 S3C2410_ADCTSC_XY_PST(3))
+
+#define AUTOPST		(S3C2410_ADCTSC_YM_SEN | \
+			 S3C2410_ADCTSC_YP_SEN | \
+			 S3C2410_ADCTSC_XP_SEN | \
+			 S3C2410_ADCTSC_AUTO_PST | \
+			 S3C2410_ADCTSC_XY_PST(0))
+
+#define FEAT_PEN_IRQ	(1 << 0)	/* HAS ADCCLRINTPNDNUP */
+
+/* Per-touchscreen data. */
+
+/**
+ * struct s3c2410ts - driver touchscreen state.
+ * @client: The ADC client we registered with the core driver.
+ * @dev: The device we are bound to.
+ * @input: The input device we registered with the input subsystem.
+ * @clock: The clock for the adc.
+ * @io: Pointer to the IO base.
+ * @xp: The accumulated X position data.
+ * @yp: The accumulated Y position data.
+ * @irq_tc: The interrupt number for pen up/down interrupt
+ * @count: The number of samples collected.
+ * @shift: The log2 of the maximum count to read in one go.
+ * @features: The features supported by the TSADC MOdule.
+ */
+struct s3c2410ts {
+	struct s3c_adc_client *client;
+	struct device *dev;
+	struct input_dev *input;
+	struct clk *clock;
+	void __iomem *io;
+	unsigned long xp;
+	unsigned long yp;
+	int irq_tc;
+	int count;
+	int shift;
+	int features;
+};
+
+static struct s3c2410ts ts;
+static void touch_timer_fire(unsigned long data);
+static DEFINE_TIMER(touch_timer, touch_timer_fire, 0, 0);
+
 /* This driver is designed to control the usage of the ADC block between
  * the touchscreen and any other drivers that may need to use it, such as
  * the hwmon driver.
@@ -120,11 +172,6 @@ struct s3c_adc_client {
 	int			 result;
 	unsigned char		 is_ts;
 	unsigned char		 channel;
-
-	void	(*select_cb)(struct s3c_adc_client *c, unsigned selected);
-	void	(*convert_cb)(struct s3c_adc_client *c,
-			      unsigned val1, unsigned val2,
-			      unsigned *samples_left);
 };
 
 struct adc_device {
@@ -162,7 +209,9 @@ static inline void s3c_adc_select(struct adc_device *adc,
 	unsigned con = readl(adc->regs + S3C2410_ADCCON);
 	enum s3c_cpu_type cpu = platform_get_device_id(adc->pdev)->driver_data;
 
-	client->select_cb(client, 1);
+	if (client->is_ts)
+		writel(S3C2410_ADCTSC_PULL_UP_DISABLE | AUTOPST,
+		       ts.io + S3C2410_ADCTSC);
 
 	if (cpu == TYPE_ADCV1 || cpu == TYPE_ADCV2)
 		con &= ~S3C2410_ADCCON_MUXMASK;
@@ -244,19 +293,11 @@ int s3c_adc_start(struct s3c_adc_client *client,
 	return 0;
 }
 
-static void s3c_convert_done(struct s3c_adc_client *client,
-			     unsigned v, unsigned u, unsigned *left)
-{
-	client->result = v;
-	wake_up(client->wait);
-}
-
 int s3c_adc_read(struct s3c_adc_client *client, unsigned int ch)
 {
 	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(wake);
 	int ret;
 
-	client->convert_cb = s3c_convert_done;
 	client->wait = &wake;
 	client->result = -1;
 
@@ -270,18 +311,12 @@ int s3c_adc_read(struct s3c_adc_client *client, unsigned int ch)
 		goto err;
 	}
 
-	client->convert_cb = NULL;
 	return client->result;
 
 err:
 	return ret;
 }
 EXPORT_SYMBOL_GPL(s3c_adc_read);
-
-static void s3c_adc_default_select(struct s3c_adc_client *client,
-				   unsigned select)
-{
-}
 
 struct s3c_adc_client *s3c_adc_register(struct platform_device *pdev,
 					void (*select)(struct s3c_adc_client *client,
@@ -295,9 +330,6 @@ struct s3c_adc_client *s3c_adc_register(struct platform_device *pdev,
 
 	WARN_ON(!pdev);
 
-	if (!select)
-		select = s3c_adc_default_select;
-
 	if (!pdev)
 		return ERR_PTR(-EINVAL);
 
@@ -309,8 +341,6 @@ struct s3c_adc_client *s3c_adc_register(struct platform_device *pdev,
 
 	client->pdev = pdev;
 	client->is_ts = is_ts;
-	client->select_cb = select;
-	client->convert_cb = conv;
 
 	return client;
 }
@@ -373,17 +403,38 @@ static irqreturn_t s3c_adc_irq(int irq, void *pw)
 		data1 &= 0xfff;
 	}
 
-	if (client->convert_cb)
-		(client->convert_cb)(client, data0, data1, &client->nr_samples);
+	if (client->is_ts) {
+		ts.xp += data0;
+		ts.yp += data1;
+
+		ts.count++;
+
+		/* From tests, it seems that it is unlikely to get a pen-up
+		 * event during the conversion process which means we can
+		 * ignore any pen-up events with less than the requisite
+		 * count done.
+		 *
+		 * In several thousand conversions, no pen-ups where detected
+		 * before count completed.
+		 */
+	} else {
+		client->result = data0;
+		wake_up(client->wait);
+	}
 
 	if (client->nr_samples > 0) {
 		/* fire another conversion for this */
 
-		client->select_cb(client, 1);
+		if (client->is_ts)
+			writel(S3C2410_ADCTSC_PULL_UP_DISABLE | AUTOPST,
+			       ts.io + S3C2410_ADCTSC);
 		s3c_adc_convert(adc);
 	} else {
 		spin_lock(&adc->lock);
-		(client->select_cb)(client, 0);
+		if (client->is_ts) {
+			mod_timer(&touch_timer, jiffies+1);
+			writel(WAIT4INT | INT_UP, ts.io + S3C2410_ADCTSC);
+		}
 		adc->cur = NULL;
 
 		s3c_adc_try(adc);
@@ -574,56 +625,6 @@ static struct platform_driver s3c_adc_driver = {
 	.remove		= s3c_adc_remove,
 };
 
-#define TSC_SLEEP  (S3C2410_ADCTSC_PULL_UP_DISABLE | S3C2410_ADCTSC_XY_PST(0))
-
-#define INT_DOWN	(0)
-#define INT_UP		(1 << 8)
-
-#define WAIT4INT	(S3C2410_ADCTSC_YM_SEN | \
-			 S3C2410_ADCTSC_YP_SEN | \
-			 S3C2410_ADCTSC_XP_SEN | \
-			 S3C2410_ADCTSC_XY_PST(3))
-
-#define AUTOPST		(S3C2410_ADCTSC_YM_SEN | \
-			 S3C2410_ADCTSC_YP_SEN | \
-			 S3C2410_ADCTSC_XP_SEN | \
-			 S3C2410_ADCTSC_AUTO_PST | \
-			 S3C2410_ADCTSC_XY_PST(0))
-
-#define FEAT_PEN_IRQ	(1 << 0)	/* HAS ADCCLRINTPNDNUP */
-
-/* Per-touchscreen data. */
-
-/**
- * struct s3c2410ts - driver touchscreen state.
- * @client: The ADC client we registered with the core driver.
- * @dev: The device we are bound to.
- * @input: The input device we registered with the input subsystem.
- * @clock: The clock for the adc.
- * @io: Pointer to the IO base.
- * @xp: The accumulated X position data.
- * @yp: The accumulated Y position data.
- * @irq_tc: The interrupt number for pen up/down interrupt
- * @count: The number of samples collected.
- * @shift: The log2 of the maximum count to read in one go.
- * @features: The features supported by the TSADC MOdule.
- */
-struct s3c2410ts {
-	struct s3c_adc_client *client;
-	struct device *dev;
-	struct input_dev *input;
-	struct clk *clock;
-	void __iomem *io;
-	unsigned long xp;
-	unsigned long yp;
-	int irq_tc;
-	int count;
-	int shift;
-	int features;
-};
-
-static struct s3c2410ts ts;
-
 /**
  * get_down - return the down state of the pen
  * @data0: The data read from ADCDAT0 register.
@@ -681,8 +682,6 @@ static void touch_timer_fire(unsigned long data)
 	}
 }
 
-static DEFINE_TIMER(touch_timer, touch_timer_fire, 0, 0);
-
 /**
  * stylus_irq - touchscreen stylus event interrupt
  * @irq: The interrupt number
@@ -716,54 +715,6 @@ static irqreturn_t stylus_irq(int irq, void *dev_id)
 	}
 
 	return IRQ_HANDLED;
-}
-
-/**
- * s3c24xx_ts_conversion - ADC conversion callback
- * @client: The client that was registered with the ADC core.
- * @data0: The reading from ADCDAT0.
- * @data1: The reading from ADCDAT1.
- * @left: The number of samples left.
- *
- * Called when a conversion has finished.
- */
-static void s3c24xx_ts_conversion(struct s3c_adc_client *client,
-				  unsigned data0, unsigned data1,
-				  unsigned *left)
-{
-	dev_dbg(ts.dev, "%s: %d,%d\n", __func__, data0, data1);
-
-	ts.xp += data0;
-	ts.yp += data1;
-
-	ts.count++;
-
-	/* From tests, it seems that it is unlikely to get a pen-up
-	 * event during the conversion process which means we can
-	 * ignore any pen-up events with less than the requisite
-	 * count done.
-	 *
-	 * In several thousand conversions, no pen-ups where detected
-	 * before count completed.
-	 */
-}
-
-/**
- * s3c24xx_ts_select - ADC selection callback.
- * @client: The client that was registered with the ADC core.
- * @select: The reason for select.
- *
- * Called when the ADC core selects (or deslects) us as a client.
- */
-static void s3c24xx_ts_select(struct s3c_adc_client *client, unsigned select)
-{
-	if (select) {
-		writel(S3C2410_ADCTSC_PULL_UP_DISABLE | AUTOPST,
-		       ts.io + S3C2410_ADCTSC);
-	} else {
-		mod_timer(&touch_timer, jiffies+1);
-		writel(WAIT4INT | INT_UP, ts.io + S3C2410_ADCTSC);
-	}
 }
 
 /**
@@ -827,8 +778,7 @@ static int s3c2410ts_probe(struct platform_device *pdev)
 	if (info->cfg_gpio)
 		info->cfg_gpio(to_platform_device(ts.dev));
 
-	ts.client = s3c_adc_register(pdev, s3c24xx_ts_select,
-				     s3c24xx_ts_conversion, 1);
+	ts.client = s3c_adc_register(pdev, NULL, NULL, 1);
 	if (IS_ERR(ts.client)) {
 		dev_err(dev, "failed to register adc client\n");
 		ret = PTR_ERR(ts.client);
