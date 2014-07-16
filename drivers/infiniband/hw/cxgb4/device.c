@@ -150,8 +150,6 @@ static int wr_log_show(struct seq_file *seq, void *v)
 	int prev_ts_set = 0;
 	int idx, end;
 
-#define ts2ns(ts) ((ts) * dev->rdev.lldi.cclk_ps / 1000)
-
 	idx = atomic_read(&dev->rdev.wr_log_idx) &
 		(dev->rdev.wr_log_size - 1);
 	end = idx - 1;
@@ -160,6 +158,15 @@ static int wr_log_show(struct seq_file *seq, void *v)
 	lep = &dev->rdev.wr_log[idx];
 	while (idx != end) {
 		if (lep->valid) {
+			u64 post_poll_delta_ns, cqe_poll_delta_ns;
+
+			post_poll_delta_ns = (lep->poll_sge_ts - lep->post_sge_ts)
+					     * dev->rdev.lldi.cclk_ps;
+			cqe_poll_delta_ns = (lep->poll_sge_ts - lep->cqe_sge_ts)
+					    * dev->rdev.lldi.cclk_ps;
+			do_div(post_poll_delta_ns, 1000);
+			do_div(cqe_poll_delta_ns, 1000);
+
 			if (!prev_ts_set) {
 				prev_ts_set = 1;
 				prev_ts = lep->poll_host_ts;
@@ -184,8 +191,8 @@ static int wr_log_show(struct seq_file *seq, void *v)
 						lep->post_host_ts).tv_nsec,
 				   lep->post_sge_ts, lep->cqe_sge_ts,
 				   lep->poll_sge_ts,
-				   ts2ns(lep->poll_sge_ts - lep->post_sge_ts),
-				   ts2ns(lep->poll_sge_ts - lep->cqe_sge_ts));
+				   post_poll_delta_ns,
+				   cqe_poll_delta_ns);
 			prev_ts = lep->poll_host_ts;
 		}
 		idx++;
@@ -193,7 +200,6 @@ static int wr_log_show(struct seq_file *seq, void *v)
 			idx = 0;
 		lep = &dev->rdev.wr_log[idx];
 	}
-#undef ts2ns
 	return 0;
 }
 
