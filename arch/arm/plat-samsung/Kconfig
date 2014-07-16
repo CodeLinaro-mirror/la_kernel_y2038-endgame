@@ -71,12 +71,14 @@ config S3C_GPIO_TRACK
 # ADC driver
 
 config S3C_ADC
-	tristate "ADC common driver support"
-	select TOUCHSCREEN_S3C2410
+	tristate
+	default TOUCHSCREEN_S3C2410
 	help
 	  Core support for the ADC block found in the Samsung SoC systems
 	  for drivers such as the touchscreen and hwmon to use to share
 	  this resource.
+	  This driver is now integrated into the touchscreen driver,
+	  since most of the registers are touchscreen specific.
 
 # device definitions to compile in
 
