@@ -166,7 +166,7 @@ enum s3c_cpu_type {
 struct s3c_adc_client {
 	struct platform_device	*pdev;
 	struct list_head	 pend;
-	wait_queue_head_t	*wait;
+	wait_queue_head_t	 wait;
 
 	unsigned int		 nr_samples;
 	int			 result;
@@ -293,27 +293,39 @@ int s3c_adc_start(struct s3c_adc_client *client,
 	return 0;
 }
 
-int s3c_adc_read(struct s3c_adc_client *client, unsigned int ch)
+int s3c_adc_read(struct s3c_adc_client *__client, unsigned int ch)
 {
-	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(wake);
+	struct s3c_adc_client client = {
+		.pdev = __client->pdev,
+		.result = -1,
+	};
+	struct adc_device *adc = adc_dev;
 	int ret;
 
-	client->wait = &wake;
-	client->result = -1;
+	init_waitqueue_head(&client.wait);
+	INIT_LIST_HEAD(&client.pend);
 
-	ret = s3c_adc_start(client, ch, 1);
+	ret = s3c_adc_start(&client, ch, 1);
 	if (ret < 0)
 		goto err;
 
-	ret = wait_event_timeout(wake, client->result >= 0, HZ / 2);
-	if (client->result < 0) {
+	ret = wait_event_timeout(client.wait, client.result >= 0, HZ / 2);
+	if (client.result < 0) {
 		ret = -ETIMEDOUT;
 		goto err;
 	}
 
-	return client->result;
+	return client.result;
 
 err:
+	spin_lock_irq(&adc->lock);
+	if (!list_empty(&client.pend))
+		list_del_init(&client.pend);
+	else if (adc->cur == &client)
+		adc->cur = NULL;
+	if (!adc->cur)
+		s3c_adc_try(adc);
+	spin_unlock_irq(&adc->lock);
 	return ret;
 }
 EXPORT_SYMBOL_GPL(s3c_adc_read);
@@ -325,6 +337,12 @@ struct s3c_adc_client *s3c_adc_register(struct platform_device *pdev,
 						     unsigned d0, unsigned d1,
 						     unsigned *samples_left),
 					unsigned int is_ts)
+{
+	return (void *)pdev;
+}
+EXPORT_SYMBOL_GPL(s3c_adc_register);
+
+static struct s3c_adc_client *s3c_adc_ts_alloc(struct platform_device *pdev)
 {
 	struct s3c_adc_client *client;
 
@@ -340,13 +358,17 @@ struct s3c_adc_client *s3c_adc_register(struct platform_device *pdev,
 	}
 
 	client->pdev = pdev;
-	client->is_ts = is_ts;
+	client->is_ts = 1;
 
 	return client;
 }
-EXPORT_SYMBOL_GPL(s3c_adc_register);
 
 void s3c_adc_release(struct s3c_adc_client *client)
+{
+}
+EXPORT_SYMBOL_GPL(s3c_adc_release);
+
+static void s3c_adc_ts_release(struct s3c_adc_client *client)
 {
 	unsigned long flags;
 
@@ -357,39 +379,30 @@ void s3c_adc_release(struct s3c_adc_client *client)
 		adc_dev->cur = NULL;
 	if (adc_dev->ts_pend == client)
 		adc_dev->ts_pend = NULL;
-	else {
-		struct list_head *p, *n;
-		struct s3c_adc_client *tmp;
-
-		list_for_each_safe(p, n, &adc_pending) {
-			tmp = list_entry(p, struct s3c_adc_client, pend);
-			if (tmp == client)
-				list_del(&tmp->pend);
-		}
-	}
-
 	if (adc_dev->cur == NULL)
 		s3c_adc_try(adc_dev);
 
 	spin_unlock_irqrestore(&adc_dev->lock, flags);
 	kfree(client);
 }
-EXPORT_SYMBOL_GPL(s3c_adc_release);
 
 static irqreturn_t s3c_adc_irq(int irq, void *pw)
 {
 	struct adc_device *adc = pw;
-	struct s3c_adc_client *client = adc->cur;
+	struct s3c_adc_client *client;
 	enum s3c_cpu_type cpu = platform_get_device_id(adc->pdev)->driver_data;
 	unsigned data0, data1;
 
+	data0 = readl(adc->regs + S3C2410_ADCDAT0);
+	data1 = readl(adc->regs + S3C2410_ADCDAT1);
+
+	spin_lock(&adc->lock);
+	client = adc->cur;
 	if (!client) {
 		dev_warn(&adc->pdev->dev, "%s: no adc pending\n", __func__);
 		goto exit;
 	}
 
-	data0 = readl(adc->regs + S3C2410_ADCDAT0);
-	data1 = readl(adc->regs + S3C2410_ADCDAT1);
 	adc_dbg(adc, "read %d: 0x%04x, 0x%04x\n", client->nr_samples, data0, data1);
 
 	client->nr_samples--;
@@ -430,7 +443,6 @@ static irqreturn_t s3c_adc_irq(int irq, void *pw)
 			       ts.io + S3C2410_ADCTSC);
 		s3c_adc_convert(adc);
 	} else {
-		spin_lock(&adc->lock);
 		if (client->is_ts) {
 			mod_timer(&touch_timer, jiffies+1);
 			writel(WAIT4INT | INT_UP, ts.io + S3C2410_ADCTSC);
@@ -438,10 +450,10 @@ static irqreturn_t s3c_adc_irq(int irq, void *pw)
 		adc->cur = NULL;
 
 		s3c_adc_try(adc);
-		spin_unlock(&adc->lock);
 	}
 
 exit:
+	spin_unlock(&adc->lock);
 	if (cpu == TYPE_ADCV2 || cpu == TYPE_ADCV3) {
 		/* Clear ADC interrupt */
 		writel(0, adc->regs + S3C64XX_ADCCLRINT);
@@ -778,7 +790,7 @@ static int s3c2410ts_probe(struct platform_device *pdev)
 	if (info->cfg_gpio)
 		info->cfg_gpio(to_platform_device(ts.dev));
 
-	ts.client = s3c_adc_register(pdev, NULL, NULL, 1);
+	ts.client = s3c_adc_ts_alloc(pdev);
 	if (IS_ERR(ts.client)) {
 		dev_err(dev, "failed to register adc client\n");
 		ret = PTR_ERR(ts.client);
