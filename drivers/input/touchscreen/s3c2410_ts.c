@@ -26,7 +26,6 @@
 #include <linux/err.h>
 #include <linux/errno.h>
 #include <linux/kernel.h>
-#include <linux/list.h>
 #include <linux/module.h>
 #include <linux/gpio.h>
 #include <linux/input.h>
@@ -165,8 +164,7 @@ enum s3c_cpu_type {
 
 struct s3c_adc_client {
 	struct platform_device	*pdev;
-	struct list_head	 pend;
-	wait_queue_head_t	 wait;
+	struct completion	 completion;
 
 	unsigned int		 nr_samples;
 	int			 result;
@@ -180,6 +178,7 @@ struct adc_device {
 	struct clk		*clk;
 	struct s3c_adc_client	*cur;
 	struct s3c_adc_client	*ts_pend;
+	struct s3c_adc_client	*dev_pend;
 	void __iomem		*regs;
 	spinlock_t		 lock;
 
@@ -190,8 +189,6 @@ struct adc_device {
 };
 
 static struct adc_device *adc_dev;
-
-static LIST_HEAD(adc_pending);	/* protected by adc_device.lock */
 
 #define adc_dbg(_adc, msg...) dev_dbg(&(_adc)->pdev->dev, msg)
 
@@ -243,10 +240,9 @@ static void s3c_adc_try(struct adc_device *adc)
 {
 	struct s3c_adc_client *next = adc->ts_pend;
 
-	if (!next && !list_empty(&adc_pending)) {
-		next = list_first_entry(&adc_pending,
-					struct s3c_adc_client, pend);
-		list_del(&next->pend);
+	if (!next && adc->dev_pend) {
+		next = adc->dev_pend;
+		adc->dev_pend = NULL;
 	} else
 		adc->ts_pend = NULL;
 
@@ -283,7 +279,7 @@ int s3c_adc_start(struct s3c_adc_client *client,
 	if (client->is_ts)
 		adc->ts_pend = client;
 	else
-		list_add_tail(&client->pend, &adc_pending);
+		adc->dev_pend = client;
 
 	if (!adc->cur)
 		s3c_adc_try(adc);
@@ -295,37 +291,37 @@ int s3c_adc_start(struct s3c_adc_client *client,
 
 int s3c_adc_read(struct s3c_adc_client *__client, unsigned int ch)
 {
+	static DEFINE_MUTEX(mutex);
 	struct s3c_adc_client client = {
 		.pdev = __client->pdev,
-		.result = -1,
 	};
 	struct adc_device *adc = adc_dev;
 	int ret;
 
-	init_waitqueue_head(&client.wait);
-	INIT_LIST_HEAD(&client.pend);
-
+	mutex_lock(&mutex);
 	ret = s3c_adc_start(&client, ch, 1);
 	if (ret < 0)
 		goto err;
 
-	ret = wait_event_timeout(client.wait, client.result >= 0, HZ / 2);
-	if (client.result < 0) {
+	ret = wait_for_completion_timeout(&client.completion, HZ / 2);
+	if (ret == 0) {
 		ret = -ETIMEDOUT;
-		goto err;
+		goto err1;
 	}
 
 	return client.result;
 
-err:
+err1:
 	spin_lock_irq(&adc->lock);
-	if (!list_empty(&client.pend))
-		list_del_init(&client.pend);
+	if (adc->dev_pend == &client)
+		adc->dev_pend = NULL;
 	else if (adc->cur == &client)
 		adc->cur = NULL;
 	if (!adc->cur)
 		s3c_adc_try(adc);
 	spin_unlock_irq(&adc->lock);
+err:
+	mutex_unlock(&mutex);
 	return ret;
 }
 EXPORT_SYMBOL_GPL(s3c_adc_read);
@@ -432,7 +428,7 @@ static irqreturn_t s3c_adc_irq(int irq, void *pw)
 		 */
 	} else {
 		client->result = data0;
-		wake_up(client->wait);
+		complete(&client->completion);
 	}
 
 	if (client->nr_samples > 0) {
@@ -867,6 +863,7 @@ static int s3c2410ts_remove(struct platform_device *pdev)
 {
 	free_irq(ts.irq_tc, ts.input);
 	del_timer_sync(&touch_timer);
+	s3c_adc_ts_release(ts.client);
 
 	clk_disable_unprepare(ts.clock);
 	clk_put(ts.clock);
