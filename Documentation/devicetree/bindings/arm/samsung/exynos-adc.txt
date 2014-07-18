@@ -43,6 +43,10 @@ Required properties:
 				   compatible ADC block)
 - vdd-supply		VDD input supply.
 
+Optional properties:
+- has-touchscreen:	If present, indicates that a touchscreen is
+			connected an usable.
+
 Note: child nodes can be added for auto probing from device tree.
 
 Example: adding device info in dtsi file

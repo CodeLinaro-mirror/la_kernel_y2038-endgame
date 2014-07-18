@@ -35,6 +35,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/of_platform.h>
 #include <linux/err.h>
+#include <linux/input.h>
 
 #include <linux/iio/iio.h>
 #include <linux/iio/machine.h>
@@ -72,6 +73,9 @@
 #define ADC_S3C2410_CON_SELMUX(x) (((x) & 7) << 3)
 #define ADC_S3C2410_DATX_MASK	0x3FF
 #define ADC_S3C2416_CON_RES_SEL	(1u << 3)
+
+/* touch screen always uses channel 0 */
+#define ADC_S3C2410_MUX_TS	0
 
 /* ADCTSC Register Bits */
 #define ADC_S3C2443_TSC_UD_SEN		(1u << 8)
@@ -111,24 +115,32 @@
 /* Bit definitions common for ADC_V1 and ADC_V2 */
 #define ADC_CON_EN_START	(1u << 0)
 #define ADC_CON_EN_START_MASK	(0x3 << 0)
+#define ADC_DATX_PRESSED	(1u << 15)
 #define ADC_DATX_MASK		0xFFF
+#define ADC_DATY_MASK		0xFFF
 
 #define EXYNOS_ADC_TIMEOUT	(msecs_to_jiffies(100))
 
 struct exynos_adc {
 	struct exynos_adc_data	*data;
 	struct device		*dev;
+	struct input_dev	*input;
 	void __iomem		*regs;
 	void __iomem		*enable_reg;
 	struct clk		*clk;
 	struct clk		*sclk;
 	unsigned int		irq;
+	unsigned int		tsirq;
 	struct regulator	*vdd;
 
 	struct completion	completion;
 
 	u32			value;
 	unsigned int            version;
+
+	bool			read_ts;
+	u32			ts_x;
+	u32			ts_y;
 };
 
 struct exynos_adc_data {
@@ -216,6 +228,9 @@ static void exynos_adc_v1_init_hw(struct exynos_adc *info)
 	/* Enable 12-bit ADC resolution */
 	con1 |= ADC_V1_CON_RES;
 	writel(con1, ADC_V1_CON(info->regs));
+
+	/* set default touchscreen delay */
+	writel(10000, ADC_V1_DLY(info->regs));
 }
 
 static void exynos_adc_v1_exit_hw(struct exynos_adc *info)
@@ -484,8 +499,8 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
 	if (info->data->start_conv)
 		info->data->start_conv(info, chan->address);
 
-	timeout = wait_for_completion_timeout
-			(&info->completion, EXYNOS_ADC_TIMEOUT);
+	timeout = wait_for_completion_timeout(&info->completion,
+					      EXYNOS_ADC_TIMEOUT);
 	if (timeout == 0) {
 		dev_warn(&indio_dev->dev, "Conversion timed out! Resetting\n");
 		if (info->data->init_hw)
@@ -502,19 +517,101 @@ static int exynos_read_raw(struct iio_dev *indio_dev,
 	return ret;
 }
 
+static int exynos_read_s3c64xx_ts(struct iio_dev *indio_dev, int *x, int *y)
+{
+	struct exynos_adc *info = iio_priv(indio_dev);
+	unsigned long timeout;
+	int ret;
+
+	mutex_lock(&indio_dev->mlock);
+	info->read_ts = true;
+
+	reinit_completion(&info->completion);
+
+	writel(ADC_S3C2410_TSC_PULL_UP_DISABLE | ADC_TSC_AUTOPST,
+	       ADC_V1_TSC(info->regs));
+
+	/* Select the ts channel to be used and Trigger conversion */
+	info->data->start_conv(info, ADC_S3C2410_MUX_TS);
+
+	timeout = wait_for_completion_timeout
+			(&info->completion, EXYNOS_ADC_TIMEOUT);
+	if (timeout == 0) {
+		dev_warn(&indio_dev->dev, "Conversion timed out! Resetting\n");
+		if (info->data->init_hw)
+			info->data->init_hw(info);
+		ret = -ETIMEDOUT;
+	} else {
+		*x = info->ts_x;
+		*y = info->ts_y;
+		ret = 0;
+	}
+
+	info->read_ts = false;
+	mutex_unlock(&indio_dev->mlock);
+
+	return ret;
+}
+
 static irqreturn_t exynos_adc_isr(int irq, void *dev_id)
 {
 	struct exynos_adc *info = (struct exynos_adc *)dev_id;
 	u32 mask = info->data->mask;
 
 	/* Read value */
-	info->value = readl(ADC_V1_DATX(info->regs)) & mask;
+	if (info->read_ts) {
+		info->ts_x = readl(ADC_V1_DATX(info->regs));
+		info->ts_y = readl(ADC_V1_DATY(info->regs));
+		writel(ADC_TSC_WAIT4INT | ADC_S3C2443_TSC_UD_SEN, ADC_V1_TSC(info->regs));
+	} else {
+		info->value = readl(ADC_V1_DATX(info->regs)) & mask;
+	}
 
 	/* clear irq */
 	if (info->data->clear_irq)
 		info->data->clear_irq(info);
 
 	complete(&info->completion);
+
+	return IRQ_HANDLED;
+}
+
+/*
+ * Here we (ab)use a threaded interrupt handler to stay running
+ * for as long as the touchscreen remains pressed, we report
+ * a new event with the latest data and then sleep until the
+ * next timer tick. This mirrors the behavior of the old
+ * driver, with much less code.
+ */
+static irqreturn_t exynos_ts_isr(int irq, void *dev_id)
+{
+	struct exynos_adc *info = dev_id;
+	struct iio_dev *dev = dev_get_drvdata(info->dev);
+	u32 x, y;
+	bool pressed;
+	int ret;
+
+	while (info->input->users) {
+		ret = exynos_read_s3c64xx_ts(dev, &x, &y);
+		if (ret == -ETIMEDOUT)
+			break;
+
+		pressed = x & y & ADC_DATX_PRESSED;
+		if (!pressed) {
+			input_report_key(info->input, BTN_TOUCH, 0);
+			input_sync(info->input);
+			break;
+		}
+
+		input_report_abs(info->input, ABS_X, x & ADC_DATX_MASK);
+		input_report_abs(info->input, ABS_Y, y & ADC_DATY_MASK);
+		input_report_key(info->input, BTN_TOUCH, 1);
+		input_sync(info->input);
+
+		msleep(1);
+	};
+
+	writel(0, ADC_V1_CLRINTPNDNUP(info->regs));
 
 	return IRQ_HANDLED;
 }
@@ -570,12 +667,66 @@ static int exynos_adc_remove_devices(struct device *dev, void *c)
 	return 0;
 }
 
+static int exynos_adc_ts_open(struct input_dev *dev)
+{
+	struct exynos_adc *info = input_get_drvdata(dev);
+
+	enable_irq(info->tsirq);
+
+	return 0;
+}
+
+static void exynos_adc_ts_close(struct input_dev *dev)
+{
+	struct exynos_adc *info = input_get_drvdata(dev);
+
+	disable_irq(info->tsirq);
+}
+
+static int exynos_adc_ts_init(struct exynos_adc *info)
+{
+	int ret;
+
+	if (info->tsirq <= 0)
+		return -ENODEV;
+
+	info->input = input_allocate_device();
+	if (!info->input)
+		return -ENOMEM;
+
+	info->input->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
+	info->input->keybit[BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH);
+
+	input_set_abs_params(info->input, ABS_X, 0, 0x3FF, 0, 0);
+	input_set_abs_params(info->input, ABS_Y, 0, 0x3FF, 0, 0);
+
+	info->input->name = "S3C24xx TouchScreen";
+	info->input->id.bustype = BUS_HOST;
+	info->input->open = exynos_adc_ts_open;
+	info->input->close = exynos_adc_ts_close;
+	
+	input_set_drvdata(info->input, info);
+
+	ret = input_register_device(info->input);
+	if (ret)
+		input_free_device(info->input);
+
+	disable_irq(info->tsirq);
+	ret = request_threaded_irq(info->tsirq, NULL, exynos_ts_isr,
+				   0, "touchscreen", info);
+	if (ret)
+		input_unregister_device(info->input);
+
+	return ret;
+}
+
 static int exynos_adc_probe(struct platform_device *pdev)
 {
 	struct exynos_adc *info = NULL;
 	struct device_node *np = pdev->dev.of_node;
 	struct iio_dev *indio_dev = NULL;
 	struct resource	*mem;
+	bool has_ts = false;
 	int ret = -ENODEV;
 	int irq;
 
@@ -614,8 +765,14 @@ static int exynos_adc_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "no irq resource?\n");
 		return irq;
 	}
-
 	info->irq = irq;
+
+	irq = platform_get_irq(pdev, 1);
+	if (irq == -EPROBE_DEFER)
+		return irq; 
+
+	info->tsirq = irq;
+
 	info->dev = &pdev->dev;
 
 	init_completion(&info->completion);
@@ -681,6 +838,15 @@ static int exynos_adc_probe(struct platform_device *pdev)
 	if (info->data->init_hw)
 		info->data->init_hw(info);
 
+	/* leave out any TS related code if unreachable */
+	if (IS_BUILTIN(CONFIG_INPUT) ||
+	    (IS_MODULE(CONFIG_INPUT) && config_enabled(MODULE)))
+		has_ts = of_property_read_bool(pdev->dev.of_node, "has-touchscreen");
+	if (has_ts)
+		ret = exynos_adc_ts_init(info);
+	if (ret)
+		goto err_iio;
+
 	ret = of_platform_populate(np, exynos_adc_match, NULL, &indio_dev->dev);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "failed adding child nodes\n");
@@ -692,6 +858,11 @@ static int exynos_adc_probe(struct platform_device *pdev)
 err_of_populate:
 	device_for_each_child(&indio_dev->dev, NULL,
 				exynos_adc_remove_devices);
+	if (has_ts) {
+		input_unregister_device(info->input);
+		free_irq(info->tsirq, info);
+	}
+err_iio:
 	iio_device_unregister(indio_dev);
 err_irq:
 	free_irq(info->irq, info);
@@ -711,6 +882,11 @@ static int exynos_adc_remove(struct platform_device *pdev)
 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
 	struct exynos_adc *info = iio_priv(indio_dev);
 
+	if (IS_BUILTIN(CONFIG_INPUT) ||
+	    (IS_MODULE(CONFIG_INPUT) && config_enabled(MODULE))) {
+		free_irq(info->tsirq, info);
+		input_unregister_device(info->input);
+	}
 	device_for_each_child(&indio_dev->dev, NULL,
 				exynos_adc_remove_devices);
 	iio_device_unregister(indio_dev);
