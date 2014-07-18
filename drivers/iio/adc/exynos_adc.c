@@ -42,10 +42,14 @@
 
 /* S3C/EXYNOS4412/5250 ADC_V1 registers definitions */
 #define ADC_V1_CON(x)		((x) + 0x00)
+#define ADC_V1_TSC(x)		((x) + 0x04)
 #define ADC_V1_DLY(x)		((x) + 0x08)
 #define ADC_V1_DATX(x)		((x) + 0x0C)
+#define ADC_V1_DATY(x)		((x) + 0x10)
+#define ADC_V1_UPDN(x)		((x) + 0x14)
 #define ADC_V1_INTCLR(x)	((x) + 0x18)
 #define ADC_V1_MUX(x)		((x) + 0x1c)
+#define ADC_V1_CLRINTPNDNUP(x)	((x) + 0x20)
 
 /* S3C2410 ADC registers definitions */
 #define ADC_S3C2410_MUX(x)	((x) + 0x18)
@@ -68,6 +72,27 @@
 #define ADC_S3C2410_CON_SELMUX(x) (((x) & 7) << 3)
 #define ADC_S3C2410_DATX_MASK	0x3FF
 #define ADC_S3C2416_CON_RES_SEL	(1u << 3)
+
+/* ADCTSC Register Bits */
+#define ADC_S3C2443_TSC_UD_SEN		(1u << 8)
+#define ADC_S3C2410_TSC_YM_SEN		(1u << 7)
+#define ADC_S3C2410_TSC_YP_SEN		(1u << 6)
+#define ADC_S3C2410_TSC_XM_SEN		(1u << 5)
+#define ADC_S3C2410_TSC_XP_SEN		(1u << 4)
+#define ADC_S3C2410_TSC_PULL_UP_DISABLE	(1u << 3)
+#define ADC_S3C2410_TSC_AUTO_PST	(1u << 2)
+#define ADC_S3C2410_TSC_XY_PST(x)	(((x) & 0x3) << 0)
+
+#define ADC_TSC_WAIT4INT (ADC_S3C2410_TSC_YM_SEN | \
+			 ADC_S3C2410_TSC_YP_SEN | \
+			 ADC_S3C2410_TSC_XP_SEN | \
+			 ADC_S3C2410_TSC_XY_PST(3))
+
+#define ADC_TSC_AUTOPST	(ADC_S3C2410_TSC_YM_SEN | \
+			 ADC_S3C2410_TSC_YP_SEN | \
+			 ADC_S3C2410_TSC_XP_SEN | \
+			 ADC_S3C2410_TSC_AUTO_PST | \
+			 ADC_S3C2410_TSC_XY_PST(0))
 
 /* Bit definitions for ADC_V2 */
 #define ADC_V2_CON1_SOFT_RESET	(1u << 2)
@@ -209,6 +234,26 @@ static void exynos_adc_v1_clear_irq(struct exynos_adc *info)
 {
 	writel(1, ADC_V1_INTCLR(info->regs));
 }
+
+static void exynos_adc_s3c64xx_start_conv(struct exynos_adc *info,
+				          unsigned long addr)
+{
+	u32 con1;
+
+	con1 = readl(ADC_V1_CON(info->regs));
+	con1 &= ~ADC_S3C2410_CON_SELMUX(7);
+	con1 |= ADC_S3C2410_CON_SELMUX(addr);
+	writel(con1 | ADC_CON_EN_START, ADC_V1_CON(info->regs));
+}
+
+static struct exynos_adc_data const exynos_adc_s3c64xx_data = {
+	.num_channels	= MAX_ADC_V1_CHANNELS,
+
+	.init_hw	= exynos_adc_v1_init_hw,
+	.exit_hw	= exynos_adc_v1_exit_hw,
+	.clear_irq	= exynos_adc_v1_clear_irq,
+	.start_conv	= exynos_adc_s3c64xx_start_conv,
+};
 
 static void exynos_adc_v1_start_conv(struct exynos_adc *info,
 				     unsigned long addr)
