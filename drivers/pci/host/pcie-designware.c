@@ -91,6 +91,7 @@ int dw_pcie_cfg_read(void __iomem *addr, int where, int size, u32 *val)
 
 	return PCIBIOS_SUCCESSFUL;
 }
+EXPORT_SYMBOL_GPL(dw_pcie_cfg_read);
 
 int dw_pcie_cfg_write(void __iomem *addr, int where, int size, u32 val)
 {
@@ -105,6 +106,7 @@ int dw_pcie_cfg_write(void __iomem *addr, int where, int size, u32 val)
 
 	return PCIBIOS_SUCCESSFUL;
 }
+EXPORT_SYMBOL_GPL(dw_pcie_cfg_write);
 
 static inline void dw_pcie_readl_rc(struct pcie_port *pp, u32 reg, u32 *val)
 {
@@ -185,6 +187,7 @@ irqreturn_t dw_handle_msi_irq(struct pcie_port *pp)
 
 	return ret;
 }
+EXPORT_SYMBOL_GPL(dw_handle_msi_irq);
 
 void dw_pcie_msi_init(struct pcie_port *pp)
 {
@@ -195,6 +198,7 @@ void dw_pcie_msi_init(struct pcie_port *pp)
 			virt_to_phys((void *)pp->msi_data));
 	dw_pcie_wr_own_conf(pp, PCIE_MSI_ADDR_HI, 4, 0);
 }
+EXPORT_SYMBOL_GPL(dw_pcie_msi_init);
 
 static void dw_pcie_msi_clear_irq(struct pcie_port *pp, int irq)
 {
@@ -324,6 +328,7 @@ int dw_pcie_link_up(struct pcie_port *pp)
 	else
 		return 0;
 }
+EXPORT_SYMBOL_GPL(dw_pcie_link_up);
 
 static int dw_pcie_msi_map(struct irq_domain *domain, unsigned int irq,
 			irq_hw_number_t hwirq)
@@ -339,7 +344,7 @@ static const struct irq_domain_ops msi_domain_ops = {
 	.map = dw_pcie_msi_map,
 };
 
-int __init dw_pcie_host_init(struct pcie_port *pp)
+int dw_pcie_host_init(struct pcie_port *pp)
 {
 	struct device_node *np = pp->dev->of_node;
 	struct platform_device *pdev = to_platform_device(pp->dev);
@@ -511,6 +516,7 @@ int __init dw_pcie_host_init(struct pcie_port *pp)
 
 	return 0;
 }
+EXPORT_SYMBOL_GPL(dw_pcie_host_init);
 
 static void dw_pcie_prog_viewport_cfg0(struct pcie_port *pp, u32 busdev)
 {
@@ -823,6 +829,7 @@ void dw_pcie_setup_rc(struct pcie_port *pp)
 		PCI_COMMAND_MASTER | PCI_COMMAND_SERR;
 	dw_pcie_writel_rc(pp, val, PCI_COMMAND);
 }
+EXPORT_SYMBOL_GPL(dw_pcie_setup_rc);
 
 MODULE_AUTHOR("Jingoo Han <jg1.han@samsung.com>");
 MODULE_DESCRIPTION("Designware PCIe host controller driver");
