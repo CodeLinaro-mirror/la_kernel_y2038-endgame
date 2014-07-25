@@ -705,7 +705,7 @@ choice
 	config DEBUG_S3C_UART0
 		depends on PLAT_SAMSUNG
 		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
-		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
+		select DEBUG_S3C24XX_UART if ARCH_S3C24XX || ARCH_S3C64XX
 		select DEBUG_S5PV210_UART if ARCH_S5PV210
 		bool "Use Samsung S3C UART 0 for low-level debug"
 		help
@@ -716,7 +716,7 @@ choice
 	config DEBUG_S3C_UART1
 		depends on PLAT_SAMSUNG
 		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
-		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
+		select DEBUG_S3C24XX_UART if ARCH_S3C24XX || ARCH_S3C64XX
 		select DEBUG_S5PV210_UART if ARCH_S5PV210
 		bool "Use Samsung S3C UART 1 for low-level debug"
 		help
@@ -727,7 +727,7 @@ choice
 	config DEBUG_S3C_UART2
 		depends on PLAT_SAMSUNG
 		select DEBUG_EXYNOS_UART if ARCH_EXYNOS
-		select DEBUG_S3C24XX_UART if ARCH_S3C24XX
+		select DEBUG_S3C24XX_UART if ARCH_S3C24XX || ARCH_S3C64XX
 		select DEBUG_S5PV210_UART if ARCH_S5PV210
 		bool "Use Samsung S3C UART 2 for low-level debug"
 		help
