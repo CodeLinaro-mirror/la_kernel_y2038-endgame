@@ -37,6 +37,7 @@ struct aer_capability_regs {
 	u16 uncor_err_source;
 };
 
+struct pci_dev;
 #if defined(CONFIG_PCIEAER)
 /* pci-e port driver needs this function to enable aer */
 int pci_enable_pcie_error_reporting(struct pci_dev *dev);
