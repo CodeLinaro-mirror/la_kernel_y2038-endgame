@@ -205,7 +205,7 @@ syscall_list() {
 	while read nr abi name entry ; do
 	    cat <<EOF
 #if !defined(__NR_${name}) && !defined(__IGNORE_${name})
-#warning syscall ${name} not implemented
+//warning syscall ${name} not implemented
 #endif
 EOF
 	done
