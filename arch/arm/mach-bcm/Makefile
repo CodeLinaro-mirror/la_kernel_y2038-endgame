@@ -45,3 +45,5 @@ CFLAGS_platsmp-brcmstb.o	+= -march=armv7-a
 obj-y				+= brcmstb.o
 obj-$(CONFIG_SMP)		+= headsmp-brcmstb.o platsmp-brcmstb.o
 endif
+
+CFLAGS_platsmp-brcmstb.o	+= -march=armv7-a
