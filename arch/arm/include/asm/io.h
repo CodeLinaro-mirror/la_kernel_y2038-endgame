@@ -192,7 +192,14 @@ void pci_ioremap_set_mem_type(int mem_type);
 static inline void pci_ioremap_set_mem_type(int mem_type) {}
 #endif
 
+#ifdef CONFIG_MMU
 extern int pci_ioremap_io(unsigned int offset, phys_addr_t phys_addr);
+#else
+static inline int pci_ioremap_io(unsigned int offset, phys_addr_t phys_addr)
+{
+	return 0;
+}
+#endif
 
 /*
  * Now, pick up the machine-defined IO definitions
