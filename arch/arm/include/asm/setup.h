@@ -23,6 +23,6 @@ static const struct tagtable __tagtable_##fn __tag = { tag, fn }
 
 extern int arm_add_memory(u64 start, u64 size);
 extern void early_print(const char *str, ...);
-extern void dump_machine_table(void);
+extern void dump_machine_table(void) __noreturn;
 
 #endif
