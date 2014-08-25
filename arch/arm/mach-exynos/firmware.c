@@ -79,7 +79,7 @@ static int exynos_set_cpu_boot_addr(int cpu, unsigned long boot_addr)
 {
 	void __iomem *boot_reg;
 
-	if (!IS_ENABLED(CONFIG_SMP) || !sysram_ns_base_addr)
+	if (!sysram_ns_base_addr)
 		return -ENODEV;
 
 	boot_reg = sysram_ns_base_addr + 0x1c;
