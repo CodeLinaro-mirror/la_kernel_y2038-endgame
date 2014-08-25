@@ -141,7 +141,7 @@ config IRQ_REMAP
 # OMAP IOMMU support
 config OMAP_IOMMU
 	bool "OMAP IOMMU Support"
-	depends on ARCH_OMAP2PLUS
+	depends on ARCH_OMAP2PLUS && MMU
 	select IOMMU_API
 
 config OMAP_IOMMU_DEBUG
@@ -188,7 +188,7 @@ config TEGRA_IOMMU_SMMU
 
 config EXYNOS_IOMMU
 	bool "Exynos IOMMU Support"
-	depends on ARCH_EXYNOS && ARM
+	depends on ARCH_EXYNOS && ARM && MMU
 	select IOMMU_API
 	select ARM_DMA_USE_IOMMU
 	help
