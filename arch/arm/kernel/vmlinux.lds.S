@@ -1,7 +1,7 @@
 /* ld script to make ARM Linux kernel
- * taken from the i386 version by Russell King
- * Written by Martin Mares <mj@atrey.karlin.mff.cuni.cz>
- */
+* taken from the i386 version by Russell King
+* Written by Martin Mares <mj@atrey.karlin.mff.cuni.cz>
+*/
 
 #include <asm-generic/vmlinux.lds.h>
 #include <asm/cache.h>
@@ -336,17 +336,8 @@ SECTIONS
 }
 
 /*
- * These must never be empty
- * If you have to comment these two assert statements out, your
- * binutils is too old (for other reasons as well)
- */
-ASSERT((__proc_info_end - __proc_info_begin), "missing CPU support")
-ASSERT((__arch_info_end - __arch_info_begin), "no machine record defined")
-
-/*
  * The HYP init code can't be more than a page long,
  * and should not cross a page boundary.
- * The above comment applies as well.
  */
 ASSERT(__hyp_idmap_text_end - (__hyp_idmap_text_start & PAGE_MASK) <= PAGE_SIZE,
 	"HYP init code too big or misaligned")
