@@ -288,6 +288,7 @@ config MACH_SMARTQ5
 	bool "SmartQ 5"
 	depends on ATAGS
 	select MACH_SMARTQ
+	depends on BROKEN
 	help
 	    Machine support for the SmartQ 5
 

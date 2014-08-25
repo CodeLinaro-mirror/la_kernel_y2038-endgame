@@ -142,7 +142,7 @@ config SND_SOC_SAMSUNG_SMDK_WM9713
 
 config SND_SOC_SMARTQ
 	tristate "SoC I2S Audio support for SmartQ board"
-	depends on SND_SOC_SAMSUNG && MACH_SMARTQ && I2C
+	depends on SND_SOC_SAMSUNG && MACH_SMARTQ && I2C && BROKEN
 	select SND_SAMSUNG_I2S
 	select SND_SOC_WM8750
 
