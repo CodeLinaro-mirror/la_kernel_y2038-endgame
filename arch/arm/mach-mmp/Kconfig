@@ -124,7 +124,7 @@ config CPU_PXA910
 	  Select code specific to PXA910
 
 config CPU_MMP2
-	bool
+	def_bool !CPU_PXA168 && !CPU_PXA910
 	select COMMON_CLK
 	select CPU_PJ4
 	help

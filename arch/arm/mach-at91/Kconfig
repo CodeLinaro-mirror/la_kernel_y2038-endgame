@@ -29,7 +29,7 @@ config COMMON_CLK_AT91
 
 config OLD_CLK_AT91
 	bool
-	default AT91_PMC_UNIT && AT91_USE_OLD_CLK
+	default AT91_PMC_UNIT && !COMMON_CLK_AT91
 
 config OLD_IRQ_AT91
 	bool
@@ -77,12 +77,14 @@ config ARCH_AT91X40
 
 config SOC_SAM_V4_V5
 	bool "ARM9 AT91SAM9/AT91RM9200"
+	select SOC_AT91SAM9 if !SOC_AT91RM9200
 	help
 	  Select this if you are using one of Atmel's AT91SAM9 or
 	  AT91RM9200 SoC.
 
 config SOC_SAM_V7
 	bool "Cortex A5"
+	select SOC_SAMA5
 	help
 	  Select this if you are using one of Atmel's SAMA5D3 SoC.
 
@@ -93,7 +95,6 @@ comment "Atmel AT91 Processor"
 if SOC_SAM_V7
 config SOC_SAMA5D3
 	bool "SAMA5D3 family"
-	select SOC_SAMA5
 	select HAVE_FB_ATMEL
 	select HAVE_AT91_DBGU1
 	select HAVE_AT91_UTMI
