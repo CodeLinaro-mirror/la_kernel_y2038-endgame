@@ -127,12 +127,9 @@ static void s3c244x_resume(void)
 {
 	s3c_pm_do_restore(s3c244x_sleep, ARRAY_SIZE(s3c244x_sleep));
 }
-#else
-#define s3c244x_suspend NULL
-#define s3c244x_resume  NULL
-#endif
 
 struct syscore_ops s3c244x_pm_syscore_ops = {
 	.suspend	= s3c244x_suspend,
 	.resume		= s3c244x_resume,
 };
+#endif
