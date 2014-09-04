@@ -1,7 +1,11 @@
 #ifndef _NF_DEFRAG_IPV6_H
 #define _NF_DEFRAG_IPV6_H
 
+#if defined(CONFIG_NF_DEFRAG_IPV6) || (defined(CONFIG_NF_DEFRAG_IPV6_MODULE) && defined(MODULE))
 void nf_defrag_ipv6_enable(void);
+#else
+static inline void nf_defrag_ipv6_enable(void) {}
+#endif
 
 int nf_ct_frag6_init(void);
 void nf_ct_frag6_cleanup(void);
