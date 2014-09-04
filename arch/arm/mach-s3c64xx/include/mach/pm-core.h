@@ -58,7 +58,9 @@ static inline void s3c_pm_arch_show_resume_irqs(void)
 /* make these defines, we currently do not have any need to change
  * the IRQ wake controls depending on the CPU we are running on */
 
+#ifdef CONFIG_PM_SLEEP
 #define s3c_irqwake_eintallow	((1 << 28) - 1)
+#endif
 #define s3c_irqwake_intallow	(~0)
 
 static inline void s3c_pm_arch_update_uart(void __iomem *regs,
