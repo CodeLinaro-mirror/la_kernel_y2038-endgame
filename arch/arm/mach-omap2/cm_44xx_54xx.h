@@ -21,7 +21,7 @@
  */
 
 #ifndef __ARCH_ARM_MACH_OMAP2_CM_44XX_54XX_H
-#define __ARCH_ARM_MACH_OMAP2_CM_44XX_55XX_H
+#define __ARCH_ARM_MACH_OMAP2_CM_44XX_54XX_H
 
 /* CM1 Function prototypes */
 extern u32 omap4_cm1_read_inst_reg(s16 inst, u16 idx);

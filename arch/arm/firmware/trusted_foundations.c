@@ -33,6 +33,7 @@ static unsigned long cpu_boot_addr;
 
 static void __naked tf_generic_smc(u32 type, u32 arg1, u32 arg2)
 {
+#if 0
 	asm volatile(
 		".arch_extension	sec\n\t"
 		"stmfd	sp!, {r4 - r11, lr}\n\t"
@@ -46,6 +47,7 @@ static void __naked tf_generic_smc(u32 type, u32 arg1, u32 arg2)
 		:
 		: "r" (type), "r" (arg1), "r" (arg2)
 		: "memory");
+#endif
 }
 
 static int tf_set_cpu_boot_addr(int cpu, unsigned long boot_addr)

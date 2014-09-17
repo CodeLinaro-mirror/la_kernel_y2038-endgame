@@ -12,7 +12,7 @@
  */
 
 #ifndef _EXYNOS_DRM_FB_H_
-#define _EXYNOS_DRM_FB_H
+#define _EXYNOS_DRM_FB_H_
 
 struct drm_framebuffer *
 exynos_drm_framebuffer_init(struct drm_device *dev,
