@@ -37,6 +37,9 @@
 #  undef  MULTI_CPU
 #  define MULTI_CPU
 # else
+#  ifdef CONFIG_ARM_CPU_SUSPEND
+#   define MULTI_CPU
+#  endif
 #  define CPU_NAME cpu_arm720
 # endif
 #endif
@@ -82,6 +85,9 @@
 #  undef  MULTI_CPU
 #  define MULTI_CPU
 # else
+#  ifdef CONFIG_ARM_CPU_SUSPEND
+#   define MULTI_CPU
+#  endif
 #  define CPU_NAME cpu_fa526
 # endif
 #endif
