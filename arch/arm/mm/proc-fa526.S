@@ -92,6 +92,19 @@ ENTRY(cpu_fa526_dcache_clean_area)
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
 	ret	lr
 
+.globl	cpu_fa526_suspend_size
+.equ	cpu_fa526_suspend_size, 0
+
+#ifdef CONFIG_ARM_CPU_SUSPEND
+ENTRY(cpu_fa526_do_suspend)
+	ret	lr
+ENDPROC(cpu_fa526_do_suspend)
+
+ENTRY(cpu_fa526_do_resume)
+	ret	lr
+ENDPROC(cpu_fa526_do_resume)
+#endif
+
 /* =============================== PageTable ============================== */
 
 /*
@@ -180,7 +193,7 @@ fa526_cr1_set:
 	__INITDATA
 
 	@ define struct processor (see <asm/proc-fns.h> and proc-macros.S)
-	define_processor_functions fa526, dabort=v4_early_abort, pabort=legacy_pabort
+	define_processor_functions fa526, dabort=v4_early_abort, pabort=legacy_pabort, suspend=1
 
 	.section ".rodata"
 
