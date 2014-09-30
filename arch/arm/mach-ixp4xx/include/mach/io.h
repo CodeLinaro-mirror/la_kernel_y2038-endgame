@@ -172,7 +172,7 @@ static inline unsigned short __indirect_readw(const volatile void __iomem *p)
 	u32 n, byte_enables, data;
 
 	if (!is_pci_memory(addr))
-		return __raw_readw(addr);
+		return __raw_readw(p);
 
 	n = addr % 4;
 	byte_enables = (0xf & ~(BIT(n) | BIT(n+1))) << IXP4XX_PCI_NP_CBE_BESL;
