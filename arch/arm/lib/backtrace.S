@@ -100,7 +100,7 @@ for_each_frame:	tst	frame, mask		@ Check for address exceptions
 
 1006:		adr	r0, .Lbad
 		mov	r1, frame
-		bl	printk
+		bl	.Lprintk
 no_frame:	ldmfd	sp!, {r4 - r8, pc}
 ENDPROC(c_backtrace)
 		
@@ -134,12 +134,12 @@ ENDPROC(c_backtrace)
 		ldr	r2, [stack], #-4
 		mov	r1, reg
 		adr	r0, .Lfp
-		bl	printk
+		bl	.Lprintk
 2:		subs	reg, reg, #1
 		bpl	1b
 		teq	r7, #0
 		adrne	r0, .Lcr
-		blne	printk
+		blne	.Lprintk
 		ldmfd	sp!, {instr, reg, stack, r7, pc}
 
 .Lfp:		.asciz	" r%d:%08x%s"
@@ -148,5 +148,8 @@ ENDPROC(c_backtrace)
 		.align
 .Ldsi:		.word	0xe92dd800 >> 11	@ stmfd sp!, {... fp, ip, lr, pc}
 		.word	0xe92d0000 >> 11	@ stmfd sp!, {}
+
+
+.Lprintk:	ldr	pc, =printk
 
 #endif
