@@ -34,7 +34,7 @@ ARM_BE8(setend	be )			@ go BE8 if entered LE
 	add	r1, r1, r0
 	mov	r0, #0x0
 	strb	r0, [r1]		@ switch SCU power state to Normal mode
-	b	cpu_resume
+	ldr	pc, =cpu_resume
 ENDPROC(armada_38x_cpu_resume)
 
 .global mvebu_boot_wa_start
