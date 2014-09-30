@@ -42,7 +42,7 @@ struct elm_errorvec {
 	int error_loc[16];
 };
 
-#if IS_ENABLED(CONFIG_MTD_NAND_OMAP_BCH)
+#if defined(CONFIG_MTD_NAND_OMAP_BCH) || (defined(CONFIG_MTD_NAND_OMAP_BCH_MODULE) && defined(MODULE))
 void elm_decode_bch_error_page(struct device *dev, u8 *ecc_calc,
 		struct elm_errorvec *err_vec);
 int elm_config(struct device *dev, enum bch_ecc bch_type,
