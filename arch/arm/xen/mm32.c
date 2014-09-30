@@ -2,6 +2,7 @@
 #include <linux/dma-mapping.h>
 #include <linux/gfp.h>
 #include <linux/highmem.h>
+#include <asm/highmem.h>
 
 #include <xen/features.h>
 
