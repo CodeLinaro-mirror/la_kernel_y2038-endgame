@@ -1,7 +1,6 @@
 config ARCH_INTEGRATOR
 	bool "ARM Ltd. Integrator family" if (ARCH_MULTI_V4T || ARCH_MULTI_V5 || ARCH_MULTI_V6)
 	select ARM_AMBA
-	select ARM_PATCH_PHYS_VIRT if MMU
 	select AUTO_ZRELADDR
 	select COMMON_CLK
 	select COMMON_CLK_VERSATILE
@@ -19,19 +18,6 @@ config ARCH_INTEGRATOR
 if ARCH_INTEGRATOR
 
 menu "Integrator Options"
-
-choice
-	prompt "CPU architecture level"
-
-config ARCH_INTEGRATOR_V4_V5
-	bool "ARMv4 or ARMv5 CPUs"
-	select CPU_ARM926T if !CPU_32v4 && !CPU_32v4T
-
-config ARCH_INTEGRATOR_V6_V7
-	bool "ARMv6 or ARMv7 CPUs"
-	select CPU_V7 if !CPU_V6 && !CPU_V6K
-
-endchoice
 
 config ARCH_INTEGRATOR_AP
 	bool "Support Integrator/AP and Integrator/PP2 platforms"
