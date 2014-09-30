@@ -48,7 +48,7 @@ ENTRY(armada_38x_cpu_resume)
 ARM_BE8(setend	be )			@ go BE8 if entered LE
 	bl	v7_invalidate_l1
 	bl	armada_38x_scu_power_up
-	b	cpu_resume
+	ldr	pc, =cpu_resume
 ENDPROC(armada_38x_cpu_resume)
 
 .global mvebu_boot_wa_start
