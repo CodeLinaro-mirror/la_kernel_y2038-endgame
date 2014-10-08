@@ -227,21 +227,11 @@ static inline unsigned long __cmpxchg_local(volatile void *ptr,
 	return ret;
 }
 
-#ifndef CONFIG_CPU_V7M
-
-#ifdef CONFIG_AEABI
-#define __cmpxchg64_reg64(x)
-#else
-#define __cmpxchg64_reg64(x) asm(x)
-#endif
-
 static inline unsigned long long __cmpxchg64(unsigned long long *ptr,
-					     unsigned long long __old,
-					     register unsigned long long __new)
+					     unsigned long long old,
+					     unsigned long long new)
 {
-	register unsigned long long old __cmpxchg64_reg64("r6") = __old;
-	register unsigned long long new __cmpxchg64_reg64("r8") = __new;
-	register unsigned long long oldval __cmpxchg64_reg64("r4");
+	unsigned long long oldval;
 	unsigned long res;
 
 	prefetchw(ptr);
@@ -292,15 +282,6 @@ static inline unsigned long long __cmpxchg64_mb(unsigned long long *ptr,
 					(unsigned long long)(n)))
 
 #define cmpxchg64_local(ptr, o, n)	cmpxchg64_relaxed((ptr), (o), (n))
-
-#else /* CPU_V7M has no ldrexd/strexd but also no SMP */
-
-#include <asm-generic/cmpxchg-local.h>
-#define cmpxchg64_local __cmpxchg64_local_generic
-#define cmpxchg64 	  cmpxchg64_local
-#define cmpxchg64_relaxed cmpxchg64_local
-
-#endif /* CPU_V7M */
 
 #endif	/* __LINUX_ARM_ARCH__ >= 6 */
 
