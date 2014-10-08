@@ -256,26 +256,6 @@ static void exynos_adc_v1_clear_irq(struct exynos_adc *info)
 	writel(1, ADC_V1_INTCLR(info->regs));
 }
 
-static void exynos_adc_s3c64xx_start_conv(struct exynos_adc *info,
-				          unsigned long addr)
-{
-	u32 con1;
-
-	con1 = readl(ADC_V1_CON(info->regs));
-	con1 &= ~ADC_S3C2410_CON_SELMUX(7);
-	con1 |= ADC_S3C2410_CON_SELMUX(addr);
-	writel(con1 | ADC_CON_EN_START, ADC_V1_CON(info->regs));
-}
-
-static struct exynos_adc_data const exynos_adc_s3c64xx_data = {
-	.num_channels	= MAX_ADC_V1_CHANNELS,
-
-	.init_hw	= exynos_adc_v1_init_hw,
-	.exit_hw	= exynos_adc_v1_exit_hw,
-	.clear_irq	= exynos_adc_v1_clear_irq,
-	.start_conv	= exynos_adc_s3c64xx_start_conv,
-};
-
 static void exynos_adc_v1_start_conv(struct exynos_adc *info,
 				     unsigned long addr)
 {

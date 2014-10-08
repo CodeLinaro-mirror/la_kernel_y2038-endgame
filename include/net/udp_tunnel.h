@@ -95,9 +95,13 @@ void udp_tunnel_sock_release(struct socket *sock);
 static inline struct sk_buff *udp_tunnel_handle_offloads(struct sk_buff *skb,
 							 bool udp_csum)
 {
+#if IS_ENABLED(CONFIG_INET)
 	int type = udp_csum ? SKB_GSO_UDP_TUNNEL_CSUM : SKB_GSO_UDP_TUNNEL;
 
 	return iptunnel_handle_offloads(skb, udp_csum, type);
+#else
+	return ERR_PTR(-EPFNOSUPPORT);
+#endif
 }
 
 static inline void udp_tunnel_gro_complete(struct sk_buff *skb, int nhoff)

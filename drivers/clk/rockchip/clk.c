@@ -56,7 +56,7 @@ static struct clk *rockchip_clk_register_branch(const char *name,
 	if (num_parents > 1) {
 		mux = kzalloc(sizeof(*mux), GFP_KERNEL);
 		if (!mux)
-			goto err;
+			return ERR_PTR(-ENOMEM);
 
 		mux->reg = base + muxdiv_offset;
 		mux->shift = mux_shift;
@@ -70,7 +70,7 @@ static struct clk *rockchip_clk_register_branch(const char *name,
 	if (gate_offset >= 0) {
 		gate = kzalloc(sizeof(*gate), GFP_KERNEL);
 		if (!gate)
-			goto err;
+			return ERR_PTR(-ENOMEM);
 
 		gate->flags = gate_flags;
 		gate->reg = base + gate_offset;
@@ -82,7 +82,7 @@ static struct clk *rockchip_clk_register_branch(const char *name,
 	if (div_width > 0) {
 		div = kzalloc(sizeof(*div), GFP_KERNEL);
 		if (!div)
-			goto err;
+			return ERR_PTR(-ENOMEM);
 
 		div->flags = div_flags;
 		div->reg = base + muxdiv_offset;
@@ -148,13 +148,6 @@ static struct clk *rockchip_clk_register_frac_branch(const char *name,
 				     flags);
 
 	return clk;
-
-err:
-	kfree(mux);
-	kfree(gate);
-	kfree(div);
-
-	return ERR_PTR(-ENOMEM);
 }
 
 static DEFINE_SPINLOCK(clk_lock);
