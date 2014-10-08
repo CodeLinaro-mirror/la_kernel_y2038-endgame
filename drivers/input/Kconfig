@@ -6,7 +6,7 @@ menu "Input device support"
 	depends on !UML
 
 config INPUT
-	tristate "Generic input layer (needed for keyboard, mouse, ...)" if EXPERT
+	bool "Generic input layer (needed for keyboard, mouse, ...)" if EXPERT
 	default y
 	help
 	  Say Y here if you have any input device (mouse, keyboard, tablet,
