@@ -125,7 +125,7 @@ ENDPROC(secondary_startup)
 ENTRY(__secondary_switched)
 	ldr	sp, [r7, #8]			@ set up the stack pointer
 	mov	fp, #0
-	b	secondary_start_kernel
+	ldr	pc, =secondary_start_kernel
 ENDPROC(__secondary_switched)
 
 	.type	__secondary_data, %object

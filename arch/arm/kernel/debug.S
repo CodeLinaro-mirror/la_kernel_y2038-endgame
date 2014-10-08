@@ -100,14 +100,16 @@ ENTRY(printch)
 		b	1b
 ENDPROC(printch)
 
-#ifdef CONFIG_MMU
 ENTRY(debug_ll_addr)
 		addruart r2, r3, ip
 		str	r2, [r0]
+#ifdef CONFIG_MMU
 		str	r3, [r1]
+#else
+		str	r2, [r1]
+#endif
 		ret	lr
 ENDPROC(debug_ll_addr)
-#endif
 
 #else
 
