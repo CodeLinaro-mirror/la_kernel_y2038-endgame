@@ -650,6 +650,9 @@ int vfio_pci_set_irqs_ioctl(struct vfio_pci_device *vdev, uint32_t flags,
 		break;
 	case VFIO_PCI_MSI_IRQ_INDEX:
 	case VFIO_PCI_MSIX_IRQ_INDEX:
+		if (!IS_ENABLED(CONFIG_PCI_MSI))
+			break;
+
 		switch (flags & VFIO_IRQ_SET_ACTION_TYPE_MASK) {
 		case VFIO_IRQ_SET_ACTION_MASK:
 		case VFIO_IRQ_SET_ACTION_UNMASK:
