@@ -1,20 +1,29 @@
 /*
- * arch/arm/mach-at91/at91rm9200.c
+ *  Setup code for AT91RM9200
  *
  *  Copyright (C) 2005 SAN People
+ *  Copyright (C) 2011 Atmel,
+ *                2011 Nicolas Ferre <nicolas.ferre@atmel.com>
+ *                2012 Joachim Eastwood <manabian@gmail.com>
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
+ * Licensed under GPLv2 or later.
  */
-
+#include <linux/types.h>
+#include <linux/init.h>
 #include <linux/module.h>
+#include <linux/gpio.h>
+#include <linux/of.h>
+#include <linux/of_irq.h>
+#include <linux/clk-provider.h>
 #include <linux/clk/at91_pmc.h>
 
+#include <asm/setup.h>
+#include <asm/irq.h>
+#include <asm/mach/arch.h>
+#include <asm/mach/irq.h>
 #include <asm/mach/map.h>
 #include <asm/system_misc.h>
+
 #include <mach/at91_st.h>
 #include <mach/hardware.h>
 
@@ -59,3 +68,21 @@ AT91_SOC_START(at91rm9200)
 	.map_io = at91rm9200_map_io,
 	.init = at91rm9200_initialize,
 AT91_SOC_END
+
+static void __init at91rm9200_dt_timer_init(void)
+{
+	of_clk_init(NULL);
+	at91rm9200_timer_init();
+}
+
+static const char *at91rm9200_dt_board_compat[] __initdata = {
+	"atmel,at91rm9200",
+	NULL
+};
+
+DT_MACHINE_START(at91rm9200_dt, "Atmel AT91RM9200 (Device Tree)")
+	.init_time      = at91rm9200_dt_timer_init,
+	.map_io		= at91_map_io,
+	.init_early	= at91rm9200_dt_initialize,
+	.dt_compat	= at91rm9200_dt_board_compat,
+MACHINE_END
