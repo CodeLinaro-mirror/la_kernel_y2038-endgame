@@ -25,9 +25,9 @@
 #include <asm/system_misc.h>
 
 #include <mach/at91_st.h>
+#include <mach/cpu.h>
 #include <mach/hardware.h>
 
-#include "soc.h"
 #include "generic.h"
 
 static void at91rm9200_idle(void)
@@ -48,26 +48,29 @@ static void at91rm9200_restart(enum reboot_mode reboot_mode, const char *cmd)
 	at91_st_write(AT91_ST_CR, AT91_ST_WDRST);
 }
 
-/* --------------------------------------------------------------------
- *  AT91RM9200 processor initialization
- * -------------------------------------------------------------------- */
+static struct map_desc at91_io_desc __initdata __maybe_unused = {
+	.virtual	= (unsigned long)AT91_VA_BASE_SYS,
+	.pfn		= __phys_to_pfn(AT91_BASE_SYS),
+	.length		= SZ_16K,
+	.type		= MT_DEVICE,
+};
+
 static void __init at91rm9200_map_io(void)
 {
+	at91_soc_initdata.type = AT91_SOC_RM9200;
+	at91_soc_initdata.subtype = AT91_SOC_RM9200_BGA;
+
 	/* Map peripherals */
+	iotable_init(&at91_io_desc, 1);
 	at91_init_sram(0, AT91RM9200_SRAM_BASE, AT91RM9200_SRAM_SIZE);
 }
 
 static void __init at91rm9200_initialize(void)
 {
+	at91_dt_ramc();
 	arm_pm_idle = at91rm9200_idle;
 	arm_pm_restart = at91rm9200_restart;
 }
-
-
-AT91_SOC_START(at91rm9200)
-	.map_io = at91rm9200_map_io,
-	.init = at91rm9200_initialize,
-AT91_SOC_END
 
 static void __init at91rm9200_dt_timer_init(void)
 {
@@ -82,7 +85,7 @@ static const char *at91rm9200_dt_board_compat[] __initdata = {
 
 DT_MACHINE_START(at91rm9200_dt, "Atmel AT91RM9200 (Device Tree)")
 	.init_time      = at91rm9200_dt_timer_init,
-	.map_io		= at91_map_io,
-	.init_early	= at91rm9200_dt_initialize,
+	.map_io		= at91rm9200_map_io,
+	.init_early	= at91rm9200_initialize,
 	.dt_compat	= at91rm9200_dt_board_compat,
 MACHINE_END

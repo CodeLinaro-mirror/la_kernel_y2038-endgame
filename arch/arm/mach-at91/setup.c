@@ -31,17 +31,6 @@ struct at91_init_soc __initdata at91_boot_soc;
 struct at91_socinfo at91_soc_initdata;
 EXPORT_SYMBOL(at91_soc_initdata);
 
-void __init at91rm9200_set_type(int type)
-{
-	if (type == ARCH_REVISON_9200_PQFP)
-		at91_soc_initdata.subtype = AT91_SOC_RM9200_PQFP;
-	else
-		at91_soc_initdata.subtype = AT91_SOC_RM9200_BGA;
-
-	pr_info("filled in soc subtype: %s\n",
-		at91_get_soc_subtype(&at91_soc_initdata));
-}
-
 void __iomem *at91_ramc_base[2];
 EXPORT_SYMBOL_GPL(at91_ramc_base);
 
@@ -87,13 +76,6 @@ static void __init soc_detect(u32 dbgu_base)
 	socid = cidr & ~AT91_CIDR_VERSION;
 
 	switch (socid) {
-	case ARCH_ID_AT91RM9200:
-		at91_soc_initdata.type = AT91_SOC_RM9200;
-		if (at91_soc_initdata.subtype == AT91_SOC_SUBTYPE_UNKNOWN)
-			at91_soc_initdata.subtype = AT91_SOC_RM9200_BGA;
-		at91_boot_soc = at91rm9200_soc;
-		break;
-
 	case ARCH_ID_AT91SAM9260:
 		at91_soc_initdata.type = AT91_SOC_SAM9260;
 		at91_soc_initdata.subtype = AT91_SOC_SUBTYPE_NONE;
@@ -276,7 +258,6 @@ static void __init alt_soc_detect(u32 dbgu_base)
 }
 
 static const char *soc_name[] = {
-	[AT91_SOC_RM9200]	= "at91rm9200",
 	[AT91_SOC_SAM9260]	= "at91sam9260",
 	[AT91_SOC_SAM9261]	= "at91sam9261",
 	[AT91_SOC_SAM9263]	= "at91sam9263",
@@ -298,8 +279,6 @@ const char *at91_get_soc_type(struct at91_socinfo *c)
 EXPORT_SYMBOL(at91_get_soc_type);
 
 static const char *soc_subtype_name[] = {
-	[AT91_SOC_RM9200_BGA]	= "at91rm9200 BGA",
-	[AT91_SOC_RM9200_PQFP]	= "at91rm9200 PQFP",
 	[AT91_SOC_SAM9XE]	= "at91sam9xe",
 	[AT91_SOC_SAM9G45ES]	= "at91sam9g45es",
 	[AT91_SOC_SAM9M10]	= "at91sam9m10",
@@ -400,7 +379,7 @@ static struct of_device_id ramc_ids[] = {
 	{ /*sentinel*/ }
 };
 
-static void at91_dt_ramc(void)
+void at91_dt_ramc(void)
 {
 	struct device_node *np;
 	const struct of_device_id *of_id;
@@ -427,13 +406,6 @@ static void at91_dt_ramc(void)
 	}
 
 	at91_pm_set_standby(standby);
-}
-
-void __init at91rm9200_dt_initialize(void)
-{
-	at91_dt_ramc();
-
-	at91_boot_soc.init();
 }
 
 void __init at91_dt_initialize(void)
