@@ -10,10 +10,21 @@
 #include <linux/module.h>
 #include <linux/dma-mapping.h>
 #include <linux/clk/at91_pmc.h>
+#include <linux/types.h>
+#include <linux/init.h>
+#include <linux/gpio.h>
+#include <linux/micrel_phy.h>
+#include <linux/of.h>
+#include <linux/of_irq.h>
+#include <linux/of_platform.h>
+#include <linux/phy.h>
+#include <linux/clk-provider.h>
 
 #include <asm/irq.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
+#include <asm/mach/irq.h>
+
 #include <mach/sama5d4.h>
 #include <mach/cpu.h>
 #include <mach/hardware.h>
@@ -52,7 +63,6 @@ static struct map_desc at91_io_desc[] __initdata = {
 	},
 };
 
-
 static void __init sama5d4_map_io(void)
 {
 	iotable_init(at91_io_desc, ARRAY_SIZE(at91_io_desc));
@@ -62,3 +72,16 @@ static void __init sama5d4_map_io(void)
 AT91_SOC_START(sama5d4)
 	.map_io = sama5d4_map_io,
 AT91_SOC_END
+
+static const char *sama5_alt_dt_board_compat[] __initconst = {
+	"atmel,sama5d4",
+	NULL
+};
+
+DT_MACHINE_START(sama5_alt_dt, "Atmel SAMA5 (Device Tree)")
+	/* Maintainer: Atmel */
+	.map_io		= at91_alt_map_io,
+	.init_early	= at91_dt_initialize,
+	.dt_compat	= sama5_alt_dt_board_compat,
+	.l2c_aux_mask	= ~0UL,
+MACHINE_END

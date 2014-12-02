@@ -7,19 +7,19 @@
  * Licensed under GPLv2 or later.
  */
 
-#include <linux/module.h>
-#include <linux/dma-mapping.h>
-#include <linux/clk/at91_pmc.h>
+#include <linux/init.h>
 
-#include <asm/irq.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
+#include <asm/mach/irq.h>
+
 #include <mach/sama5d3.h>
 #include <mach/cpu.h>
 
 #include "soc.h"
-#include "generic.h"
 #include "sam9_smc.h"
+#include "generic.h"
+
 
 /* --------------------------------------------------------------------
  *  AT91SAM9x5 processor initialization
@@ -39,3 +39,15 @@ AT91_SOC_START(sama5d3)
 	.map_io = sama5d3_map_io,
 	.init = sama5d3_initialize,
 AT91_SOC_END
+
+static const char *sama5_dt_board_compat[] __initconst = {
+	"atmel,sama5",
+	NULL
+};
+
+DT_MACHINE_START(sama5_dt, "Atmel SAMA5 (Device Tree)")
+	/* Maintainer: Atmel */
+	.map_io		= at91_map_io,
+	.init_early	= at91_dt_initialize,
+	.dt_compat	= sama5_dt_board_compat,
+MACHINE_END
