@@ -255,13 +255,6 @@ static int __init pcie_setup(struct pci_sys_data *sys)
 #define PCI_CONF_REG_BAR_LO_CS(n)	(((n) & 1) ? 0x18 : 0x10)
 #define PCI_CONF_REG_BAR_HI_CS(n)	(((n) & 1) ? 0x1c : 0x14)
 
-/*
- * PCI config cycles are done by programming the PCI_CONF_ADDR register
- * and then reading the PCI_CONF_DATA register. Need to make sure these
- * transactions are atomic.
- */
-static DEFINE_SPINLOCK(orion5x_pci_lock);
-
 static int orion5x_pci_cardbus_mode;
 
 static int orion5x_pci_local_bus_nr(void)
@@ -273,9 +266,6 @@ static int orion5x_pci_local_bus_nr(void)
 static int orion5x_pci_hw_rd_conf(int bus, int dev, u32 func,
 					u32 where, u32 size, u32 *val)
 {
-	unsigned long flags;
-	spin_lock_irqsave(&orion5x_pci_lock, flags);
-
 	writel(PCI_CONF_BUS(bus) |
 		PCI_CONF_DEV(dev) | PCI_CONF_REG(where) |
 		PCI_CONF_FUNC(func) | PCI_CONF_ADDR_EN, PCI_CONF_ADDR);
@@ -287,18 +277,13 @@ static int orion5x_pci_hw_rd_conf(int bus, int dev, u32 func,
 	else if (size == 2)
 		*val = (*val >> (8*(where & 0x3))) & 0xffff;
 
-	spin_unlock_irqrestore(&orion5x_pci_lock, flags);
-
 	return PCIBIOS_SUCCESSFUL;
 }
 
 static int orion5x_pci_hw_wr_conf(int bus, int dev, u32 func,
 					u32 where, u32 size, u32 val)
 {
-	unsigned long flags;
 	int ret = PCIBIOS_SUCCESSFUL;
-
-	spin_lock_irqsave(&orion5x_pci_lock, flags);
 
 	writel(PCI_CONF_BUS(bus) |
 		PCI_CONF_DEV(dev) | PCI_CONF_REG(where) |
@@ -313,8 +298,6 @@ static int orion5x_pci_hw_wr_conf(int bus, int dev, u32 func,
 	} else {
 		ret = PCIBIOS_BAD_REGISTER_NUMBER;
 	}
-
-	spin_unlock_irqrestore(&orion5x_pci_lock, flags);
 
 	return ret;
 }
