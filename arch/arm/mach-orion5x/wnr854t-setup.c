@@ -8,6 +8,7 @@
 #include <linux/gpio.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
+#include <linux/platform_data/pci-orion.h>
 #include <linux/platform_device.h>
 #include <linux/pci.h>
 #include <linux/irq.h>
@@ -111,6 +112,22 @@ static struct dsa_platform_data wnr854t_switch_plat_data = {
 	.chip		= &wnr854t_switch_chip_data,
 };
 
+static int wnr854t_pci_map_irq(const struct pci_dev *dev, u8 slot,
+	u8 pin)
+{
+	/*
+	 * Mini-PCI slot.
+	 */
+	if (slot == 7)
+		return gpio_to_irq(4);
+
+	return -1;
+}
+
+static const struct orion_pci_platform_data wnr854t_pci_data __initconst = {
+	.map_irq	= wnr854t_pci_map_irq,
+};
+
 static void __init wnr854t_init(void)
 {
 	/*
@@ -132,34 +149,15 @@ static void __init wnr854t_init(void)
 				    WNR854T_NOR_BOOT_BASE,
 				    WNR854T_NOR_BOOT_SIZE);
 	platform_device_register(&wnr854t_nor_flash);
-}
-
-static int __init wnr854t_pci_map_irq(const struct pci_dev *dev, u8 slot,
-	u8 pin)
-{
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
-	/*
-	 * Mini-PCI slot.
-	 */
-	if (slot == 7)
-		return gpio_to_irq(4);
-
-	return -1;
+	platform_device_register_data(NULL, "orion-pci", -1, &wnr854t_pci_data,
+				      sizeof(wnr854t_pci_data));
 }
 
 static struct hw_pci wnr854t_pci __initdata = {
-	.nr_controllers	= 2,
+	.nr_controllers	= 1,
 	.setup		= orion5x_pci_sys_setup,
 	.scan		= orion5x_pci_sys_scan_bus,
-	.map_irq	= wnr854t_pci_map_irq,
+	.map_irq	= orion5x_pci_map_irq,
 };
 
 static int __init wnr854t_pci_init(void)

@@ -12,6 +12,7 @@
 #include <linux/gpio.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
+#include <linux/platform_data/pci-orion.h>
 #include <linux/platform_device.h>
 #include <linux/pci.h>
 #include <linux/irq.h>
@@ -236,18 +237,8 @@ static void __init db88f5281_pci_preinit(void)
 	}
 }
 
-static int __init db88f5281_pci_map_irq(const struct pci_dev *dev, u8 slot,
-	u8 pin)
+static int db88f5281_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
 	/*
 	 * PCI IRQs are connected via GPIOs.
 	 */
@@ -262,19 +253,22 @@ static int __init db88f5281_pci_map_irq(const struct pci_dev *dev, u8 slot,
 	}
 }
 
-static struct hw_pci db88f5281_pci __initdata = {
-	.nr_controllers	= 2,
+static const struct orion_pci_platform_data db88f5281_pci_pdata __initconst = {
 	.preinit	= db88f5281_pci_preinit,
+	.map_irq	= db88f5281_pci_map_irq,
+};
+
+static struct hw_pci db88f5281_pci __initdata = {
+	.nr_controllers	= 1,
 	.setup		= orion5x_pci_sys_setup,
 	.scan		= orion5x_pci_sys_scan_bus,
-	.map_irq	= db88f5281_pci_map_irq,
+	.map_irq	= orion5x_pci_map_irq,
 };
 
 static int __init db88f5281_pci_init(void)
 {
 	if (machine_is_db88f5281())
 		pci_common_init(&db88f5281_pci);
-
 	return 0;
 }
 
@@ -364,6 +358,9 @@ static void __init db88f5281_init(void)
 	platform_device_register(&db88f5281_nand_flash);
 
 	i2c_register_board_info(0, &db88f5281_i2c_rtc, 1);
+
+	platform_device_register_data(NULL, "orion-pci", -1, &db88f5281_pci_pdata,
+                                      sizeof(db88f5281_pci_pdata));
 }
 
 MACHINE_START(DB88F5281, "Marvell Orion-2 Development Board")

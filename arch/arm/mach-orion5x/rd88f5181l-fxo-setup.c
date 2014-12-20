@@ -10,6 +10,7 @@
 #include <linux/gpio.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
+#include <linux/platform_data/pci-orion.h>
 #include <linux/platform_device.h>
 #include <linux/pci.h>
 #include <linux/irq.h>
@@ -133,15 +134,6 @@ static void __init rd88f5181l_fxo_init(void)
 static int __init
 rd88f5181l_fxo_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
 	/*
 	 * Mini-PCI / Cardbus slot.
 	 */
@@ -149,17 +141,25 @@ rd88f5181l_fxo_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 }
 
 static struct hw_pci rd88f5181l_fxo_pci __initdata = {
-	.nr_controllers	= 2,
+	.nr_controllers	= 1,
 	.setup		= orion5x_pci_sys_setup,
 	.scan		= orion5x_pci_sys_scan_bus,
+	.map_irq	= orion5x_pci_map_irq,
+};
+
+static const struct orion_pci_platform_data rd88f5181l_pci_data = {
+	.cardbus	= true,
 	.map_irq	= rd88f5181l_fxo_pci_map_irq,
 };
 
 static int __init rd88f5181l_fxo_pci_init(void)
 {
 	if (machine_is_rd88f5181l_fxo()) {
-		orion5x_pci_set_cardbus_mode();
 		pci_common_init(&rd88f5181l_fxo_pci);
+
+		platform_device_register_data(NULL, "orion-pci", -1,
+					      &rd88f5181l_pci_data,
+					      sizeof(rd88f5181l_pci_data));
 	}
 
 	return 0;

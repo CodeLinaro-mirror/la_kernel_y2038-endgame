@@ -118,35 +118,16 @@ static struct platform_device kurobox_pro_nor_flash = {
  * PCI
  ****************************************************************************/
 
-static int __init kurobox_pro_pci_map_irq(const struct pci_dev *dev, u8 slot,
-	u8 pin)
-{
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
-	/*
-	 * PCI isn't used on the Kuro
-	 */
-	return -1;
-}
-
 static struct hw_pci kurobox_pro_pci __initdata = {
-	.nr_controllers	= 2,
+	.nr_controllers	= 1,
 	.setup		= orion5x_pci_sys_setup,
 	.scan		= orion5x_pci_sys_scan_bus,
-	.map_irq	= kurobox_pro_pci_map_irq,
+	.map_irq	= orion5x_pci_map_irq,
 };
 
 static int __init kurobox_pro_pci_init(void)
 {
 	if (machine_is_kurobox_pro()) {
-		orion5x_pci_disable();
 		pci_common_init(&kurobox_pro_pci);
 	}
 

@@ -12,6 +12,7 @@
 #include <linux/gpio.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
+#include <linux/platform_data/pci-orion.h>
 #include <linux/platform_device.h>
 #include <linux/pci.h>
 #include <linux/irq.h>
@@ -142,18 +143,8 @@ static void __init rd88f5182_pci_preinit(void)
 	}
 }
 
-static int __init rd88f5182_pci_map_irq(const struct pci_dev *dev, u8 slot,
-	u8 pin)
+static int rd88f5182_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
 	/*
 	 * PCI IRQs are connected via GPIOs
 	 */
@@ -168,12 +159,16 @@ static int __init rd88f5182_pci_map_irq(const struct pci_dev *dev, u8 slot,
 	}
 }
 
-static struct hw_pci rd88f5182_pci __initdata = {
-	.nr_controllers	= 2,
+static const struct orion_pci_platform_data rd88f5182_pci_pdata __initconst = {
 	.preinit	= rd88f5182_pci_preinit,
+	.map_irq	= rd88f5182_pci_map_irq,
+};
+
+static struct hw_pci rd88f5182_pci __initdata = {
+	.nr_controllers	= 1,
 	.setup		= orion5x_pci_sys_setup,
 	.scan		= orion5x_pci_sys_scan_bus,
-	.map_irq	= rd88f5182_pci_map_irq,
+	.map_irq	= orion5x_pci_map_irq,
 };
 
 static int __init rd88f5182_pci_init(void)
@@ -276,6 +271,10 @@ static void __init rd88f5182_init(void)
 	platform_device_register(&rd88f5182_gpio_leds);
 
 	i2c_register_board_info(0, &rd88f5182_i2c_rtc, 1);
+
+	platform_device_register_data(NULL, "orion-pci", -1,
+				      &rd88f5182_pci_pdata,
+				      sizeof(rd88f5182_pci_pdata));
 }
 
 MACHINE_START(RD88F5182, "Marvell Orion-NAS Reference Design")

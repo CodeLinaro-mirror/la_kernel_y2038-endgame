@@ -8,6 +8,7 @@
 #include <linux/gpio.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
+#include <linux/platform_data/pci-orion.h>
 #include <linux/platform_device.h>
 #include <linux/pci.h>
 #include <linux/irq.h>
@@ -196,6 +197,21 @@ static struct dsa_platform_data wrt350n_v2_switch_plat_data = {
 	.chip		= &wrt350n_v2_switch_chip_data,
 };
 
+static int wrt350n_v2_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+{
+	/*
+	 * Mini-PCI slot.
+	 */
+	if (slot == 7)
+		return gpio_to_irq(4);
+
+	return -1;
+}
+
+static const struct orion_pci_platform_data wrt350n_v2_pci_data = {
+	.map_irq	= wrt350n_v2_pci_map_irq,
+};
+
 static void __init wrt350n_v2_init(void)
 {
 	/*
@@ -220,34 +236,15 @@ static void __init wrt350n_v2_init(void)
 	platform_device_register(&wrt350n_v2_nor_flash);
 	platform_device_register(&wrt350n_v2_leds);
 	platform_device_register(&wrt350n_v2_button_device);
-}
-
-static int __init wrt350n_v2_pci_map_irq(const struct pci_dev *dev, u8 slot,
-	u8 pin)
-{
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
-	/*
-	 * Mini-PCI slot.
-	 */
-	if (slot == 7)
-		return gpio_to_irq(4);
-
-	return -1;
+	platform_device_register_data(NULL, "orion-pci", -1, &wrt350n_v2_pci_data,
+				      sizeof(wrt350n_v2_pci_data));
 }
 
 static struct hw_pci wrt350n_v2_pci __initdata = {
-	.nr_controllers	= 2,
+	.nr_controllers	= 1,
 	.setup		= orion5x_pci_sys_setup,
 	.scan		= orion5x_pci_sys_scan_bus,
-	.map_irq	= wrt350n_v2_pci_map_irq,
+	.map_irq	= orion5x_pci_map_irq,
 };
 
 static int __init wrt350n_v2_pci_init(void)

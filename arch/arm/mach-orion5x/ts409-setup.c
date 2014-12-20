@@ -120,29 +120,11 @@ static struct platform_device qnap_ts409_nor_flash = {
  * PCI
  ****************************************************************************/
 
-static int __init qnap_ts409_pci_map_irq(const struct pci_dev *dev, u8 slot,
-	u8 pin)
-{
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
-	/*
-	 * PCI isn't used on the TS-409
-	 */
-	return -1;
-}
-
 static struct hw_pci qnap_ts409_pci __initdata = {
-	.nr_controllers	= 2,
+	.nr_controllers	= 1,
 	.setup		= orion5x_pci_sys_setup,
 	.scan		= orion5x_pci_sys_scan_bus,
-	.map_irq	= qnap_ts409_pci_map_irq,
+	.map_irq	= orion5x_pci_map_irq,
 };
 
 static int __init qnap_ts409_pci_init(void)

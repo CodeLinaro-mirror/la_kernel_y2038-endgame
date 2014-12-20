@@ -11,6 +11,7 @@
 #include <linux/gpio.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
+#include <linux/platform_data/pci-orion.h>
 #include <linux/platform_device.h>
 #include <linux/pci.h>
 #include <linux/irq.h>
@@ -99,32 +100,26 @@ static void __init tsp2_pci_preinit(void)
 	}
 }
 
-static int __init tsp2_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+static int tsp2_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
 	/*
 	 * PCI IRQs are connected via GPIOs.
 	 */
 	if (slot == TSP2_PCI_SLOT0_OFFS)
 		return gpio_to_irq(TSP2_PCI_SLOT0_IRQ_PIN);
-
 	return -1;
 }
 
-static struct hw_pci tsp2_pci __initdata = {
-	.nr_controllers = 2,
+static const struct orion_pci_platform_data tsp2_pci_data __initconst = {
 	.preinit        = tsp2_pci_preinit,
+	.map_irq        = tsp2_pci_map_irq,
+};
+
+static struct hw_pci tsp2_pci __initdata = {
+	.nr_controllers = 1,
 	.setup          = orion5x_pci_sys_setup,
 	.scan           = orion5x_pci_sys_scan_bus,
-	.map_irq        = tsp2_pci_map_irq,
+	.map_irq	= orion5x_pci_map_irq,
 };
 
 static int __init tsp2_pci_init(void)
@@ -354,6 +349,9 @@ static void __init tsp2_init(void)
 
 	/* register Terastation Pro II specific power-off method */
 	pm_power_off = tsp2_power_off;
+
+	platform_device_register_data(NULL, "orion-pci", -1, &tsp2_pci_data,
+				      sizeof(tsp2_pci_data));
 }
 
 MACHINE_START(TERASTATION_PRO2, "Buffalo Terastation Pro II/Live")

@@ -10,6 +10,7 @@
 #include <linux/gpio.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
+#include <linux/platform_data/pci-orion.h>
 #include <linux/platform_device.h>
 #include <linux/pci.h>
 #include <linux/irq.h>
@@ -111,6 +112,20 @@ static struct i2c_board_info __initdata rd88f5181l_ge_i2c_rtc = {
 	I2C_BOARD_INFO("ds1338", 0x68),
 };
 
+static int
+rd88f5181l_ge_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+{
+	if (pin == 1)
+		return gpio_to_irq(4);
+	else
+		return gpio_to_irq(10);
+}
+
+static const struct orion_pci_platform_data rd88f5181l_ge_pci_data = {
+	.cardbus	= true,
+	.map_irq	= rd88f5181l_ge_pci_map_irq,
+};
+
 static void __init rd88f5181l_ge_init(void)
 {
 	/*
@@ -137,40 +152,22 @@ static void __init rd88f5181l_ge_init(void)
 	platform_device_register(&rd88f5181l_ge_nor_boot_flash);
 
 	i2c_register_board_info(0, &rd88f5181l_ge_i2c_rtc, 1);
-}
 
-static int __init
-rd88f5181l_ge_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-{
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
-	/*
-	 * Cardbus slot.
-	 */
-	if (pin == 1)
-		return gpio_to_irq(4);
-	else
-		return gpio_to_irq(10);
+	platform_device_register_data(NULL, "orion-pci", -1,
+				      &rd88f5181l_ge_pci_data,
+				      sizeof(rd88f5181l_ge_pci_data));
 }
 
 static struct hw_pci rd88f5181l_ge_pci __initdata = {
-	.nr_controllers	= 2,
+	.nr_controllers	= 1,
 	.setup		= orion5x_pci_sys_setup,
 	.scan		= orion5x_pci_sys_scan_bus,
-	.map_irq	= rd88f5181l_ge_pci_map_irq,
+	.map_irq	= orion5x_pci_map_irq,
 };
 
 static int __init rd88f5181l_ge_pci_init(void)
 {
 	if (machine_is_rd88f5181l_ge()) {
-		orion5x_pci_set_cardbus_mode();
 		pci_common_init(&rd88f5181l_ge_pci);
 	}
 

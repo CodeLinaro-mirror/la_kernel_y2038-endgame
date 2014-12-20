@@ -11,6 +11,7 @@
 #include <linux/gpio.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
+#include <linux/platform_data/pci-orion.h>
 #include <linux/platform_device.h>
 #include <linux/pci.h>
 #include <linux/irq.h>
@@ -142,18 +143,8 @@ static void __init qnap_ts209_pci_preinit(void)
 	}
 }
 
-static int __init qnap_ts209_pci_map_irq(const struct pci_dev *dev, u8 slot,
-	u8 pin)
+static int qnap_ts209_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
 	/*
 	 * PCI IRQs are connected via GPIOs.
 	 */
@@ -167,12 +158,16 @@ static int __init qnap_ts209_pci_map_irq(const struct pci_dev *dev, u8 slot,
 	}
 }
 
-static struct hw_pci qnap_ts209_pci __initdata = {
-	.nr_controllers	= 2,
+static const struct orion_pci_platform_data qnap_ts209_pci_data __initconst = {
 	.preinit	= qnap_ts209_pci_preinit,
+	.map_irq	= qnap_ts209_pci_map_irq,
+};
+
+static struct hw_pci qnap_ts209_pci __initdata = {
+	.nr_controllers	= 1,
 	.setup		= orion5x_pci_sys_setup,
 	.scan		= orion5x_pci_sys_scan_bus,
-	.map_irq	= qnap_ts209_pci_map_irq,
+	.map_irq	= orion5x_pci_map_irq,
 };
 
 static int __init qnap_ts209_pci_init(void)
@@ -319,6 +314,9 @@ static void __init qnap_ts209_init(void)
 
 	/* register tsx09 specific power-off method */
 	pm_power_off = qnap_tsx09_power_off;
+
+	platform_device_register_data(NULL, "orion-pci", -1, &qnap_ts209_pci_data,
+				      sizeof(qnap_ts209_pci_data));
 }
 
 MACHINE_START(TS209, "QNAP TS-109/TS-209")
