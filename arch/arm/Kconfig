@@ -542,6 +542,7 @@ config ARCH_ORION5X
 	select GENERIC_CLOCKEVENTS
 	select MVEBU_MBUS
 	select PCI
+	select PCI_DOMAINS
 	select PLAT_ORION_LEGACY
 	help
 	  Support for the following Marvell Orion 5x series SoCs:
