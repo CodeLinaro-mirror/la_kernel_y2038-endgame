@@ -64,6 +64,57 @@
 			status = "disabled";
 		};
 
+		pcic: pci-controller {
+			compatible = "marvell,orion-pci";
+			status = "disabled";
+			device_type = "pci";
+			interrupts = <15>;
+			reg = <MBUS_ID(0xf0, 0x01) 0x30000 0x10000>;
+
+			#address-cells = <3>;
+			#size-cells = <2>;
+
+			bus-range = <0x00 0xff>;
+
+			ranges = <0x82000000 0 0xe0000000 MBUS_ID(0x03, 0x59) 0xe0000000 0 0x08000000>, /* MEM */
+				 <0x81000000 0 0 MBUS_ID(0x03, 0x51) 0xf2100000 0 0x10000>; /* IO  */
+		};
+
+		pciec: pcie-controller {
+			compatible = "marvell,orion-pcie";
+			status = "disabled";
+			device_type = "pci";
+
+			#address-cells = <3>;
+			#size-cells = <2>;
+
+			bus-range = <0x00 0xff>;
+
+			ranges =
+				<0x82000000 0 0x40000    MBUS_ID(0xf0, 0x01) 0x40000	0 0x00002000>, /* host */
+				<0x82000000 0 0xfd000000 MBUS_ID(0x04, 0x79) 0		0 0x01000000>, /* PCIe RA */
+				<0x82000000 0x1 0	 MBUS_ID(0x04, 0x59) 0       	1 0>, /* Port 0.0 MEM */
+				<0x81000000 0x1 0	 MBUS_ID(0x04, 0x51) 0       	1 0>; /* Port 0.0 IO  */
+
+			pcie0: pcie@1,0 {
+				device_type = "pci";
+				assigned-addresses = <0x82000800 0 0x00040000 0 0x2000>,
+						     <0x82000000 0 0xfd000000 0 0x01000000>;
+				reg = <0x0800 0 0 0 0>;
+				#address-cells = <3>;
+				#size-cells = <2>;
+				#interrupt-cells = <1>;
+				ranges = <0x82000000 0 0 0x82000000 0x1 0 1 0>,
+					 <0x81000000 0 0 0x81000000 0x1 0 1 0>;
+				interrupt-map-mask = <0 0 0 0>;
+				interrupt-map = <0 0 0 0 &intc 11>;
+				marvell,pcie-port = <0>;
+				marvell,pcie-lane = <0>;
+				clocks = <&core_clk 0>;
+				status = "disabled";
+			};
+		};
+
 		internal-regs {
 			compatible = "simple-bus";
 			#address-cells = <1>;
