@@ -12,7 +12,7 @@ config PCI_DRA7XX
 
 config PCI_MVEBU
 	bool "Marvell EBU PCIe controller"
-	depends on ARCH_MVEBU || ARCH_DOVE
+	depends on ARCH_MVEBU || ARCH_DOVE || ARCH_ORION5X_DT
 	depends on OF
 
 config PCIE_DW

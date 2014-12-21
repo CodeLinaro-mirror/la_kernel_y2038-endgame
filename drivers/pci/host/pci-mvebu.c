@@ -113,6 +113,7 @@ struct mvebu_pcie {
 struct mvebu_pcie_port {
 	char *name;
 	void __iomem *base;
+	void __iomem *wa_base;
 	u32 port;
 	u32 lane;
 	int devfn;
@@ -259,6 +260,33 @@ static int mvebu_pcie_hw_rd_conf(struct mvebu_pcie_port *port,
 		     PCIE_CONF_ADDR_OFF);
 
 	*val = mvebu_readl(port, PCIE_CONF_DATA_OFF);
+
+	if (size == 1)
+		*val = (*val >> (8 * (where & 3))) & 0xff;
+	else if (size == 2)
+		*val = (*val >> (8 * (where & 3))) & 0xffff;
+
+	return PCIBIOS_SUCCESSFUL;
+}
+
+static int mvebu_pcie_hw_rd_conf_wa(struct mvebu_pcie_port *port,
+				    struct pci_bus *bus,
+				    u32 devfn, int where, int size, u32 *val)
+{
+	/*
+	 * We only support access to the non-extended configuration
+	 * space when using the WA access method (or we would have to
+	 * sacrifice 256M of CPU virtual address space.)
+	 */
+	if (where >= 0x100) {
+		*val = 0xffffffff;
+		return PCIBIOS_DEVICE_NOT_FOUND;
+	}
+
+	*val = readl(port->wa_base + (PCIE_CONF_BUS(bus->number) |
+				      PCIE_CONF_DEV(PCI_SLOT(devfn)) |
+				      PCIE_CONF_FUNC(PCI_FUNC(devfn)) |
+				      PCIE_CONF_REG(where)));
 
 	if (size == 1)
 		*val = (*val >> (8 * (where & 3))) & 0xff;
@@ -707,6 +735,9 @@ static int mvebu_pcie_rd_conf(struct pci_bus *bus, u32 devfn, int where,
 		return PCIBIOS_DEVICE_NOT_FOUND;
 	}
 
+	if (port->wa_base)
+		return mvebu_pcie_hw_rd_conf_wa(port, bus, devfn,
+						where, size, val);
 	/* Access the real PCIe interface */
 	ret = mvebu_pcie_hw_rd_conf(port, bus, devfn,
 				    where, size, val);
@@ -834,12 +865,13 @@ static void mvebu_pcie_enable(struct mvebu_pcie *pcie)
  */
 static void __iomem *mvebu_pcie_map_registers(struct platform_device *pdev,
 					      struct device_node *np,
-					      struct mvebu_pcie_port *port)
+					      struct mvebu_pcie_port *port,
+					      int index)
 {
 	struct resource regs;
 	int ret = 0;
 
-	ret = of_address_to_resource(np, 0, &regs);
+	ret = of_address_to_resource(np, index, &regs);
 	if (ret)
 		return ERR_PTR(ret);
 
@@ -1043,13 +1075,23 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
 		if (ret)
 			continue;
 
-		port->base = mvebu_pcie_map_registers(pdev, child, port);
+		port->base = mvebu_pcie_map_registers(pdev, child, port, 0);
 		if (IS_ERR(port->base)) {
 			dev_err(&pdev->dev, "PCIe%d.%d: cannot map registers\n",
 				port->port, port->lane);
 			port->base = NULL;
 			clk_disable_unprepare(port->clk);
 			continue;
+		}
+
+		if (of_device_is_compatible(np, "marvell,orion-pcie")) {
+			port->wa_base = mvebu_pcie_map_registers(pdev, child,
+								 port, 1);
+			if (IS_ERR(port->wa_base))
+				port->wa_base = NULL;
+			else
+				dev_info(&pdev->dev,
+					 "enabling config space workaround\n");
 		}
 
 		mvebu_pcie_set_local_dev_nr(port, 1);
@@ -1075,6 +1117,7 @@ static const struct of_device_id mvebu_pcie_of_match_table[] = {
 	{ .compatible = "marvell,armada-370-pcie", },
 	{ .compatible = "marvell,dove-pcie", },
 	{ .compatible = "marvell,kirkwood-pcie", },
+	{ .compatible = "marvell,orion-pcie", },
 	{},
 };
 MODULE_DEVICE_TABLE(of, mvebu_pcie_of_match_table);

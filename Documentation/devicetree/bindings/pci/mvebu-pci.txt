@@ -7,6 +7,7 @@ Mandatory properties:
     marvell,armada-xp-pcie
     marvell,dove-pcie
     marvell,kirkwood-pcie
+    marvell,orion-pcie
 - #address-cells, set to <3>
 - #size-cells, set to <2>
 - #interrupt-cells, set to <1>
@@ -61,6 +62,9 @@ PCIe interface, having the following mandatory properties:
   are used to refer to the correct bus number and device number.
 - assigned-addresses: reference to the MMIO registers used to control
   this PCIe interface.
+  If the device is compatible with marvell,orion-pcie and a second
+  address range is present, that is a reference to the configuration
+  space.
 - clocks: the clock associated to this PCIe interface
 - marvell,pcie-port: the physical PCIe port number
 - status: either "disabled" or "okay"
