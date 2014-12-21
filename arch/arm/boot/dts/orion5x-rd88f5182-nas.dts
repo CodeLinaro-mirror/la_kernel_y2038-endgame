@@ -9,6 +9,7 @@
 /dts-v1/;
 
 #include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/interrupt-controller/irq.h>
 #include "orion5x-mv88f5182.dtsi"
 
 / {
@@ -173,5 +174,17 @@
 };
 
 &uart0 {
+	status = "okay";
+};
+
+&pcic {
+	status = "okay";
+	interrupt-map-mask = <0xf800 0 0 7>;
+	/* IDSEL 7 */
+	interrupt-map = <0x3800 0 0 1 &gpio0 7 IRQ_TYPE_LEVEL_LOW>, /* IntA */
+			<0x3800 0 0 2 &gpio0 6 IRQ_TYPE_LEVEL_LOW>; /* IntB */
+};
+
+&pciec {
 	status = "okay";
 };
