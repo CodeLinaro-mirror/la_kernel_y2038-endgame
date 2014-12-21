@@ -10,6 +10,8 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/of_address.h>
+#include <linux/of_pci.h>
 #include <linux/pci.h>
 #include <linux/platform_data/pci-orion.h>
 #include <linux/platform_device.h>
@@ -342,6 +344,78 @@ static int orion5x_pci_setup(int nr, struct pci_sys_data *sys)
 	return 1;
 }
 
+static int orion5x_pci_probe_dt(struct platform_device *pdev)
+{
+	struct device *dev = &pdev->dev;
+	struct orion5x_pci *priv = devm_kzalloc(dev, sizeof(*priv),
+						     GFP_KERNEL);
+	struct resource *reg_phys;
+	void *hw_priv[1] = { priv };
+	/*
+	 * we always use domain 1 here and domain 0 for pcie, but after
+	 * "arm: pcibios: remove pci_sys_data domain" is merged, it will
+	 * work automatically
+	 */
+	struct hw_pci hwpci = {
+		.domain		= 1,
+		.nr_controllers	= ARRAY_SIZE(hw_priv),
+		.ops		= &orion5x_pci_ops,
+		.setup		= orion5x_pci_setup,
+		.map_irq	= of_irq_parse_and_map_pci,
+		.private_data	= hw_priv,
+	};
+	struct of_pci_range range;
+	struct of_pci_range_parser parser;
+	struct device_node *np = dev->of_node;
+	int ret;
+
+	if (!priv)
+		return -ENOMEM;
+
+	reg_phys = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	if (!reg_phys) {
+		dev_err(dev, "missing reg property\n");
+		return -ENXIO;
+	}
+	priv->reg_phys = *reg_phys;
+
+	ret = of_pci_parse_bus_range(np, &priv->bus);
+	if (ret) {
+		dev_err(dev, "missing bus-range property\n");
+		return ret;
+	}
+
+	if (of_pci_range_parser_init(&parser, np)) {
+		dev_err(dev, "missing ranges property\n");
+		return -ENXIO;
+	}
+
+	priv->cardbus = of_property_read_bool(np, "cardbus");
+
+	for_each_of_pci_range(&parser, &range) {
+		switch (range.flags & IORESOURCE_TYPE_BITS) {
+		case IORESOURCE_IO:
+			of_pci_range_to_resource(&range, np, &priv->io_io);
+			priv->io_phys = (struct resource) {
+				.start	= range.cpu_addr,
+				.end	= range.cpu_addr + range.size - 1,
+				.name	= np->full_name,
+				.flags	= IORESOURCE_MEM,
+			};
+			break;
+
+		case IORESOURCE_MEM:
+			of_pci_range_to_resource(&range, np, &priv->mem);
+			break;
+		}
+	}
+
+	pci_common_init_dev(dev, &hwpci);
+
+	return 0;
+}
+
+
 /* hardcoded MMIO locations when booting without DT */
 #define __ORION5X_PCI_REG_PHYS_BASE	(0xf1000000 + 0x30000)
 #define __ORION5X_PCI_REG_SIZE		0x10000
@@ -349,7 +423,7 @@ static int orion5x_pci_setup(int nr, struct pci_sys_data *sys)
 #define __ORION5X_PCI_IO_SIZE		SZ_64K
 #define __ORION5X_PCI_MEM_PHYS_BASE	0xe8000000
 #define __ORION5X_PCI_MEM_SIZE		SZ_128M
-static int orion5x_pci_probe(struct platform_device *pdev)
+static int orion5x_pci_probe_pdata(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 	struct orion5x_pci *priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
@@ -400,9 +474,25 @@ static int orion5x_pci_probe(struct platform_device *pdev)
 	return 0;
 }
 
+static int orion5x_pci_probe(struct platform_device *pdev)
+{
+	if (IS_ENABLED(CONFIG_OF) && pdev->dev.of_node)
+		return orion5x_pci_probe_dt(pdev);
+	else if (IS_ENABLED(CONFIG_ATAGS) && dev_get_platdata(&pdev->dev))
+		return orion5x_pci_probe_pdata(pdev);
+	return -ENXIO;
+}
+
+static const struct of_device_id orion5x_pci_of_match_table[] = {
+	{ .compatible = "marvell,orion-pci", },
+	{},
+};
+MODULE_DEVICE_TABLE(of, orion5x_pci_of_match_table);
+
 static struct platform_driver orion5x_pci_driver = {
 	.driver = {
 		.name = "orion-pci",
+		.of_match_table = orion5x_pci_of_match_table,
 		.suppress_bind_attrs = true,
 	},
 	.probe = orion5x_pci_probe,
