@@ -22,7 +22,7 @@ obj-$(CONFIG_S3C2412_PM)	+= pm-s3c2412.o
 obj-$(CONFIG_S3C2412_PM_SLEEP)	+= sleep-s3c2412.o
 
 obj-$(CONFIG_CPU_S3C2416)	+= s3c2416.o
-obj-$(CONFIG_S3C2416_PM)	+= pm-s3c2416.o
+obj-$(CONFIG_S3C2416_PM)	+= sleep-s3c2412.o pm-s3c2416.o
 
 obj-$(CONFIG_CPU_S3C2440)	+= s3c2440.o
 obj-$(CONFIG_CPU_S3C2442)	+= s3c2442.o

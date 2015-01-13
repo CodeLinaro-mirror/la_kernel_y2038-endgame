@@ -10,6 +10,11 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+#include <linux/delay.h>
+#include <linux/io.h>
+
+#include "regs-clock.h"
+#include "regs-irq.h"
 
 static inline void s3c_pm_debug_init_uart(void)
 {
