@@ -320,25 +320,6 @@ config ARCH_MULTIPLATFORM
 	select USE_OF
 
 
-config ARCH_VERSATILE
-	bool "ARM Ltd. Versatile family"
-	select ARCH_WANT_OPTIONAL_GPIOLIB
-	select ARM_AMBA
-	select ARM_TIMER_SP804
-	select ARM_VIC
-	select CLKSRC_VERSATILE
-	select COMMON_CLK
-	select COMMON_CLK_VERSATILE
-	select CPU_ARM926T
-	select GENERIC_CLOCKEVENTS
-	select ICST
-	select MIGHT_HAVE_PCI
-	select SPARSE_IRQ
-	select USE_OF
-	select VERSATILE_FPGA_IRQ
-	help
-	  This enables support for ARM Ltd Versatile board.
-
 config ARCH_AT91
 	bool "Atmel AT91"
 	select ARCH_REQUIRE_GPIOLIB
@@ -863,6 +844,8 @@ source "arch/arm/mach-tegra/Kconfig"
 source "arch/arm/mach-u300/Kconfig"
 
 source "arch/arm/mach-ux500/Kconfig"
+
+source "arch/arm/mach-versatile/Kconfig"
 
 source "arch/arm/mach-vexpress/Kconfig"
 source "arch/arm/plat-versatile/Kconfig"
