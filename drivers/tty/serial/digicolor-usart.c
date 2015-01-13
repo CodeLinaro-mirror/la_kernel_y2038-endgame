@@ -23,6 +23,10 @@
 #include <linux/platform_device.h>
 #include <linux/workqueue.h>
 
+#if defined(CONFIG_SERIAL_CONEXANT_DIGICOLOR_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
+#define SUPPORT_SYSRQ
+#endif
+
 #define UA_ENABLE			0x00
 #define UA_ENABLE_ENABLE		BIT(0)
 
@@ -403,8 +407,13 @@ static void digicolor_uart_console_write(struct console *co, const char *c,
 	u8 status;
 	unsigned long flags;
 	int locked = 1;
+	int sysrq = 0;
 
-	if (port->sysrq || oops_in_progress)
+#ifdef SUPPORT_SYSRQ
+	sysrq = port->sysrq;
+#endif
+
+	if (sysrq || oops_in_progress)
 		locked = spin_trylock_irqsave(&port->lock, flags);
 	else
 		spin_lock_irqsave(&port->lock, flags);
