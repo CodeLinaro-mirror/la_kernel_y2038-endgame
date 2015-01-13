@@ -34,7 +34,6 @@
 #include "regs-pmu.h"
 #include "exynos-pmu.h"
 #include "regs-srom.h"
-#include "regs-sys.h"
 
 #define S5P_CHECK_SLEEP 0x00000BAD
 
@@ -274,7 +273,7 @@ static void exynos5420_pm_prepare(void)
 	/* Set wake-up mask registers */
 	exynos_pm_set_wakeup_mask();
 
-	s3c_pm_do_save(exynos_core_save, ARRAY_SIZE(exynos_core_save));
+	s5p_pm_do_save(exynos_core_save, ARRAY_SIZE(exynos_core_save));
 
 	exynos_pmu_spare3 = pmu_raw_readl(S5P_PMU_SPARE3);
 	/*
@@ -433,7 +432,7 @@ static void exynos5420_pm_resume(void)
 
 	pmu_raw_writel(exynos_pmu_spare3, S5P_PMU_SPARE3);
 
-	s3c_pm_do_restore_core(exynos_core_save, ARRAY_SIZE(exynos_core_save));
+	s5p_pm_do_restore_core(exynos_core_save, ARRAY_SIZE(exynos_core_save));
 
 early_wakeup:
 
@@ -487,13 +486,9 @@ static int exynos_suspend_enter(suspend_state_t state)
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
 	if (pm_data->pm_resume_prepare)
 		pm_data->pm_resume_prepare();
-	s3c_pm_restore_uarts();
-=======
 	s5p_pm_restore_uarts();
->>>>>>> [EXPERIMENTAL] ARM: exynos: become independent of plat-samsung
 
 	S3C_PMDBG("%s: wakeup stat: %08x\n", __func__,
 			pmu_raw_readl(S5P_WAKEUP_STAT));
@@ -507,7 +502,6 @@ static int exynos_suspend_enter(suspend_state_t state)
 
 static int exynos_suspend_prepare(void)
 {
-<<<<<<< HEAD
 	int ret;
 
 	/*
@@ -524,27 +518,20 @@ static int exynos_suspend_prepare(void)
 		return ret;
 	}
 
-	s3c_pm_check_prepare();
-=======
 	s5p_pm_check_prepare();
->>>>>>> [EXPERIMENTAL] ARM: exynos: become independent of plat-samsung
 
 	return 0;
 }
 
 static void exynos_suspend_finish(void)
 {
-<<<<<<< HEAD
 	int ret;
 
-	s3c_pm_check_cleanup();
+	s5p_pm_check_cleanup();
 
 	ret = regulator_suspend_finish();
 	if (ret)
 		pr_warn("Failed to resume regulators from suspend (%d)\n", ret);
-=======
-	s5p_pm_check_cleanup();
->>>>>>> [EXPERIMENTAL] ARM: exynos: become independent of plat-samsung
 }
 
 static const struct platform_suspend_ops exynos_suspend_ops = {
