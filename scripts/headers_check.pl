@@ -69,6 +69,10 @@ sub check_declarations
 	if ($line =~ m/^void seqbuf_dump\(void\);/) {
 		return;
 	}
+	# user-only declaration from kexec.h
+	if ($line =~ m/^extern int kexec_load/) {
+		return;
+	}
 	if ($line =~ m/^(\s*extern|unsigned|char|short|int|long|void)\b/) {
 		printf STDERR "$filename:$lineno: " .
 			      "userspace cannot reference function or " .
