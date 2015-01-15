@@ -32,13 +32,13 @@
 #include "s3c24xx-i2s.h"
 
 static struct s3c_dma_params s3c24xx_i2s_pcm_stereo_out = {
-	.channel	= DMACH_I2S_OUT,
+	.filter_data	= (void *)(unsigned long)DMACH_I2S_OUT,
 	.ch_name	= "tx",
 	.dma_size	= 2,
 };
 
 static struct s3c_dma_params s3c24xx_i2s_pcm_stereo_in = {
-	.channel	= DMACH_I2S_IN,
+	.filter_data	= (void *)(unsigned long)DMACH_I2S_IN,
 	.ch_name	= "rx",
 	.dma_size	= 2,
 };

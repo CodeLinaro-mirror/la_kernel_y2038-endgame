@@ -568,8 +568,8 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 	s3c_pcm_stereo_out[pdev->id].dma_addr = mem_res->start
 							+ S3C_PCM_TXFIFO;
 
-	s3c_pcm_stereo_in[pdev->id].channel = dmarx_res->start;
-	s3c_pcm_stereo_out[pdev->id].channel = dmatx_res->start;
+	s3c_pcm_stereo_in[pdev->id].filter_data = (void*)(unsigned long)dmarx_res->start;
+	s3c_pcm_stereo_out[pdev->id].filter_data = (void *)(unsigned long)dmatx_res->start;
 
 	pcm->dma_capture = &s3c_pcm_stereo_in[pdev->id];
 	pcm->dma_playback = &s3c_pcm_stereo_out[pdev->id];

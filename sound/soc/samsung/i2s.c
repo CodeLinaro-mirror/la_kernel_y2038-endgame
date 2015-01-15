@@ -1263,7 +1263,7 @@ static int samsung_i2s_probe(struct platform_device *pdev)
 				"Unable to get I2S-TX dma resource\n");
 			return -ENXIO;
 		}
-		pri_dai->dma_playback.channel = res->start;
+		pri_dai->dma_playback.filter_data = (void *)(unsigned long)res->start;
 
 		res = platform_get_resource(pdev, IORESOURCE_DMA, 1);
 		if (!res) {
@@ -1271,7 +1271,7 @@ static int samsung_i2s_probe(struct platform_device *pdev)
 				"Unable to get I2S-RX dma resource\n");
 			return -ENXIO;
 		}
-		pri_dai->dma_capture.channel = res->start;
+		pri_dai->dma_capture.filter_data = (void *)(unsigned long)res->start;
 
 		if (i2s_pdata == NULL) {
 			dev_err(&pdev->dev, "Can't work without s3c_audio_pdata\n");
@@ -1341,7 +1341,7 @@ static int samsung_i2s_probe(struct platform_device *pdev)
 		if (!np) {
 			res = platform_get_resource(pdev, IORESOURCE_DMA, 2);
 			if (res)
-				sec_dai->dma_playback.channel = res->start;
+				sec_dai->dma_playback.filter_data = (void *)(unsigned long)res->start;
 		}
 
 		sec_dai->dma_playback.dma_size = 4;

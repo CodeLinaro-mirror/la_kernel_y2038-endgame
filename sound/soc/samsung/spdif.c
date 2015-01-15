@@ -432,7 +432,7 @@ static int spdif_probe(struct platform_device *pdev)
 
 	spdif_stereo_out.dma_size = 2;
 	spdif_stereo_out.dma_addr = mem_res->start + DATA_OUTBUF;
-	spdif_stereo_out.channel = dma_res->start;
+	spdif_stereo_out.filter_data = (void *)(unsigned long)dma_res->start;
 
 	spdif->dma_playback = &spdif_stereo_out;
 

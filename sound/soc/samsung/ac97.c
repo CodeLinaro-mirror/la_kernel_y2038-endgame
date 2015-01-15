@@ -364,11 +364,11 @@ static int s3c_ac97_probe(struct platform_device *pdev)
 	if (IS_ERR(s3c_ac97.regs))
 		return PTR_ERR(s3c_ac97.regs);
 
-	s3c_ac97_pcm_out.channel = dmatx_res->start;
+	s3c_ac97_pcm_out.filter_data = (void *)(unsigned long)dmatx_res->start;
 	s3c_ac97_pcm_out.dma_addr = mem_res->start + S3C_AC97_PCM_DATA;
-	s3c_ac97_pcm_in.channel = dmarx_res->start;
+	s3c_ac97_pcm_in.filter_data = (void *)(unsigned long)dmarx_res->start;
 	s3c_ac97_pcm_in.dma_addr = mem_res->start + S3C_AC97_PCM_DATA;
-	s3c_ac97_mic_in.channel = dmamic_res->start;
+	s3c_ac97_mic_in.filter_data = (void *)(unsigned long)dmamic_res->start;
 	s3c_ac97_mic_in.dma_addr = mem_res->start + S3C_AC97_MIC_DATA;
 
 	init_completion(&s3c_ac97.done);
