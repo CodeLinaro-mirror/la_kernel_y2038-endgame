@@ -56,6 +56,8 @@
 #define RCV_DROP			BIT(7)
 #define TX_DROP				BIT(6)
 #define DEF_INT_ERR			(RCV_NOBUF | RCV_DROP | TX_DROP)
+#define DEF_INT_RX			(RCV_INT | RCV_NOBUF | RCV_DROP)
+#define DEF_INT_TX			(TX_DROP)
 #define DEF_INT_MASK			(RCV_INT | DEF_INT_ERR)
 
 /* TX descriptor config */
@@ -154,7 +156,6 @@ struct hip04_priv {
 	unsigned int port;
 	unsigned int speed;
 	unsigned int duplex;
-	unsigned int reg_inten;
 
 	struct napi_struct napi;
 	struct net_device *ndev;
@@ -303,17 +304,15 @@ static void hip04_mac_enable(struct net_device *ndev)
 	val |= GE_RX_PORT_EN | GE_TX_PORT_EN;
 	writel_relaxed(val, priv->base + GE_PORT_EN);
 
-	/* clear rx int */
-	val = RCV_INT;
-	writel_relaxed(val, priv->base + PPE_RINT);
+	/* clear prior interrupts */
+	writel_relaxed(DEF_INT_MASK, priv->base + PPE_RINT);
 
 	/* config recv int */
 	val = GE_RX_INT_THRESHOLD | GE_RX_TIMEOUT;
 	writel_relaxed(val, priv->base + PPE_CFG_RX_PKT_INT);
 
 	/* enable interrupt */
-	priv->reg_inten = DEF_INT_MASK;
-	writel_relaxed(priv->reg_inten, priv->base + PPE_INTEN);
+	writel_relaxed(DEF_INT_MASK, priv->base + PPE_INTEN);
 }
 
 static void hip04_mac_disable(struct net_device *ndev)
@@ -322,8 +321,7 @@ static void hip04_mac_disable(struct net_device *ndev)
 	u32 val;
 
 	/* disable int */
-	priv->reg_inten &= ~(DEF_INT_MASK);
-	writel_relaxed(priv->reg_inten, priv->base + PPE_INTEN);
+	writel_relaxed(0, priv->base + PPE_INTEN);
 
 	/* disable tx & rx */
 	val = readl_relaxed(priv->base + GE_PORT_EN);
@@ -403,6 +401,8 @@ static int hip04_tx_reclaim(struct net_device *ndev, bool force)
 	priv->tx_tail = tx_tail;
 	smp_wmb(); /* Ensure tx_tail visible to xmit */
 
+	writel_relaxed(DEF_INT_TX, priv->base + PPE_RINT);
+
 out:
 	if (pkts_compl || bytes_compl)
 		netdev_completed_queue(ndev, pkts_compl, bytes_compl);
@@ -458,9 +458,7 @@ static int hip04_mac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 	if (count >= priv->tx_coalesce_frames) {
 		if (napi_schedule_prep(&priv->napi)) {
 			/* disable rx interrupt and timer */
-			priv->reg_inten &= ~(RCV_INT);
-			writel_relaxed(DEF_INT_MASK & ~RCV_INT,
-				       priv->base + PPE_INTEN);
+			writel_relaxed(0, priv->base + PPE_INTEN);
 			hrtimer_cancel(&priv->tx_coalesce_timer);
 			__napi_schedule(&priv->napi);
 		}
@@ -478,7 +476,7 @@ static int hip04_rx_poll(struct napi_struct *napi, int budget)
 	struct hip04_priv *priv = container_of(napi, struct hip04_priv, napi);
 	struct net_device *ndev = priv->ndev;
 	struct net_device_stats *stats = &ndev->stats;
-	unsigned int cnt = hip04_recv_cnt(priv);
+	unsigned int cnt;
 	struct rx_desc *desc;
 	struct sk_buff *skb;
 	unsigned char *buf;
@@ -488,6 +486,10 @@ static int hip04_rx_poll(struct napi_struct *napi, int budget)
 	int tx_remaining;
 	u16 len;
 	u32 err;
+
+	/* acknowledge interrupts and read status */
+	writel_relaxed(DEF_INT_RX, priv->base + PPE_RINT);
+	cnt = hip04_recv_cnt(priv);
 
 	while (cnt && !last) {
 		buf = priv->rx_buf[priv->rx_head];
@@ -539,11 +541,8 @@ static int hip04_rx_poll(struct napi_struct *napi, int budget)
 			cnt = hip04_recv_cnt(priv);
 	}
 
-	if (!(priv->reg_inten & RCV_INT)) {
-		/* enable rx interrupt */
-		priv->reg_inten |= RCV_INT;
-		writel_relaxed(priv->reg_inten, priv->base + PPE_INTEN);
-	}
+	/* enable rx interrupt */
+	writel_relaxed(DEF_INT_MASK, priv->base + PPE_INTEN);
 	napi_complete(napi);
 done:
 	/* clean up tx descriptors and start a new timer if necessary */
@@ -564,24 +563,21 @@ static irqreturn_t hip04_mac_interrupt(int irq, void *dev_id)
 	if (!ists)
 		return IRQ_NONE;
 
-	writel_relaxed(DEF_INT_MASK, priv->base + PPE_RINT);
-
 	if (unlikely(ists & DEF_INT_ERR)) {
 		if (ists & (RCV_NOBUF | RCV_DROP)) {
 			stats->rx_errors++;
 			stats->rx_dropped++;
-			netdev_err(ndev, "rx drop\n");
+			netdev_dbg(ndev, "rx drop\n");
 		}
 		if (ists & TX_DROP) {
 			stats->tx_dropped++;
-			netdev_err(ndev, "tx drop\n");
+			netdev_dbg(ndev, "tx drop\n");
 		}
 	}
 
-	if (ists & RCV_INT && napi_schedule_prep(&priv->napi)) {
-		/* disable rx interrupt */
-		priv->reg_inten &= ~(RCV_INT);
-		writel_relaxed(DEF_INT_MASK & ~RCV_INT, priv->base + PPE_INTEN);
+	if (napi_schedule_prep(&priv->napi)) {
+		/* disable interrupt */
+		writel_relaxed(0, priv->base + PPE_INTEN);
 		hrtimer_cancel(&priv->tx_coalesce_timer);
 		__napi_schedule(&priv->napi);
 	}
@@ -597,8 +593,7 @@ enum hrtimer_restart tx_done(struct hrtimer *hrtimer)
 
 	if (napi_schedule_prep(&priv->napi)) {
 		/* disable rx interrupt */
-		priv->reg_inten &= ~(RCV_INT);
-		writel_relaxed(DEF_INT_MASK & ~RCV_INT, priv->base + PPE_INTEN);
+		writel_relaxed(0, priv->base + PPE_INTEN);
 		__napi_schedule(&priv->napi);
 	}
 
