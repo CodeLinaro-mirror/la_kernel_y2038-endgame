@@ -29,8 +29,7 @@
  * if we eventually end up using our copied page.
  *
  */
-static void __naked
-xsc3_mc_copy_user_page(void *kto, const void *kfrom)
+static void __naked __xsc3_mc_copy_user_page(void *kto, const void *kfrom)
 {
 	asm("\
 	stmfd	sp!, {r4, r5, lr}		\n\
@@ -70,6 +69,12 @@ xsc3_mc_copy_user_page(void *kto, const void *kfrom)
 	: "r" (kto), "r" (kfrom), "I" (PAGE_SIZE / 64 - 1));
 }
 
+void xsc3_mc_copy_user_page(void *to, const void *from, unsigned long vaddr,
+	struct page *pto)
+{
+	__xsc3_mc_copy_user_page(to, from);
+}
+
 void xsc3_mc_copy_user_highpage(struct page *to, struct page *from,
 	unsigned long vaddr, struct vm_area_struct *vma)
 {
@@ -78,7 +83,7 @@ void xsc3_mc_copy_user_highpage(struct page *to, struct page *from,
 	kto = kmap_atomic(to);
 	kfrom = kmap_atomic(from);
 	flush_cache_page(vma, vaddr, page_to_pfn(from));
-	xsc3_mc_copy_user_page(kto, kfrom);
+	__xsc3_mc_copy_user_page(kto, kfrom);
 	kunmap_atomic(kfrom);
 	kunmap_atomic(kto);
 }
@@ -110,5 +115,6 @@ void xsc3_mc_clear_user_highpage(struct page *page, unsigned long vaddr)
 
 struct cpu_user_fns xsc3_mc_user_fns __initdata = {
 	.cpu_clear_user_highpage = xsc3_mc_clear_user_highpage,
+	.cpu_copy_user_page = xsc3_mc_copy_user_page,
 	.cpu_copy_user_highpage	= xsc3_mc_copy_user_highpage,
 };

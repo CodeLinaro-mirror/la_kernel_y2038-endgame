@@ -13,8 +13,7 @@
 #include <linux/init.h>
 #include <linux/highmem.h>
 
-static void __naked
-feroceon_copy_user_page(void *kto, const void *kfrom)
+static void __naked __feroceon_copy_user_page(void *kto, const void *kfrom)
 {
 	asm("\
 	stmfd	sp!, {r4-r9, lr}		\n\
@@ -67,6 +66,12 @@ feroceon_copy_user_page(void *kto, const void *kfrom)
 	: "r" (kto), "r" (kfrom), "I" (PAGE_SIZE));
 }
 
+void feroceon_copy_user_page(void *to, const void *from, unsigned long vaddr,
+	struct page *pto)
+{
+	__feroceon_copy_user_page(to, from);
+}
+
 void feroceon_copy_user_highpage(struct page *to, struct page *from,
 	unsigned long vaddr, struct vm_area_struct *vma)
 {
@@ -75,7 +80,7 @@ void feroceon_copy_user_highpage(struct page *to, struct page *from,
 	kto = kmap_atomic(to);
 	kfrom = kmap_atomic(from);
 	flush_cache_page(vma, vaddr, page_to_pfn(from));
-	feroceon_copy_user_page(kto, kfrom);
+	__feroceon_copy_user_page(kto, kfrom);
 	kunmap_atomic(kfrom);
 	kunmap_atomic(kto);
 }
@@ -107,6 +112,7 @@ void feroceon_clear_user_highpage(struct page *page, unsigned long vaddr)
 
 struct cpu_user_fns feroceon_user_fns __initdata = {
 	.cpu_clear_user_highpage = feroceon_clear_user_highpage,
+	.cpu_copy_user_page = feroceon_copy_user_page,
 	.cpu_copy_user_highpage	= feroceon_copy_user_highpage,
 };
 

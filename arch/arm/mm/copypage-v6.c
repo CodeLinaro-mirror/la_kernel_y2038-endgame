@@ -98,6 +98,21 @@ static void v6_copy_user_highpage_aliasing(struct page *to,
 	raw_spin_unlock(&v6_lock);
 }
 
+static void v6_copy_user_page_aliasing(void *kto_unused, const void *kfrom,
+	unsigned long vaddr, struct page *page_to)
+{
+	unsigned int offset = CACHE_COLOUR(vaddr);
+	unsigned long kto = COPYPAGE_V6_TO + (offset << PAGE_SHIFT);
+
+	/* FIXME: not highmem safe */
+	discard_old_kernel_data(page_address(page_to));
+
+	raw_spin_lock(&v6_lock);
+	set_top_pte(kto, mk_pte(page_to, PAGE_KERNEL));
+	copy_page((void *)kto, kfrom);
+	raw_spin_unlock(&v6_lock);
+}
+
 /*
  * Clear the user page.  We need to deal with the aliasing issues,
  * so remap the kernel page into the same cache colour as the user
@@ -124,6 +139,7 @@ static void v6_clear_user_highpage_aliasing(struct page *page, unsigned long vad
 
 struct cpu_user_fns v6_user_fns __initdata = {
 	.cpu_clear_user_highpage = v6_clear_user_highpage_nonaliasing,
+	.cpu_copy_user_page = (copy_user_page_t *)copy_page,
 	.cpu_copy_user_highpage	= v6_copy_user_highpage_nonaliasing,
 };
 
@@ -131,6 +147,7 @@ static int __init v6_userpage_init(void)
 {
 	if (cache_is_vipt_aliasing()) {
 		cpu_user.cpu_clear_user_highpage = v6_clear_user_highpage_aliasing;
+		cpu_user.cpu_copy_user_page = v6_copy_user_page_aliasing,
 		cpu_user.cpu_copy_user_highpage = v6_copy_user_highpage_aliasing;
 	}
 
