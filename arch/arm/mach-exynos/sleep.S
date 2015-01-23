@@ -71,9 +71,9 @@ ENTRY(exynos_cpu_resume_ns)
 	cmp	r0, r1
 	bne	skip_cp15
 
-	adr	r0, cp15_save_power
+	adr	r0, 3f
 	ldr	r1, [r0]
-	adr	r0, cp15_save_diag
+	adr	r0, 2f
 	ldr	r2, [r0]
 	mov	r0, #SMC_CMD_C15RESUME
 	dsb
@@ -122,10 +122,10 @@ skip_cp15:
 ENDPROC(exynos_cpu_resume_ns)
 	.globl cp15_save_diag
 cp15_save_diag:
-	.long	0	@ cp15 diagnostic
+2:	.long	0	@ cp15 diagnostic
 	.globl cp15_save_power
 cp15_save_power:
-	.long	0	@ cp15 power control
+3:	.long	0	@ cp15 power control
 
 #ifdef CONFIG_CACHE_L2X0
 	.align
