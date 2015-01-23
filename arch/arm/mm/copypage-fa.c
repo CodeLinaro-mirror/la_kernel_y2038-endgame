@@ -17,8 +17,7 @@
 /*
  * Faraday optimised copy_user_page
  */
-static void __naked
-fa_copy_user_page(void *kto, const void *kfrom)
+static void __naked __fa_copy_user_page(void *kto, const void *kfrom)
 {
 	asm("\
 	stmfd	sp!, {r4, lr}			@ 2\n\
@@ -39,6 +38,12 @@ fa_copy_user_page(void *kto, const void *kfrom)
 	: "I" (PAGE_SIZE / 32));
 }
 
+void fa_copy_user_page(void *to, const void *from, unsigned long vaddr,
+	struct page *pto)
+{
+	__fa_copy_user_page(to, from);
+}
+
 void fa_copy_user_highpage(struct page *to, struct page *from,
 	unsigned long vaddr, struct vm_area_struct *vma)
 {
@@ -46,7 +51,7 @@ void fa_copy_user_highpage(struct page *to, struct page *from,
 
 	kto = kmap_atomic(to);
 	kfrom = kmap_atomic(from);
-	fa_copy_user_page(kto, kfrom);
+	__fa_copy_user_page(kto, kfrom);
 	kunmap_atomic(kfrom);
 	kunmap_atomic(kto);
 }
@@ -82,5 +87,6 @@ void fa_clear_user_highpage(struct page *page, unsigned long vaddr)
 
 struct cpu_user_fns fa_user_fns __initdata = {
 	.cpu_clear_user_highpage = fa_clear_user_highpage,
+	.cpu_copy_user_page = fa_copy_user_page,
 	.cpu_copy_user_highpage	= fa_copy_user_highpage,
 };

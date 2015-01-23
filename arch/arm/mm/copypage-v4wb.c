@@ -22,8 +22,7 @@
  * instruction.  If your processor does not supply this, you have to write your
  * own copy_user_highpage that does the right thing.
  */
-static void __naked
-v4wb_copy_user_page(void *kto, const void *kfrom)
+static void __naked __v4wb_copy_user_page(void *kto, const void *kfrom)
 {
 	asm("\
 	stmfd	sp!, {r4, lr}			@ 2\n\
@@ -47,6 +46,12 @@ v4wb_copy_user_page(void *kto, const void *kfrom)
 	: "r" (kto), "r" (kfrom), "I" (PAGE_SIZE / 64));
 }
 
+void v4wb_copy_user_page(void *to, const void *from, unsigned long vaddr,
+	struct page *pto)
+{
+	__v4wb_copy_user_page(to, from);
+}
+
 void v4wb_copy_user_highpage(struct page *to, struct page *from,
 	unsigned long vaddr, struct vm_area_struct *vma)
 {
@@ -55,7 +60,7 @@ void v4wb_copy_user_highpage(struct page *to, struct page *from,
 	kto = kmap_atomic(to);
 	kfrom = kmap_atomic(from);
 	flush_cache_page(vma, vaddr, page_to_pfn(from));
-	v4wb_copy_user_page(kto, kfrom);
+	__v4wb_copy_user_page(kto, kfrom);
 	kunmap_atomic(kfrom);
 	kunmap_atomic(kto);
 }
@@ -91,5 +96,6 @@ void v4wb_clear_user_highpage(struct page *page, unsigned long vaddr)
 
 struct cpu_user_fns v4wb_user_fns __initdata = {
 	.cpu_clear_user_highpage = v4wb_clear_user_highpage,
+	.cpu_copy_user_page = v4wb_copy_user_page,
 	.cpu_copy_user_highpage	= v4wb_copy_user_highpage,
 };

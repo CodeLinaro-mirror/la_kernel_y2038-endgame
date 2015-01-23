@@ -20,8 +20,7 @@
  * dirty data in the cache.  However, we do have to ensure that
  * subsequent reads are up to date.
  */
-static void __naked
-v4wt_copy_user_page(void *kto, const void *kfrom)
+static void __naked __v4wt_copy_user_page(void *kto, const void *kfrom)
 {
 	asm("\
 	stmfd	sp!, {r4, lr}			@ 2\n\
@@ -43,6 +42,12 @@ v4wt_copy_user_page(void *kto, const void *kfrom)
 	: "r" (kto), "r" (kfrom), "I" (PAGE_SIZE / 64));
 }
 
+void v4wt_copy_user_page(void *to, const void *from, unsigned long vaddr,
+	struct page *pto)
+{
+	__v4wt_copy_user_page(to, from);
+}
+
 void v4wt_copy_user_highpage(struct page *to, struct page *from,
 	unsigned long vaddr, struct vm_area_struct *vma)
 {
@@ -50,7 +55,7 @@ void v4wt_copy_user_highpage(struct page *to, struct page *from,
 
 	kto = kmap_atomic(to);
 	kfrom = kmap_atomic(from);
-	v4wt_copy_user_page(kto, kfrom);
+	__v4wt_copy_user_page(kto, kfrom);
 	kunmap_atomic(kfrom);
 	kunmap_atomic(kto);
 }
@@ -84,5 +89,6 @@ void v4wt_clear_user_highpage(struct page *page, unsigned long vaddr)
 
 struct cpu_user_fns v4wt_user_fns __initdata = {
 	.cpu_clear_user_highpage = v4wt_clear_user_highpage,
+	.cpu_copy_user_page = v4wt_copy_user_page,
 	.cpu_copy_user_highpage	= v4wt_copy_user_highpage,
 };

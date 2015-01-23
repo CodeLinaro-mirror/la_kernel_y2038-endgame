@@ -36,8 +36,7 @@ static DEFINE_RAW_SPINLOCK(minicache_lock);
  * Dcache aliasing issue.  The writes will be forwarded to the write buffer,
  * and merged as appropriate.
  */
-static void __naked
-mc_copy_user_page(void *from, void *to)
+static void __naked __xscale_mc_copy_user_page(const void *from, void *to)
 {
 	/*
 	 * Strangely enough, best performance is achieved
@@ -84,6 +83,12 @@ mc_copy_user_page(void *from, void *to)
 	: "r" (from), "r" (to), "I" (PAGE_SIZE / 64 - 1));
 }
 
+void xscale_mc_copy_user_page(void *to, const void *from,
+	unsigned long vaddr, struct page *pto)
+{
+	__xscale_mc_copy_user_page(from, to);
+}
+
 void xscale_mc_copy_user_highpage(struct page *to, struct page *from,
 	unsigned long vaddr, struct vm_area_struct *vma)
 {
@@ -96,7 +101,7 @@ void xscale_mc_copy_user_highpage(struct page *to, struct page *from,
 
 	set_top_pte(COPYPAGE_MINICACHE, mk_pte(from, minicache_pgprot));
 
-	mc_copy_user_page((void *)COPYPAGE_MINICACHE, kto);
+	__xscale_mc_copy_user_page((void *)COPYPAGE_MINICACHE, kto);
 
 	raw_spin_unlock(&minicache_lock);
 
@@ -131,5 +136,6 @@ xscale_mc_clear_user_highpage(struct page *page, unsigned long vaddr)
 
 struct cpu_user_fns xscale_mc_user_fns __initdata = {
 	.cpu_clear_user_highpage = xscale_mc_clear_user_highpage,
+	.cpu_copy_user_page = xscale_mc_copy_user_page,
 	.cpu_copy_user_highpage	= xscale_mc_copy_user_highpage,
 };
