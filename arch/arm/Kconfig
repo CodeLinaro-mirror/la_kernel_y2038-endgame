@@ -315,9 +315,11 @@ source "kernel/Kconfig.freezer"
 
 menu "System Type"
 
+config NOMMU
+	bool
+
 config MMU
-	bool "MMU-based Paged Memory Management Support"
-	default y
+	def_bool !NOMMU
 	help
 	  Select if you want MMU-based virtualised addressing space
 	  support by paged memory management. If unsure, say 'Y'.
@@ -336,12 +338,10 @@ config ARCH_MMAP_RND_BITS_MAX
 #
 choice
 	prompt "ARM system type"
-	default ARM_SINGLE_ARMV7M if !MMU
-	default ARCH_MULTIPLATFORM if MMU
+	default ARCH_MULTIPLATFORM
 
 config ARCH_MULTIPLATFORM
 	bool "Allow multiple platforms to be selected"
-	depends on MMU
 	select ARM_HAS_SG_CHAIN
 	select ARM_PATCH_PHYS_VIRT
 	select AUTO_ZRELADDR
@@ -356,7 +356,6 @@ config ARCH_MULTIPLATFORM
 
 config ARM_SINGLE_ARMV7M
 	bool "ARMv7-M based platforms (Cortex-M0/M3/M4)"
-	depends on !MMU
 	select ARM_NVIC
 	select AUTO_ZRELADDR
 	select CLKSRC_OF
@@ -364,6 +363,7 @@ config ARM_SINGLE_ARMV7M
 	select CPU_V7M
 	select GENERIC_CLOCKEVENTS
 	select NO_IOPORT_MAP
+	select NOMMU
 	select SPARSE_IRQ
 	select USE_OF
 
@@ -420,7 +420,6 @@ config ARCH_NETX
 
 config ARCH_IOP13XX
 	bool "IOP13xx-based"
-	depends on MMU
 	select CPU_XSC3
 	select NEED_MACH_MEMORY_H
 	select NEED_RET_TO_USER
@@ -433,7 +432,6 @@ config ARCH_IOP13XX
 
 config ARCH_IOP32X
 	bool "IOP32x-based"
-	depends on MMU
 	select CPU_XSCALE
 	select GPIO_IOP
 	select GPIOLIB
@@ -446,7 +444,6 @@ config ARCH_IOP32X
 
 config ARCH_IOP33X
 	bool "IOP33x-based"
-	depends on MMU
 	select CPU_XSCALE
 	select GPIO_IOP
 	select GPIOLIB
@@ -458,7 +455,6 @@ config ARCH_IOP33X
 
 config ARCH_IXP4XX
 	bool "IXP4xx-based"
-	depends on MMU
 	select ARCH_HAS_DMA_SET_COHERENT_MASK
 	select ARCH_SUPPORTS_BIG_ENDIAN
 	select CLKSRC_MMIO
@@ -519,7 +515,6 @@ config ARCH_LPC32XX
 
 config ARCH_PXA
 	bool "PXA2xx/PXA3xx-based"
-	depends on MMU
 	select ARCH_MTD_XIP
 	select ARM_CPU_SUSPEND if PM
 	select AUTO_ZRELADDR
@@ -542,7 +537,6 @@ config ARCH_PXA
 
 config ARCH_RPC
 	bool "RiscPC"
-	depends on MMU
 	select ARCH_ACORN
 	select ARCH_MAY_HAVE_PC_FDC
 	select ARCH_SPARSEMEM_ENABLE
@@ -617,7 +611,6 @@ config ARCH_DAVINCI
 
 config ARCH_OMAP1
 	bool "TI OMAP1"
-	depends on MMU
 	select ARCH_HAS_HOLES_MEMORYMODEL
 	select ARCH_OMAP
 	select CLKDEV_LOOKUP
