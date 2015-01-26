@@ -298,9 +298,11 @@ source "kernel/Kconfig.freezer"
 
 menu "System Type"
 
+config NOMMU
+	bool
+
 config MMU
-	bool "MMU-based Paged Memory Management Support"
-	default y
+	def_bool !NOMMU
 	help
 	  Select if you want MMU-based virtualised addressing space
 	  support by paged memory management. If unsure, say 'Y'.
@@ -311,12 +313,10 @@ config MMU
 #
 choice
 	prompt "ARM system type"
-	default ARCH_VERSATILE if !MMU
-	default ARCH_MULTIPLATFORM if MMU
+	default ARCH_MULTIPLATFORM
 
 config ARCH_MULTIPLATFORM
 	bool "Allow multiple platforms to be selected"
-	depends on MMU
 	select ARCH_WANT_OPTIONAL_GPIOLIB
 	select ARM_HAS_SG_CHAIN
 	select ARM_PATCH_PHYS_VIRT
@@ -400,7 +400,6 @@ config ARCH_EBSA110
 
 config ARCH_EFM32
 	bool "Energy Micro efm32"
-	depends on !MMU
 	select ARCH_REQUIRE_GPIOLIB
 	select ARM_NVIC
 	select AUTO_ZRELADDR
@@ -410,6 +409,7 @@ config ARCH_EFM32
 	select GENERIC_CLOCKEVENTS
 	select NO_DMA
 	select NO_IOPORT_MAP
+	select NOMMU
 	select SPARSE_IRQ
 	select USE_OF
 	help
@@ -451,7 +451,6 @@ config ARCH_NETX
 
 config ARCH_IOP13XX
 	bool "IOP13xx-based"
-	depends on MMU
 	select CPU_XSC3
 	select NEED_MACH_MEMORY_H
 	select NEED_RET_TO_USER
@@ -464,7 +463,6 @@ config ARCH_IOP13XX
 
 config ARCH_IOP32X
 	bool "IOP32x-based"
-	depends on MMU
 	select ARCH_REQUIRE_GPIOLIB
 	select CPU_XSCALE
 	select GPIO_IOP
@@ -477,7 +475,6 @@ config ARCH_IOP32X
 
 config ARCH_IOP33X
 	bool "IOP33x-based"
-	depends on MMU
 	select ARCH_REQUIRE_GPIOLIB
 	select CPU_XSCALE
 	select GPIO_IOP
@@ -489,7 +486,6 @@ config ARCH_IOP33X
 
 config ARCH_IXP4XX
 	bool "IXP4xx-based"
-	depends on MMU
 	select ARCH_HAS_DMA_SET_COHERENT_MASK
 	select ARCH_REQUIRE_GPIOLIB
 	select ARCH_SUPPORTS_BIG_ENDIAN
@@ -531,7 +527,6 @@ config ARCH_MV78XX0
 
 config ARCH_ORION5X
 	bool "Marvell Orion"
-	depends on MMU
 	select ARCH_REQUIRE_GPIOLIB
 	select CPU_FEROCEON
 	select GENERIC_CLOCKEVENTS
@@ -545,7 +540,6 @@ config ARCH_ORION5X
 
 config ARCH_MMP
 	bool "Marvell PXA168/910/MMP2"
-	depends on MMU
 	select ARCH_REQUIRE_GPIOLIB
 	select CLKDEV_LOOKUP
 	select GENERIC_ALLOCATOR
@@ -601,7 +595,6 @@ config ARCH_LPC32XX
 
 config ARCH_PXA
 	bool "PXA2xx/PXA3xx-based"
-	depends on MMU
 	select ARCH_MTD_XIP
 	select ARCH_REQUIRE_GPIOLIB
 	select ARM_CPU_SUSPEND if PM
@@ -742,7 +735,6 @@ config ARCH_DAVINCI
 
 config ARCH_OMAP1
 	bool "TI OMAP1"
-	depends on MMU
 	select ARCH_HAS_HOLES_MEMORYMODEL
 	select ARCH_OMAP
 	select ARCH_REQUIRE_GPIOLIB
