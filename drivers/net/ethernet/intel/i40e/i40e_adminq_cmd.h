@@ -1535,7 +1535,7 @@ struct i40e_aqc_configure_partition_bw_data {
 	__le16	pf_valid_bits;
 	u8	min_bw[16];      /* guaranteed bandwidth */
 	u8	max_bw[16];      /* bandwidth limit */
-};
+} __attribute__((packed, aligned(2)));
 
 I40E_CHECK_STRUCT_LEN(0x22, i40e_aqc_configure_partition_bw_data);
 
@@ -1872,7 +1872,7 @@ struct i40e_aqc_nvm_config_data_feature {
 #define I40E_AQ_ANVM_FEATURE_OPTION_POR_CSR		0x10
 	__le16 feature_options;
 	__le16 feature_selection;
-};
+} __attribute__((packed, aligned(2)));
 
 I40E_CHECK_STRUCT_LEN(0x6, i40e_aqc_nvm_config_data_feature);
 

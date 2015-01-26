@@ -75,7 +75,7 @@ struct vring_avail {
 	__virtio16 flags;
 	__virtio16 idx;
 	__virtio16 ring[];
-};
+} __packed __attribute__((aligned(2)));
 
 /* u32 is used here for ids for padding reasons. */
 struct vring_used_elem {
