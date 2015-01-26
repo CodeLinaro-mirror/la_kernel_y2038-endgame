@@ -283,9 +283,11 @@ config PGTABLE_LEVELS
 
 menu "System Type"
 
+config NOMMU
+	bool
+
 config MMU
-	bool "MMU-based Paged Memory Management Support"
-	default y
+	def_bool !NOMMU
 	help
 	  Select if you want MMU-based virtualised addressing space
 	  support by paged memory management. If unsure, say 'Y'.
@@ -304,12 +306,10 @@ config ARCH_MMAP_RND_BITS_MAX
 #
 choice
 	prompt "ARM system type"
-	default ARM_SINGLE_ARMV7M if !MMU
-	default ARCH_MULTIPLATFORM if MMU
+	default ARCH_MULTIPLATFORM
 
 config ARCH_MULTIPLATFORM
 	bool "Allow multiple platforms to be selected"
-	depends on MMU
 	select ARCH_FLATMEM_ENABLE
 	select ARCH_SPARSEMEM_ENABLE
 	select ARCH_SELECT_MEMORY_MODEL
@@ -326,13 +326,13 @@ config ARCH_MULTIPLATFORM
 
 config ARM_SINGLE_ARMV7M
 	bool "ARMv7-M based platforms (Cortex-M0/M3/M4)"
-	depends on !MMU
 	select ARM_NVIC
 	select AUTO_ZRELADDR
 	select TIMER_OF
 	select COMMON_CLK
 	select CPU_V7M
 	select NO_IOPORT_MAP
+	select NOMMU
 	select SPARSE_IRQ
 	select USE_OF
 
@@ -363,7 +363,6 @@ config ARCH_FOOTBRIDGE
 
 config ARCH_IOP32X
 	bool "IOP32x-based"
-	depends on MMU
 	select CPU_XSCALE
 	select GPIO_IOP
 	select GPIOLIB
@@ -376,7 +375,6 @@ config ARCH_IOP32X
 
 config ARCH_IXP4XX
 	bool "IXP4xx-based"
-	depends on MMU
 	select ARCH_HAS_DMA_SET_COHERENT_MASK
 	select ARCH_SUPPORTS_BIG_ENDIAN
 	select CPU_XSCALE
@@ -411,7 +409,6 @@ config ARCH_DOVE
 
 config ARCH_PXA
 	bool "PXA2xx/PXA3xx-based"
-	depends on MMU
 	select ARCH_MTD_XIP
 	select ARM_CPU_SUSPEND if PM
 	select AUTO_ZRELADDR
@@ -431,7 +428,6 @@ config ARCH_PXA
 
 config ARCH_RPC
 	bool "RiscPC"
-	depends on MMU
 	select ARCH_ACORN
 	select ARCH_MAY_HAVE_PC_FDC
 	select ARCH_SPARSEMEM_ENABLE
@@ -489,7 +485,6 @@ config ARCH_S3C24XX
 
 config ARCH_OMAP1
 	bool "TI OMAP1"
-	depends on MMU
 	select ARCH_OMAP
 	select CLKSRC_MMIO
 	select GENERIC_IRQ_CHIP
