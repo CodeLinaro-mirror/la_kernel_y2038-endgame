@@ -66,6 +66,14 @@ static inline uint32_t __div64_32(uint64_t *n, uint32_t base)
  */
 #define do_div(n, base) __div64_32(&(n), base)
 
+#elif defined(CONFIG_CPU_32v3)
+
+/*
+ * modern compiler versions (>= gcc-4.9) tend to misoptimize
+ * the code for ARMv3, and this is not getting fixed any more.
+ */
+#define do_div(n, base) __div64_32(&(n), base)
+
 #else
 
 /*
