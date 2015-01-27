@@ -126,4 +126,9 @@ config REALVIEW_HIGH_PHYS_OFFSET
 	  offset. On the PBX board, disabling this option allows 1GB of
 	  RAM to be used with SPARSEMEM.
 
+config MACH_REALVIEW_AUTO
+	def_bool y
+	select MACH_REALVIEW_PBX if (!MACH_REALVIEW_PBA8 || MACH_REALVIEW_PB1176 || MACH_REALVIEW_PB11MP || MACH_REALVIEW_EB)
+	select CPU_V6 if !CPU_V7
+
 endmenu
