@@ -32,7 +32,7 @@
 #include <asm/mach/map.h>
 
 #include <mach/pxa25x.h>
-#include <mach/idp.h>
+#include "idp.h"
 #include <linux/platform_data/video-pxafb.h>
 #include <mach/bitfield.h>
 #include <linux/platform_data/mmc-pxamci.h>

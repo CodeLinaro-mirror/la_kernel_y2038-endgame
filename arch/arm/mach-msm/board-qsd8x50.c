@@ -31,7 +31,7 @@
 
 #include <mach/irqs.h>
 #include <mach/sirc.h>
-#include <mach/vreg.h>
+#include "vreg.h"
 #include <mach/clk.h>
 #include <linux/platform_data/mmc-msm_sdcc.h>
 

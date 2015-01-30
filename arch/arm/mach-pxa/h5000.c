@@ -31,8 +31,8 @@
 #include <asm/irq.h>
 
 #include <mach/pxa25x.h>
-#include <mach/h5000.h>
-#include <mach/udc.h>
+#include "h5000.h"
+#include "udc.h"
 #include <mach/smemc.h>
 
 #include "generic.h"

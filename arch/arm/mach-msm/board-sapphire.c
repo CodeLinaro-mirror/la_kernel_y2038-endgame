@@ -27,7 +27,7 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 #include <asm/mach/flash.h>
-#include <mach/vreg.h>
+#include "vreg.h"
 
 #include <asm/io.h>
 #include <asm/delay.h>

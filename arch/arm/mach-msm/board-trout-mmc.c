@@ -13,8 +13,7 @@
 
 #include <asm/io.h>
 
-#include <mach/vreg.h>
-#include <mach/irqs.h>
+#include "vreg.h"
 
 #include <linux/platform_data/mmc-msm_sdcc.h>
 

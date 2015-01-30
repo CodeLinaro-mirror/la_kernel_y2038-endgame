@@ -31,7 +31,7 @@
 #include <linux/cpu.h>
 #include <linux/pci.h>
 #include <linux/sched_clock.h>
-#include <mach/udc.h>
+#include "udc.h"
 #include <mach/hardware.h>
 #include <mach/io.h>
 #include <asm/uaccess.h>
