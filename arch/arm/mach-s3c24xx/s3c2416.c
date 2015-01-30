@@ -48,7 +48,7 @@
 #include <asm/system_misc.h>
 
 #include <mach/regs-s3c2443-clock.h>
-#include <mach/rtc-core.h>
+#include "rtc-core.h"
 
 #include <plat/gpio-core.h>
 #include <plat/gpio-cfg.h>

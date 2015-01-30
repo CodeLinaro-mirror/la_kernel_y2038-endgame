@@ -51,7 +51,7 @@
 #include <linux/platform_data/video-pxafb.h>
 #include <mach/regs-uart.h>
 #include <linux/platform_data/pcmcia-pxa2xx_viper.h>
-#include <mach/viper.h>
+#include "viper.h"
 
 #include <asm/setup.h>
 #include <asm/mach-types.h>

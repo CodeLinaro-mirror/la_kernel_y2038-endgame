@@ -33,11 +33,11 @@
 
 #include <mach/pxa25x.h>
 #include <mach/audio.h>
-#include <mach/palmte2.h>
+#include "palmte2.h"
 #include <linux/platform_data/mmc-pxamci.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <linux/platform_data/irda-pxaficp.h>
-#include <mach/udc.h>
+#include "udc.h"
 #include <linux/platform_data/asoc-palm27x.h>
 
 #include "generic.h"

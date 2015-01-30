@@ -51,9 +51,9 @@
 #include <mach/pxa25x.h>
 #include <linux/platform_data/irda-pxaficp.h>
 #include <linux/platform_data/mmc-pxamci.h>
-#include <mach/udc.h>
+#include "udc.h"
 #include <mach/corgi.h>
-#include <mach/sharpsl_pm.h>
+#include "sharpsl_pm.h"
 
 #include <asm/mach/sharpsl_param.h>
 #include <asm/hardware/scoop.h>
