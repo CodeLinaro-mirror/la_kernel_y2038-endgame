@@ -37,7 +37,7 @@
 #include <linux/platform_data/mmc-pxamci.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <linux/platform_data/irda-pxaficp.h>
-#include <mach/udc.h>
+#include "udc.h"
 
 #include "generic.h"
 #include "devices.h"

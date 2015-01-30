@@ -32,8 +32,8 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
-#include <mach/board-voiceblue.h>
-#include <mach/flash.h>
+#include "board-voiceblue.h"
+#include "flash.h"
 #include <mach/mux.h>
 #include <mach/tc.h>
 

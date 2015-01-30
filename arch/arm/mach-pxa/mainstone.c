@@ -45,7 +45,7 @@
 #include <asm/mach/irq.h>
 #include <asm/mach/flash.h>
 
-#include <mach/pxa27x.h>
+#include "pxa27x.h"
 #include <mach/mainstone.h>
 #include <mach/audio.h>
 #include <linux/platform_data/video-pxafb.h>
