@@ -177,7 +177,7 @@ config MTD_OTP
 
 config MTD_CFI_INTELEXT
 	tristate "Support for CFI command set 0001 (Intel/Sharp chips)"
-	depends on MTD_GEN_PROBE
+	depends on MTD_GEN_PROBE && BROKEN
 	select MTD_CFI_UTIL
 	help
 	  The Common Flash Interface defines a number of different command
