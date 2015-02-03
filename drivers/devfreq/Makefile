@@ -11,4 +11,4 @@ obj-$(CONFIG_ARM_EXYNOS5_BUS_DEVFREQ)	+= exynos/
 obj-$(CONFIG_ARM_TEGRA_DEVFREQ)		+= tegra-devfreq.o
 
 # DEVFREQ Event Drivers
-obj-$(CONFIG_PM_DEVFREQ_EVENT)		+= event/
+obj-$(CONFIG_PM_DEVFREQ_EVENT)		+= event/ devfreq-event.o
