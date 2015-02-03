@@ -17,6 +17,7 @@ config DRM_PS8622
 	tristate "Parade eDP/LVDS bridge"
 	depends on DRM
 	depends on OF
+	depends on GPIOLIB
 	select DRM_PANEL
 	select DRM_KMS_HELPER
 	select BACKLIGHT_LCD_SUPPORT
