@@ -198,6 +198,7 @@ static int exynos_cpu0_enter_aftr(void)
 {
 	int ret = -1;
 
+#ifdef CONFIG_SMP
 	/*
 	 * If the other cpu is powered on, we have to power it off, because
 	 * the AFTR state won't work otherwise
@@ -227,10 +228,12 @@ static int exynos_cpu0_enter_aftr(void)
 			cpu_relax();
 		}
 	}
+#endif
 
 	exynos_enter_aftr();
 	ret = 0;
 
+#ifdef CONFIG_SMP
 abort:
 	if (cpu_online(1)) {
 		/*
@@ -257,11 +260,12 @@ abort:
 			arch_send_wakeup_ipi_mask(cpumask_of(1));
 		}
 	}
+#endif
 
 	return ret;
 }
 
-static int exynos_wfi_finisher(unsigned long flags)
+static int __maybe_unused exynos_wfi_finisher(unsigned long flags)
 {
 	cpu_do_idle();
 
@@ -271,7 +275,7 @@ static int exynos_wfi_finisher(unsigned long flags)
 static int exynos_cpu1_powerdown(void)
 {
 	int ret = -1;
-
+#ifdef CONFIG_SMP
 	/*
 	 * Idle sequence for cpu1
 	 */
@@ -293,13 +297,20 @@ cpu1_aborted:
 	 * Notify cpu 0 that cpu 1 is awake
 	 */
 	atomic_set(&cpu1_wakeup, 1);
-
+#endif
 	return ret;
 }
 
 static void exynos_pre_enter_aftr(void)
 {
-	__raw_writel(virt_to_phys(exynos_cpu_resume), cpu_boot_reg_base());
+	void *reg_base;
+
+	if (soc_is_exynos4210() && samsung_rev() == EXYNOS4210_REV_1_1)
+		reg_base = pmu_base_addr + S5P_INFORM5;
+	else
+		reg_base = sysram_base_addr;
+
+	__raw_writel(virt_to_phys(exynos_cpu_resume), reg_base);
 }
 
 static void exynos_post_enter_aftr(void)
