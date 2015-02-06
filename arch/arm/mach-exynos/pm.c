@@ -292,7 +292,7 @@ static void exynos_pre_enter_aftr(void)
 {
 	void *reg_base;
 
-	if (soc_is_exynos4210() && samsung_rev() == EXYNOS4210_REV_1_1)
+	if (soc_is_exynos4210() && exynos_rev() == EXYNOS4210_REV_1_1)
 		reg_base = pmu_base_addr + S5P_INFORM5;
 	else
 		reg_base = sysram_base_addr;
