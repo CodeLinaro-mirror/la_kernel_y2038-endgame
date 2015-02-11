@@ -33,7 +33,7 @@ config NFSD_V2_ACL
 	depends on NFSD
 
 config NFSD_V3
-	bool "NFS server support for NFS version 3"
+	def_bool y
 	depends on NFSD
 	help
 	  This option enables support in your system's NFS server for
