@@ -45,7 +45,7 @@ extern void __init sun6i_reset_init(void);
 static void __init sun6i_timer_init(void)
 {
 	of_clk_init(NULL);
-	if (IS_ENABLED(CONFIG_RESET_CONTROLLER))
+	if (IS_ENABLED(CONFIG_RESET_SUNXI))
 		sun6i_reset_init();
 	clocksource_probe();
 }
