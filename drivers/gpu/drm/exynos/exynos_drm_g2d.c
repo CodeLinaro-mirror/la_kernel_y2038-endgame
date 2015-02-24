@@ -350,7 +350,7 @@ static void g2d_add_cmdlist_to_inuse(struct exynos_drm_g2d_private *g2d_priv,
 	/* this links to base address of new cmdlist */
 	lnode = list_entry(g2d_priv->inuse_cmdlist.prev,
 				struct g2d_cmdlist_node, list);
-	lnode->cmdlist->data[lnode->cmdlist->last] = node->dma_addr;
+	lnode->cmdlist->data[lnode->cmdlist->last] = node->dma_addr & 0xffffffff;
 
 add_to_list:
 	list_add_tail(&node->list, &g2d_priv->inuse_cmdlist);
