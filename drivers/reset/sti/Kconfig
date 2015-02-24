@@ -1,19 +1,19 @@
-if ARCH_STI
+if ARCH_STI || COMPILE_TEST
 
-config STI_RESET_SYSCFG
+config RESET_STI_SYSCFG
 	bool
 	select RESET_CONTROLLER
 
-config STIH415_RESET
-	bool
-	select STI_RESET_SYSCFG
+config RESET_STIH415
+	bool "STmicroelectronics STiH415 reset controller" if COMPILE_TEST
+	select RESET_STI_SYSCFG
 
-config STIH416_RESET
-	bool
-	select STI_RESET_SYSCFG
+config RESET_STIH416
+	bool "STmicroelectronics STiH416 reset controller" if COMPILE_TEST
+	select RESET_STI_SYSCFG
 
-config STIH407_RESET
-	bool
-	select STI_RESET_SYSCFG
+config RESET_STIH407
+	bool "STmicroelectronics STiH407 reset controller" if COMPILE_TEST
+	select RESET_STI_SYSCFG
 
 endif
