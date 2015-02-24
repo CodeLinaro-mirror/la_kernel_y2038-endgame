@@ -17,7 +17,8 @@ config GENERIC_PHY
 
 config PHY_BERLIN_USB
 	tristate "Marvell Berlin USB PHY Driver"
-	depends on ARCH_BERLIN && RESET_CONTROLLER && HAS_IOMEM && OF
+	depends on ARCH_BERLIN || COMPILE_TEST
+	depends on HAS_IOMEM && OF
 	select GENERIC_PHY
 	help
 	  Enable this to support the USB PHY on Marvell Berlin SoCs.
@@ -218,7 +219,6 @@ config PHY_MT65XX_USB3
 config PHY_SUN4I_USB
 	tristate "Allwinner sunxi SoC USB PHY driver"
 	depends on ARCH_SUNXI && HAS_IOMEM && OF
-	depends on RESET_CONTROLLER
 	depends on EXTCON
 	depends on POWER_SUPPLY
 	select GENERIC_PHY
@@ -232,7 +232,6 @@ config PHY_SUN4I_USB
 config PHY_SUN9I_USB
 	tristate "Allwinner sun9i SoC USB PHY driver"
 	depends on ARCH_SUNXI && HAS_IOMEM && OF
-	depends on RESET_CONTROLLER
 	select GENERIC_PHY
 	help
 	  Enable this to support the transceiver that is part of Allwinner
@@ -342,7 +341,6 @@ config PHY_XGENE
 
 config PHY_STIH407_USB
 	tristate "STMicroelectronics USB2 picoPHY driver for STiH407 family"
-	depends on RESET_CONTROLLER
 	depends on ARCH_STI || COMPILE_TEST
 	select GENERIC_PHY
 	help

@@ -322,6 +322,7 @@ choice
 
 config ARCH_MULTIPLATFORM
 	bool "Allow multiple platforms to be selected"
+	select ARCH_HAS_RESET_CONTROLLER
 	select ARCH_WANT_OPTIONAL_GPIOLIB
 	select ARM_HAS_SG_CHAIN
 	select ARM_PATCH_PHYS_VIRT
