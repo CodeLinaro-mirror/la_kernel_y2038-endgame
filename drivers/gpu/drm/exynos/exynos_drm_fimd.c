@@ -657,16 +657,16 @@ static void fimd_update_plane(struct exynos_drm_crtc *crtc,
 
 	/* buffer start address */
 	dma_addr = plane->dma_addr[0] + offset;
-	val = (unsigned long)dma_addr;
+	val = (u32)dma_addr & 0xffffffff;
 	writel(val, ctx->regs + VIDWx_BUF_START(win, 0));
 
 	/* buffer end address */
 	size = pitch * plane->crtc_h;
-	val = (unsigned long)(dma_addr + size);
+	val = (u32)((dma_addr + size) & 0xffffffff);
 	writel(val, ctx->regs + VIDWx_BUF_END(win, 0));
 
-	DRM_DEBUG_KMS("start addr = 0x%lx, end addr = 0x%lx, size = 0x%lx\n",
-			(unsigned long)dma_addr, val, size);
+	DRM_DEBUG_KMS("start addr = %pad, end addr = %pad, size = 0x%lx\n",
+			&dma_addr, &val, size);
 	DRM_DEBUG_KMS("ovl_width = %d, ovl_height = %d\n",
 			plane->crtc_w, plane->crtc_h);
 

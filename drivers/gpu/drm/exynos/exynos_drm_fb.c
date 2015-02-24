@@ -201,7 +201,7 @@ struct exynos_drm_gem *exynos_drm_fb_gem(struct drm_framebuffer *fb, int index)
 	if (!exynos_gem)
 		return NULL;
 
-	DRM_DEBUG_KMS("dma_addr: 0x%lx\n", (unsigned long)exynos_gem->dma_addr);
+	DRM_DEBUG_KMS("dma_addr: %pad\n", &exynos_gem->dma_addr);
 
 	return exynos_gem;
 }

@@ -418,7 +418,7 @@ static void decon_update_plane(struct exynos_drm_crtc *crtc,
 	 */
 
 	/* buffer start address */
-	val = (unsigned long)plane->dma_addr[0];
+	val = (u32)plane->dma_addr[0] & 0xffffffff;
 	writel(val, ctx->regs + VIDW_BUF_START(win));
 
 	padding = (pitch / bpp) - state->fb->width;
@@ -431,8 +431,7 @@ static void decon_update_plane(struct exynos_drm_crtc *crtc,
 	writel(plane->src_x, ctx->regs + VIDW_OFFSET_X(win));
 	writel(plane->src_y, ctx->regs + VIDW_OFFSET_Y(win));
 
-	DRM_DEBUG_KMS("start addr = 0x%lx\n",
-			(unsigned long)val);
+	DRM_DEBUG_KMS("start addr = %pad\n", &plane->dma_addr[0]);
 	DRM_DEBUG_KMS("ovl_width = %d, ovl_height = %d\n",
 			plane->crtc_w, plane->crtc_h);
 
