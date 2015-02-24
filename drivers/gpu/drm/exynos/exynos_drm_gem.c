@@ -90,8 +90,8 @@ static int exynos_drm_alloc_buf(struct exynos_drm_gem *exynos_gem)
 
 	sg_free_table(&sgt);
 
-	DRM_DEBUG_KMS("dma_addr(0x%lx), size(0x%lx)\n",
-			(unsigned long)exynos_gem->dma_addr, exynos_gem->size);
+	DRM_DEBUG_KMS("dma_addr(%pad), size(0x%lx)\n",
+			&exynos_gem->dma_addr, exynos_gem->size);
 
 	return 0;
 
@@ -115,8 +115,8 @@ static void exynos_drm_free_buf(struct exynos_drm_gem *exynos_gem)
 		return;
 	}
 
-	DRM_DEBUG_KMS("dma_addr(0x%lx), size(0x%lx)\n",
-			(unsigned long)exynos_gem->dma_addr, exynos_gem->size);
+	DRM_DEBUG_KMS("dma_addr(%pad), size(0x%lx)\n",
+			&exynos_gem->dma_addr, exynos_gem->size);
 
 	dma_free_attrs(dev->dev, exynos_gem->size, exynos_gem->cookie,
 			(dma_addr_t)exynos_gem->dma_addr,

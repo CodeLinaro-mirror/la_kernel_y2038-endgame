@@ -582,8 +582,8 @@ static struct drm_exynos_ipp_mem_node
 
 			buf_info->handles[i] = qbuf->handle[i];
 			buf_info->base[i] = *addr;
-			DRM_DEBUG_KMS("i[%d]base[0x%x]hd[0x%lx]\n", i,
-				      buf_info->base[i], buf_info->handles[i]);
+			DRM_DEBUG_KMS("i[%d]base[%pad]hd[0x%lx]\n", i,
+				      &buf_info->base[i], buf_info->handles[i]);
 		}
 	}
 
