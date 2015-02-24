@@ -97,16 +97,15 @@ static int lowlevel_buffer_allocate(struct drm_device *dev,
 		goto err_free_attrs;
 	}
 
-	DRM_DEBUG_KMS("dma_addr(0x%lx), size(0x%lx)\n",
-			(unsigned long)buf->dma_addr,
-			buf->size);
+	DRM_DEBUG_KMS("dma_addr(%pad), size(0x%lx)\n",
+			&buf->dma_addr, buf->size);
 
 	return ret;
 
 err_free_attrs:
 	dma_free_attrs(dev->dev, buf->size, buf->pages,
-			(dma_addr_t)buf->dma_addr, &buf->dma_attrs);
-	buf->dma_addr = (dma_addr_t)NULL;
+		       buf->dma_addr, &buf->dma_attrs);
+	buf->dma_addr = 0;
 err_free:
 	if (!is_drm_iommu_supported(dev))
 		drm_free_large(buf->pages);
@@ -122,9 +121,8 @@ static void lowlevel_buffer_deallocate(struct drm_device *dev,
 		return;
 	}
 
-	DRM_DEBUG_KMS("dma_addr(0x%lx), size(0x%lx)\n",
-			(unsigned long)buf->dma_addr,
-			buf->size);
+	DRM_DEBUG_KMS("dma_addr(%pad), size(0x%lx)\n",
+		      &buf->dma_addr, buf->size);
 
 	sg_free_table(buf->sgt);
 
@@ -133,13 +131,13 @@ static void lowlevel_buffer_deallocate(struct drm_device *dev,
 
 	if (!is_drm_iommu_supported(dev)) {
 		dma_free_attrs(dev->dev, buf->size, buf->cookie,
-				(dma_addr_t)buf->dma_addr, &buf->dma_attrs);
+			       buf->dma_addr, &buf->dma_attrs);
 		drm_free_large(buf->pages);
 	} else
 		dma_free_attrs(dev->dev, buf->size, buf->pages,
-				(dma_addr_t)buf->dma_addr, &buf->dma_attrs);
+			       buf->dma_addr, &buf->dma_attrs);
 
-	buf->dma_addr = (dma_addr_t)NULL;
+	buf->dma_addr = 0;
 }
 
 struct exynos_drm_gem_buf *exynos_drm_init_buf(struct drm_device *dev,
