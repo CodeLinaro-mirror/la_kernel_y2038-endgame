@@ -191,7 +191,7 @@ static void vidi_win_mode_set(struct exynos_drm_crtc *crtc,
 			win_data->offset_x, win_data->offset_y);
 	DRM_DEBUG_KMS("ovl_width = %d, ovl_height = %d\n",
 			win_data->ovl_width, win_data->ovl_height);
-	DRM_DEBUG_KMS("paddr = 0x%lx\n", (unsigned long)win_data->dma_addr);
+	DRM_DEBUG_KMS("paddr = %pad\n", &win_data->dma_addr);
 	DRM_DEBUG_KMS("fb_width = %d, crtc_width = %d\n",
 			plane->fb_width, plane->crtc_width);
 }

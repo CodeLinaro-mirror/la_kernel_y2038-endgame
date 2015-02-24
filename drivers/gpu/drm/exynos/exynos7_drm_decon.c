@@ -335,7 +335,7 @@ static void decon_win_mode_set(struct exynos_drm_crtc *crtc,
 			win_data->offset_x, win_data->offset_y);
 	DRM_DEBUG_KMS("ovl_width = %d, ovl_height = %d\n",
 			win_data->ovl_width, win_data->ovl_height);
-	DRM_DEBUG_KMS("paddr = 0x%lx\n", (unsigned long)win_data->dma_addr);
+	DRM_DEBUG_KMS("paddr = %pad\n", &win_data->dma_addr);
 	DRM_DEBUG_KMS("fb_width = %d, crtc_width = %d\n",
 			plane->fb_width, plane->crtc_width);
 }
@@ -490,7 +490,7 @@ static void decon_win_commit(struct exynos_drm_crtc *crtc, int zpos)
 	decon_shadow_protect_win(ctx, win, true);
 
 	/* buffer start address */
-	val = (unsigned long)win_data->dma_addr;
+	val = win_data->dma_addr & 0xffffffff;
 	writel(val, ctx->regs + VIDW_BUF_START(win));
 
 	/* buffer size */
@@ -501,8 +501,7 @@ static void decon_win_commit(struct exynos_drm_crtc *crtc, int zpos)
 	writel(win_data->offset_x, ctx->regs + VIDW_OFFSET_X(win));
 	writel(win_data->offset_y, ctx->regs + VIDW_OFFSET_Y(win));
 
-	DRM_DEBUG_KMS("start addr = 0x%lx\n",
-			(unsigned long)win_data->dma_addr);
+	DRM_DEBUG_KMS("start addr = %pad\n", &win_data->dma_addr);
 	DRM_DEBUG_KMS("ovl_width = %d, ovl_height = %d\n",
 			win_data->ovl_width, win_data->ovl_height);
 

@@ -550,7 +550,7 @@ static void fimd_win_mode_set(struct exynos_drm_crtc *crtc,
 			win_data->offset_x, win_data->offset_y);
 	DRM_DEBUG_KMS("ovl_width = %d, ovl_height = %d\n",
 			win_data->ovl_width, win_data->ovl_height);
-	DRM_DEBUG_KMS("paddr = 0x%lx\n", (unsigned long)win_data->dma_addr);
+	DRM_DEBUG_KMS("paddr = %pad\n", &win_data->dma_addr);
 	DRM_DEBUG_KMS("fb_width = %d, crtc_width = %d\n",
 			plane->fb_width, plane->crtc_width);
 }
@@ -671,6 +671,7 @@ static void fimd_win_commit(struct exynos_drm_crtc *crtc, int zpos)
 	struct fimd_win_data *win_data;
 	int win = zpos;
 	unsigned long val, alpha, size;
+	dma_addr_t end;
 	unsigned int last_x;
 	unsigned int last_y;
 
@@ -705,16 +706,16 @@ static void fimd_win_commit(struct exynos_drm_crtc *crtc, int zpos)
 	fimd_shadow_protect_win(ctx, win, true);
 
 	/* buffer start address */
-	val = (unsigned long)win_data->dma_addr;
+	val = (u32)win_data->dma_addr & 0xffffffff;
 	writel(val, ctx->regs + VIDWx_BUF_START(win, 0));
 
 	/* buffer end address */
 	size = win_data->fb_width * win_data->ovl_height * (win_data->bpp >> 3);
-	val = (unsigned long)(win_data->dma_addr + size);
+	end = win_data->dma_addr + size;
 	writel(val, ctx->regs + VIDWx_BUF_END(win, 0));
 
-	DRM_DEBUG_KMS("start addr = 0x%lx, end addr = 0x%lx, size = 0x%lx\n",
-			(unsigned long)win_data->dma_addr, val, size);
+	DRM_DEBUG_KMS("start addr = %pad, end addr = %pad, size = 0x%lx\n",
+			&win_data->dma_addr, &end, size);
 	DRM_DEBUG_KMS("ovl_width = %d, ovl_height = %d\n",
 			win_data->ovl_width, win_data->ovl_height);
 
