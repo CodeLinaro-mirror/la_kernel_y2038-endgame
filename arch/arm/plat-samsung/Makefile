@@ -26,6 +26,8 @@ obj-$(CONFIG_SAMSUNG_DEV_BACKLIGHT)	+= dev-backlight.o
 
 obj-$(CONFIG_S3C_SETUP_CAMIF)	+= setup-camif.o
 
+obj-$(CONFIG_GPIO_SAMSUNG)     += gpio-samsung.o
+
 # PM support
 
 obj-$(CONFIG_PM_SLEEP)		+= pm-common.o
