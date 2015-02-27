@@ -294,6 +294,9 @@ config SAMSUNG_WDT_RESET
 	  Compile support for system restart by triggering watchdog reset.
 	  Used on SoCs that do not provide dedicated reset control.
 
+config GPIO_SAMSUNG
+	def_bool SAMSUNG_ATAGS
+
 config DEBUG_S3C_UART
 	depends on PLAT_SAMSUNG
 	int
