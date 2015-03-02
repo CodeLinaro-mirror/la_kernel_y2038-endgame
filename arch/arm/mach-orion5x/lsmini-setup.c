@@ -269,6 +269,7 @@ static void __init lsmini_init(void)
 MACHINE_START(LINKSTATION_MINI, "Buffalo Linkstation Mini")
 	/* Maintainer: Alexey Kopytko <alexey@kopytko.ru> */
 	.atag_offset	= 0x100,
+	.nr_irqs	= ORION5X_NR_IRQS,
 	.init_machine	= lsmini_init,
 	.map_io		= orion5x_map_io,
 	.init_early	= orion5x_init_early,
