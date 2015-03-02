@@ -45,7 +45,6 @@
 #include <asm/sizes.h>
 
 #include <linux/platform_data/mmc-msm_sdcc.h>
-#include <mach/msm_iomap.h>
 #include <mach/clk.h>
 
 /* data mover definitions */
@@ -170,16 +169,7 @@ typedef struct {
 
 #define MSM_DMOV_CHANNEL_COUNT 16
 
-#define DMOV_SD0(off, ch) (MSM_DMOV_BASE + 0x0000 + (off) + ((ch) << 2))
-#define DMOV_SD1(off, ch) (MSM_DMOV_BASE + 0x0400 + (off) + ((ch) << 2))
-#define DMOV_SD2(off, ch) (MSM_DMOV_BASE + 0x0800 + (off) + ((ch) << 2))
-#define DMOV_SD3(off, ch) (MSM_DMOV_BASE + 0x0C00 + (off) + ((ch) << 2))
-
-#if defined(CONFIG_ARCH_MSM7X30)
-#define DMOV_SD_AARM DMOV_SD2
-#else
-#define DMOV_SD_AARM DMOV_SD3
-#endif
+#define DMOV_SD_AARM(off, ch) (msm_dmov_base + (off) + ((ch) << 2))
 
 #define DMOV_CMD_PTR(ch)      DMOV_SD_AARM(0x000, ch)
 #define DMOV_RSLT(ch)         DMOV_SD_AARM(0x040, ch)
@@ -203,6 +193,8 @@ enum {
 
 static DEFINE_SPINLOCK(msm_dmov_lock);
 static struct clk *msm_dmov_clk;
+static int msm_dmov_irq;
+static void __iomem *msm_dmov_base;
 static unsigned int channel_active;
 static struct list_head ready_commands[MSM_DMOV_CHANNEL_COUNT];
 static struct list_head active_commands[MSM_DMOV_CHANNEL_COUNT];
@@ -248,7 +240,7 @@ static void msm_dmov_enqueue_cmd(unsigned id, struct msm_dmov_cmd *cmd)
 		PRINT_IO("msm_dmov_enqueue_cmd(%d), start command, status %x\n", id, status);
 		list_add_tail(&cmd->list, &active_commands[id]);
 		if (!channel_active)
-			enable_irq(INT_ADM_AARM);
+			enable_irq(msm_dmov_irq);
 		channel_active |= 1U << id;
 		writel(cmd->cmdptr, DMOV_CMD_PTR(id));
 	} else {
@@ -370,7 +362,7 @@ static irqreturn_t msm_datamover_irq_handler(int irq, void *dev_id)
 	}
 
 	if (!channel_active) {
-		disable_irq_nosync(INT_ADM_AARM);
+		disable_irq_nosync(msm_dmov_irq);
 		clk_disable(msm_dmov_clk);
 	}
 
@@ -378,11 +370,17 @@ static irqreturn_t msm_datamover_irq_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-static int __init msm_init_datamover(void)
+static int msm_init_datamover(int irq, resource_size_t phys)
 {
 	int i;
 	int ret;
 	struct clk *clk;
+
+	if (msm_dmov_irq || msm_dmov_base)
+		return -EBUSY;
+
+	msm_dmov_irq = irq;
+	msm_dmov_base = ioremap(phys, 0x400);
 
 	for (i = 0; i < MSM_DMOV_CHANNEL_COUNT; i++) {
 		INIT_LIST_HEAD(&ready_commands[i]);
@@ -394,13 +392,12 @@ static int __init msm_init_datamover(void)
 		return PTR_ERR(clk);
 	clk_prepare(clk);
 	msm_dmov_clk = clk;
-	ret = request_irq(INT_ADM_AARM, msm_datamover_irq_handler, 0, "msmdatamover", NULL);
+	ret = request_irq(msm_dmov_irq, msm_datamover_irq_handler, 0, "msmdatamover", NULL);
 	if (ret)
 		return ret;
-	disable_irq(INT_ADM_AARM);
+	disable_irq(msm_dmov_irq);
 	return 0;
 }
-module_init(msm_init_datamover);
 
 /* now the actual SD card driver */
 
@@ -1529,8 +1526,10 @@ msmsdcc_probe(struct platform_device *pdev)
 	struct mmc_host *mmc;
 	struct resource *cmd_irqres = NULL;
 	struct resource *stat_irqres = NULL;
+	struct resource *dmov_irqres = NULL;
 	struct resource *memres = NULL;
 	struct resource *dmares = NULL;
+	struct resource *dmovres = NULL;
 	int ret;
 
 	/* must have platform data */
@@ -1549,16 +1548,21 @@ msmsdcc_probe(struct platform_device *pdev)
 	}
 
 	memres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	dmovres = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 	dmares = platform_get_resource(pdev, IORESOURCE_DMA, 0);
 	cmd_irqres = platform_get_resource_byname(pdev, IORESOURCE_IRQ,
 						  "cmd_irq");
 	stat_irqres = platform_get_resource_byname(pdev, IORESOURCE_IRQ,
 						   "status_irq");
+	dmov_irqres = platform_get_resource_byname(pdev, IORESOURCE_IRQ,
+						   "dmov_irq");
 
-	if (!cmd_irqres || !memres) {
+	if (!cmd_irqres || !memres || !dmov_irqres || !dmovres) {
 		pr_err("%s: Invalid resource\n", __func__);
 		return -ENXIO;
 	}
+
+	msm_init_datamover(dmov_irqres->start, dmovres->start);
 
 	/*
 	 * Setup our host structure
@@ -1826,7 +1830,11 @@ static struct platform_driver msmsdcc_driver = {
 	},
 };
 
-module_platform_driver(msmsdcc_driver);
+static int __init msmsdcc_init(void)
+{
+	return platform_driver_register(&msmsdcc_driver);
+}
+module_init(msmsdcc_init);
 
 MODULE_DESCRIPTION("Qualcomm MSM 7X00A Multimedia Card Interface driver");
 MODULE_LICENSE("GPL");

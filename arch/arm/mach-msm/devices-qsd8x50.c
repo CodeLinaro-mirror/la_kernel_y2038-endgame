@@ -175,6 +175,17 @@ static struct resource resources_sdc1[] = {
 		.name	= "status_irq"
 	},
 	{
+		.start	= INT_ADM_AARM,
+		.end	= INT_ADM_AARM,
+		.flags	= IORESOURCE_IRQ,
+		.name	= "dmov_irq",
+	},
+	{
+		.start	= MSM_DMOV_PHYS + (3 * 0x400),
+		.end	= MSM_DMOV_PHYS + (4 * 0x400) - 1,
+		.flags	= IORESOURCE_MEM,
+	},
+	{
 		.start	= 8,
 		.end	= 8,
 		.flags	= IORESOURCE_DMA,
@@ -196,6 +207,17 @@ static struct resource resources_sdc2[] = {
 	{
 		.flags	= IORESOURCE_IRQ | IORESOURCE_DISABLED,
 		.name	= "status_irq"
+	},
+	{
+		.start	= INT_ADM_AARM,
+		.end	= INT_ADM_AARM,
+		.flags	= IORESOURCE_IRQ,
+		.name	= "dmov_irq",
+	},
+	{
+		.start	= MSM_DMOV_PHYS + (3 * 0x400),
+		.end	= MSM_DMOV_PHYS + (4 * 0x400) - 1,
+		.flags	= IORESOURCE_MEM,
 	},
 	{
 		.start	= 8,
@@ -221,6 +243,17 @@ static struct resource resources_sdc3[] = {
 		.name	= "status_irq"
 	},
 	{
+		.start	= INT_ADM_AARM,
+		.end	= INT_ADM_AARM,
+		.flags	= IORESOURCE_IRQ,
+		.name	= "dmov_irq",
+	},
+	{
+		.start	= MSM_DMOV_PHYS + (3 * 0x400),
+		.end	= MSM_DMOV_PHYS + (4 * 0x400) - 1,
+		.flags	= IORESOURCE_MEM,
+	},
+	{
 		.start	= 8,
 		.end	= 8,
 		.flags	= IORESOURCE_DMA,
@@ -242,6 +275,17 @@ static struct resource resources_sdc4[] = {
 	{
 		.flags	= IORESOURCE_IRQ | IORESOURCE_DISABLED,
 		.name	= "status_irq"
+	},
+	{
+		.start	= INT_ADM_AARM,
+		.end	= INT_ADM_AARM,
+		.flags	= IORESOURCE_IRQ,
+		.name	= "dmov_irq",
+	},
+	{
+		.start	= MSM_DMOV_PHYS + (3 * 0x400),
+		.end	= MSM_DMOV_PHYS + (4 * 0x400) - 1,
+		.flags	= IORESOURCE_MEM,
 	},
 	{
 		.start	= 8,
