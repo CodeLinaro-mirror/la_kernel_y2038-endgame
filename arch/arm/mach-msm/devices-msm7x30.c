@@ -20,7 +20,6 @@
 #include <linux/clkdev.h>
 #include <mach/irqs.h>
 #include <mach/msm_iomap.h>
-#include <mach/dma.h>
 
 #include "devices.h"
 #include "smd_private.h"

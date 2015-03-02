@@ -32,7 +32,6 @@
 
 #include <mach/clk.h>
 #include <mach/msm_iomap.h>
-#include <mach/dma.h>
 
 #include <mach/vreg.h>
 #include "devices.h"

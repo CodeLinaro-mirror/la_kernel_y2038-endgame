@@ -20,7 +20,6 @@
 
 #include <mach/irqs.h>
 #include <mach/msm_iomap.h>
-#include <mach/dma.h>
 
 #include "devices.h"
 #include "common.h"
