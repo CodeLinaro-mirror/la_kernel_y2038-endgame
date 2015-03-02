@@ -15,6 +15,8 @@ struct msm_mmc_gpio_data {
 	u8 size;
 };
 
+struct clk;
+
 struct msm_mmc_platform_data {
 	unsigned int ocr_mask;			/* available voltages */
 	u32 (*translate_vdd)(struct device *, unsigned int);
@@ -22,6 +24,7 @@ struct msm_mmc_platform_data {
 	int (*register_status_notify)(void (*callback)(int card_present, void *dev_id), void *dev_id);
 	struct msm_mmc_gpio_data *gpio_data;
 	void (*init_card)(struct mmc_card *card);
+	void (*clk_reset)(struct clk *clk);
 };
 
 #endif

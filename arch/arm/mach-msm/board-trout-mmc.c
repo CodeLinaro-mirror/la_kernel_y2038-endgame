@@ -2,6 +2,7 @@
 ** Author: Brian Swetland <swetland@google.com>
 */
 #include <linux/gpio.h>
+#include <linux/clk.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -14,6 +15,7 @@
 #include <asm/io.h>
 
 #include <mach/vreg.h>
+#include <mach/clk.h>
 
 #include <linux/platform_data/mmc-msm_sdcc.h>
 
@@ -154,6 +156,21 @@ static unsigned int trout_sdslot_status(struct device *dev)
 	return (!status);
 }
 
+static void trout_sdcc_clk_reset(struct clk *clk)
+{
+	int ret;
+
+	ret = clk_reset(clk, CLK_RESET_ASSERT);
+	if (ret)
+		pr_err("sdcc clock assert failed at %lu Hz with err %d\n",
+			clk_get_rate(clk), ret);
+
+	ret = clk_reset(clk, CLK_RESET_DEASSERT);
+	if (ret)
+	        pr_err("sdcc clock deassert failed at %lu Hz with err %d\n",
+			clk_get_rate(clk), ret);
+}
+
 #define TROUT_MMC_VDD	MMC_VDD_165_195 | MMC_VDD_20_21 | MMC_VDD_21_22 \
 			| MMC_VDD_22_23 | MMC_VDD_23_24 | MMC_VDD_24_25 \
 			| MMC_VDD_25_26 | MMC_VDD_26_27 | MMC_VDD_27_28 \
@@ -163,6 +180,7 @@ static struct msm_mmc_platform_data trout_sdslot_data = {
 	.ocr_mask	= TROUT_MMC_VDD,
 	.status		= trout_sdslot_status,
 	.translate_vdd	= trout_sdslot_switchvdd,
+	.clk_reset	= trout_sdcc_clk_reset,
 };
 
 int __init trout_init_mmc(unsigned int sys_rev)

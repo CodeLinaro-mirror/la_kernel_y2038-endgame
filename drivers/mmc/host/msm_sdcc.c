@@ -45,7 +45,6 @@
 #include <asm/sizes.h>
 
 #include <linux/platform_data/mmc-msm_sdcc.h>
-#include <mach/clk.h>
 
 /* data mover definitions */
 
@@ -493,15 +492,8 @@ static void msmsdcc_reset_and_restore(struct msmsdcc_host *host)
 	mci_mask0 = readl(host->base + MMCIMASK0);
 
 	/* Reset the controller */
-	ret = clk_reset(host->clk, CLK_RESET_ASSERT);
-	if (ret)
-		pr_err("%s: Clock assert failed at %u Hz with err %d\n",
-				mmc_hostname(host->mmc), host->clk_rate, ret);
-
-	ret = clk_reset(host->clk, CLK_RESET_DEASSERT);
-	if (ret)
-		pr_err("%s: Clock deassert failed at %u Hz with err %d\n",
-				mmc_hostname(host->mmc), host->clk_rate, ret);
+	if (host->plat->clk_reset)
+		host->plat->clk_reset(host->clk);
 
 	pr_info("%s: Controller has been re-initialiazed\n",
 			mmc_hostname(host->mmc));

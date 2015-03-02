@@ -180,6 +180,21 @@ static uint32_t msm_sdcc_setup_power(struct device *dv, unsigned int vdd)
 	return 0;
 }
 
+static void msm_sdcc_clk_reset(struct clk *clk)
+{
+	int ret;
+
+	ret = clk_reset(clk, CLK_RESET_ASSERT);
+	if (ret)
+		pr_err("sdcc clock assert failed at %lu Hz with err %d\n",
+			clk_get_rate(clk), ret);
+
+	ret = clk_reset(clk, CLK_RESET_DEASSERT);
+	if (ret)
+	        pr_err("sdcc clock deassert failed at %lu Hz with err %d\n",
+			clk_get_rate(clk), ret);
+}
+
 static struct msm_mmc_gpio_data sdc1_gpio = {
 	.gpio = sdc1_gpio_cfg,
 	.size = ARRAY_SIZE(sdc1_gpio_cfg),
@@ -188,7 +203,8 @@ static struct msm_mmc_gpio_data sdc1_gpio = {
 static struct msm_mmc_platform_data qsd8x50_sdc1_data = {
 	.ocr_mask	= MMC_VDD_27_28 | MMC_VDD_28_29,
 	.translate_vdd	= msm_sdcc_setup_power,
-	.gpio_data = &sdc1_gpio,
+	.gpio_data	= &sdc1_gpio,
+	.clk_reset	= msm_sdcc_clk_reset,
 };
 
 static void __init qsd8x50_init_mmc(void)
