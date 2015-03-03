@@ -18,7 +18,7 @@
 #define __ARCH_ARM_MACH_MSM_CLOCK_H
 
 #include <linux/clk-provider.h>
-#include <mach/clk.h>
+#include "clk.h"
 
 #define CLK_FIRST_AVAILABLE_FLAG	0x00000100
 #define CLKFLAG_AUTO_OFF		0x00000200

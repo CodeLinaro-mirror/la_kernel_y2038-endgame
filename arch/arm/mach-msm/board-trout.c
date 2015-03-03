@@ -27,13 +27,11 @@
 #include <asm/mach/map.h>
 #include <asm/setup.h>
 
-#include <mach/hardware.h>
-#include <mach/irqs-7x00.h>
-#include <mach/msm_iomap-7x00.h>
-
-#include "devices.h"
 #include "board-trout.h"
 #include "common.h"
+#include "devices.h"
+#include "irqs-7x00.h"
+#include "msm_iomap-7x00.h"
 
 extern int trout_init_mmc(unsigned int);
 

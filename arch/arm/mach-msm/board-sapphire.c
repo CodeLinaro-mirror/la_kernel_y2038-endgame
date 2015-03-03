@@ -19,16 +19,12 @@
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/device.h>
-
 #include <linux/delay.h>
 
-#include <mach/hardware.h>
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 #include <asm/mach/flash.h>
-#include <mach/vreg.h>
-
 #include <asm/io.h>
 #include <asm/delay.h>
 #include <asm/setup.h>
@@ -37,11 +33,12 @@
 #include <linux/mtd/partitions.h>
 #include <linux/memblock.h>
 
-#include "gpio_chip.h"
 #include "board-sapphire.h"
-#include "proc_comm.h"
-#include "devices.h"
 #include "common.h"
+#include "devices.h"
+#include "gpio_chip.h"
+#include "proc_comm.h"
+#include "vreg.h"
 
 void msm_init_irq(void);
 void msm_init_gpio(void);

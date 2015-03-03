@@ -17,8 +17,7 @@
 #include <linux/debugfs.h>
 #include <linux/list.h>
 
-#include <mach/msm_iomap.h>
-
+#include "msm_iomap.h"
 #include "smd_private.h"
 
 static char *chstate(unsigned n)

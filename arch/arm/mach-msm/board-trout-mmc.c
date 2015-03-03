@@ -5,6 +5,7 @@
 #include <linux/clk.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
+#include <linux/platform_data/mmc-msm_sdcc.h>
 #include <linux/platform_device.h>
 #include <linux/delay.h>
 #include <linux/mmc/host.h>
@@ -14,17 +15,12 @@
 
 #include <asm/io.h>
 
-#include <mach/vreg.h>
-#include <mach/clk.h>
-#include <mach/irqs-7x00.h>
-
-#include <linux/platform_data/mmc-msm_sdcc.h>
-
-#include "devices.h"
-
 #include "board-trout.h"
-
+#include "clk.h"
+#include "devices.h"
+#include "irqs-7x00.h"
 #include "proc_comm.h"
+#include "vreg.h"
 
 #define DEBUG_SDSLOT_VDD 1
 

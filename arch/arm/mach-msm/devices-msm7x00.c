@@ -14,22 +14,21 @@
  */
 
 #include <linux/kernel.h>
+#include <linux/platform_data/mmc-msm_sdcc.h>
 #include <linux/platform_device.h>
 #include <linux/clkdev.h>
 #include <asm/mach/map.h>
-
-#include <mach/irqs-7x00.h>
-#include <mach/msm_iomap.h>
-#include <mach/msm_iomap-7x00.h>
-#include "devices.h"
 
 #include <asm/mach/flash.h>
 #include <linux/mtd/nand.h>
 #include <linux/mtd/partitions.h>
 
-#include "clock.h"
 #include "clock-pcom.h"
-#include <linux/platform_data/mmc-msm_sdcc.h>
+#include "clock.h"
+#include "devices.h"
+#include "irqs-7x00.h"
+#include "msm_iomap-7x00.h"
+#include "msm_iomap.h"
 
 static struct map_desc msm_io_desc[] __initdata = {
 	MSM_DEVICE_TYPE(VIC, MT_DEVICE_NONSHARED),

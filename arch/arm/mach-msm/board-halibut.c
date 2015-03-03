@@ -21,21 +21,19 @@
 #include <linux/io.h>
 #include <linux/delay.h>
 
-#include <mach/hardware.h>
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 #include <asm/mach/flash.h>
 #include <asm/setup.h>
 
-#include <mach/irqs-7x00.h>
-#include <mach/msm_iomap-7x00.h>
-
 #include <linux/mtd/nand.h>
 #include <linux/mtd/partitions.h>
 
-#include "devices.h"
 #include "common.h"
+#include "devices.h"
+#include "irqs-7x00.h"
+#include "msm_iomap-7x00.h"
 
 static struct resource smc91x_resources[] = {
 	[0] = {

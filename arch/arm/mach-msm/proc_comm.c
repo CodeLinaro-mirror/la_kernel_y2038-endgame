@@ -18,8 +18,8 @@
 #include <linux/errno.h>
 #include <linux/io.h>
 #include <linux/spinlock.h>
-#include <mach/msm_iomap.h>
 
+#include "msm_iomap.h"
 #include "proc_comm.h"
 
 /* msm7x00 uses a different method and needs to override

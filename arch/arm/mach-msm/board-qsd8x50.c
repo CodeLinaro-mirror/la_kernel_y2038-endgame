@@ -17,6 +17,7 @@
 #include <linux/gpio.h>
 #include <linux/kernel.h>
 #include <linux/irq.h>
+#include <linux/platform_data/mmc-msm_sdcc.h>
 #include <linux/platform_device.h>
 #include <linux/delay.h>
 #include <linux/usb/msm_hsusb.h>
@@ -28,15 +29,13 @@
 #include <asm/io.h>
 #include <asm/setup.h>
 
-#include <mach/irqs-8x50.h>
-#include <mach/sirc.h>
-#include <mach/vreg.h>
-#include <mach/clk.h>
-#include <linux/platform_data/mmc-msm_sdcc.h>
-
-#include "devices.h"
+#include "clk.h"
 #include "common.h"
+#include "devices.h"
 #include "gpiomux.h"
+#include "irqs-8x50.h"
+#include "sirc.h"
+#include "vreg.h"
 
 static const resource_size_t qsd8x50_surf_smc91x_base __initconst = 0x70000300;
 static const unsigned        qsd8x50_surf_smc91x_gpio __initconst = 156;

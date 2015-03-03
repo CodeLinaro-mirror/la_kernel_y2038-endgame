@@ -19,7 +19,7 @@
 
 #include <linux/bitops.h>
 #include <linux/errno.h>
-#include <mach/msm_gpiomux.h>
+#include "msm_gpiomux.h"
 #include "gpiomux-v1.h"
 
 /**

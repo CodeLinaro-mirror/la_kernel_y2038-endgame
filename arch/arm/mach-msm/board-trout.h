@@ -41,7 +41,7 @@
 #endif
 
 #define DECLARE_MSM_IOMAP
-#include <mach/msm_iomap.h>
+#include "msm_iomap.h"
 
 #define TROUT_4_BALL_UP_0     1
 #define TROUT_4_BALL_LEFT_0   18

@@ -21,9 +21,9 @@
 #include <linux/debugfs.h>
 #include <linux/module.h>
 #include <linux/string.h>
-#include <mach/vreg.h>
 
 #include "proc_comm.h"
+#include "vreg.h"
 
 struct vreg {
 	const char *name;

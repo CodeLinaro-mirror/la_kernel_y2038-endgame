@@ -20,8 +20,9 @@
 #include <linux/irq.h>
 #include <linux/interrupt.h>
 #include <asm/irq.h>
-#include <mach/msm_iomap-8x50.h>
-#include <mach/sirc.h>
+
+#include "msm_iomap-8x50.h"
+#include "sirc.h"
 
 #define SPSS_SIRC_INT_SELECT          (MSM_SIRC_BASE + 0x00)
 #define SPSS_SIRC_INT_ENABLE          (MSM_SIRC_BASE + 0x04)

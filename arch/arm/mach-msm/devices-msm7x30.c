@@ -14,25 +14,22 @@
  */
 
 #include <linux/kernel.h>
+#include <linux/platform_data/mmc-msm_sdcc.h>
 #include <linux/platform_device.h>
-
 #include <linux/dma-mapping.h>
 #include <linux/clkdev.h>
+
 #include <asm/mach/map.h>
-#include <mach/irqs-7x30.h>
-#include <mach/msm_iomap-7x30.h>
-
-#include "devices.h"
-#include "smd_private.h"
-#include "common.h"
-
 #include <asm/mach/flash.h>
 
-#include "clock.h"
 #include "clock-pcom.h"
+#include "clock.h"
+#include "common.h"
+#include "devices.h"
+#include "irqs-7x30.h"
+#include "msm_iomap-7x30.h"
 #include "proc_comm.h"
-
-#include <linux/platform_data/mmc-msm_sdcc.h>
+#include "smd_private.h"
 
 static struct map_desc msm7x30_io_desc[] __initdata = {
 	MSM_DEVICE(VIC),

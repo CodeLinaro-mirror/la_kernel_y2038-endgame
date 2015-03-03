@@ -18,8 +18,8 @@
 #include <linux/interrupt.h>
 #include <linux/gpio.h>
 
-#include <mach/irqs-7x00.h>
 #include "board-trout.h"
+#include "irqs-7x00.h"
 
 static uint8_t trout_int_mask[2] = {
 	[0] = 0xff, /* mask all interrupts */

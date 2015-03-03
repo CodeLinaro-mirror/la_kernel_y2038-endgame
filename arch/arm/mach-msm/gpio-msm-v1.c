@@ -23,7 +23,7 @@
 #include <linux/platform_device.h>
 #include <linux/err.h>
 
-#include <mach/msm_gpiomux.h>
+#include "msm_gpiomux.h"
 
 /* see 80-VA736-2 Rev C pp 695-751
 **

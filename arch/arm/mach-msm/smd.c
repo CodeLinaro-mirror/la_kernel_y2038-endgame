@@ -31,8 +31,8 @@
 
 #include <linux/msm_smd.h>
 
-#include "smd_private.h"
 #include "proc_comm.h"
+#include "smd_private.h"
 
 enum msm_smd_version {
 	SMD_MSM7X00,

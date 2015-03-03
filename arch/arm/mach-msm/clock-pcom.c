@@ -20,11 +20,10 @@
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
 
-#include <mach/clk.h>
-
-#include "proc_comm.h"
+#include "clk.h"
 #include "clock.h"
 #include "clock-pcom.h"
+#include "proc_comm.h"
 
 struct clk_pcom {
 	unsigned id;

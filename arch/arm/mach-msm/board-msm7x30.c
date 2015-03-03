@@ -30,15 +30,14 @@
 #include <asm/memory.h>
 #include <asm/setup.h>
 
-#include <mach/clk.h>
-#include <mach/irqs-7x30.h>
-#include <mach/msm_iomap-7x30.h>
-
-#include <mach/vreg.h>
+#include "clk.h"
+#include "common.h"
 #include "devices.h"
 #include "gpiomux.h"
+#include "irqs-7x30.h"
+#include "msm_iomap-7x30.h"
 #include "proc_comm.h"
-#include "common.h"
+#include "vreg.h"
 
 static void __init msm7x30_fixup(struct tag *tag, char **cmdline)
 {

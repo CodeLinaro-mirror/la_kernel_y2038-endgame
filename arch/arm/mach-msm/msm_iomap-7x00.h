@@ -1,5 +1,4 @@
-/* arch/arm/mach-msm/include/mach/msm_iomap.h
- *
+/*
  * Copyright (C) 2007 Google, Inc.
  * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
  * Author: Brian Swetland <swetland@google.com>
