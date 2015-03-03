@@ -34,9 +34,21 @@
 #include "smd_private.h"
 #include "proc_comm.h"
 
-#if defined(CONFIG_ARCH_QSD8X50)
-#define CONFIG_QDSP6 1
-#endif
+enum msm_smd_version {
+	SMD_MSM7X00,
+	SMD_MSM7X30,
+	SMD_QSD8X50,
+} smd_version;
+
+#define SMSM_STATE_APPS (smd_version == SMD_MSM7X00 ? \
+	MSM7X00_SMSM_STATE_APPS : SCORPION_SMSM_STATE_APPS)
+
+#define SMSM_STATE_MODEM (smd_version == SMD_MSM7X00 ? \
+	MSM7X00_SMSM_STATE_MODEM : SCORPION_SMSM_STATE_MODEM)
+
+#define SMSM_STATE_COUNT \
+	(MSM7X00_SMSM_STATE_COUNT > SCORPION_SMSM_STATE_COUNT ? \
+	 MSM7X00_SMSM_STATE_COUNT : SCORPION_SMSM_STATE_COUNT)
 
 #define MODULE_NAME "msm_smd"
 
@@ -67,9 +79,8 @@ static unsigned last_heap_free = 0xffffffff;
 static inline void notify_other_smsm(void)
 {
 	msm_a2m_int(5);
-#ifdef CONFIG_QDSP6
-	msm_a2m_int(8);
-#endif
+	if (smd_version == SMD_QSD8X50)
+		msm_a2m_int(8);
 }
 
 static inline void notify_modem_smd(void)
@@ -374,13 +385,11 @@ static irqreturn_t smd_modem_irq_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-#if defined(CONFIG_QDSP6)
 static irqreturn_t smd_dsp_irq_handler(int irq, void *data)
 {
 	handle_smd_irq(&smd_ch_list_dsp, notify_dsp_smd);
 	return IRQ_HANDLED;
 }
-#endif
 
 static void smd_fake_irq_handler(unsigned long arg)
 {
@@ -553,6 +562,7 @@ static int smd_packet_read(smd_channel_t *ch, void *data, int len)
 static int smd_alloc_channel(const char *name, uint32_t cid, uint32_t type)
 {
 	struct smd_channel *ch;
+	int ret;
 
 	ch = kzalloc(sizeof(struct smd_channel), GFP_KERNEL);
 	if (ch == 0) {
@@ -561,7 +571,12 @@ static int smd_alloc_channel(const char *name, uint32_t cid, uint32_t type)
 	}
 	ch->n = cid;
 
-	if (_smd_alloc_channel(ch)) {
+	if (smd_version == SMD_MSM7X00)
+		ret = _smd_alloc_channel_pkg3(ch);
+	else
+		ret = _smd_alloc_channel_pkg4(ch);
+
+	if (ret) {
 		kfree(ch);
 		return -1;
 	}
@@ -892,47 +907,11 @@ uint32_t smsm_get_state(enum smsm_state_item item)
 	return rv;
 }
 
-#ifdef CONFIG_ARCH_MSM_SCORPION
-
-int smsm_set_sleep_duration(uint32_t delay)
-{
-	struct msm_dem_slave_data *ptr;
-
-	ptr = smem_find(SMEM_APPS_DEM_SLAVE_DATA, sizeof(*ptr));
-	if (ptr == NULL) {
-		pr_err("smsm_set_sleep_duration <SM NO APPS_DEM_SLAVE_DATA>\n");
-		return -EIO;
-	}
-	if (msm_smd_debug_mask & MSM_SMSM_DEBUG)
-		pr_info("smsm_set_sleep_duration %d -> %d\n",
-		       ptr->sleep_time, delay);
-	ptr->sleep_time = delay;
-	return 0;
-}
-
-#else
-
-int smsm_set_sleep_duration(uint32_t delay)
-{
-	uint32_t *ptr;
-
-	ptr = smem_find(SMEM_SMSM_SLEEP_DELAY, sizeof(*ptr));
-	if (ptr == NULL) {
-		pr_err("smsm_set_sleep_duration <SM NO SLEEP_DELAY>\n");
-		return -EIO;
-	}
-	if (msm_smd_debug_mask & MSM_SMSM_DEBUG)
-		pr_info("smsm_set_sleep_duration %d -> %d\n",
-		       *ptr, delay);
-	*ptr = delay;
-	return 0;
-}
-
-#endif
-
-int smd_core_init(void)
+static int smd_core_init(int version, int irq_a9_m2a_0, int irq_a9_m2a_5, int irq_adsp_a11)
 {
 	int r;
+
+	smd_version = version;
 
 	/* wait for essential items to be initialized */
 	for (;;) {
@@ -947,33 +926,33 @@ int smd_core_init(void)
 
 	smd_info.ready = 1;
 
-	r = request_irq(INT_A9_M2A_0, smd_modem_irq_handler,
+	r = request_irq(irq_a9_m2a_0, smd_modem_irq_handler,
 			IRQF_TRIGGER_RISING, "smd_dev", 0);
 	if (r < 0)
 		return r;
-	r = enable_irq_wake(INT_A9_M2A_0);
+	r = enable_irq_wake(irq_a9_m2a_0);
 	if (r < 0)
 		pr_err("smd_core_init: enable_irq_wake failed for A9_M2A_0\n");
 
-	r = request_irq(INT_A9_M2A_5, smsm_irq_handler,
+	r = request_irq(irq_a9_m2a_5, smsm_irq_handler,
 			IRQF_TRIGGER_RISING, "smsm_dev", 0);
 	if (r < 0) {
-		free_irq(INT_A9_M2A_0, 0);
+		free_irq(irq_a9_m2a_0, 0);
 		return r;
 	}
-	r = enable_irq_wake(INT_A9_M2A_5);
+	r = enable_irq_wake(irq_a9_m2a_5);
 	if (r < 0)
 		pr_err("smd_core_init: enable_irq_wake failed for A9_M2A_5\n");
 
-#if defined(CONFIG_QDSP6)
-	r = request_irq(INT_ADSP_A11, smd_dsp_irq_handler,
-			IRQF_TRIGGER_RISING, "smd_dsp", 0);
-	if (r < 0) {
-		free_irq(INT_A9_M2A_0, 0);
-		free_irq(INT_A9_M2A_5, 0);
-		return r;
+	if (smd_version == SMD_QSD8X50) {
+		r = request_irq(irq_adsp_a11, smd_dsp_irq_handler,
+				IRQF_TRIGGER_RISING, "smd_dsp", 0);
+		if (r < 0) {
+			free_irq(irq_a9_m2a_0, 0);
+			free_irq(irq_a9_m2a_5, 0);
+			return r;
+		}
 	}
-#endif
 
 	/* check for any SMD channels that may already exist */
 	do_smd_probe();
@@ -981,15 +960,16 @@ int smd_core_init(void)
 	/* indicate that we're up and running */
 	smsm_change_state(SMSM_STATE_APPS,
 			  ~0, SMSM_INIT | SMSM_SMDINIT | SMSM_RPCINIT | SMSM_RUN);
-#ifdef CONFIG_ARCH_MSM_SCORPION
-	smsm_change_state(SMSM_STATE_APPS_DEM, ~0, 0);
-#endif
+	if (smd_version != SMD_MSM7X00)
+		smsm_change_state(SCORPION_SMSM_STATE_APPS_DEM, ~0, 0);
 
 	return 0;
 }
 
 static int msm_smd_probe(struct platform_device *pdev)
 {
+	int ret;
+
 	/*
 	 * If we haven't waited for the ARM9 to boot up till now,
 	 * then we need to wait here. Otherwise this should just
@@ -999,9 +979,14 @@ static int msm_smd_probe(struct platform_device *pdev)
 
 	INIT_WORK(&probe_work, smd_channel_probe_worker);
 
-	if (smd_core_init()) {
+	ret = smd_core_init(pdev->id_entry->driver_data,
+			    platform_get_irq(pdev, 0),
+			    platform_get_irq(pdev, 1),
+			    platform_get_irq(pdev, 2));
+
+	if (ret) {
 		pr_err("smd_core_init() failed\n");
-		return -1;
+		return ret;
 	}
 
 	do_smd_probe();
@@ -1010,13 +995,23 @@ static int msm_smd_probe(struct platform_device *pdev)
 
 	msm_init_last_radio_log(THIS_MODULE);
 
+	smd_debugfs_init(pdev->id_entry->driver_data != SMD_MSM7X00);
+
 	smd_initialized = 1;
 
 	return 0;
 }
 
+struct platform_device_id msm_smd_id_table[] = {
+	{ "msm7x00_smd", SMD_MSM7X00 },
+	{ "msm7x30_smd", SMD_MSM7X00 },
+	{ "qsd8x50_smd", SMD_QSD8X50 },
+	{}
+};
+
 static struct platform_driver msm_smd_driver = {
 	.probe = msm_smd_probe,
+	.id_table = msm_smd_id_table,
 	.driver = {
 		.name = MODULE_NAME,
 	},

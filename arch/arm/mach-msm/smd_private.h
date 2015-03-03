@@ -64,15 +64,14 @@ struct smem_shared {
 #define SMSM_V1_SIZE		(sizeof(unsigned) * 8)
 #define SMSM_V2_SIZE		(sizeof(unsigned) * 4)
 
-#ifdef CONFIG_MSM_SMD_PKG3
-struct smsm_interrupt_info {
+struct smsm_interrupt_info_pkg3 {
 	uint32_t interrupt_mask;
 	uint32_t pending_interrupts;
 	uint32_t wakeup_reason;
 };
-#else
+
 #define DEM_MAX_PORT_NAME_LEN (20)
-struct msm_dem_slave_data {
+struct msm_dem_slave_data_pkg4 {
 	uint32_t sleep_time;
 	uint32_t interrupt_mask;
 	uint32_t resources_used;
@@ -85,7 +84,6 @@ struct msm_dem_slave_data {
 	char     smd_port_name[DEM_MAX_PORT_NAME_LEN];
 	uint32_t reserved2;
 };
-#endif
 
 #define SZ_DIAG_ERR_MSG 0xC8
 #define ID_DIAG_ERR_MSG SMEM_DIAG_ERR_MESSAGE
@@ -126,30 +124,24 @@ struct msm_dem_slave_data {
 #define SMSM_WKUP_REASON_ALARM	0x00000010
 #define SMSM_WKUP_REASON_RESET	0x00000020
 
-#ifdef CONFIG_ARCH_MSM7X00A
 enum smsm_state_item {
-	SMSM_STATE_APPS = 1,
-	SMSM_STATE_MODEM = 3,
-	SMSM_STATE_COUNT,
+	MSM7X00_SMSM_STATE_APPS = 1,
+	MSM7X00_SMSM_STATE_MODEM = 3,
+	MSM7X00_SMSM_STATE_COUNT,
+	SCORPION_SMSM_STATE_APPS = 0,
+	SCORPION_SMSM_STATE_MODEM,
+	SCORPION_SMSM_STATE_HEXAGON,
+	SCORPION_SMSM_STATE_APPS_DEM,
+	SCORPION_SMSM_STATE_MODEM_DEM,
+	SCORPION_SMSM_STATE_QDSP6_DEM,
+	SCORPION_SMSM_STATE_POWER_MASTER_DEM,
+	SCORPION_SMSM_STATE_TIME_MASTER_DEM,
+	SCORPION_SMSM_STATE_COUNT,
 };
-#else
-enum smsm_state_item {
-	SMSM_STATE_APPS,
-	SMSM_STATE_MODEM,
-	SMSM_STATE_HEXAGON,
-	SMSM_STATE_APPS_DEM,
-	SMSM_STATE_MODEM_DEM,
-	SMSM_STATE_QDSP6_DEM,
-	SMSM_STATE_POWER_MASTER_DEM,
-	SMSM_STATE_TIME_MASTER_DEM,
-	SMSM_STATE_COUNT,
-};
-#endif
 
 void *smem_alloc(unsigned id, unsigned size);
 int smsm_change_state(enum smsm_state_item item, uint32_t clear_mask, uint32_t set_mask);
 uint32_t smsm_get_state(enum smsm_state_item item);
-int smsm_set_sleep_duration(uint32_t delay);
 void smsm_print_sleep_info(void);
 
 #define SMEM_NUM_SMD_CHANNELS        64
@@ -335,12 +327,17 @@ uint32_t raw_smsm_get_state(enum smsm_state_item item);
 
 extern void msm_init_last_radio_log(struct module *);
 
-#ifdef CONFIG_MSM_SMD_PKG3
+#if defined(CONFIG_MSM_SMD) && defined(CONFIG_DEBUG_FS)
+extern int smd_debugfs_init(bool);
+#else
+static inline int smd_debugfs_init(bool is_scorpion) { return 0; }
+#endif
+
 /*
  * This allocator assumes an SMD Package v3 which only exists on
  * MSM7x00 SoC's.
  */
-static inline int _smd_alloc_channel(struct smd_channel *ch)
+static inline int _smd_alloc_channel_pkg3(struct smd_channel *ch)
 {
 	struct smd_shared_v1 *shared1;
 
@@ -356,12 +353,12 @@ static inline int _smd_alloc_channel(struct smd_channel *ch)
 	ch->fifo_size = SMD_BUF_SIZE;
 	return 0;
 }
-#else
+
 /*
  * This allocator assumes an SMD Package v4, the most common
  * and the default.
  */
-static inline int _smd_alloc_channel(struct smd_channel *ch)
+static inline int _smd_alloc_channel_pkg4(struct smd_channel *ch)
 {
 	struct smd_shared_v2 *shared2;
 	void *buffer;
@@ -385,19 +382,5 @@ static inline int _smd_alloc_channel(struct smd_channel *ch)
 	ch->fifo_size = buffer_sz;
 	return 0;
 }
-#endif /* CONFIG_MSM_SMD_PKG3 */
-
-#if defined(CONFIG_ARCH_MSM7X30)
-static inline void msm_a2m_int(uint32_t irq)
-{
-	writel(1 << irq, MSM_GCC_BASE + 0x8);
-}
-#else
-static inline void msm_a2m_int(uint32_t irq)
-{
-	writel(1, MSM_CSR_BASE + 0x400 + (irq * 4));
-}
-#endif /* CONFIG_ARCH_MSM7X30 */
-
 
 #endif

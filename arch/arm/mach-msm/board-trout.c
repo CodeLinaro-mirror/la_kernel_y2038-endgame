@@ -94,11 +94,6 @@ static void __init trout_map_io(void)
 #endif
 }
 
-static void __init trout_init_late(void)
-{
-	smd_debugfs_init();
-}
-
 MACHINE_START(TROUT, "HTC Dream")
 	.atag_offset	= 0x100,
 	.fixup		= trout_fixup,
@@ -106,6 +101,5 @@ MACHINE_START(TROUT, "HTC Dream")
 	.init_early	= trout_init_early,
 	.init_irq	= trout_init_irq,
 	.init_machine	= trout_init,
-	.init_late	= trout_init_late,
 	.init_time	= msm7x01_timer_init,
 MACHINE_END

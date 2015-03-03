@@ -247,9 +247,16 @@ struct platform_device msm_device_nand = {
 	},
 };
 
+static struct resource resources_smd[] = {
+	DEFINE_RES_IRQ(INT_A9_M2A_0),
+	DEFINE_RES_IRQ(INT_A9_M2A_5),
+};
+
 struct platform_device msm_device_smd = {
-	.name	= "msm_smd",
-	.id	= -1,
+	.name		= "msm7x00_smd",
+	.id		= -1,
+	.num_resources	= ARRAY_SIZE(resources_smd),
+	.resource	= resources_smd,
 };
 
 static struct resource resources_sdc1[] = {

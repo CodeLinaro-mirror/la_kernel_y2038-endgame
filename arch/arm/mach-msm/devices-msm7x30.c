@@ -30,6 +30,7 @@
 
 #include "clock.h"
 #include "clock-pcom.h"
+#include "proc_comm.h"
 
 #include <linux/platform_data/mmc-msm_sdcc.h>
 
@@ -55,10 +56,16 @@ static struct map_desc msm7x30_io_desc[] __initdata = {
 	},
 };
 
+static void msm_a2m_int_msm7x00(uint32_t irq)
+{
+	writel(1 << irq, MSM_GCC_BASE + 0x8);
+}
+
 void __init msm_map_msm7x30_io(void)
 {
 	debug_ll_io_init();
 	iotable_init(msm7x30_io_desc, ARRAY_SIZE(msm7x30_io_desc));
+	msm_a2m_int = msm_a2m_int_msm7x00;
 }
 
 static struct resource msm_gpio_resources[] = {
@@ -113,9 +120,16 @@ struct platform_device msm_device_uart2 = {
 	.resource	= resources_uart2,
 };
 
+static struct resource resources_smd[] = {
+	DEFINE_RES_IRQ(INT_A9_M2A_0),
+	DEFINE_RES_IRQ(INT_A9_M2A_5),
+};
+
 struct platform_device msm_device_smd = {
-	.name   = "msm_smd",
-	.id     = -1,
+	.name   	= "msm_smd",
+	.id     	= -1,
+	.num_resources	= ARRAY_SIZE(resources_smd),
+	.resource	= resources_smd,
 };
 
 static struct resource resources_otg[] = {

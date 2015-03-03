@@ -22,14 +22,14 @@
 
 #include "proc_comm.h"
 
-static inline void msm_a2m_int(uint32_t irq)
+/* msm7x00 uses a different method and needs to override
+ * this function
+ */
+static void msm_a2m_int_scorpion(uint32_t irq)
 {
-#if defined(CONFIG_ARCH_MSM7X30)
-	writel(1 << irq, MSM_GCC_BASE + 0x8);
-#else
 	writel(1, MSM_CSR_BASE + 0x400 + (irq * 4));
-#endif
 }
+void (*msm_a2m_int)(uint32_t irq) = msm_a2m_int_scorpion;
 
 static inline void notify_other_proc_comm(void)
 {

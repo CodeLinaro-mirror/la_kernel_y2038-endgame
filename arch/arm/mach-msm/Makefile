@@ -9,8 +9,9 @@ obj-$(CONFIG_MSM_PROC_COMM) += proc_comm.o clock-pcom.o vreg.o
 
 obj-$(CONFIG_ARCH_MSM) += gpio-msm-v1.o
 
-obj-$(CONFIG_MSM_SMD) += smd.o smd_debug.o
-obj-$(CONFIG_MSM_SMD) += last_radio_log.o
+obj-$(CONFIG_MSM_SMD) += msm-smd.o
+msm-smd-y += smd.o last_radio_log.o
+msm-smd-$(CONFIG_DEBUG_FS) += smd_debug.o
 
 obj-$(CONFIG_MACH_TROUT) += board-trout.o board-trout-gpio.o board-trout-mmc.o devices-msm7x00.o
 obj-$(CONFIG_MACH_TROUT) += board-trout.o board-trout-gpio.o board-trout-mmc.o board-trout-panel.o devices-msm7x00.o

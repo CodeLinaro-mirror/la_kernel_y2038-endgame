@@ -21,8 +21,6 @@
 
 #include "smd_private.h"
 
-#if defined(CONFIG_DEBUG_FS)
-
 static char *chstate(unsigned n)
 {
 	switch (n) {
@@ -76,33 +74,56 @@ static int dump_ch(char *buf, int max, struct smd_channel *ch)
 		);
 }
 
-static int debug_read_stat(char *buf, int max)
+static int debug_read_stat_common(char *buf, int max)
 {
 	char *msg;
-	int i = 0;
 
 	msg = smem_find(ID_DIAG_ERR_MSG, SZ_DIAG_ERR_MSG);
+	if (!msg)
+		return 0;
 
-	if (raw_smsm_get_state(SMSM_STATE_MODEM) & SMSM_RESET)
+	msg[SZ_DIAG_ERR_MSG - 1] = 0;
+	return scnprintf(buf, max, "diag: '%s'\n", msg);
+}
+
+static int debug_read_stat_msm7x00(char *buf, int max)
+{
+	int i = 0;
+
+	if (raw_smsm_get_state(MSM7X00_SMSM_STATE_MODEM) & SMSM_RESET)
 		i += scnprintf(buf + i, max - i,
 			       "smsm: ARM9 HAS CRASHED\n");
 
 	i += scnprintf(buf + i, max - i, "smsm: a9: %08x a11: %08x\n",
-		       raw_smsm_get_state(SMSM_STATE_MODEM),
-		       raw_smsm_get_state(SMSM_STATE_APPS));
-#ifdef CONFIG_ARCH_MSM_SCORPION
+		       raw_smsm_get_state(MSM7X00_SMSM_STATE_MODEM),
+		       raw_smsm_get_state(MSM7X00_SMSM_STATE_APPS));
+
+	i += debug_read_stat_common(buf + i, max - i);
+
+	return i;
+}
+
+static int debug_read_stat_scorpion(char *buf, int max)
+{
+	int i = 0;
+
+	if (raw_smsm_get_state(SCORPION_SMSM_STATE_MODEM) & SMSM_RESET)
+		i += scnprintf(buf + i, max - i,
+			       "smsm: ARM9 HAS CRASHED\n");
+
+	i += scnprintf(buf + i, max - i, "smsm: a9: %08x a11: %08x\n",
+		       raw_smsm_get_state(SCORPION_SMSM_STATE_MODEM),
+		       raw_smsm_get_state(SCORPION_SMSM_STATE_APPS));
 	i += scnprintf(buf + i, max - i, "smsm dem: apps: %08x modem: %08x "
 		       "qdsp6: %08x power: %08x time: %08x\n",
-		       raw_smsm_get_state(SMSM_STATE_APPS_DEM),
-		       raw_smsm_get_state(SMSM_STATE_MODEM_DEM),
-		       raw_smsm_get_state(SMSM_STATE_QDSP6_DEM),
-		       raw_smsm_get_state(SMSM_STATE_POWER_MASTER_DEM),
-		       raw_smsm_get_state(SMSM_STATE_TIME_MASTER_DEM));
-#endif
-	if (msg) {
-		msg[SZ_DIAG_ERR_MSG - 1] = 0;
-		i += scnprintf(buf + i, max - i, "diag: '%s'\n", msg);
-	}
+		       raw_smsm_get_state(SCORPION_SMSM_STATE_APPS_DEM),
+		       raw_smsm_get_state(SCORPION_SMSM_STATE_MODEM_DEM),
+		       raw_smsm_get_state(SCORPION_SMSM_STATE_QDSP6_DEM),
+		       raw_smsm_get_state(SCORPION_SMSM_STATE_POWER_MASTER_DEM),
+		       raw_smsm_get_state(SCORPION_SMSM_STATE_TIME_MASTER_DEM));
+
+	i += debug_read_stat_common(buf + i, max - i);
+
 	return i;
 }
 
@@ -216,7 +237,7 @@ static void debug_create(const char *name, umode_t mode,
 	debugfs_create_file(name, mode, dent, fill, &debug_ops);
 }
 
-int __init smd_debugfs_init(void)
+int smd_debugfs_init(bool is_scorpion)
 {
 	struct dentry *dent;
 
@@ -225,7 +246,10 @@ int __init smd_debugfs_init(void)
 		return 1;
 
 	debug_create("ch", 0444, dent, debug_read_ch);
-	debug_create("stat", 0444, dent, debug_read_stat);
+	if (is_scorpion)
+		debug_create("stat", 0444, dent, debug_read_stat_scorpion);
+	else
+		debug_create("stat", 0444, dent, debug_read_stat_msm7x00);
 	debug_create("mem", 0444, dent, debug_read_mem);
 	debug_create("version", 0444, dent, debug_read_version);
 	debug_create("tbl", 0444, dent, debug_read_alloc_tbl);
@@ -233,79 +257,3 @@ int __init smd_debugfs_init(void)
 
 	return 0;
 }
-
-#endif
-
-
-#define MAX_NUM_SLEEP_CLIENTS		64
-#define MAX_SLEEP_NAME_LEN		8
-
-#define NUM_GPIO_INT_REGISTERS		6
-#define GPIO_SMEM_NUM_GROUPS		2
-#define GPIO_SMEM_MAX_PC_INTERRUPTS	8
-
-struct tramp_gpio_save {
-	unsigned int enable;
-	unsigned int detect;
-	unsigned int polarity;
-};
-
-struct tramp_gpio_smem {
-	uint16_t num_fired[GPIO_SMEM_NUM_GROUPS];
-	uint16_t fired[GPIO_SMEM_NUM_GROUPS][GPIO_SMEM_MAX_PC_INTERRUPTS];
-	uint32_t enabled[NUM_GPIO_INT_REGISTERS];
-	uint32_t detection[NUM_GPIO_INT_REGISTERS];
-	uint32_t polarity[NUM_GPIO_INT_REGISTERS];
-};
-
-
-void smsm_print_sleep_info(void)
-{
-	unsigned long flags;
-	uint32_t *ptr;
-#ifndef CONFIG_ARCH_MSM_SCORPION
-	struct tramp_gpio_smem *gpio;
-	struct smsm_interrupt_info *int_info;
-#endif
-
-
-	spin_lock_irqsave(&smem_lock, flags);
-
-	ptr = smem_alloc(SMEM_SMSM_SLEEP_DELAY, sizeof(*ptr));
-	if (ptr)
-		pr_info("SMEM_SMSM_SLEEP_DELAY: %x\n", *ptr);
-
-	ptr = smem_alloc(SMEM_SMSM_LIMIT_SLEEP, sizeof(*ptr));
-	if (ptr)
-		pr_info("SMEM_SMSM_LIMIT_SLEEP: %x\n", *ptr);
-
-	ptr = smem_alloc(SMEM_SLEEP_POWER_COLLAPSE_DISABLED, sizeof(*ptr));
-	if (ptr)
-		pr_info("SMEM_SLEEP_POWER_COLLAPSE_DISABLED: %x\n", *ptr);
-
-#ifndef CONFIG_ARCH_MSM_SCORPION
-	int_info = smem_alloc(SMEM_SMSM_INT_INFO, sizeof(*int_info));
-	if (int_info)
-		pr_info("SMEM_SMSM_INT_INFO %x %x %x\n",
-			int_info->interrupt_mask,
-			int_info->pending_interrupts,
-			int_info->wakeup_reason);
-
-	gpio = smem_alloc(SMEM_GPIO_INT, sizeof(*gpio));
-	if (gpio) {
-		int i;
-		for (i = 0; i < NUM_GPIO_INT_REGISTERS; i++)
-			pr_info("SMEM_GPIO_INT: %d: e %x d %x p %x\n",
-				i, gpio->enabled[i], gpio->detection[i],
-				gpio->polarity[i]);
-
-		for (i = 0; i < GPIO_SMEM_NUM_GROUPS; i++)
-			pr_info("SMEM_GPIO_INT: %d: f %d: %d %d...\n",
-				i, gpio->num_fired[i], gpio->fired[i][0],
-				gpio->fired[i][1]);
-	}
-#else
-#endif
-	spin_unlock_irqrestore(&smem_lock, flags);
-}
-

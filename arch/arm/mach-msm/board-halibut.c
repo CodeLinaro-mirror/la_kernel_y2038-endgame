@@ -88,17 +88,11 @@ static void __init halibut_map_io(void)
 	msm_map_common_io();
 }
 
-static void __init halibut_init_late(void)
-{
-	smd_debugfs_init();
-}
-
 MACHINE_START(HALIBUT, "Halibut Board (QCT SURF7200A)")
 	.atag_offset	= 0x100,
 	.map_io		= halibut_map_io,
 	.init_early	= halibut_init_early,
 	.init_irq	= halibut_init_irq,
 	.init_machine	= halibut_init,
-	.init_late	= halibut_init_late,
 	.init_time	= msm7x01_timer_init,
 MACHINE_END

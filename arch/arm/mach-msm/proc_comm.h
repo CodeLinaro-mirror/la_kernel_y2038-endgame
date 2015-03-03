@@ -255,4 +255,6 @@ enum {
 int msm_proc_comm(unsigned cmd, unsigned *data1, unsigned *data2);
 void proc_comm_boot_wait(void);
 
+extern void (*msm_a2m_int)(uint32_t irq);
+
 #endif

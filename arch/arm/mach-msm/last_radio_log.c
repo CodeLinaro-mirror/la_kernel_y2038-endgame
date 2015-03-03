@@ -68,4 +68,3 @@ void msm_init_last_radio_log(struct module *owner)
 	last_radio_log_fops.owner = owner;
 	proc_set_size(entry, radio_log_size);
 }
-EXPORT_SYMBOL(msm_init_last_radio_log);
