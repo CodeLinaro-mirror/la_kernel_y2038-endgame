@@ -328,7 +328,10 @@ struct msm_gpio_chip {
 struct msm_gpio_initdata {
 	struct msm_gpio_chip *chips;
 	int count;
+	bool mux;
 };
+
+static bool msm_gpio_mux;
 
 static void msm_gpio_writel(struct msm_gpio_chip *chip, u32 val,
 			    enum msm_gpio_reg reg)
@@ -446,20 +449,19 @@ static int msm_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
 	return MSM_GPIO_TO_INT(chip->base + offset);
 }
 
-#ifdef CONFIG_MSM_GPIOMUX
 static int msm_gpio_request(struct gpio_chip *chip, unsigned offset)
 {
+	if (!IS_ENABLED(CONFIG_MSM_GPIOMUX) || !msm_gpio_mux)
+		return 0;
 	return msm_gpiomux_get(chip->base + offset);
 }
 
 static void msm_gpio_free(struct gpio_chip *chip, unsigned offset)
 {
+	if (!IS_ENABLED(CONFIG_MSM_GPIOMUX) || !msm_gpio_mux)
+		return;
 	msm_gpiomux_put(chip->base + offset);
 }
-#else
-#define msm_gpio_request NULL
-#define msm_gpio_free NULL
-#endif
 
 static struct msm_gpio_chip *msm_gpio_chips;
 static int msm_gpio_count;
@@ -476,6 +478,7 @@ static struct msm_gpio_chip msm_gpio_chips_msm7x01[] = {
 static struct msm_gpio_initdata msm_gpio_7x01_init = {
 	.chips = msm_gpio_chips_msm7x01,
 	.count = ARRAY_SIZE(msm_gpio_chips_msm7x01),
+	.mux = false,
 };
 
 static struct msm_gpio_chip msm_gpio_chips_msm7x30[] = {
@@ -492,6 +495,7 @@ static struct msm_gpio_chip msm_gpio_chips_msm7x30[] = {
 static struct msm_gpio_initdata msm_gpio_7x30_init = {
 	.chips = msm_gpio_chips_msm7x30,
 	.count = ARRAY_SIZE(msm_gpio_chips_msm7x30),
+	.mux = true,
 };
 
 static struct msm_gpio_chip msm_gpio_chips_qsd8x50[] = {
@@ -508,6 +512,7 @@ static struct msm_gpio_chip msm_gpio_chips_qsd8x50[] = {
 static struct msm_gpio_initdata msm_gpio_8x50_init = {
 	.chips = msm_gpio_chips_qsd8x50,
 	.count = ARRAY_SIZE(msm_gpio_chips_qsd8x50),
+	.mux = true,
 };
 
 static void msm_gpio_irq_ack(struct irq_data *d)
@@ -643,6 +648,7 @@ static int gpio_msm_v1_probe(struct platform_device *pdev)
 	data = (struct msm_gpio_initdata *)dev_id->driver_data;
 	msm_gpio_chips = data->chips;
 	msm_gpio_count = data->count;
+	msm_gpio_mux = data->mux;
 
 	irq1 = platform_get_irq(pdev, 0);
 	if (irq1 < 0)

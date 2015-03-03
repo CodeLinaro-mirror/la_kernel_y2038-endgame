@@ -65,7 +65,7 @@ enum {
  * of that flag will prevent the configuration from being applied
  * during state transitions.
  */
-extern struct msm_gpiomux_config msm_gpiomux_configs[GPIOMUX_NGPIOS];
+extern struct msm_gpiomux_config qsd8x50_gpiomux_configs[QSD8X50_GPIOMUX_NGPIOS];
 
 /* Install a new configuration to the gpio line.  To avoid overwriting
  * a configuration, leave the VALID bit out.
@@ -73,12 +73,18 @@ extern struct msm_gpiomux_config msm_gpiomux_configs[GPIOMUX_NGPIOS];
 int msm_gpiomux_write(unsigned gpio,
 		      gpiomux_config_t active,
 		      gpiomux_config_t suspended);
+
+int gpiomux_init(struct msm_gpiomux_config *config, unsigned int ngpios);
 #else
 static inline int msm_gpiomux_write(unsigned gpio,
 				    gpiomux_config_t active,
 				    gpiomux_config_t suspended)
 {
 	return -ENOSYS;
+}
+int gpiomux_init(struct msm_gpiomux_config *config, unsigned int ngpios)
+{
+	return 0;
 }
 #endif
 #endif

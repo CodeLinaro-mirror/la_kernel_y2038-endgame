@@ -99,7 +99,7 @@ static struct msm_otg_platform_data msm_otg_pdata = {
 	.phy_clk_reset		= hsusb_phy_clk_reset,
 };
 
-struct msm_gpiomux_config msm_gpiomux_configs[GPIOMUX_NGPIOS] = {
+static struct msm_gpiomux_config msm7x30_gpiomux_configs[MSM7X30_GPIOMUX_NGPIOS] = {
 #ifdef CONFIG_SERIAL_MSM_CONSOLE
 	[49] = { /* UART2 RFR */
 		.suspended = GPIOMUX_DRV_2MA | GPIOMUX_PULL_DOWN |
@@ -139,6 +139,8 @@ static void __init msm7x30_init_irq(void)
 
 static void __init msm7x30_init(void)
 {
+	gpiomux_init(msm7x30_gpiomux_configs,
+		     ARRAY_SIZE(msm7x30_gpiomux_configs));
 	msm_device_otg.dev.platform_data = &msm_otg_pdata;
 	msm_device_hsusb.dev.parent = &msm_device_otg.dev;
 	msm_device_hsusb_host.dev.parent = &msm_device_otg.dev;

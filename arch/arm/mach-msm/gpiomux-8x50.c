@@ -29,7 +29,7 @@
 #define SDC1_SUSPEND_CONFIG (GPIOMUX_VALID | GPIOMUX_PULL_DOWN\
 				| GPIOMUX_FUNC_GPIO | GPIOMUX_DRV_2MA)
 
-struct msm_gpiomux_config msm_gpiomux_configs[GPIOMUX_NGPIOS] = {
+struct msm_gpiomux_config qsd8x50_gpiomux_configs[QSD8X50_GPIOMUX_NGPIOS] = {
 	[86] = { /* UART3 RX */
 		.suspended = GPIOMUX_DRV_2MA | GPIOMUX_PULL_DOWN |
 			     GPIOMUX_FUNC_1 | GPIOMUX_VALID,

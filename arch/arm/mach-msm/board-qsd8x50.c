@@ -36,6 +36,7 @@
 
 #include "devices.h"
 #include "common.h"
+#include "gpiomux.h"
 
 static const resource_size_t qsd8x50_surf_smc91x_base __initconst = 0x70000300;
 static const unsigned        qsd8x50_surf_smc91x_gpio __initconst = 156;
@@ -228,6 +229,8 @@ static void __init qsd8x50_init_irq(void)
 
 static void __init qsd8x50_init(void)
 {
+	gpiomux_init(qsd8x50_gpiomux_configs,
+		     ARRAY_SIZE(qsd8x50_gpiomux_configs));
 	msm_device_otg.dev.platform_data = &msm_otg_pdata;
 	msm_device_hsusb.dev.parent = &msm_device_otg.dev;
 	msm_device_hsusb_host.dev.parent = &msm_device_otg.dev;
