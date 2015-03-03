@@ -18,8 +18,9 @@
 
 #include <linux/dma-mapping.h>
 #include <linux/clkdev.h>
+#include <asm/mach/map.h>
 #include <mach/irqs.h>
-#include <mach/msm_iomap.h>
+#include <mach/msm_iomap-7x30.h>
 
 #include "devices.h"
 #include "smd_private.h"
@@ -31,6 +32,34 @@
 #include "clock-pcom.h"
 
 #include <linux/platform_data/mmc-msm_sdcc.h>
+
+static struct map_desc msm7x30_io_desc[] __initdata = {
+	MSM_DEVICE(VIC),
+	MSM_CHIP_DEVICE(CSR, MSM7X30),
+	MSM_DEVICE(DMOV),
+	MSM_CHIP_DEVICE(GPIO1, MSM7X30),
+	MSM_CHIP_DEVICE(GPIO2, MSM7X30),
+	MSM_DEVICE(CLK_CTL),
+	MSM_DEVICE(CLK_CTL_SH2),
+	MSM_DEVICE(AD5),
+	MSM_DEVICE(MDC),
+	MSM_DEVICE(ACC),
+	MSM_DEVICE(SAW),
+	MSM_DEVICE(GCC),
+	MSM_DEVICE(TCSR),
+	{
+		.virtual =  (unsigned long) MSM_SHARED_RAM_BASE,
+		.pfn = __phys_to_pfn(MSM_SHARED_RAM_PHYS),
+		.length =   MSM_SHARED_RAM_SIZE,
+		.type =     MT_DEVICE,
+	},
+};
+
+void __init msm_map_msm7x30_io(void)
+{
+	debug_ll_io_init();
+	iotable_init(msm7x30_io_desc, ARRAY_SIZE(msm7x30_io_desc));
+}
 
 static struct resource msm_gpio_resources[] = {
 	{

@@ -16,9 +16,11 @@
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
 #include <linux/clkdev.h>
+#include <asm/mach/map.h>
 
 #include <mach/irqs.h>
 #include <mach/msm_iomap.h>
+#include <mach/msm_iomap-7x00.h>
 #include "devices.h"
 
 #include <asm/mach/flash.h>
@@ -28,6 +30,62 @@
 #include "clock.h"
 #include "clock-pcom.h"
 #include <linux/platform_data/mmc-msm_sdcc.h>
+
+static struct map_desc msm_io_desc[] __initdata = {
+	MSM_DEVICE_TYPE(VIC, MT_DEVICE_NONSHARED),
+	MSM_CHIP_DEVICE_TYPE(CSR, MSM7X00, MT_DEVICE_NONSHARED),
+	MSM_DEVICE_TYPE(DMOV, MT_DEVICE_NONSHARED),
+	MSM_CHIP_DEVICE_TYPE(GPIO1, MSM7X00, MT_DEVICE_NONSHARED),
+	MSM_CHIP_DEVICE_TYPE(GPIO2, MSM7X00, MT_DEVICE_NONSHARED),
+	MSM_DEVICE_TYPE(CLK_CTL, MT_DEVICE_NONSHARED),
+	{
+		.virtual =  (unsigned long) MSM_SHARED_RAM_BASE,
+		.pfn = __phys_to_pfn(MSM_SHARED_RAM_PHYS),
+		.length =   MSM_SHARED_RAM_SIZE,
+		.type =     MT_DEVICE,
+	},
+#if defined(CONFIG_DEBUG_MSM_UART)
+	{
+		/* Must be last: virtual and pfn filled in by debug_ll_addr() */
+		.length = SZ_4K,
+		.type = MT_DEVICE_NONSHARED,
+	}
+#endif
+};
+
+void __init msm_map_common_io(void)
+{
+	size_t size = ARRAY_SIZE(msm_io_desc);
+
+	/* Make sure the peripheral register window is closed, since
+	 * we will use PTE flags (TEX[1]=1,B=0,C=1) to determine which
+	 * pages are peripheral interface or not.
+	 */
+	asm("mcr p15, 0, %0, c15, c2, 4" : : "r" (0));
+#if defined(CONFIG_DEBUG_MSM_UART)
+#ifdef CONFIG_MMU
+	debug_ll_addr(&msm_io_desc[size - 1].pfn,
+		      &msm_io_desc[size - 1].virtual);
+#endif
+	msm_io_desc[size - 1].pfn = __phys_to_pfn(msm_io_desc[size - 1].pfn);
+#endif
+	iotable_init(msm_io_desc, size);
+}
+
+void __iomem *__msm_ioremap_caller(phys_addr_t phys_addr, size_t size,
+				   unsigned int mtype, void *caller)
+{
+	if (mtype == MT_DEVICE) {
+		/* The peripherals in the 88000000 - D0000000 range
+		 * are only accessible by type MT_DEVICE_NONSHARED.
+		 * Adjust mtype as necessary to make this "just work."
+		 */
+		if ((phys_addr >= 0x88000000) && (phys_addr < 0xD0000000))
+			mtype = MT_DEVICE_NONSHARED;
+	}
+
+	return __arm_ioremap_caller(phys_addr, size, mtype, caller);
+}
 
 static struct resource msm_gpio_resources[] = {
 	{

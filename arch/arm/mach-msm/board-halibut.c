@@ -29,7 +29,7 @@
 #include <asm/setup.h>
 
 #include <mach/irqs.h>
-#include <mach/msm_iomap.h>
+#include <mach/msm_iomap-7x00.h>
 
 #include <linux/mtd/nand.h>
 #include <linux/mtd/partitions.h>

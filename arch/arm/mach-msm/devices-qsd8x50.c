@@ -17,9 +17,11 @@
 #include <linux/platform_device.h>
 #include <linux/clkdev.h>
 #include <linux/dma-mapping.h>
+#include <asm/mach/map.h>
 
 #include <mach/irqs.h>
 #include <mach/msm_iomap.h>
+#include <mach/msm_iomap-8x50.h>
 
 #include "devices.h"
 #include "common.h"
@@ -29,6 +31,52 @@
 #include <linux/platform_data/mmc-msm_sdcc.h>
 #include "clock.h"
 #include "clock-pcom.h"
+
+static struct map_desc qsd8x50_io_desc[] __initdata = {
+	MSM_DEVICE(VIC),
+	MSM_CHIP_DEVICE(CSR, QSD8X50),
+	MSM_DEVICE(DMOV),
+	MSM_CHIP_DEVICE(GPIO1, QSD8X50),
+	MSM_CHIP_DEVICE(GPIO2, QSD8X50),
+	MSM_DEVICE(CLK_CTL),
+	MSM_DEVICE(SIRC),
+	MSM_DEVICE(SCPLL),
+	MSM_DEVICE(AD5),
+	MSM_DEVICE(MDC),
+};
+
+static struct map_desc qsd8x50_io_desc_rev_other[] __initdata = {
+	{
+		.virtual =  (unsigned long) MSM_SHARED_RAM_BASE,
+		.pfn = __phys_to_pfn(MSM_SHARED_RAM_PHYS_REV_OTHER),
+		.length =   MSM_SHARED_RAM_SIZE,
+		.type =     MT_DEVICE,
+	},
+};
+
+void __init msm_map_qsd8x50_io(void)
+{
+	debug_ll_io_init();
+	iotable_init(qsd8x50_io_desc, ARRAY_SIZE(qsd8x50_io_desc));
+	iotable_init(qsd8x50_io_desc_rev_other, ARRAY_SIZE(qsd8x50_io_desc_rev_other));
+}
+#ifdef CONFIG_MSM_SOC_REV_A
+static struct map_desc qsd8x50_io_desc_rev_a[] __initdata = {
+	{
+		.virtual =  (unsigned long) MSM_SHARED_RAM_BASE,
+		.pfn = __phys_to_pfn(MSM_SHARED_RAM_PHYS_REV_A),
+		.length =   MSM_SHARED_RAM_SIZE,
+		.type =     MT_DEVICE,
+	},
+};
+
+void __init msm_map_qsd8x50_io_rev_a(void)
+{
+	debug_ll_io_init();
+	iotable_init(qsd8x50_io_desc, ARRAY_SIZE(qsd8x50_io_desc));
+	iotable_init(qsd8x50_io_desc_rev_a, ARRAY_SIZE(qsd8x50_io_desc_rev_a));
+}
+#endif /* CONFIG_MSM_SOC_REV_A */
 
 static struct resource msm_gpio_resources[] = {
 	{

@@ -35,7 +35,6 @@
  *
  */
 
-#define MSM_VIC_BASE          IOMEM(0xE0000000)
 #define MSM_VIC_PHYS          0xC0080000
 #define MSM_VIC_SIZE          SZ_4K
 
@@ -76,7 +75,6 @@
 #define MSM_TCSR_PHYS	      0xAB600000
 #define MSM_TCSR_SIZE	      SZ_4K
 
-#define MSM_SHARED_RAM_BASE   IOMEM(0xE0100000)
 #define MSM_SHARED_RAM_PHYS   0x00100000
 #define MSM_SHARED_RAM_SIZE   SZ_1M
 

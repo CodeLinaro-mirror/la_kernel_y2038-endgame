@@ -31,7 +31,7 @@
 #include <asm/setup.h>
 
 #include <mach/clk.h>
-#include <mach/msm_iomap.h>
+#include <mach/msm_iomap-7x30.h>
 
 #include <mach/vreg.h>
 #include "devices.h"

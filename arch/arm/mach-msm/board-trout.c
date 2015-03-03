@@ -28,7 +28,7 @@
 #include <asm/setup.h>
 
 #include <mach/hardware.h>
-#include <mach/msm_iomap.h>
+#include <mach/msm_iomap-7x00.h>
 
 #include "devices.h"
 #include "board-trout.h"

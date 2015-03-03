@@ -25,6 +25,19 @@
 
 #include <asm/sizes.h>
 
+#define MSM_CHIP_DEVICE_TYPE(name, chip, mem_type) {			      \
+		.virtual = (unsigned long) MSM_##name##_BASE, \
+		.pfn = __phys_to_pfn(chip##_##name##_PHYS), \
+		.length = chip##_##name##_SIZE, \
+		.type = mem_type, \
+	 }
+
+#define MSM_DEVICE_TYPE(name, mem_type) \
+		MSM_CHIP_DEVICE_TYPE(name, MSM, mem_type)
+#define MSM_CHIP_DEVICE(name, chip) \
+		MSM_CHIP_DEVICE_TYPE(name, chip, MT_DEVICE)
+#define MSM_DEVICE(name) MSM_CHIP_DEVICE(name, MSM)
+
 /* Physical base address and size of peripherals.
  * Ordered by the virtual base addresses they will be mapped at.
  *
@@ -37,17 +50,10 @@
  *
  */
 
-#if defined(CONFIG_ARCH_MSM7X30)
-#include "msm_iomap-7x30.h"
-#elif defined(CONFIG_ARCH_QSD8X50)
-#include "msm_iomap-8x50.h"
-#else
-#include "msm_iomap-7x00.h"
-#endif
-
 /* Virtual addresses shared across all MSM targets. */
+#define MSM_VIC_BASE		IOMEM(0xE0000000)
 #define MSM_CSR_BASE		IOMEM(0xE0001000)
 #define MSM_GPIO1_BASE		IOMEM(0xE0003000)
 #define MSM_GPIO2_BASE		IOMEM(0xE0004000)
-
+#define MSM_SHARED_RAM_BASE	IOMEM(0xE0100000)
 #endif

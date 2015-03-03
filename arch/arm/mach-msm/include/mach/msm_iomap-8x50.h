@@ -35,7 +35,6 @@
  *
  */
 
-#define MSM_VIC_BASE          IOMEM(0xE0000000)
 #define MSM_VIC_PHYS          0xAC000000
 #define MSM_VIC_SIZE          SZ_4K
 

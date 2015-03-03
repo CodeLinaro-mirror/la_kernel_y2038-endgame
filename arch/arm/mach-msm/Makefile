@@ -7,10 +7,6 @@ obj-$(CONFIG_ARCH_QSD8X50) += sirc.o
 
 obj-$(CONFIG_MSM_PROC_COMM) += proc_comm.o clock-pcom.o vreg.o
 
-obj-$(CONFIG_ARCH_MSM7X00A) += io.o
-obj-$(CONFIG_ARCH_MSM7X30) += io.o
-obj-$(CONFIG_ARCH_QSD8X50) += io.o
-
 obj-$(CONFIG_MSM_SMD) += smd.o smd_debug.o
 obj-$(CONFIG_MSM_SMD) += last_radio_log.o
 
