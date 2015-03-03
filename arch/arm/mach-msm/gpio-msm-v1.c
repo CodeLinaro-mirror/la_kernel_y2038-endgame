@@ -274,7 +274,7 @@
 #define MSM7X30_GPIO_INT_STATUS_6	MSM_GPIO1_REG(0xE0)
 #define MSM7X30_GPIO_INT_STATUS_7	MSM_GPIO1_REG(0x234)
 
-#define FIRST_GPIO_IRQ MSM_GPIO_TO_INT(0)
+static int msm_gpio_first_irq;
 
 #define MSM_GPIO_BANK(soc, bank, first, last)				\
 	{								\
@@ -446,7 +446,7 @@ static void msm_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 
 static int msm_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
 {
-	return MSM_GPIO_TO_INT(chip->base + offset);
+	return chip->base + offset - msm_gpio_first_irq;
 }
 
 static int msm_gpio_request(struct gpio_chip *chip, unsigned offset)
@@ -618,9 +618,9 @@ static void msm_gpio_irq_handler(unsigned int irq, struct irq_desc *desc)
 			j = fls(mask) - 1;
 			/* printk("%s %08x %08x bit %d gpio %d irq %d\n",
 				__func__, v, m, j, msm_chip->chip.start + j,
-				FIRST_GPIO_IRQ + msm_chip->chip.start + j); */
+				msm_gpio_first_irq + msm_chip->chip.start + j); */
 			val &= ~mask;
-			generic_handle_irq(FIRST_GPIO_IRQ +
+			generic_handle_irq(msm_gpio_first_irq +
 					   msm_chip->chip.base + j);
 		}
 	}
@@ -668,8 +668,11 @@ static int gpio_msm_v1_probe(struct platform_device *pdev)
 	if (IS_ERR(base2))
 		return PTR_ERR(base2);
 
-	for (i = FIRST_GPIO_IRQ; i < FIRST_GPIO_IRQ + NR_GPIO_IRQS; i++) {
-		if (i - FIRST_GPIO_IRQ >=
+	res = platform_get_resource(pdev, IORESOURCE_IRQ, 2);
+	msm_gpio_first_irq = res->start;
+
+	for (i = msm_gpio_first_irq; i <= res->end; i++) {
+		if (i - msm_gpio_first_irq >=
 			msm_gpio_chips[j].chip.base +
 			msm_gpio_chips[j].chip.ngpio)
 			j++;

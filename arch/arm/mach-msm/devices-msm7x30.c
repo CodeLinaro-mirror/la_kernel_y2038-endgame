@@ -80,6 +80,11 @@ static struct resource msm_gpio_resources[] = {
 		.flags	= IORESOURCE_IRQ,
 	},
 	{
+		.start	= NR_MSM_IRQS,
+		.end	= NR_MSM_IRQS + NR_GPIO_IRQS - 1,
+		.flags	= IORESOURCE_IRQ,
+	},
+	{
 		.start	= 0xac001000,
 		.end	= 0xac001000 + SZ_4K - 1,
 		.flags	= IORESOURCE_MEM,
