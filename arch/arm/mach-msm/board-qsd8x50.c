@@ -223,7 +223,7 @@ static void __init qsd8x50_init_mmc(void)
 static void __init qsd8x50_init_irq(void)
 {
 	msm_init_irq();
-	msm_init_sirc();
+	msm_init_sirc(FIRST_SIRC_IRQ, NR_SIRC_IRQS_REV_OTHER, INT_SIRC_0);
 }
 
 static void __init qsd8x50_init(void)
@@ -249,11 +249,19 @@ MACHINE_START(QSD8X50_SURF, "QCT QSD8X50 SURF")
 	.init_time	= qsd8x50_timer_init,
 MACHINE_END
 
+#ifdef CONFIG_MSM_SOC_REV_A
+static void __init qsd8x50_init_irq_rev_a(void)
+{
+	msm_init_irq();
+	msm_init_sirc(FIRST_SIRC_IRQ, NR_SIRC_IRQS_REV_A, INT_SIRC_0);
+}
+
 MACHINE_START(QSD8X50A_ST1_5, "QCT QSD8X50A ST1.5")
 	.atag_offset = 0x100,
 	.map_io = msm_map_qsd8x50_io_rev_a,
-	.init_irq = qsd8x50_init_irq,
+	.init_irq = qsd8x50_init_irq_rev_a,
 	.init_machine = qsd8x50_init,
 	.init_late = qsd8x50_init_late,
 	.init_time	= qsd8x50_timer_init,
 MACHINE_END
+#endif

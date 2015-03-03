@@ -85,4 +85,44 @@
 #define NR_MSM_IRQS 64
 #define NR_BOARD_IRQS 64
 
+/*
+ * Secondary interrupt controller interrupts
+ */
+
+#define FIRST_SIRC_IRQ (NR_MSM_IRQS + NR_GPIO_IRQS)
+
+#define INT_UART1                     (FIRST_SIRC_IRQ + 0)
+#define INT_UART2                     (FIRST_SIRC_IRQ + 1)
+#define INT_UART3                     (FIRST_SIRC_IRQ + 2)
+#define INT_UART1_RX                  (FIRST_SIRC_IRQ + 3)
+#define INT_UART2_RX                  (FIRST_SIRC_IRQ + 4)
+#define INT_UART3_RX                  (FIRST_SIRC_IRQ + 5)
+#define INT_SPI_INPUT                 (FIRST_SIRC_IRQ + 6)
+#define INT_SPI_OUTPUT                (FIRST_SIRC_IRQ + 7)
+#define INT_SPI_ERROR                 (FIRST_SIRC_IRQ + 8)
+#define INT_GPIO_GROUP1               (FIRST_SIRC_IRQ + 9)
+#define INT_GPIO_GROUP2               (FIRST_SIRC_IRQ + 10)
+#define INT_GPIO_GROUP1_SECURE        (FIRST_SIRC_IRQ + 11)
+#define INT_GPIO_GROUP2_SECURE        (FIRST_SIRC_IRQ + 12)
+#define INT_AVS_SVIC                  (FIRST_SIRC_IRQ + 13)
+#define INT_AVS_REQ_UP                (FIRST_SIRC_IRQ + 14)
+#define INT_AVS_REQ_DOWN              (FIRST_SIRC_IRQ + 15)
+#define INT_PBUS_ERR                  (FIRST_SIRC_IRQ + 16)
+#define INT_AXI_ERR                   (FIRST_SIRC_IRQ + 17)
+#define INT_SMI_ERR                   (FIRST_SIRC_IRQ + 18)
+#define INT_EBI1_ERR                  (FIRST_SIRC_IRQ + 19)
+#define INT_IMEM_ERR                  (FIRST_SIRC_IRQ + 20)
+#define INT_TEMP_SENSOR               (FIRST_SIRC_IRQ + 21)
+#define INT_TV_ENC                    (FIRST_SIRC_IRQ + 22)
+#define INT_GRP2D                     (FIRST_SIRC_IRQ + 23)
+#define INT_GSBI_QUP                  (FIRST_SIRC_IRQ + 24)
+#define INT_SC_ACG                    (FIRST_SIRC_IRQ + 25)
+#define INT_WDT0                      (FIRST_SIRC_IRQ + 26)
+#define INT_WDT1                      (FIRST_SIRC_IRQ + 27)
+
+#define NR_SIRC_IRQS_REV_A		28
+#define NR_SIRC_IRQS_REV_OTHER		23
+
+#define LAST_SIRC_IRQ                 (FIRST_SIRC_IRQ + NR_SIRC_IRQS - 1)
+
 #endif

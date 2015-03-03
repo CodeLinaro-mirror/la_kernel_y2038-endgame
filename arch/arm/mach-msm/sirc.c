@@ -20,9 +20,27 @@
 #include <linux/irq.h>
 #include <linux/interrupt.h>
 #include <asm/irq.h>
+#include <mach/msm_iomap-8x50.h>
+#include <mach/sirc.h>
+
+#define SPSS_SIRC_INT_SELECT          (MSM_SIRC_BASE + 0x00)
+#define SPSS_SIRC_INT_ENABLE          (MSM_SIRC_BASE + 0x04)
+#define SPSS_SIRC_INT_ENABLE_CLEAR    (MSM_SIRC_BASE + 0x08)
+#define SPSS_SIRC_INT_ENABLE_SET      (MSM_SIRC_BASE + 0x0C)
+#define SPSS_SIRC_INT_TYPE            (MSM_SIRC_BASE + 0x10)
+#define SPSS_SIRC_INT_POLARITY        (MSM_SIRC_BASE + 0x14)
+#define SPSS_SIRC_SECURITY            (MSM_SIRC_BASE + 0x18)
+#define SPSS_SIRC_IRQ_STATUS          (MSM_SIRC_BASE + 0x1C)
+#define SPSS_SIRC_IRQ1_STATUS         (MSM_SIRC_BASE + 0x20)
+#define SPSS_SIRC_RAW_STATUS          (MSM_SIRC_BASE + 0x24)
+#define SPSS_SIRC_INT_CLEAR           (MSM_SIRC_BASE + 0x28)
+#define SPSS_SIRC_SOFT_INT            (MSM_SIRC_BASE + 0x2C)
 
 static unsigned int int_enable;
 static unsigned int wake_enable;
+static int first_sirc_irq;
+static int nr_sirc_irqs;
+static int sirc_mask;
 
 static struct sirc_regs_t sirc_regs = {
 	.int_enable       = SPSS_SIRC_INT_ENABLE,
@@ -36,7 +54,6 @@ static struct sirc_regs_t sirc_regs = {
 static struct sirc_cascade_regs sirc_reg_table[] = {
 	{
 		.int_status  = SPSS_SIRC_IRQ_STATUS,
-		.cascade_irq = INT_SIRC_0,
 	}
 };
 
@@ -46,7 +63,7 @@ static void sirc_irq_mask(struct irq_data *d)
 {
 	unsigned int mask;
 
-	mask = 1 << (d->irq - FIRST_SIRC_IRQ);
+	mask = 1 << (d->irq - first_sirc_irq);
 	writel(mask, sirc_regs.int_enable_clear);
 	int_enable &= ~mask;
 	return;
@@ -58,7 +75,7 @@ static void sirc_irq_unmask(struct irq_data *d)
 {
 	unsigned int mask;
 
-	mask = 1 << (d->irq - FIRST_SIRC_IRQ);
+	mask = 1 << (d->irq - first_sirc_irq);
 	writel(mask, sirc_regs.int_enable_set);
 	int_enable |= mask;
 	return;
@@ -68,7 +85,7 @@ static void sirc_irq_ack(struct irq_data *d)
 {
 	unsigned int mask;
 
-	mask = 1 << (d->irq - FIRST_SIRC_IRQ);
+	mask = 1 << (d->irq - first_sirc_irq);
 	writel(mask, sirc_regs.int_clear);
 	return;
 }
@@ -78,7 +95,7 @@ static int sirc_irq_set_wake(struct irq_data *d, unsigned int on)
 	unsigned int mask;
 
 	/* Used to set the interrupt enable mask during power collapse. */
-	mask = 1 << (d->irq - FIRST_SIRC_IRQ);
+	mask = 1 << (d->irq - first_sirc_irq);
 	if (on)
 		wake_enable |= mask;
 	else
@@ -92,7 +109,7 @@ static int sirc_irq_set_type(struct irq_data *d, unsigned int flow_type)
 	unsigned int mask;
 	unsigned int val;
 
-	mask = 1 << (d->irq - FIRST_SIRC_IRQ);
+	mask = 1 << (d->irq - first_sirc_irq);
 	val = readl(sirc_regs.int_polarity);
 
 	if (flow_type & (IRQF_TRIGGER_LOW | IRQF_TRIGGER_FALLING))
@@ -128,15 +145,15 @@ static void sirc_irq_handler(unsigned int irq, struct irq_desc *desc)
 		reg++;
 
 	status = readl(sirc_reg_table[reg].int_status);
-	status &= SIRC_MASK;
+	status &= sirc_mask;
 	if (status == 0)
 		return;
 
 	for (sirq = 0;
-	     (sirq < NR_SIRC_IRQS) && ((status & (1U << sirq)) == 0);
+	     (sirq < nr_sirc_irqs) && ((status & (1U << sirq)) == 0);
 	     sirq++)
 		;
-	generic_handle_irq(sirq+FIRST_SIRC_IRQ);
+	generic_handle_irq(sirq+first_sirc_irq);
 
 	desc->irq_data.chip->irq_ack(&desc->irq_data);
 }
@@ -150,14 +167,18 @@ static struct irq_chip sirc_irq_chip = {
 	.irq_set_type  = sirc_irq_set_type,
 };
 
-void __init msm_init_sirc(void)
+void __init msm_init_sirc(int first, int count, int cascade)
 {
 	int i;
 
 	int_enable = 0;
 	wake_enable = 0;
+	first_sirc_irq = first;
+	nr_sirc_irqs = count;
+	sirc_mask = (1 << count) - 1;
+	sirc_reg_table[0].cascade_irq = cascade;
 
-	for (i = FIRST_SIRC_IRQ; i < LAST_SIRC_IRQ; i++) {
+	for (i = first; i < first + count; i++) {
 		irq_set_chip_and_handler(i, &sirc_irq_chip, handle_edge_irq);
 		set_irq_flags(i, IRQF_VALID);
 	}
