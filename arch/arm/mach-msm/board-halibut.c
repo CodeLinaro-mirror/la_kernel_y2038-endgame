@@ -59,12 +59,12 @@ static struct platform_device smc91x_device = {
 
 static struct platform_device *devices[] __initdata = {
 	&msm_clock_7x01a,
-	&msm_device_gpio_7201,
-	&msm_device_uart3,
-	&msm_device_smd,
-	&msm_device_nand,
-	&msm_device_hsusb,
-	&msm_device_i2c,
+	&msm7x00_device_gpio_7201,
+	&msm7x00_device_uart3,
+	&msm7x00_device_smd,
+	&msm7x00_device_nand,
+	&msm7x00_device_hsusb,
+	&msm7x00_device_i2c,
 	&smc91x_device,
 };
 

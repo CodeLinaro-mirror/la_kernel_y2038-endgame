@@ -123,14 +123,14 @@ static struct msm_gpiomux_config msm7x30_gpiomux_configs[MSM7X30_GPIOMUX_NGPIOS]
 
 static struct platform_device *devices[] __initdata = {
 	&msm_clock_7x30,
-	&msm_device_gpio_7x30,
+	&msm7x30_device_gpio_7x30,
 #if defined(CONFIG_SERIAL_MSM)
-        &msm_device_uart2,
+        &msm7x30_device_uart2,
 #endif
-	&msm_device_smd,
-	&msm_device_otg,
-	&msm_device_hsusb,
-	&msm_device_hsusb_host,
+	&msm7x30_device_smd,
+	&msm7x30_device_otg,
+	&msm7x30_device_hsusb,
+	&msm7x30_device_hsusb_host,
 };
 
 #define SMSM_FAKE_IRQ (0xff)
@@ -194,9 +194,9 @@ static void __init msm7x30_init(void)
 {
 	gpiomux_init(msm7x30_gpiomux_configs,
 		     ARRAY_SIZE(msm7x30_gpiomux_configs));
-	msm_device_otg.dev.platform_data = &msm_otg_pdata;
-	msm_device_hsusb.dev.parent = &msm_device_otg.dev;
-	msm_device_hsusb_host.dev.parent = &msm_device_otg.dev;
+	msm7x30_device_otg.dev.platform_data = &msm_otg_pdata;
+	msm7x30_device_hsusb.dev.parent = &msm7x30_device_otg.dev;
+	msm7x30_device_hsusb_host.dev.parent = &msm7x30_device_otg.dev;
 
 	platform_add_devices(devices, ARRAY_SIZE(devices));
 }

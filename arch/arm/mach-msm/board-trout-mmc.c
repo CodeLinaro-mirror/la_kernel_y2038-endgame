@@ -194,8 +194,8 @@ int __init trout_init_mmc(unsigned int sys_rev)
 	irq_set_irq_wake(TROUT_GPIO_TO_INT(TROUT_GPIO_SDMC_CD_N), 1);
 
 	if (!opt_disable_sdcard)
-		msm_add_sdcc(2, &trout_sdslot_data,
-			     TROUT_GPIO_TO_INT(TROUT_GPIO_SDMC_CD_N), 0);
+		msm7x00_add_sdcc(2, &trout_sdslot_data,
+				 TROUT_GPIO_TO_INT(TROUT_GPIO_SDMC_CD_N), 0);
 	else
 		printk(KERN_INFO "trout: SD-Card interface disabled\n");
 	return 0;

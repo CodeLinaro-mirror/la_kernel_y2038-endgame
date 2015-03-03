@@ -16,35 +16,44 @@
 #ifndef __ARCH_ARM_MACH_MSM_DEVICES_H
 #define __ARCH_ARM_MACH_MSM_DEVICES_H
 
-extern struct platform_device msm_device_gpio_7201;
-extern struct platform_device msm_device_gpio_7x30;
-extern struct platform_device msm_device_gpio_8x50;
+extern struct platform_device msm7x00_device_gpio_7201;
+extern struct platform_device msm7x30_device_gpio_7x30;
+extern struct platform_device qsd8x50_device_gpio_8x50;
 
-extern struct platform_device msm_device_uart1;
-extern struct platform_device msm_device_uart2;
-extern struct platform_device msm_device_uart3;
+extern struct platform_device msm7x00_device_uart1;
+extern struct platform_device msm7x00_device_uart2;
+extern struct platform_device msm7x00_device_uart3;
+extern struct platform_device msm7x30_device_uart2;
+extern struct platform_device qsd8x50_device_uart3;
 
-extern struct platform_device msm8960_device_uart_gsbi2;
-extern struct platform_device msm8960_device_uart_gsbi5;
+extern struct platform_device msm7x00_device_sdc1;
+extern struct platform_device msm7x00_device_sdc2;
+extern struct platform_device msm7x00_device_sdc3;
+extern struct platform_device msm7x00_device_sdc4;
+extern struct platform_device qsd8x50_device_sdc1;
+extern struct platform_device qsd8x50_device_sdc2;
+extern struct platform_device qsd8x50_device_sdc3;
+extern struct platform_device qsd8x50_device_sdc4;
 
-extern struct platform_device msm_device_sdc1;
-extern struct platform_device msm_device_sdc2;
-extern struct platform_device msm_device_sdc3;
-extern struct platform_device msm_device_sdc4;
+extern struct platform_device msm7x00_device_hsusb;
+extern struct platform_device msm7x30_device_hsusb;
+extern struct platform_device msm7x30_device_otg;
+extern struct platform_device msm7x30_device_hsusb_host;
+extern struct platform_device qsd8x50_device_hsusb;
+extern struct platform_device qsd8x50_device_otg;
+extern struct platform_device qsd8x50_device_hsusb_host;
 
-extern struct platform_device msm_device_hsusb;
-extern struct platform_device msm_device_otg;
-extern struct platform_device msm_device_hsusb_host;
+extern struct platform_device msm7x00_device_i2c;
 
-extern struct platform_device msm_device_i2c;
+extern struct platform_device msm7x00_device_nand;
 
-extern struct platform_device msm_device_smd;
+extern struct platform_device msm7x00_device_smd;
+extern struct platform_device msm7x30_device_smd;
+extern struct platform_device qsd8x50_device_smd;
 
-extern struct platform_device msm_device_nand;
-
-extern struct platform_device msm_device_mddi0;
-extern struct platform_device msm_device_mddi1;
-extern struct platform_device msm_device_mdp;
+extern struct platform_device msm7x00_device_mddi0;
+extern struct platform_device msm7x00_device_mddi1;
+extern struct platform_device msm7x00_device_mdp;
 
 extern struct platform_device msm_clock_7x01a;
 extern struct platform_device msm_clock_7x30;

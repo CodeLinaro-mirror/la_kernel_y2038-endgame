@@ -112,7 +112,7 @@ static struct resource msm_gpio_resources[] = {
 	},
 };
 
-struct platform_device msm_device_gpio_7201 = {
+struct platform_device msm7x00_device_gpio_7201 = {
 	.name	= "gpio-msm-7201",
 	.num_resources	= ARRAY_SIZE(msm_gpio_resources),
 	.resource	= msm_gpio_resources,
@@ -160,21 +160,21 @@ static struct resource resources_uart3[] = {
 	},
 };
 
-struct platform_device msm_device_uart1 = {
+struct platform_device msm7x00_device_uart1 = {
 	.name	= "msm_serial",
 	.id	= 0,
 	.num_resources	= ARRAY_SIZE(resources_uart1),
 	.resource	= resources_uart1,
 };
 
-struct platform_device msm_device_uart2 = {
+struct platform_device msm7x00_device_uart2 = {
 	.name	= "msm_serial",
 	.id	= 1,
 	.num_resources	= ARRAY_SIZE(resources_uart2),
 	.resource	= resources_uart2,
 };
 
-struct platform_device msm_device_uart3 = {
+struct platform_device msm7x00_device_uart3 = {
 	.name	= "msm_serial",
 	.id	= 2,
 	.num_resources	= ARRAY_SIZE(resources_uart3),
@@ -194,7 +194,7 @@ static struct resource resources_i2c[] = {
 	},
 };
 
-struct platform_device msm_device_i2c = {
+struct platform_device msm7x00_device_i2c = {
 	.name		= "msm_i2c",
 	.id		= 0,
 	.num_resources	= ARRAY_SIZE(resources_i2c),
@@ -214,7 +214,7 @@ static struct resource resources_hsusb[] = {
 	},
 };
 
-struct platform_device msm_device_hsusb = {
+struct platform_device msm7x00_device_hsusb = {
 	.name		= "msm_hsusb",
 	.id		= -1,
 	.num_resources	= ARRAY_SIZE(resources_hsusb),
@@ -237,7 +237,7 @@ static struct resource resources_nand[] = {
 	},
 };
 
-struct platform_device msm_device_nand = {
+struct platform_device msm7x00_device_nand = {
 	.name		= "msm_nand",
 	.id		= -1,
 	.num_resources	= ARRAY_SIZE(resources_nand),
@@ -252,7 +252,7 @@ static struct resource resources_smd[] = {
 	DEFINE_RES_IRQ(INT_A9_M2A_5),
 };
 
-struct platform_device msm_device_smd = {
+struct platform_device msm7x00_device_smd = {
 	.name		= "msm7x00_smd",
 	.id		= -1,
 	.num_resources	= ARRAY_SIZE(resources_smd),
@@ -395,7 +395,7 @@ static struct resource resources_sdc4[] = {
 	},
 };
 
-struct platform_device msm_device_sdc1 = {
+struct platform_device msm7x00_device_sdc1 = {
 	.name		= "msm_sdcc",
 	.id		= 1,
 	.num_resources	= ARRAY_SIZE(resources_sdc1),
@@ -405,7 +405,7 @@ struct platform_device msm_device_sdc1 = {
 	},
 };
 
-struct platform_device msm_device_sdc2 = {
+struct platform_device msm7x00_device_sdc2 = {
 	.name		= "msm_sdcc",
 	.id		= 2,
 	.num_resources	= ARRAY_SIZE(resources_sdc2),
@@ -415,7 +415,7 @@ struct platform_device msm_device_sdc2 = {
 	},
 };
 
-struct platform_device msm_device_sdc3 = {
+struct platform_device msm7x00_device_sdc3 = {
 	.name		= "msm_sdcc",
 	.id		= 3,
 	.num_resources	= ARRAY_SIZE(resources_sdc3),
@@ -425,7 +425,7 @@ struct platform_device msm_device_sdc3 = {
 	},
 };
 
-struct platform_device msm_device_sdc4 = {
+struct platform_device msm7x00_device_sdc4 = {
 	.name		= "msm_sdcc",
 	.id		= 4,
 	.num_resources	= ARRAY_SIZE(resources_sdc4),
@@ -436,13 +436,13 @@ struct platform_device msm_device_sdc4 = {
 };
 
 static struct platform_device *msm_sdcc_devices[] __initdata = {
-	&msm_device_sdc1,
-	&msm_device_sdc2,
-	&msm_device_sdc3,
-	&msm_device_sdc4,
+	&msm7x00_device_sdc1,
+	&msm7x00_device_sdc2,
+	&msm7x00_device_sdc3,
+	&msm7x00_device_sdc4,
 };
 
-int __init msm_add_sdcc(unsigned int controller,
+int __init msm7x00_add_sdcc(unsigned int controller,
 			struct msm_mmc_platform_data *plat,
 			unsigned int stat_irq, unsigned long stat_irq_flags)
 {
@@ -493,7 +493,7 @@ static struct resource resources_mddi1[] = {
 	},
 };
 
-struct platform_device msm_device_mddi0 = {
+struct platform_device msm7x00_device_mddi0 = {
 	.name = "msm_mddi",
 	.id = 0,
 	.num_resources = ARRAY_SIZE(resources_mddi0),
@@ -503,7 +503,7 @@ struct platform_device msm_device_mddi0 = {
 	},
 };
 
-struct platform_device msm_device_mddi1 = {
+struct platform_device msm7x00_device_mddi1 = {
 	.name = "msm_mddi",
 	.id = 1,
 	.num_resources = ARRAY_SIZE(resources_mddi1),
@@ -527,7 +527,7 @@ static struct resource resources_mdp[] = {
 	},
 };
 
-struct platform_device msm_device_mdp = {
+struct platform_device msm7x00_device_mdp = {
 	.name = "msm_mdp",
 	.id = 0,
 	.num_resources = ARRAY_SIZE(resources_mdp),

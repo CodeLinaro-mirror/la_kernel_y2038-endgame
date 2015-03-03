@@ -30,8 +30,12 @@ extern void msm_add_devices(void);
 extern void msm_init_irq(void);
 extern void msm_init_vic(uint8_t *irq_to_smsm, int nr);
 extern void msm_init_gpio(void);
-extern int msm_add_sdcc(unsigned int controller,
-			struct msm_mmc_platform_data *plat,
-			unsigned int stat_irq, unsigned long stat_irq_flags);
+extern int msm7x00_add_sdcc(unsigned int controller,
+			    struct msm_mmc_platform_data *plat,
+			    unsigned int stat_irq, unsigned long stat_irq_flags);
+
+extern int qsd8x50_add_sdcc(unsigned int controller,
+			    struct msm_mmc_platform_data *plat,
+			    unsigned int stat_irq, unsigned long stat_irq_flags);
 
 #endif

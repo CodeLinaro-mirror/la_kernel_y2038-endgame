@@ -282,11 +282,11 @@ int __init trout_init_panel(void)
 			pr_err("trout_init_panel: set clock rate failed\n");
 	}
 
-	rc = platform_device_register(&msm_device_mdp);
+	rc = platform_device_register(&msm7x00_device_mdp);
 	if (rc)
 		return rc;
-	msm_device_mddi0.dev.platform_data = &mddi_pdata;
-	return platform_device_register(&msm_device_mddi0);
+	msm7x00_device_mddi0.dev.platform_data = &mddi_pdata;
+	return platform_device_register(&msm7x00_device_mddi0);
 }
 
 device_initcall(trout_init_panel);

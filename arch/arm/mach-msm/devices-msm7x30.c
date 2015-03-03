@@ -93,7 +93,7 @@ static struct resource msm_gpio_resources[] = {
 	},
 };
 
-struct platform_device msm_device_gpio_7x30 = {
+struct platform_device msm7x30_device_gpio_7x30 = {
 	.name	= "gpio-msm-7x30",
 	.num_resources	= ARRAY_SIZE(msm_gpio_resources),
 	.resource	= msm_gpio_resources,
@@ -113,7 +113,7 @@ static struct resource resources_uart2[] = {
 	},
 };
 
-struct platform_device msm_device_uart2 = {
+struct platform_device msm7x30_device_uart2 = {
 	.name	= "msm_serial",
 	.id	= 1,
 	.num_resources	= ARRAY_SIZE(resources_uart2),
@@ -125,7 +125,7 @@ static struct resource resources_smd[] = {
 	DEFINE_RES_IRQ(INT_A9_M2A_5),
 };
 
-struct platform_device msm_device_smd = {
+struct platform_device msm7x30_device_smd = {
 	.name   	= "msm_smd",
 	.id     	= -1,
 	.num_resources	= ARRAY_SIZE(resources_smd),
@@ -145,7 +145,7 @@ static struct resource resources_otg[] = {
 	},
 };
 
-struct platform_device msm_device_otg = {
+struct platform_device msm7x30_device_otg = {
 	.name		= "msm_otg",
 	.id		= -1,
 	.num_resources	= ARRAY_SIZE(resources_otg),
@@ -168,7 +168,7 @@ static struct resource resources_hsusb[] = {
 	},
 };
 
-struct platform_device msm_device_hsusb = {
+struct platform_device msm7x30_device_hsusb = {
 	.name		= "msm_hsusb",
 	.id		= -1,
 	.num_resources	= ARRAY_SIZE(resources_hsusb),
@@ -192,7 +192,7 @@ static struct resource resources_hsusb_host[] = {
 	},
 };
 
-struct platform_device msm_device_hsusb_host = {
+struct platform_device msm7x30_device_hsusb_host = {
 	.name		= "msm_hsusb_host",
 	.id		= -1,
 	.num_resources	= ARRAY_SIZE(resources_hsusb_host),

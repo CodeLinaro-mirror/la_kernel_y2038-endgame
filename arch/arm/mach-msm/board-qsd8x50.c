@@ -125,12 +125,12 @@ static struct msm_otg_platform_data msm_otg_pdata = {
 
 static struct platform_device *devices[] __initdata = {
 	&msm_clock_8x50,
-	&msm_device_gpio_8x50,
-	&msm_device_uart3,
-	&msm_device_smd,
-	&msm_device_otg,
-	&msm_device_hsusb,
-	&msm_device_hsusb_host,
+	&qsd8x50_device_gpio_8x50,
+	&qsd8x50_device_uart3,
+	&qsd8x50_device_smd,
+	&qsd8x50_device_otg,
+	&qsd8x50_device_hsusb,
+	&qsd8x50_device_hsusb_host,
 };
 
 static struct msm_mmc_gpio sdc1_gpio_cfg[] = {
@@ -218,7 +218,7 @@ static void __init qsd8x50_init_mmc(void)
 		return;
 	}
 
-	msm_add_sdcc(1, &qsd8x50_sdc1_data, 0, 0);
+	qsd8x50_add_sdcc(1, &qsd8x50_sdc1_data, 0, 0);
 }
 
 #define SMSM_FAKE_IRQ (0xff)
@@ -286,9 +286,9 @@ static void __init qsd8x50_init(void)
 {
 	gpiomux_init(qsd8x50_gpiomux_configs,
 		     ARRAY_SIZE(qsd8x50_gpiomux_configs));
-	msm_device_otg.dev.platform_data = &msm_otg_pdata;
-	msm_device_hsusb.dev.parent = &msm_device_otg.dev;
-	msm_device_hsusb_host.dev.parent = &msm_device_otg.dev;
+	qsd8x50_device_otg.dev.platform_data = &msm_otg_pdata;
+	qsd8x50_device_hsusb.dev.parent = &qsd8x50_device_otg.dev;
+	qsd8x50_device_hsusb_host.dev.parent = &qsd8x50_device_otg.dev;
 	platform_add_devices(devices, ARRAY_SIZE(devices));
 	qsd8x50_init_mmc();
 }
