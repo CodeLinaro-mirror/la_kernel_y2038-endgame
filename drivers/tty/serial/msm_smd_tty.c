@@ -24,7 +24,7 @@
 #include <linux/tty_driver.h>
 #include <linux/tty_flip.h>
 
-#include <mach/msm_smd.h>
+#include <linux/msm_smd.h>
 
 #define MAX_SMD_TTYS 32
 
