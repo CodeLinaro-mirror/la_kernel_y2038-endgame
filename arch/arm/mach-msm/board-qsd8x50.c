@@ -28,7 +28,7 @@
 #include <asm/io.h>
 #include <asm/setup.h>
 
-#include <mach/irqs.h>
+#include <mach/irqs-8x50.h>
 #include <mach/sirc.h>
 #include <mach/vreg.h>
 #include <mach/clk.h>
@@ -222,7 +222,7 @@ static void __init qsd8x50_init_mmc(void)
 }
 
 #define SMSM_FAKE_IRQ (0xff)
-static uint8_t msm_irq_to_smsm[NR_IRQS] = {
+static uint8_t msm_irq_to_smsm[QSD8X50_NR_IRQS] = {
 	[INT_MDDI_EXT] = 1,
 	[INT_MDDI_PRI] = 2,
 	[INT_MDDI_CLIENT] = 3,
@@ -310,6 +310,7 @@ static void __init qsd8x50_init_irq_rev_a(void)
 
 MACHINE_START(QSD8X50A_ST1_5, "QCT QSD8X50A ST1.5")
 	.atag_offset = 0x100,
+	.nr_irqs = QSD8X50_NR_IRQS,
 	.map_io = msm_map_qsd8x50_io_rev_a,
 	.init_irq = qsd8x50_init_irq_rev_a,
 	.init_machine = qsd8x50_init,

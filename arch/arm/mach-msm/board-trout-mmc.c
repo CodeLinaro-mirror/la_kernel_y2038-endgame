@@ -16,6 +16,7 @@
 
 #include <mach/vreg.h>
 #include <mach/clk.h>
+#include <mach/irqs-7x00.h>
 
 #include <linux/platform_data/mmc-msm_sdcc.h>
 

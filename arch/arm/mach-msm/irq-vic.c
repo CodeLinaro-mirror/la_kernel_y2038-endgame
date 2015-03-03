@@ -22,6 +22,7 @@
 #include <linux/irq.h>
 #include <linux/io.h>
 
+#include <asm/exception.h>
 #include <asm/cacheflush.h>
 
 #include <mach/hardware.h>
@@ -242,10 +243,33 @@ static struct irq_chip msm_irq_chip = {
 	.irq_set_type  = msm_irq_set_type,
 };
 
+static void __exception_irq_entry msm_vic_handle_irq(struct pt_regs *regs)
+{
+	int irq;
+
+	do {
+		/*
+		 * 0xD0 has irq# or old irq# if the irq has been handled
+		 * 0xD4 has irq# or -1 if none pending *but* if you just
+		 * read 0xD4 you never get the first irq for some reason
+		 */
+		irq = readl(VIC_IRQ_VEC_RD);
+		irq = readl(VIC_IRQ_VEC_PEND_RD);
+
+		if (irq == -1)
+			break;
+
+		generic_handle_irq(irq);
+	} while (1);
+}
+
 void __init msm_init_vic(uint8_t *irq_to_smsm, int nr)
 {
 	unsigned n;
 	msm_irq_to_smsm = irq_to_smsm;
+
+	/* set entry point */
+	set_handle_irq(msm_vic_handle_irq);
 
 	/* select level interrupts */
 	msm_irq_write_all_regs(VIC_INT_TYPE0, 0, nr / 32);

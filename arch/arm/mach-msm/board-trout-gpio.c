@@ -18,6 +18,7 @@
 #include <linux/interrupt.h>
 #include <linux/gpio.h>
 
+#include <mach/irqs-7x00.h>
 #include "board-trout.h"
 
 static uint8_t trout_int_mask[2] = {
@@ -222,9 +223,9 @@ int __init trout_init_gpio(void)
 	for (i = 0; i < ARRAY_SIZE(msm_gpio_banks); i++)
 		gpiochip_add(&msm_gpio_banks[i].chip);
 
-	irq_set_irq_type(MSM_GPIO_TO_INT(17), IRQF_TRIGGER_HIGH);
-	irq_set_chained_handler(MSM_GPIO_TO_INT(17), trout_gpio_irq_handler);
-	irq_set_irq_wake(MSM_GPIO_TO_INT(17), 1);
+	irq_set_irq_type(MSM7X00_GPIO_TO_INT(17), IRQF_TRIGGER_HIGH);
+	irq_set_chained_handler(MSM7X00_GPIO_TO_INT(17), trout_gpio_irq_handler);
+	irq_set_irq_wake(MSM7X00_GPIO_TO_INT(17), 1);
 
 	return 0;
 }

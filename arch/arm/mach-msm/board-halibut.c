@@ -28,7 +28,7 @@
 #include <asm/mach/flash.h>
 #include <asm/setup.h>
 
-#include <mach/irqs.h>
+#include <mach/irqs-7x00.h>
 #include <mach/msm_iomap-7x00.h>
 
 #include <linux/mtd/nand.h>
@@ -44,8 +44,8 @@ static struct resource smc91x_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
-		.start	= MSM_GPIO_TO_INT(49),
-		.end	= MSM_GPIO_TO_INT(49),
+		.start	= MSM7X00_GPIO_TO_INT(49),
+		.end	= MSM7X00_GPIO_TO_INT(49),
 		.flags	= IORESOURCE_IRQ,
 	},
 };
@@ -90,6 +90,7 @@ static void __init halibut_map_io(void)
 
 MACHINE_START(HALIBUT, "Halibut Board (QCT SURF7200A)")
 	.atag_offset	= 0x100,
+	.nr_irqs	= MSM7X00_NR_IRQS,
 	.map_io		= halibut_map_io,
 	.init_early	= halibut_init_early,
 	.init_irq	= halibut_init_irq,

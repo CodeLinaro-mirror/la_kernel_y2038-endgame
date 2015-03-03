@@ -28,6 +28,7 @@
 #include <asm/setup.h>
 
 #include <mach/hardware.h>
+#include <mach/irqs-7x00.h>
 #include <mach/msm_iomap-7x00.h>
 
 #include "devices.h"
@@ -96,6 +97,7 @@ static void __init trout_map_io(void)
 
 MACHINE_START(TROUT, "HTC Dream")
 	.atag_offset	= 0x100,
+	.nr_irqs	= MSM7X00_NR_IRQS,
 	.fixup		= trout_fixup,
 	.map_io		= trout_map_io,
 	.init_early	= trout_init_early,

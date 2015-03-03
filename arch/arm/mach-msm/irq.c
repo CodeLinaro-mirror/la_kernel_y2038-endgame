@@ -21,7 +21,9 @@
 #include <linux/timer.h>
 #include <linux/irq.h>
 #include <linux/io.h>
+#include <asm/exception.h>
 
+#include <mach/irqs-7x00.h>
 #include <mach/hardware.h>
 
 #include <mach/msm_iomap.h>
@@ -118,9 +120,32 @@ static struct irq_chip msm_irq_chip = {
 	.irq_set_type  = msm_irq_set_type,
 };
 
+static void __exception_irq_entry msm_handle_irq(struct pt_regs *regs)
+{
+	int irq;
+
+	do {
+		/*
+		 * 0xD0 has irq# or old irq# if the irq has been handled
+		 * 0xD4 has irq# or -1 if none pending *but* if you just
+		 * read 0xD4 you never get the first irq for some reason
+		 */
+		irq = readl(VIC_IRQ_VEC_RD);
+		irq = readl(VIC_IRQ_VEC_PEND_RD);
+
+		if (irq == -1)
+			break;
+
+		generic_handle_irq(irq);
+	} while (1);
+}
+
 void __init msm_init_irq(void)
 {
 	unsigned n;
+
+	/* set entry point */
+	set_handle_irq(msm_handle_irq);
 
 	/* select level interrupts */
 	writel(0, VIC_INT_TYPE0);

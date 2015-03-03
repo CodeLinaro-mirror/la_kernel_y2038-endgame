@@ -18,7 +18,7 @@
 #include <linux/clkdev.h>
 #include <asm/mach/map.h>
 
-#include <mach/irqs.h>
+#include <mach/irqs-7x00.h>
 #include <mach/msm_iomap.h>
 #include <mach/msm_iomap-7x00.h>
 #include "devices.h"

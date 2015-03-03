@@ -19,7 +19,7 @@
 #include <linux/dma-mapping.h>
 #include <asm/mach/map.h>
 
-#include <mach/irqs.h>
+#include <mach/irqs-8x50.h>
 #include <mach/msm_iomap.h>
 #include <mach/msm_iomap-8x50.h>
 

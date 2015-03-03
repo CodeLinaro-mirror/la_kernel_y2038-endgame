@@ -85,6 +85,8 @@
 #define NR_MSM_IRQS 64
 #define NR_BOARD_IRQS 64
 
+#define QSD8X50_NR_IRQS (NR_MSM_IRQS + NR_GPIO_IRQS + NR_BOARD_IRQS)
+
 /*
  * Secondary interrupt controller interrupts
  */

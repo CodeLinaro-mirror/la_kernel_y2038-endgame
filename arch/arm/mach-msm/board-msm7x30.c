@@ -134,7 +134,7 @@ static struct platform_device *devices[] __initdata = {
 };
 
 #define SMSM_FAKE_IRQ (0xff)
-static uint8_t msm_irq_to_smsm[NR_IRQS] = {
+static uint8_t msm_irq_to_smsm[MSM7X30_NR_IRQS] = {
 	[INT_MDDI_EXT] = 1,
 	[INT_MDDI_PRI] = 2,
 	[INT_MDDI_CLIENT] = 3,
@@ -208,6 +208,7 @@ static void __init msm7x30_map_io(void)
 
 MACHINE_START(MSM7X30_SURF, "QCT MSM7X30 SURF")
 	.atag_offset = 0x100,
+	.nr_irqs = MSM7X30_NR_IRQS,
 	.fixup = msm7x30_fixup,
 	.reserve = msm7x30_reserve,
 	.map_io = msm7x30_map_io,
@@ -218,6 +219,7 @@ MACHINE_END
 
 MACHINE_START(MSM7X30_FFA, "QCT MSM7X30 FFA")
 	.atag_offset = 0x100,
+	.nr_irqs = MSM7X30_NR_IRQS,
 	.fixup = msm7x30_fixup,
 	.reserve = msm7x30_reserve,
 	.map_io = msm7x30_map_io,
@@ -228,6 +230,7 @@ MACHINE_END
 
 MACHINE_START(MSM7X30_FLUID, "QCT MSM7X30 FLUID")
 	.atag_offset = 0x100,
+	.nr_irqs = MSM7X30_NR_IRQS,
 	.fixup = msm7x30_fixup,
 	.reserve = msm7x30_reserve,
 	.map_io = msm7x30_map_io,

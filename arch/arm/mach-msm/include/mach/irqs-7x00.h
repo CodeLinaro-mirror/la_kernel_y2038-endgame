@@ -71,5 +71,8 @@
 #define NR_MSM_IRQS 64
 #define NR_GPIO_IRQS 122
 #define NR_BOARD_IRQS 64
+#define MSM7X00_NR_IRQS (NR_MSM_IRQS + NR_GPIO_IRQS + NR_BOARD_IRQS)
+
+#define MSM7X00_GPIO_TO_INT(n) (NR_MSM_IRQS + (n))
 
 #endif
