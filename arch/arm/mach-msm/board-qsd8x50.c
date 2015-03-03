@@ -220,11 +220,6 @@ static void __init qsd8x50_init_mmc(void)
 	msm_add_sdcc(1, &qsd8x50_sdc1_data, 0, 0);
 }
 
-static void __init qsd8x50_map_io(void)
-{
-	msm_map_qsd8x50_io();
-}
-
 static void __init qsd8x50_init_irq(void)
 {
 	msm_init_irq();
@@ -247,7 +242,7 @@ static void __init qsd8x50_init_late(void)
 
 MACHINE_START(QSD8X50_SURF, "QCT QSD8X50 SURF")
 	.atag_offset = 0x100,
-	.map_io = qsd8x50_map_io,
+	.map_io = msm_map_qsd8x50_io,
 	.init_irq = qsd8x50_init_irq,
 	.init_machine = qsd8x50_init,
 	.init_late = qsd8x50_init_late,
@@ -256,7 +251,7 @@ MACHINE_END
 
 MACHINE_START(QSD8X50A_ST1_5, "QCT QSD8X50A ST1.5")
 	.atag_offset = 0x100,
-	.map_io = qsd8x50_map_io,
+	.map_io = msm_map_qsd8x50_io_rev_a,
 	.init_irq = qsd8x50_init_irq,
 	.init_machine = qsd8x50_init,
 	.init_late = qsd8x50_init_late,

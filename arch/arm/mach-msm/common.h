@@ -18,6 +18,7 @@ extern void qsd8x50_timer_init(void);
 
 extern void msm_map_common_io(void);
 extern void msm_map_msm7x30_io(void);
+extern void msm_map_qsd8x50_io_rev_a(void);
 extern void msm_map_qsd8x50_io(void);
 
 extern void __iomem *__msm_ioremap_caller(phys_addr_t phys_addr, size_t size,

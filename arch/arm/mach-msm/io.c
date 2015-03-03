@@ -98,9 +98,12 @@ static struct map_desc qsd8x50_io_desc[] __initdata = {
 	MSM_DEVICE(SCPLL),
 	MSM_DEVICE(AD5),
 	MSM_DEVICE(MDC),
+};
+
+static struct map_desc qsd8x50_io_desc_rev_other[] __initdata = {
 	{
 		.virtual =  (unsigned long) MSM_SHARED_RAM_BASE,
-		.pfn = __phys_to_pfn(MSM_SHARED_RAM_PHYS),
+		.pfn = __phys_to_pfn(MSM_SHARED_RAM_PHYS_REV_OTHER),
 		.length =   MSM_SHARED_RAM_SIZE,
 		.type =     MT_DEVICE,
 	},
@@ -110,7 +113,25 @@ void __init msm_map_qsd8x50_io(void)
 {
 	debug_ll_io_init();
 	iotable_init(qsd8x50_io_desc, ARRAY_SIZE(qsd8x50_io_desc));
+	iotable_init(qsd8x50_io_desc_rev_other, ARRAY_SIZE(qsd8x50_io_desc_rev_other));
 }
+#ifdef CONFIG_MSM_SOC_REV_A
+static struct map_desc qsd8x50_io_desc_rev_a[] __initdata = {
+	{
+		.virtual =  (unsigned long) MSM_SHARED_RAM_BASE,
+		.pfn = __phys_to_pfn(MSM_SHARED_RAM_PHYS_REV_A),
+		.length =   MSM_SHARED_RAM_SIZE,
+		.type =     MT_DEVICE,
+	},
+};
+
+void __init msm_map_qsd8x50_io_rev_a(void)
+{
+	debug_ll_io_init();
+	iotable_init(qsd8x50_io_desc, ARRAY_SIZE(qsd8x50_io_desc));
+	iotable_init(qsd8x50_io_desc_rev_a, ARRAY_SIZE(qsd8x50_io_desc_rev_a));
+}
+#endif /* CONFIG_MSM_SOC_REV_A */
 #endif /* CONFIG_ARCH_QSD8X50 */
 
 #ifdef CONFIG_ARCH_MSM7X30
