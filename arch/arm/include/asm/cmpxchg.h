@@ -119,8 +119,8 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr, int size
  * them available.
  */
 #define cmpxchg_local(ptr, o, n)				  	       \
-	((__typeof__(*(ptr)))__cmpxchg_local_generic((ptr), (unsigned long)(o),\
-			(unsigned long)(n), sizeof(*(ptr))))
+	({(__typeof__(*(ptr)))__cmpxchg_local_generic((ptr), (unsigned long)(o),\
+			(unsigned long)(n), sizeof(*(ptr)));})
 #define cmpxchg64_local(ptr, o, n) __cmpxchg64_local_generic((ptr), (o), (n))
 
 #ifndef CONFIG_SMP
@@ -202,10 +202,10 @@ static inline unsigned long __cmpxchg_mb(volatile void *ptr, unsigned long old,
 }
 
 #define cmpxchg(ptr,o,n)						\
-	((__typeof__(*(ptr)))__cmpxchg_mb((ptr),			\
+	({(__typeof__(*(ptr)))__cmpxchg_mb((ptr),			\
 					  (unsigned long)(o),		\
 					  (unsigned long)(n),		\
-					  sizeof(*(ptr))))
+					  sizeof(*(ptr)));})
 
 static inline unsigned long __cmpxchg_local(volatile void *ptr,
 					    unsigned long old,
