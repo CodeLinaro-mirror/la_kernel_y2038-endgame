@@ -6,6 +6,8 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 
+#pragma long_calls
+
 #include <linux/mtd/map.h>
 #include <linux/mtd/xip.h>
 
