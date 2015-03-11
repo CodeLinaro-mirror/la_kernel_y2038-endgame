@@ -19,6 +19,9 @@
  *
  * This code is GPL
  */
+#ifdef CONFIG_MTD_XIP
+#pragma long_calls
+#endif
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -38,6 +41,10 @@
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/cfi.h>
 #include <linux/mtd/xip.h>
+
+#ifdef CONFIG_MTD_XIP
+#pragma long_calls_off
+#endif
 
 #define AMD_BOOTLOC_BUG
 #define FORCE_WORD_WRITE 0
@@ -906,7 +913,7 @@ static void put_chip(struct map_info *map, struct flchip *chip, unsigned long ad
 }
 
 #ifdef CONFIG_MTD_XIP
-
+#pragma long_calls
 /*
  * No interrupt what so ever can be serviced while the flash isn't in array
  * mode.  This is ensured by the xip_disable() and xip_enable() functions
@@ -1076,7 +1083,7 @@ static void __xipram xip_udelay(struct map_info *map, struct flchip *chip,
  * is in array mode, therefore never executing many cases therein and not
  * causing any problem with XIP.
  */
-
+#pragma long_calls_off
 #else
 
 #define xip_disable(map, chip, adr)
