@@ -53,7 +53,7 @@ struct hpt_clock {
  * 31     FIFO enable.
  */
 
-static const struct hpt_clock hpt366_40[] = {
+static struct hpt_clock hpt366_40[] = {
 	{	XFER_UDMA_4,	0x900fd943	},
 	{	XFER_UDMA_3,	0x900ad943	},
 	{	XFER_UDMA_2,	0x900bd943	},
@@ -72,7 +72,7 @@ static const struct hpt_clock hpt366_40[] = {
 	{	0,		0x0120d9d9	}
 };
 
-static const struct hpt_clock hpt366_33[] = {
+static struct hpt_clock hpt366_33[] = {
 	{	XFER_UDMA_4,	0x90c9a731	},
 	{	XFER_UDMA_3,	0x90cfa731	},
 	{	XFER_UDMA_2,	0x90caa731	},
@@ -91,7 +91,7 @@ static const struct hpt_clock hpt366_33[] = {
 	{	0,		0x0120a7a7	}
 };
 
-static const struct hpt_clock hpt366_25[] = {
+static struct hpt_clock hpt366_25[] = {
 	{	XFER_UDMA_4,	0x90c98521	},
 	{	XFER_UDMA_3,	0x90cf8521	},
 	{	XFER_UDMA_2,	0x90cf8521	},

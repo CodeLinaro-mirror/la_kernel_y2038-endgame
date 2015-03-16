@@ -385,7 +385,7 @@ static void efx_iterate_state(struct efx_nic *efx)
 
 	/* Fill out payload */
 	payload->iteration = htons(ntohs(payload->iteration) + 1);
-	memcpy(&payload->msg, payload_msg, sizeof(payload_msg));
+	memcpy((void *)&payload->msg, payload_msg, sizeof(payload_msg));
 
 	/* Fill out remaining state members */
 	atomic_set(&state->rx_good, 0);

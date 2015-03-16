@@ -3770,6 +3770,8 @@ nfs4_upgrade_open(struct svc_rqst *rqstp, struct nfs4_file *fp, struct svc_fh *c
 		set_deny(open->op_share_deny, stp);
 		fp->fi_share_deny |=
 				(open->op_share_deny & NFS4_SHARE_DENY_BOTH);
+	} else {
+		old_deny_bmap = 0;
 	}
 	spin_unlock(&fp->fi_lock);
 
