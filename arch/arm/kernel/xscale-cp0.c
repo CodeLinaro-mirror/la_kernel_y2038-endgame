@@ -17,6 +17,8 @@
 #include <asm/thread_notify.h>
 #include <asm/cputype.h>
 
+asm("	.arch armv5te\n");
+
 static inline void dsp_save_state(u32 *state)
 {
 	__asm__ __volatile__ (
