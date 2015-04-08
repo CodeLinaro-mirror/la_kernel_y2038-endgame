@@ -14,11 +14,11 @@
 #include <linux/delay.h>
 #include <linux/device.h>
 
-#include "../../../../arch/arm/mach-omap2/control.h"
-
 #include "iss.h"
 #include "iss_regs.h"
 #include "iss_csiphy.h"
+
+#include "../../../../arch/arm/mach-omap2/control.h"
 
 /*
  * csiphy_lanes_config - Configuration of CSIPHY lanes.
@@ -140,9 +140,7 @@ int omap4iss_csiphy_config(struct iss_device *iss,
 	 * - bit [18] : CSIPHY1 CTRLCLK enable
 	 * - bit [17:16] : CSIPHY1 config: 00 d-phy, 01/10 ccp2
 	 */
-	cam_rx_ctrl = omap4_ctrl_pad_readl(
-			OMAP4_CTRL_MODULE_PAD_CORE_CONTROL_CAMERA_RX);
-
+	cam_rx_ctrl = WARN_ON(1);
 
 	if (subdevs->interface == ISS_INTERFACE_CSI2A_PHY1) {
 		cam_rx_ctrl &= ~(OMAP4_CAMERARX_CSI21_LANEENABLE_MASK |
@@ -166,8 +164,7 @@ int omap4iss_csiphy_config(struct iss_device *iss,
 		cam_rx_ctrl |= OMAP4_CAMERARX_CSI22_CTRLCLKEN_MASK;
 	}
 
-	omap4_ctrl_pad_writel(cam_rx_ctrl,
-		 OMAP4_CTRL_MODULE_PAD_CORE_CONTROL_CAMERA_RX);
+	WARN_ON(1);
 
 	/* Reset used lane count */
 	csi2->phy->used_data_lanes = 0;
