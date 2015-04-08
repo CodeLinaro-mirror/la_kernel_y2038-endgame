@@ -10,6 +10,10 @@ ENTRY(__get_datapage)
 	adr	r0, .L_vdso_data_ptr
 	ldr	r1, [r0]
 	add	r0, r0, r1
+#if defined(CONFIG_CPU_32v3) || defined(CONFIG_CPU_32v4)
+	mov	pc, lr
+#else
 	bx	lr
+#endif
 	.fnend
 ENDPROC(__get_datapage)
