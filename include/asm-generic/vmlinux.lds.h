@@ -198,6 +198,7 @@
 
 /* .data section */
 #define DATA_DATA							\
+	*(.xiptext)							\
 	*(.data)							\
 	*(.ref.data)							\
 	*(.data..shared_aligned) /* percpu related */			\
