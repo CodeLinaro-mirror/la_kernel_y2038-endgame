@@ -57,7 +57,7 @@ config SAMPLE_KDB
 
 config SAMPLE_KDBUS
 	bool "Build kdbus API example"
-	depends on KDBUS
+	depends on KDBUS && BROKEN
 	help
 	  Build an example of how the kdbus API can be used from
 	  userspace.
