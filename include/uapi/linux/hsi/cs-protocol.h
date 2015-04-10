@@ -90,12 +90,12 @@ struct cs_mmap_config_block {
 	__u32 tx_offsets[CS_MAX_BUFFERS];
 	__u32 rx_ptr;
 	__u32 rx_ptr_boundary;
-	__u32 reserved3[2];
+	__u32 reserved3[3];
 	/*
 	 * if enabled with CS_FEAT_TSTAMP_RX_CTRL, monotonic
 	 * timestamp taken when the last control command was received
 	 */
-	struct timespec tstamp_rx_ctrl;
+	__u64 tstamp_rx_ctrl;
 };
 
 #define CS_IO_MAGIC		'C'
