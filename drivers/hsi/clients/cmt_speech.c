@@ -451,9 +451,7 @@ static void cs_hsi_read_on_control_complete(struct hsi_msg *msg)
 	dev_dbg(&hi->cl->device, "Read on control: %08X\n", cmd);
 	cs_release_cmd(msg);
 	if (hi->flags & CS_FEAT_TSTAMP_RX_CTRL) {
-		struct timespec *tstamp =
-			&hi->mmap_cfg->tstamp_rx_ctrl;
-		do_posix_clock_monotonic_gettime(tstamp);
+		hi->mmap_cfg->tstamp_rx_ctrl = ktime_get_ns();
 	}
 	spin_unlock(&hi->lock);
 
