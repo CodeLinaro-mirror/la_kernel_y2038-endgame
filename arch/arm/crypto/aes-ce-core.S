@@ -8,11 +8,14 @@
  * published by the Free Software Foundation.
  */
 
+#ifdef ARMV8_CE_DISABLED
+#warning ARMv8 Crypto Extensions need binutils 2.23 or higher
+#else
+
 #include <linux/linkage.h>
 #include <asm/assembler.h>
 
 	.text
-	.fpu		crypto-neon-fp-armv8
 	.align		3
 
 	.macro		enc_round, state, key
@@ -516,3 +519,5 @@ ENTRY(ce_aes_invert)
 	vst1.8		{q0}, [r0]
 	bx		lr
 ENDPROC(ce_aes_invert)
+
+#endif

@@ -9,11 +9,14 @@
  * published by the Free Software Foundation.
  */
 
+#ifdef ARMV8_CE_DISABLED
+#warning ARMv8 Crypto Extensions need binutils 2.23 or higher
+#else
+
 #include <linux/linkage.h>
 #include <asm/assembler.h>
 
 	.text
-	.fpu		crypto-neon-fp-armv8
 
 	k0		.req	q7
 	k1		.req	q8
@@ -132,3 +135,5 @@ ENTRY(sha2_ce_transform)
 	vst1.32		{dga-dgb}, [r2]
 	bx		lr
 ENDPROC(sha2_ce_transform)
+
+#endif

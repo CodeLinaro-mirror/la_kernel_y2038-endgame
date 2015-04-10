@@ -189,13 +189,16 @@ static struct shash_alg algs[] = { {
 
 static int __init sha2_ce_mod_init(void)
 {
-	if (!(elf_hwcap2 & HWCAP2_SHA2))
+	if (IS_ENABLED(ARMV8_CE_DISABLED) || !(elf_hwcap2 & HWCAP2_AES))
 		return -ENODEV;
 	return crypto_register_shashes(algs, ARRAY_SIZE(algs));
 }
 
 static void __exit sha2_ce_mod_fini(void)
 {
+	if (IS_ENABLED(ARMV8_CE_DISABLED))
+		return;
+
 	crypto_unregister_shashes(algs, ARRAY_SIZE(algs));
 }
 

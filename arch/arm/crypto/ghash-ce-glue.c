@@ -293,7 +293,7 @@ static int __init ghash_ce_mod_init(void)
 {
 	int err;
 
-	if (!(elf_hwcap2 & HWCAP2_PMULL))
+	if (IS_ENABLED(ARMV8_CE_DISABLED) || !(elf_hwcap2 & HWCAP2_AES))
 		return -ENODEV;
 
 	err = crypto_register_shash(&ghash_alg);
@@ -312,6 +312,9 @@ err_shash:
 
 static void __exit ghash_ce_mod_exit(void)
 {
+	if (IS_ENABLED(ARMV8_CE_DISABLED))
+		return;
+
 	crypto_unregister_ahash(&ghash_async_alg);
 	crypto_unregister_shash(&ghash_alg);
 }

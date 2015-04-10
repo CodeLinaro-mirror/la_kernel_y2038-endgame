@@ -510,13 +510,16 @@ static struct crypto_alg aes_algs[] = { {
 
 static int __init aes_init(void)
 {
-	if (!(elf_hwcap2 & HWCAP2_AES))
+	if (IS_ENABLED(ARMV8_CE_DISABLED) || !(elf_hwcap2 & HWCAP2_AES))
 		return -ENODEV;
 	return crypto_register_algs(aes_algs, ARRAY_SIZE(aes_algs));
 }
 
 static void __exit aes_exit(void)
 {
+	if (IS_ENABLED(ARMV8_CE_DISABLED))
+		return;
+
 	crypto_unregister_algs(aes_algs, ARRAY_SIZE(aes_algs));
 }
 

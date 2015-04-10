@@ -25,6 +25,10 @@ sha2-arm-ce-y	:= sha2-ce-core.o sha2-ce-glue.o
 aes-arm-ce-y	:= aes-ce-core.o aes-ce-glue.o
 ghash-arm-ce-y	:= ghash-ce-core.o ghash-ce-glue.o
 
+armv8-ce-flags	:= $(call as-option,-Wa$(comma)-mfpu=crypto-neon-fp-armv8,-DARMV8_CE_DISABLED)
+asflags-y := $(armv8-ce-flags)
+ccflags-y := $(armv8-ce-flags)
+
 quiet_cmd_perl = PERL    $@
       cmd_perl = $(PERL) $(<) > $(@)
 

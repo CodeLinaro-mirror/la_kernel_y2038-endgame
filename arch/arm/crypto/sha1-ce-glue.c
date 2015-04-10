@@ -136,13 +136,16 @@ static struct shash_alg alg = {
 
 static int __init sha1_ce_mod_init(void)
 {
-	if (!(elf_hwcap2 & HWCAP2_SHA1))
+	if (IS_ENABLED(ARMV8_CE_DISABLED) || !(elf_hwcap2 & HWCAP2_AES))
 		return -ENODEV;
 	return crypto_register_shash(&alg);
 }
 
 static void __exit sha1_ce_mod_fini(void)
 {
+	if (IS_ENABLED(ARMV8_CE_DISABLED))
+		return;
+
 	crypto_unregister_shash(&alg);
 }
 
