@@ -15,7 +15,6 @@
 
 typedef u32		compat_size_t;
 typedef s32		compat_ssize_t;
-typedef s32		compat_time_t;
 typedef s32		compat_clock_t;
 typedef s32		compat_pid_t;
 typedef u16		__compat_uid_t;
@@ -43,16 +42,6 @@ typedef u32		compat_ulong_t;
 typedef u32		compat_u32;
 typedef u64 __attribute__((aligned(4))) compat_u64;
 typedef u32		compat_uptr_t;
-
-struct compat_timespec {
-	compat_time_t	tv_sec;
-	s32		tv_nsec;
-};
-
-struct compat_timeval {
-	compat_time_t	tv_sec;
-	s32		tv_usec;
-};
 
 struct compat_stat {
 	compat_dev_t	st_dev;
@@ -281,6 +270,7 @@ typedef struct user_regs_struct compat_elf_gregset_t;
   while (0)
 
 #ifdef CONFIG_X86_X32_ABI
+#undef COMPAT_USE_64BIT_TIME
 #define COMPAT_USE_64BIT_TIME \
 	(!!(task_pt_regs(current)->orig_ax & __X32_SYSCALL_BIT))
 #endif

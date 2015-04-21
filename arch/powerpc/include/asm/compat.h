@@ -5,6 +5,7 @@
  * Architecture specific compatibility types
  */
 #include <linux/types.h>
+#include <linux/compat_time.h>
 #include <linux/sched.h>
 
 #define COMPAT_USER_HZ		100
@@ -16,7 +17,6 @@
 
 typedef u32		compat_size_t;
 typedef s32		compat_ssize_t;
-typedef s32		compat_time_t;
 typedef s32		compat_clock_t;
 typedef s32		compat_pid_t;
 typedef u32		__compat_uid_t;
@@ -43,16 +43,6 @@ typedef u32		compat_uint_t;
 typedef u32		compat_ulong_t;
 typedef u64		compat_u64;
 typedef u32		compat_uptr_t;
-
-struct compat_timespec {
-	compat_time_t	tv_sec;
-	s32		tv_nsec;
-};
-
-struct compat_timeval {
-	compat_time_t	tv_sec;
-	s32		tv_usec;
-};
 
 struct compat_stat {
 	compat_dev_t	st_dev;
