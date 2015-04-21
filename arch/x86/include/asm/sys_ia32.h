@@ -16,7 +16,7 @@
 #include <linux/linkage.h>
 #include <linux/types.h>
 #include <linux/signal.h>
-#include <asm/compat.h>
+#include <linux/compat.h>
 #include <asm/ia32.h>
 
 /* ia32/sys_ia32.c */
