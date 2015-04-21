@@ -396,6 +396,9 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
+		   $(call cc-disable-warning,switch) \
+		   $(call cc-disable-warning,logical-not-parentheses) \
+		   $(call cc-disable-warning,-Wno-switch-bool) \
 		   -std=gnu89
 
 KBUILD_AFLAGS_KERNEL :=
