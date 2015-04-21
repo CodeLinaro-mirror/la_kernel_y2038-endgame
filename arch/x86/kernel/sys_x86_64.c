@@ -1,3 +1,4 @@
+#include <linux/compat.h>
 #include <linux/errno.h>
 #include <linux/sched.h>
 #include <linux/sched/mm.h>
@@ -18,7 +19,6 @@
 #include <linux/elf.h>
 
 #include <asm/elf.h>
-#include <asm/compat.h>
 #include <asm/ia32.h>
 #include <asm/syscalls.h>
 
