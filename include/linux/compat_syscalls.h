@@ -88,6 +88,9 @@ struct compat_mmsghdr;
 asmlinkage long compat_sys_recvmmsg(int fd, struct compat_mmsghdr __user *mmsg,
 				    unsigned vlen, unsigned int flags,
 				    struct compat_timespec __user *timeout);
+asmlinkage long compat_sys_recvmmsg64(int fd, struct compat_mmsghdr __user *mmsg,
+				    unsigned vlen, unsigned int flags,
+				    struct __kernel_timespec __user *timeout);
 asmlinkage long compat_sys_nanosleep(struct compat_timespec __user *rqtp,
 				     struct compat_timespec __user *rmtp);
 asmlinkage long compat_sys_getitimer(int which,
