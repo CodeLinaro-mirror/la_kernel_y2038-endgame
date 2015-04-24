@@ -1,6 +1,10 @@
 #ifndef _ASM_IA64_STAT_H
 #define _ASM_IA64_STAT_H
 
+#ifndef __kernel_stat
+#define __kernel_stat stat
+#endif
+
 /*
  * Modified 1998, 1999
  *	David Mosberger-Tang <davidm@hpl.hp.com>, Hewlett-Packard Co

@@ -1,6 +1,8 @@
 #ifndef _M68K_STAT_H
 #define _M68K_STAT_H
 
+#include <asm-generic/kernel_stat.h>
+
 struct __old_kernel_stat {
 	unsigned short st_dev;
 	unsigned short st_ino;

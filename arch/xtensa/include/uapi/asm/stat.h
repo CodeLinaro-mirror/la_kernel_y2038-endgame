@@ -11,6 +11,8 @@
 #ifndef _XTENSA_STAT_H
 #define _XTENSA_STAT_H
 
+#include <asm-generic/kernel_stat.h>
+
 #define STAT_HAVE_NSEC 1
 
 struct stat {

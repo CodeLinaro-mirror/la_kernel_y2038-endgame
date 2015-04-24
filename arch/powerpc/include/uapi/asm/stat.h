@@ -78,4 +78,29 @@ struct stat64 {
 	unsigned int	__unused5;
 };
 
+#ifndef __kernel_stat
+/* this matches the powerpc64 'struct stat' for compat tasks */
+struct __kernel_stat {
+	unsigned long long	st_dev;
+	unsigned long long	st_ino;
+	unsigned long long	st_nlink;
+	unsigned int		st_mode;
+	unsigned int		st_uid;
+	unsigned int		st_gid;
+	unsigned long long	st_rdev;
+	unsigned long long	st_size;
+	unsigned long long	st_blksize;
+	unsigned long long	st_blocks;
+	unsigned long long	st_atime;
+	unsigned long long	st_atime_nsec;
+	unsigned long long	st_mtime;
+	unsigned long long	st_mtime_nsec;
+	unsigned long long	st_ctime;
+	unsigned long long	st_ctime_nsec;
+	unsigned long long	__unused4;
+	unsigned long long	__unused5;
+	unsigned long long	__unused6;
+};
+#endif
+
 #endif /* _ASM_POWERPC_STAT_H */
