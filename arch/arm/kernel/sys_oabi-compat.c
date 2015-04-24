@@ -73,6 +73,7 @@
  *   wrappers provided below.
  */
 
+#include <linux/compat_time.h>
 #include <linux/syscalls.h>
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -308,10 +309,10 @@ struct oabi_sembuf {
 asmlinkage long sys_oabi_semtimedop(int semid,
 				    struct oabi_sembuf __user *tsops,
 				    unsigned nsops,
-				    const struct timespec __user *timeout)
+				    const struct compat_timespec __user *timeout)
 {
 	struct sembuf *sops;
-	struct timespec local_timeout;
+	struct compat_timespec local_timeout;
 	long err;
 	int i;
 
@@ -337,7 +338,7 @@ asmlinkage long sys_oabi_semtimedop(int semid,
 	} else {
 		mm_segment_t fs = get_fs();
 		set_fs(KERNEL_DS);
-		err = sys_semtimedop(semid, sops, nsops, timeout);
+		err = compat_sys_semtimedop(semid, sops, nsops, timeout);
 		set_fs(fs);
 	}
 	kfree(sops);
@@ -362,7 +363,7 @@ asmlinkage int sys_oabi_ipc(uint call, int first, int second, int third,
 		return  sys_oabi_semtimedop(first,
 					    (struct oabi_sembuf __user *)ptr,
 					    second,
-					    (const struct timespec __user *)fifth);
+					    (const struct compat_timespec __user *)fifth);
 	default:
 		return sys_ipc(call, first, second, third, ptr, fifth);
 	}
