@@ -66,4 +66,21 @@ struct itimerval {
  */
 #define TIMER_ABSTIME			0x01
 
+/* types based on 64-bit time_t */
+#ifndef __kernel_timespec
+typedef __s64 __kernel_time64_t;
+
+struct __kernel_timespec {
+	__kernel_time64_t	tv_sec;
+	__s64			tv_nsec;
+};
+#endif
+
+#ifndef __kernel_itimerspec
+struct __kernel_itimerspec {
+	struct __kernel_timespec it_interval;
+	struct __kernel_timespec it_value;
+};
+#endif
+
 #endif /* _UAPI_LINUX_TIME_H */
