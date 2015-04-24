@@ -104,4 +104,32 @@ struct stat64 {
 	unsigned int	__unused5;
 };
 #endif /* defined(__sparc__) && defined(__arch64__) */
+
+#ifndef __kernel_stat
+/* This matches the sparc64 'struct stat64' in compat tasks */
+struct __kernel_stat {
+	unsigned long long	st_dev;
+	unsigned long long	st_ino;
+	unsigned long long	st_nlink;
+
+	unsigned int		st_mode;
+	unsigned int		st_uid;
+	unsigned int		st_gid;
+	unsigned int		__pad0;
+
+	unsigned long long	st_rdev;
+	long long		st_size;
+	long long		st_blksize;
+	long long		st_blocks;
+
+	unsigned long long	st_atime;
+	unsigned long long	st_atime_nsec;
+	unsigned long long	st_mtime;
+	unsigned long long	st_mtime_nsec;
+	unsigned long long	st_ctime;
+	unsigned long long	st_ctime_nsec;
+	long long		__unused[3];
+};
+#endif
+
 #endif /* __SPARC_STAT_H */
