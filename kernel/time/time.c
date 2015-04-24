@@ -765,13 +765,13 @@ EXPORT_SYMBOL_GPL(nsecs_to_jiffies);
  * Add two timespec values and do a safety check for overflow.
  * It's assumed that both values are valid (>= 0)
  */
-struct timespec timespec_add_safe(const struct timespec lhs,
-				  const struct timespec rhs)
+struct timespec64 timespec64_add_safe(const struct timespec64 lhs,
+				      const struct timespec64 rhs)
 {
-	struct timespec res;
+	struct timespec64 res;
 
-	set_normalized_timespec(&res, lhs.tv_sec + rhs.tv_sec,
-				lhs.tv_nsec + rhs.tv_nsec);
+	set_normalized_timespec64(&res, lhs.tv_sec + rhs.tv_sec,
+				  lhs.tv_nsec + rhs.tv_nsec);
 
 	if (res.tv_sec < lhs.tv_sec || res.tv_sec < rhs.tv_sec)
 		res.tv_sec = TIME_T_MAX;
