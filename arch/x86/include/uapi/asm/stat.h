@@ -27,12 +27,6 @@ struct stat {
 	unsigned long  __unused5;
 };
 
-/* We don't need to memset the whole thing just to initialize the padding */
-#define INIT_STRUCT_STAT_PADDING(st) do {	\
-	st.__unused4 = 0;			\
-	st.__unused5 = 0;			\
-} while (0)
-
 #define STAT64_HAS_BROKEN_ST_INO	1
 
 /* This matches struct stat64 in glibc2.1, hence the absolutely
@@ -102,14 +96,6 @@ struct stat {
 	__kernel_long_t		__unused[3];
 };
 
-/* We don't need to memset the whole thing just to initialize the padding */
-#define INIT_STRUCT_STAT_PADDING(st) do {	\
-	st.__pad0 = 0;				\
-	st.__unused[0] = 0;			\
-	st.__unused[1] = 0;			\
-	st.__unused[2] = 0;			\
-} while (0)
-
 #endif
 
 /* for 32bit emulation and 32 bit kernels */
@@ -133,5 +119,40 @@ struct __old_kernel_stat {
 	unsigned int  st_ctime;
 #endif
 };
+
+#ifndef __kernel_stat
+/* This matches the 64-bit version of 'struct stat' on i386 */
+struct __kernel_stat {
+	unsigned long long	st_dev;
+	unsigned long long	st_ino;
+	unsigned long long	st_nlink;
+
+	unsigned int		st_mode;
+	unsigned int		st_uid;
+	unsigned int		st_gid;
+	unsigned int		__pad0;
+	unsigned long long	st_rdev;
+	long long		st_size;
+	long long		st_blksize;
+	long long		st_blocks;	/* Number 512-byte blocks allocated. */
+
+	unsigned long long	st_atime;
+	unsigned long long	st_atime_nsec;
+	unsigned long long	st_mtime;
+	unsigned long long	st_mtime_nsec;
+	unsigned long long	st_ctime;
+	unsigned long long	st_ctime_nsec;
+	long long		__unused[3];
+};
+
+/* We don't need to memset the whole thing just to initialize the padding */
+#define INIT_STRUCT_STAT_PADDING(st) do {	\
+	st.__pad0 = 0;				\
+	st.__unused[0] = 0;			\
+	st.__unused[1] = 0;			\
+	st.__unused[2] = 0;			\
+} while (0)
+
+#endif
 
 #endif /* _ASM_X86_STAT_H */

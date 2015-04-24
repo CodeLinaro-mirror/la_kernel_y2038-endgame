@@ -1,6 +1,10 @@
 #ifndef _ALPHA_STAT_H
 #define _ALPHA_STAT_H
 
+#ifndef __kernel_stat
+#define __kernel_stat stat
+#endif
+
 struct stat {
 	unsigned int	st_dev;
 	unsigned int	st_ino;
