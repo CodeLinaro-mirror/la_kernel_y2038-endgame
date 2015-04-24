@@ -8,15 +8,17 @@
  *
  * stat64 is copied from powerpc64, with explicit padding added.
  * stat is the same structure layout on 64-bit, without the 'long long'
- * types.
+ * types. Unfortunately, we started out using '32-bit st_*time here,
+ * which was a huge mistake.
  *
- * By convention, 64 bit architectures use the stat interface, while
- * 32 bit architectures use the stat64 interface. Note that we don't
- * provide an __old_kernel_stat here, which new architecture should
- * not have to start with.
+ * New architectures use only the __kernel_stat interface with
+ * 'sys_newfstatat', everything else is provided for backwards
+ * compatibility. Note that we don't provide an __old_kernel_stat here,
+ * which new architecture should not have to start with.
  */
 
 #include <asm/bitsperlong.h>
+#include <asm-generic/kernel_stat.h>
 
 #define STAT_HAVE_NSEC 1
 

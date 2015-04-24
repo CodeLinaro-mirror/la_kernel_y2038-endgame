@@ -7,6 +7,8 @@
 #ifndef _UAPI_BFIN_STAT_H
 #define _UAPI_BFIN_STAT_H
 
+#include <asm-generic/kernel_stat.h>
+
 struct stat {
 	unsigned short st_dev;
 	unsigned short __pad1;
