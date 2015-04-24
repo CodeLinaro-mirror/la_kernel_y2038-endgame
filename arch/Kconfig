@@ -767,4 +767,15 @@ config VMAP_STACK
 	  the stack to map directly to the KASAN shadow map using a formula
 	  that is incorrect if the stack is in vmalloc space.
 
+config ARCH_HAS_COMPAT_TIME
+	def_bool COMPAT
+
+config COMPAT_TIME
+	def_bool ARCH_HAS_COMPAT_TIME
+	help
+	  This should be selected by all architectures that need to support
+	  system calls with a 32-bit time_t. Traditionally, this has been
+	  used on all 32-bit architectures, and needs to be supported on
+	  64-bit architectures as part of compat syscall handling.
+
 source "kernel/gcov/Kconfig"
