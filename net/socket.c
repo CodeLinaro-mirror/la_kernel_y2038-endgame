@@ -2188,6 +2188,9 @@ int __sys_recvmmsg(int fd, struct mmsghdr __user *mmsg, unsigned int vlen,
 	entry = mmsg;
 	compat_entry = (struct compat_mmsghdr __user *)mmsg;
 
+	if (!IS_ENABLED(CONFIG_COMPAT))
+		flags &= ~MSG_CMSG_COMPAT;
+
 	while (datagrams < vlen) {
 		/*
 		 * No need to ask LSM for more than the first datagram.
@@ -2283,12 +2286,35 @@ SYSCALL_DEFINE5(recvmmsg, int, fd, struct mmsghdr __user *, mmsg,
 
 	datagrams = __sys_recvmmsg(fd, mmsg, vlen, flags, &timeout_sys);
 
-	if (datagrams > 0 &&
-	    put_timespec64(&timeout_sys, timeout))
+	if (datagrams > 0 && put_timespec64(&timeout_sys, timeout))
 		datagrams = -EFAULT;
 
 	return datagrams;
 }
+
+#ifdef CONFIG_COMPAT_TIME
+COMPAT_SYSCALL_DEFINE5(recvmmsg, int, fd, struct compat_mmsghdr __user *, mmsg,
+		       unsigned int, vlen, unsigned int, flags,
+		       struct compat_timespec __user *, timeout)
+{
+	int datagrams;
+	struct timespec64 ktspec;
+
+	if (timeout == NULL)
+		return __sys_recvmmsg(fd, (struct mmsghdr __user *)mmsg, vlen,
+				      flags | MSG_CMSG_COMPAT, NULL);
+
+	if (compat_get_timespec64(&ktspec, timeout))
+		return -EFAULT;
+
+	datagrams = __sys_recvmmsg(fd, (struct mmsghdr __user *)mmsg, vlen,
+				   flags | MSG_CMSG_COMPAT, &ktspec);
+	if (datagrams > 0 && compat_put_timespec64(&ktspec, timeout))
+		datagrams = -EFAULT;
+
+	return datagrams;
+}
+#endif
 
 #ifdef __ARCH_WANT_SYS_SOCKETCALL
 /* Argument list sizes for sys_socketcall */
@@ -2401,6 +2427,12 @@ SYSCALL_DEFINE2(socketcall, int, call, unsigned long __user *, args)
 		err = sys_recvmsg(a0, (struct user_msghdr __user *)a1, a[2]);
 		break;
 	case SYS_RECVMMSG:
+#if !defined(CONFIG_64BIT) && defined(CONFIG_COMPAT_TIME)
+		err = compat_sys_recvmmsg(a0, (struct mmsghdr __user *)a1, a[2], a[3],
+					  (struct compat_timespec __user *)a[4]);
+		break;
+	case SYS_RECVMMSG64:
+#endif
 		err = sys_recvmmsg(a0, (struct mmsghdr __user *)a1, a[2], a[3],
 				   (struct __kernel_timespec __user *)a[4]);
 		break;
