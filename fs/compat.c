@@ -1101,10 +1101,10 @@ COMPAT_SYSCALL_DEFINE4(openat, int, dfd, const char __user *, filename, int, fla
 #ifdef CONFIG_COMPAT_TIME
 #define __COMPAT_NFDBITS       (8 * sizeof(compat_ulong_t))
 
-static int poll_select_copy_remaining(struct timespec *end_time, void __user *p,
+static int poll_select_copy_remaining(struct timespec64 *end_time, void __user *p,
 				      int timeval, int ret)
 {
-	struct timespec ts;
+	struct timespec64 ts;
 
 	if (!p)
 		return ret;
@@ -1116,8 +1116,8 @@ static int poll_select_copy_remaining(struct timespec *end_time, void __user *p,
 	if (!end_time->tv_sec && !end_time->tv_nsec)
 		return ret;
 
-	ktime_get_ts(&ts);
-	ts = timespec_sub(*end_time, ts);
+	ktime_get_ts64(&ts);
+	ts = timespec64_sub(*end_time, ts);
 	if (ts.tv_sec < 0)
 		ts.tv_sec = ts.tv_nsec = 0;
 
@@ -1231,7 +1231,7 @@ int compat_set_fd_set(unsigned long nr, compat_ulong_t __user *ufdset,
  */
 int compat_core_sys_select(int n, compat_ulong_t __user *inp,
 	compat_ulong_t __user *outp, compat_ulong_t __user *exp,
-	struct timespec *end_time)
+	struct timespec64 *end_time)
 {
 	fd_set_bits fds;
 	void *bits;
@@ -1304,7 +1304,7 @@ COMPAT_SYSCALL_DEFINE5(select, int, n, compat_ulong_t __user *, inp,
 	compat_ulong_t __user *, outp, compat_ulong_t __user *, exp,
 	struct compat_timeval __user *, tvp)
 {
-	struct timespec end_time, *to = NULL;
+	struct timespec64 end_time, *to = NULL;
 	struct compat_timeval tv;
 	int ret;
 
@@ -1351,7 +1351,7 @@ static long do_compat_pselect(int n, compat_ulong_t __user *inp,
 	compat_sigset_t ss32;
 	sigset_t ksigmask, sigsaved;
 	struct compat_timespec ts;
-	struct timespec end_time, *to = NULL;
+	struct timespec64 end_time, *to = NULL;
 	int ret;
 
 	if (tsp) {
@@ -1420,7 +1420,7 @@ COMPAT_SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds,
 	compat_sigset_t ss32;
 	sigset_t ksigmask, sigsaved;
 	struct compat_timespec ts;
-	struct timespec end_time, *to = NULL;
+	struct timespec64 end_time, *to = NULL;
 	int ret;
 
 	if (tsp) {
