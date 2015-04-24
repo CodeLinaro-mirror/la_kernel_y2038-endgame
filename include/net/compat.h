@@ -52,6 +52,9 @@ asmlinkage long compat_sys_recvmsg(int, struct compat_msghdr __user *,
 asmlinkage long compat_sys_recvmmsg(int, struct compat_mmsghdr __user *,
 				    unsigned int, unsigned int,
 				    struct compat_timespec __user *);
+asmlinkage long compat_sys_recvmmsg64(int, struct compat_mmsghdr __user *,
+				    unsigned int, unsigned int,
+				    struct __kernel_timespec __user *);
 asmlinkage long compat_sys_getsockopt(int, int, int, char __user *,
 				      int __user *);
 int put_cmsg_compat(struct msghdr*, int, int, int, void *);
