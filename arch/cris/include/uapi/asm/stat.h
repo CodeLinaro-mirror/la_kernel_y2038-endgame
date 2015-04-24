@@ -1,6 +1,8 @@
 #ifndef _CRIS_STAT_H
 #define _CRIS_STAT_H
 
+#include <asm-generic/kernel_stat.h>
+
 /* Keep this a verbatim copy of i386 version; tweak CRIS-specific bits in
    the kernel if necessary.  */
 
