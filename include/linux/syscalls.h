@@ -44,8 +44,6 @@ struct semaphore;
 struct sembuf;
 struct shmid_ds;
 struct sockaddr;
-struct stat;
-struct stat64;
 struct statfs;
 struct statfs64;
 struct __sysctl_args;
@@ -80,6 +78,7 @@ union bpf_attr;
 #include <linux/key.h>
 #include <trace/syscall.h>
 #include <linux/compat_syscalls.h>
+#include <linux/stat.h>
 
 /*
  * __MAP - apply a macro to syscall arguments
@@ -406,10 +405,10 @@ asmlinkage long sys_lstat(const char __user *filename,
 asmlinkage long sys_fstat(unsigned int fd,
 			struct __old_kernel_stat __user *statbuf);
 asmlinkage long sys_newstat(const char __user *filename,
-				struct stat __user *statbuf);
+				struct __kernel_stat __user *statbuf);
 asmlinkage long sys_newlstat(const char __user *filename,
-				struct stat __user *statbuf);
-asmlinkage long sys_newfstat(unsigned int fd, struct stat __user *statbuf);
+				struct __kernel_stat __user *statbuf);
+asmlinkage long sys_newfstat(unsigned int fd, struct __kernel_stat __user *statbuf);
 asmlinkage long sys_ustat(unsigned dev, struct ustat __user *ubuf);
 #if defined(__ARCH_WANT_STAT64) || defined(__ARCH_WANT_COMPAT_STAT64)
 asmlinkage long sys_stat64(const char __user *filename,
@@ -781,7 +780,7 @@ asmlinkage long sys_fchownat(int dfd, const char __user *filename, uid_t user,
 asmlinkage long sys_openat(int dfd, const char __user *filename, int flags,
 			   umode_t mode);
 asmlinkage long sys_newfstatat(int dfd, const char __user *filename,
-			       struct stat __user *statbuf, int flag);
+			       struct __kernel_stat __user *statbuf, int flag);
 asmlinkage long sys_readlinkat(int dfd, const char __user *path, char __user *buf,
 			       int bufsiz);
 asmlinkage long sys_utimensat(int dfd, const char __user *filename,

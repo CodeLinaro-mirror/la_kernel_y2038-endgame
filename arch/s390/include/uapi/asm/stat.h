@@ -100,4 +100,28 @@ struct stat {
 
 #define STAT_HAVE_NSEC 1
 
+/* same layout as 'struct stat on s390x' for both 32-bit and 64-bit tasks */
+#ifndef __kernel_stat
+struct __kernel_stat {
+	unsigned long long st_dev;
+	unsigned long long st_ino;
+	unsigned long long st_nlink;
+	unsigned int	   st_mode;
+	unsigned int	   st_uid;
+	unsigned int	   st_gid;
+	unsigned int	   __pad1;
+	unsigned long long st_rdev;
+	unsigned long long st_size;
+	unsigned long long st_atime;
+	unsigned long long st_atime_nsec;
+	unsigned long long st_mtime;
+	unsigned long long st_mtime_nsec;
+	unsigned long long st_ctime;
+	unsigned long long st_ctime_nsec;
+	unsigned long long st_blksize;
+	long long	   st_blocks;
+	unsigned long long __unused[3];
+};
+#endif
+
 #endif
