@@ -817,6 +817,50 @@ __SYSCALL(__NR_pkey_alloc, sys_pkey_alloc)
 __SYSCALL(__NR_pkey_free, sys_pkey_free)
 #define __NR_statx 397
 __SYSCALL(__NR_statx, sys_statx)
+#define __NR_clock_gettime64 398
+__SYSCALL(__NR_clock_gettime64, sys_clock_gettime)
+#define __NR_clock_settime64 399
+__SYSCALL(__NR_clock_settime64, sys_clock_settime)
+#define __NR_clock_adjtime64 400
+__SYSCALL(__NR_clock_adjtime64, sys_clock_adjtime)
+#define __NR_clock_getres64 401
+__SYSCALL(__NR_clock_getres64, sys_clock_getres)
+#define __NR_clock_nanosleep64 402
+__SYSCALL(__NR_clock_nanosleep64, sys_clock_nanosleep)
+#define __NR_timer_gettime64 403
+__SYSCALL(__NR_timer_gettime64, sys_timer_gettime)
+#define __NR_timer_settime64 404
+__SYSCALL(__NR_timer_settime64, sys_timer_settime)
+#define __NR_timerfd_gettime64 405
+__SYSCALL(__NR_timerfd_gettime64, sys_timerfd_gettime)
+#define __NR_timerfd_settime64 406
+__SYSCALL(__NR_timerfd_settime64, sys_timerfd_settime)
+#define __NR_pselect64 407
+__SYSCALL(__NR_pselect64, compat_sys_pselect6_time64)
+#define __NR_ppoll64 408
+__SYSCALL(__NR_ppoll64, compat_sys_ppoll_time64)
+#define __NR_io_getevents64 409
+__SYSCALL(__NR_io_getevents64, sys_io_getevents)
+#define __NR_recvmmsg64 410
+__SYSCALL(__NR_recvmmsg64, compat_sys_recvmmsg64)
+#define __NR_semtimedop64 411
+__SYSCALL(__NR_semtimedop64, sys_semtimedop)
+#define __NR_mq_timedsend64 412
+__SYSCALL(__NR_mq_timedsend64, sys_mq_timedsend)
+#define __NR_mq_timedreceive64 413
+__SYSCALL(__NR_mq_timedreceive64, sys_mq_timedreceive)
+#define __NR_utimensat64 414
+__SYSCALL(__NR_utimensat64, sys_utimensat)
+#define __NR_newfstat64 415
+__SYSCALL(__NR_newfstat64, sys_newfstat)
+#define __NR_newfstatat64 416
+__SYSCALL(__NR_newfstatat64, sys_newfstatat)
+#define __NR_rt_sigtimedwait64 417
+__SYSCALL(__NR_rt_sigtimedwait64, compat_sys_rt_sigtimedwait_time64)
+#define __NR_getrusage64 418
+__SYSCALL(__NR_getrusage64, sys_getrusage)
+#define __NR_waitid64 419
+__SYSCALL(__NR_waitid64, compat_sys_waitid_time64)
 
 /*
  * Please add new compat syscalls above this comment and update
