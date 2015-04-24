@@ -801,7 +801,50 @@ __SYSCALL(__NR_execveat, compat_sys_execveat)
 __SYSCALL(__NR_userfaultfd, sys_userfaultfd)
 #define __NR_membarrier 389
 __SYSCALL(__NR_membarrier, sys_membarrier)
-
+#define __NR_clock_gettime64 390
+_SYSCALL(__NR_clock_gettime64, sys_clock_gettime)
+#define __NR_clock_settime64 391
+_SYSCALL(__NR_clock_settime64, sys_clock_settime)
+#define __NR_clock_adjtime64 392
+_SYSCALL(__NR_clock_adjtime64, sys_clock_adjtime)
+#define __NR_clock_getres64 393
+_SYSCALL(__NR_clock_getres64, sys_clock_getres)
+#define __NR_clock_nanosleep64 394
+_SYSCALL(__NR_clock_nanosleep64, sys_clock_nanosleep)
+#define __NR_timer_gettime64 395
+_SYSCALL(__NR_timer_gettime64, sys_timer_gettime)
+#define __NR_timer_settime64 396
+_SYSCALL(__NR_timer_settime64, sys_timer_settime)
+#define __NR_timerfd_gettime64 397
+_SYSCALL(__NR_timerfd_gettime64, sys_timerfd_gettime)
+#define __NR_timerfd_settime64 398
+_SYSCALL(__NR_timerfd_settime64, sys_timerfd_settime)
+#define __NR_pselect64 399
+_SYSCALL(__NR_pselect64, compat_sys_pselect6_time64)
+#define __NR_ppoll64 400
+_SYSCALL(__NR_ppoll64, compat_sys_ppoll_time64)
+#define __NR_io_getevents64 401
+_SYSCALL(__NR_io_getevents64, sys_io_getevents)
+#define __NR_recvmmsg64 402
+_SYSCALL(__NR_recvmmsg64, compat_sys_recvmmsg64)
+#define __NR_semtimedop64 403
+_SYSCALL(__NR_semtimedop64, sys_semtimedop)
+#define __NR_mq_timedsend64 404
+_SYSCALL(__NR_mq_timedsend64, sys_mq_timedsend)
+#define __NR_mq_timedreceive64 405
+_SYSCALL(__NR_mq_timedreceive64, sys_mq_timedreceive)
+#define __NR_utimensat64 406
+_SYSCALL(__NR_utimensat64, sys_utimensat)
+#define __NR_newfstat64 407
+_SYSCALL(__NR_newfstat64, sys_newfstat)
+#define __NR_newfstatat64 408
+_SYSCALL(__NR_newfstatat64, sys_newfstatat)
+#define __NR_rt_sigtimedwait64 409
+_SYSCALL(__NR_rt_sigtimedwait64, compat_sys_rt_sigtimedwait_time64)
+#define __NR_getrusage64 410
+_SYSCALL(__NR_getrusage64, sys_getrusage)
+#define __NR_waitid64 411
+_SYSCALL(__NR_waitid64, compat_sys_waitid_time64)
 /*
  * Please add new compat syscalls above this comment and update
  * __NR_compat_syscalls in asm/unistd.h.
