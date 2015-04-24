@@ -2,6 +2,7 @@
 #define _PARISC_STAT_H
 
 #include <linux/types.h>
+#include <asm-generic/kernel_stat.h>
 
 struct stat {
 	unsigned int	st_dev;		/* dev_t is 32 bits on parisc */
