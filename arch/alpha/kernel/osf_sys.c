@@ -1178,7 +1178,7 @@ SYSCALL_DEFINE2(osf_getrusage, int, who, struct rusage32 __user *, ru)
 SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
 		struct rusage32 __user *, ur)
 {
-	struct rusage r;
+	struct __kernel_rusage r;
 	long ret, err;
 	unsigned int status = 0;
 	mm_segment_t old_fs;
@@ -1190,7 +1190,7 @@ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
 		
 	set_fs (KERNEL_DS);
 	ret = sys_wait4(pid, (unsigned int __user *) &status, options,
-			(struct rusage __user *) &r);
+			(struct __kernel_rusage __user *) &r);
 	set_fs (old_fs);
 
 	if (!access_ok(VERIFY_WRITE, ur, sizeof(*ur)))

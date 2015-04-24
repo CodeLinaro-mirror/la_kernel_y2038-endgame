@@ -525,7 +525,7 @@ COMPAT_SYSCALL_DEFINE2(getrlimit, unsigned int, resource,
 #endif
 
 #ifdef CONFIG_COMPAT_TIME
-int put_compat_rusage(const struct rusage *r, struct compat_rusage __user *ru)
+int put_compat_rusage(const struct __kernel_rusage *r, struct compat_rusage __user *ru)
 {
 	if (!access_ok(VERIFY_WRITE, ru, sizeof(*ru)) ||
 	    __put_user(r->ru_utime.tv_sec, &ru->ru_utime.tv_sec) ||
@@ -559,7 +559,7 @@ COMPAT_SYSCALL_DEFINE4(wait4,
 	if (!ru) {
 		return sys_wait4(pid, stat_addr, options, NULL);
 	} else {
-		struct rusage r;
+		struct __kernel_rusage r;
 		int ret;
 		unsigned int status;
 		mm_segment_t old_fs = get_fs();
@@ -568,7 +568,7 @@ COMPAT_SYSCALL_DEFINE4(wait4,
 		ret = sys_wait4(pid,
 				(stat_addr ?
 				 (unsigned int __user *) &status : NULL),
-				options, (struct rusage __user *) &r);
+				options, (struct __kernel_rusage __user *) &r);
 		set_fs (old_fs);
 
 		if (ret > 0) {
@@ -587,7 +587,7 @@ COMPAT_SYSCALL_DEFINE5(waitid,
 		struct compat_rusage __user *, uru)
 {
 	siginfo_t info;
-	struct rusage ru;
+	struct __kernel_rusage ru;
 	long ret;
 	mm_segment_t old_fs = get_fs();
 
@@ -595,7 +595,7 @@ COMPAT_SYSCALL_DEFINE5(waitid,
 
 	set_fs(KERNEL_DS);
 	ret = sys_waitid(which, pid, (siginfo_t __user *)&info, options,
-			 uru ? (struct rusage __user *)&ru : NULL);
+			 uru ? (struct __kernel_rusage __user *)&ru : NULL);
 	set_fs(old_fs);
 
 	if ((ret < 0) || (info.si_signo == 0))
@@ -618,6 +618,38 @@ COMPAT_SYSCALL_DEFINE5(waitid,
 #endif
 
 #ifdef CONFIG_COMPAT
+COMPAT_SYSCALL_DEFINE5(waitid_time64,
+		int, which, compat_pid_t, pid,
+		struct compat_siginfo __user *, uinfo, int, options,
+		struct compat_rusage __user *, uru)
+{
+	siginfo_t info;
+	struct __kernel_rusage ru;
+	long ret;
+	mm_segment_t old_fs = get_fs();
+
+	memset(&info, 0, sizeof(info));
+
+	set_fs(KERNEL_DS);
+	ret = sys_waitid(which, pid, (siginfo_t __user *)&info, options,
+			 uru ? (struct __kernel_rusage __user *)&ru : NULL);
+	set_fs(old_fs);
+
+	if ((ret < 0) || (info.si_signo == 0))
+		return ret;
+
+	if (uru) {
+		/* sys_waitid() overwrites everything in ru */
+		ret = copy_to_user(uru, &ru, sizeof(ru));
+		if (ret)
+			return -EFAULT;
+	}
+
+	BUG_ON(info.si_code & __SI_MASK);
+	info.si_code |= __SI_CHLD;
+	return copy_siginfo_to_user32(uinfo, &info);
+}
+
 static int compat_get_user_cpu_mask(compat_ulong_t __user *user_mask_ptr,
 				    unsigned len, struct cpumask *new_mask)
 {
