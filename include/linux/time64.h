@@ -1,16 +1,15 @@
 #ifndef _LINUX_TIME64_H
 #define _LINUX_TIME64_H
 
-#include <uapi/linux/time.h>
 #include <linux/math64.h>
 
 typedef __s64 time64_t;
 typedef __u64 timeu64_t;
 
-/*
- * This wants to go into uapi/linux/time.h once we agreed about the
- * userspace interfaces.
- */
+#ifndef CONFIG_COMPAT_TIME
+# define __kernel_timespec timespec
+#endif
+
 #if __BITS_PER_LONG == 64
 # define timespec64 timespec
 #define itimerspec64 itimerspec
@@ -26,6 +25,8 @@ struct itimerspec64 {
 };
 
 #endif
+
+#include <uapi/linux/time.h>
 
 /* Parameters used to convert the timespec values: */
 #define MSEC_PER_SEC	1000L
@@ -221,5 +222,10 @@ static __always_inline void timespec64_add_ns(struct timespec64 *a, u64 ns)
  */
 extern struct timespec64 timespec64_add_safe(const struct timespec64 lhs,
 					 const struct timespec64 rhs);
+
+extern int get_timespec64(struct timespec64 *ts,
+			  const struct __kernel_timespec __user *uts);
+extern int put_timespec64(const struct timespec64 *ts,
+			  struct __kernel_timespec __user *uts);
 
 #endif /* _LINUX_TIME64_H */
