@@ -36,7 +36,6 @@ struct old_utsname;
 struct pollfd;
 struct rlimit;
 struct rlimit64;
-struct rusage;
 struct sched_param;
 struct sched_attr;
 struct sel_arg_struct;
@@ -326,10 +325,10 @@ asmlinkage long sys_kexec_file_load(int kernel_fd, int initrd_fd,
 asmlinkage long sys_exit(int error_code);
 asmlinkage long sys_exit_group(int error_code);
 asmlinkage long sys_wait4(pid_t pid, int __user *stat_addr,
-				int options, struct rusage __user *ru);
+				int options, struct __kernel_rusage __user *ru);
 asmlinkage long sys_waitid(int which, pid_t pid,
 			   struct siginfo __user *infop,
-			   int options, struct rusage __user *ru);
+			   int options, struct __kernel_rusage __user *ru);
 asmlinkage long sys_waitpid(pid_t pid, int __user *stat_addr, int options);
 asmlinkage long sys_set_tid_address(int __user *tidptr);
 asmlinkage long sys_futex(u32 __user *uaddr, int op, u32 val,
@@ -657,7 +656,7 @@ asmlinkage long sys_setrlimit(unsigned int resource,
 asmlinkage long sys_prlimit64(pid_t pid, unsigned int resource,
 				const struct rlimit64 __user *new_rlim,
 				struct rlimit64 __user *old_rlim);
-asmlinkage long sys_getrusage(int who, struct rusage __user *ru);
+asmlinkage long sys_getrusage(int who, struct __kernel_rusage __user *ru);
 asmlinkage long sys_umask(int mask);
 
 asmlinkage long sys_msgget(key_t key, int msgflg);

@@ -978,7 +978,7 @@ struct wait_opts {
 
 	struct siginfo __user	*wo_info;
 	int __user		*wo_stat;
-	struct rusage __user	*wo_rusage;
+	struct __kernel_rusage __user *wo_rusage;
 
 	wait_queue_t		child_wait;
 	int			notask_error;
@@ -1608,7 +1608,7 @@ end:
 }
 
 SYSCALL_DEFINE5(waitid, int, which, pid_t, upid, struct siginfo __user *,
-		infop, int, options, struct rusage __user *, ru)
+		infop, int, options, struct __kernel_rusage __user *, ru)
 {
 	struct wait_opts wo;
 	struct pid *pid = NULL;
@@ -1677,7 +1677,7 @@ SYSCALL_DEFINE5(waitid, int, which, pid_t, upid, struct siginfo __user *,
 }
 
 SYSCALL_DEFINE4(wait4, pid_t, upid, int __user *, stat_addr,
-		int, options, struct rusage __user *, ru)
+		int, options, struct __kernel_rusage __user *, ru)
 {
 	struct wait_opts wo;
 	struct pid *pid = NULL;
