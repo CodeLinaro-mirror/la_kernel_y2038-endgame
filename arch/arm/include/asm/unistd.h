@@ -19,7 +19,7 @@
  * This may need to be greater than __NR_last_syscall+1 in order to
  * account for the padding in the syscall table
  */
-#define __NR_syscalls  (388)
+#define __NR_syscalls  (412)
 
 /*
  * *NOTE*: This is a ghost syscall private to the kernel.  Only the
@@ -28,7 +28,9 @@
  */
 #define __ARM_NR_cmpxchg		(__ARM_NR_BASE+0x00fff0)
 
+#ifdef CONFIG_COMPAT_TIME
 #define __ARCH_WANT_STAT64
+#endif
 #define __ARCH_WANT_SYS_GETHOSTNAME
 #define __ARCH_WANT_SYS_PAUSE
 #define __ARCH_WANT_SYS_GETPGRP
@@ -40,11 +42,13 @@
 #define __ARCH_WANT_SYS_OLD_SELECT
 
 #if !defined(CONFIG_AEABI) || defined(CONFIG_OABI_COMPAT)
-#define __ARCH_WANT_SYS_TIME
+#ifdef CONFIG_COMPAT_TIME
+#define __ARCH_WANT_COMPAT_SYS_TIME
 #define __ARCH_WANT_SYS_IPC
+#define __ARCH_WANT_SYS_UTIME
+#endif
 #define __ARCH_WANT_SYS_OLDUMOUNT
 #define __ARCH_WANT_SYS_ALARM
-#define __ARCH_WANT_SYS_UTIME
 #define __ARCH_WANT_SYS_OLD_GETRLIMIT
 #define __ARCH_WANT_OLD_READDIR
 #define __ARCH_WANT_SYS_SOCKETCALL
@@ -52,6 +56,7 @@
 #define __ARCH_WANT_SYS_FORK
 #define __ARCH_WANT_SYS_VFORK
 #define __ARCH_WANT_SYS_CLONE
+#define __ARCH_WANT_SYS_NEWFSTATAT
 
 /*
  * Unimplemented (or alternatively implemented) syscalls
