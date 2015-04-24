@@ -39,6 +39,38 @@ struct	rusage {
 	__kernel_long_t	ru_nivcsw;	/* involuntary " */
 };
 
+
+/*
+ * __kernel_rusage replaces rusage, and matches the layout of 64-bit rusage
+ * on both 32-bit and 64-bit machines, to let 32-bit user space migrate to
+ * 64-bit tv_sec.
+ */
+#ifndef __kernel_rusage
+struct __kernel_rusage_timeval {
+	__s64	tv_sec;
+	__s64	tv_usec;
+};
+
+struct	__kernel_rusage {
+	struct __kernel_rusage_timeval ru_utime; /* user time used */
+	struct __kernel_rusage_timeval ru_stime; /* system time used */
+	__s64	ru_maxrss;	/* maximum resident set size */
+	__s64	ru_ixrss;	/* integral shared memory size */
+	__s64	ru_idrss;	/* integral unshared data size */
+	__s64	ru_isrss;	/* integral unshared stack size */
+	__s64	ru_minflt;	/* page reclaims */
+	__s64	ru_majflt;	/* page faults */
+	__s64	ru_nswap;	/* swaps */
+	__s64	ru_inblock;	/* block input operations */
+	__s64	ru_oublock;	/* block output operations */
+	__s64	ru_msgsnd;	/* messages sent */
+	__s64	ru_msgrcv;	/* messages received */
+	__s64	ru_nsignals;	/* signals received */
+	__s64	ru_nvcsw;	/* voluntary context switches */
+	__s64	ru_nivcsw;	/* involuntary " */
+};
+#endif
+
 struct rlimit {
 	__kernel_ulong_t	rlim_cur;
 	__kernel_ulong_t	rlim_max;

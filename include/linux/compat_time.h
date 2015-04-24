@@ -141,8 +141,7 @@ struct compat_rusage {
 	compat_long_t	ru_nivcsw;
 };
 
-struct rusage;
-extern int put_compat_rusage(const struct rusage *,
+extern int put_compat_rusage(const struct __kernel_rusage *,
 			     struct compat_rusage __user *);
 
 static inline int compat_timeval_compare(struct compat_timeval *lhs,
