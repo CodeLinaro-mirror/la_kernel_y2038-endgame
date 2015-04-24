@@ -1640,7 +1640,7 @@ SYSCALL_DEFINE2(setrlimit, unsigned int, resource, struct rlimit __user *, rlim)
  *
  */
 
-static void accumulate_thread_rusage(struct task_struct *t, struct rusage *r)
+static void accumulate_thread_rusage(struct task_struct *t, struct __kernel_rusage *r)
 {
 	r->ru_nvcsw += t->nvcsw;
 	r->ru_nivcsw += t->nivcsw;
@@ -1650,12 +1650,13 @@ static void accumulate_thread_rusage(struct task_struct *t, struct rusage *r)
 	r->ru_oublock += task_io_get_oublock(t);
 }
 
-void getrusage(struct task_struct *p, int who, struct rusage *r)
+void getrusage(struct task_struct *p, int who, struct __kernel_rusage *r)
 {
 	struct task_struct *t;
 	unsigned long flags;
 	u64 tgutime, tgstime, utime, stime;
 	unsigned long maxrss = 0;
+	struct timeval tv;
 
 	memset((char *)r, 0, sizeof (*r));
 	utime = stime = 0;
@@ -1710,8 +1711,12 @@ void getrusage(struct task_struct *p, int who, struct rusage *r)
 	unlock_task_sighand(p, &flags);
 
 out:
-	r->ru_utime = ns_to_timeval(utime);
-	r->ru_stime = ns_to_timeval(stime);
+	tv = ns_to_timeval(utime);
+	r->ru_utime.tv_sec = tv.tv_sec;
+	r->ru_utime.tv_usec = tv.tv_usec;
+	tv = ns_to_timeval(stime);
+	r->ru_stime.tv_sec = tv.tv_sec;
+	r->ru_stime.tv_usec = tv.tv_usec;
 
 	if (who != RUSAGE_CHILDREN) {
 		struct mm_struct *mm = get_task_mm(p);
@@ -1724,9 +1729,9 @@ out:
 	r->ru_maxrss = maxrss * (PAGE_SIZE / 1024); /* convert pages to KBs */
 }
 
-SYSCALL_DEFINE2(getrusage, int, who, struct rusage __user *, ru)
+SYSCALL_DEFINE2(getrusage, int, who, struct __kernel_rusage __user *, ru)
 {
-	struct rusage r;
+	struct __kernel_rusage r;
 
 	if (who != RUSAGE_SELF && who != RUSAGE_CHILDREN &&
 	    who != RUSAGE_THREAD)
@@ -1736,10 +1741,10 @@ SYSCALL_DEFINE2(getrusage, int, who, struct rusage __user *, ru)
 	return copy_to_user(ru, &r, sizeof(r)) ? -EFAULT : 0;
 }
 
-#ifdef CONFIG_COMPAT
+#ifdef CONFIG_COMPAT_TIME
 COMPAT_SYSCALL_DEFINE2(getrusage, int, who, struct compat_rusage __user *, ru)
 {
-	struct rusage r;
+	struct __kernel_rusage r;
 
 	if (who != RUSAGE_SELF && who != RUSAGE_CHILDREN &&
 	    who != RUSAGE_THREAD)
