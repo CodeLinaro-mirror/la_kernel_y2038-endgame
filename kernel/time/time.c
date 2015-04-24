@@ -30,6 +30,7 @@
 #include <linux/export.h>
 #include <linux/timex.h>
 #include <linux/capability.h>
+#include <linux/compat.h>
 #include <linux/timekeeper_internal.h>
 #include <linux/errno.h>
 #include <linux/syscalls.h>
@@ -37,6 +38,7 @@
 #include <linux/fs.h>
 #include <linux/math64.h>
 #include <linux/ptrace.h>
+#include <linux/time64.h>
 
 #include <asm/uaccess.h>
 #include <asm/unistd.h>
@@ -770,16 +772,46 @@ EXPORT_SYMBOL_GPL(nsecs_to_jiffies);
  * Add two timespec values and do a safety check for overflow.
  * It's assumed that both values are valid (>= 0)
  */
-struct timespec timespec_add_safe(const struct timespec lhs,
-				  const struct timespec rhs)
+struct timespec64 timespec64_add_safe(const struct timespec64 lhs,
+				      const struct timespec64 rhs)
 {
-	struct timespec res;
+	struct timespec64 res;
 
-	set_normalized_timespec(&res, lhs.tv_sec + rhs.tv_sec,
-				lhs.tv_nsec + rhs.tv_nsec);
+	set_normalized_timespec64(&res, lhs.tv_sec + rhs.tv_sec,
+				  lhs.tv_nsec + rhs.tv_nsec);
 
 	if (res.tv_sec < lhs.tv_sec || res.tv_sec < rhs.tv_sec)
 		res.tv_sec = TIME_T_MAX;
 
 	return res;
 }
+
+int get_timespec64(struct timespec64 *ts,
+		   const struct __kernel_timespec __user *uts)
+{
+	struct __kernel_timespec kts;
+	int ret;
+
+	ret = copy_from_user(&kts, uts, sizeof(kts));
+	if (ret)
+		return -EFAULT;
+
+	ts->tv_sec = kts.tv_sec;
+	if (!IS_ENABLED(CONFIG_64BIT) || is_compat_task())
+		kts.tv_nsec &= 0xfffffffful;
+	ts->tv_nsec = kts.tv_nsec;
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(get_timespec64);
+
+int put_timespec64(const struct timespec64 *ts,
+		   struct __kernel_timespec __user *uts)
+{
+	struct __kernel_timespec kts = {
+		.tv_sec = ts->tv_sec,
+		.tv_nsec = ts->tv_nsec
+	};
+	return copy_to_user(uts, &kts, sizeof(kts)) ? -EFAULT : 0;
+}
+EXPORT_SYMBOL_GPL(put_timespec64);
