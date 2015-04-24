@@ -292,7 +292,6 @@ static int poll_select_copy_remaining(struct timespec64 *end_time,
 				      int timeval, int ret)
 {
 	struct timespec64 rts64;
-	struct timespec rts;
 	struct timeval rtv;
 
 	if (!p)
@@ -310,7 +309,6 @@ static int poll_select_copy_remaining(struct timespec64 *end_time,
 	if (rts64.tv_sec < 0)
 		rts64.tv_sec = rts64.tv_nsec = 0;
 
-	rts = timespec64_to_timespec(rts64);
 
 	if (timeval) {
 		if (sizeof(rtv) > sizeof(rtv.tv_sec) + sizeof(rtv.tv_usec))
@@ -321,7 +319,7 @@ static int poll_select_copy_remaining(struct timespec64 *end_time,
 		if (!copy_to_user(p, &rtv, sizeof(rtv)))
 			return ret;
 
-	} else if (!copy_to_user(p, &rts, sizeof(rts)))
+	} else if (!put_timespec64(&rts64, p))
 		return ret;
 
 	/*
@@ -656,18 +654,16 @@ SYSCALL_DEFINE5(select, int, n, fd_set __user *, inp, fd_set __user *, outp,
 }
 
 static long do_pselect(int n, fd_set __user *inp, fd_set __user *outp,
-		       fd_set __user *exp, struct timespec __user *tsp,
+		       fd_set __user *exp, struct __kernel_timespec __user *tsp,
 		       const sigset_t __user *sigmask, size_t sigsetsize)
 {
 	sigset_t ksigmask, sigsaved;
-	struct timespec ts;
 	struct timespec64 ts64, end_time, *to = NULL;
 	int ret;
 
 	if (tsp) {
-		if (copy_from_user(&ts, tsp, sizeof(ts)))
+		if (get_timespec64(&ts64, tsp))
 			return -EFAULT;
-		ts64 = timespec_to_timespec64(ts);
 
 		to = &end_time;
 		if (poll_select_set_timeout(to, ts64.tv_sec, ts64.tv_nsec))
@@ -712,7 +708,7 @@ static long do_pselect(int n, fd_set __user *inp, fd_set __user *outp,
  * the sigset size.
  */
 SYSCALL_DEFINE6(pselect6, int, n, fd_set __user *, inp, fd_set __user *, outp,
-		fd_set __user *, exp, struct timespec __user *, tsp,
+		fd_set __user *, exp, struct __kernel_timespec __user *, tsp,
 		void __user *, sig)
 {
 	size_t sigsetsize = 0;
@@ -1003,16 +999,15 @@ SYSCALL_DEFINE3(poll, struct pollfd __user *, ufds, unsigned int, nfds,
 }
 
 SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds, unsigned int, nfds,
-		struct timespec __user *, tsp, const sigset_t __user *, sigmask,
-		size_t, sigsetsize)
+		struct __kernel_timespec __user *, tsp,
+		const sigset_t __user *, sigmask, size_t, sigsetsize)
 {
 	sigset_t ksigmask, sigsaved;
-	struct timespec ts;
-	struct timespec64 end_time, *to = NULL;
+	struct timespec64 ts, end_time, *to = NULL;
 	int ret;
 
 	if (tsp) {
-		if (copy_from_user(&ts, tsp, sizeof(ts)))
+		if (get_timespec64(&ts, tsp))
 			return -EFAULT;
 
 		to = &end_time;

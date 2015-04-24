@@ -7,6 +7,8 @@
 #include <linux/uio.h>			/* iovec support		*/
 #include <linux/types.h>		/* pid_t			*/
 #include <linux/compiler.h>		/* __user			*/
+#include <linux/math64.h>
+#include <linux/time64.h>		/* timespec64			*/
 #include <uapi/linux/socket.h>
 
 struct pid;
@@ -347,7 +349,7 @@ struct timespec;
 extern long __sys_recvmsg(int fd, struct user_msghdr __user *msg, unsigned flags);
 extern long __sys_sendmsg(int fd, struct user_msghdr __user *msg, unsigned flags);
 extern int __sys_recvmmsg(int fd, struct mmsghdr __user *mmsg, unsigned int vlen,
-			  unsigned int flags, struct timespec *timeout);
+			  unsigned int flags, struct timespec64 *timeout);
 extern int __sys_sendmmsg(int fd, struct mmsghdr __user *mmsg,
 			  unsigned int vlen, unsigned int flags);
 #endif /* _LINUX_SOCKET_H */
