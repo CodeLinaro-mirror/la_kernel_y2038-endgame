@@ -522,31 +522,7 @@ COMPAT_SYSCALL_DEFINE2(io_setup, unsigned, nr_reqs, u32 __user *, ctx32p)
 		ret = put_user((u32) ctx64, ctx32p);
 	return ret;
 }
-#endif
 
-#ifdef CONFIG_COMPAT_TIME
-COMPAT_SYSCALL_DEFINE5(io_getevents, compat_aio_context_t, ctx_id,
-		       compat_long_t, min_nr,
-		       compat_long_t, nr,
-		       struct io_event __user *, events,
-		       struct compat_timespec __user *, timeout)
-{
-	struct timespec t;
-	struct timespec __user *ut = NULL;
-
-	if (timeout) {
-		if (compat_get_timespec(&t, timeout))
-			return -EFAULT;
-
-		ut = compat_alloc_user_space(sizeof(*ut));
-		if (copy_to_user(ut, &t, sizeof(t)) )
-			return -EFAULT;
-	} 
-	return sys_io_getevents(ctx_id, min_nr, nr, events, ut);
-}
-#endif
-
-#ifdef CONFIG_COMPAT
 /* A write operation does a read from user space and vice versa */
 #define vrfy_dir(type) ((type) == READ ? VERIFY_WRITE : VERIFY_READ)
 
