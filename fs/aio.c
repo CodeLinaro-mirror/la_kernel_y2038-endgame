@@ -1284,20 +1284,9 @@ static bool aio_read_events(struct kioctx *ctx, long min_nr, long nr,
 
 static long read_events(struct kioctx *ctx, long min_nr, long nr,
 			struct io_event __user *event,
-			struct timespec __user *timeout)
+			ktime_t until)
 {
-	ktime_t until = KTIME_MAX;
 	long ret = 0;
-
-	if (timeout) {
-		struct timespec	ts;
-
-		if (unlikely(copy_from_user(&ts, timeout, sizeof(ts))))
-			return -EFAULT;
-
-		until = timespec_to_ktime(ts);
-	}
-
 	/*
 	 * Note that aio_read_events() is being called as the conditional - i.e.
 	 * we're calling it after prepare_to_wait() has set task state to
@@ -1822,14 +1811,23 @@ SYSCALL_DEFINE5(io_getevents, aio_context_t, ctx_id,
 		long, min_nr,
 		long, nr,
 		struct io_event __user *, events,
-		struct timespec __user *, timeout)
+		struct __kernel_timespec __user *, timeout)
 {
 	struct kioctx *ioctx = lookup_ioctx(ctx_id);
+	ktime_t until = KTIME_MAX;
+	struct timespec64 ts;
 	long ret = -EINVAL;
 
 	if (likely(ioctx)) {
+		if (timeout) {
+			if (unlikely(get_timespec64(&ts, timeout)))
+				return -EFAULT;
+
+			until = timespec64_to_ktime(ts);
+		}
+
 		if (likely(min_nr <= nr && min_nr >= 0))
-			ret = read_events(ioctx, min_nr, nr, events, timeout);
+			ret = read_events(ioctx, min_nr, nr, events, until);
 		percpu_ref_put(&ioctx->users);
 	}
 	return ret;
@@ -1842,17 +1840,23 @@ COMPAT_SYSCALL_DEFINE5(io_getevents, compat_aio_context_t, ctx_id,
 		       struct io_event __user *, events,
 		       struct compat_timespec __user *, timeout)
 {
-	struct timespec t;
-	struct timespec __user *ut = NULL;
+	struct kioctx *ioctx = lookup_ioctx(ctx_id);
+	ktime_t until = KTIME_MAX;
+	struct timespec64 ts;
+	long ret = -EINVAL;
 
-	if (timeout) {
-		if (compat_get_timespec(&t, timeout))
-			return -EFAULT;
+	if (likely(ioctx)) {
+		if (timeout) {
+			if (unlikely(compat_get_timespec64(&ts, timeout)))
+				return -EFAULT;
 
-		ut = compat_alloc_user_space(sizeof(*ut));
-		if (copy_to_user(ut, &t, sizeof(t)))
-			return -EFAULT;
+			until = timespec64_to_ktime(ts);
+		}
+
+		if (likely(min_nr <= nr && min_nr >= 0))
+			ret = read_events(ioctx, min_nr, nr, events, until);
+		percpu_ref_put(&ioctx->users);
 	}
-	return sys_io_getevents(ctx_id, min_nr, nr, events, ut);
+	return ret;
 }
 #endif
