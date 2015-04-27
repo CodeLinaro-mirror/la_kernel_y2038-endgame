@@ -7,6 +7,7 @@
 #include <linux/unistd.h>
 
 #ifdef __ARCH_WANT_SYS_IPC
+#include <linux/compat_time.h>
 #include <linux/errno.h>
 #include <linux/ipc.h>
 #include <linux/shm.h>
@@ -26,9 +27,15 @@ SYSCALL_DEFINE6(ipc, unsigned int, call, int, first, unsigned long, second,
 		return sys_semtimedop(first, (struct sembuf __user *)ptr,
 				      second, NULL);
 	case SEMTIMEDOP:
+#if defined(CONFIG_ARCH_HAS_COMPAT_TIME) && !defined(CONFIG_64BIT)
+		return compat_sys_semtimedop(first, (struct sembuf __user *)ptr,
+					     second,
+					     (const struct compat_timespec __user *)fifth);
+#else
 		return sys_semtimedop(first, (struct sembuf __user *)ptr,
 				      second,
-				      (const struct timespec __user *)fifth);
+				      (const struct __kernel_timespec __user *)fifth);
+#endif
 
 	case SEMGET:
 		return sys_semget(first, second, third);
