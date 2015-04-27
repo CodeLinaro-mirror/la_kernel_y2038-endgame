@@ -72,6 +72,7 @@
  *   The worst-case behavior is nevertheless O(N^2) for N wakeups.
  */
 
+#include <linux/compat.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/init.h>
@@ -1813,8 +1814,8 @@ static int get_queue_result(struct sem_queue *q)
 	return error;
 }
 
-SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsops,
-		unsigned, nsops, const struct timespec __user *, timeout)
+static long semtimedop(int semid, struct sembuf __user * tsops,
+		       unsigned nsops, struct timespec64 *timeout)
 {
 	int error = -EINVAL;
 	struct sem_array *sma;
@@ -1843,17 +1844,11 @@ SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsops,
 		goto out_free;
 	}
 	if (timeout) {
-		struct timespec _timeout;
-		if (copy_from_user(&_timeout, timeout, sizeof(*timeout))) {
-			error = -EFAULT;
-			goto out_free;
-		}
-		if (_timeout.tv_sec < 0 || _timeout.tv_nsec < 0 ||
-			_timeout.tv_nsec >= 1000000000L) {
+		if (!timespec64_valid(timeout)) {
 			error = -EINVAL;
 			goto out_free;
 		}
-		jiffies_left = timespec_to_jiffies(&_timeout);
+		jiffies_left = timespec64_to_jiffies(timeout);
 	}
 	max = 0;
 	for (sop = sops; sop < sops + nsops; sop++) {
@@ -2048,10 +2043,36 @@ out_free:
 	return error;
 }
 
+SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsops,
+		unsigned, nsops,
+		const struct __kernel_timespec  __user *, p)
+{
+	struct timespec64 timeout;
+
+	if (p && get_timespec64(&timeout, p))
+		return -EFAULT;
+
+	return semtimedop(semid, tsops, nsops, p ? &timeout : NULL);
+}
+
+#ifdef CONFIG_COMPAT_TIME
+COMPAT_SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsops,
+		unsigned, nsops,
+		const struct compat_timespec  __user *, p)
+{
+	struct timespec64 timeout;
+
+	if (p && compat_get_timespec64(&timeout, p))
+		return -EFAULT;
+
+	return semtimedop(semid, tsops, nsops, p ? &timeout : NULL);
+}
+#endif
+
 SYSCALL_DEFINE3(semop, int, semid, struct sembuf __user *, tsops,
 		unsigned, nsops)
 {
-	return sys_semtimedop(semid, tsops, nsops, NULL);
+	return semtimedop(semid, tsops, nsops, NULL);
 }
 
 /* If CLONE_SYSVSEM is set, establish sharing of SEM_UNDO state between
