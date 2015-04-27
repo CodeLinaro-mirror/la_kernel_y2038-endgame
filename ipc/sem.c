@@ -72,6 +72,7 @@
  *   The worst-case behavior is nevertheless O(N^2) for N wakeups.
  */
 
+#include <linux/compat.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/init.h>
@@ -1779,8 +1780,9 @@ static int get_queue_result(struct sem_queue *q)
 	return error;
 }
 
-SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsops,
-		unsigned, nsops, const struct timespec __user *, timeout)
+static long semtimedop(int semid, struct sembuf __user * tsops,
+		       unsigned nsops, unsigned long jiffies_left,
+		       bool timeout)
 {
 	int error = -EINVAL;
 	struct sem_array *sma;
@@ -1789,7 +1791,6 @@ SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsops,
 	struct sem_undo *un;
 	int undos = 0, alter = 0, max, locknum;
 	struct sem_queue queue;
-	unsigned long jiffies_left = 0;
 	struct ipc_namespace *ns;
 	struct list_head tasks;
 
@@ -1807,19 +1808,6 @@ SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsops,
 	if (copy_from_user(sops, tsops, nsops * sizeof(*tsops))) {
 		error =  -EFAULT;
 		goto out_free;
-	}
-	if (timeout) {
-		struct timespec _timeout;
-		if (copy_from_user(&_timeout, timeout, sizeof(*timeout))) {
-			error = -EFAULT;
-			goto out_free;
-		}
-		if (_timeout.tv_sec < 0 || _timeout.tv_nsec < 0 ||
-			_timeout.tv_nsec >= 1000000000L) {
-			error = -EINVAL;
-			goto out_free;
-		}
-		jiffies_left = timespec_to_jiffies(&_timeout);
 	}
 	max = 0;
 	for (sop = sops; sop < sops + nsops; sop++) {
@@ -2014,10 +2002,48 @@ out_free:
 	return error;
 }
 
+SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsops,
+		unsigned, nsops,
+		const struct __kernel_timespec  __user *, timeout)
+{
+	unsigned long jiffies_left = 0;
+
+	if (timeout) {
+		struct timespec64 _timeout;
+		if (get_timespec64(&_timeout, timeout))
+			return -EFAULT;
+		if (_timeout.tv_sec < 0 || _timeout.tv_nsec < 0 ||
+			_timeout.tv_nsec >= 1000000000L)
+			return -EINVAL;
+		jiffies_left = nsecs_to_jiffies(timespec64_to_ns(&_timeout));
+	}
+	return semtimedop(semid, tsops, nsops, jiffies_left, timeout);
+}
+
+#ifdef CONFIG_COMPAT_TIME
+COMPAT_SYSCALL_DEFINE4(semtimedop, int, semid, struct sembuf __user *, tsops,
+		unsigned, nsops,
+		const struct compat_timespec  __user *, timeout)
+{
+	unsigned long jiffies_left = 0;
+
+	if (timeout) {
+		struct timespec64 _timeout;
+		if (compat_get_timespec64(&_timeout, timeout))
+			return -EFAULT;
+		if (_timeout.tv_sec < 0 || _timeout.tv_nsec < 0 ||
+			_timeout.tv_nsec >= 1000000000L)
+			return -EINVAL;
+		jiffies_left = nsecs_to_jiffies(timespec64_to_ns(&_timeout));
+	}
+	return semtimedop(semid, tsops, nsops, jiffies_left, timeout);
+}
+#endif
+
 SYSCALL_DEFINE3(semop, int, semid, struct sembuf __user *, tsops,
 		unsigned, nsops)
 {
-	return sys_semtimedop(semid, tsops, nsops, NULL);
+	return semtimedop(semid, tsops, nsops, 0, 0);
 }
 
 /* If CLONE_SYSVSEM is set, establish sharing of SEM_UNDO state between
