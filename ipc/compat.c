@@ -215,7 +215,9 @@ static inline int put_compat_semid64_ds(struct semid64_ds *sem64,
 	if (!access_ok(VERIFY_WRITE, up64, sizeof(*up64)))
 		return -EFAULT;
 	err  = __put_compat_ipc64_perm(&sem64->sem_perm, &up64->sem_perm);
+	err |= __put_user(sem64->sem_otime >> 32, &up64->sem_otime_high);
 	err |= __put_user(sem64->sem_otime, &up64->sem_otime);
+	err |= __put_user(sem64->sem_ctime >> 32, &up64->sem_ctime_high);
 	err |= __put_user(sem64->sem_ctime, &up64->sem_ctime);
 	err |= __put_user(sem64->sem_nsems, &up64->sem_nsems);
 	return err;
@@ -465,8 +467,11 @@ static inline int put_compat_msqid64_ds(struct msqid64_ds *m64,
 	if (!access_ok(VERIFY_WRITE, up64, sizeof(*up64)))
 		return -EFAULT;
 	err  = __put_compat_ipc64_perm(&m64->msg_perm, &up64->msg_perm);
+	err |= __put_user(m64->msg_stime >> 32, &up64->msg_stime_high);
 	err |= __put_user(m64->msg_stime, &up64->msg_stime);
+	err |= __put_user(m64->msg_rtime >> 32, &up64->msg_rtime_high);
 	err |= __put_user(m64->msg_rtime, &up64->msg_rtime);
+	err |= __put_user(m64->msg_ctime >> 32, &up64->msg_ctime_high);
 	err |= __put_user(m64->msg_ctime, &up64->msg_ctime);
 	err |= __put_user(m64->msg_cbytes, &up64->msg_cbytes);
 	err |= __put_user(m64->msg_qnum, &up64->msg_qnum);
@@ -585,8 +590,11 @@ static inline int put_compat_shmid64_ds(struct shmid64_ds *sem64,
 	if (!access_ok(VERIFY_WRITE, up64, sizeof(*up64)))
 		return -EFAULT;
 	err  = __put_compat_ipc64_perm(&sem64->shm_perm, &up64->shm_perm);
+	err |= __put_user(sem64->shm_atime >> 32, &up64->shm_atime_high);
 	err |= __put_user(sem64->shm_atime, &up64->shm_atime);
+	err |= __put_user(sem64->shm_dtime >> 32, &up64->shm_dtime_high);
 	err |= __put_user(sem64->shm_dtime, &up64->shm_dtime);
+	err |= __put_user(sem64->shm_ctime >> 32, &up64->shm_ctime_high);
 	err |= __put_user(sem64->shm_ctime, &up64->shm_ctime);
 	err |= __put_user(sem64->shm_segsz, &up64->shm_segsz);
 	err |= __put_user(sem64->shm_nattch, &up64->shm_nattch);
