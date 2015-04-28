@@ -2,6 +2,7 @@
 #define _LINUX_SHM_H_
 
 #include <linux/list.h>
+#include <linux/time.h>
 #include <asm/page.h>
 #include <uapi/linux/shm.h>
 #include <asm/shmparam.h>
@@ -12,9 +13,9 @@ struct shmid_kernel /* private to the kernel */
 	struct file		*shm_file;
 	unsigned long		shm_nattch;
 	unsigned long		shm_segsz;
-	time_t			shm_atim;
-	time_t			shm_dtim;
-	time_t			shm_ctim;
+	time64_t		shm_atim;
+	time64_t		shm_dtim;
+	time64_t		shm_ctim;
 	pid_t			shm_cprid;
 	pid_t			shm_lprid;
 	struct user_struct	*mlock_user;
