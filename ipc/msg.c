@@ -138,7 +138,7 @@ static int newque(struct ipc_namespace *ns, struct ipc_params *params)
 	}
 
 	msq->q_stime = msq->q_rtime = 0;
-	msq->q_ctime = get_seconds();
+	msq->q_ctime = ktime_get_real_seconds();
 	msq->q_cbytes = msq->q_qnum = 0;
 	msq->q_qbytes = ns->msg_ctlmnb;
 	msq->q_lspid = msq->q_lrpid = 0;
@@ -385,8 +385,9 @@ static int msgctl_down(struct ipc_namespace *ns, int msqid, int cmd,
 
 		msq->q_qbytes = msqid64.msg_qbytes;
 
-		msq->q_ctime = get_seconds();
-		/* sleeping receivers might be excluded by
+		msq->q_ctime = ktime_get_real_seconds();
+		/*
+		 * Sleeping receivers might be excluded by
 		 * stricter permissions.
 		 */
 		expunge_all(msq, -EAGAIN);
@@ -497,6 +498,11 @@ static int msgctl_nolock(struct ipc_namespace *ns, int msqid,
 		tbuf.msg_stime  = msq->q_stime;
 		tbuf.msg_rtime  = msq->q_rtime;
 		tbuf.msg_ctime  = msq->q_ctime;
+#ifndef CONFIG_64BIT
+		tbuf.msg_stime_high = msq->q_stime >> 32;
+		tbuf.msg_rtime_high = msq->q_rtime >> 32;
+		tbuf.msg_ctime_high = msq->q_ctime >> 32;
+#endif
 		tbuf.msg_cbytes = msq->q_cbytes;
 		tbuf.msg_qnum   = msq->q_qnum;
 		tbuf.msg_qbytes = msq->q_qbytes;
@@ -586,7 +592,7 @@ static inline int pipelined_send(struct msg_queue *msq, struct msg_msg *msg)
 			} else {
 				msr->r_msg = NULL;
 				msq->q_lrpid = task_pid_vnr(msr->r_tsk);
-				msq->q_rtime = get_seconds();
+				msq->q_rtime = ktime_get_real_seconds();
 				wake_up_process(msr->r_tsk);
 				/*
 				 * Ensure that the wakeup is visible before
@@ -696,7 +702,7 @@ long do_msgsnd(int msqid, long mtype, void __user *mtext,
 
 	}
 	msq->q_lspid = task_tgid_vnr(current);
-	msq->q_stime = get_seconds();
+	msq->q_stime = ktime_get_real_seconds();
 
 	if (!pipelined_send(msq, msg)) {
 		/* no one is waiting for this message, enqueue it */
@@ -888,7 +894,7 @@ long do_msgrcv(int msqid, void __user *buf, size_t bufsz, long msgtyp, int msgfl
 
 			list_del(&msg->m_list);
 			msq->q_qnum--;
-			msq->q_rtime = get_seconds();
+			msq->q_rtime = ktime_get_real_seconds();
 			msq->q_lrpid = task_tgid_vnr(current);
 			msq->q_cbytes -= msg->m_ts;
 			atomic_sub(msg->m_ts, &ns->msg_bytes);
@@ -1044,7 +1050,7 @@ static int sysvipc_msg_proc_show(struct seq_file *s, void *it)
 	struct msg_queue *msq = it;
 
 	seq_printf(s,
-		   "%10d %10d  %4o  %10lu %10lu %5u %5u %5u %5u %5u %5u %10lu %10lu %10lu\n",
+		   "%10d %10d  %4o  %10lu %10lu %5u %5u %5u %5u %5u %5u %10llu %10llu %10llu\n",
 		   msq->q_perm.key,
 		   msq->q_perm.id,
 		   msq->q_perm.mode,
@@ -1056,9 +1062,9 @@ static int sysvipc_msg_proc_show(struct seq_file *s, void *it)
 		   from_kgid_munged(user_ns, msq->q_perm.gid),
 		   from_kuid_munged(user_ns, msq->q_perm.cuid),
 		   from_kgid_munged(user_ns, msq->q_perm.cgid),
-		   msq->q_stime,
-		   msq->q_rtime,
-		   msq->q_ctime);
+		   (u64)msq->q_stime,
+		   (u64)msq->q_rtime,
+		   (u64)msq->q_ctime);
 
 	return 0;
 }
