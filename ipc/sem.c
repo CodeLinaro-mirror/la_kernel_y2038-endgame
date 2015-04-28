@@ -106,7 +106,7 @@ struct sem {
 					/* that alter the semaphore */
 	struct list_head pending_const; /* pending single-sop operations */
 					/* that do not alter the semaphore*/
-	time_t	sem_otime;	/* candidate for sem_otime */
+	time64_t	sem_otime;	/* candidate for sem_otime */
 } ____cacheline_aligned_in_smp;
 
 /* One queue for each sleeping process in the system. */
@@ -560,7 +560,7 @@ static int newary(struct ipc_namespace *ns, struct ipc_params *params)
 	INIT_LIST_HEAD(&sma->pending_const);
 	INIT_LIST_HEAD(&sma->list_id);
 	sma->sem_nsems = nsems;
-	sma->sem_ctime = get_seconds();
+	sma->sem_ctime = ktime_get_real_seconds();
 
 	id = ipc_addid(&sem_ids(ns), &sma->sem_perm, ns->sc_semmni);
 	if (id < 0) {
@@ -972,10 +972,10 @@ again:
 static void set_semotime(struct sem_array *sma, struct sembuf *sops)
 {
 	if (sops == NULL) {
-		sma->sem_base[0].sem_otime = get_seconds();
+		sma->sem_base[0].sem_otime = ktime_get_real_seconds();
 	} else {
 		sma->sem_base[sops[0].sem_num].sem_otime =
-							get_seconds();
+							ktime_get_real_seconds();
 	}
 }
 
@@ -1183,14 +1183,14 @@ static unsigned long copy_semid_to_user(void __user *buf, struct semid64_ds *in,
 	}
 }
 
-static time_t get_semotime(struct sem_array *sma)
+static time64_t get_semotime(struct sem_array *sma)
 {
 	int i;
-	time_t res;
+	time64_t res;
 
 	res = sma->sem_base[0].sem_otime;
 	for (i = 1; i < sma->sem_nsems; i++) {
-		time_t to = sma->sem_base[i].sem_otime;
+		time64_t to = sma->sem_base[i].sem_otime;
 
 		if (to > res)
 			res = to;
@@ -1242,6 +1242,7 @@ static int semctl_nolock(struct ipc_namespace *ns, int semid,
 	case SEM_STAT:
 	{
 		struct semid64_ds tbuf;
+		time64_t semotime;
 		int id = 0;
 
 		memset(&tbuf, 0, sizeof(tbuf));
@@ -1271,9 +1272,14 @@ static int semctl_nolock(struct ipc_namespace *ns, int semid,
 			goto out_unlock;
 
 		kernel_to_ipc64_perm(&sma->sem_perm, &tbuf.sem_perm);
-		tbuf.sem_otime = get_semotime(sma);
+		semotime = get_semotime(sma);
+		tbuf.sem_otime = semotime;
 		tbuf.sem_ctime = sma->sem_ctime;
 		tbuf.sem_nsems = sma->sem_nsems;
+#ifndef CONFIG_64BIT
+		tbuf.sem_ctime_high = sma->sem_ctime >> 32;
+		tbuf.sem_ctime_high = semotime >> 32;
+#endif
 		rcu_read_unlock();
 		if (copy_semid_to_user(p, &tbuf, version))
 			return -EFAULT;
@@ -1349,7 +1355,7 @@ static int semctl_setval(struct ipc_namespace *ns, int semid, int semnum,
 
 	curr->semval = val;
 	curr->sempid = task_tgid_vnr(current);
-	sma->sem_ctime = get_seconds();
+	sma->sem_ctime = ktime_get_real_seconds();
 	/* maybe some queued-up processes were waiting for this */
 	do_smart_update(sma, NULL, 0, 0, &tasks);
 	sem_unlock(sma, -1);
@@ -1477,7 +1483,7 @@ static int semctl_main(struct ipc_namespace *ns, int semid, int semnum,
 			for (i = 0; i < nsems; i++)
 				un->semadj[i] = 0;
 		}
-		sma->sem_ctime = get_seconds();
+		sma->sem_ctime = ktime_get_real_seconds();
 		/* maybe some queued-up processes were waiting for this */
 		do_smart_update(sma, NULL, 0, 0, &tasks);
 		err = 0;
@@ -1593,7 +1599,7 @@ static int semctl_down(struct ipc_namespace *ns, int semid,
 		err = ipc_update_perm(&semid64.sem_perm, ipcp);
 		if (err)
 			goto out_unlock0;
-		sma->sem_ctime = get_seconds();
+		sma->sem_ctime = ktime_get_real_seconds();
 		break;
 	default:
 		err = -EINVAL;
@@ -2226,7 +2232,7 @@ static int sysvipc_sem_proc_show(struct seq_file *s, void *it)
 {
 	struct user_namespace *user_ns = seq_user_ns(s);
 	struct sem_array *sma = it;
-	time_t sem_otime;
+	u64 sem_otime;
 
 	/*
 	 * The proc interface isn't aware of sem_lock(), it calls
@@ -2239,7 +2245,7 @@ static int sysvipc_sem_proc_show(struct seq_file *s, void *it)
 	sem_otime = get_semotime(sma);
 
 	seq_printf(s,
-		   "%10d %10d  %4o %10u %5u %5u %5u %5u %10lu %10lu\n",
+		   "%10d %10d  %4o %10u %5u %5u %5u %5u %10llu %10llu\n",
 		   sma->sem_perm.key,
 		   sma->sem_perm.id,
 		   sma->sem_perm.mode,
