@@ -11,6 +11,7 @@
 #include <linux/alarmtimer.h>
 #include <linux/file.h>
 #include <linux/poll.h>
+#include <linux/posix-timers.h>
 #include <linux/init.h>
 #include <linux/fs.h>
 #include <linux/sched.h>
@@ -522,30 +523,30 @@ static int do_timerfd_gettime(int ufd, struct itimerspec *t)
 }
 
 SYSCALL_DEFINE4(timerfd_settime, int, ufd, int, flags,
-		const struct itimerspec __user *, utmr,
-		struct itimerspec __user *, otmr)
+		const struct __kernel_itimerspec __user *, utmr,
+		struct __kernel_itimerspec __user *, otmr)
 {
 	struct itimerspec new, old;
 	int ret;
 
-	if (copy_from_user(&new, utmr, sizeof(new)))
+	if (get_itimerspec(&new, utmr))
 		return -EFAULT;
 	ret = do_timerfd_settime(ufd, flags, &new, &old);
 	if (ret)
 		return ret;
-	if (otmr && copy_to_user(otmr, &old, sizeof(old)))
+	if (otmr && put_itimerspec(&old, otmr))
 		return -EFAULT;
 
 	return ret;
 }
 
-SYSCALL_DEFINE2(timerfd_gettime, int, ufd, struct itimerspec __user *, otmr)
+SYSCALL_DEFINE2(timerfd_gettime, int, ufd, struct __kernel_itimerspec __user *, otmr)
 {
 	struct itimerspec kotmr;
 	int ret = do_timerfd_gettime(ufd, &kotmr);
 	if (ret)
 		return ret;
-	return copy_to_user(otmr, &kotmr, sizeof(kotmr)) ? -EFAULT: 0;
+	return put_itimerspec(&kotmr, otmr);
 }
 
 #ifdef CONFIG_COMPAT
