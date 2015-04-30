@@ -112,9 +112,13 @@ asmlinkage long compat_sys_clock_nanosleep(clockid_t which_clock, int flags,
 					   struct compat_timespec __user *rqtp,
 					   struct compat_timespec __user *rmtp);
 struct compat_siginfo;
+struct __kernel_timespec;
 asmlinkage long compat_sys_rt_sigtimedwait(compat_sigset_t __user *uthese,
 		struct compat_siginfo __user *uinfo,
 		struct compat_timespec __user *uts, compat_size_t sigsetsize);
+asmlinkage long compat_sys_rt_sigtimedwait_time64(compat_sigset_t __user *uthese,
+		struct compat_siginfo __user *uinfo,
+		struct __kernel_timespec __user *uts, compat_size_t sigsetsize);
 asmlinkage long compat_sys_futex(u32 __user *uaddr, int op, u32 val,
 		struct compat_timespec __user *utime, u32 __user *uaddr2,
 		u32 val3);
