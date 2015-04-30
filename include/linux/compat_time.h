@@ -78,6 +78,30 @@ struct compat_timex {
 	compat_int_t:32; compat_int_t:32; compat_int_t:32;
 };
 
+#ifdef CONFIG_COMPAT
+#include <asm/compat.h>
+
+#define _COMPAT_NSIG_WORDS     (_COMPAT_NSIG / _COMPAT_NSIG_BPW)
+typedef struct {
+       compat_sigset_word      sig[_COMPAT_NSIG_WORDS];
+} compat_sigset_t;
+
+#else
+
+#define compat_mmsghdr mmsghdr
+#define compat_stat stat
+#define compat_siginfo siginfo
+#define compat_sigevent sigevent
+#define compat_sigset_t sigset_t
+#define __compat_uid_t __kernel_uid_t
+#define __compat_gid_t __kernel_gid_t
+#define compat_mode_t __kernel_mode_t
+#define copy_siginfo_to_user32(uinfo, info) copy_siginfo_to_user(uinfo, info)
+static inline void __user *compat_ptr(compat_uptr_t ptr)
+{
+	return (void __user*)ptr;
+}
+#endif
 
 /*
  * These functions operate on 32- or 64-bit specs depending on
