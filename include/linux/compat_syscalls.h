@@ -3,9 +3,23 @@
 
 #include <linux/resource.h>
 #include <linux/signal.h>
-
-#ifdef CONFIG_COMPAT
 #include <linux/compat.h>
+
+#ifndef CONFIG_COMPAT
+#define compat_mmsghdr mmsghdr
+#define compat_stat stat
+#define compat_siginfo siginfo
+#define compat_sigevent sigevent
+#define compat_sigset_t sigset_t
+#define __compat_uid_t __kernel_uid_t
+#define __compat_gid_t __kernel_gid_t
+#define compat_mode_t __kernel_mode_t
+#define copy_siginfo_to_user32(uinfo, info) copy_siginfo_to_user(uinfo, info)
+static inline void __user *compat_ptr(compat_uptr_t ptr)
+{
+	return (void __user*)(uintptr_t)ptr;
+}
+#endif
 
 struct sembuf;
 asmlinkage long compat_sys_semtimedop(int semid, struct sembuf __user *tsems,
@@ -115,5 +129,4 @@ asmlinkage ssize_t compat_sys_mq_timedreceive(mqd_t mqdes,
 asmlinkage long compat_sys_sched_rr_get_interval(compat_pid_t pid,
 						 struct compat_timespec __user *interval);
 
-#endif
 #endif
