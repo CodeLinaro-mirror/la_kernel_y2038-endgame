@@ -68,6 +68,7 @@ int compat_printk(const char *fmt, ...)
 	return ret;
 }
 
+#ifdef CONFIG_COMPAT_TIME
 /*
  * Not all architectures have sys_utime, so implement this in terms
  * of sys_utimes.
@@ -208,7 +209,9 @@ COMPAT_SYSCALL_DEFINE2(newfstat, unsigned int, fd,
 		error = cp_compat_stat(&stat, statbuf);
 	return error;
 }
+#endif /* CONFIG_COMPAT_TIME */
 
+#ifdef CONFIG_COMPAT
 static int put_compat_statfs(struct compat_statfs __user *ubuf, struct kstatfs *kbuf)
 {
 	
@@ -519,7 +522,9 @@ COMPAT_SYSCALL_DEFINE2(io_setup, unsigned, nr_reqs, u32 __user *, ctx32p)
 		ret = put_user((u32) ctx64, ctx32p);
 	return ret;
 }
+#endif
 
+#ifdef CONFIG_COMPAT_TIME
 COMPAT_SYSCALL_DEFINE5(io_getevents, compat_aio_context_t, ctx_id,
 		       compat_long_t, min_nr,
 		       compat_long_t, nr,
@@ -539,7 +544,9 @@ COMPAT_SYSCALL_DEFINE5(io_getevents, compat_aio_context_t, ctx_id,
 	} 
 	return sys_io_getevents(ctx_id, min_nr, nr, events, ut);
 }
+#endif
 
+#ifdef CONFIG_COMPAT
 /* A write operation does a read from user space and vice versa */
 #define vrfy_dir(type) ((type) == READ ? VERIFY_WRITE : VERIFY_READ)
 
@@ -1103,7 +1110,9 @@ COMPAT_SYSCALL_DEFINE4(openat, int, dfd, const char __user *, filename, int, fla
 {
 	return do_sys_open(dfd, filename, flags, mode);
 }
+#endif
 
+#ifdef CONFIG_COMPAT_TIME
 #define __COMPAT_NFDBITS       (8 * sizeof(compat_ulong_t))
 
 static int poll_select_copy_remaining(struct timespec *end_time, void __user *p,
@@ -1470,8 +1479,9 @@ COMPAT_SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds,
 
 	return ret;
 }
+#endif
 
-#ifdef CONFIG_FHANDLE
+#if defined(CONFIG_FHANDLE) && defined(CONFIG_COMPAT)
 /*
  * Exactly like fs/open.c:sys_open_by_handle_at(), except that it
  * doesn't set the O_LARGEFILE flag.
