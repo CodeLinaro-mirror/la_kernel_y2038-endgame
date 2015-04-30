@@ -1098,7 +1098,7 @@ SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds, unsigned int, nfds,
 	return ret;
 }
 
-#ifdef CONFIG_COMPAT
+#ifdef CONFIG_COMPAT_TIME
 #define __COMPAT_NFDBITS       (8 * sizeof(compat_ulong_t))
 
 static

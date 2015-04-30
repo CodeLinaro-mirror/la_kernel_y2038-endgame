@@ -14,7 +14,7 @@ struct pollfd;
 enum timespec_type {
 	TT_NONE		= 0,
 	TT_NATIVE	= 1,
-#ifdef CONFIG_COMPAT
+#ifdef CONFIG_COMPAT_TIME
 	TT_COMPAT	= 2,
 #endif
 };
@@ -40,7 +40,7 @@ struct restart_block {
 			enum timespec_type type;
 			union {
 				struct timespec __user *rmtp;
-#ifdef CONFIG_COMPAT
+#ifdef CONFIG_COMPAT_TIME
 				struct compat_timespec __user *compat_rmtp;
 #endif
 			};

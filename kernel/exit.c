@@ -1696,7 +1696,7 @@ SYSCALL_DEFINE3(waitpid, pid_t, pid, int __user *, stat_addr, int, options)
 
 #endif
 
-#ifdef CONFIG_COMPAT
+#ifdef CONFIG_COMPAT_TIME
 COMPAT_SYSCALL_DEFINE4(wait4,
 	compat_pid_t, pid,
 	compat_uint_t __user *, stat_addr,

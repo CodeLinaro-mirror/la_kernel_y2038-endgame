@@ -143,7 +143,7 @@ SYSCALL_DEFINE4(clock_nanosleep, const clockid_t, which_clock, int, flags,
 				 which_clock);
 }
 
-#ifdef CONFIG_COMPAT
+#ifdef CONFIG_COMPAT_TIME
 COMPAT_SYS_NI(timer_create);
 COMPAT_SYS_NI(clock_adjtime);
 COMPAT_SYS_NI(timer_settime);

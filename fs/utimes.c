@@ -216,7 +216,7 @@ SYSCALL_DEFINE2(utimes, char __user *, filename,
 	return sys_futimesat(AT_FDCWD, filename, utimes);
 }
 
-#ifdef CONFIG_COMPAT
+#ifdef CONFIG_COMPAT_TIME
 /*
  * Not all architectures have sys_utime, so implement this in terms
  * of sys_utimes.

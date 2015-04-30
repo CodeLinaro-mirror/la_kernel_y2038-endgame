@@ -576,7 +576,7 @@ SYSCALL_DEFINE5(statx,
 	return cp_statx(&stat, buffer);
 }
 
-#ifdef CONFIG_COMPAT
+#ifdef CONFIG_COMPAT_TIME
 static int cp_compat_stat(struct kstat *stat, struct compat_stat __user *ubuf)
 {
 	struct compat_stat tmp;
