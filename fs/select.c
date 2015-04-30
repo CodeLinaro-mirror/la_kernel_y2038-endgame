@@ -1098,7 +1098,7 @@ SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds, unsigned int, nfds,
 
 static
 int compat_poll_select_copy_remaining(struct timespec64 *end_time, void __user *p,
-				      int timeval, int ret)
+				      int timeval, int compat_time, int ret)
 {
 	struct timespec64 ts;
 
@@ -1125,14 +1125,10 @@ int compat_poll_select_copy_remaining(struct timespec64 *end_time, void __user *
 
 		if (!copy_to_user(p, &rtv, sizeof(rtv)))
 			return ret;
+	} else if (compat_time) {
+		return compat_put_timespec64(end_time, p);
 	} else {
-		struct compat_timespec rts;
-
-		rts.tv_sec = ts.tv_sec;
-		rts.tv_nsec = ts.tv_nsec;
-
-		if (!copy_to_user(p, &rts, sizeof(rts)))
-			return ret;
+		return put_timespec64(end_time, p);
 	}
 	/*
 	 * If an application puts its timeval in read-only memory, we
@@ -1286,7 +1282,7 @@ COMPAT_SYSCALL_DEFINE5(select, int, n, compat_ulong_t __user *, inp,
 	}
 
 	ret = compat_core_sys_select(n, inp, outp, exp, to);
-	ret = compat_poll_select_copy_remaining(&end_time, tvp, 1, ret);
+	ret = compat_poll_select_copy_remaining(&end_time, tvp, 1, 1, ret);
 
 	return ret;
 }
@@ -1329,20 +1325,26 @@ int compat_copy_sigset_from_user(sigset_t *out, const compat_sigset_t __user *in
 #endif
 	return 0;
 }
+#endif
 
 static long do_compat_pselect(int n, compat_ulong_t __user *inp,
 	compat_ulong_t __user *outp, compat_ulong_t __user *exp,
-	struct compat_timespec __user *tsp, compat_sigset_t __user *sigmask,
-	compat_size_t sigsetsize)
+	void __user *tsp, compat_sigset_t __user *sigmask,
+	compat_size_t sigsetsize, int compat_time)
 {
 	sigset_t ksigmask, sigsaved;
-	struct compat_timespec ts;
+	struct timespec64 ts;
 	struct timespec64 end_time, *to = NULL;
 	int ret;
 
 	if (tsp) {
-		if (copy_from_user(&ts, tsp, sizeof(ts)))
-			return -EFAULT;
+		if (compat_time) {
+			if (compat_get_timespec64(&ts, tsp))
+				return -EFAULT;
+		} else {
+			if (get_timespec64(&ts, tsp))
+				return -EFAULT;
+		}
 
 		to = &end_time;
 		if (poll_select_set_timeout(to, ts.tv_sec, ts.tv_nsec))
@@ -1358,7 +1360,7 @@ static long do_compat_pselect(int n, compat_ulong_t __user *inp,
 	}
 
 	ret = compat_core_sys_select(n, inp, outp, exp, to);
-	ret = compat_poll_select_copy_remaining(&end_time, tsp, 0, ret);
+	ret = compat_poll_select_copy_remaining(&end_time, tsp, 0, compat_time, ret);
 
 	if (ret == -ERESTARTNOHAND) {
 		/*
@@ -1377,6 +1379,7 @@ static long do_compat_pselect(int n, compat_ulong_t __user *inp,
 	return ret;
 }
 
+#ifdef CONFIG_COMPAT_TIME
 COMPAT_SYSCALL_DEFINE6(pselect6, int, n, compat_ulong_t __user *, inp,
 	compat_ulong_t __user *, outp, compat_ulong_t __user *, exp,
 	struct compat_timespec __user *, tsp, void __user *, sig)
@@ -1387,13 +1390,13 @@ COMPAT_SYSCALL_DEFINE6(pselect6, int, n, compat_ulong_t __user *, inp,
 	if (sig) {
 		if (!access_ok(VERIFY_READ, sig,
 				sizeof(compat_uptr_t)+sizeof(compat_size_t)) ||
-		    	__get_user(up, (compat_uptr_t __user *)sig) ||
-		    	__get_user(sigsetsize,
+				__get_user(up, (compat_uptr_t __user *)sig) ||
+				__get_user(sigsetsize,
 				(compat_size_t __user *)(sig+sizeof(up))))
 			return -EFAULT;
 	}
 	return do_compat_pselect(n, inp, outp, exp, tsp, compat_ptr(up),
-				 sigsetsize);
+				 sigsetsize, 1);
 }
 
 COMPAT_SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds,
@@ -1440,8 +1443,30 @@ COMPAT_SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds,
 	} else if (sigmask)
 		sigprocmask(SIG_SETMASK, &sigsaved, NULL);
 
-	ret = compat_poll_select_copy_remaining(&end_time, tsp, 0, ret);
+	ret = compat_poll_select_copy_remaining(&end_time, tsp, 0, 1, ret);
 
 	return ret;
 }
+
+#ifdef CONFIG_COMPAT
+COMPAT_SYSCALL_DEFINE6(pselect6_time64, int, n, compat_ulong_t __user *, inp,
+	compat_ulong_t __user *, outp, compat_ulong_t __user *, exp,
+	struct __kernel_timespec __user *, tsp, void __user *, sig)
+{
+	compat_size_t sigsetsize = 0;
+	compat_uptr_t up = 0;
+
+	if (sig) {
+		if (!access_ok(VERIFY_READ, sig,
+				sizeof(compat_uptr_t)+sizeof(compat_size_t)) ||
+				__get_user(up, (compat_uptr_t __user *)sig) ||
+				__get_user(sigsetsize,
+				(compat_size_t __user *)(sig+sizeof(up))))
+			return -EFAULT;
+	}
+	return do_compat_pselect(n, inp, outp, exp, tsp, compat_ptr(up),
+				 sigsetsize, 0);
+}
+#endif
+
 #endif
