@@ -1357,19 +1357,26 @@ COMPAT_SYSCALL_DEFINE6(pselect6, int, n, compat_ulong_t __user *, inp,
 	return do_compat_pselect(n, inp, outp, exp, tsp, compat_ptr(up),
 				 sigsetsize, 1);
 }
+#endif
 
-COMPAT_SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds,
-	unsigned int,  nfds, struct compat_timespec __user *, tsp,
-	const compat_sigset_t __user *, sigmask, compat_size_t, sigsetsize)
+static int do_compat_ppoll(struct pollfd __user *ufds,
+	unsigned int nfds, void __user *tsp,
+	const compat_sigset_t __user * sigmask, compat_size_t sigsetsize,
+	int compat_time)
 {
 	sigset_t ksigmask, sigsaved;
-	struct compat_timespec ts;
+	struct timespec64 ts;
 	struct timespec64 end_time, *to = NULL;
 	int ret;
 
 	if (tsp) {
-		if (copy_from_user(&ts, tsp, sizeof(ts)))
-			return -EFAULT;
+		if (compat_time) {
+			if (compat_get_timespec64(&ts, tsp))
+				return -EFAULT;
+		} else {
+			if (get_timespec64(&ts, tsp))
+				return -EFAULT;
+		}
 
 		to = &end_time;
 		if (poll_select_set_timeout(to, ts.tv_sec, ts.tv_nsec))
@@ -1402,9 +1409,17 @@ COMPAT_SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds,
 	} else if (sigmask)
 		sigprocmask(SIG_SETMASK, &sigsaved, NULL);
 
-	ret = poll_select_copy_remaining(&end_time, tsp, 0, 1, ret);
+	ret = poll_select_copy_remaining(&end_time, tsp, 0, compat_time, ret);
 
 	return ret;
+}
+
+#ifdef CONFIG_COMPAT_TIME
+COMPAT_SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds,
+	unsigned int, nfds, struct compat_timespec __user *, tsp,
+	const compat_sigset_t __user *, sigmask, compat_size_t, sigsetsize)
+{
+	return do_compat_ppoll(ufds, nfds, tsp, sigmask, sigsetsize, 1);
 }
 #endif
 
@@ -1427,6 +1442,14 @@ COMPAT_SYSCALL_DEFINE6(pselect6_time64, int, n, compat_ulong_t __user *, inp,
 	return do_compat_pselect(n, inp, outp, exp, tsp, compat_ptr(up),
 				 sigsetsize, 0);
 }
+
+COMPAT_SYSCALL_DEFINE5(ppoll_time64, struct pollfd __user *, ufds,
+	unsigned int,  nfds, struct compat_timespec __user *, tsp,
+	const compat_sigset_t __user *, sigmask, compat_size_t, sigsetsize)
+{
+	return do_compat_ppoll(ufds, nfds, tsp, sigmask, sigsetsize, 0);
+}
+
 #endif
 
 #if defined(CONFIG_FHANDLE) && defined(CONFIG_COMPAT)
