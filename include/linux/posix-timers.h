@@ -111,6 +111,11 @@ void set_process_cpu_timer(struct task_struct *task, unsigned int clock_idx,
 			   u64 *newval, u64 *oldval);
 
 void update_rlimit_cpu(struct task_struct *task, unsigned long rlim_new);
+int get_itimerspec(struct itimerspec *it,
+		   const struct __kernel_itimerspec __user *uit);
+int put_itimerspec(const struct itimerspec *it,
+		   struct __kernel_itimerspec __user *uit);
+
 
 void posixtimer_rearm(struct siginfo *info);
 #endif
