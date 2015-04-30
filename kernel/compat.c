@@ -30,6 +30,7 @@
 
 #include <linux/uaccess.h>
 
+#ifdef CONFIG_COMPAT_TIME
 static int compat_get_timex(struct timex *txc, struct compat_timex __user *utp)
 {
 	memset(txc, 0, sizeof(struct timex));
@@ -190,6 +191,7 @@ int compat_put_timespec(const struct timespec *ts, void __user *uts)
 }
 EXPORT_SYMBOL_GPL(compat_put_timespec);
 
+#ifdef CONFIG_COMPAT
 int compat_convert_timespec(struct timespec __user **kts,
 			    const void __user *cts)
 {
@@ -212,6 +214,7 @@ int compat_convert_timespec(struct timespec __user **kts,
 	*kts = uts;
 	return 0;
 }
+#endif
 
 static long compat_nanosleep_restart(struct restart_block *restart)
 {
@@ -347,7 +350,9 @@ COMPAT_SYSCALL_DEFINE3(setitimer, int, which,
 		return -EFAULT;
 	return 0;
 }
+#endif
 
+#ifdef CONFIG_COMPAT
 static compat_clock_t clock_t_to_compat_clock_t(clock_t x)
 {
 	return compat_jiffies_to_clock_t(clock_t_to_jiffies(x));
@@ -515,7 +520,9 @@ COMPAT_SYSCALL_DEFINE2(getrlimit, unsigned int, resource,
 	}
 	return ret;
 }
+#endif
 
+#ifdef CONFIG_COMPAT_TIME
 int put_compat_rusage(const struct rusage *r, struct compat_rusage __user *ru)
 {
 	if (!access_ok(VERIFY_WRITE, ru, sizeof(*ru)) ||
@@ -606,7 +613,9 @@ COMPAT_SYSCALL_DEFINE5(waitid,
 	info.si_code |= __SI_CHLD;
 	return copy_siginfo_to_user32(uinfo, &info);
 }
+#endif
 
+#ifdef CONFIG_COMPAT
 static int compat_get_user_cpu_mask(compat_ulong_t __user *user_mask_ptr,
 				    unsigned len, struct cpumask *new_mask)
 {
@@ -668,7 +677,9 @@ COMPAT_SYSCALL_DEFINE3(sched_getaffinity, compat_pid_t,  pid, unsigned int, len,
 
 	return ret;
 }
+#endif
 
+#ifdef CONFIG_COMPAT_TIME
 int get_compat_itimerspec(struct itimerspec *dst,
 			  const struct compat_itimerspec __user *src)
 {
@@ -686,7 +697,9 @@ int put_compat_itimerspec(struct compat_itimerspec __user *dst,
 		return -EFAULT;
 	return 0;
 }
+#endif
 
+#ifdef CONFIG_COMPAT
 COMPAT_SYSCALL_DEFINE3(timer_create, clockid_t, which_clock,
 		       struct compat_sigevent __user *, timer_event_spec,
 		       timer_t __user *, created_timer_id)
@@ -704,7 +717,9 @@ COMPAT_SYSCALL_DEFINE3(timer_create, clockid_t, which_clock,
 
 	return sys_timer_create(which_clock, event, created_timer_id);
 }
+#endif
 
+#ifdef CONFIG_COMPAT_TIME
 COMPAT_SYSCALL_DEFINE4(timer_settime, timer_t, timer_id, int, flags,
 		       struct compat_itimerspec __user *, new,
 		       struct compat_itimerspec __user *, old)
@@ -873,7 +888,9 @@ COMPAT_SYSCALL_DEFINE4(clock_nanosleep, clockid_t, which_clock, int, flags,
 	}
 	return err;
 }
+#endif
 
+#ifdef CONFIG_COMPAT
 /*
  * We currently only need the following fields from the sigevent
  * structure: sigev_value, sigev_signo, sig_notify and (sometimes
@@ -1001,6 +1018,7 @@ sigset_to_compat(compat_sigset_t *compat, const sigset_t *set)
 	}
 }
 
+#ifdef CONFIG_COMPAT_TIME
 COMPAT_SYSCALL_DEFINE4(rt_sigtimedwait, compat_sigset_t __user *, uthese,
 		struct compat_siginfo __user *, uinfo,
 		struct compat_timespec __user *, uts, compat_size_t, sigsetsize)
@@ -1032,7 +1050,10 @@ COMPAT_SYSCALL_DEFINE4(rt_sigtimedwait, compat_sigset_t __user *, uthese,
 
 	return ret;
 }
+#endif
+#endif
 
+#ifdef CONFIG_COMPAT_TIME
 #ifdef __ARCH_WANT_COMPAT_SYS_TIME
 
 /* compat_time_t is a 32 bit "long" and needs to get converted. */
@@ -1090,7 +1111,9 @@ COMPAT_SYSCALL_DEFINE1(adjtimex, struct compat_timex __user *, utp)
 
 	return ret;
 }
+#endif
 
+#ifdef CONFIG_COMPAT
 #ifdef CONFIG_NUMA
 COMPAT_SYSCALL_DEFINE6(move_pages, pid_t, pid, compat_ulong_t, nr_pages,
 		       compat_uptr_t __user *, pages32,
@@ -1145,7 +1168,9 @@ COMPAT_SYSCALL_DEFINE4(migrate_pages, compat_pid_t, pid,
 	return sys_migrate_pages(pid, nr_bits + 1, old, new);
 }
 #endif
+#endif
 
+#ifdef CONFIG_COMPAT_TIME
 COMPAT_SYSCALL_DEFINE2(sched_rr_get_interval,
 		       compat_pid_t, pid,
 		       struct compat_timespec __user *, interval)
@@ -1161,7 +1186,9 @@ COMPAT_SYSCALL_DEFINE2(sched_rr_get_interval,
 		return -EFAULT;
 	return ret;
 }
+#endif
 
+#ifdef CONFIG_COMPAT
 /*
  * Allocate user-space memory for the duration of a single system call,
  * in order to marshall parameters inside a compat thunk.
@@ -1182,3 +1209,4 @@ void __user *compat_alloc_user_space(unsigned long len)
 	return ptr;
 }
 EXPORT_SYMBOL_GPL(compat_alloc_user_space);
+#endif

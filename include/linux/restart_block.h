@@ -30,7 +30,7 @@ struct restart_block {
 		struct {
 			clockid_t clockid;
 			struct timespec __user *rmtp;
-#ifdef CONFIG_COMPAT
+#ifdef CONFIG_COMPAT_TIME
 			struct compat_timespec __user *compat_rmtp;
 #endif
 			u64 expires;
