@@ -218,7 +218,7 @@ static int posix_clock_realtime_set(const clockid_t which_clock,
 }
 
 static int posix_clock_realtime_adj(const clockid_t which_clock,
-				    struct timex *t)
+				    struct __kernel_timex *t)
 {
 	return do_adjtimex(t);
 }
@@ -1077,22 +1077,28 @@ SYSCALL_DEFINE2(clock_gettime, const clockid_t, which_clock,
 	return error;
 }
 
-SYSCALL_DEFINE2(clock_adjtime, const clockid_t, which_clock,
-		struct timex __user *, utx)
+static int clock_adjtime(clockid_t which_clock, struct __kernel_timex *ktx)
 {
 	struct k_clock *kc = clockid_to_kclock(which_clock);
-	struct timex ktx;
-	int err;
 
 	if (!kc)
 		return -EINVAL;
 	if (!kc->clock_adj)
 		return -EOPNOTSUPP;
 
+	return kc->clock_adj(which_clock, ktx);
+}
+
+SYSCALL_DEFINE2(clock_adjtime, const clockid_t, which_clock,
+		struct __kernel_timex __user *, utx)
+{
+	struct __kernel_timex ktx;
+	int err;
+
 	if (copy_from_user(&ktx, utx, sizeof(ktx)))
 		return -EFAULT;
 
-	err = kc->clock_adj(which_clock, &ktx);
+	err = clock_adjtime(which_clock, &ktx);
 
 	if (err >= 0 && copy_to_user(utx, &ktx, sizeof(ktx)))
 		return -EFAULT;
@@ -1243,18 +1249,14 @@ COMPAT_SYSCALL_DEFINE2(clock_gettime, clockid_t, which_clock,
 COMPAT_SYSCALL_DEFINE2(clock_adjtime, clockid_t, which_clock,
 		       struct compat_timex __user *, utp)
 {
-	struct timex txc;
-	mm_segment_t oldfs;
+	struct __kernel_timex txc;
 	int err, ret;
 
 	err = compat_get_timex(&txc, utp);
 	if (err)
 		return err;
 
-	oldfs = get_fs();
-	set_fs(KERNEL_DS);
-	ret = sys_clock_adjtime(which_clock, (struct timex __user *) &txc);
-	set_fs(oldfs);
+	ret = clock_adjtime(which_clock, &txc);
 
 	err = compat_put_timex(utp, &txc);
 	if (err)
