@@ -62,7 +62,7 @@
 COMPAT_SYSCALL_DEFINE2(utime, const char __user *, filename,
 		       struct compat_utimbuf __user *, t)
 {
-	struct timespec tv[2];
+	struct timespec64 tv[2];
 
 	if (t) {
 		if (get_user(tv[0].tv_sec, &t->actime) ||
@@ -76,11 +76,11 @@ COMPAT_SYSCALL_DEFINE2(utime, const char __user *, filename,
 
 COMPAT_SYSCALL_DEFINE4(utimensat, unsigned int, dfd, const char __user *, filename, struct compat_timespec __user *, t, int, flags)
 {
-	struct timespec tv[2];
+	struct timespec64 tv[2];
 
 	if  (t) {
-		if (compat_get_timespec(&tv[0], &t[0]) ||
-		    compat_get_timespec(&tv[1], &t[1]))
+		if (compat_get_timespec64(&tv[0], &t[0]) ||
+		    compat_get_timespec64(&tv[1], &t[1]))
 			return -EFAULT;
 
 		if (tv[0].tv_nsec == UTIME_OMIT && tv[1].tv_nsec == UTIME_OMIT)
@@ -91,7 +91,7 @@ COMPAT_SYSCALL_DEFINE4(utimensat, unsigned int, dfd, const char __user *, filena
 
 COMPAT_SYSCALL_DEFINE3(futimesat, unsigned int, dfd, const char __user *, filename, struct compat_timeval __user *, t)
 {
-	struct timespec tv[2];
+	struct timespec64 tv[2];
 
 	if (t) {
 		if (get_user(tv[0].tv_sec, &t[0].tv_sec) ||
