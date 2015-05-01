@@ -330,7 +330,7 @@ static unsigned long long adjust_time(unsigned long long old,
 				      unsigned long long delay)
 {
 	unsigned long long delta, ticks;
-	struct timex adjust;
+	struct __kernel_timex adjust;
 
 	if (clock > old) {
 		/* It is later than we thought. */
