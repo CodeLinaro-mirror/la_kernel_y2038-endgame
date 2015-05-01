@@ -131,8 +131,6 @@ void posix_cpu_timers_exit_group(struct task_struct *task);
 void set_process_cpu_timer(struct task_struct *task, unsigned int clock_idx,
 			   cputime_t *newval, cputime_t *oldval);
 
-long clock_nanosleep_restart(struct restart_block *restart_block);
-
 void update_rlimit_cpu(struct task_struct *task, unsigned long rlim_new);
 int get_itimerspec(struct itimerspec *it,
 		   const struct __kernel_itimerspec __user *uit);
