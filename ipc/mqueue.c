@@ -668,12 +668,26 @@ static int prepare_timeout(const struct __kernel_timespec __user *u_abs_timeout,
 {
 	if (get_timespec64(ts, u_abs_timeout))
 		return -EFAULT;
-	if (!timespec_valid(ts))
+	if (!timespec64_valid(ts))
 		return -EINVAL;
 
 	*expires = timespec64_to_ktime(*ts);
 	return 0;
 }
+
+#ifdef CONFIG_COMPAT_TIME
+static int compat_prepare_timeout(const struct compat_timespec __user *u_abs_timeout,
+				  ktime_t *expires, struct timespec64 *ts)
+{
+	if (compat_get_timespec64(ts, u_abs_timeout))
+		return -EFAULT;
+	if (!timespec64_valid(ts))
+		return -EINVAL;
+
+	*expires = timespec64_to_ktime(*ts);
+	return 0;
+}
+#endif
 
 static void remove_notification(struct mqueue_inode_info *info)
 {
@@ -953,9 +967,9 @@ static inline void pipelined_receive(struct wake_q_head *wake_q,
 	sender->state = STATE_READY;
 }
 
-SYSCALL_DEFINE5(mq_timedsend, mqd_t, mqdes, const char __user *, u_msg_ptr,
-		size_t, msg_len, unsigned int, msg_prio,
-		const struct __kernel_timespec __user *, u_abs_timeout)
+static long mq_timedsend(mqd_t mqdes, const char __user * u_msg_ptr,
+			 size_t msg_len, unsigned int msg_prio,
+			 ktime_t *timeout)
 {
 	struct fd f;
 	struct inode *inode;
@@ -963,23 +977,9 @@ SYSCALL_DEFINE5(mq_timedsend, mqd_t, mqdes, const char __user *, u_msg_ptr,
 	struct ext_wait_queue *receiver;
 	struct msg_msg *msg_ptr;
 	struct mqueue_inode_info *info;
-	ktime_t expires, *timeout = NULL;
-	struct timespec64 ts;
 	struct posix_msg_tree_node *new_leaf = NULL;
 	int ret = 0;
 	WAKE_Q(wake_q);
-
-	if (u_abs_timeout) {
-		int res = prepare_timeout(u_abs_timeout, &expires, &ts);
-		if (res)
-			return res;
-		timeout = &expires;
-	}
-
-	if (unlikely(msg_prio >= (unsigned long) MQ_PRIO_MAX))
-		return -EINVAL;
-
-	audit_mq_sendrecv(mqdes, msg_len, msg_prio, timeout ? &ts : NULL);
 
 	f = fdget(mqdes);
 	if (unlikely(!f.file)) {
@@ -1074,19 +1074,12 @@ out:
 	return ret;
 }
 
-SYSCALL_DEFINE5(mq_timedreceive, mqd_t, mqdes, char __user *, u_msg_ptr,
-		size_t, msg_len, unsigned int __user *, u_msg_prio,
+SYSCALL_DEFINE5(mq_timedsend, mqd_t, mqdes, const char __user *, u_msg_ptr,
+		size_t, msg_len, unsigned int, msg_prio,
 		const struct __kernel_timespec __user *, u_abs_timeout)
 {
-	ssize_t ret;
-	struct msg_msg *msg_ptr;
-	struct fd f;
-	struct inode *inode;
-	struct mqueue_inode_info *info;
-	struct ext_wait_queue wait;
 	ktime_t expires, *timeout = NULL;
 	struct timespec64 ts;
-	struct posix_msg_tree_node *new_leaf = NULL;
 
 	if (u_abs_timeout) {
 		int res = prepare_timeout(u_abs_timeout, &expires, &ts);
@@ -1095,7 +1088,49 @@ SYSCALL_DEFINE5(mq_timedreceive, mqd_t, mqdes, char __user *, u_msg_ptr,
 		timeout = &expires;
 	}
 
-	audit_mq_sendrecv(mqdes, msg_len, 0, timeout ? &ts : NULL);
+	if (unlikely(msg_prio >= (unsigned long) MQ_PRIO_MAX))
+		return -EINVAL;
+
+	audit_mq_sendrecv(mqdes, msg_len, msg_prio, timeout ? &ts : NULL);
+
+	return mq_timedsend(mqdes, u_msg_ptr, msg_len, msg_prio, timeout);
+}
+
+#ifdef CONFIG_COMPAT_TIME
+COMPAT_SYSCALL_DEFINE5(mq_timedsend, mqd_t, mqdes, const char __user *, u_msg_ptr,
+		       compat_size_t, msg_len, unsigned int, msg_prio,
+		       const struct compat_timespec __user *, u_abs_timeout)
+{
+	ktime_t expires, *timeout = NULL;
+	struct timespec64 ts;
+
+	if (u_abs_timeout) {
+		int res = compat_prepare_timeout(u_abs_timeout, &expires, &ts);
+		if (res)
+			return res;
+		timeout = &expires;
+	}
+
+	if (unlikely(msg_prio >= (unsigned long) MQ_PRIO_MAX))
+		return -EINVAL;
+
+	audit_mq_sendrecv(mqdes, msg_len, msg_prio, timeout ? &ts : NULL);
+
+	return mq_timedsend(mqdes, u_msg_ptr, msg_len, msg_prio, timeout);
+}
+#endif
+
+static int mq_timedreceive(mqd_t mqdes, char __user *u_msg_ptr,
+		size_t msg_len, unsigned int __user *u_msg_prio,
+		ktime_t *timeout)
+{
+	ssize_t ret;
+	struct msg_msg *msg_ptr;
+	struct fd f;
+	struct inode *inode;
+	struct mqueue_inode_info *info;
+	struct ext_wait_queue wait;
+	struct posix_msg_tree_node *new_leaf = NULL;
 
 	f = fdget(mqdes);
 	if (unlikely(!f.file)) {
@@ -1179,6 +1214,45 @@ out:
 	return ret;
 }
 
+SYSCALL_DEFINE5(mq_timedreceive, mqd_t, mqdes, char __user *, u_msg_ptr,
+		size_t, msg_len, unsigned int __user *, u_msg_prio,
+		const struct __kernel_timespec __user *, u_abs_timeout)
+{
+	ktime_t expires, *timeout = NULL;
+	struct timespec64 ts;
+
+	if (u_abs_timeout) {
+		int res = prepare_timeout(u_abs_timeout, &expires, &ts);
+		if (res)
+			return res;
+		timeout = &expires;
+	}
+
+	audit_mq_sendrecv(mqdes, msg_len, 0, timeout ? &ts : NULL);
+
+	return mq_timedreceive(mqdes, u_msg_ptr, msg_len, u_msg_prio, timeout);
+}
+
+#ifdef CONFIG_COMPAT_TIME
+COMPAT_SYSCALL_DEFINE5(mq_timedreceive, mqd_t, mqdes, char __user *, u_msg_ptr,
+		       compat_size_t, msg_len, unsigned int __user *, u_msg_prio,
+		       const struct compat_timespec __user *, u_abs_timeout)
+{
+	ktime_t expires, *timeout = NULL;
+	struct timespec64 ts;
+
+	if (u_abs_timeout) {
+		int res = compat_prepare_timeout(u_abs_timeout, &expires, &ts);
+		if (res)
+			return res;
+		timeout = &expires;
+	}
+
+	audit_mq_sendrecv(mqdes, msg_len, 0, timeout ? &ts : NULL);
+
+	return mq_timedreceive(mqdes, u_msg_ptr, msg_len, u_msg_prio, timeout);
+}
+#endif
 /*
  * Notes: the case when user wants us to deregister (with NULL as pointer)
  * and he isn't currently owner of notification, will be silently discarded.
