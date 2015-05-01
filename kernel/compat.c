@@ -33,9 +33,9 @@
 #include <asm/uaccess.h>
 
 #ifdef CONFIG_COMPAT_TIME
-int compat_get_timex(struct timex *txc, struct compat_timex __user *utp)
+int compat_get_timex(struct __kernel_timex *txc, struct compat_timex __user *utp)
 {
-	memset(txc, 0, sizeof(struct timex));
+	memset(txc, 0, sizeof(struct __kernel_timex));
 
 	if (!access_ok(VERIFY_READ, utp, sizeof(struct compat_timex)) ||
 			__get_user(txc->modes, &utp->modes) ||
@@ -63,7 +63,7 @@ int compat_get_timex(struct timex *txc, struct compat_timex __user *utp)
 	return 0;
 }
 
-int compat_put_timex(struct compat_timex __user *utp, struct timex *txc)
+int compat_put_timex(struct compat_timex __user *utp, struct __kernel_timex *txc)
 {
 	if (!access_ok(VERIFY_WRITE, utp, sizeof(struct compat_timex)) ||
 			__put_user(txc->modes, &utp->modes) ||
@@ -1045,7 +1045,7 @@ COMPAT_SYSCALL_DEFINE1(stime, compat_time_t __user *, tptr)
 
 COMPAT_SYSCALL_DEFINE1(adjtimex, struct compat_timex __user *, utp)
 {
-	struct timex txc;
+	struct __kernel_timex txc;
 	int err, ret;
 
 	err = compat_get_timex(&txc, utp);
