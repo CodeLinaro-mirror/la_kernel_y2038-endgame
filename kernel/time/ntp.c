@@ -188,13 +188,13 @@ static inline int is_error_status(int status)
 			&& (status & (STA_PPSWANDER|STA_PPSERROR)));
 }
 
-static inline void pps_fill_timex(struct timex *txc)
+static inline void pps_fill_timex(struct __kernel_timex *txc)
 {
 	txc->ppsfreq	   = shift_right((pps_freq >> PPM_SCALE_INV_SHIFT) *
 					 PPM_SCALE_INV, NTP_SCALE_SHIFT);
 	txc->jitter	   = pps_jitter;
 	if (!(time_status & STA_NANO))
-		txc->jitter /= NSEC_PER_USEC;
+		txc->jitter = (long) txc->jitter / NSEC_PER_USEC;
 	txc->shift	   = pps_shift;
 	txc->stabil	   = pps_stabil;
 	txc->jitcnt	   = pps_jitcnt;
@@ -220,7 +220,7 @@ static inline int is_error_status(int status)
 	return status & (STA_UNSYNC|STA_CLOCKERR);
 }
 
-static inline void pps_fill_timex(struct timex *txc)
+static inline void pps_fill_timex(struct __kernel_timex *txc)
 {
 	/* PPS is not implemented, so these are zero */
 	txc->ppsfreq	   = 0;
@@ -581,7 +581,7 @@ void ntp_notify_cmos_timer(void) { }
 /*
  * Propagate a new txc->status value into the NTP state:
  */
-static inline void process_adj_status(struct timex *txc, struct timespec64 *ts)
+static inline void process_adj_status(struct __kernel_timex *txc, struct timespec64 *ts)
 {
 	if ((time_status & STA_PLL) && !(txc->status & STA_PLL)) {
 		time_state = TIME_OK;
@@ -604,7 +604,7 @@ static inline void process_adj_status(struct timex *txc, struct timespec64 *ts)
 }
 
 
-static inline void process_adjtimex_modes(struct timex *txc,
+static inline void process_adjtimex_modes(struct __kernel_timex *txc,
 						struct timespec64 *ts,
 						s32 *time_tai)
 {
@@ -657,7 +657,7 @@ static inline void process_adjtimex_modes(struct timex *txc,
 /**
  * ntp_validate_timex - Ensures the timex is ok for use in do_adjtimex
  */
-int ntp_validate_timex(struct timex *txc)
+int ntp_validate_timex(struct __kernel_timex *txc)
 {
 	if (txc->modes & ADJ_ADJTIME) {
 		/* singleshot must not be used with any other mode bits */
@@ -720,7 +720,7 @@ int ntp_validate_timex(struct timex *txc)
  * adjtimex mainly allows reading (and writing, if superuser) of
  * kernel time-keeping variables. used by xntpd.
  */
-int __do_adjtimex(struct timex *txc, struct timespec64 *ts, s32 *time_tai)
+int __do_adjtimex(struct __kernel_timex *txc, struct timespec64 *ts, s32 *time_tai)
 {
 	int result;
 
@@ -742,7 +742,7 @@ int __do_adjtimex(struct timex *txc, struct timespec64 *ts, s32 *time_tai)
 		txc->offset = shift_right(time_offset * NTP_INTERVAL_FREQ,
 				  NTP_SCALE_SHIFT);
 		if (!(time_status & STA_NANO))
-			txc->offset /= NSEC_PER_USEC;
+			txc->offset = (long)txc->offset / NSEC_PER_USEC;
 	}
 
 	result = time_state;	/* mostly `TIME_OK' */
@@ -764,10 +764,10 @@ int __do_adjtimex(struct timex *txc, struct timespec64 *ts, s32 *time_tai)
 	/* fill PPS status fields */
 	pps_fill_timex(txc);
 
-	txc->time.tv_sec = (time_t)ts->tv_sec;
+	txc->time.tv_sec = ts->tv_sec;
 	txc->time.tv_usec = ts->tv_nsec;
 	if (!(time_status & STA_NANO))
-		txc->time.tv_usec /= NSEC_PER_USEC;
+		txc->time.tv_usec = (long)txc->time.tv_usec / NSEC_PER_USEC;
 
 	/* Handle leapsec adjustments */
 	if (unlikely(ts->tv_sec >= ntp_next_leap_sec)) {
