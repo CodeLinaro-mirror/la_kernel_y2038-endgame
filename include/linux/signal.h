@@ -2,6 +2,7 @@
 #define _LINUX_SIGNAL_H
 
 #include <linux/list.h>
+#include <linux/time.h>
 #include <linux/bug.h>
 #include <uapi/linux/signal.h>
 
@@ -266,7 +267,7 @@ extern int do_send_sig_info(int sig, struct siginfo *info,
 extern int group_send_sig_info(int sig, struct siginfo *info, struct task_struct *p);
 extern int __group_send_sig_info(int, struct siginfo *, struct task_struct *);
 extern int do_sigtimedwait(const sigset_t *, siginfo_t *,
-				const struct timespec *);
+				const struct timespec64 *);
 extern int sigprocmask(int, sigset_t *, sigset_t *);
 extern void set_current_blocked(sigset_t *);
 extern void __set_current_blocked(const sigset_t *);
