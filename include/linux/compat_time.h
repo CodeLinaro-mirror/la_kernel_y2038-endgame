@@ -156,5 +156,4 @@ extern int get_compat_itimerspec(struct itimerspec *dst,
 extern int put_compat_itimerspec(struct compat_itimerspec __user *dst,
 				 const struct itimerspec *src);
 
-
 #endif

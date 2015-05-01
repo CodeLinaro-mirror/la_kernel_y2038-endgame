@@ -1344,7 +1344,6 @@ static int posix_cpu_nsleep(const clockid_t which_clock, int flags,
 	error = do_cpu_nanosleep(which_clock, flags, rqtp);
 
 	if (error == -ERESTART_RESTARTBLOCK) {
-
 		if (flags & TIMER_ABSTIME)
 			return -ERESTARTNOHAND;
 

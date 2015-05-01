@@ -7,7 +7,6 @@
 #include <linux/compiler.h>
 #include <linux/types.h>
 
-struct timespec;
 struct compat_timespec;
 struct pollfd;
 
@@ -38,12 +37,14 @@ struct restart_block {
 		struct {
 			clockid_t clockid;
 			enum timespec_type type;
-			union {
-				struct timespec __user *rmtp;
 #ifdef CONFIG_COMPAT_TIME
+			union {
+				struct __kernel_timespec __user *rmtp;
 				struct compat_timespec __user *compat_rmtp;
-#endif
 			};
+#else
+			struct timespec __user *rmtp;
+#endif
 			u64 expires;
 		} nanosleep;
 		/* For poll */

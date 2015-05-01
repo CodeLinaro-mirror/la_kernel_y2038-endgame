@@ -1253,7 +1253,7 @@ static int common_nsleep(const clockid_t which_clock, int flags,
 
 SYSCALL_DEFINE4(clock_nanosleep, const clockid_t, which_clock, int, flags,
 		const struct __kernel_timespec __user *, rqtp,
-		struct timespec __user *, rmtp)
+		struct __kernel_timespec __user *, rmtp)
 {
 	const struct k_clock *kc = clockid_to_kclock(which_clock);
 	struct timespec64 t;
