@@ -1347,7 +1347,8 @@ static int do_cpu_nanosleep(const clockid_t which_clock, int flags,
 static long posix_cpu_nsleep_restart(struct restart_block *restart_block);
 
 static int posix_cpu_nsleep(const clockid_t which_clock, int flags,
-			    struct timespec *rqtp, struct timespec __user *rmtp)
+			    struct timespec *rqtp,
+			    struct __kernel_timespec __user *rmtp)
 {
 	struct restart_block *restart_block = &current->restart_block;
 	struct itimerspec it;
@@ -1364,13 +1365,13 @@ static int posix_cpu_nsleep(const clockid_t which_clock, int flags,
 	error = do_cpu_nanosleep(which_clock, flags, rqtp, &it);
 
 	if (error == -ERESTART_RESTARTBLOCK) {
-
+		struct timespec64 it_value = timespec_to_timespec64(it.it_value);
 		if (flags & TIMER_ABSTIME)
 			return -ERESTARTNOHAND;
 		/*
 		 * Report back to the user the time still remaining.
 		 */
-		if (rmtp && copy_to_user(rmtp, &it.it_value, sizeof *rmtp))
+		if (rmtp && put_timespec64(&it_value, rmtp))
 			return -EFAULT;
 
 		restart_block->fn = posix_cpu_nsleep_restart;
@@ -1393,11 +1394,12 @@ static long posix_cpu_nsleep_restart(struct restart_block *restart_block)
 	error = do_cpu_nanosleep(which_clock, TIMER_ABSTIME, &t, &it);
 
 	if (error == -ERESTART_RESTARTBLOCK) {
-		struct timespec __user *rmtp = restart_block->nanosleep.rmtp;
+		struct __kernel_timespec __user *rmtp = restart_block->nanosleep.rmtp;
+		struct timespec64 it_value = timespec_to_timespec64(it.it_value);
 		/*
 		 * Report back to the user the time still remaining.
 		 */
-		if (rmtp && copy_to_user(rmtp, &it.it_value, sizeof *rmtp))
+		if (rmtp && put_timespec64(&it_value, rmtp))
 			return -EFAULT;
 
 		restart_block->nanosleep.expires = timespec_to_ns(&t);
@@ -1426,7 +1428,7 @@ static int process_cpu_timer_create(struct k_itimer *timer)
 }
 static int process_cpu_nsleep(const clockid_t which_clock, int flags,
 			      struct timespec *rqtp,
-			      struct timespec __user *rmtp)
+			      struct __kernel_timespec __user *rmtp)
 {
 	return posix_cpu_nsleep(PROCESS_CLOCK, flags, rqtp, rmtp);
 }
