@@ -34,7 +34,7 @@ SYSCALL_DEFINE6(ipc, unsigned int, call, int, first, unsigned long, second,
 #else
 		return sys_semtimedop(first, (struct sembuf __user *)ptr,
 				      second,
-				      (const struct timespec __user *)fifth);
+				      (const struct __kernel_timespec __user *)fifth);
 #endif
 
 	case SEMGET:
