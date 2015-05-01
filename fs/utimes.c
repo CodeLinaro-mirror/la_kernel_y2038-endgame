@@ -26,7 +26,7 @@
  */
 SYSCALL_DEFINE2(utime, char __user *, filename, struct utimbuf __user *, times)
 {
-	struct timespec tv[2];
+	struct timespec64 tv[2];
 
 	if (times) {
 		if (get_user(tv[0].tv_sec, &times->actime) ||
@@ -48,7 +48,7 @@ static bool nsec_valid(long nsec)
 	return nsec >= 0 && nsec <= 999999999;
 }
 
-static int utimes_common(struct path *path, struct timespec *times)
+static int utimes_common(struct path *path, struct timespec64 *times)
 {
 	int error;
 	struct iattr newattrs;
@@ -68,7 +68,7 @@ static int utimes_common(struct path *path, struct timespec *times)
 		if (times[0].tv_nsec == UTIME_OMIT)
 			newattrs.ia_valid &= ~ATTR_ATIME;
 		else if (times[0].tv_nsec != UTIME_NOW) {
-			newattrs.ia_atime.tv_sec = times[0].tv_sec;
+			newattrs.ia_atime.tv_sec = (time_t)times[0].tv_sec;
 			newattrs.ia_atime.tv_nsec = times[0].tv_nsec;
 			newattrs.ia_valid |= ATTR_ATIME_SET;
 		}
@@ -76,7 +76,7 @@ static int utimes_common(struct path *path, struct timespec *times)
 		if (times[1].tv_nsec == UTIME_OMIT)
 			newattrs.ia_valid &= ~ATTR_MTIME;
 		else if (times[1].tv_nsec != UTIME_NOW) {
-			newattrs.ia_mtime.tv_sec = times[1].tv_sec;
+			newattrs.ia_mtime.tv_sec = (time_t)times[1].tv_sec;
 			newattrs.ia_mtime.tv_nsec = times[1].tv_nsec;
 			newattrs.ia_valid |= ATTR_MTIME_SET;
 		}
@@ -133,7 +133,7 @@ out:
  * must be owner or have write permission.
  * Else, update from *times, must be owner or super user.
  */
-long do_utimes(int dfd, const char __user *filename, struct timespec *times,
+long do_utimes(int dfd, const char __user *filename, struct timespec64 *times,
 	       int flags)
 {
 	int error = -EINVAL;
@@ -183,12 +183,13 @@ out:
 }
 
 SYSCALL_DEFINE4(utimensat, int, dfd, const char __user *, filename,
-		struct timespec __user *, utimes, int, flags)
+		struct __kernel_timespec __user *, utimes, int, flags)
 {
-	struct timespec tstimes[2];
+	struct timespec64 tstimes[2];
 
 	if (utimes) {
-		if (copy_from_user(&tstimes, utimes, sizeof(tstimes)))
+		if (get_timespec64(&tstimes[0], &utimes[0]) ||
+		    get_timespec64(&tstimes[1], &utimes[1]))
 			return -EFAULT;
 
 		/* Nothing to do, we must not even check the path.  */
@@ -204,7 +205,7 @@ SYSCALL_DEFINE3(futimesat, int, dfd, const char __user *, filename,
 		struct timeval __user *, utimes)
 {
 	struct timeval times[2];
-	struct timespec tstimes[2];
+	struct timespec64 tstimes[2];
 
 	if (utimes) {
 		if (copy_from_user(&times, utimes, sizeof(times)))
