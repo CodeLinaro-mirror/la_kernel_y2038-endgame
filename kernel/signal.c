@@ -2781,7 +2781,7 @@ int copy_siginfo_to_user(siginfo_t __user *to, const siginfo_t *from)
  *  @ts: upper bound on process time suspension
  */
 static int do_sigtimedwait(const sigset_t *which, siginfo_t *info,
-		    const struct timespec *ts)
+		    const struct timespec64 *ts)
 {
 	ktime_t *to = NULL, timeout = KTIME_MAX;
 	struct task_struct *tsk = current;
@@ -2789,9 +2789,9 @@ static int do_sigtimedwait(const sigset_t *which, siginfo_t *info,
 	int sig, ret = 0;
 
 	if (ts) {
-		if (!timespec_valid(ts))
+		if (!timespec64_valid(ts))
 			return -EINVAL;
-		timeout = timespec_to_ktime(*ts);
+		timeout = timespec64_to_ktime(*ts);
 		to = &timeout;
 	}
 
@@ -2839,11 +2839,12 @@ static int do_sigtimedwait(const sigset_t *which, siginfo_t *info,
  *  @sigsetsize: size of sigset_t type
  */
 SYSCALL_DEFINE4(rt_sigtimedwait, const sigset_t __user *, uthese,
-		siginfo_t __user *, uinfo, const struct timespec __user *, uts,
+		siginfo_t __user *, uinfo,
+		const struct __kernel_timespec __user *, uts,
 		size_t, sigsetsize)
 {
 	sigset_t these;
-	struct timespec ts;
+	struct timespec64 ts;
 	siginfo_t info;
 	int ret;
 
@@ -2854,10 +2855,8 @@ SYSCALL_DEFINE4(rt_sigtimedwait, const sigset_t __user *, uthese,
 	if (copy_from_user(&these, uthese, sizeof(these)))
 		return -EFAULT;
 
-	if (uts) {
-		if (copy_from_user(&ts, uts, sizeof(ts)))
-			return -EFAULT;
-	}
+	if (uts && get_timespec64(&ts, uts))
+		return -EFAULT;
 
 	ret = do_sigtimedwait(&these, &info, uts ? &ts : NULL);
 
@@ -2876,7 +2875,7 @@ COMPAT_SYSCALL_DEFINE4(rt_sigtimedwait, compat_sigset_t __user *, uthese,
 {
 	compat_sigset_t s32;
 	sigset_t s;
-	struct timespec t;
+	struct timespec64 t;
 	siginfo_t info;
 	long ret;
 
@@ -2887,10 +2886,8 @@ COMPAT_SYSCALL_DEFINE4(rt_sigtimedwait, compat_sigset_t __user *, uthese,
 		return -EFAULT;
 	sigset_from_compat(&s, &s32);
 
-	if (uts) {
-		if (compat_get_timespec(&t, uts))
-			return -EFAULT;
-	}
+	if (uts && compat_get_timespec64(&t, uts))
+		return -EFAULT;
 
 	ret = do_sigtimedwait(&s, &info, uts ? &t : NULL);
 
@@ -2909,7 +2906,7 @@ COMPAT_SYSCALL_DEFINE4(rt_sigtimedwait, sigset_t __user *, uthese,
 		struct compat_timespec __user *, uts, size_t, sigsetsize)
 {
 	sigset_t s;
-	struct timespec t;
+	struct timespec64 t;
 	siginfo_t info;
 	long ret;
 
@@ -2918,10 +2915,8 @@ COMPAT_SYSCALL_DEFINE4(rt_sigtimedwait, sigset_t __user *, uthese,
 
 	if (copy_from_user(&s, uthese, sizeof(sigset_t)))
 		return -EFAULT;
-	if (uts) {
-		if (compat_get_timespec(&t, uts))
-			return -EFAULT;
-	}
+	if (uts && compat_get_timespec64(&t, uts))
+		return -EFAULT;
 
 	ret = do_sigtimedwait(&s, &info, uts ? &t : NULL);
 
@@ -2941,7 +2936,7 @@ COMPAT_SYSCALL_DEFINE4(rt_sigtimedwait_time64, compat_sigset_t __user *, uthese,
 {
 	compat_sigset_t s32;
 	sigset_t s;
-	struct timespec t;
+	struct timespec64 t;
 	siginfo_t info;
 	long ret;
 
@@ -2951,10 +2946,8 @@ COMPAT_SYSCALL_DEFINE4(rt_sigtimedwait_time64, compat_sigset_t __user *, uthese,
 	if (copy_from_user(&s32, uthese, sizeof(compat_sigset_t)))
 		return -EFAULT;
 	sigset_from_compat(&s, &s32);
-	if (uts) {
-		if (get_timespec64(&t, uts))
-			return -EFAULT;
-	}
+	if (uts && get_timespec64(&t, uts))
+		return -EFAULT;
 
 	ret = do_sigtimedwait(&s, &info, uts ? &t : NULL);
 
