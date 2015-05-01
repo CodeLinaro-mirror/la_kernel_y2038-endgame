@@ -33,7 +33,7 @@
 #include <linux/uaccess.h>
 
 #ifdef CONFIG_COMPAT_TIME
-static int compat_get_timex(struct timex *txc, struct compat_timex __user *utp)
+int compat_get_timex(struct timex *txc, struct compat_timex __user *utp)
 {
 	memset(txc, 0, sizeof(struct timex));
 
@@ -63,7 +63,7 @@ static int compat_get_timex(struct timex *txc, struct compat_timex __user *utp)
 	return 0;
 }
 
-static int compat_put_timex(struct compat_timex __user *utp, struct timex *txc)
+int compat_put_timex(struct compat_timex __user *utp, struct timex *txc)
 {
 	if (!access_ok(VERIFY_WRITE, utp, sizeof(struct compat_timex)) ||
 			__put_user(txc->modes, &utp->modes) ||
@@ -783,180 +783,7 @@ COMPAT_SYSCALL_DEFINE3(timer_create, clockid_t, which_clock,
 
 	return sys_timer_create(which_clock, event, created_timer_id);
 }
-#endif
 
-#ifdef CONFIG_COMPAT_TIME
-COMPAT_SYSCALL_DEFINE4(timer_settime, timer_t, timer_id, int, flags,
-		       struct compat_itimerspec __user *, new,
-		       struct compat_itimerspec __user *, old)
-{
-	long err;
-	mm_segment_t oldfs;
-	struct itimerspec newts, oldts;
-
-	if (!new)
-		return -EINVAL;
-	if (get_compat_itimerspec(&newts, new))
-		return -EFAULT;
-	oldfs = get_fs();
-	set_fs(KERNEL_DS);
-	err = sys_timer_settime(timer_id, flags,
-				(struct itimerspec __user *) &newts,
-				(struct itimerspec __user *) &oldts);
-	set_fs(oldfs);
-	if (!err && old && put_compat_itimerspec(old, &oldts))
-		return -EFAULT;
-	return err;
-}
-
-COMPAT_SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
-		       struct compat_itimerspec __user *, setting)
-{
-	long err;
-	mm_segment_t oldfs;
-	struct itimerspec ts;
-
-	oldfs = get_fs();
-	set_fs(KERNEL_DS);
-	err = sys_timer_gettime(timer_id,
-				(struct itimerspec __user *) &ts);
-	set_fs(oldfs);
-	if (!err && put_compat_itimerspec(setting, &ts))
-		return -EFAULT;
-	return err;
-}
-
-COMPAT_SYSCALL_DEFINE2(clock_settime, clockid_t, which_clock,
-		       struct compat_timespec __user *, tp)
-{
-	long err;
-	mm_segment_t oldfs;
-	struct timespec ts;
-
-	if (compat_get_timespec(&ts, tp))
-		return -EFAULT;
-	oldfs = get_fs();
-	set_fs(KERNEL_DS);
-	err = sys_clock_settime(which_clock,
-				(struct timespec __user *) &ts);
-	set_fs(oldfs);
-	return err;
-}
-
-COMPAT_SYSCALL_DEFINE2(clock_gettime, clockid_t, which_clock,
-		       struct compat_timespec __user *, tp)
-{
-	long err;
-	mm_segment_t oldfs;
-	struct timespec ts;
-
-	oldfs = get_fs();
-	set_fs(KERNEL_DS);
-	err = sys_clock_gettime(which_clock,
-				(struct timespec __user *) &ts);
-	set_fs(oldfs);
-	if (!err && compat_put_timespec(&ts, tp))
-		return -EFAULT;
-	return err;
-}
-
-COMPAT_SYSCALL_DEFINE2(clock_adjtime, clockid_t, which_clock,
-		       struct compat_timex __user *, utp)
-{
-	struct timex txc;
-	mm_segment_t oldfs;
-	int err, ret;
-
-	err = compat_get_timex(&txc, utp);
-	if (err)
-		return err;
-
-	oldfs = get_fs();
-	set_fs(KERNEL_DS);
-	ret = sys_clock_adjtime(which_clock, (struct timex __user *) &txc);
-	set_fs(oldfs);
-
-	err = compat_put_timex(utp, &txc);
-	if (err)
-		return err;
-
-	return ret;
-}
-
-COMPAT_SYSCALL_DEFINE2(clock_getres, clockid_t, which_clock,
-		       struct compat_timespec __user *, tp)
-{
-	long err;
-	mm_segment_t oldfs;
-	struct timespec ts;
-
-	oldfs = get_fs();
-	set_fs(KERNEL_DS);
-	err = sys_clock_getres(which_clock,
-			       (struct timespec __user *) &ts);
-	set_fs(oldfs);
-	if (!err && tp && compat_put_timespec(&ts, tp))
-		return -EFAULT;
-	return err;
-}
-
-static long compat_clock_nanosleep_restart(struct restart_block *restart)
-{
-	long err;
-	mm_segment_t oldfs;
-	struct timespec tu;
-	struct compat_timespec __user *rmtp = restart->nanosleep.compat_rmtp;
-
-	restart->nanosleep.rmtp = (struct timespec __user *) &tu;
-	oldfs = get_fs();
-	set_fs(KERNEL_DS);
-	err = clock_nanosleep_restart(restart);
-	set_fs(oldfs);
-
-	if ((err == -ERESTART_RESTARTBLOCK) && rmtp &&
-	    compat_put_timespec(&tu, rmtp))
-		return -EFAULT;
-
-	if (err == -ERESTART_RESTARTBLOCK) {
-		restart->fn = compat_clock_nanosleep_restart;
-		restart->nanosleep.compat_rmtp = rmtp;
-	}
-	return err;
-}
-
-COMPAT_SYSCALL_DEFINE4(clock_nanosleep, clockid_t, which_clock, int, flags,
-		       struct compat_timespec __user *, rqtp,
-		       struct compat_timespec __user *, rmtp)
-{
-	long err;
-	mm_segment_t oldfs;
-	struct timespec in, out;
-	struct restart_block *restart;
-
-	if (compat_get_timespec(&in, rqtp))
-		return -EFAULT;
-
-	oldfs = get_fs();
-	set_fs(KERNEL_DS);
-	err = sys_clock_nanosleep(which_clock, flags,
-				  (struct timespec __user *) &in,
-				  (struct timespec __user *) &out);
-	set_fs(oldfs);
-
-	if ((err == -ERESTART_RESTARTBLOCK) && rmtp &&
-	    compat_put_timespec(&out, rmtp))
-		return -EFAULT;
-
-	if (err == -ERESTART_RESTARTBLOCK) {
-		restart = &current->restart_block;
-		restart->fn = compat_clock_nanosleep_restart;
-		restart->nanosleep.compat_rmtp = rmtp;
-	}
-	return err;
-}
-#endif
-
-#ifdef CONFIG_COMPAT
 /*
  * We currently only need the following fields from the sigevent
  * structure: sigev_value, sigev_signo, sig_notify and (sometimes

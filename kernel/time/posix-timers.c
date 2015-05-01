@@ -39,6 +39,7 @@
 #include <linux/uaccess.h>
 #include <linux/list.h>
 #include <linux/init.h>
+#include <linux/compat.h>
 #include <linux/compiler.h>
 #include <linux/hash.h>
 #include <linux/posix-clock.h>
@@ -1149,11 +1150,12 @@ SYSCALL_DEFINE4(clock_nanosleep, const clockid_t, which_clock, int, flags,
 	return kc->nsleep(which_clock, flags, &t, rmtp);
 }
 
+#ifdef CONFIG_COMPAT_TIME
 /*
  * This will restart clock_nanosleep. This is required only by
  * compat_clock_nanosleep_restart for now.
  */
-long clock_nanosleep_restart(struct restart_block *restart_block)
+static long clock_nanosleep_restart(struct restart_block *restart_block)
 {
 	clockid_t which_clock = restart_block->nanosleep.clockid;
 	struct k_clock *kc = clockid_to_kclock(which_clock);
@@ -1163,3 +1165,173 @@ long clock_nanosleep_restart(struct restart_block *restart_block)
 
 	return kc->nsleep_restart(restart_block);
 }
+
+COMPAT_SYSCALL_DEFINE4(timer_settime, timer_t, timer_id, int, flags,
+		       struct compat_itimerspec __user *, new,
+		       struct compat_itimerspec __user *, old)
+{
+	long err;
+	mm_segment_t oldfs;
+	struct itimerspec newts, oldts;
+
+	if (!new)
+		return -EINVAL;
+	if (get_compat_itimerspec(&newts, new))
+		return -EFAULT;
+	oldfs = get_fs();
+	set_fs(KERNEL_DS);
+	err = sys_timer_settime(timer_id, flags,
+				(struct itimerspec __user *) &newts,
+				(struct itimerspec __user *) &oldts);
+	set_fs(oldfs);
+	if (!err && old && put_compat_itimerspec(old, &oldts))
+		return -EFAULT;
+	return err;
+}
+
+COMPAT_SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
+		       struct compat_itimerspec __user *, setting)
+{
+	long err;
+	mm_segment_t oldfs;
+	struct itimerspec ts;
+
+	oldfs = get_fs();
+	set_fs(KERNEL_DS);
+	err = sys_timer_gettime(timer_id,
+				(struct itimerspec __user *) &ts);
+	set_fs(oldfs);
+	if (!err && put_compat_itimerspec(setting, &ts))
+		return -EFAULT;
+	return err;
+}
+
+COMPAT_SYSCALL_DEFINE2(clock_settime, clockid_t, which_clock,
+		       struct compat_timespec __user *, tp)
+{
+	long err;
+	mm_segment_t oldfs;
+	struct timespec ts;
+
+	if (compat_get_timespec(&ts, tp))
+		return -EFAULT;
+	oldfs = get_fs();
+	set_fs(KERNEL_DS);
+	err = sys_clock_settime(which_clock,
+				(struct timespec __user *) &ts);
+	set_fs(oldfs);
+	return err;
+}
+
+COMPAT_SYSCALL_DEFINE2(clock_gettime, clockid_t, which_clock,
+		       struct compat_timespec __user *, tp)
+{
+	long err;
+	mm_segment_t oldfs;
+	struct timespec ts;
+
+	oldfs = get_fs();
+	set_fs(KERNEL_DS);
+	err = sys_clock_gettime(which_clock,
+				(struct timespec __user *) &ts);
+	set_fs(oldfs);
+	if (!err && compat_put_timespec(&ts, tp))
+		return -EFAULT;
+	return err;
+}
+
+COMPAT_SYSCALL_DEFINE2(clock_adjtime, clockid_t, which_clock,
+		       struct compat_timex __user *, utp)
+{
+	struct timex txc;
+	mm_segment_t oldfs;
+	int err, ret;
+
+	err = compat_get_timex(&txc, utp);
+	if (err)
+		return err;
+
+	oldfs = get_fs();
+	set_fs(KERNEL_DS);
+	ret = sys_clock_adjtime(which_clock, (struct timex __user *) &txc);
+	set_fs(oldfs);
+
+	err = compat_put_timex(utp, &txc);
+	if (err)
+		return err;
+
+	return ret;
+}
+
+COMPAT_SYSCALL_DEFINE2(clock_getres, clockid_t, which_clock,
+		       struct compat_timespec __user *, tp)
+{
+	long err;
+	mm_segment_t oldfs;
+	struct timespec ts;
+
+	oldfs = get_fs();
+	set_fs(KERNEL_DS);
+	err = sys_clock_getres(which_clock,
+			       (struct timespec __user *) &ts);
+	set_fs(oldfs);
+	if (!err && tp && compat_put_timespec(&ts, tp))
+		return -EFAULT;
+	return err;
+}
+
+static long compat_clock_nanosleep_restart(struct restart_block *restart)
+{
+	long err;
+	mm_segment_t oldfs;
+	struct timespec tu;
+	struct compat_timespec __user *rmtp = restart->nanosleep.compat_rmtp;
+
+	restart->nanosleep.rmtp = (struct timespec __user *) &tu;
+	oldfs = get_fs();
+	set_fs(KERNEL_DS);
+	err = clock_nanosleep_restart(restart);
+	set_fs(oldfs);
+
+	if ((err == -ERESTART_RESTARTBLOCK) && rmtp &&
+	    compat_put_timespec(&tu, rmtp))
+		return -EFAULT;
+
+	if (err == -ERESTART_RESTARTBLOCK) {
+		restart->fn = compat_clock_nanosleep_restart;
+		restart->nanosleep.compat_rmtp = rmtp;
+	}
+	return err;
+}
+
+COMPAT_SYSCALL_DEFINE4(clock_nanosleep, clockid_t, which_clock, int, flags,
+		       struct compat_timespec __user *, rqtp,
+		       struct compat_timespec __user *, rmtp)
+{
+	long err;
+	mm_segment_t oldfs;
+	struct timespec in, out;
+	struct restart_block *restart;
+
+	if (compat_get_timespec(&in, rqtp))
+		return -EFAULT;
+
+	oldfs = get_fs();
+	set_fs(KERNEL_DS);
+	err = sys_clock_nanosleep(which_clock, flags,
+				  (struct timespec __user *) &in,
+				  (struct timespec __user *) &out);
+	set_fs(oldfs);
+
+	if ((err == -ERESTART_RESTARTBLOCK) && rmtp &&
+	    compat_put_timespec(&out, rmtp))
+		return -EFAULT;
+
+	if (err == -ERESTART_RESTARTBLOCK) {
+		restart = &current->restart_block;
+		restart->fn = compat_clock_nanosleep_restart;
+		restart->nanosleep.compat_rmtp = rmtp;
+	}
+	return err;
+}
+#endif
