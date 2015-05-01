@@ -290,7 +290,18 @@ static inline u64 jiffies_to_nsecs(const unsigned long j)
 
 extern unsigned long msecs_to_jiffies(const unsigned int m);
 extern unsigned long usecs_to_jiffies(const unsigned int u);
-extern unsigned long timespec_to_jiffies(const struct timespec *value);
+extern unsigned long __timespec_to_jiffies(unsigned long sec, long nsec);
+static inline unsigned long timespec_to_jiffies(const struct timespec *value)
+{
+	return __timespec_to_jiffies(value->tv_sec, value->tv_nsec);
+}
+
+static inline unsigned long timespec64_to_jiffies(const struct timespec64 *value)
+{
+	return __timespec_to_jiffies(value->tv_sec, value->tv_nsec);
+}
+
+
 extern void jiffies_to_timespec(const unsigned long jiffies,
 				struct timespec *value);
 extern unsigned long timeval_to_jiffies(const struct timeval *value);
