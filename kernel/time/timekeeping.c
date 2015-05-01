@@ -1991,7 +1991,7 @@ ktime_t ktime_get_update_offsets_now(ktime_t *offs_real, ktime_t *offs_boot,
 /**
  * do_adjtimex() - Accessor function to NTP __do_adjtimex function
  */
-int do_adjtimex(struct timex *txc)
+int do_adjtimex(struct __kernel_timex *txc)
 {
 	struct timekeeper *tk = &tk_core.timekeeper;
 	unsigned long flags;

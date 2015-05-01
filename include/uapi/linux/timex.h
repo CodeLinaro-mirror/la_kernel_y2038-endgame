@@ -92,7 +92,7 @@ struct timex {
 	int  :32; int  :32; int  :32;
 };
 
-
+#ifndef __kernel_timex
 /*
  * __kernel_timex is the new structure that uses the same layout
  * as timex on 64-bit machines
@@ -135,6 +135,7 @@ struct __kernel_timex {
 	int  :32; int  :32; int  :32; int  :32;
 	int  :32; int  :32; int  :32;
 };
+#endif
 
 /*
  * Mode codes (timex.mode)
