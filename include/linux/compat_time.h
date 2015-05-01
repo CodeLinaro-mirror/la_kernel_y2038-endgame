@@ -80,9 +80,9 @@ struct compat_timex {
 	compat_int_t:32; compat_int_t:32; compat_int_t:32;
 };
 
-struct timex;
-int compat_get_timex(struct timex *, const struct compat_timex __user *);
-int compat_put_timex(struct compat_timex __user *, const struct timex *);
+struct __kernel_timex;
+int compat_get_timex(struct __kernel_timex *, const struct compat_timex __user *);
+int compat_put_timex(struct compat_timex __user *, const struct __kernel_timex *);
 
 /*
  * These functions operate on 32- or 64-bit specs depending on

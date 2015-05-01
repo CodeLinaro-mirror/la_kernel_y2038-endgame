@@ -31,7 +31,7 @@
 #include <linux/uaccess.h>
 
 #ifdef CONFIG_COMPAT_TIME
-int compat_get_timex(struct timex *txc, const struct compat_timex __user *utp)
+int compat_get_timex(struct __kernel_timex *txc, const struct compat_timex __user *utp)
 {
 	struct compat_timex tx32;
 
@@ -62,7 +62,7 @@ int compat_get_timex(struct timex *txc, const struct compat_timex __user *utp)
 	return 0;
 }
 
-int compat_put_timex(struct compat_timex __user *utp, const struct timex *txc)
+int compat_put_timex(struct compat_timex __user *utp, const struct __kernel_timex *txc)
 {
 	struct compat_timex tx32;
 

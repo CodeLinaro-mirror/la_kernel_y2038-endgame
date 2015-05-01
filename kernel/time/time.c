@@ -234,32 +234,7 @@ int do_sys_settimeofday64(const struct timespec64 *tv, const struct timezone *tz
 	return 0;
 }
 
-SYSCALL_DEFINE2(settimeofday, struct timeval __user *, tv,
-		struct timezone __user *, tz)
-{
-	struct timespec64 new_ts;
-	struct timeval user_tv;
-	struct timezone new_tz;
-
-	if (tv) {
-		if (copy_from_user(&user_tv, tv, sizeof(*tv)))
-			return -EFAULT;
-
-		if (!timeval_valid(&user_tv))
-			return -EINVAL;
-
-		new_ts.tv_sec = user_tv.tv_sec;
-		new_ts.tv_nsec = user_tv.tv_usec * NSEC_PER_USEC;
-	}
-	if (tz) {
-		if (copy_from_user(&new_tz, tz, sizeof(*tz)))
-			return -EFAULT;
-	}
-
-	return do_sys_settimeofday64(tv ? &new_ts : NULL, tz ? &new_tz : NULL);
-}
-
-#ifdef CONFIG_COMPAT
+#ifdef CONFIG_COMPAT_TIME
 COMPAT_SYSCALL_DEFINE2(gettimeofday, struct compat_timeval __user *, tv,
 		       struct timezone __user *, tz)
 {
@@ -300,26 +275,51 @@ COMPAT_SYSCALL_DEFINE2(settimeofday, struct compat_timeval __user *, tv,
 }
 #endif
 
-SYSCALL_DEFINE1(adjtimex, struct timex __user *, txc_p)
+SYSCALL_DEFINE2(settimeofday, struct timeval __user *, tv,
+		struct timezone __user *, tz)
 {
-	struct timex txc;		/* Local copy of parameter */
+	struct timespec64 new_ts;
+	struct timeval user_tv;
+	struct timezone new_tz;
+
+	if (tv) {
+		if (copy_from_user(&user_tv, tv, sizeof(*tv)))
+			return -EFAULT;
+
+		if (!timeval_valid(&user_tv))
+			return -EINVAL;
+
+		new_ts.tv_sec = user_tv.tv_sec;
+		new_ts.tv_nsec = user_tv.tv_usec * NSEC_PER_USEC;
+	}
+	if (tz) {
+		if (copy_from_user(&new_tz, tz, sizeof(*tz)))
+			return -EFAULT;
+	}
+
+	return do_sys_settimeofday64(tv ? &new_ts : NULL, tz ? &new_tz : NULL);
+}
+
+SYSCALL_DEFINE1(adjtimex, struct __kernel_timex __user *, txc_p)
+{
+	struct __kernel_timex txc;		/* Local copy of parameter */
 	int ret;
 
 	/* Copy the user data space into the kernel copy
 	 * structure. But bear in mind that the structures
 	 * may change
 	 */
-	if (copy_from_user(&txc, txc_p, sizeof(struct timex)))
+	if (copy_from_user(&txc, txc_p, sizeof(struct __kernel_timex)))
 		return -EFAULT;
 	ret = do_adjtimex(&txc);
-	return copy_to_user(txc_p, &txc, sizeof(struct timex)) ? -EFAULT : ret;
+	return copy_to_user(txc_p, &txc, sizeof(struct __kernel_timex)) ? -EFAULT : ret;
 }
 
 #ifdef CONFIG_COMPAT_TIME
 
 COMPAT_SYSCALL_DEFINE1(adjtimex, struct compat_timex __user *, utp)
 {
-	struct timex txc;
+	struct __kernel_timex txc;
 	int err, ret;
 
 	err = compat_get_timex(&txc, utp);
