@@ -301,9 +301,15 @@ static inline unsigned long timespec64_to_jiffies(const struct timespec64 *value
 	return __timespec_to_jiffies(value->tv_sec, value->tv_nsec);
 }
 
-
-extern void jiffies_to_timespec(const unsigned long jiffies,
-				struct timespec *value);
+extern void jiffies_to_timespec64(const unsigned long jiffies,
+				  struct timespec64 *value);
+static inline void jiffies_to_timespec(const unsigned long jiffies,
+				       struct timespec *value)
+{
+	struct timespec64 ts64;
+	jiffies_to_timespec64(jiffies, &ts64);
+	*value = timespec64_to_timespec(ts64);
+}
 extern unsigned long timeval_to_jiffies(const struct timeval *value);
 extern void jiffies_to_timeval(const unsigned long jiffies,
 			       struct timeval *value);

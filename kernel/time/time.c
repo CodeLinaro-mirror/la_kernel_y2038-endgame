@@ -588,7 +588,7 @@ __timespec_to_jiffies(unsigned long sec, long nsec)
 EXPORT_SYMBOL(__timespec_to_jiffies);
 
 void
-jiffies_to_timespec(const unsigned long jiffies, struct timespec *value)
+jiffies_to_timespec64(const unsigned long jiffies, struct timespec64 *value)
 {
 	/*
 	 * Convert jiffies to nanoseconds and separate with
