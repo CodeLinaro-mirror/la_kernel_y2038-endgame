@@ -87,6 +87,10 @@ extern int compat_get_timeval(struct timeval *, const void __user *);
 extern int compat_put_timeval(const struct timeval *, void __user *);
 extern int compat_get_timespec64(struct timespec64 *ts, const void __user *uts);
 extern int compat_put_timespec64(const struct timespec64 *ts, void __user *uts);
+struct compat_timex;
+struct timex;
+extern int compat_get_timex(struct timex *txc, struct compat_timex __user *utp);
+extern int compat_put_timex(struct compat_timex __user *utp, struct timex *txc);
 
 /*
  * This function convert a timespec if necessary and returns a *user
