@@ -172,7 +172,8 @@ extern int do_setitimer(int which, struct itimerval *value,
 			struct itimerval *ovalue);
 extern int do_getitimer(int which, struct itimerval *value);
 
-extern long do_utimes(int dfd, const char __user *filename, struct timespec *times, int flags);
+
+extern long do_utimes(int dfd, const char __user *filename, struct timespec64 *times, int flags);
 
 struct tms;
 extern void do_sys_times(struct tms *);
