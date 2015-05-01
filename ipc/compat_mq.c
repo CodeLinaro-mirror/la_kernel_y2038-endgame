@@ -64,34 +64,6 @@ COMPAT_SYSCALL_DEFINE4(mq_open, const char __user *, u_name,
 	return sys_mq_open(u_name, oflag, mode, p);
 }
 
-COMPAT_SYSCALL_DEFINE5(mq_timedsend, mqd_t, mqdes,
-		       const char __user *, u_msg_ptr,
-		       compat_size_t, msg_len, unsigned int, msg_prio,
-		       const struct compat_timespec __user *, u_abs_timeout)
-{
-	struct timespec __user *u_ts;
-
-	if (compat_convert_timespec(&u_ts, u_abs_timeout))
-		return -EFAULT;
-
-	return sys_mq_timedsend(mqdes, u_msg_ptr, msg_len,
-			msg_prio, u_ts);
-}
-
-COMPAT_SYSCALL_DEFINE5(mq_timedreceive, mqd_t, mqdes,
-		       char __user *, u_msg_ptr,
-		       compat_size_t, msg_len, unsigned int __user *, u_msg_prio,
-		       const struct compat_timespec __user *, u_abs_timeout)
-{
-	struct timespec __user *u_ts;
-
-	if (compat_convert_timespec(&u_ts, u_abs_timeout))
-		return -EFAULT;
-
-	return sys_mq_timedreceive(mqdes, u_msg_ptr, msg_len,
-			u_msg_prio, u_ts);
-}
-
 COMPAT_SYSCALL_DEFINE2(mq_notify, mqd_t, mqdes,
 		       const struct compat_sigevent __user *, u_notification)
 {
