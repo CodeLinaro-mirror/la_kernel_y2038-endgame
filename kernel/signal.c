@@ -2796,7 +2796,7 @@ int copy_siginfo_to_user(siginfo_t __user *to, const siginfo_t *from)
  *  @ts: upper bound on process time suspension
  */
 int do_sigtimedwait(const sigset_t *which, siginfo_t *info,
-			const struct timespec *ts)
+			const struct timespec64 *ts)
 {
 	struct task_struct *tsk = current;
 	long timeout = MAX_SCHEDULE_TIMEOUT;
@@ -2804,9 +2804,9 @@ int do_sigtimedwait(const sigset_t *which, siginfo_t *info,
 	int sig;
 
 	if (ts) {
-		if (!timespec_valid(ts))
+		if (!timespec64_valid(ts))
 			return -EINVAL;
-		timeout = timespec_to_jiffies(ts);
+		timeout = timespec64_to_jiffies(ts);
 		/*
 		 * We can be close to the next tick, add another one
 		 * to ensure we will wait at least the time asked for.
@@ -2858,11 +2858,12 @@ int do_sigtimedwait(const sigset_t *which, siginfo_t *info,
  *  @sigsetsize: size of sigset_t type
  */
 SYSCALL_DEFINE4(rt_sigtimedwait, const sigset_t __user *, uthese,
-		siginfo_t __user *, uinfo, const struct timespec __user *, uts,
+		siginfo_t __user *, uinfo,
+		const struct __kernel_timespec __user *, uts,
 		size_t, sigsetsize)
 {
 	sigset_t these;
-	struct timespec ts;
+	struct timespec64 ts;
 	siginfo_t info;
 	int ret;
 
@@ -2870,7 +2871,7 @@ SYSCALL_DEFINE4(rt_sigtimedwait, const sigset_t __user *, uthese,
 	if (sigsetsize != sizeof(sigset_t))
 		return -EINVAL;
 
-	if (copy_from_user(&these, uthese, sizeof(these)))
+	if (get_timespec64(&ts, uts))
 		return -EFAULT;
 
 	if (uts) {
