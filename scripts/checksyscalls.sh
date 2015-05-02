@@ -197,6 +197,31 @@ cat << EOF
 #define __IGNORE_getpmsg
 #define __IGNORE_putpmsg
 #define __IGNORE_vserver
+
+#if !defined(CONFIG_ARCH_HAS_COMPAT_TIME) || defined(CONFIG_64BIT)
+#define __IGNORE_clock_gettime64
+#define __IGNORE_clock_settime64
+#define __IGNORE_clock_adjtime64
+#define __IGNORE_clock_getres64
+#define __IGNORE_clock_nanosleep64
+#define __IGNORE_timer_gettime64
+#define __IGNORE_timer_settime64
+#define __IGNORE_timerfd_gettime64
+#define __IGNORE_timerfd_settime64
+#define __IGNORE_pselect64
+#define __IGNORE_ppoll64
+#define __IGNORE_io_getevents64
+#define __IGNORE_recvmmsg64
+#define __IGNORE_semtimedop64
+#define __IGNORE_mq_timedsend64
+#define __IGNORE_mq_timedreceive64
+#define __IGNORE_utimensat64
+#define __IGNORE_newfstat64
+#define __IGNORE_newfstatat64
+#define __IGNORE_rt_sigtimedwait64
+#define __IGNORE_getrusage64
+#define __IGNORE_waitid64
+#endif
 EOF
 }
 
