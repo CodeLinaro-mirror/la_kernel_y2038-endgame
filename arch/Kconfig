@@ -549,7 +549,8 @@ config ARCH_HAS_COMPAT_TIME
 	def_bool COMPAT
 
 config COMPAT_TIME
-	def_bool ARCH_HAS_COMPAT_TIME
+	bool "Provide backwards-compatibility with 32-bit time_t"
+	default ARCH_HAS_COMPAT_TIME
 	help
 	  This should be selected by all architectures that need to support
 	  system calls with a 32-bit time_t. Traditionally, this has been
