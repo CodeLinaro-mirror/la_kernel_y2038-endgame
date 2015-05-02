@@ -1,10 +1,6 @@
 #ifndef _LINUX_RESOURCE_H
 #define _LINUX_RESOURCE_H
 
-#ifndef CONFIG_COMPAT_TIME
-#define __kernel_rusage rusage
-#endif
-
 #include <uapi/linux/resource.h>
 
 struct task_struct;

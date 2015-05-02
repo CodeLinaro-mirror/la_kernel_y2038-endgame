@@ -5,10 +5,6 @@
 
 typedef __s64 time64_t;
 
-#ifndef CONFIG_COMPAT_TIME
-# define __kernel_timespec timespec
-#endif
-
 #if __BITS_PER_LONG == 64
 # define timespec64 timespec
 #define itimerspec64 itimerspec
