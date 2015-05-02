@@ -243,3 +243,41 @@ cond_syscall(sys_bpf);
 
 /* execveat */
 cond_syscall(sys_execveat);
+
+/* compat time handling for 32-bit time_t */
+cond_syscall(compat_sys_getrusage);
+cond_syscall(compat_sys_wait4);
+cond_syscall(compat_sys_waitid);
+cond_syscall(compat_sys_time);
+cond_syscall(compat_sys_stime);
+cond_syscall(compat_sys_gettimeofday);
+cond_syscall(compat_sys_settimeofday);
+cond_syscall(compat_sys_setitimer);
+cond_syscall(compat_sys_getitimer);
+cond_syscall(compat_sys_utime);
+cond_syscall(compat_sys_utimes);
+cond_syscall(compat_sys_futimesat);
+cond_syscall(compat_sys_utimensat);
+cond_syscall(compat_sys_newstat);
+cond_syscall(compat_sys_newlstat);
+cond_syscall(compat_sys_newfstat);
+cond_syscall(sys_stat64);
+cond_syscall(sys_lstat64);
+cond_syscall(sys_fstat64);
+cond_syscall(sys_fstatat64);
+cond_syscall(compat_sys_adjtimex);
+cond_syscall(compat_sys_old_select);
+cond_syscall(compat_sys_select);
+cond_syscall(compat_sys_pselect6);
+cond_syscall(compat_sys_ppoll);
+cond_syscall(compat_sys_sched_rr_get_interval);
+cond_syscall(compat_sys_nanosleep);
+cond_syscall(compat_sys_rt_sigtimedwait);
+cond_syscall(compat_sys_io_getevents);
+cond_syscall(compat_sys_timer_settime);
+cond_syscall(compat_sys_timer_gettime);
+cond_syscall(compat_sys_clock_settime);
+cond_syscall(compat_sys_clock_gettime);
+cond_syscall(compat_sys_clock_getres);
+cond_syscall(compat_sys_clock_nanosleep);
+cond_syscall(compat_sys_clock_adjtime);
