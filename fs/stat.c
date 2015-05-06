@@ -226,9 +226,9 @@ SYSCALL_DEFINE2(fstat, unsigned int, fd, struct __old_kernel_stat __user *, stat
 #  define INIT_STRUCT_STAT_PADDING(st) memset(&st, 0, sizeof(st))
 #endif
 
-static int cp_new_stat(struct kstat *stat, struct stat __user *statbuf)
+static int cp_new_stat(struct kstat *stat, struct __kernel_stat __user *statbuf)
 {
-	struct stat tmp;
+	struct __kernel_stat tmp;
 
 	if (!valid_dev(stat->dev) || !valid_dev(stat->rdev))
 		return -EOVERFLOW;
@@ -264,7 +264,7 @@ static int cp_new_stat(struct kstat *stat, struct stat __user *statbuf)
 }
 
 SYSCALL_DEFINE2(newstat, const char __user *, filename,
-		struct stat __user *, statbuf)
+		struct __kernel_stat __user *, statbuf)
 {
 	struct kstat stat;
 	int error = vfs_stat(filename, &stat);
@@ -275,7 +275,7 @@ SYSCALL_DEFINE2(newstat, const char __user *, filename,
 }
 
 SYSCALL_DEFINE2(newlstat, const char __user *, filename,
-		struct stat __user *, statbuf)
+		struct __kernel_stat __user *, statbuf)
 {
 	struct kstat stat;
 	int error;
@@ -289,7 +289,7 @@ SYSCALL_DEFINE2(newlstat, const char __user *, filename,
 
 #if !defined(__ARCH_WANT_STAT64) || defined(__ARCH_WANT_SYS_NEWFSTATAT)
 SYSCALL_DEFINE4(newfstatat, int, dfd, const char __user *, filename,
-		struct stat __user *, statbuf, int, flag)
+		struct __kernel_stat __user *, statbuf, int, flag)
 {
 	struct kstat stat;
 	int error;
@@ -301,7 +301,7 @@ SYSCALL_DEFINE4(newfstatat, int, dfd, const char __user *, filename,
 }
 #endif
 
-SYSCALL_DEFINE2(newfstat, unsigned int, fd, struct stat __user *, statbuf)
+SYSCALL_DEFINE2(newfstat, unsigned int, fd, struct __kernel_stat __user *, statbuf)
 {
 	struct kstat stat;
 	int error = vfs_fstat(fd, &stat);
