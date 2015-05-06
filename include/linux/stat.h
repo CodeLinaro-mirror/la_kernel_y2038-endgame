@@ -2,6 +2,9 @@
 #ifndef _LINUX_STAT_H
 #define _LINUX_STAT_H
 
+#ifndef CONFIG_COMPAT_TIME
+#define __kernel_stat stat
+#endif
 
 #include <asm/stat.h>
 #include <uapi/linux/stat.h>
