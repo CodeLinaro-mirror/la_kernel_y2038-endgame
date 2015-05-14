@@ -28,6 +28,7 @@ config DRM_NOUVEAU
 config NOUVEAU_PLATFORM_DRIVER
 	bool "Nouveau (NVIDIA) SoC GPUs"
 	depends on DRM_NOUVEAU && ARCH_TEGRA
+	depends on IOMMU
 	default y
 	help
 	  Support for Nouveau platform driver, used for SoC GPUs as found
