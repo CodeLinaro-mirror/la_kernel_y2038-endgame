@@ -20,7 +20,7 @@ struct __old_kernel_stat {
 
 #define STAT_HAVE_NSEC	1
 
-struct stat {
+struct __old_kernel_stat2 {
 	unsigned short st_dev;
 	unsigned short __pad1;
 	unsigned long  st_ino;

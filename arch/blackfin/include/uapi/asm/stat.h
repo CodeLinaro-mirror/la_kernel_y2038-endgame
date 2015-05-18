@@ -9,7 +9,7 @@
 
 #include <asm-generic/kernel_stat.h>
 
-struct stat {
+struct __old_kernel_stat2 {
 	unsigned short st_dev;
 	unsigned short __pad1;
 	unsigned long st_ino;

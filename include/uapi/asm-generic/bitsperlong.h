@@ -12,4 +12,13 @@
 #define __BITS_PER_LONG 32
 #endif
 
+/*
+ * Traditionally we define defines 'time_t' as 'long', but we need to
+ * migrate to a 64-bit type until 2038. This one is designed to be
+ * overridden by user space if it's prepared to handle 64-bit time_t.
+ */
+#ifndef __KERNEL_TIME_BITS
+#define __KERNEL_TIME_BITS __BITS_PER_LONG
+#endif
+
 #endif /* _UAPI__ASM_GENERIC_BITS_PER_LONG */

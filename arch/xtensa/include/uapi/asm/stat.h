@@ -15,7 +15,7 @@
 
 #define STAT_HAVE_NSEC 1
 
-struct stat {
+struct __old_kernel_stat2 {
 	unsigned long	st_dev;
 	unsigned long	st_ino;
 	unsigned int	st_mode;

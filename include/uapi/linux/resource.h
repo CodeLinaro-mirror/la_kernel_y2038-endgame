@@ -3,10 +3,16 @@
 
 #include <linux/time.h>
 #include <linux/types.h>
+#include <asm/bitsperlong.h>
 
 /*
  * Resource control/accounting header file for linux
  */
+#if __KERNEL_TIME_BITS == 32 || __BITS_PER_LONG == 64
+#define __old_kernel_rusage rusage
+#else
+#define __kernel_rusage rusage
+#endif
 
 /*
  * Definition of struct rusage taken from BSD 4.3 Reno
@@ -20,7 +26,7 @@
 #define RUSAGE_BOTH	(-2)		/* sys_wait4() uses this */
 #define	RUSAGE_THREAD	1		/* only the calling thread */
 
-struct	rusage {
+struct	__old_kernel_rusage {
 	struct timeval ru_utime;	/* user time used */
 	struct timeval ru_stime;	/* system time used */
 	__kernel_long_t	ru_maxrss;	/* maximum resident set size */
@@ -45,7 +51,6 @@ struct	rusage {
  * on both 32-bit and 64-bit machines, to let 32-bit user space migrate to
  * 64-bit tv_sec.
  */
-#ifndef __kernel_rusage
 struct __kernel_rusage_timeval {
 	__s64	tv_sec;
 	__s64	tv_usec;
@@ -69,7 +74,6 @@ struct	__kernel_rusage {
 	__s64	ru_nvcsw;	/* voluntary context switches */
 	__s64	ru_nivcsw;	/* involuntary " */
 };
-#endif
 
 struct rlimit {
 	__kernel_ulong_t	rlim_cur;

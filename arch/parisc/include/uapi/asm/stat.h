@@ -4,7 +4,7 @@
 #include <linux/types.h>
 #include <asm-generic/kernel_stat.h>
 
-struct stat {
+struct __old_kernel_stat2 {
 	unsigned int	st_dev;		/* dev_t is 32 bits on parisc */
 	unsigned int	st_ino;		/* 32 bits */
 	unsigned short	st_mode;	/* 16 bits */

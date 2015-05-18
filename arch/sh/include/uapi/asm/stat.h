@@ -18,7 +18,7 @@ struct __old_kernel_stat {
 };
 
 #if defined(__SH5__) || defined(CONFIG_CPU_SH5)
-struct stat {
+struct __old_kernel_stat2 {
 	unsigned short st_dev;
 	unsigned short __pad1;
 	unsigned long st_ino;
@@ -77,7 +77,7 @@ struct stat64 {
 	unsigned long	__unused2;
 };
 #else
-struct stat {
+struct __old_kernel_stat2 {
 	unsigned long  st_dev;
 	unsigned long  st_ino;
 	unsigned short st_mode;

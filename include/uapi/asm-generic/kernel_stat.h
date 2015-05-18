@@ -1,6 +1,14 @@
 #ifndef __ASM_GENERIC_KERNEL_STAT_H
 #define __ASM_GENERIC_KERNEL_STAT_H
 
+#include <asm/bitsperlong.h>
+
+#if __KERNEL_TIME_BITS == 32 || __BITS_PER_LONG == 64
+#define __old_kernel_stat2 stat
+#else
+#define __kernel_stat stat
+#endif
+
 /*
  * The new structure that works on both 32-bit and 64-bit and survives y2038
  * The layout matches 'struct stat' from asm-generic/stat.h on 64-bit
@@ -8,7 +16,6 @@
  * st_?time members so we don't wrap around in 2038.
  */
 
-#ifndef __kernel_stat
 struct __kernel_stat {
 	unsigned long long st_dev;	/* Device.  */
 	unsigned long long st_ino;	/* File serial number.  */
@@ -31,6 +38,5 @@ struct __kernel_stat {
 	unsigned int	   __unused4;
 	unsigned int	   __unused5;
 };
-#endif
 
 #endif /* __ASM_GENERIC_KERNEL_STAT_H */

@@ -7,6 +7,13 @@
  * 2 of the License, or (at your option) any later version.
  */
 #include <linux/types.h>
+#include <asm/bitsperlong.h>
+
+#if __KERNEL_TIME_BITS == 32 || __BITS_PER_LONG == 64
+#define __old_kernel_stat2 stat
+#else
+#define __kernel_stat stat
+#endif
 
 #define STAT_HAVE_NSEC 1
 
@@ -26,7 +33,7 @@ struct __old_kernel_stat {
 };
 #endif /* !__powerpc64__ */
 
-struct stat {
+struct __old_kernel_stat2 {
 	unsigned long	st_dev;
 	ino_t		st_ino;
 #ifdef __powerpc64__
@@ -78,8 +85,7 @@ struct stat64 {
 	unsigned int	__unused5;
 };
 
-#ifndef __kernel_stat
-/* this matches the powerpc64 'struct stat' for compat tasks */
+/* this matches the powerpc64 'struct __old_kernel_stat2' for compat tasks */
 struct __kernel_stat {
 	unsigned long long	st_dev;
 	unsigned long long	st_ino;
@@ -101,6 +107,5 @@ struct __kernel_stat {
 	unsigned long long	__unused5;
 	unsigned long long	__unused6;
 };
-#endif
 
 #endif /* _ASM_POWERPC_STAT_H */

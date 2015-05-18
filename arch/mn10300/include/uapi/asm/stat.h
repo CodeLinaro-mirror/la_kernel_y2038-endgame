@@ -17,7 +17,7 @@ struct __old_kernel_stat {
 	unsigned long  st_ctime;
 };
 
-struct stat {
+struct __old_kernel_stat2 {
 	unsigned long  st_dev;
 	unsigned long  st_ino;
 	unsigned short st_mode;

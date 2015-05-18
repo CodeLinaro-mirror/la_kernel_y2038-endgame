@@ -2,6 +2,13 @@
 #define __SPARC_STAT_H
 
 #include <linux/types.h>
+#include <asm/bitsperlong.h>
+
+#if __KERNEL_TIME_BITS == 32 || __BITS_PER_LONG == 64
+#define __old_kernel_stat2 stat
+#else
+#define __kernel_stat stat
+#endif
 
 #if defined(__sparc__) && defined(__arch64__)
 /* 64 bit sparc */
@@ -48,7 +55,8 @@ struct stat64 {
 
 #else
 /* 32 bit sparc */
-struct stat {
+
+struct __old_kernel_stat2 {
 	unsigned short	st_dev;
 	ino_t		st_ino;
 	mode_t		st_mode;
@@ -105,7 +113,6 @@ struct stat64 {
 };
 #endif /* defined(__sparc__) && defined(__arch64__) */
 
-#ifndef __kernel_stat
 /* This matches the sparc64 'struct stat64' in compat tasks */
 struct __kernel_stat {
 	unsigned long long	st_dev;
@@ -130,6 +137,5 @@ struct __kernel_stat {
 	unsigned long long	st_ctime_nsec;
 	long long		__unused[3];
 };
-#endif
 
 #endif /* __SPARC_STAT_H */
