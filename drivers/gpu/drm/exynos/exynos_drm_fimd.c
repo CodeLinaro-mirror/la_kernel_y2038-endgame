@@ -659,16 +659,16 @@ static void fimd_win_commit(struct exynos_drm_crtc *crtc, unsigned int win)
 
 	/* buffer start address */
 	dma_addr = plane->dma_addr[0] + offset;
-	val = (u32)dma_addr & 0xffffffff;
+	val = (unsigned long)dma_addr;
 	writel(val, ctx->regs + VIDWx_BUF_START(win, 0));
 
 	/* buffer end address */
 	size = plane->pitch * plane->crtc_height;
-	val = (u32)((dma_addr + size) & 0xffffffff);
+	val = (unsigned long)(dma_addr + size);
 	writel(val, ctx->regs + VIDWx_BUF_END(win, 0));
 
-	DRM_DEBUG_KMS("start addr = %pad, end addr = %pad, size = 0x%lx\n",
-			&dma_addr, &val, size);
+	DRM_DEBUG_KMS("start addr = 0x%lx, end addr = 0x%lx, size = 0x%lx\n",
+			(unsigned long)dma_addr, val, size);
 	DRM_DEBUG_KMS("ovl_width = %d, ovl_height = %d\n",
 			plane->crtc_width, plane->crtc_height);
 

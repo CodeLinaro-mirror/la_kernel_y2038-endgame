@@ -2,9 +2,6 @@
    Common Flash Interface probe code.
    (C) 2000 Red Hat. GPL'd.
 */
-#ifdef CONFIG_MTD_XIP
-#pragma long_calls
-#endif
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -20,10 +17,6 @@
 #include <linux/mtd/map.h>
 #include <linux/mtd/cfi.h>
 #include <linux/mtd/gen_probe.h>
-
-#ifdef CONFIG_MTD_XIP
-#pragma long_calls_off
-#endif
 
 //#define DEBUG_CFI
 
@@ -74,7 +67,7 @@ do { \
    in: interleave,type,mode
    ret: table index, <0 for error
  */
-#pragma long_calls
+
 static int __xipram cfi_probe_chip(struct map_info *map, __u32 base,
 				   unsigned long *chip_map, struct cfi_private *cfi)
 {
@@ -248,8 +241,6 @@ static int __xipram cfi_chip_setup(struct map_info *map,
 
 	return 1;
 }
-
-#pragma long_calls_off
 
 #ifdef DEBUG_CFI
 static char *vendorname(__u16 vendor)

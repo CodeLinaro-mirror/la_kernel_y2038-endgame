@@ -423,8 +423,7 @@ static inline void thermal_zone_device_unregister(
 static inline int thermal_zone_bind_cooling_device(
 	struct thermal_zone_device *tz, int trip,
 	struct thermal_cooling_device *cdev,
-	unsigned long upper, unsigned long lower,
-	unsigned int weight)
+	unsigned long upper, unsigned long lower)
 { return -ENODEV; }
 static inline int thermal_zone_unbind_cooling_device(
 	struct thermal_zone_device *tz, int trip,

@@ -22,7 +22,6 @@ menuconfig ARCH_EXYNOS
 	select PINCTRL
 	select PINCTRL_EXYNOS
 	select PM_GENERIC_DOMAINS if PM
-	select REGULATOR if PM_SLEEP
 	select S5P_DEV_MFC
 	select SRAM
 	select MFD_SYSCON

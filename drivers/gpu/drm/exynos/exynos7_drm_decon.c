@@ -430,7 +430,7 @@ static void decon_win_commit(struct exynos_drm_crtc *crtc, unsigned int win)
 	decon_shadow_protect_win(ctx, win, true);
 
 	/* buffer start address */
-	val = (u32)plane->dma_addr[0] & 0xffffffff;
+	val = (unsigned long)plane->dma_addr[0];
 	writel(val, ctx->regs + VIDW_BUF_START(win));
 
 	padding = (plane->pitch / (plane->bpp >> 3)) - plane->fb_width;
@@ -443,7 +443,8 @@ static void decon_win_commit(struct exynos_drm_crtc *crtc, unsigned int win)
 	writel(plane->src_x, ctx->regs + VIDW_OFFSET_X(win));
 	writel(plane->src_y, ctx->regs + VIDW_OFFSET_Y(win));
 
-	DRM_DEBUG_KMS("start addr = %pad\n", &plane->dma_addr[0]);
+	DRM_DEBUG_KMS("start addr = 0x%lx\n",
+			(unsigned long)val);
 	DRM_DEBUG_KMS("ovl_width = %d, ovl_height = %d\n",
 			plane->crtc_width, plane->crtc_height);
 
