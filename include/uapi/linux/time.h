@@ -6,11 +6,24 @@
 
 #ifndef _STRUCT_TIMESPEC
 #define _STRUCT_TIMESPEC
-struct timespec {
+
+#if __KERNEL_TIME_BITS == 32 || __BITS_PER_LONG == 64
+#define __old_kernel_timespec timespec
+#else
+#define __kernel_timespec timespec
+#endif
+#endif
+
+#if __KERNEL_TIME_BITS == 32 || __BITS_PER_LONG == 64
+#define __old_kernel_itimerspec itimerspec
+#else
+#define __kernel_itimerspec itimerspec
+#endif
+
+struct __old_kernel_timespec {
 	__kernel_time_t	tv_sec;			/* seconds */
 	long		tv_nsec;		/* nanoseconds */
 };
-#endif
 
 struct timeval {
 	__kernel_time_t		tv_sec;		/* seconds */
@@ -31,7 +44,7 @@ struct timezone {
 #define	ITIMER_VIRTUAL		1
 #define	ITIMER_PROF		2
 
-struct itimerspec {
+struct __old_kernel_itimerspec {
 	struct timespec it_interval;	/* timer period */
 	struct timespec it_value;	/* timer expiration */
 };
@@ -67,14 +80,12 @@ struct itimerval {
 #define TIMER_ABSTIME			0x01
 
 /* types based on 64-bit time_t */
-#ifndef __kernel_timespec
 typedef __s64 __kernel_time64_t;
 
 struct __kernel_timespec {
 	__kernel_time64_t	tv_sec;
 	__s64			tv_nsec;
 };
-#endif
 
 #ifndef __kernel_itimerspec
 struct __kernel_itimerspec {

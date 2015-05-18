@@ -7,6 +7,14 @@
 #ifndef _S390_STAT_H
 #define _S390_STAT_H
 
+#include <asm/bitsperlong.h>
+
+#if __KERNEL_TIME_BITS == 32 || __BITS_PER_LONG == 64
+#define __old_kernel_stat2 stat
+#else
+#define __kernel_stat stat
+#endif
+
 #ifndef __s390x__
 struct __old_kernel_stat {
         unsigned short st_dev;
@@ -22,7 +30,7 @@ struct __old_kernel_stat {
         unsigned long  st_ctime;
 };
 
-struct stat {
+struct __old_kernel_stat2 {
         unsigned short st_dev;
         unsigned short __pad1;
         unsigned long  st_ino;
@@ -75,7 +83,7 @@ struct stat64 {
 
 #else /* __s390x__ */
 
-struct stat {
+struct __old_kernel_stat {
         unsigned long  st_dev;
         unsigned long  st_ino;
         unsigned long  st_nlink;
@@ -101,7 +109,6 @@ struct stat {
 #define STAT_HAVE_NSEC 1
 
 /* same layout as 'struct stat on s390x' for both 32-bit and 64-bit tasks */
-#ifndef __kernel_stat
 struct __kernel_stat {
 	unsigned long long st_dev;
 	unsigned long long st_ino;
@@ -122,6 +129,5 @@ struct __kernel_stat {
 	long long	   st_blocks;
 	unsigned long long __unused[3];
 };
-#endif
 
 #endif

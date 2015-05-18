@@ -19,7 +19,7 @@ struct __old_kernel_stat {
 
 #define STAT_HAVE_NSEC 
 
-struct stat {
+struct __old_kernel_stat2 {
 #if defined(__ARMEB__)
 	unsigned short st_dev;
 	unsigned short __pad1;

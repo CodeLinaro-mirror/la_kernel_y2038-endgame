@@ -2,11 +2,18 @@
 #define _ASM_X86_STAT_H
 
 #include <asm/posix_types.h>
+#include <asm/bitsperlong.h>
 
 #define STAT_HAVE_NSEC 1
 
+#if __KERNEL_TIME_BITS == 32 || __BITS_PER_LONG == 64
+#define __old_kernel_stat2 stat
+#else
+#define __kernel_stat stat
+#endif
+
 #ifdef __i386__
-struct stat {
+struct __old_kernel_stat2 {
 	unsigned long  st_dev;
 	unsigned long  st_ino;
 	unsigned short st_mode;
@@ -73,7 +80,7 @@ struct stat64 {
 
 #else /* __i386__ */
 
-struct stat {
+struct __old_kernel_stat2 {
 	__kernel_ulong_t	st_dev;
 	__kernel_ulong_t	st_ino;
 	__kernel_ulong_t	st_nlink;
@@ -120,7 +127,6 @@ struct __old_kernel_stat {
 #endif
 };
 
-#ifndef __kernel_stat
 /* This matches the 64-bit version of 'struct stat' on i386 */
 struct __kernel_stat {
 	unsigned long long	st_dev;
@@ -152,7 +158,5 @@ struct __kernel_stat {
 	st.__unused[1] = 0;			\
 	st.__unused[2] = 0;			\
 } while (0)
-
-#endif
 
 #endif /* _ASM_X86_STAT_H */

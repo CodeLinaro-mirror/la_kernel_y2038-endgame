@@ -18,7 +18,7 @@ struct __old_kernel_stat {
 };
 
 /* This matches struct stat in uClibc/glibc.  */
-struct stat {
+struct __old_kernel_stat2 {
 	unsigned char __pad1[6];
 	unsigned short st_dev;
 

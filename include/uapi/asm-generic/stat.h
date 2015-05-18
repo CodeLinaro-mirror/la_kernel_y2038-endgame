@@ -22,7 +22,7 @@
 
 #define STAT_HAVE_NSEC 1
 
-struct stat {
+struct __old_kernel_stat2 {
 	unsigned long	st_dev;		/* Device.  */
 	unsigned long	st_ino;		/* File serial number.  */
 	unsigned int	st_mode;	/* File mode.  */

@@ -54,14 +54,22 @@
 #define _UAPI_LINUX_TIMEX_H
 
 #include <linux/time.h>
+#include <asm/bitsperlong.h>
+
+#if __KERNEL_TIME_BITS == 32 || __BITS_PER_LONG == 64
+#define __old_kernel_timex timex
+#else
+#define __kernel_timex timex
+#endif
 
 #define NTP_API		4	/* NTP API version */
+
 
 /*
  * syscall interface - used (mainly by NTP daemon)
  * to discipline kernel clock oscillator
  */
-struct timex {
+struct __old_kernel_timex {
 	unsigned int modes;	/* mode selector */
 	__kernel_long_t offset;	/* time offset (usec) */
 	__kernel_long_t freq;	/* frequency offset (scaled ppm) */
@@ -92,7 +100,6 @@ struct timex {
 	int  :32; int  :32; int  :32;
 };
 
-#ifndef __kernel_timex
 /*
  * __kernel_timex is the new structure that uses the same layout
  * as timex on 64-bit machines
@@ -135,7 +142,6 @@ struct __kernel_timex {
 	int  :32; int  :32; int  :32; int  :32;
 	int  :32; int  :32; int  :32;
 };
-#endif
 
 /*
  * Mode codes (timex.mode)
