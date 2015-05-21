@@ -796,6 +796,35 @@ static int timer_gettime(timer_t timer_id, struct itimerspec *setting)
 	return ret;
 }
 
+#define __get_timespec(kts, uts) \
+	(__get_user((kts)->tv_sec, &(uts)->tv_sec) || \
+	 __get_user((kts)->tv_nsec, &(uts)->tv_nsec))
+
+#define __put_timespec(kts, uts) \
+	(__put_user((kts)->tv_sec, &(uts)->tv_sec) || \
+	 __put_user((kts)->tv_nsec, &(uts)->tv_nsec))
+
+#define get_timespec(kts, uts) \
+	((access_ok(VERIFY_READ, (uts), sizeof(*(uts))) || \
+	  __get_timespec((kts), (uts))) ? \
+	 -EFAULT : 0)
+
+#define put_timespec(kts, uts) \
+	((access_ok(VERIFY_WRITE, (uts), sizeof(*(uts))) || \
+	  __put_timespec((kts), (uts))) ? \
+	 -EFAULT : 0)
+
+#define get_itimerspec(kit, uit) \
+	((access_ok(VERIFY_READ, (uit), sizeof(*(uit))) || \
+	  __get_timespec(&(kit)->it_interval, &(uit)->it_interval) || \
+	  __get_timespec(&(kit)->it_value, &(uit)->it_value)))
+
+#define put_itimerspec(kit, uit) \
+	((access_ok(VERIFY_WRITE, (uit), sizeof(*(uit))) || \
+	  __put_timespec(&(kit)->it_interval, &(uit)->it_interval) || \
+	  __put_timespec(&(kit)->it_value, &(uit)->it_value)) ? \
+	 -EFAULT : 0)
+
 /* Get the time remaining on a POSIX.1b interval timer. */
 SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
 		struct itimerspec __user *, setting)
@@ -810,6 +839,7 @@ SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
 	return ret;
 }
 
+#if 0
 int get_itimerspec(struct itimerspec *it, const struct __kernel_itimerspec __user *uit)
 {
 	int ret;
@@ -843,6 +873,7 @@ int put_itimerspec(const struct itimerspec *it, struct __kernel_itimerspec __use
 
 	return ret;
 }
+#endif
 
 /*
  * Get the number of overruns of a POSIX.1b interval timer.  This is to
@@ -1063,7 +1094,6 @@ void exit_itimers(struct signal_struct *sig)
 static int clock_settime(clockid_t which_clock, struct timespec *tp)
 {
 	struct k_clock *kc = clockid_to_kclock(which_clock);
-	struct timespec new_tp;
 
 	if (!kc || !kc->clock_set)
 		return -EINVAL;
@@ -1141,7 +1171,6 @@ SYSCALL_DEFINE2(clock_adjtime, const clockid_t, which_clock,
 int clock_getres(const clockid_t which_clock, struct timespec *tp)
 {
 	struct k_clock *kc = clockid_to_kclock(which_clock);
-	struct timespec rtn_tp;
 	int error;
 
 	if (!kc)
