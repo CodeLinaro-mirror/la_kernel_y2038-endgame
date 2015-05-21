@@ -131,7 +131,7 @@ static struct k_clock posix_clocks[MAX_CLOCKS];
  * These ones are defined below.
  */
 static int common_nsleep(const clockid_t, int flags, struct timespec *t,
-			 struct timespec __user *rmtp);
+			 struct __kernel_timespec __user *rmtp);
 static int common_timer_create(struct k_itimer *new_timer);
 static void common_timer_get(struct k_itimer *, struct itimerspec *);
 static int common_timer_set(struct k_itimer *, int,
@@ -1209,16 +1209,16 @@ SYSCALL_DEFINE2(clock_getres, const clockid_t, which_clock,
  * nanosleep for monotonic and realtime clocks
  */
 static int common_nsleep(const clockid_t which_clock, int flags,
-			 struct timespec *tsave, struct timespec __user *rmtp)
+			 struct timespec *tsave,
+			 struct __kernel_timespec __user *rmtp)
 {
 	return hrtimer_nanosleep(tsave, rmtp, flags & TIMER_ABSTIME ?
 				 HRTIMER_MODE_ABS : HRTIMER_MODE_REL,
 				 which_clock);
 }
 
-SYSCALL_DEFINE4(clock_nanosleep, const clockid_t, which_clock, int, flags,
-		const struct timespec __user *, rqtp,
-		struct timespec __user *, rmtp)
+static int clock_nanosleep(clockid_t which_clock, int flags, struct timespec64 *rqtp,
+			   struct __kernel_timespec __user * rmtp)
 {
 	struct k_clock *kc = clockid_to_kclock(which_clock);
 	struct timespec t;
@@ -1228,8 +1228,7 @@ SYSCALL_DEFINE4(clock_nanosleep, const clockid_t, which_clock, int, flags,
 	if (!kc->nsleep)
 		return -ENANOSLEEP_NOTSUP;
 
-	if (copy_from_user(&t, rqtp, sizeof (struct timespec)))
-		return -EFAULT;
+	t = timespec64_to_timespec(*rqtp);
 
 	if (!timespec_valid(&t))
 		return -EINVAL;
@@ -1237,19 +1236,16 @@ SYSCALL_DEFINE4(clock_nanosleep, const clockid_t, which_clock, int, flags,
 	return kc->nsleep(which_clock, flags, &t, rmtp);
 }
 
-/*
- * This will restart clock_nanosleep. This is required only by
- * compat_clock_nanosleep_restart for now.
- */
-static long clock_nanosleep_restart(struct restart_block *restart_block)
+SYSCALL_DEFINE4(clock_nanosleep, const clockid_t, which_clock, int, flags,
+		const struct __kernel_timespec __user *, rqtp,
+		struct __kernel_timespec __user *, rmtp)
 {
-	clockid_t which_clock = restart_block->nanosleep.clockid;
-	struct k_clock *kc = clockid_to_kclock(which_clock);
+	struct timespec64 t64;
 
-	if (WARN_ON_ONCE(!kc || !kc->nsleep_restart))
-		return -EINVAL;
+	if (get_timespec64(&t64, rqtp))
+		return -EFAULT;
 
-	return kc->nsleep_restart(restart_block);
+	return clock_nanosleep(which_clock, flags, &t64, rmtp);
 }
 
 #ifdef CONFIG_COMPAT_TIME
@@ -1365,19 +1361,26 @@ COMPAT_SYSCALL_DEFINE2(clock_getres, clockid_t, which_clock,
 
 static long compat_clock_nanosleep_restart(struct restart_block *restart)
 {
+	clockid_t which_clock = restart->nanosleep.clockid;
+	struct compat_timespec __user *rmtp = restart->nanosleep.compat_rmtp;
+	struct k_clock *kc = clockid_to_kclock(which_clock);
 	long err;
 	mm_segment_t oldfs;
-	struct timespec tu;
-	struct compat_timespec __user *rmtp = restart->nanosleep.compat_rmtp;
+	struct __kernel_timespec tu;
 
-	restart->nanosleep.rmtp = (struct timespec __user *) &tu;
+	if (WARN_ON_ONCE(!kc || !kc->nsleep_restart))
+		return -EINVAL;
+
+	restart->nanosleep.rmtp = (struct __kernel_timespec __user *) &tu;
+
 	oldfs = get_fs();
 	set_fs(KERNEL_DS);
-	err = clock_nanosleep_restart(restart);
+	err = kc->nsleep_restart(restart);
 	set_fs(oldfs);
 
 	if ((err == -ERESTART_RESTARTBLOCK) && rmtp &&
-	    compat_put_timespec(&tu, rmtp))
+	    (put_user(tu.tv_sec, &rmtp->tv_sec) ||
+	     put_user(tu.tv_nsec, &rmtp->tv_nsec)))
 		return -EFAULT;
 
 	if (err == -ERESTART_RESTARTBLOCK) {
@@ -1393,21 +1396,22 @@ COMPAT_SYSCALL_DEFINE4(clock_nanosleep, clockid_t, which_clock, int, flags,
 {
 	long err;
 	mm_segment_t oldfs;
-	struct timespec in, out;
+	struct timespec64 in;
+	struct __kernel_timespec out;
 	struct restart_block *restart;
 
-	if (compat_get_timespec(&in, rqtp))
+	if (compat_get_timespec64(&in, rqtp))
 		return -EFAULT;
 
 	oldfs = get_fs();
 	set_fs(KERNEL_DS);
-	err = sys_clock_nanosleep(which_clock, flags,
-				  (struct timespec __user *) &in,
-				  (struct timespec __user *) &out);
+	err = clock_nanosleep(which_clock, flags, &in,
+			      (struct __kernel_timespec __user *) &out);
 	set_fs(oldfs);
 
 	if ((err == -ERESTART_RESTARTBLOCK) && rmtp &&
-	    compat_put_timespec(&out, rmtp))
+	    (put_user(out.tv_sec, &rmtp->tv_sec) ||
+	     put_user(out.tv_nsec, &rmtp->tv_nsec)))
 		return -EFAULT;
 
 	if (err == -ERESTART_RESTARTBLOCK) {
