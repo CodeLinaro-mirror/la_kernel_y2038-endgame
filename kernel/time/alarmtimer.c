@@ -691,18 +691,18 @@ static int alarmtimer_do_nsleep(struct alarm *alarm, ktime_t absexp)
  * now and the exp value
  */
 static int update_rmtp(ktime_t exp, enum  alarmtimer_type type,
-			struct timespec __user *rmtp)
+			struct __kernel_timespec __user *rmtp)
 {
-	struct timespec rmt;
+	struct timespec64 rmt;
 	ktime_t rem;
 
 	rem = ktime_sub(exp, alarm_bases[type].gettime());
 
 	if (rem.tv64 <= 0)
 		return 0;
-	rmt = ktime_to_timespec(rem);
+	rmt = ktime_to_timespec64(rem);
 
-	if (copy_to_user(rmtp, &rmt, sizeof(*rmtp)))
+	if (put_timespec64(&rmt, rmtp))
 		return -EFAULT;
 
 	return 1;
@@ -719,7 +719,7 @@ static long __sched alarm_timer_nsleep_restart(struct restart_block *restart)
 {
 	enum  alarmtimer_type type = restart->nanosleep.clockid;
 	ktime_t exp;
-	struct timespec __user  *rmtp;
+	struct __kernel_timespec __user  *rmtp;
 	struct alarm alarm;
 	int ret = 0;
 
@@ -756,7 +756,8 @@ out:
  * Handles clock_nanosleep calls against _ALARM clockids
  */
 static int alarm_timer_nsleep(const clockid_t which_clock, int flags,
-		     struct timespec *tsreq, struct timespec __user *rmtp)
+			      struct timespec *tsreq,
+			      struct __kernel_timespec __user *rmtp)
 {
 	enum  alarmtimer_type type = clock2alarm(which_clock);
 	struct alarm alarm;
