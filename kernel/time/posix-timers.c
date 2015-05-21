@@ -30,6 +30,8 @@
 /* These are all the functions necessary to implement
  * POSIX clocks & timers
  */
+#include <linux/compat.h>
+#include <linux/compat_time.h>
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 #include <linux/slab.h>
@@ -39,7 +41,6 @@
 #include <asm/uaccess.h>
 #include <linux/list.h>
 #include <linux/init.h>
-#include <linux/compat.h>
 #include <linux/compiler.h>
 #include <linux/hash.h>
 #include <linux/posix-clock.h>
@@ -1250,75 +1251,64 @@ SYSCALL_DEFINE4(clock_nanosleep, const clockid_t, which_clock, int, flags,
 
 #ifdef CONFIG_COMPAT_TIME
 COMPAT_SYSCALL_DEFINE4(timer_settime, timer_t, timer_id, int, flags,
-		       struct compat_itimerspec __user *, new,
-		       struct compat_itimerspec __user *, old)
+		       struct compat_itimerspec __user *, new_setting,
+		       struct compat_itimerspec __user *, old_setting)
 {
-	long err;
-	mm_segment_t oldfs;
-	struct itimerspec newts, oldts;
+	long error;
+	struct itimerspec new_spec, old_spec;
+	struct itimerspec *rtn = old_setting ? &old_spec : NULL;
 
-	if (!new)
+	if (!new_setting)
 		return -EINVAL;
-	if (get_compat_itimerspec(&newts, new))
+
+	if (get_compat_itimerspec(&new_spec, new_setting))
 		return -EFAULT;
-	oldfs = get_fs();
-	set_fs(KERNEL_DS);
-	err = sys_timer_settime(timer_id, flags,
-				(struct itimerspec __user *) &newts,
-				(struct itimerspec __user *) &oldts);
-	set_fs(oldfs);
-	if (!err && old && put_compat_itimerspec(old, &oldts))
+retry:
+	error = timer_settime(timer_id, flags, &new_spec, rtn);
+	if (error == TIMER_RETRY) {
+		rtn = NULL;	// We already got the old time...
+		goto retry;
+	}
+
+	error = timer_settime(timer_id, flags, &new_spec, &old_spec);
+	if (!error && old_setting && put_compat_itimerspec(old_setting, &old_spec))
 		return -EFAULT;
-	return err;
+
+	return error;
 }
 
 COMPAT_SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
 		       struct compat_itimerspec __user *, setting)
 {
 	long err;
-	mm_segment_t oldfs;
 	struct itimerspec ts;
 
-	oldfs = get_fs();
-	set_fs(KERNEL_DS);
-	err = sys_timer_gettime(timer_id,
-				(struct itimerspec __user *) &ts);
-	set_fs(oldfs);
+	err = timer_gettime(timer_id, &ts);
+
 	if (!err && put_compat_itimerspec(setting, &ts))
 		return -EFAULT;
+
 	return err;
 }
 
 COMPAT_SYSCALL_DEFINE2(clock_settime, clockid_t, which_clock,
 		       struct compat_timespec __user *, tp)
 {
-	long err;
-	mm_segment_t oldfs;
-	struct timespec ts;
+	struct timespec64 ts;
 
-	if (compat_get_timespec(&ts, tp))
+	if (compat_get_timespec64(&ts, tp))
 		return -EFAULT;
-	oldfs = get_fs();
-	set_fs(KERNEL_DS);
-	err = sys_clock_settime(which_clock,
-				(struct timespec __user *) &ts);
-	set_fs(oldfs);
-	return err;
+	return clock_settime(which_clock, &ts);
 }
 
 COMPAT_SYSCALL_DEFINE2(clock_gettime, clockid_t, which_clock,
 		       struct compat_timespec __user *, tp)
 {
 	long err;
-	mm_segment_t oldfs;
-	struct timespec ts;
+	struct timespec64 ts;
 
-	oldfs = get_fs();
-	set_fs(KERNEL_DS);
-	err = sys_clock_gettime(which_clock,
-				(struct timespec __user *) &ts);
-	set_fs(oldfs);
-	if (!err && compat_put_timespec(&ts, tp))
+	err = clock_gettime(which_clock, &ts);
+	if (!err && compat_put_timespec64(&ts, tp))
 		return -EFAULT;
 	return err;
 }
@@ -1345,16 +1335,11 @@ COMPAT_SYSCALL_DEFINE2(clock_adjtime, clockid_t, which_clock,
 COMPAT_SYSCALL_DEFINE2(clock_getres, clockid_t, which_clock,
 		       struct compat_timespec __user *, tp)
 {
-	long err;
-	mm_segment_t oldfs;
-	struct timespec ts;
+	int err;
+	struct timespec64 ts;
 
-	oldfs = get_fs();
-	set_fs(KERNEL_DS);
-	err = sys_clock_getres(which_clock,
-			       (struct timespec __user *) &ts);
-	set_fs(oldfs);
-	if (!err && tp && compat_put_timespec(&ts, tp))
+	err = clock_getres(which_clock, &ts);
+	if (!err && tp && compat_put_timespec64(&ts, tp))
 		return -EFAULT;
 	return err;
 }
