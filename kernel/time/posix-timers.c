@@ -827,7 +827,7 @@ static int timer_gettime(timer_t timer_id, struct itimerspec *setting)
 
 /* Get the time remaining on a POSIX.1b interval timer. */
 SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
-		struct itimerspec __user *, setting)
+		struct __kernel_itimerspec __user *, setting)
 {
 	struct itimerspec cur_setting;
 	int ret;
@@ -979,8 +979,8 @@ static int timer_settime(timer_t timer_id, int flags, struct itimerspec *new_spe
 
 /* Set a POSIX.1b interval timer */
 SYSCALL_DEFINE4(timer_settime, timer_t, timer_id, int, flags,
-		const struct itimerspec __user *, new_setting,
-		struct itimerspec __user *, old_setting)
+		const struct __kernel_itimerspec __user *, new_setting,
+		struct __kernel_itimerspec __user *, old_setting)
 {
 	struct itimerspec new_spec, old_spec;
 	int error;
@@ -1105,7 +1105,7 @@ static int clock_settime(clockid_t which_clock, struct timespec64 *tp)
 }
 
 SYSCALL_DEFINE2(clock_settime, const clockid_t, which_clock,
-		const struct timespec __user *, tp)
+		const struct __kernel_timespec __user *, tp)
 {
 	struct timespec64 new_tp64;
 
@@ -1132,7 +1132,7 @@ static int clock_gettime(clockid_t which_clock, struct timespec64 *tp)
 }
 
 SYSCALL_DEFINE2(clock_gettime, const clockid_t, which_clock,
-		struct timespec __user *,tp)
+		struct __kernel_timespec __user *,tp)
 {
 	struct timespec64 kernel_tp64;
 	int error;
@@ -1192,7 +1192,7 @@ int clock_getres(const clockid_t which_clock, struct timespec64 *tp)
 }
 
 SYSCALL_DEFINE2(clock_getres, const clockid_t, which_clock,
-		struct timespec __user *, tp)
+		struct __kernel_timespec __user *, tp)
 {
 	struct timespec64 rtn_tp64;
 	int error;
