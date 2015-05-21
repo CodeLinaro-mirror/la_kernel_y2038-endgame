@@ -1480,17 +1480,17 @@ static int __sched do_nanosleep(struct hrtimer_sleeper *t, enum hrtimer_mode mod
 	return t->task == NULL;
 }
 
-static int update_rmtp(struct hrtimer *timer, struct __kernel_timespec __user *rmtp)
+static int update_rmtp(struct hrtimer *timer, struct timespec __user *rmtp)
 {
-	struct timespec64 rmt;
+	struct timespec rmt;
 	ktime_t rem;
 
 	rem = hrtimer_expires_remaining(timer);
 	if (rem.tv64 <= 0)
 		return 0;
-	rmt = ktime_to_timespec64(rem);
+	rmt = ktime_to_timespec(rem);
 
-	if (put_timespec64(&rmt, rmtp))
+	if (copy_to_user(rmtp, &rmt, sizeof(*rmtp)))
 		return -EFAULT;
 
 	return 1;
@@ -1499,7 +1499,7 @@ static int update_rmtp(struct hrtimer *timer, struct __kernel_timespec __user *r
 long __sched hrtimer_nanosleep_restart(struct restart_block *restart)
 {
 	struct hrtimer_sleeper t;
-	struct __kernel_timespec __user  *rmtp;
+	struct timespec __user  *rmtp;
 	int ret = 0;
 
 	hrtimer_init_on_stack(&t.timer, restart->nanosleep.clockid,
@@ -1523,7 +1523,7 @@ out:
 	return ret;
 }
 
-long hrtimer_nanosleep(struct timespec *rqtp, struct __kernel_timespec __user *rmtp,
+long hrtimer_nanosleep(struct timespec *rqtp, struct timespec __user *rmtp,
 		       const enum hrtimer_mode mode, const clockid_t clockid)
 {
 	struct restart_block *restart;
@@ -1564,15 +1564,13 @@ out:
 	return ret;
 }
 
-SYSCALL_DEFINE2(nanosleep, struct __kernel_timespec __user *, rqtp,
-		struct __kernel_timespec __user *, rmtp)
+SYSCALL_DEFINE2(nanosleep, struct timespec __user *, rqtp,
+		struct timespec __user *, rmtp)
 {
 	struct timespec tu;
-	struct timespec64 tu64;
 
-	if (get_timespec64(&tu64, rqtp))
+	if (copy_from_user(&tu, rqtp, sizeof(tu)))
 		return -EFAULT;
-	tu = timespec64_to_timespec(tu64);
 
 	if (!timespec_valid(&tu))
 		return -EINVAL;
