@@ -1091,36 +1091,42 @@ void exit_itimers(struct signal_struct *sig)
 	}
 }
 
-static int clock_settime(clockid_t which_clock, struct timespec *tp)
+static int clock_settime(clockid_t which_clock, struct timespec64 *tp)
 {
 	struct k_clock *kc = clockid_to_kclock(which_clock);
+	struct timespec new_tp;
 
 	if (!kc || !kc->clock_set)
 		return -EINVAL;
 
-	return kc->clock_set(which_clock, tp);
+	new_tp = timespec64_to_timespec(*tp);
+
+	return kc->clock_set(which_clock, &new_tp);
 }
 
 SYSCALL_DEFINE2(clock_settime, const clockid_t, which_clock,
 		const struct timespec __user *, tp)
 {
-	struct timespec new_tp;
+	struct timespec64 new_tp64;
 
-	if (get_timespec(&new_tp, tp))
+	if (get_timespec64(&new_tp64, tp))
 		return -EFAULT;
 
-	return clock_settime(which_clock, &new_tp);
+	return clock_settime(which_clock, &new_tp64);
 }
 
-static int clock_gettime(clockid_t which_clock, struct timespec *tp)
+static int clock_gettime(clockid_t which_clock, struct timespec64 *tp)
 {
 	struct k_clock *kc = clockid_to_kclock(which_clock);
+	struct timespec kernel_tp;
 	int error;
 
 	if (!kc)
 		return -EINVAL;
 
-	error = kc->clock_get(which_clock, tp);
+	error = kc->clock_get(which_clock, &kernel_tp);
+
+	*tp = timespec_to_timespec64(kernel_tp);
 
 	return error;
 }
@@ -1128,12 +1134,12 @@ static int clock_gettime(clockid_t which_clock, struct timespec *tp)
 SYSCALL_DEFINE2(clock_gettime, const clockid_t, which_clock,
 		struct timespec __user *,tp)
 {
-	struct timespec kernel_tp;
+	struct timespec64 kernel_tp64;
 	int error;
 
-	error = clock_gettime(which_clock, &kernel_tp);
+	error = clock_gettime(which_clock, &kernel_tp64);
 
-	if (!error && put_timespec(&kernel_tp, tp))
+	if (!error && put_timespec64(&kernel_tp64, tp))
 		error = -EFAULT;
 
 	return error;
@@ -1168,15 +1174,18 @@ SYSCALL_DEFINE2(clock_adjtime, const clockid_t, which_clock,
 	return err;
 }
 
-int clock_getres(const clockid_t which_clock, struct timespec *tp)
+int clock_getres(const clockid_t which_clock, struct timespec64 *tp)
 {
 	struct k_clock *kc = clockid_to_kclock(which_clock);
+	struct timespec rtn_tp;
 	int error;
 
 	if (!kc)
 		return -EINVAL;
 
-	error = kc->clock_getres(which_clock, tp);
+	error = kc->clock_getres(which_clock, &rtn_tp);
+
+	*tp = timespec_to_timespec64(rtn_tp);
 
 	return error;
 
@@ -1185,12 +1194,12 @@ int clock_getres(const clockid_t which_clock, struct timespec *tp)
 SYSCALL_DEFINE2(clock_getres, const clockid_t, which_clock,
 		struct timespec __user *, tp)
 {
-	struct timespec rtn_tp;
+	struct timespec64 rtn_tp64;
 	int error;
 
-	error = clock_getres(which_clock, &rtn_tp);
+	error = clock_getres(which_clock, &rtn_tp64);
 
-	if (!error && put_timespec(&rtn_tp, tp))
+	if (!error && put_timespec64(&rtn_tp64, tp))
 		error = -EFAULT;
 
 	return error;
