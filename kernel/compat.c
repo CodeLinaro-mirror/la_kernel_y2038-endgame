@@ -253,11 +253,11 @@ int compat_convert_timespec(struct timespec __user **kts,
 static long compat_nanosleep_restart(struct restart_block *restart)
 {
 	struct compat_timespec __user *rmtp;
-	struct __kernel_timespec rmt;
+	struct timespec rmt;
 	mm_segment_t oldfs;
 	long ret;
 
-	restart->nanosleep.rmtp = (struct __kernel_timespec __user *) &rmt;
+	restart->nanosleep.rmtp = (struct timespec __user *) &rmt;
 	oldfs = get_fs();
 	set_fs(KERNEL_DS);
 	ret = hrtimer_nanosleep_restart(restart);
@@ -266,8 +266,7 @@ static long compat_nanosleep_restart(struct restart_block *restart)
 	if (ret == -ERESTART_RESTARTBLOCK) {
 		rmtp = restart->nanosleep.compat_rmtp;
 
-		if (rmtp && put_user(rmt.tv_sec, &rmtp->tv_sec) &&
-		    put_user(rmt.tv_nsec, &rmtp->tv_nsec))
+		if (rmtp && compat_put_timespec(&rmt, rmtp))
 			return -EFAULT;
 	}
 
@@ -277,8 +276,7 @@ static long compat_nanosleep_restart(struct restart_block *restart)
 COMPAT_SYSCALL_DEFINE2(nanosleep, struct compat_timespec __user *, rqtp,
 		       struct compat_timespec __user *, rmtp)
 {
-	struct timespec tu;
-	struct __kernel_timespec rmt;
+	struct timespec tu, rmt;
 	mm_segment_t oldfs;
 	long ret;
 
@@ -291,7 +289,7 @@ COMPAT_SYSCALL_DEFINE2(nanosleep, struct compat_timespec __user *, rqtp,
 	oldfs = get_fs();
 	set_fs(KERNEL_DS);
 	ret = hrtimer_nanosleep(&tu,
-				rmtp ? (struct __kernel_timespec __user *)&rmt : NULL,
+				rmtp ? (struct timespec __user *)&rmt : NULL,
 				HRTIMER_MODE_REL, CLOCK_MONOTONIC);
 	set_fs(oldfs);
 
@@ -320,8 +318,7 @@ COMPAT_SYSCALL_DEFINE2(nanosleep, struct compat_timespec __user *, rqtp,
 		restart->fn = compat_nanosleep_restart;
 		restart->nanosleep.compat_rmtp = rmtp;
 
-		if (rmtp && put_user(rmt.tv_sec, &rmtp->tv_sec) &&
-		    put_user(rmt.tv_nsec, &rmtp->tv_nsec))
+		if (rmtp && compat_put_timespec(&rmt, rmtp))
 			return -EFAULT;
 	}
 	return ret;
