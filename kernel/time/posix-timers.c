@@ -737,7 +737,7 @@ static int do_timer_gettime(timer_t timer_id,  struct itimerspec64 *setting)
 
 /* Get the time remaining on a POSIX.1b interval timer. */
 SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
-		struct itimerspec __user *, setting)
+		struct __kernel_itimerspec __user *, setting)
 {
 	struct itimerspec64 cur_setting;
 
@@ -903,8 +903,8 @@ static int do_timer_settime(timer_t timer_id, int flags,
 {
 	const struct k_clock *kc;
 	struct k_itimer *timr;
+	int error;
 	unsigned long flag;
-	int error = 0;
 
 	if (!timespec64_valid(&new_spec64->it_interval) ||
 	    !timespec64_valid(&new_spec64->it_value))
@@ -924,18 +924,14 @@ retry:
 		error = kc->timer_set(timr, flags, new_spec64, old_spec64);
 
 	unlock_timer(timr, flag);
-	if (error == TIMER_RETRY) {
-		old_spec64 = NULL;	// We already got the old time...
-		goto retry;
-	}
 
 	return error;
 }
 
 /* Set a POSIX.1b interval timer */
 SYSCALL_DEFINE4(timer_settime, timer_t, timer_id, int, flags,
-		const struct itimerspec __user *, new_setting,
-		struct itimerspec __user *, old_setting)
+		const struct __kernel_itimerspec __user *, new_setting,
+		struct __kernel_itimerspec __user *, old_setting)
 {
 	struct itimerspec64 new_spec, old_spec;
 	struct itimerspec64 *rtn = old_setting ? &old_spec : NULL;
@@ -1067,33 +1063,47 @@ void exit_itimers(struct signal_struct *sig)
 	}
 }
 
-SYSCALL_DEFINE2(clock_settime, const clockid_t, which_clock,
-		const struct timespec __user *, tp)
+static int clock_settime(clockid_t which_clock, struct timespec64 *tp)
 {
 	const struct k_clock *kc = clockid_to_kclock(which_clock);
-	struct timespec64 new_tp;
 
 	if (!kc || !kc->clock_set)
 		return -EINVAL;
 
+	return kc->clock_set(which_clock, tp);
+}
+
+SYSCALL_DEFINE2(clock_settime, const clockid_t, which_clock,
+		const struct __kernel_timespec __user *, tp)
+{
+	struct timespec64 new_tp;
+
 	if (get_timespec64(&new_tp, tp))
 		return -EFAULT;
 
-	return kc->clock_set(which_clock, &new_tp);
+	return clock_settime(which_clock, &new_tp);
 }
 
-SYSCALL_DEFINE2(clock_gettime, const clockid_t, which_clock,
-		struct timespec __user *,tp)
+static int clock_gettime(clockid_t which_clock, struct timespec64 *tp)
 {
 	const struct k_clock *kc = clockid_to_kclock(which_clock);
-	struct timespec64 kernel_tp;
 	int error;
 
 	if (!kc)
 		return -EINVAL;
 
-	error = kc->clock_get(which_clock, &kernel_tp);
+	error = kc->clock_get(which_clock, tp);
 
+	return error;
+}
+
+SYSCALL_DEFINE2(clock_gettime, const clockid_t, which_clock,
+		struct __kernel_timespec __user *,tp)
+{
+	struct timespec64 kernel_tp;
+	int error;
+
+	error = clock_gettime(which_clock, &kernel_tp);
 	if (!error && put_timespec64(&kernel_tp, tp))
 		error = -EFAULT;
 
@@ -1129,19 +1139,24 @@ SYSCALL_DEFINE2(clock_adjtime, const clockid_t, which_clock,
 	return err;
 }
 
-SYSCALL_DEFINE2(clock_getres, const clockid_t, which_clock,
-		struct timespec __user *, tp)
+int clock_getres(const clockid_t which_clock, struct timespec64 *tp)
 {
 	const struct k_clock *kc = clockid_to_kclock(which_clock);
-	struct timespec64 rtn_tp;
-	int error;
 
 	if (!kc)
 		return -EINVAL;
 
-	error = kc->clock_getres(which_clock, &rtn_tp);
+	return kc->clock_getres(which_clock, tp);
+}
 
-	if (!error && tp && put_timespec64(&rtn_tp, tp))
+SYSCALL_DEFINE2(clock_getres, const clockid_t, which_clock,
+		struct __kernel_timespec __user *, tp)
+{
+	struct timespec64 rtn_tp;
+	int error;
+
+	error = clock_getres(which_clock, &rtn_tp);
+	if (!error && put_timespec64(&rtn_tp, tp))
 		error = -EFAULT;
 
 	return error;
@@ -1237,7 +1252,7 @@ static int common_nsleep(const clockid_t which_clock, int flags,
 }
 
 SYSCALL_DEFINE4(clock_nanosleep, const clockid_t, which_clock, int, flags,
-		const struct timespec __user *, rqtp,
+		const struct __kernel_timespec __user *, rqtp,
 		struct timespec __user *, rmtp)
 {
 	const struct k_clock *kc = clockid_to_kclock(which_clock);
