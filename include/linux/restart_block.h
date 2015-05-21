@@ -7,7 +7,7 @@
 #include <linux/compiler.h>
 #include <linux/types.h>
 
-struct __kernel_timespec;
+struct timespec;
 struct compat_timespec;
 struct pollfd;
 
@@ -29,11 +29,9 @@ struct restart_block {
 		/* For nanosleep */
 		struct {
 			clockid_t clockid;
-#ifdef CONFIG_COMPAT_TIME
-			struct __kernel_timespec __user *rmtp;
-			struct compat_timespec __user *compat_rmtp;
-#else
 			struct timespec __user *rmtp;
+#ifdef CONFIG_COMPAT_TIME
+			struct compat_timespec __user *compat_rmtp;
 #endif
 			u64 expires;
 		} nanosleep;
