@@ -391,6 +391,7 @@ void kprobe_arm_test_cases(void)
 	TEST_UNSUPPORTED(__inst_arm(0xe0700090) " @ undef")
 	TEST_UNSUPPORTED(__inst_arm(0xe07fff9f) " @ undef")
 
+#if __LINUX_ARM_ARCH__ >= 4
 	TEST_RR(  "umull	r0, r1, r",2, VAL1,", r",3, VAL2,"")
 	TEST_RR(  "umullls	r7, r8, r",9, VAL2,", r",10, VAL1,"")
 	TEST_R(   "umull	lr, r12, r",11,VAL3,", r13")
@@ -436,6 +437,7 @@ void kprobe_arm_test_cases(void)
 	TEST_UNSUPPORTED(__inst_arm(0xe0f0f392) " @ smlals r0, pc, r2, r3")
 	TEST_UNSUPPORTED(__inst_arm(0xe0f0139f) " @ smlals r0, r1, pc, r3")
 	TEST_UNSUPPORTED(__inst_arm(0xe0f01f92) " @ smlals r0, r1, r2, pc")
+#endif
 
 	TEST_GROUP("Synchronization primitives")
 
@@ -478,7 +480,7 @@ void kprobe_arm_test_cases(void)
 	TEST_UNSUPPORTED("ldrexh	r2, [sp]")
 #endif
 	TEST_GROUP("Extra load/store instructions")
-
+#if __LINUX_ARM_ARCH__ >= 4
 	TEST_RPR(  "strh	r",0, VAL1,", [r",1, 48,", -r",2, 24,"]")
 	TEST_RPR(  "streqh	r",14,VAL2,", [r",11,0, ", r",12, 48,"]")
 	TEST_UNSUPPORTED(  "streqh	r14, [r13, r12]")
@@ -560,6 +562,7 @@ void kprobe_arm_test_cases(void)
 	TEST(      "ldrsh	r0, [pc, #0]")
 	TEST_UNSUPPORTED(__inst_arm(0xe1ffc3f0) "	@ ldrsh r12, [pc, #48]!")
 	TEST_UNSUPPORTED(__inst_arm(0xe0d9f3f0) "	@ ldrsh pc, [r9], #48")
+#endif
 
 #if __LINUX_ARM_ARCH__ >= 7
 	TEST_UNSUPPORTED("strht	r1, [r2], r3")
