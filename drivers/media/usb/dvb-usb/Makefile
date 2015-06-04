@@ -17,7 +17,7 @@ obj-$(CONFIG_DVB_USB_DTT200U) += dvb-usb-dtt200u.o
 dvb-usb-dibusb-common-objs := dibusb-common.o
 
 dvb-usb-dibusb-mc-common-objs := dibusb-mc-common.o
-obj-$(CONFIG_DVB_USB_DIB3000MC)	+= dvb-usb-dibusb-mc-common.o
+obj-$(CONFIG_DVB_USB_DIB3000MC)	+= dvb-usb-dibusb-common.o dvb-usb-dibusb-mc-common.o
 
 dvb-usb-a800-objs := a800.o
 obj-$(CONFIG_DVB_USB_A800) += dvb-usb-dibusb-common.o dvb-usb-a800.o
