@@ -113,6 +113,8 @@ struct k_clock {
 #define TIMER_RETRY 1
 	void (*timer_get) (struct k_itimer * timr,
 			   struct itimerspec * cur_setting);
+	void (*timer_get64) (struct k_itimer *timr,
+			     struct itimerspec64 *cur_setting);
 };
 
 extern struct k_clock clock_posix_cpu;

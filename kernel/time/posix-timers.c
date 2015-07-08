@@ -142,6 +142,7 @@ static int common_timer_del(struct k_itimer *timer);
 static enum hrtimer_restart posix_timer_fn(struct hrtimer *data);
 
 static struct k_itimer *__lock_timer(timer_t timer_id, unsigned long *flags);
+static struct k_clock *clockid_to_kclock(const clockid_t id);
 
 #define lock_timer(tid, flags)						   \
 ({	struct k_itimer *__timr;					   \
@@ -590,6 +591,16 @@ static struct pid *good_sigevent(sigevent_t * event)
 	return task_pid(rtn);
 }
 
+static void default_timer_get64(struct k_itimer *timr,
+				struct itimerspec64 *cur_setting64)
+{
+	struct itimerspec cur_setting;
+	struct k_clock *kc = clockid_to_kclock(timr->it_clock);
+
+	kc->timer_get(timr, &cur_setting);
+	*cur_setting64 = itimerspec_to_itimerspec64(&cur_setting);
+}
+
 void posix_timers_register_clock(const clockid_t clock_id,
 				 struct k_clock *new_clock)
 {
@@ -609,6 +620,9 @@ void posix_timers_register_clock(const clockid_t clock_id,
 		       clock_id);
 		return;
 	}
+
+	if (new_clock->timer_get && !new_clock->timer_get64)
+		new_clock->timer_get64 = default_timer_get64;
 
 	posix_clocks[clock_id] = *new_clock;
 }
@@ -843,7 +857,7 @@ common_timer_get(struct k_itimer *timr, struct itimerspec *cur_setting)
 		cur_setting->it_value = ktime_to_timespec(remaining);
 }
 
-static int timer_gettime(timer_t timer_id, struct itimerspec *setting)
+static int timer_gettime(timer_t timer_id, struct itimerspec64 *setting)
 {
 	struct k_itimer *timr;
 	struct k_clock *kc;
@@ -855,10 +869,10 @@ static int timer_gettime(timer_t timer_id, struct itimerspec *setting)
 		return -EINVAL;
 
 	kc = clockid_to_kclock(timr->it_clock);
-	if (WARN_ON_ONCE(!kc || !kc->timer_get))
+	if (WARN_ON_ONCE(!kc || !kc->timer_get64))
 		ret = -EINVAL;
 	else
-		kc->timer_get(timr, setting);
+		kc->timer_get64(timr, setting);
 
 	unlock_timer(timr, flags);
 
@@ -882,20 +896,6 @@ static int timer_gettime(timer_t timer_id, struct itimerspec *setting)
 	((access_ok(VERIFY_WRITE, (uts), sizeof(*(uts))) || \
 	  __put_timespec((kts), (uts))) ? \
 	 -EFAULT : 0)
-
-/* Get the time remaining on a POSIX.1b interval timer. */
-SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
-		struct __kernel_itimerspec __user *, setting)
-{
-	struct itimerspec cur_setting;
-	int ret;
-
-	ret = timer_gettime(timer_id, &cur_setting);
-	if (!ret && put_itimerspec(&cur_setting, setting))
-		return -EFAULT;
-
-	return ret;
-}
 
 int get_itimerspec(struct itimerspec *it, const struct __kernel_itimerspec __user *uit)
 {
@@ -926,6 +926,19 @@ int put_itimerspec(const struct itimerspec *it, struct __kernel_itimerspec __use
 
 	ret = copy_to_user(uit, &kit, sizeof(kit));
 	if (ret)
+		return -EFAULT;
+
+	return ret;
+}
+/* Get the time remaining on a POSIX.1b interval timer. */
+SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
+		struct __kernel_itimerspec __user *, setting)
+{
+	struct itimerspec64 cur_setting;
+	int ret;
+
+	ret = timer_gettime(timer_id, &cur_setting);
+	if (!ret && put_itimerspec64(&cur_setting, setting))
 		return -EFAULT;
 
 	return ret;
