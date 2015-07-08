@@ -630,6 +630,20 @@ static int default_clock_set64(const clockid_t which_clock,
 	return ret;
 }
 
+static int default_clock_get64(const clockid_t which_clock,
+			       struct timespec64 *tp64)
+{
+	struct k_clock *kc = clockid_to_kclock(which_clock);
+	struct timespec tp;
+	int ret;
+
+	ret = kc->clock_get(which_clock, &tp);
+	if (!ret)
+		*tp64 = timespec_to_timespec64(tp);
+
+	return ret;
+}
+
 void posix_timers_register_clock(const clockid_t clock_id,
 				 struct k_clock *new_clock)
 {
@@ -639,8 +653,8 @@ void posix_timers_register_clock(const clockid_t clock_id,
 		return;
 	}
 
-	if (!new_clock->clock_get) {
-		printk(KERN_WARNING "POSIX clock id %d lacks clock_get()\n",
+	if (!new_clock->clock_get && !new_clock->clock_get64) {
+		printk(KERN_WARNING "POSIX clock id %d lacks clock_get() and clock_get64()\n",
 		       clock_id);
 		return;
 	}
@@ -656,6 +670,8 @@ void posix_timers_register_clock(const clockid_t clock_id,
 		new_clock->timer_set64 = default_timer_set64;
 	if (new_clock->clock_set && !new_clock->clock_set64)
 		new_clock->clock_set64 = default_clock_set64;
+	if (new_clock->clock_get && !new_clock->clock_get64)
+		new_clock->clock_get64 = default_clock_get64;
 
 	posix_clocks[clock_id] = *new_clock;
 }
@@ -1217,17 +1233,11 @@ SYSCALL_DEFINE2(clock_settime, const clockid_t, which_clock,
 static int clock_gettime(clockid_t which_clock, struct timespec64 *tp)
 {
 	struct k_clock *kc = clockid_to_kclock(which_clock);
-	struct timespec kernel_tp;
-	int error;
 
 	if (!kc)
 		return -EINVAL;
 
-	error = kc->clock_get(which_clock, &kernel_tp);
-
-	*tp = timespec_to_timespec64(kernel_tp);
-
-	return error;
+	return kc->clock_get64(which_clock, tp);
 }
 
 SYSCALL_DEFINE2(clock_gettime, const clockid_t, which_clock,
