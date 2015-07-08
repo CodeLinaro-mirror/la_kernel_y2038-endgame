@@ -44,12 +44,12 @@ typedef u64 __nocast cputime64_t;
 #define secs_to_cputime(sec)		jiffies_to_cputime((sec) * HZ)
 
 /*
- * Convert cputime to timespec and back.
+ * Convert cputime to timespec64 and back.
  */
-#define timespec_to_cputime(__val)	\
-	jiffies_to_cputime(timespec_to_jiffies(__val))
-#define cputime_to_timespec(__ct,__val)	\
-	jiffies_to_timespec(cputime_to_jiffies(__ct),__val)
+#define timespec64_to_cputime(__val)	\
+	jiffies_to_cputime(timespec64_to_jiffies(__val))
+#define cputime_to_timespec64(__ct,__val)	\
+	jiffies_to_timespec64(cputime_to_jiffies(__ct),__val)
 
 /*
  * Convert cputime to timeval and back.

@@ -71,14 +71,14 @@ typedef u64 __nocast cputime64_t;
 	(__force cputime_t)((__secs) * NSEC_PER_SEC)
 
 /*
- * Convert cputime <-> timespec (nsec)
+ * Convert cputime <-> timespec64 (nsec)
  */
-static inline cputime_t timespec_to_cputime(const struct timespec *val)
+static inline cputime_t timespec64_to_cputime(const struct timespec64 *val)
 {
 	u64 ret = val->tv_sec * NSEC_PER_SEC + val->tv_nsec;
 	return (__force cputime_t) ret;
 }
-static inline void cputime_to_timespec(const cputime_t ct, struct timespec *val)
+static inline void cputime_to_timespec64(const cputime_t ct, struct timespec64 *val)
 {
 	u32 rem;
 

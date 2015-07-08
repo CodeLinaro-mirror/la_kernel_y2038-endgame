@@ -81,16 +81,16 @@ static inline cputime_t secs_to_cputime(const unsigned int s)
 }
 
 /*
- * Convert cputime to timespec and back.
+ * Convert cputime to timespec64 and back.
  */
-static inline cputime_t timespec_to_cputime(const struct timespec *value)
+static inline cputime_t timespec64_to_cputime(const struct timespec64 *value)
 {
 	unsigned long long ret = value->tv_sec * CPUTIME_PER_SEC;
 	return (__force cputime_t)(ret + __div(value->tv_nsec * CPUTIME_PER_USEC, NSEC_PER_USEC));
 }
 
-static inline void cputime_to_timespec(const cputime_t cputime,
-				       struct timespec *value)
+static inline void cputime_to_timespec64(const cputime_t cputime,
+					 struct timespec64 *value)
 {
 	unsigned long long __cputime = (__force unsigned long long) cputime;
 	value->tv_nsec = (__cputime % CPUTIME_PER_SEC) * NSEC_PER_USEC / CPUTIME_PER_USEC;

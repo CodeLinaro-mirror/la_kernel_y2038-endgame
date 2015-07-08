@@ -154,9 +154,9 @@ static inline cputime_t secs_to_cputime(const unsigned long sec)
 }
 
 /*
- * Convert cputime <-> timespec
+ * Convert cputime <-> timespec64
  */
-static inline void cputime_to_timespec(const cputime_t ct, struct timespec *p)
+static inline void cputime_to_timespec64(const cputime_t ct, struct timespec64 *p)
 {
 	u64 x = (__force u64) ct;
 	unsigned int frac;
@@ -168,7 +168,7 @@ static inline void cputime_to_timespec(const cputime_t ct, struct timespec *p)
 	p->tv_nsec = x;
 }
 
-static inline cputime_t timespec_to_cputime(const struct timespec *p)
+static inline cputime_t timespec64_to_cputime(const struct timespec64 *p)
 {
 	u64 ct;
 
