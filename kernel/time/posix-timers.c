@@ -149,6 +149,74 @@ static struct k_itimer *__lock_timer(timer_t timer_id, unsigned long *flags);
 	__timr;								   \
 })
 
+static int get_timespec64(struct timespec64 *ts,
+			  const struct timespec __user *uts)
+{
+	struct timespec tmp;
+	int ret;
+
+	if (sizeof(tmp) == sizeof(*ts))
+		return copy_from_user(ts, uts, sizeof(*uts)) ? -EFAULT : 0;
+
+	ret = copy_from_user(&tmp, uts, sizeof(*uts));
+	if (ret)
+		return -EFAULT;
+
+	ts->tv_sec = tmp.tv_sec;
+	ts->tv_nsec = tmp.tv_nsec;
+	return 0;
+}
+
+static int put_timespec64(const struct timespec64 *ts,
+			  struct timespec __user *uts)
+{
+	struct timespec tmp;
+
+	if (sizeof(tmp) == sizeof(*ts))
+		return copy_to_user(uts, ts, sizeof(*uts)) ? -EFAULT : 0;
+
+	tmp.tv_sec = ts->tv_sec;
+	tmp.tv_nsec = ts->tv_nsec;
+
+	return copy_to_user(uts, &tmp, sizeof(*uts)) ? -EFAULT : 0;
+}
+
+static int get_itimerspec64(struct itimerspec64 *its,
+			    const struct __kernel_itimerspec __user *uits)
+{
+	struct itimerspec tmp;
+	int ret;
+
+	if (sizeof(tmp) == sizeof(*its))
+		return copy_from_user(its, uits, sizeof(*uits)) ? -EFAULT : 0;
+
+	ret = copy_from_user(&tmp, uits, sizeof(*uits));
+	if (ret)
+		return -EFAULT;
+
+	its->it_interval.tv_sec = tmp.it_interval.tv_sec;
+	its->it_interval.tv_nsec = tmp.it_interval.tv_nsec;
+	its->it_value.tv_sec = tmp.it_value.tv_sec;
+	its->it_value.tv_nsec = tmp.it_value.tv_nsec;
+	return 0;
+}
+
+static int put_itimerspec64(const struct itimerspec64 *its,
+			    struct __kernel_itimerspec __user *uits)
+{
+	struct itimerspec tmp;
+
+	if (sizeof(tmp) == sizeof(*its))
+		return copy_to_user(uits, its, sizeof(*uits)) ? -EFAULT : 0;
+
+	tmp.it_interval.tv_sec = its->it_interval.tv_sec;
+	tmp.it_interval.tv_nsec = its->it_interval.tv_nsec;
+	tmp.it_value.tv_sec = its->it_value.tv_sec;
+	tmp.it_value.tv_nsec = its->it_value.tv_nsec;
+
+	return copy_to_user(uits, &tmp, sizeof(*uits)) ? -EFAULT : 0;
+}
+
 static int hash(struct signal_struct *sig, unsigned int nr)
 {
 	return hash_32(hash32_ptr(sig) ^ nr, HASH_BITS(posix_timers_hashtable));
