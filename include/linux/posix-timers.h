@@ -109,6 +109,9 @@ struct k_clock {
 	int (*timer_set) (struct k_itimer * timr, int flags,
 			  struct itimerspec * new_setting,
 			  struct itimerspec * old_setting);
+	int (*timer_set64) (struct k_itimer *timr, int flags,
+			    struct itimerspec64 *new_setting,
+			    struct itimerspec64 *old_setting);
 	int (*timer_del) (struct k_itimer * timr);
 #define TIMER_RETRY 1
 	void (*timer_get) (struct k_itimer * timr,

@@ -601,6 +601,23 @@ static void default_timer_get64(struct k_itimer *timr,
 	*cur_setting64 = itimerspec_to_itimerspec64(&cur_setting);
 }
 
+static int default_timer_set64(struct k_itimer *timr, int flags,
+			       struct itimerspec64 *new_setting64,
+			       struct itimerspec64 *old_setting64)
+{
+	struct k_clock *kc = clockid_to_kclock(timr->it_clock);
+	struct itimerspec new_setting, old_setting;
+	struct itimerspec *rtn = old_setting64 ? &old_setting : NULL;
+	int ret;
+
+	new_setting = itimerspec64_to_itimerspec(new_setting64);
+	ret = kc->timer_set(timr, flags, &new_setting, rtn);
+	if (!ret && old_setting64)
+		*old_setting64 = itimerspec_to_itimerspec64(&old_setting);
+
+	return ret;
+}
+
 void posix_timers_register_clock(const clockid_t clock_id,
 				 struct k_clock *new_clock)
 {
@@ -623,6 +640,8 @@ void posix_timers_register_clock(const clockid_t clock_id,
 
 	if (new_clock->timer_get && !new_clock->timer_get64)
 		new_clock->timer_get64 = default_timer_get64;
+	if (new_clock->timer_set && !new_clock->timer_set64)
+		new_clock->timer_set64 = default_timer_set64;
 
 	posix_clocks[clock_id] = *new_clock;
 }
@@ -1020,26 +1039,26 @@ common_timer_set(struct k_itimer *timr, int flags,
 	return 0;
 }
 
-static int timer_settime(timer_t timer_id, int flags, struct itimerspec *new_spec,
-			  struct itimerspec __user *old_spec)
+static int timer_settime(timer_t timer_id, int flags, struct itimerspec64 *new_spec,
+			   struct itimerspec64 *old_spec)
 {
 	struct k_itimer *timr;
 	int error;
 	unsigned long flag;
 	struct k_clock *kc;
 
-	if (!timespec_valid(&new_spec->it_interval) ||
-	    !timespec_valid(&new_spec->it_value))
+	if (!timespec64_valid(&new_spec->it_interval) ||
+	    !timespec64_valid(&new_spec->it_value))
 		return -EINVAL;
 	timr = lock_timer(timer_id, &flag);
 	if (!timr)
 		return -EINVAL;
 
 	kc = clockid_to_kclock(timr->it_clock);
-	if (WARN_ON_ONCE(!kc || !kc->timer_set))
+	if (WARN_ON_ONCE(!kc || !kc->timer_set64))
 		error = -EINVAL;
 	else
-		error = kc->timer_set(timr, flags, new_spec, old_spec);
+		error = kc->timer_set64(timr, flags, new_spec, old_spec);
 
 	unlock_timer(timr, flag);
 
@@ -1051,14 +1070,14 @@ SYSCALL_DEFINE4(timer_settime, timer_t, timer_id, int, flags,
 		const struct __kernel_itimerspec __user *, new_setting,
 		struct __kernel_itimerspec __user *, old_setting)
 {
-	struct itimerspec new_spec, old_spec;
+	struct itimerspec64 new_spec, old_spec;
 	int error;
-	struct itimerspec *rtn = old_setting ? &old_spec : NULL;
+	struct itimerspec64 *rtn = old_setting ? &old_spec : NULL;
 
 	if (!new_setting)
 		return -EINVAL;
 
-	if (get_itimerspec(&new_spec, new_setting))
+	if (get_itimerspec64(&new_spec, new_setting))
 		return -EFAULT;
 retry:
 	error = timer_settime(timer_id, flags, &new_spec, rtn);
@@ -1067,7 +1086,7 @@ retry:
 		goto retry;
 	}
 
-	if (old_setting && !error && put_itimerspec(&old_spec, old_setting));
+	if (old_setting && !error && put_itimerspec64(&old_spec, old_setting));
 		error = -EFAULT;
 
 	return error;
@@ -1323,13 +1342,13 @@ COMPAT_SYSCALL_DEFINE4(timer_settime, timer_t, timer_id, int, flags,
 		       struct compat_itimerspec __user *, old_setting)
 {
 	long error;
-	struct itimerspec new_spec, old_spec;
-	struct itimerspec *rtn = old_setting ? &old_spec : NULL;
+	struct itimerspec64 new_spec, old_spec;
+	struct itimerspec64 *rtn = old_setting ? &old_spec : NULL;
 
 	if (!new_setting)
 		return -EINVAL;
 
-	if (get_compat_itimerspec(&new_spec, new_setting))
+	if (get_compat_itimerspec64(&new_spec, new_setting))
 		return -EFAULT;
 retry:
 	error = timer_settime(timer_id, flags, &new_spec, rtn);
@@ -1338,8 +1357,7 @@ retry:
 		goto retry;
 	}
 
-	error = timer_settime(timer_id, flags, &new_spec, &old_spec);
-	if (!error && old_setting && put_compat_itimerspec(old_setting, &old_spec))
+	if (!error && old_setting && put_compat_itimerspec64(old_setting, &old_spec))
 		return -EFAULT;
 
 	return error;
