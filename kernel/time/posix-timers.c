@@ -134,9 +134,9 @@ static struct k_clock posix_clocks[MAX_CLOCKS];
 static int common_nsleep(const clockid_t, int flags, struct timespec *t,
 			 struct __kernel_timespec __user *rmtp);
 static int common_timer_create(struct k_itimer *new_timer);
-static void common_timer_get(struct k_itimer *, struct itimerspec *);
+static void common_timer_get(struct k_itimer *, struct itimerspec64 *);
 static int common_timer_set(struct k_itimer *, int,
-			    struct itimerspec *, struct itimerspec *);
+			    struct itimerspec64 *, struct itimerspec64 *);
 static int common_timer_del(struct k_itimer *timer);
 
 static enum hrtimer_restart posix_timer_fn(struct hrtimer *data);
@@ -274,17 +274,17 @@ static inline void unlock_timer(struct k_itimer *timr, unsigned long flags)
 }
 
 /* Get clock_realtime */
-static int posix_clock_realtime_get(clockid_t which_clock, struct timespec *tp)
+static int posix_clock_realtime_get(clockid_t which_clock, struct timespec64 *tp)
 {
-	ktime_get_real_ts(tp);
+	ktime_get_real_ts64(tp);
 	return 0;
 }
 
 /* Set clock_realtime */
 static int posix_clock_realtime_set(const clockid_t which_clock,
-				    const struct timespec *tp)
+				    const struct timespec64 *tp)
 {
-	return do_sys_settimeofday(tp, NULL);
+	return do_sys_settimeofday64(tp, NULL);
 }
 
 static int posix_clock_realtime_adj(const clockid_t which_clock,
@@ -296,54 +296,54 @@ static int posix_clock_realtime_adj(const clockid_t which_clock,
 /*
  * Get monotonic time for posix timers
  */
-static int posix_ktime_get_ts(clockid_t which_clock, struct timespec *tp)
+static int posix_ktime_get_ts(clockid_t which_clock, struct timespec64 *tp)
 {
-	ktime_get_ts(tp);
+	ktime_get_ts64(tp);
 	return 0;
 }
 
 /*
  * Get monotonic-raw time for posix timers
  */
-static int posix_get_monotonic_raw(clockid_t which_clock, struct timespec *tp)
+static int posix_get_monotonic_raw(clockid_t which_clock, struct timespec64 *tp)
 {
-	getrawmonotonic(tp);
+	getrawmonotonic64(tp);
 	return 0;
 }
 
 
-static int posix_get_realtime_coarse(clockid_t which_clock, struct timespec *tp)
+static int posix_get_realtime_coarse(clockid_t which_clock, struct timespec64 *tp)
 {
-	*tp = current_kernel_time();
+	*tp = current_kernel_time64();
 	return 0;
 }
 
 static int posix_get_monotonic_coarse(clockid_t which_clock,
-						struct timespec *tp)
+						struct timespec64 *tp)
 {
-	*tp = get_monotonic_coarse();
+	*tp = get_monotonic_coarse64();
 	return 0;
 }
 
-static int posix_get_coarse_res(const clockid_t which_clock, struct timespec *tp)
+static int posix_get_coarse_res(const clockid_t which_clock, struct timespec64 *tp)
 {
-	*tp = ktime_to_timespec(KTIME_LOW_RES);
+	*tp = ktime_to_timespec64(KTIME_LOW_RES);
 	return 0;
 }
 
-static int posix_get_boottime(const clockid_t which_clock, struct timespec *tp)
+static int posix_get_boottime(const clockid_t which_clock, struct timespec64 *tp)
 {
-	get_monotonic_boottime(tp);
+	get_monotonic_boottime64(tp);
 	return 0;
 }
 
-static int posix_get_tai(clockid_t which_clock, struct timespec *tp)
+static int posix_get_tai(clockid_t which_clock, struct timespec64 *tp)
 {
-	timekeeping_clocktai(tp);
+	*tp = ktime_to_timespec64(ktime_get_clocktai());
 	return 0;
 }
 
-static int posix_get_hrtimer_res(clockid_t which_clock, struct timespec *tp)
+static int posix_get_hrtimer_res(clockid_t which_clock, struct timespec64 *tp)
 {
 	tp->tv_sec = 0;
 	tp->tv_nsec = hrtimer_resolution;
@@ -356,57 +356,57 @@ static int posix_get_hrtimer_res(clockid_t which_clock, struct timespec *tp)
 static __init int init_posix_timers(void)
 {
 	struct k_clock clock_realtime = {
-		.clock_getres	= posix_get_hrtimer_res,
-		.clock_get	= posix_clock_realtime_get,
-		.clock_set	= posix_clock_realtime_set,
+		.clock_getres64	= posix_get_hrtimer_res,
+		.clock_get64	= posix_clock_realtime_get,
+		.clock_set64	= posix_clock_realtime_set,
 		.clock_adj	= posix_clock_realtime_adj,
 		.nsleep		= common_nsleep,
 		.nsleep_restart	= hrtimer_nanosleep_restart,
 		.timer_create	= common_timer_create,
-		.timer_set	= common_timer_set,
-		.timer_get	= common_timer_get,
+		.timer_set64	= common_timer_set,
+		.timer_get64	= common_timer_get,
 		.timer_del	= common_timer_del,
 	};
 	struct k_clock clock_monotonic = {
-		.clock_getres	= posix_get_hrtimer_res,
-		.clock_get	= posix_ktime_get_ts,
+		.clock_getres64	= posix_get_hrtimer_res,
+		.clock_get64	= posix_ktime_get_ts,
 		.nsleep		= common_nsleep,
 		.nsleep_restart	= hrtimer_nanosleep_restart,
 		.timer_create	= common_timer_create,
-		.timer_set	= common_timer_set,
-		.timer_get	= common_timer_get,
+		.timer_set64	= common_timer_set,
+		.timer_get64	= common_timer_get,
 		.timer_del	= common_timer_del,
 	};
 	struct k_clock clock_monotonic_raw = {
-		.clock_getres	= posix_get_hrtimer_res,
-		.clock_get	= posix_get_monotonic_raw,
+		.clock_getres64	= posix_get_hrtimer_res,
+		.clock_get64	= posix_get_monotonic_raw,
 	};
 	struct k_clock clock_realtime_coarse = {
-		.clock_getres	= posix_get_coarse_res,
-		.clock_get	= posix_get_realtime_coarse,
+		.clock_getres64	= posix_get_coarse_res,
+		.clock_get64	= posix_get_realtime_coarse,
 	};
 	struct k_clock clock_monotonic_coarse = {
-		.clock_getres	= posix_get_coarse_res,
-		.clock_get	= posix_get_monotonic_coarse,
+		.clock_getres64	= posix_get_coarse_res,
+		.clock_get64	= posix_get_monotonic_coarse,
 	};
 	struct k_clock clock_tai = {
-		.clock_getres	= posix_get_hrtimer_res,
-		.clock_get	= posix_get_tai,
+		.clock_getres64	= posix_get_hrtimer_res,
+		.clock_get64	= posix_get_tai,
 		.nsleep		= common_nsleep,
 		.nsleep_restart	= hrtimer_nanosleep_restart,
 		.timer_create	= common_timer_create,
-		.timer_set	= common_timer_set,
-		.timer_get	= common_timer_get,
+		.timer_set64	= common_timer_set,
+		.timer_get64	= common_timer_get,
 		.timer_del	= common_timer_del,
 	};
 	struct k_clock clock_boottime = {
-		.clock_getres	= posix_get_hrtimer_res,
-		.clock_get	= posix_get_boottime,
+		.clock_getres64	= posix_get_hrtimer_res,
+		.clock_get64	= posix_get_boottime,
 		.nsleep		= common_nsleep,
 		.nsleep_restart	= hrtimer_nanosleep_restart,
 		.timer_create	= common_timer_create,
-		.timer_set	= common_timer_set,
-		.timer_get	= common_timer_get,
+		.timer_set64	= common_timer_set,
+		.timer_get64	= common_timer_get,
 		.timer_del	= common_timer_del,
 	};
 
@@ -883,7 +883,7 @@ static struct k_itimer *__lock_timer(timer_t timer_id, unsigned long *flags)
  * report.
  */
 static void
-common_timer_get(struct k_itimer *timr, struct itimerspec *cur_setting)
+common_timer_get(struct k_itimer *timr, struct itimerspec64 *cur_setting)
 {
 	ktime_t now, remaining, iv;
 	struct hrtimer *timer = &timr->it.real.timer;
@@ -894,7 +894,7 @@ common_timer_get(struct k_itimer *timr, struct itimerspec *cur_setting)
 
 	/* interval timer ? */
 	if (iv.tv64)
-		cur_setting->it_interval = ktime_to_timespec(iv);
+		cur_setting->it_interval = ktime_to_timespec64(iv);
 	else if (!hrtimer_active(timer) &&
 		 (timr->it_sigev_notify & ~SIGEV_THREAD_ID) != SIGEV_NONE)
 		return;
@@ -920,7 +920,7 @@ common_timer_get(struct k_itimer *timr, struct itimerspec *cur_setting)
 		if ((timr->it_sigev_notify & ~SIGEV_THREAD_ID) != SIGEV_NONE)
 			cur_setting->it_value.tv_nsec = 1;
 	} else
-		cur_setting->it_value = ktime_to_timespec(remaining);
+		cur_setting->it_value = ktime_to_timespec64(remaining);
 }
 
 static int timer_gettime(timer_t timer_id, struct itimerspec64 *setting)
@@ -1039,7 +1039,7 @@ SYSCALL_DEFINE1(timer_getoverrun, timer_t, timer_id)
 /* timr->it_lock is taken. */
 static int
 common_timer_set(struct k_itimer *timr, int flags,
-		 struct itimerspec *new_setting, struct itimerspec *old_setting)
+		 struct itimerspec64 *new_setting, struct itimerspec64 *old_setting)
 {
 	struct hrtimer *timer = &timr->it.real.timer;
 	enum hrtimer_mode mode;
@@ -1068,10 +1068,10 @@ common_timer_set(struct k_itimer *timr, int flags,
 	hrtimer_init(&timr->it.real.timer, timr->it_clock, mode);
 	timr->it.real.timer.function = posix_timer_fn;
 
-	hrtimer_set_expires(timer, timespec_to_ktime(new_setting->it_value));
+	hrtimer_set_expires(timer, timespec64_to_ktime(new_setting->it_value));
 
 	/* Convert interval */
-	timr->it.real.interval = timespec_to_ktime(new_setting->it_interval);
+	timr->it.real.interval = timespec64_to_ktime(new_setting->it_interval);
 
 	/* SIGEV_NONE timers are not queued ! See common_timer_get */
 	if (((timr->it_sigev_notify & ~SIGEV_THREAD_ID) == SIGEV_NONE)) {
