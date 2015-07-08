@@ -486,11 +486,11 @@ static enum alarmtimer_restart alarm_handle_timer(struct alarm *alarm,
 /**
  * alarm_clock_getres - posix getres interface
  * @which_clock: clockid
- * @tp: timespec to fill
+ * @tp: timespec64 to fill
  *
  * Returns the granularity of underlying alarm base clock
  */
-static int alarm_clock_getres(const clockid_t which_clock, struct timespec *tp)
+static int alarm_clock_getres(const clockid_t which_clock, struct timespec64 *tp)
 {
 	if (!alarmtimer_get_rtcdev())
 		return -EINVAL;
@@ -503,18 +503,18 @@ static int alarm_clock_getres(const clockid_t which_clock, struct timespec *tp)
 /**
  * alarm_clock_get - posix clock_get interface
  * @which_clock: clockid
- * @tp: timespec to fill.
+ * @tp: timespec64 to fill.
  *
  * Provides the underlying alarm base time.
  */
-static int alarm_clock_get(clockid_t which_clock, struct timespec *tp)
+static int alarm_clock_get(clockid_t which_clock, struct timespec64 *tp)
 {
 	struct alarm_base *base = &alarm_bases[clock2alarm(which_clock)];
 
 	if (!alarmtimer_get_rtcdev())
 		return -EINVAL;
 
-	*tp = ktime_to_timespec(base->gettime());
+	*tp = ktime_to_timespec64(base->gettime());
 	return 0;
 }
 
@@ -544,24 +544,24 @@ static int alarm_timer_create(struct k_itimer *new_timer)
 /**
  * alarm_timer_get - posix timer_get interface
  * @new_timer: k_itimer pointer
- * @cur_setting: itimerspec data to fill
+ * @cur_setting: itimerspec64 data to fill
  *
  * Copies out the current itimerspec data
  */
 static void alarm_timer_get(struct k_itimer *timr,
-				struct itimerspec *cur_setting)
+				struct itimerspec64 *cur_setting)
 {
 	ktime_t relative_expiry_time =
 		alarm_expires_remaining(&(timr->it.alarm.alarmtimer));
 
 	if (ktime_to_ns(relative_expiry_time) > 0) {
-		cur_setting->it_value = ktime_to_timespec(relative_expiry_time);
+		cur_setting->it_value = ktime_to_timespec64(relative_expiry_time);
 	} else {
 		cur_setting->it_value.tv_sec = 0;
 		cur_setting->it_value.tv_nsec = 0;
 	}
 
-	cur_setting->it_interval = ktime_to_timespec(timr->it.alarm.interval);
+	cur_setting->it_interval = ktime_to_timespec64(timr->it.alarm.interval);
 }
 
 /**
@@ -585,14 +585,14 @@ static int alarm_timer_del(struct k_itimer *timr)
  * alarm_timer_set - posix timer_set interface
  * @timr: k_itimer pointer to be deleted
  * @flags: timer flags
- * @new_setting: itimerspec to be used
- * @old_setting: itimerspec being replaced
+ * @new_setting: itimerspec64 to be used
+ * @old_setting: itimerspec64 being replaced
  *
  * Sets the timer to new_setting, and starts the timer.
  */
 static int alarm_timer_set(struct k_itimer *timr, int flags,
-				struct itimerspec *new_setting,
-				struct itimerspec *old_setting)
+				struct itimerspec64 *new_setting,
+				struct itimerspec64 *old_setting)
 {
 	ktime_t exp;
 
@@ -610,8 +610,8 @@ static int alarm_timer_set(struct k_itimer *timr, int flags,
 		return TIMER_RETRY;
 
 	/* start the timer */
-	timr->it.alarm.interval = timespec_to_ktime(new_setting->it_interval);
-	exp = timespec_to_ktime(new_setting->it_value);
+	timr->it.alarm.interval = timespec64_to_ktime(new_setting->it_interval);
+	exp = timespec64_to_ktime(new_setting->it_value);
 	/* Convert (if necessary) to absolute time */
 	if (flags != TIMER_ABSTIME) {
 		ktime_t now;
@@ -822,12 +822,12 @@ static int __init alarmtimer_init(void)
 	int error = 0;
 	int i;
 	struct k_clock alarm_clock = {
-		.clock_getres	= alarm_clock_getres,
-		.clock_get	= alarm_clock_get,
+		.clock_getres64	= alarm_clock_getres,
+		.clock_get64	= alarm_clock_get,
 		.timer_create	= alarm_timer_create,
-		.timer_set	= alarm_timer_set,
+		.timer_set64	= alarm_timer_set,
 		.timer_del	= alarm_timer_del,
-		.timer_get	= alarm_timer_get,
+		.timer_get64	= alarm_timer_get,
 		.nsleep		= alarm_timer_nsleep,
 	};
 
