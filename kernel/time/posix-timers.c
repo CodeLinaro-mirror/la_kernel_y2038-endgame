@@ -142,7 +142,6 @@ static int common_timer_del(struct k_itimer *timer);
 static enum hrtimer_restart posix_timer_fn(struct hrtimer *data);
 
 static struct k_itimer *__lock_timer(timer_t timer_id, unsigned long *flags);
-static struct k_clock *clockid_to_kclock(const clockid_t id);
 
 #define lock_timer(tid, flags)						   \
 ({	struct k_itimer *__timr;					   \
@@ -591,73 +590,6 @@ static struct pid *good_sigevent(sigevent_t * event)
 	return task_pid(rtn);
 }
 
-static void default_timer_get64(struct k_itimer *timr,
-				struct itimerspec64 *cur_setting64)
-{
-	struct itimerspec cur_setting;
-	struct k_clock *kc = clockid_to_kclock(timr->it_clock);
-
-	kc->timer_get(timr, &cur_setting);
-	*cur_setting64 = itimerspec_to_itimerspec64(&cur_setting);
-}
-
-static int default_timer_set64(struct k_itimer *timr, int flags,
-			       struct itimerspec64 *new_setting64,
-			       struct itimerspec64 *old_setting64)
-{
-	struct k_clock *kc = clockid_to_kclock(timr->it_clock);
-	struct itimerspec new_setting, old_setting;
-	struct itimerspec *rtn = old_setting64 ? &old_setting : NULL;
-	int ret;
-
-	new_setting = itimerspec64_to_itimerspec(new_setting64);
-	ret = kc->timer_set(timr, flags, &new_setting, rtn);
-	if (!ret && old_setting64)
-		*old_setting64 = itimerspec_to_itimerspec64(&old_setting);
-
-	return ret;
-}
-
-static int default_clock_set64(const clockid_t which_clock,
-			       const struct timespec64 *tp64)
-{
-	struct k_clock *kc = clockid_to_kclock(which_clock);
-	struct timespec tp;
-	int ret;
-
-	tp = timespec64_to_timespec(*tp64);
-	ret = kc->clock_set(which_clock, &tp);
-	return ret;
-}
-
-static int default_clock_get64(const clockid_t which_clock,
-			       struct timespec64 *tp64)
-{
-	struct k_clock *kc = clockid_to_kclock(which_clock);
-	struct timespec tp;
-	int ret;
-
-	ret = kc->clock_get(which_clock, &tp);
-	if (!ret)
-		*tp64 = timespec_to_timespec64(tp);
-
-	return ret;
-}
-
-static int default_clock_getres64(const clockid_t which_clock,
-				  struct timespec64 *tp64)
-{
-	struct k_clock *kc = clockid_to_kclock(which_clock);
-	struct timespec tp;
-	int ret;
-
-	ret = kc->clock_getres(which_clock, &tp);
-	if (!ret)
-		*tp64 = timespec_to_timespec64(tp);
-
-	return 0;
-}
-
 void posix_timers_register_clock(const clockid_t clock_id,
 				 struct k_clock *new_clock)
 {
@@ -667,27 +599,16 @@ void posix_timers_register_clock(const clockid_t clock_id,
 		return;
 	}
 
-	if (!new_clock->clock_get && !new_clock->clock_get64) {
-		printk(KERN_WARNING "POSIX clock id %d lacks clock_get() and clock_get64()\n",
+	if (!new_clock->clock_get64) {
+		printk(KERN_WARNING "POSIX clock id %d lacks clock_get64()\n",
 		       clock_id);
 		return;
 	}
-	if (!new_clock->clock_getres && !new_clock->clock_getres64) {
-		printk(KERN_WARNING "POSIX clock id %d lacks clock_getres() and clock_getres64()\n",
+	if (!new_clock->clock_getres64) {
+		printk(KERN_WARNING "POSIX clock id %d lacks clock_getres64()\n",
 		       clock_id);
 		return;
 	}
-
-	if (new_clock->timer_get && !new_clock->timer_get64)
-		new_clock->timer_get64 = default_timer_get64;
-	if (new_clock->timer_set && !new_clock->timer_set64)
-		new_clock->timer_set64 = default_timer_set64;
-	if (new_clock->clock_set && !new_clock->clock_set64)
-		new_clock->clock_set64 = default_clock_set64;
-	if (new_clock->clock_get && !new_clock->clock_get64)
-		new_clock->clock_get64 = default_clock_get64;
-	if (new_clock->clock_getres && !new_clock->clock_getres64)
-		new_clock->clock_getres64 = default_clock_getres64;
 
 	posix_clocks[clock_id] = *new_clock;
 }
@@ -735,8 +656,7 @@ static struct k_clock *clockid_to_kclock(const clockid_t id)
 		return (id & CLOCKFD_MASK) == CLOCKFD ?
 			&clock_posix_dynamic : &clock_posix_cpu;
 
-	if (id >= MAX_CLOCKS || (!posix_clocks[id].clock_getres
-	    && !posix_clocks[id].clock_getres64))
+	if (id >= MAX_CLOCKS || !posix_clocks[id].clock_getres64)
 		return NULL;
 	return &posix_clocks[id];
 }
