@@ -100,6 +100,8 @@ struct k_clock {
 	int (*clock_getres) (const clockid_t which_clock, struct timespec *tp);
 	int (*clock_set) (const clockid_t which_clock,
 			  const struct timespec *tp);
+	int (*clock_set64) (const clockid_t which_clock,
+			    const struct timespec64 *tp);
 	int (*clock_get) (const clockid_t which_clock, struct timespec * tp);
 	int (*clock_adj) (const clockid_t which_clock, struct __kernel_timex *tx);
 	int (*timer_create) (struct k_itimer *timer);

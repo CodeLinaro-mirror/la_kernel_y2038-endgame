@@ -618,6 +618,18 @@ static int default_timer_set64(struct k_itimer *timr, int flags,
 	return ret;
 }
 
+static int default_clock_set64(const clockid_t which_clock,
+			       const struct timespec64 *tp64)
+{
+	struct k_clock *kc = clockid_to_kclock(which_clock);
+	struct timespec tp;
+	int ret;
+
+	tp = timespec64_to_timespec(*tp64);
+	ret = kc->clock_set(which_clock, &tp);
+	return ret;
+}
+
 void posix_timers_register_clock(const clockid_t clock_id,
 				 struct k_clock *new_clock)
 {
@@ -642,6 +654,8 @@ void posix_timers_register_clock(const clockid_t clock_id,
 		new_clock->timer_get64 = default_timer_get64;
 	if (new_clock->timer_set && !new_clock->timer_set64)
 		new_clock->timer_set64 = default_timer_set64;
+	if (new_clock->clock_set && !new_clock->clock_set64)
+		new_clock->clock_set64 = default_clock_set64;
 
 	posix_clocks[clock_id] = *new_clock;
 }
@@ -1182,14 +1196,11 @@ void exit_itimers(struct signal_struct *sig)
 static int clock_settime(clockid_t which_clock, struct timespec64 *tp)
 {
 	struct k_clock *kc = clockid_to_kclock(which_clock);
-	struct timespec new_tp;
 
-	if (!kc || !kc->clock_set)
+	if (!kc || !kc->clock_set64)
 		return -EINVAL;
 
-	new_tp = timespec64_to_timespec(*tp);
-
-	return kc->clock_set(which_clock, &new_tp);
+	return kc->clock_set64(which_clock, tp);
 }
 
 SYSCALL_DEFINE2(clock_settime, const clockid_t, which_clock,
