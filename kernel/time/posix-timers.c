@@ -644,6 +644,20 @@ static int default_clock_get64(const clockid_t which_clock,
 	return ret;
 }
 
+static int default_clock_getres64(const clockid_t which_clock,
+				  struct timespec64 *tp64)
+{
+	struct k_clock *kc = clockid_to_kclock(which_clock);
+	struct timespec tp;
+	int ret;
+
+	ret = kc->clock_getres(which_clock, &tp);
+	if (!ret)
+		*tp64 = timespec_to_timespec64(tp);
+
+	return 0;
+}
+
 void posix_timers_register_clock(const clockid_t clock_id,
 				 struct k_clock *new_clock)
 {
@@ -658,8 +672,8 @@ void posix_timers_register_clock(const clockid_t clock_id,
 		       clock_id);
 		return;
 	}
-	if (!new_clock->clock_getres) {
-		printk(KERN_WARNING "POSIX clock id %d lacks clock_getres()\n",
+	if (!new_clock->clock_getres && !new_clock->clock_getres64) {
+		printk(KERN_WARNING "POSIX clock id %d lacks clock_getres() and clock_getres64()\n",
 		       clock_id);
 		return;
 	}
@@ -672,6 +686,8 @@ void posix_timers_register_clock(const clockid_t clock_id,
 		new_clock->clock_set64 = default_clock_set64;
 	if (new_clock->clock_get && !new_clock->clock_get64)
 		new_clock->clock_get64 = default_clock_get64;
+	if (new_clock->clock_getres && !new_clock->clock_getres64)
+		new_clock->clock_getres64 = default_clock_getres64;
 
 	posix_clocks[clock_id] = *new_clock;
 }
@@ -719,7 +735,8 @@ static struct k_clock *clockid_to_kclock(const clockid_t id)
 		return (id & CLOCKFD_MASK) == CLOCKFD ?
 			&clock_posix_dynamic : &clock_posix_cpu;
 
-	if (id >= MAX_CLOCKS || !posix_clocks[id].clock_getres)
+	if (id >= MAX_CLOCKS || (!posix_clocks[id].clock_getres
+	    && !posix_clocks[id].clock_getres64))
 		return NULL;
 	return &posix_clocks[id];
 }
@@ -1283,21 +1300,14 @@ SYSCALL_DEFINE2(clock_adjtime, const clockid_t, which_clock,
 	return err;
 }
 
-int clock_getres(const clockid_t which_clock, struct timespec64 __user * tp)
+static int clock_getres(const clockid_t which_clock, struct timespec64 __user * tp)
 {
 	struct k_clock *kc = clockid_to_kclock(which_clock);
-	struct timespec rtn_tp;
-	int error;
 
 	if (!kc)
 		return -EINVAL;
 
-	error = kc->clock_getres(which_clock, &rtn_tp);
-
-	*tp = timespec_to_timespec64(rtn_tp);
-
-	return error;
-
+	return kc->clock_getres64(which_clock, tp);
 }
 
 SYSCALL_DEFINE2(clock_getres, const clockid_t, which_clock,
