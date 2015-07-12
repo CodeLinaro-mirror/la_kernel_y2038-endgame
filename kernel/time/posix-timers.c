@@ -815,17 +815,6 @@ static int timer_gettime(timer_t timer_id, struct itimerspec *setting)
 	  __put_timespec((kts), (uts))) ? \
 	 -EFAULT : 0)
 
-#define get_itimerspec(kit, uit) \
-	((access_ok(VERIFY_READ, (uit), sizeof(*(uit))) || \
-	  __get_timespec(&(kit)->it_interval, &(uit)->it_interval) || \
-	  __get_timespec(&(kit)->it_value, &(uit)->it_value)))
-
-#define put_itimerspec(kit, uit) \
-	((access_ok(VERIFY_WRITE, (uit), sizeof(*(uit))) || \
-	  __put_timespec(&(kit)->it_interval, &(uit)->it_interval) || \
-	  __put_timespec(&(kit)->it_value, &(uit)->it_value)) ? \
-	 -EFAULT : 0)
-
 /* Get the time remaining on a POSIX.1b interval timer. */
 SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
 		struct __kernel_itimerspec __user *, setting)
@@ -840,41 +829,39 @@ SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
 	return ret;
 }
 
-#if 0
 int get_itimerspec(struct itimerspec *it, const struct __kernel_itimerspec __user *uit)
 {
+	struct __kernel_itimerspec kit;
 	int ret;
-	struct timespec64 ts;
 
-	ret = get_timespec64(&ts, &uit->it_interval);
+	ret = copy_from_user(&kit, uit, sizeof(kit));
 	if (ret)
-		return ret;
-	it->it_interval = timespec64_to_timespec(ts);
+		return -EFAULT;
 
-	ret = get_timespec64(&ts, &uit->it_value);
-	if (ret)
-		return ret;
-	it->it_value = timespec64_to_timespec(ts);
+	it->it_interval.tv_sec = kit.it_interval.tv_sec;
+	it->it_interval.tv_nsec = kit.it_interval.tv_nsec;
+	it->it_value.tv_sec = kit.it_value.tv_sec;
+	it->it_value.tv_nsec = kit.it_value.tv_nsec;
 
 	return ret;
 }
 
 int put_itimerspec(const struct itimerspec *it, struct __kernel_itimerspec __user *uit)
 {
+	struct __kernel_itimerspec kit;
 	int ret;
-	struct timespec64 ts;
 
-	ts = timespec_to_timespec64(it->it_interval);
-	ret = put_timespec64(&ts, &uit->it_interval);
+	kit.it_interval.tv_sec = it->it_interval.tv_sec;
+	kit.it_interval.tv_nsec = it->it_interval.tv_nsec;
+	kit.it_value.tv_sec = it->it_value.tv_sec;
+	kit.it_value.tv_nsec = it->it_value.tv_nsec;
+
+	ret = copy_to_user(uit, &kit, sizeof(kit));
 	if (ret)
-		return ret;
-
-	ts = timespec_to_timespec64(it->it_value);
-	ret = put_timespec64(&ts, &uit->it_value);
+		return -EFAULT;
 
 	return ret;
 }
-#endif
 
 /*
  * Get the number of overruns of a POSIX.1b interval timer.  This is to
