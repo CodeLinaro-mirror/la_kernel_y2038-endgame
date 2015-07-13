@@ -45,8 +45,8 @@ struct timezone {
 #define	ITIMER_PROF		2
 
 struct __old_kernel_itimerspec {
-	struct timespec it_interval;	/* timer period */
-	struct timespec it_value;	/* timer expiration */
+	struct __old_kernel_timespec it_interval; /* timer period */
+	struct __old_kernel_timespec it_value;	  /* timer expiration */
 };
 
 struct itimerval {
