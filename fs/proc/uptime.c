@@ -9,8 +9,8 @@
 
 static int uptime_proc_show(struct seq_file *m, void *v)
 {
-	struct timespec uptime;
-	struct timespec idle;
+	struct timespec64 uptime;
+	struct timespec64 idle;
 	u64 idletime;
 	u64 nsec;
 	u32 rem;
@@ -20,14 +20,14 @@ static int uptime_proc_show(struct seq_file *m, void *v)
 	for_each_possible_cpu(i)
 		idletime += (__force u64) kcpustat_cpu(i).cpustat[CPUTIME_IDLE];
 
-	get_monotonic_boottime(&uptime);
+	get_monotonic_boottime64(&uptime);
 	nsec = cputime64_to_jiffies64(idletime) * TICK_NSEC;
 	idle.tv_sec = div_u64_rem(nsec, NSEC_PER_SEC, &rem);
 	idle.tv_nsec = rem;
-	seq_printf(m, "%lu.%02lu %lu.%02lu\n",
-			(unsigned long) uptime.tv_sec,
+	seq_printf(m, "%llu.%02lu %llu.%02lu\n",
+			(unsigned long long) uptime.tv_sec,
 			(uptime.tv_nsec / (NSEC_PER_SEC / 100)),
-			(unsigned long) idle.tv_sec,
+			(unsigned long long) idle.tv_sec,
 			(idle.tv_nsec / (NSEC_PER_SEC / 100)));
 	return 0;
 }
