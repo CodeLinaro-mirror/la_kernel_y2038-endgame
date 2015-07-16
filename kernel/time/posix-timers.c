@@ -149,38 +149,6 @@ static struct k_itimer *__lock_timer(timer_t timer_id, unsigned long *flags);
 	__timr;								   \
 })
 
-static int get_timespec64(struct timespec64 *ts,
-			  const struct timespec __user *uts)
-{
-	struct timespec tmp;
-	int ret;
-
-	if (sizeof(tmp) == sizeof(*ts))
-		return copy_from_user(ts, uts, sizeof(*uts)) ? -EFAULT : 0;
-
-	ret = copy_from_user(&tmp, uts, sizeof(*uts));
-	if (ret)
-		return -EFAULT;
-
-	ts->tv_sec = tmp.tv_sec;
-	ts->tv_nsec = tmp.tv_nsec;
-	return 0;
-}
-
-static int put_timespec64(const struct timespec64 *ts,
-			  struct timespec __user *uts)
-{
-	struct timespec tmp;
-
-	if (sizeof(tmp) == sizeof(*ts))
-		return copy_to_user(uts, ts, sizeof(*uts)) ? -EFAULT : 0;
-
-	tmp.tv_sec = ts->tv_sec;
-	tmp.tv_nsec = ts->tv_nsec;
-
-	return copy_to_user(uts, &tmp, sizeof(*uts)) ? -EFAULT : 0;
-}
-
 static int get_itimerspec64(struct itimerspec64 *its,
 			    const struct __kernel_itimerspec __user *uits)
 {
