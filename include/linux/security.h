@@ -472,7 +472,7 @@ static inline int security_settime64(const struct timespec64 *ts,
 static inline int security_settime(const struct timespec *ts,
 				   const struct timezone *tz)
 {
-	struct timsepc64 ts64 = timespec_to_timespec64(*ts);
+	struct timespec64 ts64 = timespec_to_timespec64(*ts);
 
 	return cap_settime(&ts64, tz);
 }
