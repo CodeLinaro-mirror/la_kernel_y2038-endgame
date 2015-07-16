@@ -149,6 +149,42 @@ static struct k_itimer *__lock_timer(timer_t timer_id, unsigned long *flags);
 	__timr;								   \
 })
 
+static int get_compat_itimerspec64(struct itimerspec64 *its,
+			    const struct compat_itimerspec __user *uits)
+{
+	struct compat_itimerspec tmp;
+	int ret;
+
+	if (sizeof(tmp) == sizeof(*its))
+		return copy_from_user(its, uits, sizeof(*uits)) ? -EFAULT : 0;
+
+	ret = copy_from_user(&tmp, uits, sizeof(*uits));
+	if (ret)
+		return -EFAULT;
+
+	its->it_interval.tv_sec = tmp.it_interval.tv_sec;
+	its->it_interval.tv_nsec = tmp.it_interval.tv_nsec;
+	its->it_value.tv_sec = tmp.it_value.tv_sec;
+	its->it_value.tv_nsec = tmp.it_value.tv_nsec;
+	return 0;
+}
+
+static int put_compat_itimerspec64(const struct itimerspec64 *its,
+			    struct compat_itimerspec __user *uits)
+{
+	struct compat_itimerspec tmp;
+
+	if (sizeof(tmp) == sizeof(*its))
+		return copy_to_user(uits, its, sizeof(*uits)) ? -EFAULT : 0;
+
+	tmp.it_interval.tv_sec = its->it_interval.tv_sec;
+	tmp.it_interval.tv_nsec = its->it_interval.tv_nsec;
+	tmp.it_value.tv_sec = its->it_value.tv_sec;
+	tmp.it_value.tv_nsec = its->it_value.tv_nsec;
+
+	return copy_to_user(uits, &tmp, sizeof(*uits)) ? -EFAULT : 0;
+}
+
 static int get_itimerspec64(struct itimerspec64 *its,
 			    const struct __kernel_itimerspec __user *uits)
 {
@@ -1276,7 +1312,7 @@ retry:
 		goto retry;
 	}
 
-	if (!error && old_setting && put_compat_itimerspec64(old_setting, &old_spec))
+	if (!error && old_setting && put_compat_itimerspec64(&old_spec, old_setting))
 		return -EFAULT;
 
 	return error;
@@ -1286,11 +1322,11 @@ COMPAT_SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
 		       struct compat_itimerspec __user *, setting)
 {
 	long err;
-	struct itimerspec ts;
+	struct itimerspec64 ts;
 
 	err = timer_gettime(timer_id, &ts);
 
-	if (!err && put_compat_itimerspec(setting, &ts))
+	if (!err && put_compat_itimerspec64(&ts, setting))
 		return -EFAULT;
 
 	return err;
