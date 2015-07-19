@@ -1978,6 +1978,7 @@ config FB_SH_MOBILE_LCDC
 	tristate "SuperH Mobile LCDC framebuffer support"
 	depends on FB && (SUPERH || ARCH_SHMOBILE) && HAVE_CLK
 	depends on FB_SH_MOBILE_MERAM || !FB_SH_MOBILE_MERAM
+	depends on VIDEO_DEV
 	select FB_SYS_FILLRECT
 	select FB_SYS_COPYAREA
 	select FB_SYS_IMAGEBLIT
