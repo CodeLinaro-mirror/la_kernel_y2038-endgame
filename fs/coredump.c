@@ -232,9 +232,7 @@ static int format_corename(struct core_name *cn, struct coredump_params *cprm)
 				break;
 			/* UNIX time of coredump */
 			case 't': {
-				struct timeval tv;
-				do_gettimeofday(&tv);
-				err = cn_printf(cn, "%lu", tv.tv_sec);
+				err = cn_printf(cn, "%llu", ktime_get_real_seconds());
 				break;
 			}
 			/* hostname */
