@@ -21,9 +21,13 @@
 /*
  * The event structure itself
  */
+struct input_timeval {
+	__s32 tv_sec;
+	__s32 tv_usec;
+};
 
 struct input_event {
-	struct timeval time;
+	struct input_timeval time;
 	__u16 type;
 	__u16 code;
 	__s32 value;

@@ -156,6 +156,7 @@ static void __evdev_flush_queue(struct evdev_client *client, unsigned int type)
 static void __evdev_queue_syn_dropped(struct evdev_client *client)
 {
 	struct input_event ev;
+	struct timespec64 ts64;
 	ktime_t time;
 
 	time = client->clk_type == EV_CLK_REAL ?
@@ -164,7 +165,11 @@ static void __evdev_queue_syn_dropped(struct evdev_client *client)
 				ktime_get() :
 				ktime_get_boottime();
 
-	ev.time = ktime_to_timeval(time);
+	/* overflow here is prevented by disallowing CLOCK_REALTIME */
+	ts64 = ktime_to_timespec64(time);
+	ev.time.tv_sec = ts64.tv_sec;
+	ev.time.tv_usec = ts64.tv_nsec / NSEC_PER_USEC;
+
 	ev.type = EV_SYN;
 	ev.code = SYN_DROPPED;
 	ev.value = 0;
@@ -195,9 +200,12 @@ static int evdev_set_clk_type(struct evdev_client *client, unsigned int clkid)
 
 	switch (clkid) {
 
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
+	/* CLOCK_REALTIME will overflow on 32 bit in 2038 */
 	case CLOCK_REALTIME:
 		clk_type = EV_CLK_REAL;
 		break;
+#endif
 	case CLOCK_MONOTONIC:
 		clk_type = EV_CLK_MONO;
 		break;
@@ -262,12 +270,16 @@ static void evdev_pass_values(struct evdev_client *client,
 	struct evdev *evdev = client->evdev;
 	const struct input_value *v;
 	struct input_event event;
+	struct timespec64 ts64;
 	bool wakeup = false;
 
 	if (client->revoked)
 		return;
 
-	event.time = ktime_to_timeval(ev_time[client->clk_type]);
+	/* overflow here is prevented by disallowing CLOCK_REALTIME */
+	ts64 = ktime_to_timespec64(ev_time[client->clk_type]);
+	event.time.tv_sec = ts64.tv_sec;
+	event.time.tv_usec = ts64.tv_nsec / NSEC_PER_USEC;
 
 	/* Interrupts are disabled, just acquire the lock. */
 	spin_lock(&client->buffer_lock);
