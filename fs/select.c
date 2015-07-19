@@ -290,7 +290,9 @@ static int poll_select_copy_remaining(struct timespec64 *end_time, void __user *
 				      int timeval, int ret)
 {
 	struct timespec64 rts;
+#ifdef CONFIG_Y2038_UNSAFE
 	struct timeval rtv;
+#endif
 
 	if (!p)
 		return ret;
@@ -307,6 +309,7 @@ static int poll_select_copy_remaining(struct timespec64 *end_time, void __user *
 	if (rts.tv_sec < 0)
 		rts.tv_sec = rts.tv_nsec = 0;
 
+#ifdef CONFIG_Y2038_UNSAFE
 	if (timeval) {
 		if (sizeof(rtv) > sizeof(rtv.tv_sec) + sizeof(rtv.tv_usec))
 			memset(&rtv, 0, sizeof(rtv));
@@ -316,8 +319,12 @@ static int poll_select_copy_remaining(struct timespec64 *end_time, void __user *
 		if (!copy_to_user(p, &rtv, sizeof(rtv)))
 			return ret;
 
-	} else if (!put_timespec64(&rts, p))
-		return ret;
+	} else
+#endif
+	{
+		if (!put_timespec64(&rts, p))
+			return ret;
+	}
 
 	/*
 	 * If an application puts its timeval in read-only memory, we
@@ -619,6 +626,7 @@ out_nofds:
 	return ret;
 }
 
+#if defined (CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 SYSCALL_DEFINE5(select, int, n, fd_set __user *, inp, fd_set __user *, outp,
 		fd_set __user *, exp, struct timeval __user *, tvp)
 {
@@ -642,6 +650,7 @@ SYSCALL_DEFINE5(select, int, n, fd_set __user *, inp, fd_set __user *, outp,
 
 	return ret;
 }
+#endif
 
 static long do_pselect(int n, fd_set __user *inp, fd_set __user *outp,
 		       fd_set __user *exp, struct __kernel_timespec __user *tsp,
@@ -715,7 +724,7 @@ SYSCALL_DEFINE6(pselect6, int, n, fd_set __user *, inp, fd_set __user *, outp,
 	return do_pselect(n, inp, outp, exp, tsp, up, sigsetsize);
 }
 
-#ifdef __ARCH_WANT_SYS_OLD_SELECT
+#if (defined (CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)) && defined(__ARCH_WANT_SYS_OLD_SELECT)
 struct sel_arg_struct {
 	unsigned long n;
 	fd_set __user *inp, *outp, *exp;
