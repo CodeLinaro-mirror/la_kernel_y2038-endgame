@@ -101,7 +101,7 @@ struct nfsd_net {
 	bool lockd_up;
 
 	/* Time of server startup */
-	struct timeval nfssvc_boot;
+	struct timespec64 nfssvc_boot;
 
 	/*
 	 * Max number of connections this nfsd container will allow. Defaults
