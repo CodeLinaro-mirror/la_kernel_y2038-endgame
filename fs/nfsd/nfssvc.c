@@ -425,7 +425,7 @@ int nfsd_create_serv(struct net *net)
 	}
 
 	set_max_drc();
-	do_gettimeofday(&nn->nfssvc_boot);		/* record boot time */
+	ktime_get_real_ts64(&nn->nfssvc_boot); /* record boot time */
 	return 0;
 }
 
