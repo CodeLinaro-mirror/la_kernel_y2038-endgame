@@ -101,6 +101,7 @@ SYSCALL_DEFINE1(stime, time_t __user *, tptr)
 
 #endif /* __ARCH_WANT_SYS_TIME */
 
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 SYSCALL_DEFINE2(gettimeofday, struct timeval __user *, tv,
 		struct timezone __user *, tz)
 {
@@ -116,6 +117,7 @@ SYSCALL_DEFINE2(gettimeofday, struct timeval __user *, tv,
 	}
 	return 0;
 }
+#endif
 
 /*
  * Indicates if there is an offset between the system clock and the hardware
@@ -192,6 +194,7 @@ int do_sys_settimeofday64(const struct timespec64 *tv, const struct timezone *tz
 	return 0;
 }
 
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 SYSCALL_DEFINE2(settimeofday, struct timeval __user *, tv,
 		struct timezone __user *, tz)
 {
@@ -216,6 +219,7 @@ SYSCALL_DEFINE2(settimeofday, struct timeval __user *, tv,
 
 	return do_sys_settimeofday(tv ? &new_ts : NULL, tz ? &new_tz : NULL);
 }
+#endif
 
 SYSCALL_DEFINE1(adjtimex, struct __kernel_timex __user *, txc_p)
 {
