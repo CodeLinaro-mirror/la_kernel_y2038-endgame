@@ -1545,7 +1545,7 @@ static void k_getrusage(struct task_struct *p, int who, struct __kernel_rusage *
 	unsigned long flags;
 	cputime_t tgutime, tgstime, utime, stime;
 	unsigned long maxrss = 0;
-	struct timeval tv;
+	struct timespec64 ts;
 
 	memset((char *)r, 0, sizeof (*r));
 	utime = stime = 0;
@@ -1600,12 +1600,12 @@ static void k_getrusage(struct task_struct *p, int who, struct __kernel_rusage *
 	unlock_task_sighand(p, &flags);
 
 out:
-	cputime_to_timeval(utime, &tv);
-	r->ru_utime.tv_sec = tv.tv_sec;
-	r->ru_utime.tv_usec = tv.tv_usec;
-	cputime_to_timeval(stime, &tv);
-	r->ru_stime.tv_sec = tv.tv_sec;
-	r->ru_stime.tv_usec = tv.tv_usec;
+	cputime_to_timespec64(utime, &ts);
+	r->ru_utime.tv_sec = ts.tv_sec;
+	r->ru_utime.tv_usec = ts.tv_nsec / 1000;
+	cputime_to_timespec64(stime, &ts);
+	r->ru_stime.tv_sec = ts.tv_sec;
+	r->ru_stime.tv_usec = ts.tv_nsec / 1000;
 
 	if (who != RUSAGE_CHILDREN) {
 		struct mm_struct *mm = get_task_mm(p);
