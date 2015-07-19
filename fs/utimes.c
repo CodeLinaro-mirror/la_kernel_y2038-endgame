@@ -201,6 +201,7 @@ SYSCALL_DEFINE4(utimensat, int, dfd, const char __user *, filename,
 	return do_utimes(dfd, filename, utimes ? tstimes : NULL, flags);
 }
 
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 SYSCALL_DEFINE3(futimesat, int, dfd, const char __user *, filename,
 		struct timeval __user *, utimes)
 {
@@ -234,3 +235,4 @@ SYSCALL_DEFINE2(utimes, char __user *, filename,
 {
 	return sys_futimesat(AT_FDCWD, filename, utimes);
 }
+#endif
