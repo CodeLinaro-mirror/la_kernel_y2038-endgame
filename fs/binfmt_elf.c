@@ -1386,6 +1386,15 @@ static void fill_note(struct memelfnote *note, const char *name, int type,
 	return;
 }
 
+static inline void cputime_to_elfcore_timeval(cputime_t t, struct elfcore_timeval *tv)
+{
+	struct timespec64 ts;
+
+	cputime_to_timespec64(t, &ts);
+	tv->tv_sec = ts.tv_sec;
+	tv->tv_usec = ts.tv_nsec / NSEC_PER_USEC;
+}
+
 /*
  * fill up all the fields in prstatus from the given task struct, except
  * registers which need to be filled up separately.
@@ -1410,17 +1419,17 @@ static void fill_prstatus(struct elf_prstatus *prstatus,
 		 * group-wide total, not its individual thread total.
 		 */
 		thread_group_cputime(p, &cputime);
-		cputime_to_timeval(cputime.utime, &prstatus->pr_utime);
-		cputime_to_timeval(cputime.stime, &prstatus->pr_stime);
+		cputime_to_elfcore_timeval(cputime.utime, &prstatus->pr_utime);
+		cputime_to_elfcore_timeval(cputime.stime, &prstatus->pr_stime);
 	} else {
 		cputime_t utime, stime;
 
 		task_cputime(p, &utime, &stime);
-		cputime_to_timeval(utime, &prstatus->pr_utime);
-		cputime_to_timeval(stime, &prstatus->pr_stime);
+		cputime_to_elfcore_timeval(utime, &prstatus->pr_utime);
+		cputime_to_elfcore_timeval(stime, &prstatus->pr_stime);
 	}
-	cputime_to_timeval(p->signal->cutime, &prstatus->pr_cutime);
-	cputime_to_timeval(p->signal->cstime, &prstatus->pr_cstime);
+	cputime_to_elfcore_timeval(p->signal->cutime, &prstatus->pr_cutime);
+	cputime_to_elfcore_timeval(p->signal->cstime, &prstatus->pr_cstime);
 }
 
 static int fill_psinfo(struct elf_prpsinfo *psinfo, struct task_struct *p,

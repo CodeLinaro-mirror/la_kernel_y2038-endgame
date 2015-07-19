@@ -24,6 +24,11 @@ typedef elf_fpxregset_t fpxregset_t;
 #define NGREG ELF_NGREG
 #endif
 
+struct elfcore_timeval {
+	long	tv_sec;
+	long	tv_usec;
+};
+
 /*
  * Definitions to generate Intel SVR4-like core files.
  * These mostly have the same names as the SVR4 types with "elf_"
@@ -52,10 +57,10 @@ struct elf_prstatus
 	pid_t	pr_ppid;
 	pid_t	pr_pgrp;
 	pid_t	pr_sid;
-	struct timeval pr_utime;	/* User time */
-	struct timeval pr_stime;	/* System time */
-	struct timeval pr_cutime;	/* Cumulative user time */
-	struct timeval pr_cstime;	/* Cumulative system time */
+	struct elfcore_timeval pr_utime;	/* User time */
+	struct elfcore_timeval pr_stime;	/* System time */
+	struct elfcore_timeval pr_cutime;	/* Cumulative user time */
+	struct elfcore_timeval pr_cstime;	/* Cumulative system time */
 #if 0
 	long	pr_instr;		/* Current instruction */
 #endif
