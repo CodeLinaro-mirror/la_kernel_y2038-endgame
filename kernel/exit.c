@@ -717,7 +717,9 @@ void do_exit(long code)
 	acct_update_integrals(tsk);
 	group_dead = atomic_dec_and_test(&tsk->signal->live);
 	if (group_dead) {
+#ifdef CONFIG_ITIMER
 		hrtimer_cancel(&tsk->signal->real_timer);
+#endif
 		exit_itimers(tsk->signal);
 		if (tsk->mm)
 			setmax_mm_hiwater_rss(&tsk->signal->maxrss, tsk->mm);

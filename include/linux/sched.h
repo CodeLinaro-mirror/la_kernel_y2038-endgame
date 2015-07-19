@@ -683,9 +683,11 @@ struct signal_struct {
 	struct list_head	posix_timers;
 
 	/* ITIMER_REAL timer for the process */
+#ifdef CONFIG_ITIMER
 	struct hrtimer real_timer;
-	struct pid *leader_pid;
 	ktime_t it_real_incr;
+#endif
+	struct pid *leader_pid;
 
 	/*
 	 * ITIMER_PROF and ITIMER_VIRTUAL timers for the process, we use

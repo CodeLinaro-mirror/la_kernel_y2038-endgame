@@ -613,6 +613,7 @@ int dequeue_signal(struct task_struct *tsk, sigset_t *mask, siginfo_t *info)
 	if (!signr) {
 		signr = __dequeue_signal(&tsk->signal->shared_pending,
 					 mask, info);
+#ifdef CONFIG_ITIMER
 		/*
 		 * itimer signal ?
 		 *
@@ -636,6 +637,7 @@ int dequeue_signal(struct task_struct *tsk, sigset_t *mask, siginfo_t *info)
 				hrtimer_restart(tmr);
 			}
 		}
+#endif
 	}
 
 	recalc_sigpending();

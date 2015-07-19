@@ -261,6 +261,7 @@ DEFINE_EVENT(hrtimer_class, hrtimer_cancel,
 	TP_ARGS(hrtimer)
 );
 
+#ifdef CONFIG_ITIMER
 /**
  * itimer_state - called when itimer is started or canceled
  * @which:	name of the interval timer
@@ -298,6 +299,7 @@ TRACE_EVENT(itimer_state,
 		  __entry->value_sec, __entry->value_usec,
 		  __entry->interval_sec, __entry->interval_usec)
 );
+#endif
 
 /**
  * itimer_expire - called when itimer expires

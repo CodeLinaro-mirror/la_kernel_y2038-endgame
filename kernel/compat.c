@@ -347,6 +347,7 @@ static inline long put_compat_itimerval(struct compat_itimerval __user *o,
 		 __put_user(i->it_value.tv_usec, &o->it_value.tv_usec)));
 }
 
+#ifdef CONFIG_ITIMER
 COMPAT_SYSCALL_DEFINE2(getitimer, int, which,
 		struct compat_itimerval __user *, it)
 {
@@ -379,6 +380,7 @@ COMPAT_SYSCALL_DEFINE3(setitimer, int, which,
 		return -EFAULT;
 	return 0;
 }
+#endif
 #endif
 
 #ifdef CONFIG_COMPAT

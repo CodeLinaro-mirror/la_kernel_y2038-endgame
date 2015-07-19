@@ -1423,8 +1423,7 @@ void run_local_timers(void)
 	raise_softirq(TIMER_SOFTIRQ);
 }
 
-#ifdef __ARCH_WANT_SYS_ALARM
-
+#if defined(CONFIG_ITIMER) && defined(__ARCH_WANT_SYS_ALARM)
 /*
  * For backwards compatibility?  This can be done in libc so Alpha
  * and all newer ports shouldn't need it.

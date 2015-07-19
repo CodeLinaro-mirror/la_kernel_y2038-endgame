@@ -162,12 +162,14 @@ struct inode_time current_inode_time(void);
 extern u32 (*arch_gettimeoffset)(void);
 #endif
 
+#ifdef CONFIG_ITIMER
 struct itimerval;
 extern int do_setitimer(int which, struct itimerval *value,
 			struct itimerval *ovalue);
 extern int do_getitimer(int which, struct itimerval *value);
 
 extern unsigned int alarm_setitimer(unsigned int seconds);
+#endif
 
 extern long do_utimes(int dfd, const char __user *filename, struct timespec64 *times, int flags);
 extern struct inode_time inode_time_trunc(struct inode_time t, unsigned gran);

@@ -2441,9 +2441,12 @@ static void selinux_bprm_committing_creds(struct linux_binprm *bprm)
 static void selinux_bprm_committed_creds(struct linux_binprm *bprm)
 {
 	const struct task_security_struct *tsec = current_security();
+#ifdef CONFIG_ITIMER
 	struct itimerval itimer;
+	int i;
+#endif
 	u32 osid, sid;
-	int rc, i;
+	int rc;
 
 	osid = tsec->osid;
 	sid = tsec->sid;
@@ -2460,9 +2463,11 @@ static void selinux_bprm_committed_creds(struct linux_binprm *bprm)
 	 */
 	rc = avc_has_perm(osid, sid, SECCLASS_PROCESS, PROCESS__SIGINH, NULL);
 	if (rc) {
+#ifdef CONFIG_ITIMER
 		memset(&itimer, 0, sizeof itimer);
 		for (i = 0; i < 3; i++)
 			do_setitimer(i, &itimer, NULL);
+#endif
 		spin_lock_irq(&current->sighand->siglock);
 		if (!fatal_signal_pending(current)) {
 			flush_sigqueue(&current->pending);
