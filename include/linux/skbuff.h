@@ -2922,6 +2922,7 @@ static inline ktime_t skb_get_ktime(const struct sk_buff *skb)
 	return skb->tstamp;
 }
 
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 /**
  *	skb_get_timestamp - get timestamp from a skb
  *	@skb: skb to get stamp from
@@ -2942,6 +2943,7 @@ static inline void skb_get_timestampns(const struct sk_buff *skb,
 {
 	*stamp = ktime_to_timespec(skb->tstamp);
 }
+#endif
 
 static inline void __net_timestamp(struct sk_buff *skb)
 {

@@ -892,6 +892,7 @@ static void hci_sock_cmsg(struct sock *sk, struct msghdr *msg,
 			 &incoming);
 	}
 
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	if (mask & HCI_CMSG_TSTAMP) {
 #ifdef CONFIG_COMPAT
 		struct compat_timeval ctv;
@@ -916,6 +917,7 @@ static void hci_sock_cmsg(struct sock *sk, struct msghdr *msg,
 
 		put_cmsg(msg, SOL_HCI, HCI_CMSG_TSTAMP, len, data);
 	}
+#endif
 }
 
 static int hci_sock_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,

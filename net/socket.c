@@ -635,6 +635,7 @@ EXPORT_SYMBOL(kernel_sendmsg);
 void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
 	struct sk_buff *skb)
 {
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	int need_software_tstamp = sock_flag(sk, SOCK_RCVTSTAMP);
 	struct scm_timestamping tss;
 	int empty = 1;
@@ -671,6 +672,7 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
 	if (!empty)
 		put_cmsg(msg, SOL_SOCKET,
 			 SCM_TIMESTAMPING, sizeof(tss), &tss);
+#endif
 }
 EXPORT_SYMBOL_GPL(__sock_recv_timestamp);
 
@@ -3117,8 +3119,10 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
 		return do_siocgstampns(net, sock, cmd, argp);
 	case SIOCBONDSLAVEINFOQUERY:
 	case SIOCBONDINFOQUERY:
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SIOCSHWTSTAMP:
 	case SIOCGHWTSTAMP:
+#endif
 		return compat_ifr_data_ioctl(net, cmd, argp);
 
 	case FIOSETOWN:

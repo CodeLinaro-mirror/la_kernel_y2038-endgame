@@ -840,7 +840,7 @@ set_rcvbuf:
 		else
 			clear_bit(SOCK_PASSCRED, &sock->flags);
 		break;
-
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SO_TIMESTAMP:
 	case SO_TIMESTAMPNS:
 		if (valbool)  {
@@ -855,7 +855,6 @@ set_rcvbuf:
 			sock_reset_flag(sk, SOCK_RCVTSTAMPNS);
 		}
 		break;
-
 	case SO_TIMESTAMPING:
 		if (val & ~SOF_TIMESTAMPING_MASK) {
 			ret = -EINVAL;
@@ -882,6 +881,7 @@ set_rcvbuf:
 			sock_disable_timestamp(sk,
 					       (1UL << SOCK_TIMESTAMPING_RX_SOFTWARE));
 		break;
+#endif
 
 	case SO_RCVLOWAT:
 		if (val < 0)
@@ -1110,7 +1110,7 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
 	case SO_BSDCOMPAT:
 		sock_warn_obsolete_bsdism("getsockopt");
 		break;
-
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SO_TIMESTAMP:
 		v.val = sock_flag(sk, SOCK_RCVTSTAMP) &&
 				!sock_flag(sk, SOCK_RCVTSTAMPNS);
@@ -1124,7 +1124,6 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
 		v.val = sk->sk_tsflags;
 		break;
 
-#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SO_RCVTIMEO:
 		lv = sizeof(struct timeval);
 		if (sk->sk_rcvtimeo == MAX_SCHEDULE_TIMEOUT) {
