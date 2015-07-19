@@ -1822,12 +1822,12 @@ static int irda_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		err = put_user(amount, (unsigned int __user *)arg);
 		break;
 	}
-
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SIOCGSTAMP:
 		if (sk != NULL)
 			err = sock_get_timestamp(sk, (struct timeval __user *)arg);
 		break;
-
+#endif
 	case SIOCGIFADDR:
 	case SIOCSIFADDR:
 	case SIOCGIFDSTADDR:

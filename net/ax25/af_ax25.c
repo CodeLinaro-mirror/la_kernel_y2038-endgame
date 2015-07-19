@@ -1702,7 +1702,7 @@ static int ax25_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		res = put_user(amount, (int __user *) argp);
 		break;
 	}
-
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SIOCGSTAMP:
 		res = sock_get_timestamp(sk, argp);
 		break;
@@ -1710,7 +1710,7 @@ static int ax25_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 	case SIOCGSTAMPNS:
 		res = sock_get_timestampns(sk, argp);
 		break;
-
+#endif
 	case SIOCAX25ADDUID:	/* Add a uid to the uid/call map table */
 	case SIOCAX25DELUID:	/* Delete a uid from the uid/call map table */
 	case SIOCAX25GETUID: {

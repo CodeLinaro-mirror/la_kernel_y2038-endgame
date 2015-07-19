@@ -97,13 +97,11 @@ static atomic_t skbcounter = ATOMIC_INIT(0);
 
 int can_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 {
-	struct sock *sk = sock->sk;
-
 	switch (cmd) {
-
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SIOCGSTAMP:
-		return sock_get_timestamp(sk, (struct timeval __user *)arg);
-
+		return sock_get_timestamp(sock->sk, (void __user *)arg);
+#endif
 	default:
 		return -ENOIOCTLCMD;
 	}

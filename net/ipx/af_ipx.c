@@ -1885,9 +1885,11 @@ static int ipx_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		rc = get_user(ipx_sk(sk)->ipx_ncp_conn,
 			      (const unsigned short __user *)argp);
 		break;
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SIOCGSTAMP:
 		rc = sock_get_timestamp(sk, argp);
 		break;
+#endif
 	case SIOCGIFDSTADDR:
 	case SIOCSIFDSTADDR:
 	case SIOCGIFBRDADDR:

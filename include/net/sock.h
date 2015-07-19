@@ -2206,8 +2206,10 @@ static inline bool sk_fullsock(const struct sock *sk)
 }
 
 void sock_enable_timestamp(struct sock *sk, int flag);
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 int sock_get_timestamp(struct sock *, struct timeval __user *);
 int sock_get_timestampns(struct sock *, struct timespec __user *);
+#endif
 int sock_recv_errqueue(struct sock *sk, struct msghdr *msg, int len, int level,
 		       int type);
 

@@ -1298,12 +1298,13 @@ static int rose_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		return put_user(amount, (unsigned int __user *) argp);
 	}
 
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SIOCGSTAMP:
 		return sock_get_timestamp(sk, (struct timeval __user *) argp);
 
 	case SIOCGSTAMPNS:
 		return sock_get_timestampns(sk, (struct timespec __user *) argp);
-
+#endif
 	case SIOCGIFADDR:
 	case SIOCSIFADDR:
 	case SIOCGIFDSTADDR:

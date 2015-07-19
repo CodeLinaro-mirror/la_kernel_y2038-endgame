@@ -3878,10 +3878,12 @@ static int packet_ioctl(struct socket *sock, unsigned int cmd,
 		spin_unlock_bh(&sk->sk_receive_queue.lock);
 		return put_user(amount, (int __user *)arg);
 	}
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SIOCGSTAMP:
 		return sock_get_timestamp(sk, (struct timeval __user *)arg);
 	case SIOCGSTAMPNS:
 		return sock_get_timestampns(sk, (struct timespec __user *)arg);
+#endif
 
 #ifdef CONFIG_INET
 	case SIOCADDRT:

@@ -1386,6 +1386,7 @@ static int x25_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		break;
 	}
 
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SIOCGSTAMP:
 		rc = -EINVAL;
 		if (sk)
@@ -1398,6 +1399,7 @@ static int x25_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 			rc = sock_get_timestampns(sk,
 					(struct timespec __user *)argp);
 		break;
+#endif
 	case SIOCGIFADDR:
 	case SIOCSIFADDR:
 	case SIOCGIFDSTADDR:

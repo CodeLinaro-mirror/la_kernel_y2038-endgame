@@ -477,7 +477,7 @@ int bt_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		release_sock(sk);
 		err = put_user(amount, (int __user *) arg);
 		break;
-
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SIOCGSTAMP:
 		err = sock_get_timestamp(sk, (struct timeval __user *) arg);
 		break;
@@ -485,7 +485,7 @@ int bt_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 	case SIOCGSTAMPNS:
 		err = sock_get_timestampns(sk, (struct timespec __user *) arg);
 		break;
-
+#endif
 	default:
 		err = -ENOIOCTLCMD;
 		break;

@@ -81,6 +81,7 @@ static int do_vcc_ioctl(struct socket *sock, unsigned int cmd,
 		goto done;
 	}
 	case SIOCGSTAMP: /* borrowed from IP */
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 #ifdef CONFIG_COMPAT
 		if (compat)
 			error = compat_sock_get_timestamp(sk, argp);
@@ -96,6 +97,7 @@ static int do_vcc_ioctl(struct socket *sock, unsigned int cmd,
 #endif
 			error = sock_get_timestampns(sk, argp);
 		goto done;
+#endif
 	case ATM_SETSC:
 		net_warn_ratelimited("ATM_SETSC is obsolete; used by %s:%d\n",
 				     current->comm, task_pid_nr(current));

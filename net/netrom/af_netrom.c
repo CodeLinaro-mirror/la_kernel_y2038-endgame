@@ -1192,7 +1192,9 @@ static int nr_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 {
 	struct sock *sk = sock->sk;
 	void __user *argp = (void __user *)arg;
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	int ret;
+#endif
 
 	switch (cmd) {
 	case TIOCOUTQ: {
@@ -1218,6 +1220,7 @@ static int nr_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		return put_user(amount, (int __user *)argp);
 	}
 
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SIOCGSTAMP:
 		lock_sock(sk);
 		ret = sock_get_timestamp(sk, argp);
@@ -1229,7 +1232,7 @@ static int nr_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		ret = sock_get_timestampns(sk, argp);
 		release_sock(sk);
 		return ret;
-
+#endif
 	case SIOCGIFADDR:
 	case SIOCSIFADDR:
 	case SIOCGIFDSTADDR:

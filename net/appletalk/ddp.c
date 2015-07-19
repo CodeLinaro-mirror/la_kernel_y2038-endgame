@@ -1808,12 +1808,14 @@ static int atalk_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		rc = put_user(amount, (int __user *)argp);
 		break;
 	}
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SIOCGSTAMP:
 		rc = sock_get_timestamp(sk, argp);
 		break;
 	case SIOCGSTAMPNS:
 		rc = sock_get_timestampns(sk, argp);
 		break;
+#endif
 	/* Routing */
 	case SIOCADDRT:
 	case SIOCDELRT:

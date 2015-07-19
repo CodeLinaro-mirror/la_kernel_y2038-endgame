@@ -380,6 +380,7 @@ int __sk_backlog_rcv(struct sock *sk, struct sk_buff *skb)
 }
 EXPORT_SYMBOL(__sk_backlog_rcv);
 
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 static int sock_set_timeout(long *timeo_p, char __user *optval, int optlen)
 {
 	struct timeval tv;
@@ -409,6 +410,7 @@ static int sock_set_timeout(long *timeo_p, char __user *optval, int optlen)
 		*timeo_p = tv.tv_sec*HZ + (tv.tv_usec+(1000000/HZ-1))/(1000000/HZ);
 	return 0;
 }
+#endif
 
 static void sock_warn_obsolete_bsdism(const char *name)
 {
@@ -887,6 +889,7 @@ set_rcvbuf:
 		sk->sk_rcvlowat = val ? : 1;
 		break;
 
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SO_RCVTIMEO:
 		ret = sock_set_timeout(&sk->sk_rcvtimeo, optval, optlen);
 		break;
@@ -894,6 +897,7 @@ set_rcvbuf:
 	case SO_SNDTIMEO:
 		ret = sock_set_timeout(&sk->sk_sndtimeo, optval, optlen);
 		break;
+#endif
 
 	case SO_ATTACH_FILTER:
 		ret = -EINVAL;
@@ -1019,7 +1023,9 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
 	union {
 		int val;
 		struct linger ling;
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 		struct timeval tm;
+#endif
 	} v;
 
 	int lv = sizeof(int);
@@ -1118,6 +1124,7 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
 		v.val = sk->sk_tsflags;
 		break;
 
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SO_RCVTIMEO:
 		lv = sizeof(struct timeval);
 		if (sk->sk_rcvtimeo == MAX_SCHEDULE_TIMEOUT) {
@@ -1139,6 +1146,7 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
 			v.tm.tv_usec = ((sk->sk_sndtimeo % HZ) * 1000000) / HZ;
 		}
 		break;
+#endif
 
 	case SO_RCVLOWAT:
 		v.val = sk->sk_rcvlowat;
@@ -2436,6 +2444,7 @@ bool lock_sock_fast(struct sock *sk)
 }
 EXPORT_SYMBOL(lock_sock_fast);
 
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 int sock_get_timestamp(struct sock *sk, struct timeval __user *userstamp)
 {
 	struct timeval tv;
@@ -2467,6 +2476,7 @@ int sock_get_timestampns(struct sock *sk, struct timespec __user *userstamp)
 	return copy_to_user(userstamp, &ts, sizeof(ts)) ? -EFAULT : 0;
 }
 EXPORT_SYMBOL(sock_get_timestampns);
+#endif
 
 void sock_enable_timestamp(struct sock *sk, int flag)
 {

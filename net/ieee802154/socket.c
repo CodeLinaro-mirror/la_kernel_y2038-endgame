@@ -163,10 +163,12 @@ static int ieee802154_sock_ioctl(struct socket *sock, unsigned int cmd,
 	struct sock *sk = sock->sk;
 
 	switch (cmd) {
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_TIME)
 	case SIOCGSTAMP:
 		return sock_get_timestamp(sk, (struct timeval __user *)arg);
 	case SIOCGSTAMPNS:
 		return sock_get_timestampns(sk, (struct timespec __user *)arg);
+#endif
 	case SIOCGIFADDR:
 	case SIOCSIFADDR:
 		return ieee802154_dev_ioctl(sk, (struct ifreq __user *)arg,
