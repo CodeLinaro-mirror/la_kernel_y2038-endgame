@@ -27,4 +27,6 @@
 
 #endif
 
+#ifdef CONFIG_COMPAT_TIME
 #include "../vclock_gettime.c"
+#endif
