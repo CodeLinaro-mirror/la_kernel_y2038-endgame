@@ -14,6 +14,7 @@ if MD
 
 config BLK_DEV_MD
 	tristate "RAID support"
+	depends on Y2038_UNSAFE
 	---help---
 	  This driver lets you combine several hard disk partitions into one
 	  logical block device. This can be used to simply append one
