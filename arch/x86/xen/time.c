@@ -169,7 +169,7 @@ static cycle_t xen_clocksource_get_cycles(struct clocksource *cs)
 	return xen_clocksource_read();
 }
 
-static void xen_read_wallclock(struct timespec *ts)
+static void xen_read_wallclock(struct timespec64 *ts)
 {
 	struct shared_info *s = HYPERVISOR_shared_info;
 	struct pvclock_wall_clock *wall_clock = &(s->wc);
@@ -180,12 +180,12 @@ static void xen_read_wallclock(struct timespec *ts)
 	put_cpu_var(xen_vcpu);
 }
 
-static void xen_get_wallclock(struct timespec *now)
+static void xen_get_wallclock(struct timespec64 *now)
 {
 	xen_read_wallclock(now);
 }
 
-static int xen_set_wallclock(const struct timespec *now)
+static int xen_set_wallclock(const struct timespec64 *now)
 {
 	return -1;
 }

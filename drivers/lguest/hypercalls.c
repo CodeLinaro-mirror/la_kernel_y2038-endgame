@@ -300,9 +300,9 @@ void do_hypercalls(struct lg_cpu *cpu)
  */
 void write_timestamp(struct lg_cpu *cpu)
 {
-	struct timespec now;
-	ktime_get_real_ts(&now);
+	struct timespec64 now;
+	ktime_get_real_ts64(&now);
 	if (copy_to_user(&cpu->lg->lguest_data->time,
-			 &now, sizeof(struct timespec)))
+			 &now, sizeof(struct timespec64)))
 		kill_guest(cpu, "Writing timestamp");
 }

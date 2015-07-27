@@ -142,7 +142,7 @@ struct x86_cpuinit_ops {
 	void (*fixup_cpu_id)(struct cpuinfo_x86 *c, int node);
 };
 
-struct timespec;
+struct timespec64;
 
 /**
  * struct x86_platform_ops - platform specific runtime functions
@@ -158,8 +158,8 @@ struct timespec;
  */
 struct x86_platform_ops {
 	unsigned long (*calibrate_tsc)(void);
-	void (*get_wallclock)(struct timespec *ts);
-	int (*set_wallclock)(const struct timespec *ts);
+	void (*get_wallclock)(struct timespec64 *ts);
+	int (*set_wallclock)(const struct timespec64 *ts);
 	void (*iommu_shutdown)(void);
 	bool (*is_untracked_pat_range)(u64 start, u64 end);
 	void (*nmi_init)(void);

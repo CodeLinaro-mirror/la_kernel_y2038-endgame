@@ -35,7 +35,7 @@ struct lguest_data {
 	unsigned long cr2;
 
 	/* Wallclock time set by the Host. */
-	struct timespec time;
+	struct timespec64 time;
 
 	/*
 	 * Interrupt pending set by the Host.  The Guest should do a hypercall

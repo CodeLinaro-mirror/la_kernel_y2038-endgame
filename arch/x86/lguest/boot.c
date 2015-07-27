@@ -910,7 +910,7 @@ static void __init lguest_init_IRQ(void)
  * It would be far better for everyone if the Guest had its own clock, but
  * until then the Host gives us the time on every interrupt.
  */
-static void lguest_get_wallclock(struct timespec *now)
+static void lguest_get_wallclock(struct timespec64 *now)
 {
 	*now = lguest_data.time;
 }

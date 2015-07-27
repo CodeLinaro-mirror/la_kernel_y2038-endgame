@@ -117,11 +117,11 @@ cycle_t pvclock_clocksource_read(struct pvclock_vcpu_time_info *src)
 
 void pvclock_read_wallclock(struct pvclock_wall_clock *wall_clock,
 			    struct pvclock_vcpu_time_info *vcpu_time,
-			    struct timespec *ts)
+			    struct timespec64 *ts)
 {
 	u32 version;
 	u64 delta;
-	struct timespec now;
+	struct timespec64 now;
 
 	/* get wallclock at system boot */
 	do {
@@ -135,10 +135,7 @@ void pvclock_read_wallclock(struct pvclock_wall_clock *wall_clock,
 	delta = pvclock_clocksource_read(vcpu_time);	/* time since system boot */
 	delta += now.tv_sec * (u64)NSEC_PER_SEC + now.tv_nsec;
 
-	now.tv_nsec = do_div(delta, NSEC_PER_SEC);
-	now.tv_sec = delta;
-
-	set_normalized_timespec(ts, now.tv_sec, now.tv_nsec);
+	*ts = ns_to_timespec64(delta);
 }
 
 #ifdef CONFIG_X86_64
