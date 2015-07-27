@@ -51,6 +51,7 @@ config QUOTA_TREE
 config QFMT_V1
 	tristate "Old quota format support"
 	depends on QUOTA
+	depends on Y2038_UNSAFE
 	help
 	  This quota format was (is) used by kernels earlier than 2.4.22. If
 	  you have quota working and you don't want to convert to new quota
