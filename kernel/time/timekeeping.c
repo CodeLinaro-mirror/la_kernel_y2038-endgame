@@ -846,6 +846,40 @@ time64_t ktime_get_real_seconds(void)
 }
 EXPORT_SYMBOL_GPL(ktime_get_real_seconds);
 
+#if IS_ENABLED(CONFIG_INET)
+u32 ktime_get_ms_since_midnight(void)
+{
+	struct timekeeper *tk = &tk_core.timekeeper;
+	struct timespec64 now;
+	unsigned long seq;
+	u32 ms;
+
+	/* we assume that the coarse time is good enough here */
+	do {
+		seq = read_seqcount_begin(&tk_core.seq);
+
+		now = tk_xtime(tk);
+	} while (read_seqcount_retry(&tk_core.seq, seq));
+
+	/*
+	 * efficiently calculate the milliseconds since midnight:
+	 * 86400 seconds per day == 2^7 * 675, which helps us
+	 * replace an expensive div_s64_rem() with a hand-written
+	 * 39-bit modulo on 32-bit architectures.
+	 */
+	if (!IS_ENABLED(CONFIG_64BIT))
+		ms = (now.tv_sec & 0x7f) * MSEC_PER_SEC +
+		     ((u32)(now.tv_sec >> 7) % 675) * 0x80 * MSEC_PER_SEC;
+	else
+		ms = (now.tv_sec % 86400) * MSEC_PER_SEC;
+
+	ms += now.tv_nsec / NSEC_PER_MSEC;
+
+	return ms;
+}
+EXPORT_SYMBOL_GPL(ktime_get_ms_since_midnight);
+#endif
+
 #ifdef CONFIG_NTP_PPS
 
 /**
