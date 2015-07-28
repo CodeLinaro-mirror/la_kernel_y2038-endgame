@@ -984,4 +984,12 @@ config REFCOUNT_FULL
 	  against various use-after-free conditions that can be used in
 	  security flaw exploits.
 
+config Y2038_UNSAFE
+	def_bool COMPAT_TIME
+	help
+	  This symbol enables all code that has some sort of y2038
+	  problem inside of the kernel, either accessing 32-bit seconds
+	  quantities in external data structures, or using the wrong
+	  kernel types.
+
 source "kernel/gcov/Kconfig"
