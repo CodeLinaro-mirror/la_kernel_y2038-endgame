@@ -2,7 +2,6 @@
 #define _LINUX_NFS_XDR_H
 
 #include <linux/nfsacl.h>
-#include <linux/sunrpc/gss_api.h>
 
 /*
  * To change the maximum rsize and wsize supported by the NFS client, adjust
@@ -894,6 +893,7 @@ struct nfs3_getaclres {
 };
 
 #if IS_ENABLED(CONFIG_NFS_V4)
+#include <linux/sunrpc/gss_api.h>
 
 typedef u64 clientid4;
 
