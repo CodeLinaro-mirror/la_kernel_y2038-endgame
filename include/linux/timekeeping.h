@@ -30,9 +30,9 @@ static inline int do_sys_settimeofday(const struct timespec *tv,
  */
 unsigned long get_seconds(void);
 struct timespec64 current_kernel_time64(void);
-#ifdef CONFIG_Y2038_UNSAFE
 /* does not take xtime_lock */
 struct timespec64 __current_kernel_time64(void);
+#ifdef CONFIG_Y2038_UNSAFE
 static inline struct timespec __current_kernel_time(void)
 {
 	struct timespec64 now = __current_kernel_time64();

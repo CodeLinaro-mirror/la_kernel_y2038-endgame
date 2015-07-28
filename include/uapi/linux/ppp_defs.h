@@ -138,6 +138,7 @@ struct ppp_comp_stats {
     struct compstat	d;	/* packet decompression statistics */
 };
 
+#if !defined(__KERNEL__) || defined(__KERNEL_COMPAT_TIME__)
 /*
  * The following structure records the time in seconds since
  * the last NP packet was sent or received.
@@ -146,5 +147,6 @@ struct ppp_idle {
     __kernel_time_t xmit_idle;	/* time since last NP packet sent */
     __kernel_time_t recv_idle;	/* time since last NP packet received */
 };
+#endif
 
 #endif /* _UAPI_PPP_DEFS_H_ */

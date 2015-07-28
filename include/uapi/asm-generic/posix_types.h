@@ -85,7 +85,9 @@ typedef struct {
  */
 typedef __kernel_long_t	__kernel_off_t;
 typedef long long	__kernel_loff_t;
+#if !defined(__KERNEL__) || defined(__KERNEL_COMPAT_TIME__)
 typedef __kernel_long_t	__kernel_time_t;
+#endif
 typedef __kernel_long_t	__kernel_clock_t;
 typedef int		__kernel_timer_t;
 typedef int		__kernel_clockid_t;

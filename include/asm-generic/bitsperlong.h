@@ -22,4 +22,8 @@
 #define BITS_PER_LONG_LONG 64
 #endif
 
+#ifdef CONFIG_COMPAT_TIME
+#define __KERNEL_COMPAT_TIME__
+#endif
+
 #endif /* __ASM_GENERIC_BITS_PER_LONG */

@@ -64,9 +64,11 @@ typedef __kernel_ssize_t	ssize_t;
 typedef __kernel_ptrdiff_t	ptrdiff_t;
 #endif
 
+#ifdef CONFIG_Y2038_UNSAFE
 #ifndef _TIME_T
 #define _TIME_T
 typedef __kernel_time_t		time_t;
+#endif
 #endif
 
 #ifndef _CLOCK_T
