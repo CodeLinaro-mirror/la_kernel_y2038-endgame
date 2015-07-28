@@ -89,7 +89,7 @@ void jent_memcpy(void *dest, const void *src, unsigned int n)
 
 void jent_get_nstime(__u64 *out)
 {
-	struct timespec ts;
+	struct timespec64 ts;
 	__u64 tmp = 0;
 
 	tmp = random_get_entropy();
@@ -102,9 +102,11 @@ void jent_get_nstime(__u64 *out)
 	 * The list of available timers can be obtained from
 	 * /sys/devices/system/clocksource/clocksource0/available_clocksource
 	 * and are registered with clocksource_register()
+	 *
+	 * should we have a __ktime_get_ns() instead?
 	 */
 	if ((0 == tmp) &&
-	   (0 == __getnstimeofday(&ts))) {
+	   (0 == __getnstimeofday64(&ts))) {
 		tmp = ts.tv_sec;
 		tmp = tmp << 32;
 		tmp = tmp | ts.tv_nsec;
