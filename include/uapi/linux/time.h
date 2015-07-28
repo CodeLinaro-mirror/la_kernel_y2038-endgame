@@ -31,6 +31,7 @@
 #define __kernel_itimerspec itimerspec
 #endif
 
+#ifdef CONFIG_Y2038_UNSAFE
 struct __old_kernel_timespec {
 	__kernel_time_t	tv_sec;			/* seconds */
 	long		tv_nsec;		/* nanoseconds */
@@ -40,6 +41,7 @@ struct timeval {
 	__kernel_time_t		tv_sec;		/* seconds */
 	__kernel_suseconds_t	tv_usec;	/* microseconds */
 };
+#endif
 
 /*
  * __kernel_timespec64 is the general type to be used for
@@ -82,6 +84,7 @@ struct timezone {
 #define	ITIMER_VIRTUAL		1
 #define	ITIMER_PROF		2
 
+#ifdef CONFIG_Y2038_UNSAFE
 struct __old_kernel_itimerspec {
 	struct __old_kernel_timespec it_interval; /* timer period */
 	struct __old_kernel_timespec it_value;	  /* timer expiration */
@@ -91,6 +94,7 @@ struct itimerval {
 	struct timeval it_interval;	/* timer interval */
 	struct timeval it_value;	/* current value */
 };
+#endif
 
 /*
  * The IDs of the various system clocks (for POSIX.1b interval timers):

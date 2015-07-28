@@ -22,6 +22,7 @@ struct sock_extended_err {
 
 #define SO_EE_OFFENDER(ee)	((struct sockaddr*)((ee)+1))
 
+#if !defined(__KERNEL__) || defined(__KERNEL_COMPAT_TIME__)
 /**
  *	struct scm_timestamping - timestamps exposed through cmsg
  *
@@ -32,6 +33,7 @@ struct sock_extended_err {
 struct scm_timestamping {
 	struct timespec ts[3];
 };
+#endif
 
 /* The type of scm_timestamping, passed in sock_extended_err ee_info.
  * This defines the type of ts[0]. For SCM_TSTAMP_SND only, if ts[0]

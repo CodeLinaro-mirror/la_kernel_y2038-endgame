@@ -149,6 +149,7 @@ static struct k_itimer *__lock_timer(timer_t timer_id, unsigned long *flags);
 	__timr;								   \
 })
 
+#ifdef CONFIG_COMPAT_TIME
 static int get_compat_itimerspec64(struct itimerspec64 *its,
 			    const struct compat_itimerspec __user *uits)
 {
@@ -184,6 +185,7 @@ static int put_compat_itimerspec64(const struct itimerspec64 *its,
 
 	return copy_to_user(uits, &tmp, sizeof(*uits)) ? -EFAULT : 0;
 }
+#endif
 
 int get_itimerspec64(struct itimerspec64 *its,
 		     const struct __kernel_itimerspec __user *uits)
@@ -887,6 +889,7 @@ static int timer_gettime(timer_t timer_id, struct itimerspec64 *setting)
 	  __put_timespec((kts), (uts))) ? \
 	 -EFAULT : 0)
 
+#ifdef CONFIG_COMPAT_TIME
 int get_itimerspec(struct itimerspec *it, const struct __kernel_itimerspec __user *uit)
 {
 	struct __kernel_itimerspec kit;
@@ -920,6 +923,8 @@ int put_itimerspec(const struct itimerspec *it, struct __kernel_itimerspec __use
 
 	return ret;
 }
+#endif
+
 /* Get the time remaining on a POSIX.1b interval timer. */
 SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
 		struct __kernel_itimerspec __user *, setting)

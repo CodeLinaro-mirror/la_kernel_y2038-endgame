@@ -26,6 +26,7 @@
 #define RUSAGE_BOTH	(-2)		/* sys_wait4() uses this */
 #define	RUSAGE_THREAD	1		/* only the calling thread */
 
+#if !defined(__KERNEL__) || defined(__KERNEL_COMPAT_TIME__)
 struct	__old_kernel_rusage {
 	struct timeval ru_utime;	/* user time used */
 	struct timeval ru_stime;	/* system time used */
@@ -44,7 +45,7 @@ struct	__old_kernel_rusage {
 	__kernel_long_t	ru_nvcsw;	/* voluntary context switches */
 	__kernel_long_t	ru_nivcsw;	/* involuntary " */
 };
-
+#endif
 
 /*
  * __kernel_rusage replaces rusage, and matches the layout of 64-bit rusage

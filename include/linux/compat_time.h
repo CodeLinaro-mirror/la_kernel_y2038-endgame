@@ -110,8 +110,10 @@ static inline void __user *compat_ptr(compat_uptr_t ptr)
  */
 extern int compat_get_timespec(struct timespec *, const void __user *);
 extern int compat_put_timespec(const struct timespec *, void __user *);
+#ifdef CONFIG_Y2038_UNSAFE
 extern int compat_get_timeval(struct timeval *, const void __user *);
 extern int compat_put_timeval(const struct timeval *, void __user *);
+#endif
 extern int compat_get_timespec64(struct timespec64 *ts, const void __user *uts);
 extern int compat_put_timespec64(const struct timespec64 *ts, void __user *uts);
 struct compat_timex;
@@ -150,6 +152,7 @@ struct compat_rusage {
 extern int put_compat_rusage(const struct __kernel_rusage *,
 			     struct compat_rusage __user *);
 
+#ifdef CONFIG_Y2038_UNSAFE
 static inline int compat_timeval_compare(struct compat_timeval *lhs,
 					struct compat_timeval *rhs)
 {
@@ -159,6 +162,7 @@ static inline int compat_timeval_compare(struct compat_timeval *lhs,
 		return 1;
 	return lhs->tv_usec - rhs->tv_usec;
 }
+#endif
 
 static inline int compat_timespec_compare(struct compat_timespec *lhs,
 					struct compat_timespec *rhs)
@@ -170,10 +174,12 @@ static inline int compat_timespec_compare(struct compat_timespec *lhs,
 	return lhs->tv_nsec - rhs->tv_nsec;
 }
 
+#ifdef CONFIG_Y2038_UNSAFE
 extern int get_compat_itimerspec(struct itimerspec *dst,
 				 const struct compat_itimerspec __user *src);
 extern int put_compat_itimerspec(struct compat_itimerspec __user *dst,
 				 const struct itimerspec *src);
+#endif
 
 struct sembuf;
 asmlinkage long compat_sys_semtimedop(int semid, struct sembuf __user *tsems,

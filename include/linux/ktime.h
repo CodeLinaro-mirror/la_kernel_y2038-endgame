@@ -78,10 +78,12 @@ static inline ktime_t ktime_set(const s64 secs, const unsigned long nsecs)
 		({ (ktime_t){ .tv64 = (kt).tv64 - (nsval) }; })
 
 /* convert a timespec to ktime_t format: */
+#ifdef CONFIG_Y2038_UNSAFE
 static inline ktime_t timespec_to_ktime(struct timespec ts)
 {
 	return ktime_set(ts.tv_sec, ts.tv_nsec);
 }
+#endif
 
 /* convert a timespec64 to ktime_t format: */
 static inline ktime_t timespec64_to_ktime(struct timespec64 ts)
@@ -89,6 +91,7 @@ static inline ktime_t timespec64_to_ktime(struct timespec64 ts)
 	return ktime_set(ts.tv_sec, ts.tv_nsec);
 }
 
+#ifdef CONFIG_Y2038_UNSAFE
 /* convert a timeval to ktime_t format: */
 static inline ktime_t timeval_to_ktime(struct timeval tv)
 {
@@ -97,12 +100,15 @@ static inline ktime_t timeval_to_ktime(struct timeval tv)
 
 /* Map the ktime_t to timespec conversion to ns_to_timespec function */
 #define ktime_to_timespec(kt)		ns_to_timespec((kt).tv64)
+#endif
 
 /* Map the ktime_t to timespec conversion to ns_to_timespec function */
 #define ktime_to_timespec64(kt)		ns_to_timespec64((kt).tv64)
 
+#ifdef CONFIG_Y2038_UNSAFE
 /* Map the ktime_t to timeval conversion to ns_to_timeval function */
 #define ktime_to_timeval(kt)		ns_to_timeval((kt).tv64)
+#endif
 
 /* Convert ktime_t to nanoseconds - NOP in the scalar storage format: */
 #define ktime_to_ns(kt)			((kt).tv64)
@@ -233,6 +239,7 @@ static inline ktime_t ktime_sub_us(const ktime_t kt, const u64 usec)
 
 extern ktime_t ktime_add_safe(const ktime_t lhs, const ktime_t rhs);
 
+#ifdef CONFIG_Y2038_UNSAFE
 /**
  * ktime_to_timespec_cond - convert a ktime_t variable to timespec
  *			    format only if the variable contains data
@@ -251,6 +258,7 @@ static inline __must_check bool ktime_to_timespec_cond(const ktime_t kt,
 		return false;
 	}
 }
+#endif
 
 /**
  * ktime_to_timespec64_cond - convert a ktime_t variable to timespec64

@@ -9,10 +9,13 @@ extern int timekeeping_suspended;
 /*
  * Get and set timeofday
  */
+#ifdef CONFIG_Y2038_UNSAFE
 extern void do_gettimeofday(struct timeval *tv);
+#endif
 extern int do_settimeofday64(const struct timespec64 *ts);
 extern int do_sys_settimeofday64(const struct timespec64 *tv,
 				 const struct timezone *tz);
+#ifdef CONFIG_Y2038_UNSAFE
 static inline int do_sys_settimeofday(const struct timespec *tv,
 				      const struct timezone *tz)
 {
@@ -20,12 +23,14 @@ static inline int do_sys_settimeofday(const struct timespec *tv,
 
 	return do_sys_settimeofday64(&ts64, tz);
 }
+#endif
 
 /*
  * Kernel time accessors
  */
 unsigned long get_seconds(void);
 struct timespec64 current_kernel_time64(void);
+#ifdef CONFIG_Y2038_UNSAFE
 /* does not take xtime_lock */
 struct timespec64 __current_kernel_time64(void);
 static inline struct timespec __current_kernel_time(void)
@@ -41,6 +46,7 @@ static inline struct timespec current_kernel_time(void)
 
 	return timespec64_to_timespec(now);
 }
+#endif
 
 /*
  * timespec based interfaces
@@ -57,6 +63,7 @@ extern int __getnstimeofday64(struct timespec64 *tv);
 extern void getnstimeofday64(struct timespec64 *tv);
 extern void getboottime64(struct timespec64 *ts);
 
+#ifdef CONFIG_Y2038_UNSAFE
 #if BITS_PER_LONG == 64
 /**
  * Deprecated. Use do_settimeofday64().
@@ -166,6 +173,7 @@ static inline void getboottime(struct timespec *ts)
 	*ts = timespec64_to_timespec(ts64);
 }
 #endif
+#endif
 
 #define ktime_get_real_ts64(ts)	getnstimeofday64(ts)
 
@@ -249,6 +257,7 @@ static inline u64 ktime_get_raw_ns(void)
 extern u64 ktime_get_mono_fast_ns(void);
 extern u64 ktime_get_raw_fast_ns(void);
 
+#ifdef CONFIG_Y2038_UNSAFE
 /*
  * Timespec interfaces utilizing the ktime based ones
  */
@@ -256,6 +265,7 @@ static inline void get_monotonic_boottime(struct timespec *ts)
 {
 	*ts = ktime_to_timespec(ktime_get_boottime());
 }
+#endif
 
 static inline void get_monotonic_boottime64(struct timespec64 *ts)
 {
@@ -281,10 +291,14 @@ extern void ktime_get_raw_and_real_ts64(struct timespec64 *ts_raw,
  */
 extern int persistent_clock_is_local;
 
+#ifdef CONFIG_Y2038_UNSAFE
 extern void read_persistent_clock(struct timespec *ts);
+#endif
 extern void read_persistent_clock64(struct timespec64 *ts);
 extern void read_boot_clock64(struct timespec64 *ts);
+#ifdef CONFIG_Y2038_UNSAFE
 extern int update_persistent_clock(struct timespec now);
+#endif
 extern int update_persistent_clock64(struct timespec64 now);
 
 

@@ -54,7 +54,7 @@ struct timezone sys_tz;
 
 EXPORT_SYMBOL(sys_tz);
 
-#ifdef __ARCH_WANT_SYS_TIME
+#if defined(__ARCH_WANT_SYS_TIME) && defined(CONFIG_COMPAT_TIME)
 
 /*
  * sys_time() can be implemented in user-level using
@@ -355,6 +355,7 @@ time64_t mktime64(const unsigned int year0, const unsigned int mon0,
 }
 EXPORT_SYMBOL(mktime64);
 
+#ifdef CONFIG_Y2038_UNSAFE
 /**
  * set_normalized_timespec - set timespec sec and nsec parts and normalize
  *
@@ -415,6 +416,7 @@ struct timespec ns_to_timespec(const s64 nsec)
 	return ts;
 }
 EXPORT_SYMBOL(ns_to_timespec);
+#endif
 
 /**
  * ns_to_inode_time - Convert nanoseconds to inode_time
@@ -441,6 +443,7 @@ struct inode_time ns_to_inode_time(const s64 nsec)
 }
 EXPORT_SYMBOL(ns_to_inode_time);
 
+#ifdef CONFIG_Y2038_UNSAFE
 /**
  * ns_to_timeval - Convert nanoseconds to timeval
  * @nsec:       the nanoseconds value to be converted
@@ -458,6 +461,7 @@ struct timeval ns_to_timeval(const s64 nsec)
 	return tv;
 }
 EXPORT_SYMBOL(ns_to_timeval);
+#endif
 
 #if BITS_PER_LONG == 32
 /**
@@ -621,6 +625,7 @@ jiffies_to_timespec64(const unsigned long jiffies, struct timespec64 *value)
 }
 EXPORT_SYMBOL(jiffies_to_timespec64);
 
+#ifdef CONFIG_Y2038_UNSAFE
 /*
  * We could use a similar algorithm to timespec_to_jiffies (with a
  * different multiplier for usec instead of nsec). But this has a
@@ -658,6 +663,7 @@ void jiffies_to_timeval(const unsigned long jiffies, struct timeval *value)
 	value->tv_usec = rem / NSEC_PER_USEC;
 }
 EXPORT_SYMBOL(jiffies_to_timeval);
+#endif
 
 /*
  * Convert jiffies/jiffies_64 to clock_t and back.

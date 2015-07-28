@@ -412,13 +412,16 @@ static __always_inline unsigned long usecs_to_jiffies(const unsigned int u)
 extern unsigned long timespec64_to_jiffies(const struct timespec64 *value);
 extern void jiffies_to_timespec64(const unsigned long jiffies,
 				  struct timespec64 *value);
+#ifdef CONFIG_Y2038_UNSAFE
 static inline unsigned long timespec_to_jiffies(const struct timespec *value)
 {
 	struct timespec64 ts = timespec_to_timespec64(*value);
 
 	return timespec64_to_jiffies(&ts);
 }
+#endif
 
+#ifdef CONFIG_Y2038_UNSAFE
 static inline void jiffies_to_timespec(const unsigned long jiffies,
 				       struct timespec *value)
 {
@@ -432,6 +435,7 @@ extern unsigned long timeval_to_jiffies(const struct timeval *value);
 extern void jiffies_to_timeval(const unsigned long jiffies,
 			       struct timeval *value);
 
+#endif
 extern clock_t jiffies_to_clock_t(unsigned long x);
 static inline clock_t jiffies_delta_to_clock_t(long delta)
 {

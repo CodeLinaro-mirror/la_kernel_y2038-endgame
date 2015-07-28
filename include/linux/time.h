@@ -24,11 +24,13 @@ extern struct timezone sys_tz;
 
 #define TIME_T_MAX	(time_t)((1UL << ((sizeof(time_t) << 3) - 1)) - 1)
 
+#ifdef CONFIG_Y2038_UNSAFE
 static inline int timespec_equal(const struct timespec *a,
                                  const struct timespec *b)
 {
 	return (a->tv_sec == b->tv_sec) && (a->tv_nsec == b->tv_nsec);
 }
+#endif
 
 static inline int inode_time_equal(const struct inode_time *a,
                                  const struct inode_time *b)
@@ -36,6 +38,7 @@ static inline int inode_time_equal(const struct inode_time *a,
 	return (a->tv_sec == b->tv_sec) && (a->tv_nsec == b->tv_nsec);
 }
 
+#ifdef CONFIG_Y2038_UNSAFE
 /*
  * lhs < rhs:  return <0
  * lhs == rhs: return 0
@@ -49,6 +52,7 @@ static inline int timespec_compare(const struct timespec *lhs, const struct time
 		return 1;
 	return lhs->tv_nsec - rhs->tv_nsec;
 }
+#endif
 
 static inline int inode_time_compare(const struct inode_time *lhs, const struct inode_time *rhs)
 {
@@ -59,6 +63,7 @@ static inline int inode_time_compare(const struct inode_time *lhs, const struct 
 	return lhs->tv_nsec - rhs->tv_nsec;
 }
 
+#ifdef CONFIG_Y2038_UNSAFE
 static inline int timeval_compare(const struct timeval *lhs, const struct timeval *rhs)
 {
 	if (lhs->tv_sec < rhs->tv_sec)
@@ -67,6 +72,7 @@ static inline int timeval_compare(const struct timeval *lhs, const struct timeva
 		return 1;
 	return lhs->tv_usec - rhs->tv_usec;
 }
+#endif
 
 extern time64_t mktime64(const unsigned int year, const unsigned int mon,
 			const unsigned int day, const unsigned int hour,
@@ -83,6 +89,7 @@ static inline unsigned long mktime(const unsigned int year,
 	return mktime64(year, mon, day, hour, min, sec);
 }
 
+#ifdef CONFIG_Y2038_UNSAFE
 extern void set_normalized_timespec(struct timespec *ts, time_t sec, s64 nsec);
 
 static inline struct timespec timespec_add(struct timespec lhs,
@@ -144,6 +151,8 @@ static inline bool timeval_valid(const struct timeval *tv)
 }
 
 extern struct timespec timespec_trunc(struct timespec t, unsigned gran);
+#endif
+
 struct inode_time current_inode_time(void);
 
 #define CURRENT_TIME		(current_inode_time())
@@ -205,6 +214,7 @@ struct tm {
 
 void time64_to_tm(time64_t totalsecs, int offset, struct tm *result);
 
+#ifdef CONFIG_Y2038_UNSAFE
 static inline void time_to_tm(time_t totalsecs, int offset, struct tm *result)
 {
 	return time64_to_tm(totalsecs, offset, result);
@@ -242,6 +252,7 @@ static inline s64 timeval_to_ns(const struct timeval *tv)
  * Returns the timespec representation of the nsec parameter.
  */
 extern struct timespec ns_to_timespec(const s64 nsec);
+#endif
 
 /**
  * ns_to_inode_time - Convert nanoseconds to inode_time
@@ -251,6 +262,7 @@ extern struct timespec ns_to_timespec(const s64 nsec);
  */
 extern struct inode_time ns_to_inode_time(const s64 nsec);
 
+#ifdef CONFIG_Y2038_UNSAFE
 /**
  * ns_to_timeval - Convert nanoseconds to timeval
  * @nsec:	the nanoseconds value to be converted
@@ -272,5 +284,6 @@ static __always_inline void timespec_add_ns(struct timespec *a, u64 ns)
 	a->tv_sec += __iter_div_u64_rem(a->tv_nsec + ns, NSEC_PER_SEC, &ns);
 	a->tv_nsec = ns;
 }
+#endif
 
 #endif

@@ -918,6 +918,7 @@ EXPORT_SYMBOL(ktime_get_raw_and_real_ts64);
 
 #endif /* CONFIG_NTP_PPS */
 
+#ifdef CONFIG_Y2038_UNSAFE
 /**
  * do_gettimeofday - Returns the time of day in a timeval
  * @tv:		pointer to the timeval to be set
@@ -933,6 +934,7 @@ void do_gettimeofday(struct timeval *tv)
 	tv->tv_usec = now.tv_nsec/1000;
 }
 EXPORT_SYMBOL(do_gettimeofday);
+#endif
 
 /**
  * do_settimeofday64 - Sets the time of day.
@@ -1194,6 +1196,7 @@ u64 timekeeping_max_deferment(void)
 	return ret;
 }
 
+#ifdef CONFIG_Y2038_UNSAFE
 /**
  * read_persistent_clock -  Return time from the persistent clock.
  *
@@ -1208,13 +1211,19 @@ void __weak read_persistent_clock(struct timespec *ts)
 	ts->tv_sec = 0;
 	ts->tv_nsec = 0;
 }
+#endif
 
 void __weak read_persistent_clock64(struct timespec64 *ts64)
 {
+#ifdef CONFIG_Y2038_UNSAFE
 	struct timespec ts;
 
 	read_persistent_clock(&ts);
 	*ts64 = timespec_to_timespec64(ts);
+#else
+	ts64->tv_sec = 0;
+	ts64->tv_nsec = 0;
+#endif
 }
 
 /**

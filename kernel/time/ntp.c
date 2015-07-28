@@ -486,7 +486,7 @@ out:
 	return leap;
 }
 
-#ifdef CONFIG_GENERIC_CMOS_UPDATE
+#if defined(CONFIG_GENERIC_CMOS_UPDATE) && defined(CONFIG_Y2038_UNSAFE)
 int __weak update_persistent_clock(struct timespec now)
 {
 	return -ENODEV;

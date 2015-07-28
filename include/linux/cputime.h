@@ -13,6 +13,7 @@
 	usecs_to_cputime((__nsecs) / NSEC_PER_USEC)
 #endif
 
+#ifdef CONFIG_Y2038_UNSAFE
 static inline cputime_t timespec_to_cputime(const struct timespec *ts)
 {
 	struct timespec64 ts64 = timespec_to_timespec64(*ts);
@@ -28,5 +29,6 @@ static inline void cputime_to_timespec(const cputime_t cputime,
 	cputime_to_timespec64(cputime, &ts64);
 	*value = timespec64_to_timespec(ts64);
 }
+#endif
 
 #endif /* __LINUX_CPUTIME_H */

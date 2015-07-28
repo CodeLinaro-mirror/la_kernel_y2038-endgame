@@ -64,7 +64,7 @@
 
 #define NTP_API		4	/* NTP API version */
 
-
+#if !defined(__KERNEL__) || defined(__KERNEL_COMPAT_TIME__)
 /*
  * syscall interface - used (mainly by NTP daemon)
  * to discipline kernel clock oscillator
@@ -99,6 +99,7 @@ struct __old_kernel_timex {
 	int  :32; int  :32; int  :32; int  :32;
 	int  :32; int  :32; int  :32;
 };
+#endif
 
 /*
  * __kernel_timex is the new structure that uses the same layout

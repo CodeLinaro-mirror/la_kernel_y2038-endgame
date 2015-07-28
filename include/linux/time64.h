@@ -39,6 +39,7 @@ struct itimerspec64 {
 
 #if __BITS_PER_LONG == 64
 
+#ifdef CONFIG_Y2038_UNSAFE
 static inline struct timespec timespec64_to_timespec(const struct timespec64 ts64)
 {
 	return ts64;
@@ -58,6 +59,9 @@ static inline struct itimerspec64 itimerspec_to_itimerspec64(struct itimerspec *
 {
 	return *its;
 }
+#endif
+
+/* FIXME: define these the opposite way */
 
 # define timespec64_equal		timespec_equal
 # define timespec64_compare		timespec_compare
@@ -72,6 +76,7 @@ static inline struct itimerspec64 itimerspec_to_itimerspec64(struct itimerspec *
 
 #else
 
+#ifdef CONFIG_Y2038_UNSAFE
 static inline struct timespec timespec64_to_timespec(const struct timespec64 ts64)
 {
 	struct timespec ret;
@@ -107,6 +112,7 @@ static inline struct itimerspec64 itimerspec_to_itimerspec64(struct itimerspec *
 	ret.it_value = timespec_to_timespec64(its->it_value);
 	return ret;
 }
+#endif
 
 static inline int timespec64_equal(const struct timespec64 *a,
 				   const struct timespec64 *b)

@@ -135,10 +135,12 @@ void set_process_cpu_timer(struct task_struct *task, unsigned int clock_idx,
 			   cputime_t *newval, cputime_t *oldval);
 
 void update_rlimit_cpu(struct task_struct *task, unsigned long rlim_new);
+#ifdef CONFIG_Y2038_UNSAFE
 int get_itimerspec(struct itimerspec *it,
 		   const struct __kernel_itimerspec __user *uit);
 int put_itimerspec(const struct itimerspec *it,
 		   struct __kernel_itimerspec __user *uit);
+#endif
 int get_itimerspec64(struct itimerspec64 *it,
 		     const struct __kernel_itimerspec __user *uit);
 int put_itimerspec64(const struct itimerspec64 *it,
