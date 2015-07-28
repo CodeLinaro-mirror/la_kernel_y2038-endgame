@@ -640,6 +640,7 @@ static inline unsigned long copy_shmid_to_user(void __user *buf, struct shmid64_
 	switch (version) {
 	case IPC_64:
 		return copy_to_user(buf, in, sizeof(*in));
+#if defined(CONFIG_COMPAT_TIME) || defined(CONFIG_64BIT)
 	case IPC_OLD:
 	    {
 		struct shmid_ds out;
@@ -656,6 +657,7 @@ static inline unsigned long copy_shmid_to_user(void __user *buf, struct shmid64_
 
 		return copy_to_user(buf, &out, sizeof(out));
 	    }
+#endif
 	default:
 		return -EINVAL;
 	}
@@ -669,6 +671,7 @@ copy_shmid_from_user(struct shmid64_ds *out, void __user *buf, int version)
 		if (copy_from_user(out, buf, sizeof(*out)))
 			return -EFAULT;
 		return 0;
+#if defined(CONFIG_COMPAT_TIME) || defined(CONFIG_64BIT)
 	case IPC_OLD:
 	    {
 		struct shmid_ds tbuf_old;
@@ -682,6 +685,7 @@ copy_shmid_from_user(struct shmid64_ds *out, void __user *buf, int version)
 
 		return 0;
 	    }
+#endif
 	default:
 		return -EINVAL;
 	}

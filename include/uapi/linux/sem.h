@@ -19,6 +19,7 @@
 #define SEM_STAT 18
 #define SEM_INFO 19
 
+#if !defined(__KERNEL__) || defined(__KERNEL_COMPAT_TIME__)
 /* Obsolete, used only for backwards compatibility and libc5 compiles */
 struct semid_ds {
 	struct ipc_perm	sem_perm;		/* permissions .. see ipc.h */
@@ -30,6 +31,7 @@ struct semid_ds {
 	struct sem_undo	*undo;			/* undo requests on this array */
 	unsigned short	sem_nsems;		/* no. of semaphores in array */
 };
+#endif
 
 /* Include the definition of semid64_ds */
 #include <asm/sembuf.h>

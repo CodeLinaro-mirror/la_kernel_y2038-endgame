@@ -12,6 +12,7 @@
 #define MSG_EXCEPT      020000  /* recv any msg except of specified type.*/
 #define MSG_COPY        040000  /* copy (not remove) all queue messages */
 
+#if !defined(__KERNEL__) || defined(__KERNEL_COMPAT_TIME__)
 /* Obsolete, used only for backwards compatibility and libc5 compiles */
 struct msqid_ds {
 	struct ipc_perm msg_perm;
@@ -28,6 +29,7 @@ struct msqid_ds {
 	__kernel_ipc_pid_t msg_lspid;	/* pid of last msgsnd */
 	__kernel_ipc_pid_t msg_lrpid;	/* last receive pid */
 };
+#endif
 
 /* Include the definition of msqid64_ds */
 #include <asm/msgbuf.h>

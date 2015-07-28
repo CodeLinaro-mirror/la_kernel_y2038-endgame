@@ -1142,6 +1142,7 @@ static unsigned long copy_semid_to_user(void __user *buf, struct semid64_ds *in,
 	switch (version) {
 	case IPC_64:
 		return copy_to_user(buf, in, sizeof(*in));
+#if defined(CONFIG_COMPAT_TIME) || defined(CONFIG_64BIT)
 	case IPC_OLD:
 	    {
 		struct semid_ds out;
@@ -1156,6 +1157,7 @@ static unsigned long copy_semid_to_user(void __user *buf, struct semid64_ds *in,
 
 		return copy_to_user(buf, &out, sizeof(out));
 	    }
+#endif
 	default:
 		return -EINVAL;
 	}
@@ -1512,6 +1514,7 @@ copy_semid_from_user(struct semid64_ds *out, void __user *buf, int version)
 		if (copy_from_user(out, buf, sizeof(*out)))
 			return -EFAULT;
 		return 0;
+#if defined(CONFIG_COMPAT_TIME) || defined(CONFIG_64BIT)
 	case IPC_OLD:
 	    {
 		struct semid_ds tbuf_old;
@@ -1525,6 +1528,7 @@ copy_semid_from_user(struct semid64_ds *out, void __user *buf, int version)
 
 		return 0;
 	    }
+#endif
 	default:
 		return -EINVAL;
 	}

@@ -22,6 +22,7 @@
 #define SHMALL (ULONG_MAX - (1UL << 24)) /* max shm system wide (pages) */
 #define SHMSEG SHMMNI			 /* max shared segs per process */
 
+#if !defined(__KERNEL__) || defined(__KERNEL_COMPAT_TIME__)
 /* Obsolete, used only for backwards compatibility and libc5 compiles */
 struct shmid_ds {
 	struct ipc_perm		shm_perm;	/* operation perms */
@@ -36,6 +37,7 @@ struct shmid_ds {
 	void 			*shm_unused2;	/* ditto - used by DIPC */
 	void			*shm_unused3;	/* unused */
 };
+#endif
 
 /* Include the definition of shmid64_ds and shminfo64 */
 #include <asm/shmbuf.h>

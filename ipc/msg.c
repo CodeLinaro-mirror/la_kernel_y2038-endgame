@@ -261,6 +261,7 @@ copy_msqid_to_user(void __user *buf, struct msqid64_ds *in, int version)
 	switch (version) {
 	case IPC_64:
 		return copy_to_user(buf, in, sizeof(*in));
+#if defined(CONFIG_COMPAT_TIME) || defined(CONFIG_64BIT)
 	case IPC_OLD:
 	{
 		struct msqid_ds out;
@@ -295,6 +296,7 @@ copy_msqid_to_user(void __user *buf, struct msqid64_ds *in, int version)
 
 		return copy_to_user(buf, &out, sizeof(out));
 	}
+#endif
 	default:
 		return -EINVAL;
 	}
@@ -308,6 +310,7 @@ copy_msqid_from_user(struct msqid64_ds *out, void __user *buf, int version)
 		if (copy_from_user(out, buf, sizeof(*out)))
 			return -EFAULT;
 		return 0;
+#if defined(CONFIG_COMPAT_TIME) || defined(CONFIG_64BIT)
 	case IPC_OLD:
 	{
 		struct msqid_ds tbuf_old;
@@ -326,6 +329,7 @@ copy_msqid_from_user(struct msqid64_ds *out, void __user *buf, int version)
 
 		return 0;
 	}
+#endif
 	default:
 		return -EINVAL;
 	}
