@@ -47,8 +47,8 @@
  */
 struct cache_head {
 	struct hlist_node	cache_list;
-	time_t		expiry_time;	/* After time time, don't use the data */
-	time_t		last_refresh;   /* If CACHE_PENDING, this is when upcall was
+	long		expiry_time;	/* After time time, don't use the data */
+	long		last_refresh;   /* If CACHE_PENDING, this is when upcall was
 					 * sent, else this is when update was
 					 * received, though it is alway set to
 					 * be *after* ->flush_time.
@@ -112,7 +112,7 @@ struct cache_detail {
 							 * than this.
 							 */
 	struct list_head	others;
-	time_t			nextcheck;
+	long			nextcheck;
 	int			entries;
 
 	/* fields for communication over channel */
@@ -158,17 +158,17 @@ struct cache_deferred_req {
  * since boot.  This is the best for measuring differences in
  * real time.
  */
-static inline time_t seconds_since_boot(void)
+static inline long seconds_since_boot(void)
 {
-	struct timespec boot;
-	getboottime(&boot);
-	return get_seconds() - boot.tv_sec;
+	struct timespec64 boot;
+	getboottime64(&boot);
+	return ktime_get_real_seconds() - boot.tv_sec;
 }
 
-static inline time_t convert_to_wallclock(time_t sinceboot)
+static inline time64_t convert_to_wallclock(long sinceboot)
 {
-	struct timespec boot;
-	getboottime(&boot);
+	struct timespec64 boot;
+	getboottime64(&boot);
 	return boot.tv_sec + sinceboot;
 }
 
