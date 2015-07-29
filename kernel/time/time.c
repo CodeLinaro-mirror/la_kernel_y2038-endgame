@@ -144,7 +144,7 @@ int persistent_clock_is_local;
 static inline void warp_clock(void)
 {
 	if (sys_tz.tz_minuteswest != 0) {
-		struct timespec adjust;
+		struct timespec64 adjust;
 
 		persistent_clock_is_local = 1;
 		adjust.tv_sec = sys_tz.tz_minuteswest * 60;
