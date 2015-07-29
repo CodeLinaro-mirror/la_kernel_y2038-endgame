@@ -4,6 +4,7 @@
 
 config PACKET
 	tristate "Packet socket"
+	depends on COMPAT_TIME || 64BIT
 	---help---
 	  The Packet protocol is used by applications which communicate
 	  directly with network devices without an intermediate network
