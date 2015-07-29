@@ -160,7 +160,7 @@ static ktime_t timerfd_get_remaining(struct timerfd_ctx *ctx)
 }
 
 static int timerfd_setup(struct timerfd_ctx *ctx, int flags,
-			 const struct itimerspec *ktmr)
+			 const struct itimerspec64 *ktmr)
 {
 	enum hrtimer_mode htmode;
 	ktime_t texp;
@@ -169,10 +169,10 @@ static int timerfd_setup(struct timerfd_ctx *ctx, int flags,
 	htmode = (flags & TFD_TIMER_ABSTIME) ?
 		HRTIMER_MODE_ABS: HRTIMER_MODE_REL;
 
-	texp = timespec_to_ktime(ktmr->it_value);
+	texp = timespec64_to_ktime(ktmr->it_value);
 	ctx->expired = 0;
 	ctx->ticks = 0;
-	ctx->tintv = timespec_to_ktime(ktmr->it_interval);
+	ctx->tintv = timespec64_to_ktime(ktmr->it_interval);
 
 	if (isalarm(ctx)) {
 		alarm_init(&ctx->t.alarm,
@@ -292,11 +292,11 @@ static ssize_t timerfd_read(struct file *file, char __user *buf, size_t count,
 static void timerfd_show(struct seq_file *m, struct file *file)
 {
 	struct timerfd_ctx *ctx = file->private_data;
-	struct itimerspec t;
+	struct itimerspec64 t;
 
 	spin_lock_irq(&ctx->wqh.lock);
-	t.it_value = ktime_to_timespec(timerfd_get_remaining(ctx));
-	t.it_interval = ktime_to_timespec(ctx->tintv);
+	t.it_value = ktime_to_timespec64(timerfd_get_remaining(ctx));
+	t.it_interval = ktime_to_timespec64(ctx->tintv);
 	spin_unlock_irq(&ctx->wqh.lock);
 
 	seq_printf(m,
@@ -417,16 +417,16 @@ SYSCALL_DEFINE2(timerfd_create, int, clockid, int, flags)
 }
 
 static int do_timerfd_settime(int ufd, int flags, 
-		const struct itimerspec *new,
-		struct itimerspec *old)
+		const struct itimerspec64 *new,
+		struct itimerspec64 *old)
 {
 	struct fd f;
 	struct timerfd_ctx *ctx;
 	int ret;
 
 	if ((flags & ~TFD_SETTIME_FLAGS) ||
-	    !timespec_valid(&new->it_value) ||
-	    !timespec_valid(&new->it_interval))
+	    !timespec64_valid(&new->it_value) ||
+	    !timespec64_valid(&new->it_interval))
 		return -EINVAL;
 
 	ret = timerfd_fget(ufd, &f);
@@ -467,8 +467,8 @@ static int do_timerfd_settime(int ufd, int flags,
 			hrtimer_forward_now(&ctx->t.tmr, ctx->tintv);
 	}
 
-	old->it_value = ktime_to_timespec(timerfd_get_remaining(ctx));
-	old->it_interval = ktime_to_timespec(ctx->tintv);
+	old->it_value = ktime_to_timespec64(timerfd_get_remaining(ctx));
+	old->it_interval = ktime_to_timespec64(ctx->tintv);
 
 	/*
 	 * Re-program the timer to the new value ...
@@ -480,7 +480,7 @@ static int do_timerfd_settime(int ufd, int flags,
 	return ret;
 }
 
-static int do_timerfd_gettime(int ufd, struct itimerspec *t)
+static int do_timerfd_gettime(int ufd, struct itimerspec64 *t)
 {
 	struct fd f;
 	struct timerfd_ctx *ctx;
@@ -505,8 +505,8 @@ static int do_timerfd_gettime(int ufd, struct itimerspec *t)
 			hrtimer_restart(&ctx->t.tmr);
 		}
 	}
-	t->it_value = ktime_to_timespec(timerfd_get_remaining(ctx));
-	t->it_interval = ktime_to_timespec(ctx->tintv);
+	t->it_value = ktime_to_timespec64(timerfd_get_remaining(ctx));
+	t->it_interval = ktime_to_timespec64(ctx->tintv);
 	spin_unlock_irq(&ctx->wqh.lock);
 	fdput(f);
 	return 0;
@@ -516,15 +516,15 @@ SYSCALL_DEFINE4(timerfd_settime, int, ufd, int, flags,
 		const struct __kernel_itimerspec __user *, utmr,
 		struct __kernel_itimerspec __user *, otmr)
 {
-	struct itimerspec new, old;
+	struct itimerspec64 new, old;
 	int ret;
 
-	if (get_itimerspec(&new, utmr))
+	if (get_itimerspec64(&new, utmr))
 		return -EFAULT;
 	ret = do_timerfd_settime(ufd, flags, &new, &old);
 	if (ret)
 		return ret;
-	if (otmr && put_itimerspec(&old, otmr))
+	if (otmr && put_itimerspec64(&old, otmr))
 		return -EFAULT;
 
 	return ret;
@@ -532,11 +532,11 @@ SYSCALL_DEFINE4(timerfd_settime, int, ufd, int, flags,
 
 SYSCALL_DEFINE2(timerfd_gettime, int, ufd, struct __kernel_itimerspec __user *, otmr)
 {
-	struct itimerspec kotmr;
+	struct itimerspec64 kotmr;
 	int ret = do_timerfd_gettime(ufd, &kotmr);
 	if (ret)
 		return ret;
-	return put_itimerspec(&kotmr, otmr);
+	return put_itimerspec64(&kotmr, otmr);
 }
 
 #ifdef CONFIG_COMPAT

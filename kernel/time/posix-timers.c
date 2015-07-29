@@ -185,10 +185,10 @@ static int put_compat_itimerspec64(const struct itimerspec64 *its,
 	return copy_to_user(uits, &tmp, sizeof(*uits)) ? -EFAULT : 0;
 }
 
-static int get_itimerspec64(struct itimerspec64 *its,
-			    const struct __kernel_itimerspec __user *uits)
+int get_itimerspec64(struct itimerspec64 *its,
+		     const struct __kernel_itimerspec __user *uits)
 {
-	struct itimerspec tmp;
+	struct __kernel_itimerspec tmp;
 	int ret;
 
 	if (sizeof(tmp) == sizeof(*its))
@@ -205,10 +205,10 @@ static int get_itimerspec64(struct itimerspec64 *its,
 	return 0;
 }
 
-static int put_itimerspec64(const struct itimerspec64 *its,
-			    struct __kernel_itimerspec __user *uits)
+int put_itimerspec64(const struct itimerspec64 *its,
+		     struct __kernel_itimerspec __user *uits)
 {
-	struct itimerspec tmp;
+	struct __kernel_itimerspec tmp;
 
 	if (sizeof(tmp) == sizeof(*its))
 		return copy_to_user(uits, its, sizeof(*uits)) ? -EFAULT : 0;

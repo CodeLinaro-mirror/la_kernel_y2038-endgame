@@ -139,6 +139,9 @@ int get_itimerspec(struct itimerspec *it,
 		   const struct __kernel_itimerspec __user *uit);
 int put_itimerspec(const struct itimerspec *it,
 		   struct __kernel_itimerspec __user *uit);
-
+int get_itimerspec64(struct itimerspec64 *it,
+		     const struct __kernel_itimerspec __user *uit);
+int put_itimerspec64(const struct itimerspec64 *it,
+		     struct __kernel_itimerspec __user *uit);
 
 #endif
