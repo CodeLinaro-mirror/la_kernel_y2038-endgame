@@ -43,7 +43,7 @@ static void cache_revisit_request(struct cache_head *item);
 
 static void cache_init(struct cache_head *h)
 {
-	time_t now = seconds_since_boot();
+	long now = seconds_since_boot();
 	INIT_HLIST_NODE(&h->cache_list);
 	h->flags = 0;
 	kref_init(&h->ref);
@@ -116,7 +116,7 @@ EXPORT_SYMBOL_GPL(sunrpc_cache_lookup);
 
 static void cache_dequeue(struct cache_detail *detail, struct cache_head *ch);
 
-static void cache_fresh_locked(struct cache_head *head, time_t expiry)
+static void cache_fresh_locked(struct cache_head *head, long expiry)
 {
 	head->expiry_time = expiry;
 	head->last_refresh = seconds_since_boot();
@@ -1343,8 +1343,8 @@ static int c_show(struct seq_file *m, void *p)
 		return cd->cache_show(m, cd, NULL);
 
 	ifdebug(CACHE)
-		seq_printf(m, "# expiry=%ld refcnt=%d flags=%lx\n",
-			   convert_to_wallclock(cp->expiry_time),
+		seq_printf(m, "# expiry=%lld refcnt=%d flags=%lx\n",
+			   (s64)convert_to_wallclock(cp->expiry_time),
 			   atomic_read(&cp->ref.refcount), cp->flags);
 	cache_get(cp);
 	if (cache_check(cd, cp, NULL))
@@ -1417,7 +1417,7 @@ static ssize_t read_flush(struct file *file, char __user *buf,
 	unsigned long p = *ppos;
 	size_t len;
 
-	snprintf(tbuf, sizeof(tbuf), "%lu\n", convert_to_wallclock(cd->flush_time));
+	snprintf(tbuf, sizeof(tbuf), "%llu\n", (s64)convert_to_wallclock(cd->flush_time));
 	len = strlen(tbuf);
 	if (p >= len)
 		return 0;
