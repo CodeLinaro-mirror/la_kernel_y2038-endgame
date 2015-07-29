@@ -1523,7 +1523,7 @@ out:
 	return ret;
 }
 
-long hrtimer_nanosleep(struct timespec *rqtp, struct __kernel_timespec __user *rmtp,
+long hrtimer_nanosleep(ktime_t rqtp, struct __kernel_timespec __user *rmtp,
 		       const enum hrtimer_mode mode, const clockid_t clockid)
 {
 	struct restart_block *restart;
@@ -1536,7 +1536,7 @@ long hrtimer_nanosleep(struct timespec *rqtp, struct __kernel_timespec __user *r
 		slack = 0;
 
 	hrtimer_init_on_stack(&t.timer, clockid, mode);
-	hrtimer_set_expires_range_ns(&t.timer, timespec_to_ktime(*rqtp), slack);
+	hrtimer_set_expires_range_ns(&t.timer, rqtp, slack);
 	if (do_nanosleep(&t, mode))
 		goto out;
 
@@ -1567,17 +1567,17 @@ out:
 SYSCALL_DEFINE2(nanosleep, struct __kernel_timespec __user *, rqtp,
 		struct __kernel_timespec __user *, rmtp)
 {
-	struct timespec tu;
+	ktime_t tu;
 	struct timespec64 tu64;
 
 	if (get_timespec64(&tu64, rqtp))
 		return -EFAULT;
-	tu = timespec64_to_timespec(tu64);
-
-	if (!timespec_valid(&tu))
+	if (!timespec64_valid(&tu64))
 		return -EINVAL;
 
-	return hrtimer_nanosleep(&tu, rmtp, HRTIMER_MODE_REL, CLOCK_MONOTONIC);
+	tu = timespec64_to_ktime(tu64);
+
+	return hrtimer_nanosleep(tu, rmtp, HRTIMER_MODE_REL, CLOCK_MONOTONIC);
 }
 
 /*

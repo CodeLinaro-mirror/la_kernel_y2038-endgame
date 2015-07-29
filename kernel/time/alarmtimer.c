@@ -741,7 +741,7 @@ out:
  * Handles clock_nanosleep calls against _ALARM clockids
  */
 static int alarm_timer_nsleep(const clockid_t which_clock, int flags,
-			      struct timespec *tsreq,
+			      ktime_t tsreq,
 			      struct __kernel_timespec __user *rmtp)
 {
 	enum  alarmtimer_type type = clock2alarm(which_clock);
@@ -761,7 +761,7 @@ static int alarm_timer_nsleep(const clockid_t which_clock, int flags,
 
 	alarm_init(&alarm, type, alarmtimer_nsleep_wakeup);
 
-	exp = timespec_to_ktime(*tsreq);
+	exp = tsreq;
 	/* Convert (if necessary) to absolute time */
 	if (flags != TIMER_ABSTIME) {
 		ktime_t now = alarm_bases[type].gettime();

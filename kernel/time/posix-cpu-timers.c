@@ -75,6 +75,26 @@ static void sample_to_timespec64(const clockid_t which_clock,
 		cputime_to_timespec64((__force cputime_t)expires, tp);
 }
 
+static ktime_t sample_to_ktime(const clockid_t which_clock,
+			       unsigned long long expires)
+{
+	if (CPUCLOCK_WHICH(which_clock) != CPUCLOCK_SCHED)
+		expires = cputime_to_nsecs((__force cputime_t)expires);
+
+	return ns_to_ktime(expires);
+}
+
+static unsigned long long ktime_to_sample(const clockid_t which_clock,
+					  ktime_t expires)
+{
+	unsigned long long ns = ktime_to_ns(expires);
+
+	if (CPUCLOCK_WHICH(which_clock) != CPUCLOCK_SCHED)
+		ns = (__force unsigned long long)nsecs_to_cputime64(ns);
+
+	return ns;
+}
+
 /*
  * Update expiry time from increment, and increase overrun count,
  * given the current clock sample.
@@ -622,18 +642,19 @@ static inline void posix_cpu_timer_kick_nohz(void) { }
  * If we return TIMER_RETRY, it's necessary to release the timer's lock
  * and try again.  (This happens when the timer is in the middle of firing.)
  */
-static int posix_cpu_timer_set(struct k_itimer *timer, int timer_flags,
-			       struct itimerspec64 *new, struct itimerspec64 *old)
+static int __posix_cpu_timer_set(struct k_itimer *timer, int timer_flags,
+				 unsigned long long new_expires,
+				 unsigned long long new_incr,
+				 unsigned long long *old,
+				 unsigned long long *old_incr)
 {
 	unsigned long flags;
 	struct sighand_struct *sighand;
 	struct task_struct *p = timer->it.cpu.task;
-	unsigned long long old_expires, new_expires, old_incr, val;
+	unsigned long long old_expires, val;
 	int ret;
 
 	WARN_ON_ONCE(p == NULL);
-
-	new_expires = timespec64_to_sample(timer->it_clock, &new->it_value);
 
 	/*
 	 * Protect against sighand release/switch in exit/exec and p->cpu_timers
@@ -654,7 +675,8 @@ static int posix_cpu_timer_set(struct k_itimer *timer, int timer_flags,
 	WARN_ON_ONCE(!irqs_disabled());
 
 	ret = 0;
-	old_incr = timer->it.cpu.incr;
+	if (old_incr)
+		*old_incr = timer->it.cpu.incr;
 	old_expires = timer->it.cpu.expires;
 	if (unlikely(timer->it.cpu.firing)) {
 		timer->it.cpu.firing = -1;
@@ -678,8 +700,7 @@ static int posix_cpu_timer_set(struct k_itimer *timer, int timer_flags,
 
 	if (old) {
 		if (old_expires == 0) {
-			old->it_value.tv_sec = 0;
-			old->it_value.tv_nsec = 0;
+			*old = old_expires;
 		} else {
 			/*
 			 * Update the timer in case it has
@@ -693,13 +714,9 @@ static int posix_cpu_timer_set(struct k_itimer *timer, int timer_flags,
 			 */
 			bump_cpu_timer(timer, val);
 			if (val < timer->it.cpu.expires) {
-				old_expires = timer->it.cpu.expires - val;
-				sample_to_timespec64(timer->it_clock,
-						   old_expires,
-						   &old->it_value);
+				*old = timer->it.cpu.expires - val;
 			} else {
-				old->it_value.tv_nsec = 1;
-				old->it_value.tv_sec = 0;
+				*old = 1;
 			}
 		}
 	}
@@ -734,8 +751,7 @@ static int posix_cpu_timer_set(struct k_itimer *timer, int timer_flags,
 	 * Install the new reload setting, and
 	 * set up the signal and overrun bookkeeping.
 	 */
-	timer->it.cpu.incr = timespec64_to_sample(timer->it_clock,
-						&new->it_interval);
+	timer->it.cpu.incr = new_incr;
 
 	/*
 	 * This acts as a modification timestamp for the timer,
@@ -758,12 +774,39 @@ static int posix_cpu_timer_set(struct k_itimer *timer, int timer_flags,
 
 	ret = 0;
  out:
-	if (old) {
-		sample_to_timespec64(timer->it_clock,
-				   old_incr, &old->it_interval);
-	}
 	if (!ret)
 		posix_cpu_timer_kick_nohz();
+	return ret;
+}
+
+static int posix_cpu_timer_set(struct k_itimer *timer, int timer_flags,
+			       struct itimerspec64 *new, struct itimerspec64 *old)
+{
+	unsigned long long new_expires, new_incr, old_expires, old_incr;
+	int ret;
+
+	new_expires = timespec64_to_sample(timer->it_clock, &new->it_value);
+	new_incr = timespec64_to_sample(timer->it_clock, &new->it_interval);
+	old_expires = 0;
+
+	ret = __posix_cpu_timer_set(timer, timer_flags, new_expires,
+				    new_incr, old ? &old_expires : NULL,
+				    &old_incr);
+
+	if (ret == -ESRCH)
+		return ret;
+
+	if (old) {
+		if (old_expires == 0) {
+			old->it_value.tv_sec = 0;
+			old->it_value.tv_nsec = 0;
+		} else
+			sample_to_timespec64(timer->it_clock,
+					     old_expires, &old->it_value);
+		sample_to_timespec64(timer->it_clock,
+				     old_incr, &old->it_interval);
+	}
+
 	return ret;
 }
 
@@ -1267,11 +1310,9 @@ out:
 }
 
 static int do_cpu_nanosleep(const clockid_t which_clock, int flags,
-			    struct timespec *rqtp, struct itimerspec *it)
+			    ktime_t *rqtp, struct itimerspec64 *it)
 {
 	struct k_itimer timer;
-	struct timespec64 ts64;
-	struct itimerspec64 it64;
 	int error;
 
 	/*
@@ -1284,14 +1325,11 @@ static int do_cpu_nanosleep(const clockid_t which_clock, int flags,
 	error = posix_cpu_timer_create(&timer);
 	timer.it_process = current;
 	if (!error) {
-		static struct itimerspec64 zero_it;
-
-		memset(it, 0, sizeof *it);
-		it->it_value = *rqtp;
-
+		unsigned long long expires;
 		spin_lock_irq(&timer.it_lock);
-		it64 = itimerspec_to_itimerspec64(it);
-		error = posix_cpu_timer_set(&timer, flags, &it64, NULL);
+		expires  = ktime_to_sample(which_clock, *rqtp);
+		error = __posix_cpu_timer_set(&timer, flags, expires, 0,
+					      NULL, NULL);
 		if (error) {
 			spin_unlock_irq(&timer.it_lock);
 			return error;
@@ -1320,15 +1358,13 @@ static int do_cpu_nanosleep(const clockid_t which_clock, int flags,
 		/*
 		 * We were interrupted by a signal.
 		 */
-		sample_to_timespec64(which_clock, timer.it.cpu.expires, &ts64);
-		*rqtp = timespec64_to_timespec(ts64);
-		error = posix_cpu_timer_set(&timer, 0, &zero_it, &it64);
+		*rqtp = sample_to_ktime(which_clock, timer.it.cpu.expires);
+		error = __posix_cpu_timer_set(&timer, 0, 0, 0, &expires, NULL);
 		if (!error) {
 			/*
 			 * Timer is now unarmed, deletion can not fail.
 			 */
 			posix_cpu_timer_del(&timer);
-			*it = itimerspec64_to_itimerspec(&it64);
 		}
 		spin_unlock_irq(&timer.it_lock);
 
@@ -1343,7 +1379,7 @@ static int do_cpu_nanosleep(const clockid_t which_clock, int flags,
 			spin_unlock_irq(&timer.it_lock);
 		}
 
-		if ((it->it_value.tv_sec | it->it_value.tv_nsec) == 0) {
+		if (expires == 0) {
 			/*
 			 * It actually did fire already.
 			 */
@@ -1359,11 +1395,11 @@ static int do_cpu_nanosleep(const clockid_t which_clock, int flags,
 static long posix_cpu_nsleep_restart(struct restart_block *restart_block);
 
 static int posix_cpu_nsleep(const clockid_t which_clock, int flags,
-			    struct timespec *rqtp,
+			    ktime_t rqtp,
 			    struct __kernel_timespec __user *rmtp)
 {
 	struct restart_block *restart_block = &current->restart_block;
-	struct itimerspec it;
+	struct itimerspec64 it;
 	int error;
 
 	/*
@@ -1374,22 +1410,21 @@ static int posix_cpu_nsleep(const clockid_t which_clock, int flags,
 	     CPUCLOCK_PID(which_clock) == current->pid))
 		return -EINVAL;
 
-	error = do_cpu_nanosleep(which_clock, flags, rqtp, &it);
+	error = do_cpu_nanosleep(which_clock, flags, &rqtp, &it);
 
 	if (error == -ERESTART_RESTARTBLOCK) {
-		struct timespec64 it_value = timespec_to_timespec64(it.it_value);
 		if (flags & TIMER_ABSTIME)
 			return -ERESTARTNOHAND;
 		/*
 		 * Report back to the user the time still remaining.
 		 */
-		if (rmtp && put_timespec64(&it_value, rmtp))
+		if (rmtp && put_timespec64(&it.it_value, rmtp))
 			return -EFAULT;
 
 		restart_block->fn = posix_cpu_nsleep_restart;
 		restart_block->nanosleep.clockid = which_clock;
 		restart_block->nanosleep.rmtp = rmtp;
-		restart_block->nanosleep.expires = timespec_to_ns(rqtp);
+		restart_block->nanosleep.expires = ktime_to_ns(rqtp);
 	}
 	return error;
 }
@@ -1397,24 +1432,23 @@ static int posix_cpu_nsleep(const clockid_t which_clock, int flags,
 static long posix_cpu_nsleep_restart(struct restart_block *restart_block)
 {
 	clockid_t which_clock = restart_block->nanosleep.clockid;
-	struct timespec t;
-	struct itimerspec it;
+	ktime_t t;
+	struct itimerspec64 it;
 	int error;
 
-	t = ns_to_timespec(restart_block->nanosleep.expires);
+	t = ns_to_ktime(restart_block->nanosleep.expires);
 
 	error = do_cpu_nanosleep(which_clock, TIMER_ABSTIME, &t, &it);
 
 	if (error == -ERESTART_RESTARTBLOCK) {
 		struct __kernel_timespec __user *rmtp = restart_block->nanosleep.rmtp;
-		struct timespec64 it_value = timespec_to_timespec64(it.it_value);
 		/*
 		 * Report back to the user the time still remaining.
 		 */
-		if (rmtp && put_timespec64(&it_value, rmtp))
+		if (rmtp && put_timespec64(&it.it_value, rmtp))
 			return -EFAULT;
 
-		restart_block->nanosleep.expires = timespec_to_ns(&t);
+		restart_block->nanosleep.expires = ktime_to_ns(t);
 	}
 	return error;
 
@@ -1439,7 +1473,7 @@ static int process_cpu_timer_create(struct k_itimer *timer)
 	return posix_cpu_timer_create(timer);
 }
 static int process_cpu_nsleep(const clockid_t which_clock, int flags,
-			      struct timespec *rqtp,
+			      ktime_t rqtp,
 			      struct __kernel_timespec __user *rmtp)
 {
 	return posix_cpu_nsleep(PROCESS_CLOCK, flags, rqtp, rmtp);

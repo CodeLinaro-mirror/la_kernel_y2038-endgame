@@ -104,7 +104,7 @@ struct k_clock {
 	int (*clock_adj) (const clockid_t which_clock, struct __kernel_timex *tx);
 	int (*timer_create) (struct k_itimer *timer);
 	int (*nsleep) (const clockid_t which_clock, int flags,
-		       struct timespec *, struct __kernel_timespec __user *);
+		       ktime_t t, struct __kernel_timespec __user *);
 	long (*nsleep_restart) (struct restart_block *restart_block);
 	int (*timer_set64) (struct k_itimer *timr, int flags,
 			    struct itimerspec64 *new_setting,

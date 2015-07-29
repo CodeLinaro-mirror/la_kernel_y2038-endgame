@@ -440,7 +440,7 @@ static inline u64 hrtimer_forward_now(struct hrtimer *timer,
 }
 
 /* Precise sleep: */
-extern long hrtimer_nanosleep(struct timespec *rqtp,
+extern long hrtimer_nanosleep(ktime_t rqtp,
 			      struct __kernel_timespec __user *rmtp,
 			      const enum hrtimer_mode mode,
 			      const clockid_t clockid);

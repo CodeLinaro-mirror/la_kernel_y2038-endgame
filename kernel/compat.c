@@ -277,20 +277,23 @@ static long compat_nanosleep_restart(struct restart_block *restart)
 COMPAT_SYSCALL_DEFINE2(nanosleep, struct compat_timespec __user *, rqtp,
 		       struct compat_timespec __user *, rmtp)
 {
-	struct timespec tu;
+	struct timespec64 tu;
+	ktime_t kt;
 	struct __kernel_timespec rmt;
 	mm_segment_t oldfs;
 	long ret;
 
-	if (compat_get_timespec(&tu, rqtp))
+	if (compat_get_timespec64(&tu, rqtp))
 		return -EFAULT;
 
-	if (!timespec_valid(&tu))
+	if (!timespec64_valid(&tu))
 		return -EINVAL;
+
+	kt = timespec64_to_ktime(tu);
 
 	oldfs = get_fs();
 	set_fs(KERNEL_DS);
-	ret = hrtimer_nanosleep(&tu,
+	ret = hrtimer_nanosleep(kt,
 				rmtp ? (struct __kernel_timespec __user *)&rmt : NULL,
 				HRTIMER_MODE_REL, CLOCK_MONOTONIC);
 	set_fs(oldfs);
