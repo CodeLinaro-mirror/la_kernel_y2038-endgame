@@ -75,7 +75,7 @@ struct snd_pcm_ops {
 	int (*trigger)(struct snd_pcm_substream *substream, int cmd);
 	snd_pcm_uframes_t (*pointer)(struct snd_pcm_substream *substream);
 	int (*get_time_info)(struct snd_pcm_substream *substream,
-			struct timespec *system_ts, struct timespec *audio_ts,
+			struct snd_timespec *system_ts, struct snd_timespec *audio_ts,
 			struct snd_pcm_audio_tstamp_config *audio_tstamp_config,
 			struct snd_pcm_audio_tstamp_report *audio_tstamp_report);
 	int (*copy)(struct snd_pcm_substream *substream, int channel,
@@ -342,7 +342,7 @@ static inline void snd_pcm_pack_audio_tstamp_report(__u32 *data, __u32 *accuracy
 struct snd_pcm_runtime {
 	/* -- Status -- */
 	struct snd_pcm_substream *trigger_master;
-	struct timespec trigger_tstamp;	/* trigger timestamp */
+	struct snd_timespec trigger_tstamp;	/* trigger timestamp */
 	bool trigger_tstamp_latched;     /* trigger timestamp latched in low-level driver/hardware */
 	int overrange;
 	snd_pcm_uframes_t avail_max;
@@ -422,7 +422,7 @@ struct snd_pcm_runtime {
 	/* -- audio timestamp config -- */
 	struct snd_pcm_audio_tstamp_config audio_tstamp_config;
 	struct snd_pcm_audio_tstamp_report audio_tstamp_report;
-	struct timespec driver_tstamp;
+	struct snd_timespec driver_tstamp;
 
 #if defined(CONFIG_SND_PCM_OSS) || defined(CONFIG_SND_PCM_OSS_MODULE)
 	/* -- OSS things -- */
@@ -1127,19 +1127,27 @@ void snd_pcm_timer_done(struct snd_pcm_substream *substream);
  * @tv: timespec to fill
  */
 static inline void snd_pcm_gettime(struct snd_pcm_runtime *runtime,
-				   struct timespec *tv)
+				   struct snd_timespec *tv)
 {
+	struct timespec64 tv64;
 	switch (runtime->tstamp_type) {
 	case SNDRV_PCM_TSTAMP_TYPE_MONOTONIC:
-		ktime_get_ts(tv);
+		ktime_get_ts64(&tv64);
 		break;
-	case SNDRV_PCM_TSTAMP_TYPE_MONOTONIC_RAW:
-		getrawmonotonic(tv);
-		break;
+#ifndef CONFIG_Y2038_UNSAFE
 	default:
-		getnstimeofday(tv);
+#endif
+	case SNDRV_PCM_TSTAMP_TYPE_MONOTONIC_RAW:
+		getrawmonotonic64(&tv64);
 		break;
+#ifdef CONFIG_Y2038_UNSAFE
+	default:
+		getnstimeofday64(&tv64);
+		break;
+#endif
 	}
+	tv->tv_sec = tv64.tv_sec;
+	tv->tv_nsec = tv64.tv_nsec;
 }
 
 /*

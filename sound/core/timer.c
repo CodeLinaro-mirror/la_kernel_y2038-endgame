@@ -70,7 +70,7 @@ struct snd_timer_user {
 	spinlock_t qlock;
 	unsigned long last_resolution;
 	unsigned int filter;
-	struct timespec tstamp;		/* trigger tstamp */
+	struct snd_timespec tstamp;		/* trigger tstamp */
 	wait_queue_head_t qchange_sleep;
 	struct fasync_struct *fasync;
 	struct mutex tread_sem;
@@ -387,12 +387,17 @@ static void snd_timer_notify1(struct snd_timer_instance *ti, int event)
 	unsigned long flags;
 	unsigned long resolution = 0;
 	struct snd_timer_instance *ts;
-	struct timespec tstamp;
+	struct snd_timespec tstamp;
+	struct timespec64 ts64;
 
 	if (timer_tstamp_monotonic)
-		ktime_get_ts(&tstamp);
+		ktime_get_ts64(&ts64);
 	else
-		getnstimeofday(&tstamp);
+		getnstimeofday64(&ts64);
+
+	tstamp.tv_sec = ts64.tv_sec;
+	tstamp.tv_nsec = ts64.tv_nsec;
+
 	if (snd_BUG_ON(event < SNDRV_TIMER_EVENT_START ||
 		       event > SNDRV_TIMER_EVENT_PAUSE))
 		return;
@@ -883,7 +888,7 @@ static int snd_timer_dev_disconnect(struct snd_device *device)
 	return 0;
 }
 
-void snd_timer_notify(struct snd_timer *timer, int event, struct timespec *tstamp)
+void snd_timer_notify(struct snd_timer *timer, int event, struct snd_timespec *tstamp)
 {
 	unsigned long flags;
 	unsigned long resolution = 0;
@@ -1159,7 +1164,7 @@ static void snd_timer_user_append_to_tqueue(struct snd_timer_user *tu,
 
 static void snd_timer_user_ccallback(struct snd_timer_instance *timeri,
 				     int event,
-				     struct timespec *tstamp,
+				     struct snd_timespec *tstamp,
 				     unsigned long resolution)
 {
 	struct snd_timer_user *tu = timeri->callback_data;
@@ -1187,7 +1192,7 @@ static void snd_timer_user_tinterrupt(struct snd_timer_instance *timeri,
 {
 	struct snd_timer_user *tu = timeri->callback_data;
 	struct snd_timer_tread *r, r1;
-	struct timespec tstamp;
+	struct snd_timespec tstamp;
 	int prev, append = 0;
 
 	memset(&tstamp, 0, sizeof(tstamp));
@@ -1198,10 +1203,13 @@ static void snd_timer_user_tinterrupt(struct snd_timer_instance *timeri,
 		return;
 	}
 	if (tu->last_resolution != resolution || ticks > 0) {
+		struct timespec64 ts64;
 		if (timer_tstamp_monotonic)
-			ktime_get_ts(&tstamp);
+			ktime_get_ts64(&ts64);
 		else
-			getnstimeofday(&tstamp);
+			getnstimeofday64(&ts64);
+		tstamp.tv_sec = ts64.tv_sec;
+		tstamp.tv_nsec = ts64.tv_nsec;
 	}
 	if ((tu->filter & (1 << SNDRV_TIMER_EVENT_RESOLUTION)) &&
 	    tu->last_resolution != resolution) {
