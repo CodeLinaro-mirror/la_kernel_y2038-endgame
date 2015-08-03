@@ -12,6 +12,7 @@ if CAPI_EICON
 config ISDN_DIVAS
 	tristate "Support Eicon DIVA Server cards"
 	depends on PROC_FS && PCI
+	depends on Y2038_UNSAFE
 	help
 	  Say Y here if you have an Eicon Networks DIVA Server PCI ISDN card.
 	  In order to use this card, additional firmware is necessary, which

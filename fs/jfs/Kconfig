@@ -1,5 +1,6 @@
 config JFS_FS
 	tristate "JFS filesystem support"
+	depends on Y2038_UNSAFE
 	select NLS
 	select CRC32
 	help

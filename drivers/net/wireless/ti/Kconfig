@@ -1,5 +1,6 @@
 menuconfig WL_TI
 	bool "TI Wireless LAN support"
+	depends on Y2038_UNSAFE
 	---help---
 	  This section contains support for all the wireless drivers
 	  for Texas Instruments WLAN chips, such as wl1251 and the wl12xx

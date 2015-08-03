@@ -381,6 +381,7 @@ config SCSI_HPSA
 config SCSI_3W_9XXX
 	tristate "3ware 9xxx SATA-RAID support"
 	depends on PCI && SCSI
+	depends on Y2038_UNSAFE
 	help
 	  This driver supports the 9000 series 3ware SATA-RAID cards.
 
@@ -392,6 +393,7 @@ config SCSI_3W_9XXX
 config SCSI_3W_SAS
 	tristate "3ware 97xx SAS/SATA-RAID support"
 	depends on PCI && SCSI
+	depends on Y2038_UNSAFE
 	help
 	  This driver supports the LSI 3ware 9750 6Gb/s SAS/SATA-RAID cards.
 
@@ -468,6 +470,7 @@ config SCSI_AHA1740
 config SCSI_AACRAID
 	tristate "Adaptec AACRAID support"
 	depends on SCSI && PCI
+	depends on Y2038_UNSAFE
 	help
 	  This driver supports a variety of Dell, HP, Adaptec, IBM and
 	  ICP storage products. For a list of supported products, refer
@@ -485,6 +488,7 @@ source "drivers/scsi/mvsas/Kconfig"
 config SCSI_MVUMI
 	tristate "Marvell UMI driver"
 	depends on SCSI && PCI
+	depends on Y2038_UNSAFE
 	help
 	  Module for Marvell Universal Message Interface(UMI) driver
 
@@ -628,6 +632,7 @@ config FCOE_FNIC
 	tristate "Cisco FNIC Driver"
 	depends on PCI && X86
 	depends on LIBFCOE
+	depends on Y2038_UNSAFE
 	help
 	  This is support for the Cisco PCI-Express FCoE HBA.
 
@@ -638,6 +643,7 @@ config FCOE_FNIC
 config SCSI_SNIC
 	tristate "Cisco SNIC Driver"
 	depends on PCI && SCSI
+	depends on Y2038_UNSAFE
 	help
 	  This is support for the Cisco PCI-Express SCSI HBA.
 
@@ -761,6 +767,7 @@ config SCSI_FUTURE_DOMAIN
 config SCSI_GDTH
 	tristate "Intel/ICP (former GDT SCSI Disk Array) RAID Controller support"
 	depends on (ISA || EISA || PCI) && SCSI && ISA_DMA_API
+	depends on Y2038_UNSAFE
 	---help---
 	  Formerly called GDT SCSI Disk Array Controller Support.
 
@@ -830,6 +837,7 @@ config SCSI_GENERIC_NCR53C400
 config SCSI_IPS
 	tristate "IBM ServeRAID support"
 	depends on PCI && SCSI
+	depends on Y2038_UNSAFE
 	---help---
 	  This is support for the IBM ServeRAID hardware RAID controllers.
 	  See <http://www.developer.ibm.com/welcome/netfinity/serveraid.html>
@@ -1025,6 +1033,7 @@ config 53C700_LE_ON_BE
 config SCSI_STEX
 	tristate "Promise SuperTrak EX Series support"
 	depends on PCI && SCSI
+	depends on Y2038_UNSAFE
 	---help---
 	  This driver supports Promise SuperTrak EX series storage controllers.
 
@@ -1737,6 +1746,7 @@ config ZFCP
 config SCSI_PMCRAID
 	tristate "PMC SIERRA Linux MaxRAID adapter support"
 	depends on PCI && SCSI && NET
+	depends on Y2038_UNSAFE
 	---help---
 	  This driver supports the PMC SIERRA MaxRAID adapters.
 
@@ -1752,6 +1762,7 @@ config SCSI_BFA_FC
 	tristate "Brocade BFA Fibre Channel Support"
 	depends on PCI && SCSI
 	depends on SCSI_FC_ATTRS
+	depends on Y2038_UNSAFE
 	help
 	  This bfa driver supports all Brocade PCIe FC/FCOE host adapters.
 

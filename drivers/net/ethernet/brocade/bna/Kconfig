@@ -5,6 +5,7 @@
 config BNA
 	tristate "QLogic BR-series 1010/1020/1860 10Gb Ethernet Driver support"
 	depends on PCI
+	depends on Y2038_UNSAFE
 	---help---
 	  This driver supports QLogic BR-series 1010/1020/1860 10Gb CEE capable
 	  Ethernet cards.

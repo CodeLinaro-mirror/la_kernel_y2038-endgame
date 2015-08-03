@@ -16,6 +16,7 @@ config IIO_SSP_SENSORS_COMMONS
 config IIO_SSP_SENSORHUB
 	tristate "Samsung Sensorhub driver"
 	depends on SPI
+	depends on Y2038_UNSAFE
 	select MFD_CORE
 	help
 	  SSP driver for sensorhub.

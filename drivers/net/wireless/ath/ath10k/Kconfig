@@ -1,6 +1,7 @@
 config ATH10K
         tristate "Atheros 802.11ac wireless cards support"
         depends on MAC80211 && HAS_DMA
+	depends on Y2038_UNSAFE
 	select ATH_COMMON
         ---help---
           This module adds support for wireless adapters based on

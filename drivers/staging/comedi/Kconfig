@@ -78,6 +78,7 @@ config COMEDI_PARPORT
 
 config COMEDI_SERIAL2002
 	tristate "Driver for serial connected hardware"
+	depends on Y2038_UNSAFE
 	---help---
 	  Enable support for serial connected hardware
 

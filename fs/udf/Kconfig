@@ -1,6 +1,7 @@
 config UDF_FS
 	tristate "UDF file system support"
 	select CRC_ITU_T
+	depends on Y2038_UNSAFE
 	help
 	  This is a file system used on some CD-ROMs and DVDs. Since the
 	  file system is supported by multiple operating systems and is more

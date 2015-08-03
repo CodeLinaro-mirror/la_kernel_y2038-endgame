@@ -4,6 +4,7 @@
 config NCP_FS
 	tristate "NCP file system support (to mount NetWare volumes)"
 	depends on IPX!=n || INET
+	depends on Y2038_UNSAFE
 	help
 	  NCP (NetWare Core Protocol) is a protocol that runs over IPX and is
 	  used by Novell NetWare clients to talk to file servers.  It is to

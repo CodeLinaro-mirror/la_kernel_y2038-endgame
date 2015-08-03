@@ -42,6 +42,7 @@ config IP_DCCP_DEBUG
 config NET_DCCPPROBE
 	tristate "DCCP connection probing"
 	depends on PROC_FS && KPROBES
+	depends on Y2038_UNSAFE
 	---help---
 	This module allows for capturing the changes to DCCP connection
 	state in response to incoming packets. It is used for debugging

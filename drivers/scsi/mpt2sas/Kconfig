@@ -43,6 +43,7 @@
 config SCSI_MPT2SAS
 	tristate "LSI MPT Fusion SAS 2.0 Device Driver"
 	depends on PCI && SCSI
+	depends on Y2038_UNSAFE
 	select SCSI_SAS_ATTRS
 	select RAID_ATTRS
 	---help---

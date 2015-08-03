@@ -1,5 +1,6 @@
 config REISERFS_FS
 	tristate "Reiserfs support"
+	depends on Y2038_UNSAFE
 	select CRC32
 	help
 	  Stores not just filenames but the files themselves in a balanced

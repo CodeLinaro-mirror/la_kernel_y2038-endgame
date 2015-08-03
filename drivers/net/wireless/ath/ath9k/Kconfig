@@ -20,6 +20,7 @@ config ATH9K_BTCOEX_SUPPORT
 config ATH9K
 	tristate "Atheros 802.11n wireless cards support"
 	depends on MAC80211 && HAS_DMA
+	depends on Y2038_UNSAFE
 	select ATH9K_HW
 	select MAC80211_LEDS
 	select LEDS_CLASS
@@ -158,6 +159,7 @@ config ATH9K_PCOEM
 config ATH9K_HTC
        tristate "Atheros HTC based wireless cards support"
        depends on USB && MAC80211
+       depends on Y2038_UNSAFE
        select ATH9K_HW
        select MAC80211_LEDS
        select LEDS_CLASS

@@ -1,6 +1,7 @@
 config CODA_FS
 	tristate "Coda file system support (advanced network fs)"
 	depends on INET
+	depends on Y2038_UNSAFE
 	help
 	  Coda is an advanced network file system, similar to NFS in that it
 	  enables you to mount file systems of a remote server and access them

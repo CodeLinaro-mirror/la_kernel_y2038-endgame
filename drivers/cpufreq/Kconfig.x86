@@ -193,6 +193,7 @@ config X86_SPEEDSTEP_CENTRINO_TABLE
 config X86_SPEEDSTEP_ICH
 	tristate "Intel Speedstep on ICH-M chipsets (ioport interface)"
 	depends on X86_32
+	depends on Y2038_UNSAFE
 	help
 	  This adds the CPUFreq driver for certain mobile Intel Pentium III
 	  (Coppermine), all mobile Intel Pentium III-M (Tualatin) and all
@@ -206,6 +207,7 @@ config X86_SPEEDSTEP_ICH
 config X86_SPEEDSTEP_SMI
 	tristate "Intel SpeedStep on 440BX/ZX/MX chipsets (SMI interface)"
 	depends on X86_32
+	depends on Y2038_UNSAFE
 	help
 	  This adds the CPUFreq driver for certain mobile Intel Pentium III
 	  (Coppermine), all mobile Intel Pentium III-M (Tualatin)
@@ -217,6 +219,7 @@ config X86_SPEEDSTEP_SMI
 
 config X86_P4_CLOCKMOD
 	tristate "Intel Pentium 4 clock modulation"
+	depends on Y2038_UNSAFE
 	help
 	  This adds the CPUFreq driver for Intel Pentium 4 / XEON
 	  processors.  When enabled it will lower CPU temperature by skipping

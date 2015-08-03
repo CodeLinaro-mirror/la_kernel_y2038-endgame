@@ -350,6 +350,7 @@ config BLK_DEV_OSD
 config BLK_DEV_SX8
 	tristate "Promise SATA SX8 support"
 	depends on PCI
+	depends on Y2038_UNSAFE
 	---help---
 	  Saying Y or M here will enable support for the 
 	  Promise SATA SX8 controllers.
@@ -445,6 +446,7 @@ config CDROM_PKTCDVD_WCACHE
 config ATA_OVER_ETH
 	tristate "ATA over Ethernet support"
 	depends on NET
+	depends on Y2038_UNSAFE
 	help
 	This driver provides Support for ATA over Ethernet block
 	devices like the Coraid EtherDrive (R) Storage Blade.

@@ -5,6 +5,7 @@
 config TILE_NET
 	tristate "Tilera GBE/XGBE network driver support"
 	depends on TILE
+	depends on Y2038_UNSAFE
 	default y
 	select CRC32
 	select TILE_GXIO_MPIPE if TILEGX

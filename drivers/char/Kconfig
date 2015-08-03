@@ -94,6 +94,7 @@ config BFIN_OTP_WRITE_ENABLE
 config PRINTER
 	tristate "Parallel printer support"
 	depends on PARPORT
+	depends on Y2038_UNSAFE
 	---help---
 	  If you intend to attach a printer to the parallel port of your Linux
 	  box (as opposed to using a serial printer; if the connector at the
@@ -137,6 +138,7 @@ config LP_CONSOLE
 config PPDEV
 	tristate "Support for user-space parallel port device drivers"
 	depends on PARPORT
+	depends on Y2038_UNSAFE
 	---help---
 	  Saying Y to this adds support for /dev/parport device nodes.  This
 	  is needed for programs that want portable access to the parallel

@@ -16,6 +16,7 @@ config NOKIA_MODEM
 config CMT_SPEECH
 	tristate "CMT speech"
 	depends on HSI && SSI_PROTOCOL
+	depends on Y2038_UNSAFE
 	help
 	If you say Y here, you will enable the CMT speech protocol used
 	by Nokia modems. If you say M the protocol will be available as

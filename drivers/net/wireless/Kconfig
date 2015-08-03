@@ -74,6 +74,7 @@ config AIRO
 config ATMEL
       tristate "Atmel at76c50x chipset  802.11b support"
       depends on CFG80211 && (PCI || PCMCIA)
+      depends on Y2038_UNSAFE
       select WIRELESS_EXT
       select WEXT_PRIV
       select FW_LOADER

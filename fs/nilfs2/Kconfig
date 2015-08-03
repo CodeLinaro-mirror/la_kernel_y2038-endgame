@@ -1,6 +1,7 @@
 config NILFS2_FS
 	tristate "NILFS2 file system support"
 	select CRC32
+	depends on Y2038_UNSAFE
 	help
 	  NILFS2 is a log-structured file system (LFS) supporting continuous
 	  snapshotting.  In addition to versioning capability of the entire

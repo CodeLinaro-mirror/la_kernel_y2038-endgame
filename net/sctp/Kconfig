@@ -40,6 +40,7 @@ if IP_SCTP
 config NET_SCTPPROBE
 	tristate "SCTP: Association probing"
         depends on PROC_FS && KPROBES
+	depends on Y2038_UNSAFE
         ---help---
         This module allows for capturing the changes to SCTP association
         state in response to incoming packets. It is used for debugging

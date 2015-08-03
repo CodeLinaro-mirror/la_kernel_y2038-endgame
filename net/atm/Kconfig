@@ -49,6 +49,7 @@ config ATM_LANE
 config ATM_MPOA
 	tristate "Multi-Protocol Over ATM (MPOA) support"
 	depends on ATM && INET && ATM_LANE!=n
+	depends on Y2038_UNSAFE
 	help
 	  Multi-Protocol Over ATM allows ATM edge devices such as routers,
 	  bridges and ATM attached hosts establish direct ATM VCs across

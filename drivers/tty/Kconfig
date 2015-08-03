@@ -210,6 +210,7 @@ config ROCKETPORT
 config CYCLADES
 	tristate "Cyclades async mux support"
 	depends on SERIAL_NONSTANDARD && (PCI || ISA)
+	depends on Y2038_UNSAFE
 	select FW_LOADER
 	---help---
 	  This driver supports Cyclades Z and Y multiserial boards.

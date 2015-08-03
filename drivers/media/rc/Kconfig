@@ -178,6 +178,7 @@ config IR_IMON
 	tristate "SoundGraph iMON Receiver and Display"
 	depends on USB_ARCH_HAS_HCD
 	depends on RC_CORE
+	depends on Y2038_UNSAFE
 	select USB
 	---help---
 	   Say Y here if you want to use a SoundGraph iMON (aka Antec Veris)
@@ -264,6 +265,7 @@ config IR_STREAMZAP
 	tristate "Streamzap PC Remote IR Receiver"
 	depends on USB_ARCH_HAS_HCD
 	depends on RC_CORE
+	depends on Y2038_UNSAFE
 	select USB
 	---help---
 	   Say Y here if you want to use a Streamzap PC Remote

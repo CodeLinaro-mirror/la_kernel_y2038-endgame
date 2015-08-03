@@ -87,6 +87,7 @@ config QLGE
 config NETXEN_NIC
 	tristate "NetXen Multi port (1/10) Gigabit Ethernet NIC"
 	depends on PCI
+	depends on Y2038_UNSAFE
 	select FW_LOADER
 	---help---
 	  This enables the support for NetXen's Gigabit Ethernet card.

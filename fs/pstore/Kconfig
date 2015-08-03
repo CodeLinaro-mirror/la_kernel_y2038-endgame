@@ -49,6 +49,7 @@ config PSTORE_RAM
 	depends on PSTORE
 	depends on HAS_IOMEM
 	depends on HAVE_MEMBLOCK
+	depends on Y2038_UNSAFE
 	select REED_SOLOMON
 	select REED_SOLOMON_ENC8
 	select REED_SOLOMON_DEC8

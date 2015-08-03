@@ -4,6 +4,7 @@
 
 menuconfig MISDN
 	tristate "Modular ISDN driver"
+	depends on Y2038_UNSAFE
 	help
 	  Enable support for the modular ISDN driver.
 

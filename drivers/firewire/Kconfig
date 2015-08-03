@@ -6,6 +6,7 @@ menu "IEEE 1394 (FireWire) support"
 
 config FIREWIRE
 	tristate "FireWire driver stack"
+	depends on Y2038_UNSAFE
 	select CRC_ITU_T
 	help
 	  This is the new-generation IEEE 1394 (FireWire) driver stack
@@ -57,6 +58,7 @@ config FIREWIRE_NET
 
 config FIREWIRE_NOSY
 	tristate "Nosy - a FireWire traffic sniffer for PCILynx cards"
+	depends on Y2038_UNSAFE
 	depends on PCI
 	help
 	  Nosy is an IEEE 1394 packet sniffer that is used for protocol

@@ -301,6 +301,7 @@ menu "Network testing"
 config NET_PKTGEN
 	tristate "Packet Generator (USE WITH CAUTION)"
 	depends on INET && PROC_FS
+	depends on Y2038_UNSAFE
 	---help---
 	  This module will inject preconfigured packets, at a configurable
 	  rate, out of a given interface.  It is used for network interface
@@ -316,6 +317,7 @@ config NET_PKTGEN
 config NET_TCPPROBE
 	tristate "TCP connection probing"
 	depends on INET && PROC_FS && KPROBES
+	depends on Y2038_UNSAFE
 	---help---
 	This module allows for capturing the changes to TCP connection
 	state in response to incoming packets. It is used for debugging

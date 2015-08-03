@@ -1,6 +1,7 @@
 config INFINIBAND_NES
 	tristate "NetEffect RNIC Driver"
 	depends on PCI && INET && INFINIBAND
+	depends on Y2038_UNSAFE
 	select LIBCRC32C
 	select INET_LRO
 	---help---
