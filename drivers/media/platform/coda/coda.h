@@ -138,7 +138,7 @@ struct coda_buffer_meta {
 	struct list_head	list;
 	u32			sequence;
 	struct v4l2_timecode	timecode;
-	struct timeval		timestamp;
+	struct v4l2_timeval	timestamp;
 	u32			start;
 	u32			end;
 };

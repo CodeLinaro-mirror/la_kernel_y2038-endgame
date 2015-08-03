@@ -235,7 +235,7 @@ static int device_process(struct vim2m_ctx *ctx,
 	in_vb->v4l2_buf.sequence = q_data->sequence++;
 	memcpy(&out_vb->v4l2_buf.timestamp,
 			&in_vb->v4l2_buf.timestamp,
-			sizeof(struct timeval));
+			sizeof(struct v4l2_timeval));
 	if (in_vb->v4l2_buf.flags & V4L2_BUF_FLAG_TIMECODE)
 		memcpy(&out_vb->v4l2_buf.timecode, &in_vb->v4l2_buf.timecode,
 			sizeof(struct v4l2_timecode));

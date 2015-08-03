@@ -935,7 +935,7 @@ static const struct v4l2_ctrl_config vivid_ctrl_has_scaler_out = {
 static int vivid_streaming_s_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct vivid_dev *dev = container_of(ctrl->handler, struct vivid_dev, ctrl_hdl_streaming);
-	struct timeval tv;
+	struct v4l2_timeval tv;
 
 	switch (ctrl->id) {
 	case VIVID_CID_DQBUF_ERROR:

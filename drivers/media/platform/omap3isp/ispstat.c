@@ -496,7 +496,8 @@ int omap3isp_stat_request_statistics(struct ispstat *stat,
 		return PTR_ERR(buf);
 	}
 
-	data->ts = buf->ts;
+	data->ts.tv_sec = buf->ts.tv_sec;
+	data->ts.tv_usec = buf->ts.tv_usec;
 	data->config_counter = buf->config_counter;
 	data->frame_number = buf->frame_number;
 	data->buf_size = buf->buf_size;

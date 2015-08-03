@@ -513,7 +513,7 @@ static int omapvid_apply_changes(struct omap_vout_device *vout)
 }
 
 static int omapvid_handle_interlace_display(struct omap_vout_device *vout,
-		unsigned int irqstatus, struct timeval timevalue)
+		unsigned int irqstatus, struct v4l2_timeval timevalue)
 {
 	u32 fid;
 
@@ -557,7 +557,7 @@ static void omap_vout_isr(void *arg, unsigned int irqstatus)
 	int ret, fid, mgr_id;
 	u32 addr, irq;
 	struct omap_overlay *ovl;
-	struct timeval timevalue;
+	struct v4l2_timeval timevalue;
 	struct omapvideo_info *ovid;
 	struct omap_dss_device *cur_display;
 	struct omap_vout_device *vout = (struct omap_vout_device *)arg;

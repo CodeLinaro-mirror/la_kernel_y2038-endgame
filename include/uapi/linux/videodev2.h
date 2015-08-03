@@ -803,6 +803,19 @@ struct v4l2_plane {
 	__u32			reserved[11];
 };
 
+#ifdef __KERNEL__
+/*
+ * This is used for the in-kernel version of v4l2_buffer, as we are
+ * migrating away from using time_t based structures in the kernel.
+ * User space might see this defined either using 32-bit or 64-bit
+ * time_t, so we have to convert it when accessing user data.
+ */
+struct v4l2_timeval {
+	long tv_sec;
+	long tv_usec;
+};
+#endif
+
 /**
  * struct v4l2_buffer - video buffer info
  * @index:	id number of the buffer
@@ -839,7 +852,11 @@ struct v4l2_buffer {
 	__u32			bytesused;
 	__u32			flags;
 	__u32			field;
+#ifdef __KERNEL__
+	struct v4l2_timeval	timestamp;
+#else
 	struct timeval		timestamp;
+#endif
 	struct v4l2_timecode	timecode;
 	__u32			sequence;
 

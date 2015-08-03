@@ -1898,7 +1898,7 @@ static ssize_t dev_read(struct file *file, char __user *data,
 	struct gspca_dev *gspca_dev = video_drvdata(file);
 	struct gspca_frame *frame;
 	struct v4l2_buffer v4l2_buf;
-	struct timeval timestamp;
+	struct v4l2_timeval timestamp;
 	int n, ret, ret2;
 
 	PDEBUG(D_FRAM, "read (%zd)", count);

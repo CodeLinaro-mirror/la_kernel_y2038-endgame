@@ -892,7 +892,7 @@ static int find_earliest_filled_buffer(struct camera_data *cam)
 				found = i;
 			} else {
 				/* find which buffer is earlier */
-				struct timeval *tv1, *tv2;
+				struct v4l2_timeval *tv1, *tv2;
 				tv1 = &cam->buffers[i].timestamp;
 				tv2 = &cam->buffers[found].timestamp;
 				if(tv1->tv_sec < tv2->tv_sec ||

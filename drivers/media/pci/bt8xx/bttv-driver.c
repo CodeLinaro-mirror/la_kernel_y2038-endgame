@@ -3585,7 +3585,7 @@ static void
 bttv_irq_wakeup_video(struct bttv *btv, struct bttv_buffer_set *wakeup,
 		      struct bttv_buffer_set *curr, unsigned int state)
 {
-	struct timeval ts;
+	struct v4l2_timeval ts;
 
 	v4l2_get_timestamp(&ts);
 

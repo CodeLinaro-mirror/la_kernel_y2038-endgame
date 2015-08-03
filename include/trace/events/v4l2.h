@@ -6,6 +6,14 @@
 
 #include <linux/tracepoint.h>
 
+#ifndef v4l2_timeval_to_ns
+#define v4l2_timeval_to_ns v4l2_timeval_to_ns
+static inline u64 v4l2_timeval_to_ns(struct v4l2_timeval *tv)
+{
+	return (u64)tv->tv_sec * NSEC_PER_SEC + tv->tv_usec * NSEC_PER_USEC;
+}
+#endif
+
 /* Enums require being exported to userspace, for user tool parsing */
 #undef EM
 #undef EMe
@@ -126,7 +134,7 @@ DECLARE_EVENT_CLASS(v4l2_event_class,
 		__entry->bytesused = buf->bytesused;
 		__entry->flags = buf->flags;
 		__entry->field = buf->field;
-		__entry->timestamp = timeval_to_ns(&buf->timestamp);
+		__entry->timestamp = v4l2_timeval_to_ns(&buf->timestamp);
 		__entry->timecode_type = buf->timecode.type;
 		__entry->timecode_flags = buf->timecode.flags;
 		__entry->timecode_frames = buf->timecode.frames;
@@ -211,7 +219,7 @@ DECLARE_EVENT_CLASS(vb2_event_class,
 		__entry->bytesused = vb->v4l2_planes[0].bytesused;
 		__entry->flags = vb->v4l2_buf.flags;
 		__entry->field = vb->v4l2_buf.field;
-		__entry->timestamp = timeval_to_ns(&vb->v4l2_buf.timestamp);
+		__entry->timestamp = v4l2_timeval_to_ns(&vb->v4l2_buf.timestamp);
 		__entry->timecode_type = vb->v4l2_buf.timecode.type;
 		__entry->timecode_flags = vb->v4l2_buf.timecode.flags;
 		__entry->timecode_frames = vb->v4l2_buf.timecode.frames;

@@ -354,7 +354,7 @@ struct cpia2_sbuf {
 };
 
 struct framebuf {
-	struct timeval timestamp;
+	struct v4l2_timeval timestamp;
 	unsigned long seq;
 	int num;
 	int length;
