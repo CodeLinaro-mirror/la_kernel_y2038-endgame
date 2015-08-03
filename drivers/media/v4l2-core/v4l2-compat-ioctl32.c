@@ -905,35 +905,6 @@ static int put_v4l2_ext_controls32(struct file *file,
 	return 0;
 }
 
-struct v4l2_event32 {
-	__u32				type;
-	union {
-		compat_s64		value64;
-		__u8			data[64];
-	} u;
-	__u32				pending;
-	__u32				sequence;
-	struct compat_timespec		timestamp;
-	__u32				id;
-	__u32				reserved[8];
-};
-
-static int put_v4l2_event32(struct v4l2_event __user *kp,
-			    struct v4l2_event32 __user *up)
-{
-	if (!access_ok(VERIFY_WRITE, up, sizeof(*up)) ||
-	    assign_in_user(&up->type, &kp->type) ||
-	    copy_in_user(&up->u, &kp->u, sizeof(kp->u)) ||
-	    assign_in_user(&up->pending, &kp->pending) ||
-	    assign_in_user(&up->sequence, &kp->sequence) ||
-	    assign_in_user(&up->timestamp.tv_sec, &kp->timestamp.tv_sec) ||
-	    assign_in_user(&up->timestamp.tv_nsec, &kp->timestamp.tv_nsec) ||
-	    assign_in_user(&up->id, &kp->id) ||
-	    copy_in_user(up->reserved, kp->reserved, sizeof(up->reserved)))
-		return -EFAULT;
-	return 0;
-}
-
 struct v4l2_edid32 {
 	__u32 pad;
 	__u32 start_block;
@@ -990,7 +961,6 @@ static int put_v4l2_edid32(struct v4l2_edid __user *kp,
 #define VIDIOC_G_EXT_CTRLS32    _IOWR('V', 71, struct v4l2_ext_controls32)
 #define VIDIOC_S_EXT_CTRLS32    _IOWR('V', 72, struct v4l2_ext_controls32)
 #define VIDIOC_TRY_EXT_CTRLS32  _IOWR('V', 73, struct v4l2_ext_controls32)
-#define	VIDIOC_DQEVENT32	_IOR ('V', 89, struct v4l2_event32)
 #define VIDIOC_CREATE_BUFS32	_IOWR('V', 92, struct v4l2_create_buffers32)
 #define VIDIOC_PREPARE_BUF32	_IOWR('V', 93, struct v4l2_buffer32)
 
@@ -1037,7 +1007,6 @@ static long do_video_ioctl(struct file *file, unsigned int cmd, unsigned long ar
 	case VIDIOC_G_EXT_CTRLS32: cmd = VIDIOC_G_EXT_CTRLS; break;
 	case VIDIOC_S_EXT_CTRLS32: cmd = VIDIOC_S_EXT_CTRLS; break;
 	case VIDIOC_TRY_EXT_CTRLS32: cmd = VIDIOC_TRY_EXT_CTRLS; break;
-	case VIDIOC_DQEVENT32: cmd = VIDIOC_DQEVENT; break;
 	case VIDIOC_OVERLAY32: cmd = VIDIOC_OVERLAY; break;
 	case VIDIOC_STREAMON32: cmd = VIDIOC_STREAMON; break;
 	case VIDIOC_STREAMOFF32: cmd = VIDIOC_STREAMOFF; break;

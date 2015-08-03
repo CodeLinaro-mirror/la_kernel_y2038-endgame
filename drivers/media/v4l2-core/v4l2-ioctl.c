@@ -2820,6 +2820,17 @@ static int check_array_args(unsigned int cmd, void *parg, size_t *array_size,
 	return ret;
 }
 
+void v4l2_convert_event(void *parg)
+{
+	struct v4l2_event32 *ev32 = parg;
+	struct v4l2_event *ev64 = parg;
+
+	ev32.timestamp.tv_sec = ev64.timestamp.tv_sec;
+	ev32.timestamp.tv_usec = ev64.timestamp.tv_usec;
+	ev32.id = ev64.id;
+	memset(ev32->reserved, 0, sizeof(ev32->reserved));
+}
+
 long
 video_usercopy(struct file *file, unsigned int cmd, unsigned long arg,
 	       v4l2_kioctl func)
@@ -2908,10 +2919,14 @@ video_usercopy(struct file *file, unsigned int cmd, unsigned long arg,
 	}
 
 	if (err == 0) {
-		if (cmd == VIDIOC_DQBUF)
+		switch (cmd) {
+		case VIDIOC_DQBUF:
 			trace_v4l2_dqbuf(video_devdata(file)->minor, parg);
-		else if (cmd == VIDIOC_QBUF)
+		case VIDIOC_QBUF:
 			trace_v4l2_qbuf(video_devdata(file)->minor, parg);
+		case VIDIOC_DQEVENT32:
+			v4l2_convert_event(parg);
+		}
 	}
 
 	if (has_array_args) {

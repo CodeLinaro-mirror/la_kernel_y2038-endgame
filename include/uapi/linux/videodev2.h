@@ -2226,13 +2226,46 @@ struct v4l2_event {
 		struct v4l2_event_src_change	src_change;
 		struct v4l2_event_motion_det	motion_det;
 		__u8				data[64];
-	} u;
+	} u __attribute__((aligned(sizeof(time_t))));
 	__u32				pending;
 	__u32				sequence;
+#ifdef __KERNEL__
+	struct {
+		__s64 tv_sec;
+		__s64 tv_nsec;
+	} timestamp;
+#else
 	struct timespec			timestamp;
+#endif
 	__u32				id;
 	__u32				reserved[8];
 };
+
+#ifdef __KERNEL__
+/*
+ * User space will see either 64-bit or 32-bit time_t, which changes
+ * the v4l2_event layout. Both are y2038 safe because the timestamps
+ * are in monotonic time, but the kernel has to handle both cases.
+ */
+struct v4l2_event32 {
+	__u32				type;
+	union {
+#ifndef __x86_64__
+		__u64			value64;
+#endif
+		__u8			data[64];
+	} u;
+	__u32				pending;
+	__u32				sequence;
+	struct {
+		__s32			tv_sec;
+		__s32			tv_nsec;
+	}				timestamp;
+
+	__u32				id;
+	__u32				reserved[8];
+};
+#endif
 
 #define V4L2_EVENT_SUB_FL_SEND_INITIAL		(1 << 0)
 #define V4L2_EVENT_SUB_FL_ALLOW_FEEDBACK	(1 << 1)
@@ -2385,6 +2418,7 @@ struct v4l2_create_buffers {
 #define	VIDIOC_S_DV_TIMINGS	_IOWR('V', 87, struct v4l2_dv_timings)
 #define	VIDIOC_G_DV_TIMINGS	_IOWR('V', 88, struct v4l2_dv_timings)
 #define	VIDIOC_DQEVENT		 _IOR('V', 89, struct v4l2_event)
+#define	VIDIOC_DQEVENT32	 _IOR('V', 89, struct v4l2_event32)
 #define	VIDIOC_SUBSCRIBE_EVENT	 _IOW('V', 90, struct v4l2_event_subscription)
 #define	VIDIOC_UNSUBSCRIBE_EVENT _IOW('V', 91, struct v4l2_event_subscription)
 #define VIDIOC_CREATE_BUFS	_IOWR('V', 92, struct v4l2_create_buffers)
