@@ -211,6 +211,12 @@ static long subdev_do_ioctl(struct file *file, unsigned int cmd, void *arg)
 	case VIDIOC_TRY_EXT_CTRLS:
 		return v4l2_try_ext_ctrls(vfh->ctrl_handler, arg);
 
+	case VIDIOC_DQEVENT32:
+		if (!(sd->flags & V4L2_SUBDEV_FL_HAS_EVENTS))
+			return -ENOIOCTLCMD;
+
+		return v4l2_event_dequeue32(vfh, arg, file->f_flags & O_NONBLOCK);
+
 	case VIDIOC_DQEVENT:
 		if (!(sd->flags & V4L2_SUBDEV_FL_HAS_EVENTS))
 			return -ENOIOCTLCMD;

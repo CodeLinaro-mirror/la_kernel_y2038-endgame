@@ -735,32 +735,6 @@ static int put_v4l2_ext_controls32(struct v4l2_ext_controls *kp, struct v4l2_ext
 	return 0;
 }
 
-struct v4l2_event32 {
-	__u32				type;
-	union {
-		__u8			data[64];
-	} u;
-	__u32				pending;
-	__u32				sequence;
-	struct compat_timespec		timestamp;
-	__u32				id;
-	__u32				reserved[8];
-};
-
-static int put_v4l2_event32(struct v4l2_event *kp, struct v4l2_event32 __user *up)
-{
-	if (!access_ok(VERIFY_WRITE, up, sizeof(struct v4l2_event32)) ||
-		put_user(kp->type, &up->type) ||
-		copy_to_user(&up->u, &kp->u, sizeof(kp->u)) ||
-		put_user(kp->pending, &up->pending) ||
-		put_user(kp->sequence, &up->sequence) ||
-		compat_put_timespec(&kp->timestamp, &up->timestamp) ||
-		put_user(kp->id, &up->id) ||
-		copy_to_user(up->reserved, kp->reserved, 8 * sizeof(__u32)))
-			return -EFAULT;
-	return 0;
-}
-
 struct v4l2_edid32 {
 	__u32 pad;
 	__u32 start_block;
@@ -814,7 +788,6 @@ static int put_v4l2_edid32(struct v4l2_edid *kp, struct v4l2_edid32 __user *up)
 #define VIDIOC_G_EXT_CTRLS32    _IOWR('V', 71, struct v4l2_ext_controls32)
 #define VIDIOC_S_EXT_CTRLS32    _IOWR('V', 72, struct v4l2_ext_controls32)
 #define VIDIOC_TRY_EXT_CTRLS32  _IOWR('V', 73, struct v4l2_ext_controls32)
-#define	VIDIOC_DQEVENT32	_IOR ('V', 89, struct v4l2_event32)
 #define VIDIOC_CREATE_BUFS32	_IOWR('V', 92, struct v4l2_create_buffers32)
 #define VIDIOC_PREPARE_BUF32	_IOWR('V', 93, struct v4l2_buffer32)
 
@@ -860,7 +833,6 @@ static long do_video_ioctl(struct file *file, unsigned int cmd, unsigned long ar
 	case VIDIOC_G_EXT_CTRLS32: cmd = VIDIOC_G_EXT_CTRLS; break;
 	case VIDIOC_S_EXT_CTRLS32: cmd = VIDIOC_S_EXT_CTRLS; break;
 	case VIDIOC_TRY_EXT_CTRLS32: cmd = VIDIOC_TRY_EXT_CTRLS; break;
-	case VIDIOC_DQEVENT32: cmd = VIDIOC_DQEVENT; break;
 	case VIDIOC_OVERLAY32: cmd = VIDIOC_OVERLAY; break;
 	case VIDIOC_STREAMON32: cmd = VIDIOC_STREAMON; break;
 	case VIDIOC_STREAMOFF32: cmd = VIDIOC_STREAMOFF; break;
@@ -940,9 +912,6 @@ static long do_video_ioctl(struct file *file, unsigned int cmd, unsigned long ar
 		err = get_v4l2_ext_controls32(&karg.v2ecs, up);
 		compatible_arg = 0;
 		break;
-	case VIDIOC_DQEVENT:
-		compatible_arg = 0;
-		break;
 	}
 	if (err)
 		return err;
@@ -981,10 +950,6 @@ static long do_video_ioctl(struct file *file, unsigned int cmd, unsigned long ar
 
 	case VIDIOC_G_FBUF:
 		err = put_v4l2_framebuffer32(&karg.v2fb, up);
-		break;
-
-	case VIDIOC_DQEVENT:
-		err = put_v4l2_event32(&karg.v2ev, up);
 		break;
 
 	case VIDIOC_G_EDID:

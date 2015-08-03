@@ -92,6 +92,28 @@ int v4l2_event_dequeue(struct v4l2_fh *fh, struct v4l2_event *event,
 }
 EXPORT_SYMBOL_GPL(v4l2_event_dequeue);
 
+int v4l2_event_dequeue32(struct v4l2_fh *fh, struct v4l2_event32 *event32,
+		       int nonblocking)
+{
+	struct v4l2_event event64;
+	int ret;
+
+	ret = v4l2_event_dequeue(fh, &event64, nonblocking);
+	if (ret)
+		return ret;
+
+	/* only the timestamp differs, so use memcpy to copy everything else */
+	memcpy(event32, &event64, offsetof(struct v4l2_event32, timestamp));
+	event32->timestamp.tv_sec = (long)event64.timestamp.tv_sec;
+	event32->timestamp.tv_nsec = (long)event64.timestamp.tv_nsec;
+	memcpy(&event32->id, &event64.id,
+	       sizeof(event32->id) + sizeof(event32->reserved));
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(v4l2_event_dequeue32);
+
+
 /* Caller must hold fh->vdev->fh_lock! */
 static struct v4l2_subscribed_event *v4l2_event_subscribed(
 		struct v4l2_fh *fh, u32 type, u32 id)
@@ -108,7 +130,7 @@ static struct v4l2_subscribed_event *v4l2_event_subscribed(
 }
 
 static void __v4l2_event_queue_fh(struct v4l2_fh *fh, const struct v4l2_event *ev,
-		const struct timespec *ts)
+		const struct timespec64 *ts)
 {
 	struct v4l2_subscribed_event *sev;
 	struct v4l2_kevent *kev;
@@ -156,7 +178,8 @@ static void __v4l2_event_queue_fh(struct v4l2_fh *fh, const struct v4l2_event *e
 	if (copy_payload)
 		kev->event.u = ev->u;
 	kev->event.id = ev->id;
-	kev->event.timestamp = *ts;
+	kev->event.timestamp.tv_sec = ts->tv_sec;
+	kev->event.timestamp.tv_nsec = ts->tv_nsec;
 	kev->event.sequence = fh->sequence;
 	sev->in_use++;
 	list_add_tail(&kev->list, &fh->available);
@@ -170,12 +193,12 @@ void v4l2_event_queue(struct video_device *vdev, const struct v4l2_event *ev)
 {
 	struct v4l2_fh *fh;
 	unsigned long flags;
-	struct timespec timestamp;
+	struct timespec64 timestamp;
 
 	if (vdev == NULL)
 		return;
 
-	ktime_get_ts(&timestamp);
+	ktime_get_ts64(&timestamp);
 
 	spin_lock_irqsave(&vdev->fh_lock, flags);
 
@@ -189,9 +212,9 @@ EXPORT_SYMBOL_GPL(v4l2_event_queue);
 void v4l2_event_queue_fh(struct v4l2_fh *fh, const struct v4l2_event *ev)
 {
 	unsigned long flags;
-	struct timespec timestamp;
+	struct timespec64 timestamp;
 
-	ktime_get_ts(&timestamp);
+	ktime_get_ts64(&timestamp);
 
 	spin_lock_irqsave(&fh->vdev->fh_lock, flags);
 	__v4l2_event_queue_fh(fh, ev, &timestamp);

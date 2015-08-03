@@ -124,6 +124,8 @@ struct v4l2_subscribed_event {
 
 int v4l2_event_dequeue(struct v4l2_fh *fh, struct v4l2_event *event,
 		       int nonblocking);
+int v4l2_event_dequeue32(struct v4l2_fh *fh, struct v4l2_event32 *event,
+		       int nonblocking);
 void v4l2_event_queue(struct video_device *vdev, const struct v4l2_event *ev);
 void v4l2_event_queue_fh(struct v4l2_fh *fh, const struct v4l2_event *ev);
 int v4l2_event_pending(struct v4l2_fh *fh);

@@ -797,22 +797,18 @@ static void v4l_print_frmivalenum(const void *arg, bool write_only)
 	}
 }
 
-static void v4l_print_event(const void *arg, bool write_only)
+static void v4l_print_event_data(const void *arg, bool write_only, u32 type)
 {
-	const struct v4l2_event *p = arg;
-	const struct v4l2_event_ctrl *c;
+	const struct v4l2_event_vsync *vsync = arg;
+	const struct v4l2_event_ctrl *c = arg;
+	const struct v4l2_event_frame_sync *frame_sync = arg;
 
-	pr_cont("type=0x%x, pending=%u, sequence=%u, id=%u, "
-		"timestamp=%lu.%9.9lu\n",
-			p->type, p->pending, p->sequence, p->id,
-			p->timestamp.tv_sec, p->timestamp.tv_nsec);
-	switch (p->type) {
+	switch (type) {
 	case V4L2_EVENT_VSYNC:
 		printk(KERN_DEBUG "field=%s\n",
-			prt_names(p->u.vsync.field, v4l2_field_names));
+			prt_names(vsync->field, v4l2_field_names));
 		break;
 	case V4L2_EVENT_CTRL:
-		c = &p->u.ctrl;
 		printk(KERN_DEBUG "changes=0x%x, type=%u, ",
 			c->changes, c->type);
 		if (c->type == V4L2_CTRL_TYPE_INTEGER64)
@@ -825,10 +821,32 @@ static void v4l_print_event(const void *arg, bool write_only)
 			c->step, c->default_value);
 		break;
 	case V4L2_EVENT_FRAME_SYNC:
-		pr_cont("frame_sequence=%u\n",
-			p->u.frame_sync.frame_sequence);
+		pr_cont("frame_sequence=%u\n", frame_sync->frame_sequence);
 		break;
 	}
+}
+
+static void v4l_print_event32(const void *arg, bool write_only)
+{
+	const struct v4l2_event32 *p = arg;
+	pr_cont("type=0x%x, pending=%u, sequence=%u, id=%u, "
+			"timestamp=%d.%9.9u\n",
+			p->type, p->pending, p->sequence, p->id,
+			p->timestamp.tv_sec, p->timestamp.tv_nsec);
+
+	return v4l_print_event_data(&p->u, write_only, p->type);
+}
+
+static void v4l_print_event64(const void *arg, bool write_only)
+{
+	const struct v4l2_event *p = arg;
+
+	pr_cont("type=0x%x, pending=%u, sequence=%u, id=%u, "
+			"timestamp=%lld.%9.9llu\n",
+			p->type, p->pending, p->sequence, p->id,
+			p->timestamp.tv_sec, p->timestamp.tv_nsec);
+
+	return v4l_print_event_data(&p->u, write_only, p->type);
 }
 
 static void v4l_print_event_subscription(const void *arg, bool write_only)
@@ -2235,10 +2253,16 @@ static int v4l_dbg_g_chip_info(const struct v4l2_ioctl_ops *ops,
 #endif
 }
 
-static int v4l_dqevent(const struct v4l2_ioctl_ops *ops,
+static int v4l_dqevent64(const struct v4l2_ioctl_ops *ops,
 				struct file *file, void *fh, void *arg)
 {
 	return v4l2_event_dequeue(fh, arg, file->f_flags & O_NONBLOCK);
+}
+
+static int v4l_dqevent32(const struct v4l2_ioctl_ops *ops,
+				struct file *file, void *fh, void *arg)
+{
+	return v4l2_event_dequeue32(fh, arg, file->f_flags & O_NONBLOCK);
 }
 
 static int v4l_subscribe_event(const struct v4l2_ioctl_ops *ops,
@@ -2449,7 +2473,8 @@ static struct v4l2_ioctl_info v4l2_ioctls[] = {
 	IOCTL_INFO_FNC(VIDIOC_S_HW_FREQ_SEEK, v4l_s_hw_freq_seek, v4l_print_hw_freq_seek, INFO_FL_PRIO),
 	IOCTL_INFO_STD(VIDIOC_S_DV_TIMINGS, vidioc_s_dv_timings, v4l_print_dv_timings, INFO_FL_PRIO),
 	IOCTL_INFO_STD(VIDIOC_G_DV_TIMINGS, vidioc_g_dv_timings, v4l_print_dv_timings, 0),
-	IOCTL_INFO_FNC(VIDIOC_DQEVENT, v4l_dqevent, v4l_print_event, 0),
+	IOCTL_INFO_FNC(VIDIOC_DQEVENT, v4l_dqevent64, v4l_print_event64, 0),
+	IOCTL_INFO_FNC(VIDIOC_DQEVENT32, v4l_dqevent32, v4l_print_event32, 0),
 	IOCTL_INFO_FNC(VIDIOC_SUBSCRIBE_EVENT, v4l_subscribe_event, v4l_print_event_subscription, 0),
 	IOCTL_INFO_FNC(VIDIOC_UNSUBSCRIBE_EVENT, v4l_unsubscribe_event, v4l_print_event_subscription, 0),
 	IOCTL_INFO_FNC(VIDIOC_CREATE_BUFS, v4l_create_bufs, v4l_print_create_buffers, INFO_FL_PRIO | INFO_FL_QUEUE),
