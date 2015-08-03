@@ -157,7 +157,7 @@ static void snd_seq_timer_interrupt(struct snd_timer_instance *timeri,
 	snd_seq_timer_update_tick(&tmr->tick, resolution);
 
 	/* register actual time of this timer update */
-	do_gettimeofday(&tmr->last_update);
+	ktime_get_ts64(&tmr->last_update);
 
 	spin_unlock_irqrestore(&tmr->lock, flags);
 
@@ -369,7 +369,7 @@ int snd_seq_timer_start(struct snd_seq_timer * tmr)
 		return -EINVAL;
 	snd_timer_start(tmr->timeri, tmr->ticks);
 	tmr->running = 1;
-	do_gettimeofday(&tmr->last_update);
+	ktime_get_ts64(&tmr->last_update);
 	return 0;
 }
 
@@ -386,7 +386,7 @@ int snd_seq_timer_continue(struct snd_seq_timer * tmr)
 	}
 	snd_timer_start(tmr->timeri, tmr->ticks);
 	tmr->running = 1;
-	do_gettimeofday(&tmr->last_update);
+	ktime_get_ts64(&tmr->last_update);
 	return 0;
 }
 
@@ -397,17 +397,12 @@ snd_seq_real_time_t snd_seq_timer_get_cur_time(struct snd_seq_timer *tmr)
 
 	cur_time = tmr->cur_time;
 	if (tmr->running) { 
-		struct timeval tm;
-		int usec;
-		do_gettimeofday(&tm);
-		usec = (int)(tm.tv_usec - tmr->last_update.tv_usec);
-		if (usec < 0) {
-			cur_time.tv_nsec += (1000000 + usec) * 1000;
-			cur_time.tv_sec += tm.tv_sec - tmr->last_update.tv_sec - 1;
-		} else {
-			cur_time.tv_nsec += usec * 1000;
-			cur_time.tv_sec += tm.tv_sec - tmr->last_update.tv_sec;
-		}
+		struct timespec64 tm;
+
+		ktime_get_ts64(&tm);
+		tm = timespec64_sub(tm, tmr->last_update);
+		cur_time.tv_nsec = tm.tv_nsec;
+		cur_time.tv_sec = tm.tv_sec;
 		snd_seq_sanity_real_time(&cur_time);
 	}
                 
