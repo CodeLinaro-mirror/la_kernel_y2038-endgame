@@ -241,7 +241,7 @@ static char *savemem(struct nfsd4_compoundargs *argp, __be32 *p, int nbytes)
  * we ignore all 32 bits of 'nseconds'.
  */
 static __be32
-nfsd4_decode_time(struct nfsd4_compoundargs *argp, struct timespec *tv)
+nfsd4_decode_time(struct nfsd4_compoundargs *argp, struct inode_time *tv)
 {
 	DECODE_HEAD;
 	u64 sec;

@@ -120,7 +120,7 @@ udf_disk_stamp_to_time(struct inode_time *dest, struct timestamp src)
 struct timestamp *
 udf_time_to_disk_stamp(struct timestamp *dest, struct inode_time ts)
 {
-	long int days, rem, y;
+	u32 days, rem, y;
 	const unsigned short int *ip;
 	int16_t offset;
 
@@ -132,8 +132,7 @@ udf_time_to_disk_stamp(struct timestamp *dest, struct inode_time ts)
 	dest->typeAndTimezone = cpu_to_le16(0x1000 | (offset & 0x0FFF));
 
 	ts.tv_sec += offset * 60;
-	days = ts.tv_sec / SECS_PER_DAY;
-	rem = ts.tv_sec % SECS_PER_DAY;
+	days = div_s64_rem(ts.tv_sec, SECS_PER_DAY, &rem);
 	dest->hour = rem / SECS_PER_HOUR;
 	rem %= SECS_PER_HOUR;
 	dest->minute = rem / 60;

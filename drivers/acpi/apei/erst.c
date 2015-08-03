@@ -928,13 +928,13 @@ static int erst_check_table(struct acpi_table_erst *erst_tab)
 static int erst_open_pstore(struct pstore_info *psi);
 static int erst_close_pstore(struct pstore_info *psi);
 static ssize_t erst_reader(u64 *id, enum pstore_type_id *type, int *count,
-			   struct timespec *time, char **buf,
+			   struct inode_time *time, char **buf,
 			   bool *compressed, struct pstore_info *psi);
 static int erst_writer(enum pstore_type_id type, enum kmsg_dump_reason reason,
 		       u64 *id, unsigned int part, int count, bool compressed,
 		       size_t size, struct pstore_info *psi);
 static int erst_clearer(enum pstore_type_id type, u64 id, int count,
-			struct timespec time, struct pstore_info *psi);
+			struct inode_time time, struct pstore_info *psi);
 
 static struct pstore_info erst_info = {
 	.owner		= THIS_MODULE,
@@ -988,7 +988,7 @@ static int erst_close_pstore(struct pstore_info *psi)
 }
 
 static ssize_t erst_reader(u64 *id, enum pstore_type_id *type, int *count,
-			   struct timespec *time, char **buf,
+			   struct inode_time *time, char **buf,
 			   bool *compressed, struct pstore_info *psi)
 {
 	int rc;
@@ -1075,7 +1075,7 @@ static int erst_writer(enum pstore_type_id type, enum kmsg_dump_reason reason,
 	rcd->hdr.error_severity = CPER_SEV_FATAL;
 	/* timestamp valid. platform_id, partition_id are invalid */
 	rcd->hdr.validation_bits = CPER_VALID_TIMESTAMP;
-	rcd->hdr.timestamp = get_seconds();
+	rcd->hdr.timestamp = ktime_get_real_seconds();
 	rcd->hdr.record_length = sizeof(*rcd) + size;
 	rcd->hdr.creator_id = CPER_CREATOR_PSTORE;
 	rcd->hdr.notification_type = CPER_NOTIFY_MCE;
@@ -1110,7 +1110,7 @@ static int erst_writer(enum pstore_type_id type, enum kmsg_dump_reason reason,
 }
 
 static int erst_clearer(enum pstore_type_id type, u64 id, int count,
-			struct timespec time, struct pstore_info *psi)
+			struct inode_time time, struct pstore_info *psi)
 {
 	return erst_clear(id);
 }

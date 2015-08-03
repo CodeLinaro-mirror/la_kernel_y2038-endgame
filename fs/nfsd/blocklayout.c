@@ -156,7 +156,7 @@ nfsd4_block_proc_layoutcommit(struct inode *inode,
 		return nfserrno(nr_iomaps);
 
 	if (lcp->lc_mtime.tv_nsec == UTIME_NOW ||
-	    timespec_compare(&lcp->lc_mtime, &inode->i_mtime) < 0)
+	    inode_time_compare(&lcp->lc_mtime, &inode->i_mtime) < 0)
 		lcp->lc_mtime = current_fs_time(inode->i_sb);
 	iattr.ia_valid |= ATTR_ATIME | ATTR_CTIME | ATTR_MTIME;
 	iattr.ia_atime = iattr.ia_ctime = iattr.ia_mtime = lcp->lc_mtime;
