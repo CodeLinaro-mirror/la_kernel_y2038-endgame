@@ -1325,9 +1325,9 @@ int ll_setattr_raw(struct dentry *dentry, struct iattr *attr, bool hsm_import)
 	}
 
 	if (attr->ia_valid & (ATTR_MTIME | ATTR_CTIME))
-		CDEBUG(D_INODE, "setting mtime %lu, ctime %lu, now = %lu\n",
-		       LTIME_S(attr->ia_mtime), LTIME_S(attr->ia_ctime),
-		       get_seconds());
+		CDEBUG(D_INODE, "setting mtime %llu, ctime %llu, now = %llu\n",
+		       (u64)LTIME_S(attr->ia_mtime), (u64)LTIME_S(attr->ia_ctime),
+		       (u64)ktime_get_real_seconds());
 
 	/* If we are changing file size, file content is modified, flag it. */
 	if (attr->ia_valid & ATTR_SIZE) {
@@ -1616,7 +1616,7 @@ void ll_update_inode(struct inode *inode, struct lustre_md *md)
 	}
 	if (body->valid & OBD_MD_FLMTIME) {
 		if (body->mtime > LTIME_S(inode->i_mtime)) {
-			CDEBUG(D_INODE, "setting ino %lu mtime from %lu to %llu\n",
+			CDEBUG(D_INODE, "setting ino %lu mtime from %llu to %llu\n",
 			       inode->i_ino, LTIME_S(inode->i_mtime),
 			       body->mtime);
 			LTIME_S(inode->i_mtime) = body->mtime;
