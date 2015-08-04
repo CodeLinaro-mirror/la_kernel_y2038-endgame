@@ -149,4 +149,14 @@ struct ppp_idle {
 };
 #endif
 
+struct ppp_idle32 {
+	__s32 xmit_idle;
+	__s32 recv_idle;
+};
+
+struct ppp_idle64 {
+	__s64 xmit_idle;
+	__s64 recv_idle;
+};
+
 #endif /* _UAPI_PPP_DEFS_H_ */

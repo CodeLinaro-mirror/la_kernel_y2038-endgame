@@ -438,14 +438,22 @@ set_arg(void __user *b, void *val, int len)
 }
 
 #ifdef CONFIG_IPPP_FILTER
-static int get_filter(void __user *arg, struct sock_filter **p)
+static int get_filter(void __user *arg, struct sock_filter **p, bool compat)
 {
 	struct sock_fprog uprog;
+	struct sock_fprog uprog32;
 	struct sock_filter *code = NULL;
 	int len;
 
-	if (copy_from_user(&uprog, arg, sizeof(uprog)))
-		return -EFAULT;
+	if (compat) {
+		if (copy_from_user(&uprog, arg, sizeof(uprog32)))
+			return -EFAULT;
+		uprog.len = uprog32.len;
+		uprog.filter = uprog32.filter;
+	} else {
+		if (copy_from_user(&uprog, arg, sizeof(uprog)))
+			return -EFAULT;
+	}
 
 	if (!uprog.len) {
 		*p = NULL;
@@ -537,11 +545,19 @@ isdn_ppp_ioctl(int min, struct file *file, unsigned int cmd, unsigned long arg)
 		}
 		is->pppcfg = val;
 		break;
-	case PPPIOCGIDLE:	/* get idle time information */
+	case PPPIOCGIDLE32:	/* get idle time information */
 		if (lp) {
-			struct ppp_idle pidle;
+			struct ppp_idle32 pidle;
 			pidle.xmit_idle = pidle.recv_idle = lp->huptimer;
-			if ((r = set_arg(argp, &pidle, sizeof(struct ppp_idle))))
+			if ((r = set_arg(argp, &pidle, sizeof(struct ppp_idle32))))
+				return r;
+		}
+		break;
+	case PPPIOCGIDLE64:	/* get idle time information */
+		if (lp) {
+			struct ppp_idle64 pidle;
+			pidle.xmit_idle = pidle.recv_idle = lp->huptimer;
+			if ((r = set_arg(argp, &pidle, sizeof(struct ppp_idle64))))
 				return r;
 		}
 		break;
@@ -627,10 +643,13 @@ isdn_ppp_ioctl(int min, struct file *file, unsigned int cmd, unsigned long arg)
 	}
 #ifdef CONFIG_IPPP_FILTER
 	case PPPIOCSPASS:
+#ifdef CONFIG_COMPAT
+	case PPPIOCSPASS32:
+#endif
 	{
 		struct sock_fprog_kern fprog;
 		struct sock_filter *code;
-		int err, len = get_filter(argp, &code);
+		int err, len = get_filter(argp, &code, cmd != PPPIOCSPASS);
 
 		if (len < 0)
 			return len;
@@ -651,10 +670,13 @@ isdn_ppp_ioctl(int min, struct file *file, unsigned int cmd, unsigned long arg)
 		return err;
 	}
 	case PPPIOCSACTIVE:
+#ifdef CONFIG_COMPAT
+	case PPPIOCSACTIVE32:
+#endif
 	{
 		struct sock_fprog_kern fprog;
 		struct sock_filter *code;
-		int err, len = get_filter(argp, &code);
+		int err, len = get_filter(argp, &code, cmd != PPPIOCSACTIVE);
 
 		if (len < 0)
 			return len;
