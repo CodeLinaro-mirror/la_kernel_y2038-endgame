@@ -255,7 +255,6 @@ lnet_sock_write(struct socket *sock, void *buffer, int nob, int timeout)
 	int rc;
 	long ticks = timeout * HZ;
 	unsigned long then;
-	struct timeval tv;
 
 	LASSERT(nob > 0);
 	/* Caller may pass a zero timeout if she thinks the socket buffer is
@@ -269,10 +268,10 @@ lnet_sock_write(struct socket *sock, void *buffer, int nob, int timeout)
 		struct msghdr msg = {
 			.msg_flags      = (timeout == 0) ? MSG_DONTWAIT : 0
 		};
-
+#ifdef CONFIG_COMPAT_TIME
 		if (timeout != 0) {
 			/* Set send timeout to remaining time */
-			tv = (struct timeval) {
+			struct timeval tv = {
 				.tv_sec = ticks / HZ,
 				.tv_usec = ((ticks % HZ) * 1000000) / HZ
 			};
@@ -284,7 +283,7 @@ lnet_sock_write(struct socket *sock, void *buffer, int nob, int timeout)
 				return rc;
 			}
 		}
-
+#endif
 		then = jiffies;
 		rc = kernel_sendmsg(sock, &msg, &iov, 1, nob);
 		ticks -= jiffies - then;
@@ -316,7 +315,6 @@ lnet_sock_read(struct socket *sock, void *buffer, int nob, int timeout)
 	int rc;
 	long ticks = timeout * HZ;
 	unsigned long then;
-	struct timeval tv;
 
 	LASSERT(nob > 0);
 	LASSERT(ticks > 0);
@@ -329,9 +327,9 @@ lnet_sock_read(struct socket *sock, void *buffer, int nob, int timeout)
 		struct msghdr msg = {
 			.msg_flags = 0
 		};
-
+#ifdef CONFIG_COMPAT_TIME
 		/* Set receive timeout to remaining time */
-		tv = (struct timeval) {
+		struct timeval tv = {
 			.tv_sec = ticks / HZ,
 			.tv_usec = ((ticks % HZ) * 1000000) / HZ
 		};
@@ -342,7 +340,7 @@ lnet_sock_read(struct socket *sock, void *buffer, int nob, int timeout)
 			       (long)tv.tv_sec, (int)tv.tv_usec, rc);
 			return rc;
 		}
-
+#endif
 		then = jiffies;
 		rc = kernel_recvmsg(sock, &msg, &iov, 1, nob, 0);
 		ticks -= jiffies - then;
