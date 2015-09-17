@@ -811,8 +811,8 @@ struct v4l2_plane {
  * time_t, so we have to convert it when accessing user data.
  */
 struct v4l2_timeval {
-	long tv_sec;
-	long tv_usec;
+	__s64 tv_sec;
+	__s64 tv_usec;
 };
 #endif
 
@@ -857,6 +857,32 @@ struct v4l2_buffer {
 #else
 	struct timeval		timestamp;
 #endif
+	struct v4l2_timecode	timecode;
+	__u32			sequence;
+
+	/* memory location */
+	__u32			memory;
+	union {
+		__u32           offset;
+		unsigned long   userptr;
+		struct v4l2_plane *planes;
+		__s32		fd;
+	} m;
+	__u32			length;
+	__u32			reserved2;
+	__u32			reserved;
+};
+
+struct v4l2_buffer_time32 {
+	__u32			index;
+	__u32			type;
+	__u32			bytesused;
+	__u32			flags;
+	__u32			field;
+	struct {
+		__s32		tv_sec;
+		__s32		tv_usec;
+	}			timestamp;
 	struct v4l2_timecode	timecode;
 	__u32			sequence;
 
@@ -2216,12 +2242,15 @@ struct v4l2_create_buffers {
 #define VIDIOC_S_FMT		_IOWR('V',  5, struct v4l2_format)
 #define VIDIOC_REQBUFS		_IOWR('V',  8, struct v4l2_requestbuffers)
 #define VIDIOC_QUERYBUF		_IOWR('V',  9, struct v4l2_buffer)
+#define VIDIOC_QUERYBUF_TIME32	_IOWR('V',  9, struct v4l2_buffer_time32)
 #define VIDIOC_G_FBUF		 _IOR('V', 10, struct v4l2_framebuffer)
 #define VIDIOC_S_FBUF		 _IOW('V', 11, struct v4l2_framebuffer)
 #define VIDIOC_OVERLAY		 _IOW('V', 14, int)
 #define VIDIOC_QBUF		_IOWR('V', 15, struct v4l2_buffer)
+#define VIDIOC_QBUF_TIME32	_IOWR('V', 15, struct v4l2_buffer_time32)
 #define VIDIOC_EXPBUF		_IOWR('V', 16, struct v4l2_exportbuffer)
 #define VIDIOC_DQBUF		_IOWR('V', 17, struct v4l2_buffer)
+#define VIDIOC_DQBUF_TIME32	_IOWR('V', 17, struct v4l2_buffer_time32)
 #define VIDIOC_STREAMON		 _IOW('V', 18, int)
 #define VIDIOC_STREAMOFF	 _IOW('V', 19, int)
 #define VIDIOC_G_PARM		_IOWR('V', 21, struct v4l2_streamparm)
@@ -2292,6 +2321,7 @@ struct v4l2_create_buffers {
    versions */
 #define VIDIOC_CREATE_BUFS	_IOWR('V', 92, struct v4l2_create_buffers)
 #define VIDIOC_PREPARE_BUF	_IOWR('V', 93, struct v4l2_buffer)
+#define VIDIOC_PREPARE_BUF_TIME32 _IOWR('V', 93, struct v4l2_buffer_time32)
 
 /* Experimental selection API */
 #define VIDIOC_G_SELECTION	_IOWR('V', 94, struct v4l2_selection)
