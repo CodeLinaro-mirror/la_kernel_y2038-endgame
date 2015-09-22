@@ -1085,13 +1085,13 @@ static void ptlrpc_update_export_timer(struct obd_export *exp, long extra_delay)
 			 * other PING_INTERVAL (see note in ptlrpc_pinger_main),
 			 * we better wait for 3. */
 			exp->exp_obd->obd_eviction_timer =
-				get_seconds() + 3 * PING_INTERVAL;
+				ktime_get_real_seconds() + 3 * PING_INTERVAL;
 			CDEBUG(D_HA, "%s: Think about evicting %s from "CFS_TIME_T"\n",
 			       exp->exp_obd->obd_name,
 			       obd_export_nid2str(oldest_exp), oldest_time);
 		}
 	} else {
-		if (get_seconds() >
+		if (ktime_get_real_seconds() >
 		    (exp->exp_obd->obd_eviction_timer + extra_delay)) {
 			/* The evictor won't evict anyone who we've heard from
 			 * recently, so we don't have to check before we start
