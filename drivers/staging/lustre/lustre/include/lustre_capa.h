@@ -266,20 +266,24 @@ static inline __u64 capa_open_opc(int mode)
 
 static inline void set_capa_expiry(struct obd_capa *ocapa)
 {
-	unsigned long expiry = cfs_time_sub((unsigned long)ocapa->c_capa.lc_expiry,
-					 get_seconds());
-	ocapa->c_expiry = cfs_time_add(cfs_time_current(),
-				       cfs_time_seconds(expiry));
+	u32 expiry = ocapa->c_capa.lc_expiry - (u32)ktime_get_real_seconds();
+	ocapa->c_expiry = jiffies + expiry * HZ;
 }
 
 static inline int capa_is_expired_sec(struct lustre_capa *capa)
 {
-	return (capa->lc_expiry - get_seconds() <= 0);
+	/*
+	 * workaround for y2038 problem: do the same as time_before, but
+	 * use 32-bit arithmetic, because lc_expiry is transmitted as a 32-bit
+	 * variable on the wire
+	 */
+	s32 diff = capa->lc_expiry - (u32)ktime_get_real_seconds();
+	return diff <= 0;
 }
 
 static inline int capa_is_expired(struct obd_capa *ocapa)
 {
-	return time_before_eq(ocapa->c_expiry, cfs_time_current());
+	return time_before_eq(ocapa->c_expiry, jiffies);
 }
 
 static inline int capa_opc_supported(struct lustre_capa *capa, __u64 opc)
