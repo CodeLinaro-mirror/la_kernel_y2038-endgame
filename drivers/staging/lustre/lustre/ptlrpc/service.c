@@ -1035,7 +1035,7 @@ static void ptlrpc_server_finish_active_request(
 static void ptlrpc_update_export_timer(struct obd_export *exp, long extra_delay)
 {
 	struct obd_export *oldest_exp;
-	time_t oldest_time, new_time;
+	time64_t oldest_time, new_time;
 
 	LASSERT(exp);
 
@@ -1046,7 +1046,7 @@ static void ptlrpc_update_export_timer(struct obd_export *exp, long extra_delay)
 	   will make it to the top of the list. */
 
 	/* Do not pay attention on 1sec or smaller renewals. */
-	new_time = get_seconds() + extra_delay;
+	new_time = ktime_get_real_seconds() + extra_delay;
 	if (exp->exp_last_request_time + 1 /*second */ >= new_time)
 		return;
 

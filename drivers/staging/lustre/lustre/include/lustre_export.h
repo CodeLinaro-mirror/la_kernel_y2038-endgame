@@ -180,7 +180,7 @@ struct obd_export {
 	/** Last committed transno for this export */
 	__u64		     exp_last_committed;
 	/** When was last request received */
-	unsigned long		exp_last_request_time;
+	time64_t		exp_last_request_time;
 	/** On replay all requests waiting for replay are linked here */
 	struct list_head		exp_req_replay_queue;
 	/**
@@ -268,8 +268,7 @@ static inline int exp_connect_multibulk(struct obd_export *exp)
 static inline int exp_expired(struct obd_export *exp, long age)
 {
 	LASSERT(exp->exp_delayed);
-	return time_before(cfs_time_add(exp->exp_last_request_time, age),
-			   get_seconds());
+	return exp->exp_last_request_time + age < ktime_get_real_seconds();
 }
 
 static inline int exp_connect_cancelset(struct obd_export *exp)
