@@ -537,26 +537,17 @@ extern struct lprocfs_stats *
 lprocfs_alloc_stats(unsigned int num, enum lprocfs_stats_flags flags);
 void lprocfs_clear_stats(struct lprocfs_stats *stats);
 void lprocfs_free_stats(struct lprocfs_stats **stats);
-void lprocfs_init_ops_stats(int num_private_stats, struct lprocfs_stats *stats);
-void lprocfs_init_mps_stats(int num_private_stats, struct lprocfs_stats *stats);
-void lprocfs_init_ldlm_stats(struct lprocfs_stats *ldlm_stats);
 int lprocfs_alloc_obd_stats(struct obd_device *obddev,
 			    unsigned int num_private_stats);
-int lprocfs_alloc_md_stats(struct obd_device *obddev,
-			   unsigned int num_private_stats);
 void lprocfs_counter_init(struct lprocfs_stats *stats, int index,
 			  unsigned conf, const char *name, const char *units);
 void lprocfs_free_obd_stats(struct obd_device *obddev);
-void lprocfs_free_md_stats(struct obd_device *obddev);
 struct obd_export;
 int lprocfs_exp_cleanup(struct obd_export *exp);
 struct dentry *ldebugfs_add_simple(struct dentry *root,
 				   char *name,
 				   void *data,
 				   struct file_operations *fops);
-struct dentry *
-ldebugfs_add_symlink(const char *name, struct dentry *parent,
-		     const char *format, ...);
 
 int ldebugfs_register_stats(struct dentry *parent,
 			    const char *name,
@@ -591,14 +582,9 @@ int ldebugfs_obd_seq_create(struct obd_device *dev,
 
 /* Generic callbacks */
 
-int lprocfs_rd_u64(struct seq_file *m, void *data);
-int lprocfs_rd_atomic(struct seq_file *m, void *data);
-int lprocfs_wr_atomic(struct file *file, const char __user *buffer,
-		      unsigned long count, void *data);
 int lprocfs_rd_uint(struct seq_file *m, void *data);
 int lprocfs_wr_uint(struct file *file, const char __user *buffer,
 		    unsigned long count, void *data);
-int lprocfs_rd_name(struct seq_file *m, void *data);
 int lprocfs_rd_server_uuid(struct seq_file *m, void *data);
 int lprocfs_rd_conn_uuid(struct seq_file *m, void *data);
 int lprocfs_rd_import(struct seq_file *m, void *data);
@@ -624,7 +610,6 @@ int lprocfs_wr_pinger_recov(struct file *file, const char __user *buffer,
 
 int lprocfs_write_helper(const char __user *buffer, unsigned long count,
 			 int *val);
-int lprocfs_seq_read_frac_helper(struct seq_file *m, long val, int mult);
 int lprocfs_write_u64_helper(const char __user *buffer,
 			     unsigned long count, __u64 *val);
 int lprocfs_write_frac_u64_helper(const char *buffer,
@@ -737,15 +722,6 @@ ssize_t lustre_attr_store(struct kobject *kobj, struct attribute *attr,
 			  const char *buf, size_t len);
 
 extern const struct sysfs_ops lustre_sysfs_ops;
-
-/* lproc_ptlrpc.c */
-struct ptlrpc_request;
-void target_print_req(void *seq_file, struct ptlrpc_request *req);
-
-/* lproc_status.c */
-int lprocfs_obd_rd_max_pages_per_rpc(struct seq_file *m, void *data);
-int lprocfs_obd_wr_max_pages_per_rpc(struct file *file, const char *buffer,
-				     size_t count, loff_t *off);
 
 /* all quota proc functions */
 int lprocfs_quota_rd_bunit(char *page, char **start,

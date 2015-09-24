@@ -643,7 +643,6 @@ struct ptlrpc_nrs_pol_ops {
 	 *
 	 * \see ptlrpc_nrs_req_initialize()
 	 * \see ptlrpc_nrs_hpreq_add_nolock()
-	 * \see ptlrpc_nrs_req_hp_move()
 	 */
 	int	(*op_res_get) (struct ptlrpc_nrs_policy *policy,
 			       struct ptlrpc_nrs_request *nrq,
@@ -659,7 +658,6 @@ struct ptlrpc_nrs_pol_ops {
 	 *
 	 * \see ptlrpc_nrs_req_finalize()
 	 * \see ptlrpc_nrs_hpreq_add_nolock()
-	 * \see ptlrpc_nrs_req_hp_move()
 	 */
 	void	(*op_res_put) (struct ptlrpc_nrs_policy *policy,
 			       const struct ptlrpc_nrs_resource *res);
@@ -704,8 +702,6 @@ struct ptlrpc_nrs_pol_ops {
 	 *
 	 * \param[in,out] policy The policy the request \a nrq belongs to
 	 * \param[in,out] nrq    The request to dequeue
-	 *
-	 * \see ptlrpc_nrs_req_del_nolock()
 	 */
 	void	(*op_req_dequeue) (struct ptlrpc_nrs_policy *policy,
 				   struct ptlrpc_nrs_request *nrq);
@@ -1537,10 +1533,6 @@ static inline int ptlrpc_req_interpret(const struct lu_env *env,
  * @{
  */
 int ptlrpc_nrs_policy_register(struct ptlrpc_nrs_pol_conf *conf);
-int ptlrpc_nrs_policy_unregister(struct ptlrpc_nrs_pol_conf *conf);
-void ptlrpc_nrs_req_hp_move(struct ptlrpc_request *req);
-void nrs_policy_get_info_locked(struct ptlrpc_nrs_policy *policy,
-				struct ptlrpc_nrs_pol_info *info);
 
 /*
  * Can the request be moved from the regular NRS head to the high-priority NRS
@@ -2357,22 +2349,17 @@ void ptlrpc_request_committed(struct ptlrpc_request *req, int force);
 
 void ptlrpc_init_client(int req_portal, int rep_portal, char *name,
 			struct ptlrpc_client *);
-void ptlrpc_cleanup_client(struct obd_import *imp);
 struct ptlrpc_connection *ptlrpc_uuid_to_connection(struct obd_uuid *uuid);
 
 int ptlrpc_queue_wait(struct ptlrpc_request *req);
 int ptlrpc_replay_req(struct ptlrpc_request *req);
 int ptlrpc_unregister_reply(struct ptlrpc_request *req, int async);
-void ptlrpc_restart_req(struct ptlrpc_request *req);
 void ptlrpc_abort_inflight(struct obd_import *imp);
-void ptlrpc_cleanup_imp(struct obd_import *imp);
 void ptlrpc_abort_set(struct ptlrpc_request_set *set);
 
 struct ptlrpc_request_set *ptlrpc_prep_set(void);
 struct ptlrpc_request_set *ptlrpc_prep_fcset(int max, set_producer_func func,
 					     void *arg);
-int ptlrpc_set_add_cb(struct ptlrpc_request_set *set,
-		      set_interpreter_func fn, void *data);
 int ptlrpc_set_next_timeout(struct ptlrpc_request_set *);
 int ptlrpc_check_set(const struct lu_env *env, struct ptlrpc_request_set *set);
 int ptlrpc_set_wait(struct ptlrpc_request_set *);
@@ -2406,15 +2393,7 @@ struct ptlrpc_request *ptlrpc_request_alloc_pack(struct obd_import *imp,
 int ptlrpc_request_bufs_pack(struct ptlrpc_request *request,
 			     __u32 version, int opcode, char **bufs,
 			     struct ptlrpc_cli_ctx *ctx);
-struct ptlrpc_request *ptlrpc_prep_req(struct obd_import *imp, __u32 version,
-				       int opcode, int count, __u32 *lengths,
-				       char **bufs);
-struct ptlrpc_request *ptlrpc_prep_req_pool(struct obd_import *imp,
-					     __u32 version, int opcode,
-					    int count, __u32 *lengths, char **bufs,
-					    struct ptlrpc_request_pool *pool);
 void ptlrpc_req_finished(struct ptlrpc_request *request);
-void ptlrpc_req_finished_with_imp_lock(struct ptlrpc_request *request);
 struct ptlrpc_request *ptlrpc_request_addref(struct ptlrpc_request *req);
 struct ptlrpc_bulk_desc *ptlrpc_prep_bulk_imp(struct ptlrpc_request *req,
 					      unsigned npages, unsigned max_brw,
@@ -2525,12 +2504,8 @@ struct ptlrpc_service_conf {
  *
  * @{
  */
-void ptlrpc_save_lock(struct ptlrpc_request *req,
-		      struct lustre_handle *lock, int mode, int no_ack);
-void ptlrpc_commit_replies(struct obd_export *exp);
 void ptlrpc_dispatch_difficult_reply(struct ptlrpc_reply_state *rs);
 void ptlrpc_schedule_difficult_reply(struct ptlrpc_reply_state *rs);
-int ptlrpc_hpreq_handler(struct ptlrpc_request *req);
 struct ptlrpc_service *ptlrpc_register_service(
 				struct ptlrpc_service_conf *conf,
 				struct kset *parent,
@@ -2540,11 +2515,7 @@ void ptlrpc_stop_all_threads(struct ptlrpc_service *svc);
 int ptlrpc_start_threads(struct ptlrpc_service *svc);
 int ptlrpc_unregister_service(struct ptlrpc_service *service);
 int liblustre_check_services(void *arg);
-void ptlrpc_daemonize(char *name);
-int ptlrpc_service_health_check(struct ptlrpc_service *);
 void ptlrpc_server_drop_request(struct ptlrpc_request *req);
-void ptlrpc_request_change_export(struct ptlrpc_request *req,
-				  struct obd_export *export);
 
 int ptlrpc_hr_init(void);
 void ptlrpc_hr_fini(void);
@@ -2579,7 +2550,6 @@ void ptlrpc_buf_set_swabbed(struct ptlrpc_request *req, const int inout,
 int ptlrpc_unpack_rep_msg(struct ptlrpc_request *req, int len);
 int ptlrpc_unpack_req_msg(struct ptlrpc_request *req, int len);
 
-int lustre_msg_check_version(struct lustre_msg *msg, __u32 version);
 void lustre_init_msg_v2(struct lustre_msg_v2 *msg, int count, __u32 *lens,
 			char **bufs);
 int lustre_pack_request(struct ptlrpc_request *, __u32 magic, int count,
@@ -2603,7 +2573,6 @@ int lustre_msg_early_size(void);
 void *lustre_msg_buf_v2(struct lustre_msg_v2 *m, int n, int min_size);
 void *lustre_msg_buf(struct lustre_msg *m, int n, int minlen);
 int lustre_msg_buflen(struct lustre_msg *m, int n);
-void lustre_msg_set_buflen(struct lustre_msg *m, int n, int len);
 int lustre_msg_bufcount(struct lustre_msg *m);
 char *lustre_msg_string(struct lustre_msg *m, int n, int max_len);
 __u32 lustre_msghdr_get_flags(struct lustre_msg *msg);
@@ -2616,10 +2585,8 @@ __u32 lustre_msg_get_op_flags(struct lustre_msg *msg);
 void lustre_msg_add_op_flags(struct lustre_msg *msg, int flags);
 struct lustre_handle *lustre_msg_get_handle(struct lustre_msg *msg);
 __u32 lustre_msg_get_type(struct lustre_msg *msg);
-__u32 lustre_msg_get_version(struct lustre_msg *msg);
 void lustre_msg_add_version(struct lustre_msg *msg, int version);
 __u32 lustre_msg_get_opc(struct lustre_msg *msg);
-__u64 lustre_msg_get_last_xid(struct lustre_msg *msg);
 __u64 lustre_msg_get_last_committed(struct lustre_msg *msg);
 __u64 *lustre_msg_get_versions(struct lustre_msg *msg);
 __u64 lustre_msg_get_transno(struct lustre_msg *msg);
@@ -2632,21 +2599,16 @@ __u32 lustre_msg_get_conn_cnt(struct lustre_msg *msg);
 __u32 lustre_msg_get_magic(struct lustre_msg *msg);
 __u32 lustre_msg_get_timeout(struct lustre_msg *msg);
 __u32 lustre_msg_get_service_time(struct lustre_msg *msg);
-char *lustre_msg_get_jobid(struct lustre_msg *msg);
 __u32 lustre_msg_get_cksum(struct lustre_msg *msg);
 __u32 lustre_msg_calc_cksum(struct lustre_msg *msg);
 void lustre_msg_set_handle(struct lustre_msg *msg,
 			   struct lustre_handle *handle);
 void lustre_msg_set_type(struct lustre_msg *msg, __u32 type);
 void lustre_msg_set_opc(struct lustre_msg *msg, __u32 opc);
-void lustre_msg_set_last_xid(struct lustre_msg *msg, __u64 last_xid);
-void lustre_msg_set_last_committed(struct lustre_msg *msg,
-				   __u64 last_committed);
 void lustre_msg_set_versions(struct lustre_msg *msg, __u64 *versions);
 void lustre_msg_set_transno(struct lustre_msg *msg, __u64 transno);
 void lustre_msg_set_status(struct lustre_msg *msg, __u32 status);
 void lustre_msg_set_conn_cnt(struct lustre_msg *msg, __u32 conn_cnt);
-void ptlrpc_req_set_repsize(struct ptlrpc_request *req, int count, __u32 *sizes);
 void ptlrpc_request_set_replen(struct ptlrpc_request *req);
 void lustre_msg_set_timeout(struct lustre_msg *msg, __u32 timeout);
 void lustre_msg_set_service_time(struct lustre_msg *msg, __u32 service_time);
@@ -2910,7 +2872,6 @@ void ptlrpcd_stop(struct ptlrpcd_ctl *pc, int force);
 void ptlrpcd_free(struct ptlrpcd_ctl *pc);
 void ptlrpcd_wake(struct ptlrpc_request *req);
 void ptlrpcd_add_req(struct ptlrpc_request *req);
-void ptlrpcd_add_rqset(struct ptlrpc_request_set *set);
 int ptlrpcd_addref(void);
 void ptlrpcd_decref(void);
 

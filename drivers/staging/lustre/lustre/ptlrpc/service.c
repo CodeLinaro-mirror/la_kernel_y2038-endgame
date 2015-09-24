@@ -179,33 +179,6 @@ ptlrpc_grow_req_bufs(struct ptlrpc_service_part *svcpt, int post)
 	return rc;
 }
 
-/**
- * Part of Rep-Ack logic.
- * Puts a lock and its mode into reply state associated to request reply.
- */
-void
-ptlrpc_save_lock(struct ptlrpc_request *req,
-		 struct lustre_handle *lock, int mode, int no_ack)
-{
-	struct ptlrpc_reply_state *rs = req->rq_reply_state;
-	int idx;
-
-	LASSERT(rs != NULL);
-	LASSERT(rs->rs_nlocks < RS_MAX_LOCKS);
-
-	if (req->rq_export->exp_disconnected) {
-		ldlm_lock_decref(lock, mode);
-	} else {
-		idx = rs->rs_nlocks++;
-		rs->rs_locks[idx] = *lock;
-		rs->rs_modes[idx] = mode;
-		rs->rs_difficult = 1;
-		rs->rs_no_ack = !!no_ack;
-	}
-}
-EXPORT_SYMBOL(ptlrpc_save_lock);
-
-
 struct ptlrpc_hr_partition;
 
 struct ptlrpc_hr_thread {
@@ -246,12 +219,6 @@ struct ptlrpc_hr_service {
 	struct ptlrpc_hr_partition	**hr_partitions;
 };
 
-struct rs_batch {
-	struct list_head			rsb_replies;
-	unsigned int			rsb_n_replies;
-	struct ptlrpc_service_part	*rsb_svcpt;
-};
-
 /** reply handling service. */
 static struct ptlrpc_hr_service		ptlrpc_hr;
 
@@ -259,17 +226,6 @@ static struct ptlrpc_hr_service		ptlrpc_hr;
  * maximum number of replies scheduled in one batch
  */
 #define MAX_SCHEDULED 256
-
-/**
- * Initialize a reply batch.
- *
- * \param b batch
- */
-static void rs_batch_init(struct rs_batch *b)
-{
-	memset(b, 0, sizeof(*b));
-	INIT_LIST_HEAD(&b->rsb_replies);
-}
 
 /**
  * Choose an hr thread to dispatch requests to.
@@ -295,76 +251,6 @@ ptlrpc_hr_select(struct ptlrpc_service_part *svcpt)
 	rotor = hrp->hrp_rotor++;
 	return &hrp->hrp_thrs[rotor % hrp->hrp_nthrs];
 }
-
-/**
- * Dispatch all replies accumulated in the batch to one from
- * dedicated reply handling threads.
- *
- * \param b batch
- */
-static void rs_batch_dispatch(struct rs_batch *b)
-{
-	if (b->rsb_n_replies != 0) {
-		struct ptlrpc_hr_thread	*hrt;
-
-		hrt = ptlrpc_hr_select(b->rsb_svcpt);
-
-		spin_lock(&hrt->hrt_lock);
-		list_splice_init(&b->rsb_replies, &hrt->hrt_queue);
-		spin_unlock(&hrt->hrt_lock);
-
-		wake_up(&hrt->hrt_waitq);
-		b->rsb_n_replies = 0;
-	}
-}
-
-/**
- * Add a reply to a batch.
- * Add one reply object to a batch, schedule batched replies if overload.
- *
- * \param b batch
- * \param rs reply
- */
-static void rs_batch_add(struct rs_batch *b, struct ptlrpc_reply_state *rs)
-{
-	struct ptlrpc_service_part *svcpt = rs->rs_svcpt;
-
-	if (svcpt != b->rsb_svcpt || b->rsb_n_replies >= MAX_SCHEDULED) {
-		if (b->rsb_svcpt != NULL) {
-			rs_batch_dispatch(b);
-			spin_unlock(&b->rsb_svcpt->scp_rep_lock);
-		}
-		spin_lock(&svcpt->scp_rep_lock);
-		b->rsb_svcpt = svcpt;
-	}
-	spin_lock(&rs->rs_lock);
-	rs->rs_scheduled_ever = 1;
-	if (rs->rs_scheduled == 0) {
-		list_move(&rs->rs_list, &b->rsb_replies);
-		rs->rs_scheduled = 1;
-		b->rsb_n_replies++;
-	}
-	rs->rs_committed = 1;
-	spin_unlock(&rs->rs_lock);
-}
-
-/**
- * Reply batch finalization.
- * Dispatch remaining replies from the batch
- * and release remaining spinlock.
- *
- * \param b batch
- */
-static void rs_batch_fini(struct rs_batch *b)
-{
-	if (b->rsb_svcpt != NULL) {
-		rs_batch_dispatch(b);
-		spin_unlock(&b->rsb_svcpt->scp_rep_lock);
-	}
-}
-
-#define DECLARE_RS_BATCH(b)     struct rs_batch b
-
 
 /**
  * Put reply state into a queue for processing because we received
@@ -402,32 +288,6 @@ ptlrpc_schedule_difficult_reply(struct ptlrpc_reply_state *rs)
 	ptlrpc_dispatch_difficult_reply(rs);
 }
 EXPORT_SYMBOL(ptlrpc_schedule_difficult_reply);
-
-void ptlrpc_commit_replies(struct obd_export *exp)
-{
-	struct ptlrpc_reply_state *rs, *nxt;
-	DECLARE_RS_BATCH(batch);
-
-	rs_batch_init(&batch);
-	/* Find any replies that have been committed and get their service
-	 * to attend to complete them. */
-
-	/* CAVEAT EMPTOR: spinlock ordering!!! */
-	spin_lock(&exp->exp_uncommitted_replies_lock);
-	list_for_each_entry_safe(rs, nxt, &exp->exp_uncommitted_replies,
-				     rs_obd_list) {
-		LASSERT(rs->rs_difficult);
-		/* VBR: per-export last_committed */
-		LASSERT(rs->rs_export);
-		if (rs->rs_transno <= exp->exp_last_committed) {
-			list_del_init(&rs->rs_obd_list);
-			rs_batch_add(&batch, rs);
-		}
-	}
-	spin_unlock(&exp->exp_uncommitted_replies_lock);
-	rs_batch_fini(&batch);
-}
-EXPORT_SYMBOL(ptlrpc_commit_replies);
 
 static int
 ptlrpc_server_post_idle_rqbds(struct ptlrpc_service_part *svcpt)
@@ -963,35 +823,6 @@ void ptlrpc_server_drop_request(struct ptlrpc_request *req)
 	}
 }
 
-/** Change request export and move hp request from old export to new */
-void ptlrpc_request_change_export(struct ptlrpc_request *req,
-				  struct obd_export *export)
-{
-	if (req->rq_export != NULL) {
-		if (!list_empty(&req->rq_exp_list)) {
-			/* remove rq_exp_list from last export */
-			spin_lock_bh(&req->rq_export->exp_rpc_lock);
-			list_del_init(&req->rq_exp_list);
-			spin_unlock_bh(&req->rq_export->exp_rpc_lock);
-
-			/* export has one reference already, so it`s safe to
-			 * add req to export queue here and get another
-			 * reference for request later */
-			spin_lock_bh(&export->exp_rpc_lock);
-			list_add(&req->rq_exp_list, &export->exp_hp_rpcs);
-			spin_unlock_bh(&export->exp_rpc_lock);
-		}
-		class_export_rpc_dec(req->rq_export);
-		class_export_put(req->rq_export);
-	}
-
-	/* request takes one export refcount */
-	req->rq_export = class_export_get(export);
-	class_export_rpc_inc(export);
-
-	return;
-}
-
 /**
  * to finish a request: stop sending more early replies, and release
  * the request.
@@ -1517,30 +1348,6 @@ static void ptlrpc_server_hpreq_fini(struct ptlrpc_request *req)
 		spin_unlock_bh(&req->rq_export->exp_rpc_lock);
 	}
 }
-
-static int ptlrpc_hpreq_check(struct ptlrpc_request *req)
-{
-	return 1;
-}
-
-static struct ptlrpc_hpreq_ops ptlrpc_hpreq_common = {
-	.hpreq_check       = ptlrpc_hpreq_check,
-};
-
-/* Hi-Priority RPC check by RPC operation code. */
-int ptlrpc_hpreq_handler(struct ptlrpc_request *req)
-{
-	int opc = lustre_msg_get_opc(req->rq_reqmsg);
-
-	/* Check for export to let only reconnects for not yet evicted
-	 * export to become a HP rpc. */
-	if ((req->rq_export != NULL) &&
-	    (opc == OBD_PING || opc == MDS_CONNECT || opc == OST_CONNECT))
-		req->rq_ops = &ptlrpc_hpreq_common;
-
-	return 0;
-}
-EXPORT_SYMBOL(ptlrpc_hpreq_handler);
 
 static int ptlrpc_server_request_add(struct ptlrpc_service_part *svcpt,
 				     struct ptlrpc_request *req)
@@ -3019,61 +2826,3 @@ int ptlrpc_unregister_service(struct ptlrpc_service *service)
 	return 0;
 }
 EXPORT_SYMBOL(ptlrpc_unregister_service);
-
-/**
- * Returns 0 if the service is healthy.
- *
- * Right now, it just checks to make sure that requests aren't languishing
- * in the queue.  We'll use this health check to govern whether a node needs
- * to be shot, so it's intentionally non-aggressive. */
-static int ptlrpc_svcpt_health_check(struct ptlrpc_service_part *svcpt)
-{
-	struct ptlrpc_request *request = NULL;
-	struct timespec64 right_now;
-	struct timespec64 timediff;
-
-	ktime_get_real_ts64(&right_now);
-
-	spin_lock(&svcpt->scp_req_lock);
-	/* How long has the next entry been waiting? */
-	if (ptlrpc_server_high_pending(svcpt, true))
-		request = ptlrpc_nrs_req_peek_nolock(svcpt, true);
-	else if (ptlrpc_server_normal_pending(svcpt, true))
-		request = ptlrpc_nrs_req_peek_nolock(svcpt, false);
-
-	if (request == NULL) {
-		spin_unlock(&svcpt->scp_req_lock);
-		return 0;
-	}
-
-	timediff = timespec64_sub(right_now, request->rq_arrival_time);
-	spin_unlock(&svcpt->scp_req_lock);
-
-	if ((timediff.tv_sec) >
-	    (AT_OFF ? obd_timeout * 3 / 2 : at_max)) {
-		CERROR("%s: unhealthy - request has been waiting %llds\n",
-		       svcpt->scp_service->srv_name, (s64)timediff.tv_sec);
-		return -1;
-	}
-
-	return 0;
-}
-
-int
-ptlrpc_service_health_check(struct ptlrpc_service *svc)
-{
-	struct ptlrpc_service_part *svcpt;
-	int i;
-
-	if (svc == NULL)
-		return 0;
-
-	ptlrpc_service_for_each_part(svcpt, i, svc) {
-		int rc = ptlrpc_svcpt_health_check(svcpt);
-
-		if (rc != 0)
-			return rc;
-	}
-	return 0;
-}
-EXPORT_SYMBOL(ptlrpc_service_health_check);

@@ -180,16 +180,7 @@ extern int capa_count[];
 extern struct kmem_cache *capa_cachep;
 
 struct hlist_head *init_capa_hash(void);
-void cleanup_capa_hash(struct hlist_head *hash);
 
-struct obd_capa *capa_add(struct hlist_head *hash,
-			  struct lustre_capa *capa);
-struct obd_capa *capa_lookup(struct hlist_head *hash,
-			     struct lustre_capa *capa, int alive);
-
-int capa_hmac(__u8 *hmac, struct lustre_capa *capa, __u8 *key);
-int capa_encrypt_id(__u32 *d, __u32 *s, __u8 *key, int keylen);
-int capa_decrypt_id(__u32 *d, __u32 *s, __u8 *key, int keylen);
 void capa_cpy(void *dst, struct obd_capa *ocapa);
 static inline struct obd_capa *alloc_capa(int site)
 {
