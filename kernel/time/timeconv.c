@@ -74,14 +74,15 @@ static const unsigned short __mon_yday[2][13] = {
  * @offset	offset seconds adding to totalsecs.
  * @result	pointer to struct tm variable to receive broken-down time
  */
-void time_to_tm(time_t totalsecs, int offset, struct tm *result)
+void time64_to_tm(time64_t totalsecs, int offset, struct tm *result)
 {
 	long days, rem, y;
 	const unsigned short *ip;
 
-	days = totalsecs / SECS_PER_DAY;
-	rem = totalsecs % SECS_PER_DAY;
-	rem += offset;
+	/* overflows in year 19378 on 32-bit architectures, but avoids
+	 * an expensive 64-bit division */
+	days = (long)(totalsecs >> 7) / (SECS_PER_DAY >> 7);
+	rem = totalsecs - (time64_t)days * SECS_PER_DAY + offset;
 	while (rem < 0) {
 		rem += SECS_PER_DAY;
 		--days;
@@ -124,4 +125,4 @@ void time_to_tm(time_t totalsecs, int offset, struct tm *result)
 	result->tm_mon = y;
 	result->tm_mday = days + 1;
 }
-EXPORT_SYMBOL(time_to_tm);
+EXPORT_SYMBOL(time64_to_tm);

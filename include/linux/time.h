@@ -179,7 +179,12 @@ struct tm {
 	int tm_yday;
 };
 
-void time_to_tm(time_t totalsecs, int offset, struct tm *result);
+void time64_to_tm(time64_t totalsecs, int offset, struct tm *result);
+
+static inline void time_to_tm(time_t totalsecs, int offset, struct tm *result)
+{
+	return time64_to_tm(totalsecs, offset, result);
+}
 
 /**
  * timespec_to_ns - Convert timespec to nanoseconds
