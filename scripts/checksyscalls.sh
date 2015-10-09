@@ -197,6 +197,10 @@ cat << EOF
 #define __IGNORE_getpmsg
 #define __IGNORE_putpmsg
 #define __IGNORE_vserver
+
+/* temporarily don't warn about this */
+#define __IGNORE_mlock2
+#define __IGNORE_copy_file_range
 EOF
 }
 
