@@ -26,8 +26,8 @@
 #include <linux/platform_device.h>
 #include <linux/module.h>
 
-#include <mach/hardware.h>
-#include <mach/platform.h>
+#include "hardware.h"
+#include "platform.h"
 
 #define LPC32XX_GPIO_P3_INP_STATE		_GPREG(0x000)
 #define LPC32XX_GPIO_P3_OUTP_SET		_GPREG(0x004)

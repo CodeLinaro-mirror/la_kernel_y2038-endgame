@@ -21,8 +21,8 @@
 
 #include <linux/io.h>
 
-#include <mach/hardware.h>
-#include <mach/platform.h>
+#define LPC32XX_UART5_BASE                     0x40090000
+
 
 /*
  * Uncompress output is hardcoded to standard UART 5

@@ -25,8 +25,8 @@
 #include <linux/clk.h>
 #include <linux/io.h>
 
-#include <mach/hardware.h>
-#include <mach/platform.h>
+#include "hardware.h"
+#include "platform.h"
 #include "common.h"
 
 #define LPC32XX_SUART_FIFO_SIZE	64
