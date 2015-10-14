@@ -34,8 +34,6 @@
 #include <linux/irq.h>
 #include <linux/gpio.h>
 #include <linux/of.h>
-#include <mach/platform.h>
-#include <mach/hardware.h>
 
 /*
  * High Speed UART register offsets
@@ -447,9 +445,9 @@ static void serial_lpc32xx_break_ctl(struct uart_port *port,
 /* LPC3250 Errata HSUART.1: Hang workaround via loopback mode on inactivity */
 static void lpc32xx_loopback_set(resource_size_t mapbase, int state)
 {
+#if 0
 	int bit;
 	u32 tmp;
-
 	switch (mapbase) {
 	case LPC32XX_HS_UART1_BASE:
 		bit = 0;
@@ -471,6 +469,7 @@ static void lpc32xx_loopback_set(resource_size_t mapbase, int state)
 	else
 		tmp &= ~(1 << bit);
 	writel(tmp, LPC32XX_UARTCTL_CLOOP);
+#endif
 }
 
 /* port->lock is not held.  */
@@ -700,7 +699,10 @@ static int serial_hs_lpc32xx_probe(struct platform_device *pdev)
 	p->port.irq = ret;
 
 	p->port.iotype = UPIO_MEM32;
+#if 0
+	/* FIXME: use clk_get_rate() */
 	p->port.uartclk = LPC32XX_MAIN_OSC_FREQ;
+#endif
 	p->port.regshift = 2;
 	p->port.flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_IOREMAP;
 	p->port.dev = &pdev->dev;

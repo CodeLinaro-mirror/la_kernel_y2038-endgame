@@ -31,10 +31,10 @@
 
 #include "ohci.h"
 
-#include <mach/hardware.h>
-
+#if 0
 #define USB_CONFIG_BASE		0x31020000
 #define USB_OTG_STAT_CONTROL	IO_ADDRESS(USB_CONFIG_BASE + 0x110)
+#endif
 
 /* USB_OTG_STAT_CONTROL bit defines */
 #define TRANSPARENT_I2C_EN	(1 << 7)
@@ -126,17 +126,21 @@ static inline void isp1301_vbus_off(void)
 
 static void ohci_nxp_start_hc(void)
 {
+#if 0
 	unsigned long tmp = __raw_readl(USB_OTG_STAT_CONTROL) | HOST_EN;
 	__raw_writel(tmp, USB_OTG_STAT_CONTROL);
+#endif
 	isp1301_vbus_on();
 }
 
 static void ohci_nxp_stop_hc(void)
 {
-	unsigned long tmp;
 	isp1301_vbus_off();
+#if 0
+	unsigned long tmp;
 	tmp = __raw_readl(USB_OTG_STAT_CONTROL) & ~HOST_EN;
 	__raw_writel(tmp, USB_OTG_STAT_CONTROL);
+#endif
 }
 
 static int ohci_hcd_nxp_probe(struct platform_device *pdev)
