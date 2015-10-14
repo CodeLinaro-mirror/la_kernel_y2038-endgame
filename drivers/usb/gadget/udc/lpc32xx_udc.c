@@ -52,13 +52,9 @@
 #include <linux/usb/isp1301.h>
 
 #include <asm/byteorder.h>
-#include <mach/hardware.h>
 #include <linux/io.h>
 #include <asm/irq.h>
 
-#include <mach/platform.h>
-#include <mach/irqs.h>
-#include <mach/board.h>
 #ifdef CONFIG_USB_GADGET_DEBUG_FILES
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
@@ -652,8 +648,11 @@ static void isp1301_udc_configure(struct lpc32xx_udc *udc)
 	i2c_smbus_write_byte_data(udc->isp1301_i2c_client,
 		ISP1301_I2C_INTERRUPT_RISING, INT_VBUS_VLD);
 
+#if 0
+	/* FIXME: use clock interface */
 	/* Enable usb_need_clk clock after transceiver is initialized */
 	writel((readl(USB_CTRL) | USB_DEV_NEED_CLK_EN), USB_CTRL);
+#endif
 
 	dev_info(udc->dev, "ISP1301 Vendor ID  : 0x%04x\n",
 		 i2c_smbus_read_word_data(udc->isp1301_i2c_client, 0x00));
@@ -997,9 +996,11 @@ static void udc_clk_set(struct lpc32xx_udc *udc, int enable)
 		/* 48MHz PLL up */
 		clk_enable(udc->usb_pll_clk);
 
+#if 0
 		/* Enable the USB device clock */
 		writel(readl(USB_CTRL) | USB_DEV_NEED_CLK_EN,
 			     USB_CTRL);
+#endif
 
 		clk_enable(udc->usb_otg_clk);
 	} else {
@@ -1013,10 +1014,11 @@ static void udc_clk_set(struct lpc32xx_udc *udc, int enable)
 		/* 48MHz PLL dpwn */
 		clk_disable(udc->usb_pll_clk);
 
+#if 0
 		/* Disable the USB device clock */
 		writel(readl(USB_CTRL) & ~USB_DEV_NEED_CLK_EN,
 			     USB_CTRL);
-
+#endif
 		clk_disable(udc->usb_otg_clk);
 	}
 }
@@ -3138,8 +3140,10 @@ static int lpc32xx_udc_probe(struct platform_device *pdev)
 		goto io_map_fail;
 	}
 
+#if 0
 	/* Enable AHB slave USB clock, needed for further USB clock control */
 	writel(USB_SLAVE_HCLK_EN | (1 << 19), USB_CTRL);
+#endif
 
 	/* Get required clocks */
 	udc->usb_pll_clk = clk_get(&pdev->dev, "ck_pll5");
@@ -3174,7 +3178,9 @@ static int lpc32xx_udc_probe(struct platform_device *pdev)
 		goto pll_set_fail;
 	}
 
+#if 0
 	writel(readl(USB_CTRL) | USB_DEV_NEED_CLK_EN, USB_CTRL);
+#endif
 
 	/* Enable USB device clock */
 	retval = clk_enable(udc->usb_slv_clk);

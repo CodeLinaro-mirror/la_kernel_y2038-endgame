@@ -27,9 +27,10 @@
 
 #include <asm/mach/time.h>
 
-#include <mach/hardware.h>
-#include <mach/platform.h>
+#include "hardware.h"
+#include "platform.h"
 #include "common.h"
+#include "irqs.h"
 
 static int lpc32xx_clkevt_next_event(unsigned long delta,
     struct clock_event_device *dev)

@@ -42,10 +42,11 @@
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 
-#include <mach/hardware.h>
-#include <mach/platform.h>
-#include <mach/board.h>
+#include "hardware.h"
+#include "platform.h"
+#include "board.h"
 #include "common.h"
+#include "irqs.h"
 
 /*
  * Mapped GPIOLIB GPIOs
@@ -258,6 +259,7 @@ static const char *const lpc32xx_dt_compat[] __initconst = {
 
 DT_MACHINE_START(LPC32XX_DT, "LPC32XX SoC (Flattened Device Tree)")
 	.atag_offset	= 0x100,
+	.nr_irqs	= LPC32XX_LEGACY_IRQS,
 	.map_io		= lpc32xx_map_io,
 	.init_irq	= lpc32xx_init_irq,
 	.init_time	= lpc32xx_timer_init,
