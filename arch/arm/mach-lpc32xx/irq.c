@@ -28,9 +28,11 @@
 #include <linux/irqdomain.h>
 #include <linux/module.h>
 
-#include <mach/irqs.h>
-#include <mach/hardware.h>
-#include <mach/platform.h>
+#include <asm/exception.h>
+
+#include "irqs.h"
+#include "hardware.h"
+#include "platform.h"
 #include "common.h"
 
 /*
@@ -81,7 +83,7 @@ struct lpc32xx_event_info {
 /*
  * Maps an IRQ number to and event mask and register
  */
-static const struct lpc32xx_event_info lpc32xx_events[NR_IRQS] = {
+static const struct lpc32xx_event_info lpc32xx_events[LPC32XX_LEGACY_IRQS] = {
 	[IRQ_LPC32XX_GPI_08] = {
 		.event_group = &lpc32xx_event_pin_regs,
 		.mask = LPC32XX_CLKPWR_EXTSRC_GPI_08_BIT,
@@ -370,6 +372,19 @@ static struct irq_chip lpc32xx_irq_chip = {
 	.irq_set_wake = lpc32xx_irq_wake
 };
 
+static void __exception_irq_entry lpc32xx_mic_handler(struct pt_regs *regs)
+{
+	unsigned long ints = __raw_readl(LPC32XX_INTC_STAT(LPC32XX_MIC_BASE));
+
+	while (ints) {
+		int irqno = fls(ints) - 1;
+
+		ints &= ~(1 << irqno);
+
+		handle_IRQ(irqno, regs);
+	}
+}
+
 static void lpc32xx_sic1_handler(struct irq_desc *desc)
 {
 	unsigned long ints = __raw_readl(LPC32XX_INTC_STAT(LPC32XX_SIC1_BASE));
@@ -400,6 +415,7 @@ static int __init __lpc32xx_mic_of_init(struct device_node *node,
 					struct device_node *parent)
 {
 	lpc32xx_mic_np = node;
+	set_handle_irq(lpc32xx_mic_handler);
 
 	return 0;
 }

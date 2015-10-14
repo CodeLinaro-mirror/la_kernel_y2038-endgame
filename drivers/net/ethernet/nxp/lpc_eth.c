@@ -44,9 +44,6 @@
 #include <linux/types.h>
 
 #include <linux/io.h>
-#include <mach/board.h>
-#include <mach/platform.h>
-#include <mach/hardware.h>
 
 #define MODNAME "lpc-eth"
 #define DRV_VERSION "1.00"
@@ -1299,9 +1296,12 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 	struct phy_device *phydev;
 	dma_addr_t dma_handle;
 	int irq, ret;
+#if 0
 	u32 tmp;
 
 	/* Setup network interface for RMII or MII mode */
+	FIXME: use pinctrl
+
 	tmp = __raw_readl(LPC32XX_CLKPWR_MACCLK_CTRL);
 	tmp &= ~LPC32XX_CLKPWR_MACCTRL_PINS_MSK;
 	if (lpc_phy_interface_mode(&pdev->dev) == PHY_INTERFACE_MODE_MII)
@@ -1309,6 +1309,7 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 	else
 		tmp |= LPC32XX_CLKPWR_MACCTRL_USE_RMII_PINS;
 	__raw_writel(tmp, LPC32XX_CLKPWR_MACCLK_CTRL);
+#endif
 
 	/* Get platform resources */
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -1374,6 +1375,8 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 	pldat->dma_buff_base_v = 0;
 
 	if (use_iram_for_net(&pldat->pdev->dev)) {
+#if 0
+	/* FIXME: get iram from DT */
 		dma_handle = LPC32XX_IRAM_BASE;
 		if (pldat->dma_buff_size <= lpc32xx_return_iram_size())
 			pldat->dma_buff_base_v =
@@ -1381,6 +1384,7 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 		else
 			netdev_err(ndev,
 				"IRAM not big enough for net buffers, using SDRAM instead.\n");
+#endif
 	}
 
 	if (pldat->dma_buff_base_v == 0) {
@@ -1470,11 +1474,13 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
 err_out_unregister_netdev:
 	unregister_netdev(ndev);
 err_out_dma_unmap:
+#if 0
 	if (!use_iram_for_net(&pldat->pdev->dev) ||
 	    pldat->dma_buff_size > lpc32xx_return_iram_size())
 		dma_free_coherent(&pldat->pdev->dev, pldat->dma_buff_size,
 				  pldat->dma_buff_base_v,
 				  pldat->dma_buff_base_p);
+#endif
 err_out_free_irq:
 	free_irq(ndev->irq, ndev);
 err_out_iounmap:
@@ -1496,11 +1502,13 @@ static int lpc_eth_drv_remove(struct platform_device *pdev)
 
 	unregister_netdev(ndev);
 
+#if 0
 	if (!use_iram_for_net(&pldat->pdev->dev) ||
 	    pldat->dma_buff_size > lpc32xx_return_iram_size())
 		dma_free_coherent(&pldat->pdev->dev, pldat->dma_buff_size,
 				  pldat->dma_buff_base_v,
 				  pldat->dma_buff_base_p);
+#endif
 	free_irq(ndev->irq, ndev);
 	iounmap(pldat->net_base);
 	mdiobus_unregister(pldat->mii_bus);

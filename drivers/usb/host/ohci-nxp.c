@@ -31,8 +31,7 @@
 
 #include "ohci.h"
 
-#include <mach/hardware.h>
-
+#if 0
 #define USB_CONFIG_BASE		0x31020000
 #define PWRMAN_BASE		0x40004000
 
@@ -45,6 +44,7 @@
 #define PAD_CONTROL_LAST_DRIVEN	(1 << 19)
 
 #define USB_OTG_STAT_CONTROL	IO_ADDRESS(USB_CONFIG_BASE + 0x110)
+#endif
 
 /* USB_OTG_STAT_CONTROL bit defines */
 #define TRANSPARENT_I2C_EN	(1 << 7)
@@ -110,8 +110,10 @@ static void isp1301_configure_lpc32xx(void)
 	i2c_smbus_write_byte_data(isp1301_i2c_client,
 		ISP1301_I2C_INTERRUPT_RISING | ISP1301_I2C_REG_CLEAR_ADDR, ~0);
 
+#if 0
 	/* Enable usb_need_clk clock after transceiver is initialized */
 	__raw_writel(__raw_readl(USB_CTRL) | USB_HOST_NEED_CLK_EN, USB_CTRL);
+#endif
 
 	printk(KERN_INFO "ISP1301 Vendor ID  : 0x%04x\n",
 	      i2c_smbus_read_word_data(isp1301_i2c_client, 0x00));
@@ -141,17 +143,21 @@ static inline void isp1301_vbus_off(void)
 
 static void ohci_nxp_start_hc(void)
 {
+#if 0
 	unsigned long tmp = __raw_readl(USB_OTG_STAT_CONTROL) | HOST_EN;
 	__raw_writel(tmp, USB_OTG_STAT_CONTROL);
+#endif
 	isp1301_vbus_on();
 }
 
 static void ohci_nxp_stop_hc(void)
 {
-	unsigned long tmp;
 	isp1301_vbus_off();
+#if 0
+	unsigned long tmp;
 	tmp = __raw_readl(USB_OTG_STAT_CONTROL) & ~HOST_EN;
 	__raw_writel(tmp, USB_OTG_STAT_CONTROL);
+#endif
 }
 
 static int ohci_hcd_nxp_probe(struct platform_device *pdev)
@@ -185,8 +191,10 @@ static int ohci_hcd_nxp_probe(struct platform_device *pdev)
 		goto fail_disable;
 	}
 
+#if 0
 	/* Enable AHB slave USB clock, needed for further USB clock control */
 	__raw_writel(USB_SLAVE_HCLK_EN | PAD_CONTROL_LAST_DRIVEN, USB_CTRL);
+#endif
 
 	/* Enable USB PLL */
 	usb_pll_clk = devm_clk_get(&pdev->dev, "ck_pll5");
@@ -230,7 +238,9 @@ static int ohci_hcd_nxp_probe(struct platform_device *pdev)
 		goto fail_otg;
 	}
 
+#if 0
 	__raw_writel(__raw_readl(USB_CTRL) | USB_HOST_NEED_CLK_EN, USB_CTRL);
+#endif
 
 	ret = clk_prepare_enable(usb_otg_clk);
 	if (ret < 0) {
