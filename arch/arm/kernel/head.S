@@ -120,8 +120,7 @@ ENTRY(stext)
 	 */
 	bl	__vet_atags
 #ifdef CONFIG_SMP_ON_UP
-	ldr	r3, =__fixup_smp
-	blx	r3
+	bl	__fixup_smp
 #endif
 #ifdef CONFIG_ARM_PATCH_PHYS_VIRT
 	bl	__fixup_pv_table
@@ -548,7 +547,7 @@ __fixup_smp_on_up:
 	sub	r3, r0, r3
 	add	r4, r4, r3
 	add	r5, r5, r3
-	ldr	pc, =__do_fixup_smp_on_up
+	b	__do_fixup_smp_on_up
 ENDPROC(__fixup_smp)
 
 	.align
