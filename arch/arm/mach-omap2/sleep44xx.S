@@ -327,7 +327,7 @@ set_aux_ctrl:
 skip_l2en:
 #endif
 
-	ldr	pc,=cpu_resume			@ Jump to generic resume
+	b	cpu_resume			@ Jump to generic resume
 ENDPROC(omap4_cpu_resume)
 #endif	/* CONFIG_ARCH_OMAP4 */
 
