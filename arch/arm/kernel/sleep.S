@@ -131,7 +131,7 @@ ENTRY(cpu_resume_arm)
 ENTRY(cpu_resume)
 ARM_BE8(setend be)			@ ensure we are in BE mode
 #ifdef CONFIG_ARM_VIRT_EXT
-	bl	2f
+	bl	__hyp_stub_install_secondary
 #endif
 	safe_svcmode_maskall r1
 	mov	r1, #0
@@ -158,10 +158,6 @@ ARM_BE8(setend be)			@ ensure we are in BE mode
 THUMB(	ldmia	r0!, {r1, r2, r3}	)
 THUMB(	mov	sp, r2			)
 THUMB(	bx	r3			)
-#ifdef CONFIG_ARM_VIRT_EXT
-2:
-	ldr	pc,=__hyp_stub_install_secondary
-#endif
 ENDPROC(cpu_resume)
 
 #ifdef CONFIG_MMU

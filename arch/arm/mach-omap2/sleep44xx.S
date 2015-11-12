@@ -325,7 +325,7 @@ set_aux_ctrl:
 skip_l2en:
 #endif
 
-	ldr	pc,=cpu_resume			@ Jump to generic resume
+	b	cpu_resume			@ Jump to generic resume
 ppa_por_params_offset:
 	.long	ppa_por_params - .
 ENDPROC(omap4_cpu_resume)
