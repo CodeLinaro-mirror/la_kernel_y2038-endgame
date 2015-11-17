@@ -40,49 +40,38 @@ struct reset_control *of_reset_control_get(struct device_node *node,
 
 #else
 
-#include <linux/device.h>
-#include <linux/of.h>
-
-static inline int __must_check device_reset(struct device *dev)
-{
-	return -ENOSYS;
-}
-
 static inline int reset_control_reset(struct reset_control *rstc)
 {
-	WARN_ON(rstc != NULL);
+	WARN_ON(1);
 	return 0;
 }
 
 static inline int reset_control_assert(struct reset_control *rstc)
 {
-	WARN_ON(rstc != NULL);
+	WARN_ON(1);
 	return 0;
 }
 
 static inline int reset_control_deassert(struct reset_control *rstc)
 {
-	WARN_ON(rstc != NULL);
+	WARN_ON(1);
 	return 0;
 }
 
 static inline int reset_control_status(struct reset_control *rstc)
 {
-	WARN_ON(rstc != NULL);
+	WARN_ON(1);
 	return 0;
 }
 
 static inline void reset_control_put(struct reset_control *rstc)
 {
-	WARN_ON(rstc != NULL);
+	WARN_ON(1);
 }
 
 static inline int device_reset_optional(struct device *dev)
 {
-	if (of_property_read_bool(dev->of_node, "resets"))
-		return -ENOSYS;
-
-	return 0;
+	return -ENOSYS;
 }
 
 static inline struct reset_control *__must_check reset_control_get(
@@ -99,21 +88,16 @@ static inline struct reset_control *__must_check devm_reset_control_get(
 	return ERR_PTR(-EINVAL);
 }
 
-/*
- * We intentionally return NULL here when no resets are specified
- * or when building without DT, which is interpreted as 'success'
- * if reset controller support is left out from the kernel.
- */
 static inline struct reset_control *reset_control_get_optional(
 					struct device *dev, const char *id)
 {
-	return ERR_PTR(device_reset_optional(dev));
+	return ERR_PTR(-ENOSYS);
 }
 
 static inline struct reset_control *devm_reset_control_get_optional(
 					struct device *dev, const char *id)
 {
-	return reset_control_get_optional(dev, id);
+	return ERR_PTR(-ENOSYS);
 }
 
 static inline struct reset_control *of_reset_control_get(
