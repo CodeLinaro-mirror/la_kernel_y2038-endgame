@@ -207,6 +207,7 @@ config SPEAR_THERMAL
 config ROCKCHIP_THERMAL
 	tristate "Rockchip thermal driver"
 	depends on ARCH_ROCKCHIP || COMPILE_TEST
+	depends on RESET_CONTROLLER
 	depends on HAS_IOMEM
 	help
 	  Rockchip thermal driver provides support for Temperature sensor

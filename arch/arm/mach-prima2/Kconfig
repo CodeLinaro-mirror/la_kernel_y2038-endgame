@@ -1,13 +1,14 @@
 menuconfig ARCH_SIRF
 	bool "CSR SiRF"
 	depends on ARCH_MULTI_V7
+	select ARCH_HAS_RESET_CONTROLLER
+	select RESET_CONTROLLER
 	select GENERIC_IRQ_CHIP
 	select GPIOLIB
 	select NO_IOPORT_MAP
 	select REGMAP
 	select PINCTRL
 	select PINCTRL_SIRF
-	select RESET_CONTROLLER
 	help
 	  Support for CSR SiRFprimaII/Marco/Polo platforms
 

@@ -27,41 +27,33 @@ static inline int device_reset_optional(struct device *dev)
 
 #else
 
-#include <linux/device.h>
-#include <linux/of.h>
-
-static inline int __must_check device_reset(struct device *dev)
-{
-	return -ENOSYS;
-}
-
 static inline int reset_control_reset(struct reset_control *rstc)
 {
-	WARN_ON(rstc != NULL);
+	WARN_ON(1);
 	return 0;
 }
 
 static inline int reset_control_assert(struct reset_control *rstc)
 {
-	WARN_ON(rstc != NULL);
+	WARN_ON(1);
 	return 0;
 }
 
 static inline int reset_control_deassert(struct reset_control *rstc)
 {
-	WARN_ON(rstc != NULL);
+	WARN_ON(1);
 	return 0;
 }
 
 static inline int reset_control_status(struct reset_control *rstc)
 {
-	WARN_ON(rstc != NULL);
+	WARN_ON(1);
 	return 0;
 }
 
 static inline void reset_control_put(struct reset_control *rstc)
 {
-	WARN_ON(rstc != NULL);
+	WARN_ON(1);
 }
 
 static inline int __must_check device_reset(struct device *dev)
@@ -72,24 +64,21 @@ static inline int __must_check device_reset(struct device *dev)
 
 static inline int device_reset_optional(struct device *dev)
 {
-	if (of_property_read_bool(dev->of_node, "resets"))
-		return -ENOSYS;
-
-	return 0;
+	return -ENOTSUPP;
 }
 
 static inline struct reset_control *__of_reset_control_get(
 					struct device_node *node,
 					const char *id, int index, int shared)
 {
-	return ERR_PTR(device_reset_optional(dev));
+	return ERR_PTR(-ENOTSUPP);
 }
 
 static inline struct reset_control *__devm_reset_control_get(
 					struct device *dev,
 					const char *id, int index, int shared)
 {
-	return ERR_PTR(device_reset_optional(dev));
+	return ERR_PTR(-ENOTSUPP);
 }
 
 #endif /* CONFIG_RESET_CONTROLLER */
@@ -341,15 +330,10 @@ static inline struct reset_control *reset_control_get(
 	return reset_control_get_exclusive(dev, id);
 }
 
-/*
- * We intentionally return NULL here when no resets are specified
- * or when building without DT, which is interpreted as 'success'
- * if reset controller support is left out from the kernel.
- */
 static inline struct reset_control *reset_control_get_optional(
 					struct device *dev, const char *id)
 {
-	return __of_reset_control_get(dev ? dev->of_node : NULL, id, 0, 0);
+	return reset_control_get_optional_exclusive(dev, id);
 }
 
 static inline struct reset_control *of_reset_control_get(

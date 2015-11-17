@@ -1,23 +1,18 @@
-config RESET_CONTROLLER
+config ARCH_HAS_RESET_CONTROLLER
 	bool
 
-menu "Reset Controller Support"
-	depends on ARCH_HAS_RESET_CONTROLLER || COMPILE_TEST
+menuconfig RESET_CONTROLLER
+	bool "Reset Controller Support"
+	default y if ARCH_HAS_RESET_CONTROLLER
+	help
+	  Generic Reset Controller support.
 
-config RESET_SOCFPGA
-	bool "Altera SOCFPGA reset controller" if COMPILE_TEST
-	default ARCH_SOCFPGA
-	select RESET_CONTROLLER
+	  This framework is designed to abstract reset handling of devices
+	  via GPIOs or SoC-internal reset controller modules.
 
-config RESET_BERLIN
-	bool "Marvell Berlin reset controller" if COMPILE_TEST
-	default ARCH_BERLIN
-	select RESET_CONTROLLER
+	  If unsure, say no.
 
-config RESET_SUNXI
-	bool "Allwinner reset controller" if COMPILE_TEST
-	default ARCH_SUNXI
-	select RESET_CONTROLLER
+if RESET_CONTROLLER
 
 config RESET_OXNAS
 	bool
@@ -35,4 +30,4 @@ config TI_SYSCON_RESET
 source "drivers/reset/sti/Kconfig"
 source "drivers/reset/hisilicon/Kconfig"
 
-endmenu
+endif
