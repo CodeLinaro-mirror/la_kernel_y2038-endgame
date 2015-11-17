@@ -888,6 +888,7 @@ config I2C_STU300
 
 config I2C_SUN6I_P2WI
 	tristate "Allwinner sun6i internal P2WI controller"
+	depends on RESET_CONTROLLER
 	depends on MACH_SUN6I || COMPILE_TEST
 	help
 	  If you say yes to this option, support will be included for the
