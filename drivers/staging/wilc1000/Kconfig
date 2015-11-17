@@ -1,6 +1,6 @@
 config WILC1000_DRIVER
 	bool "WILC1000 support (WiFi only)"
-	depends on CFG80211 && WEXT_CORE && INET
+	depends on CFG80211=y && WEXT_CORE && INET
 	---help---
 	  This module only support IEEE 802.11n WiFi.
 
