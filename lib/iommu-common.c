@@ -94,7 +94,7 @@ void iommu_tbl_pool_init(struct iommu_map_table *iommu,
 }
 EXPORT_SYMBOL(iommu_tbl_pool_init);
 
-dma_addr_t iommu_tbl_range_alloc(struct device *dev,
+unsigned long iommu_tbl_range_alloc(struct device *dev,
 				struct iommu_map_table *iommu,
 				unsigned long npages,
 				unsigned long *handle,
@@ -102,8 +102,7 @@ dma_addr_t iommu_tbl_range_alloc(struct device *dev,
 				unsigned int align_order)
 {
 	unsigned int pool_hash = __this_cpu_read(iommu_hash_common);
-	dma_addr_t n;
-	unsigned long end, start, limit, boundary_size;
+	unsigned long n, end, start, limit, boundary_size;
 	struct iommu_pool *pool;
 	int pass = 0;
 	unsigned int pool_nr;
