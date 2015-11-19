@@ -8,10 +8,6 @@
  * This code is covered by the GPL.
  */
 
-#ifdef CONFIG_MTD_XIP
-#pragma long_calls
-#endif
-
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -336,10 +332,6 @@ __xipram cfi_read_pri(struct map_info *map, __u16 adr, __u16 size, const char* n
 }
 
 EXPORT_SYMBOL(cfi_read_pri);
-
-#ifdef CONFIG_MTD_XIP
-#pragma long_calls_off
-#endif
 
 void cfi_fixup(struct mtd_info *mtd, struct cfi_fixup *fixups)
 {
