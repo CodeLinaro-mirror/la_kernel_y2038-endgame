@@ -1,4 +1,6 @@
 /*
+ * arch/arm/mach-dove/include/mach/bridge-regs.h
+ *
  * Mbus-L to Mbus Bridge Registers
  *
  * This file is licensed under the terms of the GNU General Public
@@ -9,7 +11,7 @@
 #ifndef __ASM_ARCH_BRIDGE_REGS_H
 #define __ASM_ARCH_BRIDGE_REGS_H
 
-#include "dove.h"
+#include <mach/dove.h>
 
 #define CPU_CONFIG		(BRIDGE_VIRT_BASE + 0x0000)
 
