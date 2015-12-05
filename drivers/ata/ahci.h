@@ -38,6 +38,7 @@
 #include <linux/pci.h>
 #include <linux/clk.h>
 #include <linux/libata.h>
+#include <linux/pci.h>
 #include <linux/phy/phy.h>
 #include <linux/regulator/consumer.h>
 
