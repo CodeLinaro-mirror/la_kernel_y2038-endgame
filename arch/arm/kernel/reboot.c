@@ -12,6 +12,7 @@
 
 #include <asm/cacheflush.h>
 #include <asm/idmap.h>
+#include <asm/v7m.h>
 
 #include "reboot.h"
 
@@ -144,6 +145,9 @@ void machine_restart(char *cmd)
 		arm_pm_restart(reboot_mode, cmd);
 	else
 		do_kernel_restart(cmd);
+
+	if (IS_ENABLED(CONFIG_CPU_V7M))
+		armv7m_restart(reboot_mode, cmd);
 
 	/* Give a grace period for failure to restart of 1s */
 	mdelay(1000);
