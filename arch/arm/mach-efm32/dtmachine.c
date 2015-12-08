@@ -11,4 +11,5 @@ static const char *const efm32gg_compat[] __initconst = {
 
 DT_MACHINE_START(EFM32DT, "EFM32 (Device Tree Support)")
 	.dt_compat = efm32gg_compat,
+	.restart = armv7m_restart,
 MACHINE_END
