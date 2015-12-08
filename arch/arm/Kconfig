@@ -362,6 +362,7 @@ config ARM_SINGLE_ARMV7M
 	select CPU_V7M
 	select GENERIC_CLOCKEVENTS
 	select NO_IOPORT_MAP
+	select NOMMU
 	select SPARSE_IRQ
 	select USE_OF
 

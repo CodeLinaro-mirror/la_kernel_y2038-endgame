@@ -16,4 +16,5 @@ static const char *const stm32_compat[] __initconst = {
 
 DT_MACHINE_START(STM32DT, "STM32 (Device Tree Support)")
 	.dt_compat = stm32_compat,
+	.restart = armv7m_restart,
 MACHINE_END
