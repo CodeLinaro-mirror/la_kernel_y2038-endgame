@@ -108,10 +108,10 @@ struct va_format {
  * Dummy printk for disabled debugging statements to use whilst maintaining
  * gcc's format checking.
  */
-#define no_printk(fmt, ...)			\
+#define no_printk(arg ...)			\
 do {						\
 	if (0)					\
-		printk(fmt, ##__VA_ARGS__);	\
+		printk(arg);			\
 } while (0)
 
 #ifdef CONFIG_EARLY_PRINTK
