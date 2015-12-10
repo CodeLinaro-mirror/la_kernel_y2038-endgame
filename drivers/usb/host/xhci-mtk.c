@@ -695,8 +695,7 @@ static int xhci_mtk_remove(struct platform_device *dev)
 	return 0;
 }
 
-#ifdef CONFIG_PM_SLEEP
-static int xhci_mtk_suspend(struct device *dev)
+static int __maybe_unused xhci_mtk_suspend(struct device *dev)
 {
 	struct xhci_hcd_mtk *mtk = dev_get_drvdata(dev);
 
@@ -707,7 +706,7 @@ static int xhci_mtk_suspend(struct device *dev)
 	return 0;
 }
 
-static int xhci_mtk_resume(struct device *dev)
+static int __maybe_unused xhci_mtk_resume(struct device *dev)
 {
 	struct xhci_hcd_mtk *mtk = dev_get_drvdata(dev);
 
@@ -718,13 +717,10 @@ static int xhci_mtk_resume(struct device *dev)
 	return 0;
 }
 
-static const struct dev_pm_ops xhci_mtk_pm_ops = {
+static const struct dev_pm_ops xhci_mtk_pm_ops __maybe_unused = {
 	SET_SYSTEM_SLEEP_PM_OPS(xhci_mtk_suspend, xhci_mtk_resume)
 };
-#define DEV_PM_OPS	(&xhci_mtk_pm_ops)
-#else
-#define DEV_PM_OPS	NULL
-#endif /* CONFIG_PM */
+#define DEV_PM_OPS IS_ENABLED(CONFIG_PM) ? &xhci_mtk_pm_ops : NULL
 
 #ifdef CONFIG_OF
 static const struct of_device_id mtk_xhci_of_match[] = {
