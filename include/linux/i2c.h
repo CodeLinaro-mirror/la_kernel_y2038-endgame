@@ -254,7 +254,6 @@ static inline void i2c_set_clientdata(struct i2c_client *dev, void *data)
 
 /* I2C slave support */
 
-#if IS_ENABLED(CONFIG_I2C_SLAVE)
 enum i2c_slave_event {
 	I2C_SLAVE_READ_REQUESTED,
 	I2C_SLAVE_WRITE_REQUESTED,
@@ -266,11 +265,14 @@ enum i2c_slave_event {
 extern int i2c_slave_register(struct i2c_client *client, i2c_slave_cb_t slave_cb);
 extern int i2c_slave_unregister(struct i2c_client *client);
 
+#if IS_ENABLED(CONFIG_I2C_SLAVE)
 static inline int i2c_slave_event(struct i2c_client *client,
 				  enum i2c_slave_event event, u8 *val)
 {
 	return client->slave_cb(client, event, val);
 }
+#else
+extern int i2c_slave_event(struct i2c_client *client, enum i2c_slave_event event, u8 *val);
 #endif
 
 /**
