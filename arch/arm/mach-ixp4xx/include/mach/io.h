@@ -440,7 +440,7 @@ static inline void iowrite32_rep(void __iomem *addr, const void *vaddr,
 #endif
 }
 
-#define	ioport_map(port, nr)		((void __iomem*)(port + PIO_OFFSET))
+#define	ioport_map(port, nr)		((void __iomem*)((port) + PIO_OFFSET))
 #define	ioport_unmap(addr)
 #endif /* CONFIG_PCI */
 
