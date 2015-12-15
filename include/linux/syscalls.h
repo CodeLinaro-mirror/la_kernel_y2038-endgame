@@ -660,6 +660,7 @@ asmlinkage long sys_msgsnd(int msqid, struct msgbuf __user *msgp,
 asmlinkage long sys_msgrcv(int msqid, struct msgbuf __user *msgp,
 				size_t msgsz, long msgtyp, int msgflg);
 asmlinkage long sys_msgctl(int msqid, int cmd, struct msqid_ds __user *buf);
+asmlinkage long sys_msgctl64(int msqid, int cmd, struct msqid_ds __user *buf);
 
 asmlinkage long sys_semget(key_t key, int nsems, int semflg);
 asmlinkage long sys_semop(int semid, struct sembuf __user *sops,
