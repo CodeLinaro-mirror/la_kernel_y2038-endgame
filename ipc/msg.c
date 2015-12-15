@@ -519,15 +519,13 @@ out_unlock:
 	return err;
 }
 
-SYSCALL_DEFINE3(msgctl, int, msqid, int, cmd, struct msqid_ds __user *, buf)
+static long do_msgctl(int msqid, int cmd, struct msqid_ds __user * buf, int version)
 {
-	int version;
 	struct ipc_namespace *ns;
 
 	if (msqid < 0 || cmd < 0)
 		return -EINVAL;
 
-	version = ipc_parse_version(&cmd);
 	ns = current->nsproxy->ipc_ns;
 
 	switch (cmd) {
@@ -542,6 +540,18 @@ SYSCALL_DEFINE3(msgctl, int, msqid, int, cmd, struct msqid_ds __user *, buf)
 	default:
 		return  -EINVAL;
 	}
+}
+
+SYSCALL_DEFINE3(msgctl, int, msqid, int, cmd, struct msqid_ds __user *, buf)
+{
+	int version = ipc_parse_version(&cmd);
+
+	return do_msgctl(msqid, cmd, buf, version);
+}
+
+SYSCALL_DEFINE3(msgctl64, int, msqid, int, cmd, struct msqid_ds __user *, buf)
+{
+	return do_msgctl(msqid, cmd, buf, IPC_64);
 }
 
 static int testmsg(struct msg_msg *msg, long type, int mode)

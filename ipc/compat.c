@@ -495,20 +495,19 @@ static inline int put_compat_msqid_ds(struct msqid64_ds *m,
 	return err;
 }
 
-COMPAT_SYSCALL_DEFINE3(msgctl, int, first, int, second, void __user *, uptr)
+static long do_compat_msgctl(int msqid, int cmd, void __user *uptr, int version)
 {
 	int err, err2;
 	struct msqid64_ds m64;
-	int version = compat_ipc_parse_version(&second);
 	void __user *p;
 
 	memset(&m64, 0, sizeof(m64));
 
-	switch (second & (~IPC_64)) {
+	switch (cmd & (~IPC_64)) {
 	case IPC_INFO:
 	case IPC_RMID:
 	case MSG_INFO:
-		err = sys_msgctl(first, second, uptr);
+		err = sys_msgctl(msqid, cmd, uptr);
 		break;
 
 	case IPC_SET:
@@ -523,13 +522,13 @@ COMPAT_SYSCALL_DEFINE3(msgctl, int, first, int, second, void __user *, uptr)
 		if (copy_to_user(p, &m64, sizeof(m64)))
 			err = -EFAULT;
 		else
-			err = sys_msgctl(first, second, p);
+			err = sys_msgctl(msqid, cmd, p);
 		break;
 
 	case IPC_STAT:
 	case MSG_STAT:
 		p = compat_alloc_user_space(sizeof(m64));
-		err = sys_msgctl(first, second, p);
+		err = sys_msgctl(msqid, cmd, p);
 		if (err < 0)
 			break;
 		if (copy_from_user(&m64, p, sizeof(m64)))
@@ -547,6 +546,18 @@ COMPAT_SYSCALL_DEFINE3(msgctl, int, first, int, second, void __user *, uptr)
 		break;
 	}
 	return err;
+}
+
+COMPAT_SYSCALL_DEFINE3(msgctl, int, msqid, int, cmd, void __user *, uptr)
+{
+	int version = compat_ipc_parse_version(&cmd);
+
+	return do_compat_msgctl(msqid, cmd, uptr, version);
+}
+
+COMPAT_SYSCALL_DEFINE3(msgctl64, int, first, int, second, void __user *, uptr)
+{
+	return do_compat_msgctl(msqid, cmd, uptr, IPC_64);
 }
 
 COMPAT_SYSCALL_DEFINE3(shmat, int, shmid, compat_uptr_t, shmaddr, int, shmflg)
