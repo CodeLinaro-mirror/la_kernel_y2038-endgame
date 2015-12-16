@@ -144,6 +144,7 @@ int vc4_v3d_debugfs_ident(struct seq_file *m, void *unused)
 }
 #endif /* CONFIG_DEBUG_FS */
 
+#ifdef CONFIG_PM_SLEEP
 /*
  * Asks the firmware to turn on power to the V3D engine.
  *
@@ -158,6 +159,7 @@ vc4_v3d_set_power(struct vc4_dev *vc4, bool on)
 	else
 		return pm_generic_resume(&vc4->v3d->pdev->dev);
 }
+#endif
 
 static void vc4_v3d_init_hw(struct drm_device *dev)
 {
