@@ -84,6 +84,10 @@
 #define CONST const
 #endif
 
+#ifndef NO_DMA
+#define NO_DMA	255
+#endif
+
 #define MAX_ECARDS	9
 
 struct ecard_id {			/* Card ID structure		*/

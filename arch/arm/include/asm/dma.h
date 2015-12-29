@@ -137,10 +137,6 @@ extern void set_dma_speed(unsigned int chan, int cycle_ns);
  */
 extern int  get_dma_residue(unsigned int chan);
 
-#ifndef NO_DMA
-#define NO_DMA	255
-#endif
-
 #endif /* CONFIG_ISA_DMA_API */
 
 #ifdef CONFIG_PCI
