@@ -4756,6 +4756,7 @@ static int mem_cgroup_can_attach(struct cgroup_taskset *tset)
 	 * multiple.
 	 */
 	p = NULL;
+	memcg = NULL;
 	cgroup_taskset_for_each_leader(leader, css, tset) {
 		WARN_ON_ONCE(p);
 		p = leader;
