@@ -20,6 +20,8 @@
 
 #include <linux/init.h>
 #include <linux/module.h>
+#include <linux/of_device.h>
+#include <linux/of_gpio.h>
 #include <linux/kernel.h>
 #include <linux/err.h>
 #include <linux/power_supply.h>
@@ -721,11 +723,6 @@ static void sbs_delayed_work(struct work_struct *work)
 	}
 }
 
-#if defined(CONFIG_OF)
-
-#include <linux/of_device.h>
-#include <linux/of_gpio.h>
-
 static const struct of_device_id sbs_dt_ids[] = {
 	{ .compatible = "sbs,sbs-battery" },
 	{ .compatible = "ti,bq20z75" },
@@ -743,7 +740,7 @@ static struct sbs_platform_data *sbs_of_populate_pdata(
 	u32 prop;
 
 	/* verify this driver matches this device */
-	if (!of_node)
+	if (!IS_ENABLED(CONFIG_OF_GPIO) || !of_node)
 		return NULL;
 
 	/* if platform data is set, honor it */
@@ -787,13 +784,6 @@ static struct sbs_platform_data *sbs_of_populate_pdata(
 of_out:
 	return pdata;
 }
-#else
-static struct sbs_platform_data *sbs_of_populate_pdata(
-	struct i2c_client *client)
-{
-	return client->dev.platform_data;
-}
-#endif
 
 static const struct power_supply_desc sbs_default_desc = {
 	.type = POWER_SUPPLY_TYPE_BATTERY,
@@ -988,7 +978,7 @@ static struct i2c_driver sbs_battery_driver = {
 	.id_table	= sbs_id,
 	.driver = {
 		.name	= "sbs-battery",
-		.of_match_table = of_match_ptr(sbs_dt_ids),
+		.of_match_table = sbs_dt_ids,
 		.pm	= SBS_PM_OPS,
 	},
 };

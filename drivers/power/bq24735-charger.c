@@ -257,7 +257,7 @@ static int bq24735_charger_probe(struct i2c_client *client,
 
 	charger->pdata = client->dev.platform_data;
 
-	if (IS_ENABLED(CONFIG_OF) && !charger->pdata && client->dev.of_node)
+	if (IS_ENABLED(CONFIG_OF_GPIO) && !charger->pdata && client->dev.of_node)
 		charger->pdata = bq24735_parse_dt_data(client);
 
 	if (!charger->pdata) {
