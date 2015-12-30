@@ -3539,6 +3539,8 @@ void r100_bandwidth_update(struct radeon_device *rdev)
 		DRM_DEBUG_KMS("GRPH_BUFFER_CNTL from to %x\n",
 			  /* 	  (unsigned int)info->SavedReg->grph_buffer_cntl, */
 			  (unsigned int)RREG32(RADEON_GRPH_BUFFER_CNTL));
+	} else {
+		crit_point_ff.full = disp_drain_rate.full = 0; /* avoid gcc warning */
 	}
 
 	if (mode2) {
