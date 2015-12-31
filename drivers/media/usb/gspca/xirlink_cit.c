@@ -2765,12 +2765,14 @@ static void sd_stop0(struct gspca_dev *gspca_dev)
 		break;
 	}
 
+#if IS_ENABLED(CONFIG_INPUT)
 	/* If the last button state is pressed, release it now! */
-	if (IS_ENABLED(CONFIG_INPUT) && sd->button_state) {
+	if (sd->button_state) {
 		input_report_key(gspca_dev->input_dev, KEY_CAMERA, 0);
 		input_sync(gspca_dev->input_dev);
 		sd->button_state = 0;
 	}
+#endif
 }
 
 static u8 *cit_find_sof(struct gspca_dev *gspca_dev, u8 *data, int len)
