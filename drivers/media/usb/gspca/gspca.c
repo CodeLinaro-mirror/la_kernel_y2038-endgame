@@ -44,10 +44,8 @@
 
 #include "gspca.h"
 
-#if IS_ENABLED(CONFIG_INPUT)
 #include <linux/input.h>
 #include <linux/usb/input.h>
-#endif
 
 /* global values */
 #define DEF_NURBS 3		/* default number of URBs */
@@ -115,7 +113,6 @@ static const struct vm_operations_struct gspca_vm_ops = {
 /*
  * Input and interrupt endpoint handling functions
  */
-#if IS_ENABLED(CONFIG_INPUT)
 static void int_irq(struct urb *urb)
 {
 	struct gspca_dev *gspca_dev = (struct gspca_dev *) urb->context;
@@ -199,6 +196,9 @@ static int alloc_and_submit_int_urb(struct gspca_dev *gspca_dev,
 	void *buffer = NULL;
 	int ret = -EINVAL;
 
+	if (!IS_ENABLED(CONFIG_INPUT))
+		return;
+
 	buffer_len = le16_to_cpu(ep->wMaxPacketSize);
 	interval = ep->bInterval;
 	PDEBUG(D_CONF, "found int in endpoint: 0x%x, "
@@ -250,6 +250,9 @@ static void gspca_input_create_urb(struct gspca_dev *gspca_dev)
 	struct usb_endpoint_descriptor *ep;
 	int i;
 
+	if (!IS_ENABLED(CONFIG_INPUT))
+		return;
+
 	if (gspca_dev->sd_desc->int_pkt_scan)  {
 		intf = usb_ifnum_to_if(gspca_dev->dev, gspca_dev->iface);
 		intf_desc = intf->cur_altsetting;
@@ -269,6 +272,9 @@ static void gspca_input_destroy_urb(struct gspca_dev *gspca_dev)
 {
 	struct urb *urb;
 
+	if (!IS_ENABLED(CONFIG_INPUT))
+		return;
+
 	urb = gspca_dev->int_urb;
 	if (urb) {
 		gspca_dev->int_urb = NULL;
@@ -280,20 +286,6 @@ static void gspca_input_destroy_urb(struct gspca_dev *gspca_dev)
 		usb_free_urb(urb);
 	}
 }
-#else
-static inline void gspca_input_destroy_urb(struct gspca_dev *gspca_dev)
-{
-}
-
-static inline void gspca_input_create_urb(struct gspca_dev *gspca_dev)
-{
-}
-
-static inline int gspca_input_connect(struct gspca_dev *dev)
-{
-	return 0;
-}
-#endif
 
 /*
  * fill a video frame from an URB and resubmit
@@ -2125,10 +2117,8 @@ int gspca_dev_probe2(struct usb_interface *intf,
 
 	return 0;
 out:
-#if IS_ENABLED(CONFIG_INPUT)
-	if (gspca_dev->input_dev)
+	if (IS_ENABLED(CONFIG_INPUT) && gspca_dev->input_dev)
 		input_unregister_device(gspca_dev->input_dev);
-#endif
 	v4l2_ctrl_handler_free(gspca_dev->vdev.ctrl_handler);
 	kfree(gspca_dev->usb_buf);
 	kfree(gspca_dev);
@@ -2170,9 +2160,7 @@ EXPORT_SYMBOL(gspca_dev_probe);
 void gspca_disconnect(struct usb_interface *intf)
 {
 	struct gspca_dev *gspca_dev = usb_get_intfdata(intf);
-#if IS_ENABLED(CONFIG_INPUT)
 	struct input_dev *input_dev;
-#endif
 
 	PDEBUG(D_PROBE, "%s disconnect",
 		video_device_node_name(&gspca_dev->vdev));
@@ -2182,14 +2170,13 @@ void gspca_disconnect(struct usb_interface *intf)
 	gspca_dev->present = 0;
 	destroy_urbs(gspca_dev);
 
-#if IS_ENABLED(CONFIG_INPUT)
 	gspca_input_destroy_urb(gspca_dev);
 	input_dev = gspca_dev->input_dev;
-	if (input_dev) {
+	if (IS_ENABLED(CONFIG_INPUT) && input_dev) {
 		gspca_dev->input_dev = NULL;
 		input_unregister_device(input_dev);
 	}
-#endif
+
 	/* Free subdriver's streaming resources / stop sd workqueue(s) */
 	if (gspca_dev->sd_desc->stop0 && gspca_dev->streaming)
 		gspca_dev->sd_desc->stop0(gspca_dev);

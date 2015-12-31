@@ -4285,14 +4285,13 @@ static void sd_stop0(struct gspca_dev *gspca_dev)
 	if (sd->bridge == BRIDGE_W9968CF)
 		w9968cf_stop0(sd);
 
-#if IS_ENABLED(CONFIG_INPUT)
 	/* If the last button state is pressed, release it now! */
-	if (sd->snapshot_pressed) {
+	if (IS_ENABLED(CONFIG_INPUT) && sd->snapshot_pressed) {
 		input_report_key(gspca_dev->input_dev, KEY_CAMERA, 0);
 		input_sync(gspca_dev->input_dev);
 		sd->snapshot_pressed = 0;
 	}
-#endif
+
 	if (sd->bridge == BRIDGE_OV519)
 		reg_w(sd, OV519_R57_SNAPSHOT, 0x23);
 }
@@ -4302,10 +4301,12 @@ static void ov51x_handle_button(struct gspca_dev *gspca_dev, u8 state)
 	struct sd *sd = (struct sd *) gspca_dev;
 
 	if (sd->snapshot_pressed != state) {
-#if IS_ENABLED(CONFIG_INPUT)
-		input_report_key(gspca_dev->input_dev, KEY_CAMERA, state);
-		input_sync(gspca_dev->input_dev);
-#endif
+		if (IS_ENABLED(CONFIG_INPUT)) {
+			input_report_key(gspca_dev->input_dev, KEY_CAMERA,
+					 state);
+			input_sync(gspca_dev->input_dev);
+		}
+
 		if (state)
 			sd->snapshot_needs_reset = 1;
 
