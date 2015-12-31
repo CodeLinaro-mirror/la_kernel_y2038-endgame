@@ -3577,18 +3577,19 @@ static void qlt_do_ctio_completion(struct scsi_qla_host *vha, uint32_t handle,
 			    status, cmd->state, se_cmd);
 			break;
 
-		case CTIO_PORT_LOGGED_OUT:
 		case CTIO_PORT_UNAVAILABLE:
-		{
-			int logged_out = (status & 0xFFFF);
 			ql_dbg(ql_dbg_tgt_mgt, vha, 0xf059,
-			    "qla_target(%d): CTIO with %s status %x "
+			    "qla_target(%d): CTIO with PORT UNAVAILABLE status %x "
 			    "received (state %x, se_cmd %p)\n", vha->vp_idx,
-			    (logged_out == CTIO_PORT_LOGGED_OUT) ?
-			    "PORT LOGGED OUT" : "PORT UNAVAILABLE",
 			    status, cmd->state, se_cmd);
+			break;
 
-			if (logged_out && cmd->sess) {
+		case CTIO_PORT_LOGGED_OUT:
+			ql_dbg(ql_dbg_tgt_mgt, vha, 0xf059,
+			    "qla_target(%d): CTIO with PORT LOGGED OUT status %x "
+			    "received (state %x, se_cmd %p)\n", vha->vp_idx,
+			    status, cmd->state, se_cmd);
+			if (cmd->sess) {
 				/*
 				 * Session is already logged out, but we need
 				 * to notify initiator, who's not aware of this
@@ -3598,7 +3599,7 @@ static void qlt_do_ctio_completion(struct scsi_qla_host *vha, uint32_t handle,
 				qlt_schedule_sess_for_deletion(cmd->sess, true);
 			}
 			break;
-		}
+
 		case CTIO_SRR_RECEIVED:
 			ql_dbg(ql_dbg_tgt_mgt, vha, 0xf05a,
 			    "qla_target(%d): CTIO with SRR_RECEIVED"
