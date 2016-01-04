@@ -246,6 +246,8 @@ static int sun4i_ss_cipher_poll(struct ablkcipher_request *areq)
 				sg_miter_next(&mi);
 				oi = 0;
 			}
+		} else {
+			todo = 0;
 		}
 
 		spaces = readl(ss->base + SS_FCSR);
