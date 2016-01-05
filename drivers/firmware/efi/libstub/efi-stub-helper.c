@@ -30,7 +30,7 @@
  */
 #define EFI_READ_CHUNK_SIZE	(1024 * 1024)
 
-static unsigned long __chunk_size = EFI_READ_CHUNK_SIZE;
+unsigned long __chunk_size = EFI_READ_CHUNK_SIZE;
 
 /*
  * Allow the platform to override the allocation granularity: this allows

@@ -12,7 +12,8 @@ cflags-$(CONFIG_X86)		+= -m$(BITS) -D__KERNEL__ $(LINUX_INCLUDE) -O2 \
 
 cflags-$(CONFIG_ARM64)		:= $(subst -pg,,$(KBUILD_CFLAGS))
 cflags-$(CONFIG_ARM)		:= $(subst -pg,,$(KBUILD_CFLAGS)) \
-				   -fno-builtin -fpic $(call cc-option,-mno-single-pic-base,)
+				   -fno-builtin -fpic $(call cc-option,-mno-single-pic-base,) \
+				   -fvisibility=hidden
 
 cflags-$(CONFIG_EFI_ARMSTUB)	+= -I$(srctree)/scripts/dtc/libfdt
 
@@ -76,4 +77,4 @@ quiet_cmd_stubcopy = STUBCPY $@
 # explicitly by the decompressor linker script.
 #
 STUBCOPY_FLAGS-$(CONFIG_ARM)	+= --rename-section .data=.data.efistub
-STUBCOPY_RELOC-$(CONFIG_ARM)	:= R_ARM_ABS
+STUBCOPY_RELOC-$(CONFIG_ARM)	:= -E 'R_ARM_(ABS|GOT)'
