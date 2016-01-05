@@ -4477,17 +4477,15 @@ static void end_reshape(struct r10conf *conf)
 	conf->fullsync = 0;
 }
 
+extern void *__builtin_alloca(size_t size);
+
 static int handle_reshape_read_error(struct mddev *mddev,
 				     struct r10bio *r10_bio)
 {
 	/* Use sync reads to get the blocks from somewhere else */
 	int sectors = r10_bio->sectors;
 	struct r10conf *conf = mddev->private;
-	struct {
-		struct r10bio r10_bio;
-		struct r10dev devs[conf->copies];
-	} on_stack;
-	struct r10bio *r10b = &on_stack.r10_bio;
+	struct r10bio *r10b = __builtin_alloca(sizeof(*r10b) + sizeof(struct r10dev) * conf->copies);
 	int slot = 0;
 	int idx = 0;
 	struct bio_vec *bvec = r10_bio->master_bio->bi_io_vec;
