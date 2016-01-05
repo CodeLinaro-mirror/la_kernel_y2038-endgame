@@ -73,53 +73,77 @@ void __raw_readsl(const volatile void __iomem *addr, void *data, int longlen);
 #define __raw_writew __raw_writew
 static inline void __raw_writew(u16 val, volatile void __iomem *addr)
 {
+#ifdef __clang__
+	*(volatile u16 *)addr = val;
+#else
 	asm volatile("strh %1, %0"
 		     : : "Q" (*(volatile u16 __force *)addr), "r" (val));
+#endif
 }
 
 #define __raw_readw __raw_readw
 static inline u16 __raw_readw(const volatile void __iomem *addr)
 {
+#ifdef __clang__
+	return *(volatile u16 *)addr;
+#else
 	u16 val;
 	asm volatile("ldrh %0, %1"
 		     : "=r" (val)
 		     : "Q" (*(volatile u16 __force *)addr));
 	return val;
+#endif
 }
 #endif
 
 #define __raw_writeb __raw_writeb
 static inline void __raw_writeb(u8 val, volatile void __iomem *addr)
 {
+#ifdef __clang__
+	*(volatile u8 *)addr = val;
+#else
 	asm volatile("strb %1, %0"
 		     : : "Qo" (*(volatile u8 __force *)addr), "r" (val));
+#endif
 }
 
 #define __raw_writel __raw_writel
 static inline void __raw_writel(u32 val, volatile void __iomem *addr)
 {
+#ifdef __clang__
+	*(volatile u32 *)addr = val;
+#else
 	asm volatile("str %1, %0"
 		     : : "Qo" (*(volatile u32 __force *)addr), "r" (val));
+#endif
 }
 
 #define __raw_readb __raw_readb
 static inline u8 __raw_readb(const volatile void __iomem *addr)
 {
+#ifdef __clang__
+	return *(volatile u8 *)addr;
+#else
 	u8 val;
 	asm volatile("ldrb %0, %1"
 		     : "=r" (val)
 		     : "Qo" (*(volatile u8 __force *)addr));
 	return val;
+#endif
 }
 
 #define __raw_readl __raw_readl
 static inline u32 __raw_readl(const volatile void __iomem *addr)
 {
+#ifdef __clang__
+	return *(volatile u32 *)addr;
+#else
 	u32 val;
 	asm volatile("ldr %0, %1"
 		     : "=r" (val)
 		     : "Qo" (*(volatile u32 __force *)addr));
 	return val;
+#endif
 }
 
 /*
