@@ -664,8 +664,8 @@ static struct futex_q *futex_top_waiter(struct futex_hash_bucket *hb,
 	return NULL;
 }
 
-static int cmpxchg_futex_value_locked(u32 *curval, u32 __user *uaddr,
-				      u32 uval, u32 newval)
+static int noinline cmpxchg_futex_value_locked(u32 *curval, u32 __user *uaddr,
+					       u32 uval, u32 newval)
 {
 	int ret;
 
