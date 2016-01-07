@@ -238,37 +238,20 @@ static int i2cdev_check_addr(struct i2c_adapter *adapter, unsigned int addr)
 	return result;
 }
 
-static noinline int i2cdev_ioctl_rdwr(struct i2c_client *client,
-		unsigned long arg)
+static int __i2cdev_ioctl_rdwr(struct i2c_client *client,
+			       struct i2c_msg *rdwr_pa, u32 nmsgs)
 {
-	struct i2c_rdwr_ioctl_data rdwr_arg;
-	struct i2c_msg *rdwr_pa;
+	int i;
+	int res = 0;
+
 	u8 __user **data_ptrs;
-	int i, res;
-
-	if (copy_from_user(&rdwr_arg,
-			   (struct i2c_rdwr_ioctl_data __user *)arg,
-			   sizeof(rdwr_arg)))
-		return -EFAULT;
-
-	/* Put an arbitrary limit on the number of messages that can
-	 * be sent at once */
-	if (rdwr_arg.nmsgs > I2C_RDWR_IOCTL_MAX_MSGS)
-		return -EINVAL;
-
-	rdwr_pa = memdup_user(rdwr_arg.msgs,
-			      rdwr_arg.nmsgs * sizeof(struct i2c_msg));
-	if (IS_ERR(rdwr_pa))
-		return PTR_ERR(rdwr_pa);
-
-	data_ptrs = kmalloc(rdwr_arg.nmsgs * sizeof(u8 __user *), GFP_KERNEL);
+	data_ptrs = kmalloc(nmsgs * sizeof(u8 __user *), GFP_KERNEL);
 	if (data_ptrs == NULL) {
 		kfree(rdwr_pa);
 		return -ENOMEM;
 	}
 
-	res = 0;
-	for (i = 0; i < rdwr_arg.nmsgs; i++) {
+	for (i = 0; i < nmsgs; i++) {
 		/* Limit the size of the message to a sane amount */
 		if (rdwr_pa[i].len > 8192) {
 			res = -EINVAL;
@@ -310,11 +293,10 @@ static noinline int i2cdev_ioctl_rdwr(struct i2c_client *client,
 		for (j = 0; j < i; ++j)
 			kfree(rdwr_pa[j].buf);
 		kfree(data_ptrs);
-		kfree(rdwr_pa);
 		return res;
 	}
 
-	res = i2c_transfer(client->adapter, rdwr_pa, rdwr_arg.nmsgs);
+	res = i2c_transfer(client->adapter, rdwr_pa, nmsgs);
 	while (i-- > 0) {
 		if (res >= 0 && (rdwr_pa[i].flags & I2C_M_RD)) {
 			if (copy_to_user(data_ptrs[i], rdwr_pa[i].buf,
@@ -324,6 +306,34 @@ static noinline int i2cdev_ioctl_rdwr(struct i2c_client *client,
 		kfree(rdwr_pa[i].buf);
 	}
 	kfree(data_ptrs);
+
+	return res;
+}
+
+static noinline int i2cdev_ioctl_rdwr(struct i2c_client *client,
+		unsigned long arg)
+{
+	struct i2c_rdwr_ioctl_data rdwr_arg;
+	struct i2c_msg *rdwr_pa;
+	int res;
+
+	if (copy_from_user(&rdwr_arg,
+			   (struct i2c_rdwr_ioctl_data __user *)arg,
+			   sizeof(rdwr_arg)))
+		return -EFAULT;
+
+	/* Put an arbitrary limit on the number of messages that can
+	 * be sent at once */
+	if (rdwr_arg.nmsgs > I2C_RDWR_IOCTL_MAX_MSGS)
+		return -EINVAL;
+
+	rdwr_pa = memdup_user(rdwr_arg.msgs,
+			      rdwr_arg.nmsgs * sizeof(struct i2c_msg));
+	if (IS_ERR(rdwr_pa))
+		return PTR_ERR(rdwr_pa);
+
+	res = __i2cdev_ioctl_rdwr(client, rdwr_pa, rdwr_arg.nmsgs);
+
 	kfree(rdwr_pa);
 	return res;
 }
@@ -503,6 +513,45 @@ struct i2c_rdwr_ioctl_data32 {
 	u32 nmsgs;
 };
 
+static noinline int i2cdev_compat_ioctl_rdwr(struct i2c_client *client,
+					     struct i2c_rdwr_ioctl_data32 __user * arg)
+{
+	struct i2c_rdwr_ioctl_data32 rdwr_arg;
+	struct i2c_msg32 __user *rdwr_pa32;
+	struct i2c_msg *rdwr_pa;
+	compat_caddr_t datap;
+	int i, res;
+
+	if (copy_from_user(&rdwr_arg, arg, sizeof(rdwr_arg)))
+		return -EFAULT;
+
+	/* Put an arbitrary limit on the number of messages that can
+	 * be sent at once */
+	if (rdwr_arg.nmsgs > I2C_RDWR_IOCTL_MAX_MSGS)
+		return -EINVAL;
+
+	rdwr_pa = kcalloc(rdwr_arg.nmsgs, sizeof (struct i2c_msg), GFP_KERNEL);
+	if (IS_ERR(rdwr_pa))
+		return PTR_ERR(rdwr_pa);
+
+	res = 0;
+	rdwr_pa32 = compat_ptr(rdwr_arg.msgs);
+	for (i = 0; i < rdwr_arg.nmsgs; i++) {
+		if (copy_from_user(&rdwr_pa[i].addr, &rdwr_pa32[i].addr, 3*sizeof(u16)))
+			res = -EFAULT;
+		if (get_user(datap, &rdwr_pa32[i].buf))
+			res = -EFAULT;
+		rdwr_pa[i].buf = compat_ptr(datap);
+	}
+
+	if (!res)
+		res = __i2cdev_ioctl_rdwr(client, rdwr_pa, rdwr_arg.nmsgs);
+
+	kfree(rdwr_pa);
+	kfree(rdwr_pa32);
+	return res;
+}
+
 struct i2c_smbus_ioctl_data32 {
 	u8 read_write;
 	u8 command;
@@ -510,47 +559,6 @@ struct i2c_smbus_ioctl_data32 {
 	compat_caddr_t data; /* union i2c_smbus_data *data */
 };
 
-struct i2c_rdwr_aligned {
-	struct i2c_rdwr_ioctl_data cmd;
-	struct i2c_msg msgs[0];
-};
-
-static int i2cdev_compat_ioctl_rdwr(struct i2c_client *client,
-				    struct i2c_rdwr_ioctl_data32 __user *udata)
-{
-	struct i2c_rdwr_aligned		__user *tdata;
-	struct i2c_msg			__user *tmsgs;
-	struct i2c_msg32		__user *umsgs;
-	compat_caddr_t			datap;
-	u32				nmsgs;
-	int				i;
-
-	if (get_user(nmsgs, &udata->nmsgs))
-		return -EFAULT;
-	if (nmsgs > I2C_RDWR_IOCTL_MAX_MSGS)
-		return -EINVAL;
-
-	if (get_user(datap, &udata->msgs))
-		return -EFAULT;
-	umsgs = compat_ptr(datap);
-
-	tdata = compat_alloc_user_space(sizeof(*tdata) +
-				      nmsgs * sizeof(struct i2c_msg));
-	tmsgs = &tdata->msgs[0];
-
-	if (put_user(nmsgs, &tdata->cmd.nmsgs) ||
-	    put_user(tmsgs, &tdata->cmd.msgs))
-		return -EFAULT;
-
-	for (i = 0; i < nmsgs; i++) {
-		if (copy_in_user(&tmsgs[i].addr, &umsgs[i].addr, 3*sizeof(u16)))
-			return -EFAULT;
-		if (get_user(datap, &umsgs[i].buf) ||
-		    put_user(compat_ptr(datap), &tmsgs[i].buf))
-			return -EFAULT;
-	}
-	return i2cdev_ioctl_rdwr(client, (unsigned long)tdata);
-}
 
 static int i2cdev_compat_ioctl_smbus(struct i2c_client *client,
 				     struct i2c_smbus_ioctl_data32 __user *udata)
