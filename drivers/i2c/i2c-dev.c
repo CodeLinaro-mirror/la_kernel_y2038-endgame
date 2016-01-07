@@ -481,22 +481,6 @@ static long i2cdev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 #ifdef CONFIG_COMPAT
 /* compat ioctl handling */
-static int w_long(struct file *file,
-		unsigned int cmd, compat_ulong_t __user *argp)
-{
-	int err;
-	unsigned long __user *valp = compat_alloc_user_space(sizeof(*valp));
-
-	if (valp == NULL)
-		return -EFAULT;
-	err = i2cdev_ioctl(file, cmd, (unsigned long)valp);
-	if (err)
-		return err;
-	if (convert_in_user(valp, argp))
-		return -EFAULT;
-	return 0;
-}
-
 struct i2c_msg32 {
 	u16 addr;
 	u16 flags;
@@ -521,8 +505,8 @@ struct i2c_rdwr_aligned {
 	struct i2c_msg msgs[0];
 };
 
-static int do_i2c_rdwr_ioctl(struct file *file, unsigned int cmd,
-			struct i2c_rdwr_ioctl_data32    __user *udata)
+static int i2cdev_compat_ioctl_rdwr(struct i2c_client *client,
+				    struct i2c_rdwr_ioctl_data32 __user *udata)
 {
 	struct i2c_rdwr_aligned		__user *tdata;
 	struct i2c_msg			__user *tmsgs;
@@ -555,11 +539,11 @@ static int do_i2c_rdwr_ioctl(struct file *file, unsigned int cmd,
 		    put_user(compat_ptr(datap), &tmsgs[i].buf))
 			return -EFAULT;
 	}
-	return i2cdev_ioctl(file, cmd, (unsigned long)tdata);
+	return i2cdev_ioctl_rdwr(client, (unsigned long)tdata);
 }
 
-static int do_i2c_smbus_ioctl(struct file *file, unsigned int cmd,
-			struct i2c_smbus_ioctl_data32   __user *udata)
+static int i2cdev_compat_ioctl_smbus(struct i2c_client *client,
+				     struct i2c_smbus_ioctl_data32 __user *udata)
 {
 	struct i2c_smbus_ioctl_data	__user *tdata;
 	compat_caddr_t			datap;
@@ -581,12 +565,14 @@ static int do_i2c_smbus_ioctl(struct file *file, unsigned int cmd,
 	    __put_user(compat_ptr(datap), &tdata->data))
 		return -EFAULT;
 
-	return i2cdev_ioctl(file, cmd, (unsigned long)tdata);
+	return i2cdev_ioctl_smbus(client, (unsigned long)tdata);
 }
 
 static long i2cdev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	void __user *argp = compat_ptr(arg);
+	struct i2c_client *client = file->private_data;
+	unsigned long funcs;
 
 	switch (cmd) {
 	case I2C_SLAVE:
@@ -597,11 +583,12 @@ static long i2cdev_compat_ioctl(struct file *file, unsigned int cmd, unsigned lo
 	case I2C_TIMEOUT:
 		return i2cdev_ioctl(file, cmd, arg);
 	case I2C_FUNCS:
-		return w_long(file, cmd, argp);
+		funcs = i2c_get_functionality(client->adapter);
+		return put_user(funcs, (compat_ulong_t __user *)arg);
 	case I2C_RDWR:
-		return do_i2c_rdwr_ioctl(file, cmd, argp);
+		return i2cdev_compat_ioctl_rdwr(client, argp);
 	case I2C_SMBUS:
-		return do_i2c_smbus_ioctl(file, cmd, argp);
+		return i2cdev_compat_ioctl_smbus(client, argp);
 	default:
 		return -ENOTTY;
 	}
