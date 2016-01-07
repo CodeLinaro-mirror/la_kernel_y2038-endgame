@@ -326,89 +326,97 @@ static noinline int i2cdev_ioctl_rdwr(struct i2c_client *client,
 	return res;
 }
 
-static noinline int i2cdev_ioctl_smbus(struct i2c_client *client,
-		unsigned long arg)
+static noinline int __i2cdev_ioctl_smbus(struct i2c_client *client,
+					 struct i2c_smbus_ioctl_data *data_arg)
 {
-	struct i2c_smbus_ioctl_data data_arg;
 	union i2c_smbus_data temp;
 	int datasize, res;
 
-	if (copy_from_user(&data_arg,
-			   (struct i2c_smbus_ioctl_data __user *) arg,
-			   sizeof(struct i2c_smbus_ioctl_data)))
-		return -EFAULT;
-	if ((data_arg.size != I2C_SMBUS_BYTE) &&
-	    (data_arg.size != I2C_SMBUS_QUICK) &&
-	    (data_arg.size != I2C_SMBUS_BYTE_DATA) &&
-	    (data_arg.size != I2C_SMBUS_WORD_DATA) &&
-	    (data_arg.size != I2C_SMBUS_PROC_CALL) &&
-	    (data_arg.size != I2C_SMBUS_BLOCK_DATA) &&
-	    (data_arg.size != I2C_SMBUS_I2C_BLOCK_BROKEN) &&
-	    (data_arg.size != I2C_SMBUS_I2C_BLOCK_DATA) &&
-	    (data_arg.size != I2C_SMBUS_BLOCK_PROC_CALL)) {
+	if ((data_arg->size != I2C_SMBUS_BYTE) &&
+	    (data_arg->size != I2C_SMBUS_QUICK) &&
+	    (data_arg->size != I2C_SMBUS_BYTE_DATA) &&
+	    (data_arg->size != I2C_SMBUS_WORD_DATA) &&
+	    (data_arg->size != I2C_SMBUS_PROC_CALL) &&
+	    (data_arg->size != I2C_SMBUS_BLOCK_DATA) &&
+	    (data_arg->size != I2C_SMBUS_I2C_BLOCK_BROKEN) &&
+	    (data_arg->size != I2C_SMBUS_I2C_BLOCK_DATA) &&
+	    (data_arg->size != I2C_SMBUS_BLOCK_PROC_CALL)) {
 		dev_dbg(&client->adapter->dev,
 			"size out of range (%x) in ioctl I2C_SMBUS.\n",
-			data_arg.size);
+			data_arg->size);
 		return -EINVAL;
 	}
 	/* Note that I2C_SMBUS_READ and I2C_SMBUS_WRITE are 0 and 1,
 	   so the check is valid if size==I2C_SMBUS_QUICK too. */
-	if ((data_arg.read_write != I2C_SMBUS_READ) &&
-	    (data_arg.read_write != I2C_SMBUS_WRITE)) {
+	if ((data_arg->read_write != I2C_SMBUS_READ) &&
+	    (data_arg->read_write != I2C_SMBUS_WRITE)) {
 		dev_dbg(&client->adapter->dev,
 			"read_write out of range (%x) in ioctl I2C_SMBUS.\n",
-			data_arg.read_write);
+			data_arg->read_write);
 		return -EINVAL;
 	}
 
 	/* Note that command values are always valid! */
 
-	if ((data_arg.size == I2C_SMBUS_QUICK) ||
-	    ((data_arg.size == I2C_SMBUS_BYTE) &&
-	    (data_arg.read_write == I2C_SMBUS_WRITE)))
+	if ((data_arg->size == I2C_SMBUS_QUICK) ||
+	    ((data_arg->size == I2C_SMBUS_BYTE) &&
+	    (data_arg->read_write == I2C_SMBUS_WRITE)))
 		/* These are special: we do not use data */
 		return i2c_smbus_xfer(client->adapter, client->addr,
-				      client->flags, data_arg.read_write,
-				      data_arg.command, data_arg.size, NULL);
+				      client->flags, data_arg->read_write,
+				      data_arg->command, data_arg->size, NULL);
 
-	if (data_arg.data == NULL) {
+	if (data_arg->data == NULL) {
 		dev_dbg(&client->adapter->dev,
 			"data is NULL pointer in ioctl I2C_SMBUS.\n");
 		return -EINVAL;
 	}
 
-	if ((data_arg.size == I2C_SMBUS_BYTE_DATA) ||
-	    (data_arg.size == I2C_SMBUS_BYTE))
-		datasize = sizeof(data_arg.data->byte);
-	else if ((data_arg.size == I2C_SMBUS_WORD_DATA) ||
-		 (data_arg.size == I2C_SMBUS_PROC_CALL))
-		datasize = sizeof(data_arg.data->word);
+	if ((data_arg->size == I2C_SMBUS_BYTE_DATA) ||
+	    (data_arg->size == I2C_SMBUS_BYTE))
+		datasize = sizeof(data_arg->data->byte);
+	else if ((data_arg->size == I2C_SMBUS_WORD_DATA) ||
+		 (data_arg->size == I2C_SMBUS_PROC_CALL))
+		datasize = sizeof(data_arg->data->word);
 	else /* size == smbus block, i2c block, or block proc. call */
-		datasize = sizeof(data_arg.data->block);
+		datasize = sizeof(data_arg->data->block);
 
-	if ((data_arg.size == I2C_SMBUS_PROC_CALL) ||
-	    (data_arg.size == I2C_SMBUS_BLOCK_PROC_CALL) ||
-	    (data_arg.size == I2C_SMBUS_I2C_BLOCK_DATA) ||
-	    (data_arg.read_write == I2C_SMBUS_WRITE)) {
-		if (copy_from_user(&temp, data_arg.data, datasize))
+	if ((data_arg->size == I2C_SMBUS_PROC_CALL) ||
+	    (data_arg->size == I2C_SMBUS_BLOCK_PROC_CALL) ||
+	    (data_arg->size == I2C_SMBUS_I2C_BLOCK_DATA) ||
+	    (data_arg->read_write == I2C_SMBUS_WRITE)) {
+		if (copy_from_user(&temp, data_arg->data, datasize))
 			return -EFAULT;
 	}
-	if (data_arg.size == I2C_SMBUS_I2C_BLOCK_BROKEN) {
+	if (data_arg->size == I2C_SMBUS_I2C_BLOCK_BROKEN) {
 		/* Convert old I2C block commands to the new
 		   convention. This preserves binary compatibility. */
-		data_arg.size = I2C_SMBUS_I2C_BLOCK_DATA;
-		if (data_arg.read_write == I2C_SMBUS_READ)
+		data_arg->size = I2C_SMBUS_I2C_BLOCK_DATA;
+		if (data_arg->read_write == I2C_SMBUS_READ)
 			temp.block[0] = I2C_SMBUS_BLOCK_MAX;
 	}
 	res = i2c_smbus_xfer(client->adapter, client->addr, client->flags,
-	      data_arg.read_write, data_arg.command, data_arg.size, &temp);
-	if (!res && ((data_arg.size == I2C_SMBUS_PROC_CALL) ||
-		     (data_arg.size == I2C_SMBUS_BLOCK_PROC_CALL) ||
-		     (data_arg.read_write == I2C_SMBUS_READ))) {
-		if (copy_to_user(data_arg.data, &temp, datasize))
+	      data_arg->read_write, data_arg->command, data_arg->size, &temp);
+	if (!res && ((data_arg->size == I2C_SMBUS_PROC_CALL) ||
+		     (data_arg->size == I2C_SMBUS_BLOCK_PROC_CALL) ||
+		     (data_arg->read_write == I2C_SMBUS_READ))) {
+		if (copy_to_user(data_arg->data, &temp, datasize))
 			return -EFAULT;
 	}
 	return res;
+}
+
+static int i2cdev_ioctl_smbus(struct i2c_client *client,
+			      unsigned long arg)
+{
+	struct i2c_smbus_ioctl_data data_arg;
+
+	if (copy_from_user(&data_arg,
+			   (struct i2c_smbus_ioctl_data __user *) arg,
+			   sizeof(struct i2c_smbus_ioctl_data)))
+		return -EFAULT;
+
+	return __i2cdev_ioctl_smbus(client, &data_arg);
 }
 
 static long i2cdev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
@@ -545,27 +553,20 @@ static int i2cdev_compat_ioctl_rdwr(struct i2c_client *client,
 static int i2cdev_compat_ioctl_smbus(struct i2c_client *client,
 				     struct i2c_smbus_ioctl_data32 __user *udata)
 {
-	struct i2c_smbus_ioctl_data	__user *tdata;
-	compat_caddr_t			datap;
+	struct i2c_smbus_ioctl_data data;
+	struct i2c_smbus_ioctl_data32 tmp;
 
-	tdata = compat_alloc_user_space(sizeof(*tdata));
-	if (tdata == NULL)
-		return -ENOMEM;
-	if (!access_ok(VERIFY_WRITE, tdata, sizeof(*tdata)))
+	if (copy_from_user(&tmp, udata, sizeof(tmp)))
 		return -EFAULT;
 
-	if (!access_ok(VERIFY_READ, udata, sizeof(*udata)))
-		return -EFAULT;
+	data = (struct i2c_smbus_ioctl_data) {
+		.read_write	= tmp.read_write,
+		.command	= tmp.command,
+		.size		= tmp.size,
+		.data		= compat_ptr(tmp.data),
+	};
 
-	if (__copy_in_user(&tdata->read_write, &udata->read_write, 2 * sizeof(u8)))
-		return -EFAULT;
-	if (__copy_in_user(&tdata->size, &udata->size, 2 * sizeof(u32)))
-		return -EFAULT;
-	if (__get_user(datap, &udata->data) ||
-	    __put_user(compat_ptr(datap), &tdata->data))
-		return -EFAULT;
-
-	return i2cdev_ioctl_smbus(client, (unsigned long)tdata);
+	return __i2cdev_ioctl_smbus(client, &data);
 }
 
 static long i2cdev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
