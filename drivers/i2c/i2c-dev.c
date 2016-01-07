@@ -24,6 +24,7 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/compat.h>
 #include <linux/device.h>
 #include <linux/notifier.h>
 #include <linux/fs.h>
@@ -478,6 +479,135 @@ static long i2cdev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	return 0;
 }
 
+#ifdef CONFIG_COMPAT
+/* compat ioctl handling */
+static int w_long(struct file *file,
+		unsigned int cmd, compat_ulong_t __user *argp)
+{
+	int err;
+	unsigned long __user *valp = compat_alloc_user_space(sizeof(*valp));
+
+	if (valp == NULL)
+		return -EFAULT;
+	err = i2cdev_ioctl(file, cmd, (unsigned long)valp);
+	if (err)
+		return err;
+	if (convert_in_user(valp, argp))
+		return -EFAULT;
+	return 0;
+}
+
+struct i2c_msg32 {
+	u16 addr;
+	u16 flags;
+	u16 len;
+	compat_caddr_t buf;
+};
+
+struct i2c_rdwr_ioctl_data32 {
+	compat_caddr_t msgs; /* struct i2c_msg __user *msgs */
+	u32 nmsgs;
+};
+
+struct i2c_smbus_ioctl_data32 {
+	u8 read_write;
+	u8 command;
+	u32 size;
+	compat_caddr_t data; /* union i2c_smbus_data *data */
+};
+
+struct i2c_rdwr_aligned {
+	struct i2c_rdwr_ioctl_data cmd;
+	struct i2c_msg msgs[0];
+};
+
+static int do_i2c_rdwr_ioctl(struct file *file, unsigned int cmd,
+			struct i2c_rdwr_ioctl_data32    __user *udata)
+{
+	struct i2c_rdwr_aligned		__user *tdata;
+	struct i2c_msg			__user *tmsgs;
+	struct i2c_msg32		__user *umsgs;
+	compat_caddr_t			datap;
+	u32				nmsgs;
+	int				i;
+
+	if (get_user(nmsgs, &udata->nmsgs))
+		return -EFAULT;
+	if (nmsgs > I2C_RDWR_IOCTL_MAX_MSGS)
+		return -EINVAL;
+
+	if (get_user(datap, &udata->msgs))
+		return -EFAULT;
+	umsgs = compat_ptr(datap);
+
+	tdata = compat_alloc_user_space(sizeof(*tdata) +
+				      nmsgs * sizeof(struct i2c_msg));
+	tmsgs = &tdata->msgs[0];
+
+	if (put_user(nmsgs, &tdata->cmd.nmsgs) ||
+	    put_user(tmsgs, &tdata->cmd.msgs))
+		return -EFAULT;
+
+	for (i = 0; i < nmsgs; i++) {
+		if (copy_in_user(&tmsgs[i].addr, &umsgs[i].addr, 3*sizeof(u16)))
+			return -EFAULT;
+		if (get_user(datap, &umsgs[i].buf) ||
+		    put_user(compat_ptr(datap), &tmsgs[i].buf))
+			return -EFAULT;
+	}
+	return i2cdev_ioctl(file, cmd, (unsigned long)tdata);
+}
+
+static int do_i2c_smbus_ioctl(struct file *file, unsigned int cmd,
+			struct i2c_smbus_ioctl_data32   __user *udata)
+{
+	struct i2c_smbus_ioctl_data	__user *tdata;
+	compat_caddr_t			datap;
+
+	tdata = compat_alloc_user_space(sizeof(*tdata));
+	if (tdata == NULL)
+		return -ENOMEM;
+	if (!access_ok(VERIFY_WRITE, tdata, sizeof(*tdata)))
+		return -EFAULT;
+
+	if (!access_ok(VERIFY_READ, udata, sizeof(*udata)))
+		return -EFAULT;
+
+	if (__copy_in_user(&tdata->read_write, &udata->read_write, 2 * sizeof(u8)))
+		return -EFAULT;
+	if (__copy_in_user(&tdata->size, &udata->size, 2 * sizeof(u32)))
+		return -EFAULT;
+	if (__get_user(datap, &udata->data) ||
+	    __put_user(compat_ptr(datap), &tdata->data))
+		return -EFAULT;
+
+	return i2cdev_ioctl(file, cmd, (unsigned long)tdata);
+}
+
+static long i2cdev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
+	void __user *argp = compat_ptr(arg);
+
+	switch (cmd) {
+	case I2C_SLAVE:
+	case I2C_SLAVE_FORCE:
+	case I2C_TENBIT:
+	case I2C_PEC:
+	case I2C_RETRIES:
+	case I2C_TIMEOUT:
+		return i2cdev_ioctl(file, cmd, arg);
+	case I2C_FUNCS:
+		return w_long(file, cmd, argp);
+	case I2C_RDWR:
+		return do_i2c_rdwr_ioctl(file, cmd, argp);
+	case I2C_SMBUS:
+		return do_i2c_smbus_ioctl(file, cmd, argp);
+	default:
+		return -ENOTTY;
+	}
+}
+#endif
+
 static int i2cdev_open(struct inode *inode, struct file *file)
 {
 	unsigned int minor = iminor(inode);
@@ -530,6 +660,9 @@ static const struct file_operations i2cdev_fops = {
 	.read		= i2cdev_read,
 	.write		= i2cdev_write,
 	.unlocked_ioctl	= i2cdev_ioctl,
+#ifdef CONFIG_COMPAT
+	.compat_ioctl	= i2cdev_compat_ioctl,
+#endif
 	.open		= i2cdev_open,
 	.release	= i2cdev_release,
 };
