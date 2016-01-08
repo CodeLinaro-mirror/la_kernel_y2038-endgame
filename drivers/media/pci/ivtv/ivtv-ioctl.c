@@ -1620,6 +1620,52 @@ static int ivtv_try_decoder_cmd(struct file *file, void *fh, struct v4l2_decoder
 	return ivtv_video_command(itv, id, dec, true);
 }
 
+static int ivtv_get_event(struct ivtv *itv, int nonblocking, struct video_event *ev)
+{
+	DEFINE_WAIT(wait);
+
+	IVTV_DEBUG_IOCTL("VIDEO_GET_EVENT\n");
+	if (!(itv->v4l2_cap & V4L2_CAP_VIDEO_OUTPUT))
+		return -EINVAL;
+	memset(ev, 0, sizeof(*ev));
+	set_bit(IVTV_F_I_EV_VSYNC_ENABLED, &itv->i_flags);
+
+	while (1) {
+		if (test_and_clear_bit(IVTV_F_I_EV_DEC_STOPPED, &itv->i_flags))
+			ev->type = VIDEO_EVENT_DECODER_STOPPED;
+		else if (test_and_clear_bit(IVTV_F_I_EV_VSYNC, &itv->i_flags)) {
+			ev->type = VIDEO_EVENT_VSYNC;
+			ev->u.vsync_field = test_bit(IVTV_F_I_EV_VSYNC_FIELD, &itv->i_flags) ?
+				VIDEO_VSYNC_FIELD_ODD : VIDEO_VSYNC_FIELD_EVEN;
+			if (itv->output_mode == OUT_UDMA_YUV &&
+				(itv->yuv_info.lace_mode & IVTV_YUV_MODE_MASK) ==
+							IVTV_YUV_MODE_PROGRESSIVE) {
+				ev->u.vsync_field = VIDEO_VSYNC_FIELD_PROGRESSIVE;
+			}
+		}
+		if (ev->type)
+			return 0;
+		if (nonblocking)
+			return -EAGAIN;
+		/* Wait for event. Note that serialize_lock is locked,
+		   so to allow other processes to access the driver while
+		   we are waiting unlock first and later lock again. */
+		mutex_unlock(&itv->serialize_lock);
+		prepare_to_wait(&itv->event_waitq, &wait, TASK_INTERRUPTIBLE);
+		if (!test_bit(IVTV_F_I_EV_DEC_STOPPED, &itv->i_flags) &&
+		    !test_bit(IVTV_F_I_EV_VSYNC, &itv->i_flags))
+			schedule();
+		finish_wait(&itv->event_waitq, &wait);
+		mutex_lock(&itv->serialize_lock);
+		if (signal_pending(current)) {
+			/* return if a signal was received */
+			IVTV_DEBUG_INFO("User stopped wait for event\n");
+			return -EINTR;
+		}
+	}
+	return 0;
+}
+
 static int ivtv_decoder_ioctls(struct file *filp, unsigned int cmd, void *arg)
 {
 	struct ivtv_open_id *id = fh2id(filp->private_data);
@@ -1738,51 +1784,21 @@ static int ivtv_decoder_ioctls(struct file *filp, unsigned int cmd, void *arg)
 		return ivtv_video_command(itv, id, dc, try);
 	}
 
-	case VIDEO_GET_EVENT: {
-		struct video_event *ev = arg;
-		DEFINE_WAIT(wait);
+	case VIDEO_GET_EVENT:
+		return ivtv_get_event(itv, nonblocking, arg);
 
-		IVTV_DEBUG_IOCTL("VIDEO_GET_EVENT\n");
-		if (!(itv->v4l2_cap & V4L2_CAP_VIDEO_OUTPUT))
-			return -EINVAL;
-		memset(ev, 0, sizeof(*ev));
-		set_bit(IVTV_F_I_EV_VSYNC_ENABLED, &itv->i_flags);
+#ifdef CONFIG_COMPAT
+	case VIDEO_GET_EVENT32: {
+		struct video_event ev;
+		struct video_event_32 *ev32 = arg;
+		int ret;
 
-		while (1) {
-			if (test_and_clear_bit(IVTV_F_I_EV_DEC_STOPPED, &itv->i_flags))
-				ev->type = VIDEO_EVENT_DECODER_STOPPED;
-			else if (test_and_clear_bit(IVTV_F_I_EV_VSYNC, &itv->i_flags)) {
-				ev->type = VIDEO_EVENT_VSYNC;
-				ev->u.vsync_field = test_bit(IVTV_F_I_EV_VSYNC_FIELD, &itv->i_flags) ?
-					VIDEO_VSYNC_FIELD_ODD : VIDEO_VSYNC_FIELD_EVEN;
-				if (itv->output_mode == OUT_UDMA_YUV &&
-					(itv->yuv_info.lace_mode & IVTV_YUV_MODE_MASK) ==
-								IVTV_YUV_MODE_PROGRESSIVE) {
-					ev->u.vsync_field = VIDEO_VSYNC_FIELD_PROGRESSIVE;
-				}
-			}
-			if (ev->type)
-				return 0;
-			if (nonblocking)
-				return -EAGAIN;
-			/* Wait for event. Note that serialize_lock is locked,
-			   so to allow other processes to access the driver while
-			   we are waiting unlock first and later lock again. */
-			mutex_unlock(&itv->serialize_lock);
-			prepare_to_wait(&itv->event_waitq, &wait, TASK_INTERRUPTIBLE);
-			if (!test_bit(IVTV_F_I_EV_DEC_STOPPED, &itv->i_flags) &&
-			    !test_bit(IVTV_F_I_EV_VSYNC, &itv->i_flags))
-				schedule();
-			finish_wait(&itv->event_waitq, &wait);
-			mutex_lock(&itv->serialize_lock);
-			if (signal_pending(current)) {
-				/* return if a signal was received */
-				IVTV_DEBUG_INFO("User stopped wait for event\n");
-				return -EINTR;
-			}
-		}
-		break;
+		ret = ivtv_get_event(itv, nonblocking, &ev);
+		ev32->type = ev.type;
+		ev32->timestamp = (compat_ulong_t)ev.timestamp;
+		ev32->u.size = ev.u.size;
 	}
+#endif
 
 	case VIDEO_SELECT_SOURCE:
 		IVTV_DEBUG_IOCTL("VIDEO_SELECT_SOURCE\n");
@@ -1867,6 +1883,35 @@ static long ivtv_default(struct file *file, void *fh, bool valid_prio,
 	}
 	return 0;
 }
+
+#ifdef CONFIG_COMPAT
+int ivtv_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg);
+{
+	switch (cmd) {
+	case AUDIO_BILINGUAL_CHANNEL_SELECT:
+	case AUDIO_CHANNEL_SELECT:
+	case AUDIO_SET_MUTE:
+	case IVTV_IOC_PASSTHROUGH_MODE:
+	case VIDEO_COMMAND:
+	case VIDEO_CONTINUE:
+	case VIDEO_FREEZE:
+	case VIDEO_GET_EVENT:
+	case VIDEO_GET_FRAME_COUNT:
+	case VIDEO_GET_PTS:
+	case VIDEO_PLAY:
+	case VIDEO_SELECT_SOURCE:
+	case VIDEO_STOP:
+	case VIDEO_TRY_COMMAND:
+	case VIDIOC_INT_RESET:
+
+		return video_ioctl2(filp, cmd, arg);
+
+	case IVTV_IOC_DMA_FRAME: /* no handler implemented */
+		return -EINVAL;
+	}
+	return -ENOIOCTLCMD;
+}
+#endif
 
 static const struct v4l2_ioctl_ops ivtv_ioctl_ops = {
 	.vidioc_querycap    		    = ivtv_querycap,
