@@ -1167,9 +1167,15 @@ static long sg_compat_ioctl(struct file *filp, unsigned int cmd_in, unsigned lon
 	case SG_GET_KEEP_ORPHAN:
 	case SG_NEXT_CMD_LEN:
 	case SG_GET_VERSION_NUM:
+	case SG_GET_ACCESS_COUNT:
 	case SG_EMULATED_HOST:
 	case SCSI_IOCTL_SEND_COMMAND:
 	case SG_SET_DEBUG:
+	case BLKSECTGET:
+	case BLKTRACESETUP:
+	case BLKTRACESTART:
+	case BLKTRACESTOP:
+	case BLKTRACETEARDOWN:
 	case SCSI_IOCTL_GET_IDLUN:
 	case SCSI_IOCTL_GET_BUS_NUMBER:
 	case SCSI_IOCTL_PROBE_HOST:
@@ -1207,6 +1213,16 @@ static long sg_compat_ioctl(struct file *filp, unsigned int cmd_in, unsigned lon
 		kfree(rinfo);
 		return result;
 	}
+
+	/* compatible on everything except x86 */
+#ifdef CONFIG_X86_64
+	case BLKTRACESETUP32:
+		return compat_blk_trace_setup(sdp->device->request_queue,
+					      sdp->disk->disk_name,
+					      MKDEV(SCSI_GENERIC_MAJOR, sdp->index),
+					      NULL,
+					      (char *)arg);
+#endif
 	default:
 		break;
 	}
