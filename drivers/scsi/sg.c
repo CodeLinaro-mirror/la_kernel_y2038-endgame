@@ -1146,6 +1146,38 @@ static long sg_compat_ioctl(struct file *filp, unsigned int cmd_in, unsigned lon
 		return -ENXIO;
 
 	switch (cmd_in) {
+	/* This relies on a handler in fs/compat_ioctl.c */
+	case SG_IO:
+		break;
+
+	/* these are all compatible */
+	case SG_SET_TIMEOUT:
+	case SG_GET_TIMEOUT:
+	case SG_SET_FORCE_LOW_DMA:
+	case SG_GET_LOW_DMA:
+	case SG_GET_SCSI_ID:
+	case SG_SET_FORCE_PACK_ID:
+	case SG_GET_PACK_ID:
+	case SG_GET_NUM_WAITING:
+	case SG_GET_SG_TABLESIZE:
+	case SG_SET_RESERVED_SIZE:
+	case SG_GET_RESERVED_SIZE:
+	case SG_SET_COMMAND_Q:
+	case SG_GET_COMMAND_Q:
+	case SG_SET_KEEP_ORPHAN:
+	case SG_GET_KEEP_ORPHAN:
+	case SG_NEXT_CMD_LEN:
+	case SG_GET_VERSION_NUM:
+	case SG_EMULATED_HOST:
+	case SCSI_IOCTL_SEND_COMMAND:
+	case SG_SET_DEBUG:
+	case SCSI_IOCTL_GET_IDLUN:
+	case SCSI_IOCTL_GET_BUS_NUMBER:
+	case SCSI_IOCTL_PROBE_HOST:
+	case SG_GET_TRANSFORM:
+	case SG_SCSI_RESET:
+		return sg_ioctl(filp, cmd_in, (unsigned long)compat_ptr(arg));
+
 	/* convert table format */
 	case SG_GET_REQUEST_TABLE: {
 		sg_req_info_t *rinfo;
