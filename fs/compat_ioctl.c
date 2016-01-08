@@ -371,40 +371,6 @@ static int sg_ioctl_trans(struct file *file, unsigned int cmd,
 
 	return err;
 }
-
-struct compat_sg_req_info { /* used by SG_GET_REQUEST_TABLE ioctl() */
-	char req_state;
-	char orphan;
-	char sg_io_owned;
-	char problem;
-	int pack_id;
-	compat_uptr_t usr_ptr;
-	unsigned int duration;
-	int unused;
-};
-
-static int sg_grt_trans(struct file *file,
-		unsigned int cmd, struct compat_sg_req_info __user *o)
-{
-	int err, i;
-	sg_req_info_t __user *r;
-	r = compat_alloc_user_space(sizeof(sg_req_info_t)*SG_MAX_QUEUE);
-	err = do_ioctl(file, cmd, (unsigned long)r);
-	if (err < 0)
-		return err;
-	for (i = 0; i < SG_MAX_QUEUE; i++) {
-		void __user *ptr;
-		int d;
-
-		if (copy_in_user(o + i, r + i, offsetof(sg_req_info_t, usr_ptr)) ||
-		    get_user(ptr, &r[i].usr_ptr) ||
-		    get_user(d, &r[i].duration) ||
-		    put_user((u32)(unsigned long)(ptr), &o[i].usr_ptr) ||
-		    put_user(d, &o[i].duration))
-			return -EFAULT;
-	}
-	return err;
-}
 #endif /* CONFIG_BLOCK */
 
 struct sock_fprog32 {
@@ -893,7 +859,6 @@ COMPATIBLE_IOCTL(SG_SET_COMMAND_Q)
 COMPATIBLE_IOCTL(SG_GET_VERSION_NUM)
 COMPATIBLE_IOCTL(SG_NEXT_CMD_LEN)
 COMPATIBLE_IOCTL(SG_SCSI_RESET)
-COMPATIBLE_IOCTL(SG_GET_REQUEST_TABLE)
 COMPATIBLE_IOCTL(SG_SET_KEEP_ORPHAN)
 COMPATIBLE_IOCTL(SG_GET_KEEP_ORPHAN)
 #endif
@@ -1351,8 +1316,6 @@ static long do_ioctl_trans(unsigned int cmd,
 #ifdef CONFIG_BLOCK
 	case SG_IO:
 		return sg_ioctl_trans(file, cmd, argp);
-	case SG_GET_REQUEST_TABLE:
-		return sg_grt_trans(file, cmd, argp);
 	case MTIOCGET32:
 	case MTIOCPOS32:
 		return mt_ioctl_trans(file, cmd, argp);
