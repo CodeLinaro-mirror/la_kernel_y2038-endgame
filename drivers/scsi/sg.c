@@ -1124,6 +1124,17 @@ sg_ioctl(struct file *filp, unsigned int cmd_in, unsigned long arg)
 }
 
 #ifdef CONFIG_COMPAT
+struct compat_sg_req_info { /* used by SG_GET_REQUEST_TABLE ioctl() */
+	char req_state;
+	char orphan;
+	char sg_io_owned;
+	char problem;
+	int pack_id;
+	compat_uptr_t usr_ptr;
+	unsigned int duration;
+	int unused;
+};
+
 static long sg_compat_ioctl(struct file *filp, unsigned int cmd_in, unsigned long arg)
 {
 	Sg_device *sdp;
@@ -1132,6 +1143,41 @@ static long sg_compat_ioctl(struct file *filp, unsigned int cmd_in, unsigned lon
 
 	if ((!(sfp = (Sg_fd *) filp->private_data)) || (!(sdp = sfp->parentdp)))
 		return -ENXIO;
+
+	switch (cmd_in) {
+	/* convert table format */
+	case SG_GET_REQUEST_TABLE: {
+		sg_req_info_t *rinfo;
+		compat_sg_req_info __user *o = compat_ptr(arg);
+		int i;
+
+		if (!access_ok(VERIFY_WRITE, p, SZ_SG_REQ_INFO * SG_MAX_QUEUE))
+			return -EFAULT;
+
+		rinfo = kmalloc(SZ_SG_REQ_INFO * SG_MAX_QUEUE, GFP_KERNEL);
+		if (!rinfo)
+			return -ENOMEM;
+
+		sg_get_request_table(sfp, srp, rinfo);
+		for (i = 0; i < SG_MAX_QUEUE; i++) {
+			void __user *ptr;
+			int d;
+
+			if (__copy_to_user(&o[i], &rinfo[i],
+					   offsetof(sg_req_info_t, usr_ptr)) ||
+			    __put_user((uintptr_t)(rinfo[i].user_ptr),
+					&o[i].usr_ptr) ||
+			    __put_user(rinfo[i].duration, &o[i].duration)) {
+				result = -EFAULT;
+				break;
+			}
+		}
+		kfree(rinfo);
+		return result;
+	}
+	default:
+		break;
+	}
 
 	sdev = sdp->device;
 	if (sdev->host->hostt->compat_ioctl) { 
