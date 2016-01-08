@@ -28,6 +28,9 @@ struct blk_trace {
 	atomic_t dropped;
 };
 
+extern int compat_blk_trace_setup(struct request_queue *q, char *name,
+				  dev_t dev, struct block_device *bdev,
+				  char __user *arg);
 extern int blk_trace_ioctl(struct block_device *, unsigned, char __user *);
 extern void blk_trace_shutdown(struct request_queue *);
 extern int do_blk_trace_setup(struct request_queue *q, char *name,

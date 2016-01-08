@@ -1159,9 +1159,15 @@ static long sg_compat_ioctl(struct file *filp, unsigned int cmd_in, unsigned lon
 	case SG_GET_KEEP_ORPHAN:
 	case SG_NEXT_CMD_LEN:
 	case SG_GET_VERSION_NUM:
+	case SG_GET_ACCESS_COUNT:
 	case SG_EMULATED_HOST:
 	case SCSI_IOCTL_SEND_COMMAND:
 	case SG_SET_DEBUG:
+	case BLKSECTGET:
+	case BLKTRACESETUP:
+	case BLKTRACESTART:
+	case BLKTRACESTOP:
+	case BLKTRACETEARDOWN:
 	case SCSI_IOCTL_GET_IDLUN:
 	case SCSI_IOCTL_GET_BUS_NUMBER:
 	case SCSI_IOCTL_PROBE_HOST:
@@ -1173,6 +1179,8 @@ static long sg_compat_ioctl(struct file *filp, unsigned int cmd_in, unsigned lon
 	case SG_GET_REQUEST_TABLE: {
 		sg_req_info_t *rinfo;
 		struct compat_sg_req_info __user *o = compat_ptr(arg);
+		Sg_request *srp;
+		int result;
 		int i;
 
 		if (!access_ok(VERIFY_WRITE, o, SZ_SG_REQ_INFO * SG_MAX_QUEUE))
@@ -1184,12 +1192,9 @@ static long sg_compat_ioctl(struct file *filp, unsigned int cmd_in, unsigned lon
 
 		sg_get_request_table(sfp, srp, rinfo);
 		for (i = 0; i < SG_MAX_QUEUE; i++) {
-			void __user *ptr;
-			int d;
-
 			if (__copy_to_user(&o[i], &rinfo[i],
 					   offsetof(sg_req_info_t, usr_ptr)) ||
-			    __put_user((uintptr_t)(rinfo[i].user_ptr),
+			    __put_user((uintptr_t)(rinfo[i].usr_ptr),
 					&o[i].usr_ptr) ||
 			    __put_user(rinfo[i].duration, &o[i].duration)) {
 				result = -EFAULT;
@@ -1199,6 +1204,16 @@ static long sg_compat_ioctl(struct file *filp, unsigned int cmd_in, unsigned lon
 		kfree(rinfo);
 		return result;
 	}
+
+	/* compatible on everything except x86 */
+#if defined(CONFIG_X86_64) && defined(CONFIG_BLK_DEV_IO_TRACE)
+	case BLKTRACESETUP32:
+		return compat_blk_trace_setup(sdp->device->request_queue,
+					      sdp->disk->disk_name,
+					      MKDEV(SCSI_GENERIC_MAJOR, sdp->index),
+					      NULL,
+					      (char *)arg);
+#endif
 	default:
 		break;
 	}
