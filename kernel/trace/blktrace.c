@@ -555,9 +555,9 @@ int blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
 EXPORT_SYMBOL_GPL(blk_trace_setup);
 
 #if defined(CONFIG_COMPAT) && defined(CONFIG_X86_64)
-static int compat_blk_trace_setup(struct request_queue *q, char *name,
-				  dev_t dev, struct block_device *bdev,
-				  char __user *arg)
+int compat_blk_trace_setup(struct request_queue *q, char *name,
+			   dev_t dev, struct block_device *bdev,
+			   char __user *arg)
 {
 	struct blk_user_trace_setup buts;
 	struct compat_blk_user_trace_setup cbuts;
@@ -586,6 +586,7 @@ static int compat_blk_trace_setup(struct request_queue *q, char *name,
 
 	return 0;
 }
+EXPORT_SYMBOL_GPL(compat_blk_trace_setup);
 #endif
 
 int blk_trace_startstop(struct request_queue *q, int start)
