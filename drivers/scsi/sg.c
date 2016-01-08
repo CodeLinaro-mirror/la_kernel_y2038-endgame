@@ -824,6 +824,40 @@ static int max_sectors_bytes(struct request_queue *q)
 	return max_sectors << 9;
 }
 
+static int sg_get_request_table(Sg_fd *sfp, Sg_request *srp, sg_req_info_t *rinfo)
+{
+	unsigned int ms;
+	unsigned long iflags;
+	int val;
+
+	read_lock_irqsave(&sfp->rq_list_lock, iflags);
+	for (srp = sfp->headrp, val = 0; val < SG_MAX_QUEUE;
+	     ++val, srp = srp ? srp->nextrp : srp) {
+		memset(&rinfo[val], 0, SZ_SG_REQ_INFO);
+		if (srp) {
+			rinfo[val].req_state = srp->done + 1;
+			rinfo[val].problem = srp->header.masked_status &
+					     srp->header.host_status &
+					     srp->header.driver_status;
+			if (srp->done)
+				rinfo[val].duration = srp->header.duration;
+			else {
+				ms = jiffies_to_msecs(jiffies);
+				rinfo[val].duration =
+				    (ms > srp->header.duration) ?
+				    (ms - srp->header.duration) : 0;
+			}
+			rinfo[val].orphan = srp->orphan;
+			rinfo[val].sg_io_owned = srp->sg_io_owned;
+			rinfo[val].pack_id = srp->header.pack_id;
+			rinfo[val].usr_ptr = srp->header.usr_ptr;
+		}
+	}
+	read_unlock_irqrestore(&sfp->rq_list_lock, iflags);
+
+	return 0;
+}
+
 static long
 sg_ioctl(struct file *filp, unsigned int cmd_in, unsigned long arg)
 {
@@ -1004,52 +1038,24 @@ sg_ioctl(struct file *filp, unsigned int cmd_in, unsigned long arg)
 		/* faked - we don't have a real access count anymore */
 		val = (sdp->device ? 1 : 0);
 		return put_user(val, ip);
-	case SG_GET_REQUEST_TABLE:
+	case SG_GET_REQUEST_TABLE: {
+		sg_req_info_t *rinfo;
+
 		if (!access_ok(VERIFY_WRITE, p, SZ_SG_REQ_INFO * SG_MAX_QUEUE))
 			return -EFAULT;
-		else {
-			sg_req_info_t *rinfo;
-			unsigned int ms;
 
-			rinfo = kmalloc(SZ_SG_REQ_INFO * SG_MAX_QUEUE,
-								GFP_KERNEL);
-			if (!rinfo)
-				return -ENOMEM;
-			read_lock_irqsave(&sfp->rq_list_lock, iflags);
-			for (srp = sfp->headrp, val = 0; val < SG_MAX_QUEUE;
-			     ++val, srp = srp ? srp->nextrp : srp) {
-				memset(&rinfo[val], 0, SZ_SG_REQ_INFO);
-				if (srp) {
-					rinfo[val].req_state = srp->done + 1;
-					rinfo[val].problem =
-					    srp->header.masked_status & 
-					    srp->header.host_status & 
-					    srp->header.driver_status;
-					if (srp->done)
-						rinfo[val].duration =
-							srp->header.duration;
-					else {
-						ms = jiffies_to_msecs(jiffies);
-						rinfo[val].duration =
-						    (ms > srp->header.duration) ?
-						    (ms - srp->header.duration) : 0;
-					}
-					rinfo[val].orphan = srp->orphan;
-					rinfo[val].sg_io_owned =
-							srp->sg_io_owned;
-					rinfo[val].pack_id =
-							srp->header.pack_id;
-					rinfo[val].usr_ptr =
-							srp->header.usr_ptr;
-				}
-			}
-			read_unlock_irqrestore(&sfp->rq_list_lock, iflags);
-			result = __copy_to_user(p, rinfo, 
-						SZ_SG_REQ_INFO * SG_MAX_QUEUE);
-			result = result ? -EFAULT : 0;
-			kfree(rinfo);
-			return result;
-		}
+		rinfo = kmalloc(SZ_SG_REQ_INFO * SG_MAX_QUEUE, GFP_KERNEL);
+		if (!rinfo)
+			return -ENOMEM;
+
+		sg_get_request_table(sfp, srp, rinfo);
+		result = __copy_to_user(p, rinfo, SZ_SG_REQ_INFO * SG_MAX_QUEUE);
+		kfree(rinfo);
+		if (result)
+			return -EFAULT;
+
+		return 0;
+	}
 	case SG_EMULATED_HOST:
 		if (atomic_read(&sdp->detaching))
 			return -ENODEV;
