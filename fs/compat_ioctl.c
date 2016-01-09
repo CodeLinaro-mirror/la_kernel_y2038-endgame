@@ -134,99 +134,6 @@ static int do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	return vfs_ioctl(file, cmd, arg);
 }
 
-struct compat_video_event {
-	int32_t		type;
-	compat_time_t	timestamp;
-	union {
-	        video_size_t size;
-		unsigned int frame_rate;
-	} u;
-};
-
-static int do_video_get_event(struct file *file,
-		unsigned int cmd, struct compat_video_event __user *up)
-{
-	struct video_event __user *kevent =
-		compat_alloc_user_space(sizeof(*kevent));
-	int err;
-
-	if (kevent == NULL)
-		return -EFAULT;
-
-	err = do_ioctl(file, cmd, (unsigned long)kevent);
-	if (!err) {
-		err  = convert_in_user(&kevent->type, &up->type);
-		err |= convert_in_user(&kevent->timestamp, &up->timestamp);
-		err |= convert_in_user(&kevent->u.size.w, &up->u.size.w);
-		err |= convert_in_user(&kevent->u.size.h, &up->u.size.h);
-		err |= convert_in_user(&kevent->u.size.aspect_ratio,
-				&up->u.size.aspect_ratio);
-		if (err)
-			err = -EFAULT;
-	}
-
-	return err;
-}
-
-struct compat_video_still_picture {
-        compat_uptr_t iFrame;
-        int32_t size;
-};
-
-static int do_video_stillpicture(struct file *file,
-		unsigned int cmd, struct compat_video_still_picture __user *up)
-{
-	struct video_still_picture __user *up_native;
-	compat_uptr_t fp;
-	int32_t size;
-	int err;
-
-	err  = get_user(fp, &up->iFrame);
-	err |= get_user(size, &up->size);
-	if (err)
-		return -EFAULT;
-
-	up_native =
-		compat_alloc_user_space(sizeof(struct video_still_picture));
-
-	err =  put_user(compat_ptr(fp), &up_native->iFrame);
-	err |= put_user(size, &up_native->size);
-	if (err)
-		return -EFAULT;
-
-	err = do_ioctl(file, cmd, (unsigned long) up_native);
-
-	return err;
-}
-
-struct compat_video_spu_palette {
-	int length;
-	compat_uptr_t palette;
-};
-
-static int do_video_set_spu_palette(struct file *file,
-		unsigned int cmd, struct compat_video_spu_palette __user *up)
-{
-	struct video_spu_palette __user *up_native;
-	compat_uptr_t palp;
-	int length, err;
-
-	err  = get_user(palp, &up->palette);
-	err |= get_user(length, &up->length);
-	if (err)
-		return -EFAULT;
-
-	up_native = compat_alloc_user_space(sizeof(struct video_spu_palette));
-	err  = put_user(compat_ptr(palp), &up_native->palette);
-	err |= put_user(length, &up_native->length);
-	if (err)
-		return -EFAULT;
-
-	err = do_ioctl(file, cmd, (unsigned long) up_native);
-
-	return err;
-}
-
 #ifdef CONFIG_BLOCK
 typedef struct sg_io_hdr32 {
 	compat_int_t interface_id;	/* [i] 'S' for SCSI generic (required) */
@@ -1326,20 +1233,10 @@ static long do_ioctl_trans(unsigned int cmd,
 	case RTC_EPOCH_SET32:
 		return rtc_ioctl(file, cmd, argp);
 
-	/* dvb */
-	case VIDEO_GET_EVENT:
-		return do_video_get_event(file, cmd, argp);
-	case VIDEO_STILLPICTURE:
-		return do_video_stillpicture(file, cmd, argp);
-	case VIDEO_SET_SPU_PALETTE:
-		return do_video_set_spu_palette(file, cmd, argp);
-	}
-
 	/*
 	 * These take an integer instead of a pointer as 'arg',
 	 * so we must not do a compat_ptr() translation.
 	 */
-	switch (cmd) {
 	/* Big T */
 	case TCSBRKP:
 	case TIOCMIWAIT:
