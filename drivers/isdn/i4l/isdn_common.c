@@ -1726,6 +1726,24 @@ isdn_unlocked_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	return ret;
 }
 
+#ifdef CONFIG_COMPAT
+static long
+isdn_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
+	uint minor = iminor(file_inode(file));
+	int ret = ENOIOCTLCMD;
+
+	if (minor >= ISDN_MINOR_PPP &&
+	    minor <= ISDN_MINOR_PPPMAX) {
+		mutex_lock(&isdn_mutex);
+		ret = isdn_ppp_compat_ioctl(minor - ISDN_MINOR_PPP, file, cmd, arg);
+		mutex_unlock(&isdn_mutex);
+	}
+
+	return ret;
+}
+#endif
+
 /*
  * Open the device code.
  */
@@ -1843,6 +1861,9 @@ static const struct file_operations isdn_fops =
 	.write		= isdn_write,
 	.poll		= isdn_poll,
 	.unlocked_ioctl	= isdn_unlocked_ioctl,
+#ifdef CONFIG_COMPAT
+	.compat_ioctl	= isdn_compat_ioctl,
+#endif
 	.open		= isdn_open,
 	.release	= isdn_close,
 };
