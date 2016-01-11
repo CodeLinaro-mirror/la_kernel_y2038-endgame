@@ -18,6 +18,7 @@
 #include <linux/io.h>
 #include <linux/sizes.h>
 #include <linux/pm_runtime.h>
+#include <linux/io.h>
 
 #include <sound/soc.h>
 
