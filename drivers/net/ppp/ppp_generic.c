@@ -939,24 +939,21 @@ struct ppp_idle32 {
 #define PPPIOCGIDLE32		_IOR('t', 63, struct ppp_idle32)
 
 static int ppp_gidle(struct file *file, unsigned int cmd,
-		struct ppp_idle32 __user *idle32)
+		struct ppp_idle32 __user *idle)
 {
-	struct ppp_idle __user *idle;
-	__kernel_time_t xmit, recv;
-	int err;
+	struct ppp_file *pf = file->private_data;
+	struct ppp *ppp;
 
-	idle = compat_alloc_user_space(sizeof(*idle));
+	if (!pf)
+		return -EINVAL;
 
-	err = ppp_ioctl(file, PPPIOCGIDLE, (unsigned long) idle);
+	ppp = PF_TO_PPP(pf);
+	idle.xmit_idle = (jiffies - ppp->last_xmit) / HZ;
+	idle.recv_idle = (jiffies - ppp->last_recv) / HZ;
+	if (copy_to_user(argp, &idle, sizeof(idle)))
+		return -EFAULT;
 
-	if (!err) {
-		if (get_user(xmit, &idle->xmit_idle) ||
-		    get_user(recv, &idle->recv_idle) ||
-		    put_user(xmit, &idle32->xmit_idle) ||
-		    put_user(recv, &idle32->recv_idle))
-			err = -EFAULT;
-	}
-	return err;
+	return 0;
 }
 
 static int ppp_scompress(struct file *file, unsigned int cmd,
