@@ -78,43 +78,18 @@ static inline int is_pci_memory(u32 addr)
 #define readsw(p, v, l)			__indirect_readsw(p, v, l)
 #define readsl(p, v, l)			__indirect_readsl(p, v, l)
 
-static inline void __indirect_writeb(u8 value, volatile void __iomem *p)
-{
-	u32 addr = (u32)p;
-	u32 n, byte_enables, data;
-
-	if (!is_pci_memory(addr)) {
-		__raw_writeb(value, p);
-		return;
-	}
-
-	n = addr % 4;
-	byte_enables = (0xf & ~BIT(n)) << IXP4XX_PCI_NP_CBE_BESL;
-	data = value << (8*n);
-	ixp4xx_pci_write(addr, byte_enables | NP_CMD_MEMWRITE, data);
-}
+void __indirect_writeb(u8 value, volatile void __iomem *p);
+void __indirect_writew(u16 value, volatile void __iomem *p);
+void __indirect_writel(u32 value, volatile void __iomem *p);
+u8 __indirect_readb(const volatile void __iomem *p);
+u16 __indirect_readw(const volatile void __iomem *p);
+u32 __indirect_readl(const volatile void __iomem *p);
 
 static inline void __indirect_writesb(volatile void __iomem *bus_addr,
 				      const u8 *vaddr, int count)
 {
 	while (count--)
 		writeb(*vaddr++, bus_addr);
-}
-
-static inline void __indirect_writew(u16 value, volatile void __iomem *p)
-{
-	u32 addr = (u32)p;
-	u32 n, byte_enables, data;
-
-	if (!is_pci_memory(addr)) {
-		__raw_writew(value, p);
-		return;
-	}
-
-	n = addr % 4;
-	byte_enables = (0xf & ~(BIT(n) | BIT(n+1))) << IXP4XX_PCI_NP_CBE_BESL;
-	data = value << (8*n);
-	ixp4xx_pci_write(addr, byte_enables | NP_CMD_MEMWRITE, data);
 }
 
 static inline void __indirect_writesw(volatile void __iomem *bus_addr,
@@ -124,39 +99,11 @@ static inline void __indirect_writesw(volatile void __iomem *bus_addr,
 		writew(*vaddr++, bus_addr);
 }
 
-static inline void __indirect_writel(u32 value, volatile void __iomem *p)
-{
-	u32 addr = (__force u32)p;
-
-	if (!is_pci_memory(addr)) {
-		__raw_writel(value, p);
-		return;
-	}
-
-	ixp4xx_pci_write(addr, NP_CMD_MEMWRITE, value);
-}
-
 static inline void __indirect_writesl(volatile void __iomem *bus_addr,
 				      const u32 *vaddr, int count)
 {
 	while (count--)
 		writel(*vaddr++, bus_addr);
-}
-
-static inline u8 __indirect_readb(const volatile void __iomem *p)
-{
-	u32 addr = (u32)p;
-	u32 n, byte_enables, data;
-
-	if (!is_pci_memory(addr))
-		return __raw_readb(p);
-
-	n = addr % 4;
-	byte_enables = (0xf & ~BIT(n)) << IXP4XX_PCI_NP_CBE_BESL;
-	if (ixp4xx_pci_read(addr, byte_enables | NP_CMD_MEMREAD, &data))
-		return 0xff;
-
-	return data >> (8*n);
 }
 
 static inline void __indirect_readsb(const volatile void __iomem *bus_addr,
@@ -166,41 +113,11 @@ static inline void __indirect_readsb(const volatile void __iomem *bus_addr,
 		*vaddr++ = readb(bus_addr);
 }
 
-static inline u16 __indirect_readw(const volatile void __iomem *p)
-{
-	u32 addr = (u32)p;
-	u32 n, byte_enables, data;
-
-	if (!is_pci_memory(addr))
-		return __raw_readw(p);
-
-	n = addr % 4;
-	byte_enables = (0xf & ~(BIT(n) | BIT(n+1))) << IXP4XX_PCI_NP_CBE_BESL;
-	if (ixp4xx_pci_read(addr, byte_enables | NP_CMD_MEMREAD, &data))
-		return 0xffff;
-
-	return data>>(8*n);
-}
-
 static inline void __indirect_readsw(const volatile void __iomem *bus_addr,
 				     u16 *vaddr, u32 count)
 {
 	while (count--)
 		*vaddr++ = readw(bus_addr);
-}
-
-static inline u32 __indirect_readl(const volatile void __iomem *p)
-{
-	u32 addr = (__force u32)p;
-	u32 data;
-
-	if (!is_pci_memory(addr))
-		return __raw_readl(p);
-
-	if (ixp4xx_pci_read(addr, NP_CMD_MEMREAD, &data))
-		return 0xffffffff;
-
-	return data;
 }
 
 static inline void __indirect_readsl(const volatile void __iomem *bus_addr,
