@@ -166,6 +166,104 @@ int ixp4xx_pci_write(u32 addr, u32 cmd, u32 data)
 	return retval;
 }
 
+#ifdef CONFIG_IXP4XX_INDIRECT_PCI
+void __indirect_writeb(u8 value, volatile void __iomem *p)
+{
+	u32 addr = (u32)p;
+	u32 n, byte_enables, data;
+
+	if (!is_pci_memory(addr)) {
+		__raw_writeb(value, p);
+		return;
+	}
+
+	n = addr % 4;
+	byte_enables = (0xf & ~BIT(n)) << IXP4XX_PCI_NP_CBE_BESL;
+	data = value << (8*n);
+	ixp4xx_pci_write(addr, byte_enables | NP_CMD_MEMWRITE, data);
+}
+EXPORT_SYMBOL(__indirect_writeb);
+
+void __indirect_writew(u16 value, volatile void __iomem *p)
+{
+	u32 addr = (u32)p;
+	u32 n, byte_enables, data;
+
+	if (!is_pci_memory(addr)) {
+		__raw_writew(value, p);
+		return;
+	}
+
+	n = addr % 4;
+	byte_enables = (0xf & ~(BIT(n) | BIT(n+1))) << IXP4XX_PCI_NP_CBE_BESL;
+	data = value << (8*n);
+	ixp4xx_pci_write(addr, byte_enables | NP_CMD_MEMWRITE, data);
+}
+EXPORT_SYMBOL(__indirect_writew);
+
+void __indirect_writel(u32 value, volatile void __iomem *p)
+{
+	u32 addr = (__force u32)p;
+
+	if (!is_pci_memory(addr)) {
+		__raw_writel(value, p);
+		return;
+	}
+
+	ixp4xx_pci_write(addr, NP_CMD_MEMWRITE, value);
+}
+EXPORT_SYMBOL(__indirect_writel);
+
+u8 __indirect_readb(const volatile void __iomem *p)
+{
+	u32 addr = (u32)p;
+	u32 n, byte_enables, data;
+
+	if (!is_pci_memory(addr))
+		return __raw_readb(p);
+
+	n = addr % 4;
+	byte_enables = (0xf & ~BIT(n)) << IXP4XX_PCI_NP_CBE_BESL;
+	if (ixp4xx_pci_read(addr, byte_enables | NP_CMD_MEMREAD, &data))
+		return 0xff;
+
+	return data >> (8*n);
+}
+EXPORT_SYMBOL(__indirect_readb);
+
+u16 __indirect_readw(const volatile void __iomem *p)
+{
+	u32 addr = (u32)p;
+	u32 n, byte_enables, data;
+
+	if (!is_pci_memory(addr))
+		return __raw_readw(p);
+
+	n = addr % 4;
+	byte_enables = (0xf & ~(BIT(n) | BIT(n+1))) << IXP4XX_PCI_NP_CBE_BESL;
+	if (ixp4xx_pci_read(addr, byte_enables | NP_CMD_MEMREAD, &data))
+		return 0xffff;
+
+	return data>>(8*n);
+}
+EXPORT_SYMBOL(__indirect_readw);
+
+u32 __indirect_readl(const volatile void __iomem *p)
+{
+	u32 addr = (__force u32)p;
+	u32 data;
+
+	if (!is_pci_memory(addr))
+		return __raw_readl(p);
+
+	if (ixp4xx_pci_read(addr, NP_CMD_MEMREAD, &data))
+		return 0xffffffff;
+
+	return data;
+}
+EXPORT_SYMBOL(__indirect_readl);
+#endif
+
 static u32 ixp4xx_config_addr(u8 bus_num, u16 devfn, int where)
 {
 	u32 addr;
