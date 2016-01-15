@@ -86,43 +86,54 @@ u16 __indirect_readw(const volatile void __iomem *p);
 u32 __indirect_readl(const volatile void __iomem *p);
 
 static inline void __indirect_writesb(volatile void __iomem *bus_addr,
-				      const u8 *vaddr, int count)
+				      const void *p, int count)
 {
+	const u8 *vaddr = p;
+
 	while (count--)
 		writeb(*vaddr++, bus_addr);
 }
 
 static inline void __indirect_writesw(volatile void __iomem *bus_addr,
-				      const u16 *vaddr, int count)
+				      const void *p, int count)
 {
+	const u16 *vaddr = p;
+
 	while (count--)
 		writew(*vaddr++, bus_addr);
 }
 
 static inline void __indirect_writesl(volatile void __iomem *bus_addr,
-				      const u32 *vaddr, int count)
+				      const void *p, int count)
 {
+	const u32 *vaddr = p;
 	while (count--)
 		writel(*vaddr++, bus_addr);
 }
 
 static inline void __indirect_readsb(const volatile void __iomem *bus_addr,
-				     u8 *vaddr, u32 count)
+				     void *p, u32 count)
 {
+	u8 *vaddr = p;
+
 	while (count--)
 		*vaddr++ = readb(bus_addr);
 }
 
 static inline void __indirect_readsw(const volatile void __iomem *bus_addr,
-				     u16 *vaddr, u32 count)
+				     void *p, u32 count)
 {
+	u16 *vaddr = p;
+
 	while (count--)
 		*vaddr++ = readw(bus_addr);
 }
 
 static inline void __indirect_readsl(const volatile void __iomem *bus_addr,
-				     u32 *vaddr, u32 count)
+				     void *p, u32 count)
 {
+	u32 *vaddr = p;
+
 	while (count--)
 		*vaddr++ = readl(bus_addr);
 }
