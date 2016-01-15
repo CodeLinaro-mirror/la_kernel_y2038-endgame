@@ -1,6 +1,6 @@
 menuconfig ISDN_DRV_GIGASET
 	tristate "Siemens Gigaset support"
-	depends on TTY
+	depends on TTY && ISDN_CAPI
 	select CRC_CCITT
 	select BITREVERSE
 	help
@@ -16,27 +16,6 @@ menuconfig ISDN_DRV_GIGASET
 	  otherwise the Gigaset device won't show up as an ISDN device.
 
 if ISDN_DRV_GIGASET
-
-config GIGASET_CAPI
-	bool "Gigaset CAPI support"
-	depends on ISDN_CAPI='y'||(ISDN_CAPI='m'&&ISDN_DRV_GIGASET='m')
-	default 'y'
-	help
-	  Build the Gigaset driver as a CAPI 2.0 driver interfacing with
-	  the Kernel CAPI subsystem. To use it with the old ISDN4Linux
-	  subsystem you'll have to enable the capidrv glue driver.
-	  (select ISDN_CAPI_CAPIDRV.)
-	  Say N to build the old native ISDN4Linux variant.
-	  If unsure, say Y.
-
-config GIGASET_I4L
-	bool
-	depends on ISDN_I4L='y'||(ISDN_I4L='m'&&ISDN_DRV_GIGASET='m')
-	default !GIGASET_CAPI
-
-config GIGASET_DUMMYLL
-	bool
-	default !GIGASET_CAPI&&!GIGASET_I4L
 
 config GIGASET_BASE
 	tristate "Gigaset base station support"
