@@ -248,6 +248,7 @@ static struct resource realview_pbx_isp1761_resources[] = {
 	},
 };
 
+#ifdef CONFIG_CACHE_L2X0
 static struct resource pmu_resources[] = {
 	[0] = {
 		.start		= IRQ_PBX_PMU_CPU0,
@@ -271,7 +272,6 @@ static struct resource pmu_resources[] = {
 	},
 };
 
-#ifdef CONFIG_CACHE_L2X0
 static struct platform_device pmu_device = {
 	.name			= "armv7-pmu",
 	.id			= -1,
