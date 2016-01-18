@@ -566,13 +566,6 @@ scripts: scripts_basic include/config/auto.conf include/config/tristate.conf \
 	 asm-generic
 	$(Q)$(MAKE) $(build)=$(@)
 
-# Objects we will link into vmlinux / subdirs we need to visit
-init-y		:= init/
-drivers-y	:= drivers/ sound/ firmware/
-net-y		:= net/
-libs-y		:= lib/
-core-y		:= usr/
-virt-y		:= virt/
 endif # KBUILD_EXTMOD
 
 ifeq ($(dot-config),1)
@@ -593,6 +586,20 @@ $(KCONFIG_CONFIG) include/config/auto.conf.cmd: ;
 # we execute the config step to be sure to catch updated Kconfig files
 include/config/%.conf: $(KCONFIG_CONFIG) include/config/auto.conf.cmd
 	$(Q)$(MAKE) -f $(srctree)/Makefile silentoldconfig
+
+# Objects we will link into vmlinux / subdirs we need to visit
+init-y		:= init/
+net-y		:= net/
+libs-y		:= lib/
+core-y		:= usr/
+virt-y		:= virt/
+
+# split out objects from drivers to avoid recursively linking large .o files
+include drivers/Makefile
+drivers-y	:= $(addprefix drivers/,$(obj-y) $(obj-m))
+drivers-y	+= sound/ firmware/
+obj-y		:=
+
 else
 # external modules needs include/generated/autoconf.h and include/config/auto.conf
 # but do not care if they are up-to-date. Use auto.conf to trigger the test
