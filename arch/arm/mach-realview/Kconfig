@@ -1,6 +1,6 @@
 menuconfig ARCH_REALVIEW
 	bool "ARM Ltd. RealView family"
-	depends on ARCH_MULTI_V5 || ARCH_MULTI_V6 || ARCH_MULTI_V7
+	depends on ARCH_MULTIPLATFORM
 	select ARM_AMBA
 	select ARM_TIMER_SP804
 	select COMMON_CLK_VERSATILE
@@ -19,7 +19,7 @@ config REALVIEW_DT
 	select CLK_SP810
 	select HAVE_SMP
 	select ICST
-	select MACH_REALVIEW_EB if ARCH_MULTI_V5
+	select MACH_REALVIEW_EB if ARCH_MULTI_V4_V5
 	select MFD_SYSCON
 	select POWER_RESET
 	select POWER_RESET_VERSATILE
@@ -34,7 +34,7 @@ config REALVIEW_DT
 config MACH_REALVIEW_EB
 	bool "Support RealView(R) Emulation Baseboard"
 	select ARM_GIC
-	select CPU_ARM926T if ARCH_MULTI_V5
+	select CPU_ARM926T if ARCH_MULTI_V4_V5
 	help
 	  Include support for the ARM(R) RealView(R) Emulation Baseboard
 	  platform. On an ARMv5 kernel, this will include support for
@@ -59,7 +59,7 @@ config REALVIEW_EB_ARM1176
 
 config REALVIEW_EB_A9MP
 	bool "Support Multicore Cortex-A9 Tile"
-	depends on MACH_REALVIEW_EB && ARCH_MULTI_V7
+	depends on MACH_REALVIEW_EB && ARCH_MULTI_V6_V7
 	select HAVE_ARM_SCU if SMP
 	select HAVE_ARM_TWD if SMP
 	select HAVE_SMP
@@ -125,7 +125,7 @@ config REALVIEW_PB1176_SECURE_FLASH
 
 config MACH_REALVIEW_PBA8
 	bool "Support RealView(R) Platform Baseboard for Cortex(tm)-A8 platform"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select ARM_GIC
 	select HAVE_PATA_PLATFORM
 	help
@@ -135,7 +135,7 @@ config MACH_REALVIEW_PBA8
 
 config MACH_REALVIEW_PBX
 	bool "Support RealView(R) Platform Baseboard Explore for Cortex-A9"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select ARM_GIC
 	select HAVE_ARM_SCU if SMP
 	select HAVE_ARM_TWD if SMP

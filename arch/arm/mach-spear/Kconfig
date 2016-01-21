@@ -4,7 +4,7 @@
 
 menuconfig PLAT_SPEAR
 	bool "ST SPEAr Family"
-	depends on ARCH_MULTI_V7 || ARCH_MULTI_V5
+	depends on ARCH_MULTI_V6_V7 || ARCH_MULTI_V4_V5
 	select ARM_AMBA
 	select CLKSRC_MMIO
 	select GPIOLIB
@@ -13,7 +13,7 @@ if PLAT_SPEAR
 
 config ARCH_SPEAR13XX
 	bool "ST SPEAr13xx"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select ARM_GIC
 	select GPIO_SPEAR_SPICS
 	select HAVE_ARM_SCU if SMP
@@ -44,7 +44,7 @@ endif #ARCH_SPEAR13XX
 
 config ARCH_SPEAR3XX
 	bool "ST SPEAr3xx"
-	depends on ARCH_MULTI_V5
+	depends on ARCH_MULTI_V4_V5
 	depends on !ARCH_SPEAR13XX
 	select ARM_VIC
 	select PINCTRL
@@ -75,7 +75,7 @@ endif
 
 config ARCH_SPEAR6XX
 	bool "ST SPEAr6XX"
-	depends on ARCH_MULTI_V5
+	depends on ARCH_MULTI_V4_V5
 	depends on !ARCH_SPEAR13XX
 	select ARM_VIC
 	help
