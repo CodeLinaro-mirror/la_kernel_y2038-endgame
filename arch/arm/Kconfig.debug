@@ -152,7 +152,7 @@ choice
 
 	config DEBUG_BCM2836
 		bool "Kernel low-level debugging on BCM2836 PL011 UART"
-		depends on ARCH_BCM2835 && ARCH_MULTI_V7
+		depends on ARCH_BCM2835 && ARCH_MULTI_V6_V7
 		select DEBUG_UART_PL01X
 
 	config DEBUG_BCM_5301X

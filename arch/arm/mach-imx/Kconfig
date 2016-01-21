@@ -1,6 +1,6 @@
 menuconfig ARCH_MXC
 	bool "Freescale i.MX family"
-	depends on ARCH_MULTI_V4_V5 || ARCH_MULTI_V6_V7 || ARM_SINGLE_ARMV7M
+	depends on ARCH_MULTIPLATFORM || ARM_SINGLE_ARMV7M
 	select ARCH_SUPPORTS_BIG_ENDIAN
 	select CLKSRC_IMX_GPT
 	select GENERIC_IRQ_CHIP
@@ -89,7 +89,7 @@ config SOC_IMX35
 	select MXC_AVIC
 	select PINCTRL_IMX35
 
-if ARCH_MULTI_V5
+if ARCH_MULTI_V4_V5
 
 comment "MX21 platforms:"
 
@@ -424,7 +424,7 @@ endif
 
 comment "Device tree only"
 
-if ARCH_MULTI_V4T
+if ARCH_MULTI_V4_V4T
 
 config SOC_IMX1
 	bool "i.MX1 support"
@@ -436,7 +436,7 @@ config SOC_IMX1
 
 endif
 
-if ARCH_MULTI_V5
+if ARCH_MULTI_V4_V5
 
 config SOC_IMX25
 	bool "i.MX25 support"
@@ -448,7 +448,7 @@ config SOC_IMX25
 	  This enables support for Freescale i.MX25 processor
 endif
 
-if ARCH_MULTI_V7
+if ARCH_MULTI_V6_V7
 
 comment "Cortex-A platforms"
 
@@ -551,11 +551,11 @@ endif
 
 comment "Cortex-A/Cortex-M asymmetric multiprocessing platforms"
 
-if ARCH_MULTI_V7 || ARM_SINGLE_ARMV7M
+if ARCH_MULTI_V6_V7 || ARM_SINGLE_ARMV7M
 
 config SOC_VF610
 	bool "Vybrid Family VF610 support"
-	select ARM_GIC if ARCH_MULTI_V7
+	select ARM_GIC if ARCH_MULTI_V6_V7
 	select PINCTRL_VF610
 
 	help
@@ -568,7 +568,7 @@ choice
 
 	config VF_USE_ARM_GLOBAL_TIMER
 		bool "Use ARM Global Timer"
-		depends on ARCH_MULTI_V7
+		depends on ARCH_MULTI_V6_V7
 		select ARM_GLOBAL_TIMER
 		select CLKSRC_ARM_GLOBAL_TIMER_SCHED_CLOCK
 		help
