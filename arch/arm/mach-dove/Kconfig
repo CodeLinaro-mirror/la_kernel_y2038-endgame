@@ -1,5 +1,5 @@
 menuconfig ARCH_DOVE
-	bool "Marvell Dove" if ARCH_MULTI_V7
+	bool "Marvell Dove" if ARCH_MULTI_V6_V7
 	select ARCH_REQUIRE_GPIOLIB
 	select CPU_PJ4
 	select MVEBU_MBUS

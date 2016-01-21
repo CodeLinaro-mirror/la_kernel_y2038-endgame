@@ -1,6 +1,6 @@
 menuconfig ARCH_AT91
 	bool "Atmel SoCs"
-	depends on ARCH_MULTI_V4T || ARCH_MULTI_V5 || ARCH_MULTI_V7
+	depends on ARCH_MULTI_V4_V5 || ARCH_MULTI_V6_V7
 	select ARCH_REQUIRE_GPIOLIB
 	select COMMON_CLK_AT91
 	select PINCTRL
@@ -9,7 +9,7 @@ menuconfig ARCH_AT91
 if ARCH_AT91
 config SOC_SAMA5D2
 	bool "SAMA5D2 family"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select SOC_SAMA5
 	select CACHE_L2X0
 	select HAVE_FB_ATMEL
@@ -23,7 +23,7 @@ config SOC_SAMA5D2
 
 config SOC_SAMA5D3
 	bool "SAMA5D3 family"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select SOC_SAMA5
 	select HAVE_FB_ATMEL
 	select HAVE_AT91_UTMI
@@ -36,7 +36,7 @@ config SOC_SAMA5D3
 
 config SOC_SAMA5D4
 	bool "SAMA5D4 family"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select SOC_SAMA5
 	select CACHE_L2X0
 	select HAVE_FB_ATMEL
@@ -50,7 +50,7 @@ config SOC_SAMA5D4
 
 config SOC_AT91RM9200
 	bool "AT91RM9200"
-	depends on ARCH_MULTI_V4T
+	depends on ARCH_MULTI_V4_V4T
 	select ATMEL_AIC_IRQ
 	select ATMEL_ST
 	select CPU_ARM920T
@@ -64,7 +64,7 @@ config SOC_AT91RM9200
 
 config SOC_AT91SAM9
 	bool "AT91SAM9"
-	depends on ARCH_MULTI_V5
+	depends on ARCH_MULTI_V4_V5
 	select ATMEL_AIC_IRQ
 	select ATMEL_SDRAMC
 	select CPU_ARM926T

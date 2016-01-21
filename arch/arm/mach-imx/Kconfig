@@ -1,6 +1,6 @@
 menuconfig ARCH_MXC
 	bool "Freescale i.MX family"
-	depends on ARCH_MULTI_V4_V5 || ARCH_MULTI_V6_V7 || ARM_SINGLE_ARMV7M
+	depends on ARCH_MULTIPLATFORM || ARM_SINGLE_ARMV7M
 	select ARCH_REQUIRE_GPIOLIB
 	select ARM_CPU_SUSPEND if PM
 	select CLKSRC_IMX_GPT
@@ -102,7 +102,7 @@ config SOC_IMX35
 	select PINCTRL_IMX35
 	select SMP_ON_UP if SMP
 
-if ARCH_MULTI_V4T
+if ARCH_MULTI_V4_V4T
 
 comment "MX1 platforms:"
 
@@ -130,7 +130,7 @@ config MACH_IMX1_DT
 
 endif
 
-if ARCH_MULTI_V5
+if ARCH_MULTI_V4_V5
 
 comment "MX21 platforms:"
 
@@ -465,7 +465,7 @@ endif
 
 comment "Device tree only"
 
-if ARCH_MULTI_V5
+if ARCH_MULTI_V4_V5
 
 config SOC_IMX25
 	bool "i.MX25 support"
@@ -477,7 +477,7 @@ config SOC_IMX25
 	  This enables support for Freescale i.MX25 processor
 endif
 
-if ARCH_MULTI_V7
+if ARCH_MULTI_V6_V7
 
 comment "Cortex-A platforms"
 
@@ -581,11 +581,11 @@ endif
 
 comment "Cortex-A/Cortex-M asymmetric multiprocessing platforms"
 
-if ARCH_MULTI_V7 || ARM_SINGLE_ARMV7M
+if ARCH_MULTI_V6_V7 || ARM_SINGLE_ARMV7M
 
 config SOC_VF610
 	bool "Vybrid Family VF610 support"
-	select ARM_GIC if ARCH_MULTI_V7
+	select ARM_GIC if ARCH_MULTI_V6_V7
 	select PINCTRL_VF610
 	select PL310_ERRATA_769419 if CACHE_L2X0
 	select SMP_ON_UP if SMP
@@ -600,7 +600,7 @@ choice
 
 	config VF_USE_ARM_GLOBAL_TIMER
 		bool "Use ARM Global Timer"
-		depends on ARCH_MULTI_V7
+		depends on ARCH_MULTI_V6_V7
 		select ARM_GLOBAL_TIMER
 		select CLKSRC_ARM_GLOBAL_TIMER_SCHED_CLOCK
 		help

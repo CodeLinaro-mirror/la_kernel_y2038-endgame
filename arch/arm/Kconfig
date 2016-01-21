@@ -626,17 +626,17 @@ endchoice
 
 if ARCH_MULTIPLATFORM
 
-comment "CPU Core family selection"
+choice
+	prompt "Minimum CPU architecture selection"
+	default ARCH_MULTI_V7
 
 config ARCH_MULTI_V4
 	bool "ARMv4 based platforms (FA526)"
-	depends on !ARCH_MULTI_V6_V7
 	select ARCH_MULTI_V4_V5
 	select CPU_FA526
 
 config ARCH_MULTI_V4T
 	bool "ARMv4T based platforms (ARM720T, ARM920T, ...)"
-	depends on !ARCH_MULTI_V6_V7
 	select ARCH_MULTI_V4_V5
 	select CPU_ARM920T if !(CPU_ARM7TDMI || CPU_ARM720T || \
 		CPU_ARM740T || CPU_ARM9TDMI || CPU_ARM922T || \
@@ -644,34 +644,36 @@ config ARCH_MULTI_V4T
 
 config ARCH_MULTI_V5
 	bool "ARMv5 based platforms (ARM926T, XSCALE, PJ1, ...)"
-	depends on !ARCH_MULTI_V6_V7
 	select ARCH_MULTI_V4_V5
 	select CPU_ARM926T if !(CPU_ARM946E || CPU_ARM1020 || \
 		CPU_ARM1020E || CPU_ARM1022 || CPU_ARM1026 || \
 		CPU_XSCALE || CPU_XSC3 || CPU_MOHAWK || CPU_FEROCEON)
 
-config ARCH_MULTI_V4_V5
-	bool
-
 config ARCH_MULTI_V6
 	bool "ARMv6 based platforms (ARM11)"
-	select ARCH_MULTI_V6_V7
 	select CPU_V6K
+	select CPU_V7
+	select MIGHT_HAVE_CACHE_L2X0
 
 config ARCH_MULTI_V7
 	bool "ARMv7 based platforms (Cortex-A, PJ4, Scorpion, Krait)"
-	default y
-	select ARCH_MULTI_V6_V7
 	select CPU_V7
 	select HAVE_SMP
-
-config ARCH_MULTI_V6_V7
-	bool
 	select MIGHT_HAVE_CACHE_L2X0
 
-config ARCH_MULTI_CPU_AUTO
-	def_bool !(ARCH_MULTI_V4 || ARCH_MULTI_V4T || ARCH_MULTI_V6_V7)
-	select ARCH_MULTI_V5
+endchoice
+
+# ARMv4T is backwards compatible with ARMv4
+config ARCH_MULTI_V4_V4T
+	def_bool ARCH_MULTI_V4 || ARCH_MULTI_V4T
+
+# ARMv5 is backwards compatible with ARMv4/v4T
+config ARCH_MULTI_V4_V5
+	def_bool ARCH_MULTI_V4_V4T || ARCH_MULTI_V5
+
+# ARMv7 is backwards compatible with ARMv6
+config ARCH_MULTI_V6_V7
+	def_bool ARCH_MULTI_V6 || ARCH_MULTI_V7
 
 comment "Multiple platform selection"
 

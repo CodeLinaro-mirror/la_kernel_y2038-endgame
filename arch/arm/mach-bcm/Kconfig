@@ -29,7 +29,7 @@ config ARCH_BCM_IPROC
 
 config ARCH_BCM_CYGNUS
 	bool "Broadcom Cygnus Support"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select ARCH_BCM_IPROC
 	help
 	  Enable support for the Cygnus family,
@@ -39,7 +39,7 @@ config ARCH_BCM_CYGNUS
 
 config ARCH_BCM_NSP
 	bool "Broadcom Northstar Plus SoC Support"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select ARCH_BCM_IPROC
 	select ARM_ERRATA_754322
 	select ARM_ERRATA_775420
@@ -56,7 +56,7 @@ config ARCH_BCM_NSP
 
 config ARCH_BCM_5301X
 	bool "Broadcom BCM470X / BCM5301X ARM SoC"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select ARCH_BCM_IPROC
 	select ARM_ERRATA_754322
 	select ARM_ERRATA_775420
@@ -94,7 +94,7 @@ config ARCH_BCM_MOBILE
 
 config ARCH_BCM_281XX
 	bool "Broadcom BCM281XX SoC family"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select ARCH_BCM_MOBILE
 	select HAVE_SMP
 	help
@@ -104,7 +104,7 @@ config ARCH_BCM_281XX
 
 config ARCH_BCM_21664
 	bool "Broadcom BCM21664 SoC family"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select ARCH_BCM_MOBILE
 	select HAVE_SMP
 	help
@@ -136,12 +136,12 @@ comment "Other Architectures"
 
 config ARCH_BCM2835
 	bool "Broadcom BCM2835 family"
-	depends on ARCH_MULTI_V6 || ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6 || ARCH_MULTI_V6_V7
 	select ARCH_REQUIRE_GPIOLIB
 	select ARM_AMBA
 	select ARM_ERRATA_411920 if ARCH_MULTI_V6
 	select ARM_TIMER_SP804
-	select HAVE_ARM_ARCH_TIMER if ARCH_MULTI_V7
+	select HAVE_ARM_ARCH_TIMER if ARCH_MULTI_V6_V7
 	select CLKSRC_OF
 	select PINCTRL
 	select PINCTRL_BCM2835
@@ -151,7 +151,7 @@ config ARCH_BCM2835
 
 config ARCH_BCM_63XX
 	bool "Broadcom BCM63xx DSL SoC"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	depends on MMU
 	select ARM_ERRATA_754322
 	select ARM_ERRATA_764369 if SMP
@@ -169,7 +169,7 @@ config ARCH_BCM_63XX
 
 config ARCH_BRCMSTB
 	bool "Broadcom BCM7XXX based boards"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select ARM_GIC
 	select ARM_ERRATA_798181 if SMP
 	select HAVE_ARM_ARCH_TIMER

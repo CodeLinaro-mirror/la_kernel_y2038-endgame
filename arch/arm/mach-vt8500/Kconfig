@@ -9,7 +9,7 @@ config ARCH_VT8500
 
 config ARCH_WM8505
 	bool "VIA/Wondermedia 85xx and WM8650"
- 	depends on ARCH_MULTI_V5
+	depends on ARCH_MULTI_V4_V5
  	select ARCH_VT8500
  	select CPU_ARM926T
  	help
@@ -23,7 +23,7 @@ config ARCH_WM8750
 
 config ARCH_WM8850
 	bool "WonderMedia WM8850"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select ARCH_VT8500
 	help
 	  Support for WonderMedia WM8850 System-on-Chip.
