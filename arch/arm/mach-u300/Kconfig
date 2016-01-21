@@ -1,6 +1,6 @@
 menuconfig ARCH_U300
 	bool "ST-Ericsson U300 Series"
-	depends on ARCH_MULTI_V5 && MMU
+	depends on ARCH_MULTI_V4_V5 && MMU
 	select ARM_AMBA
 	select ARM_VIC
 	select U300_TIMER

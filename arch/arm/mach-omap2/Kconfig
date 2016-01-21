@@ -1,5 +1,5 @@
 menu "TI OMAP/AM/DM/DRA Family"
-	depends on ARCH_MULTI_V6 || ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6 || ARCH_MULTI_V6_V7
 
 config ARCH_OMAP2
 	bool "TI OMAP2"
@@ -10,7 +10,7 @@ config ARCH_OMAP2
 
 config ARCH_OMAP3
 	bool "TI OMAP3"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select ARCH_OMAP2PLUS
 	select ARM_CPU_SUSPEND if PM
 	select OMAP_INTERCONNECT
@@ -21,7 +21,7 @@ config ARCH_OMAP3
 
 config ARCH_OMAP4
 	bool "TI OMAP4"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select ARCH_OMAP2PLUS
 	select ARCH_NEEDS_CPU_IDLE_COUPLED if SMP
 	select ARM_CPU_SUSPEND if PM
@@ -41,7 +41,7 @@ config ARCH_OMAP4
 
 config SOC_OMAP5
 	bool "TI OMAP5"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select ARCH_OMAP2PLUS
 	select ARM_CPU_SUSPEND if PM
 	select ARM_GIC
@@ -55,13 +55,13 @@ config SOC_OMAP5
 
 config SOC_AM33XX
 	bool "TI AM33XX"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select ARCH_OMAP2PLUS
 	select ARM_CPU_SUSPEND if PM
 
 config SOC_AM43XX
 	bool "TI AM43x"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select ARCH_OMAP2PLUS
 	select ARM_GIC
 	select MACH_OMAP_GENERIC
@@ -75,7 +75,7 @@ config SOC_AM43XX
 
 config SOC_DRA7XX
 	bool "TI DRA7XX"
-	depends on ARCH_MULTI_V7
+	depends on ARCH_MULTI_V6_V7
 	select ARCH_OMAP2PLUS
 	select ARM_CPU_SUSPEND if PM
 	select ARM_GIC

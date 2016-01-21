@@ -1,6 +1,6 @@
 menuconfig ARCH_ORION5X
 	bool "Marvell Orion"
-	depends on MMU && ARCH_MULTI_V5
+	depends on MMU && ARCH_MULTI_V4_V5
 	select CPU_FEROCEON
 	select GENERIC_CLOCKEVENTS
 	select GPIOLIB
