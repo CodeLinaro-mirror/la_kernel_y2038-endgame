@@ -10,6 +10,9 @@
  * published by the Free Software Foundation.
  *
 */
+#if CONFIG_DEBUG_UART_PHYS == 0xdeadbeef || CONFIG_DEBUG_UART_VIRT <  0xf0000000
+#include "none.S"
+#else
 #include <linux/amba/serial.h>
 
 #ifdef CONFIG_DEBUG_ZTE_ZX
@@ -43,3 +46,4 @@
 		tst	\rd, #UART01x_FR_BUSY
 		bne	1001b
 		.endm
+#endif
