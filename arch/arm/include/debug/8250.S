@@ -6,6 +6,9 @@
  */
 #include <linux/serial_reg.h>
 
+#if CONFIG_DEBUG_UART_PHYS == 0xdeadbeef
+#include "none.S"
+#else
 		.macro	addruart, rp, rv, tmp
 		ldr	\rp, =CONFIG_DEBUG_UART_PHYS
 		ldr	\rv, =CONFIG_DEBUG_UART_VIRT
@@ -53,3 +56,5 @@
 		tst	\rd, #UART_MSR_CTS
 		beq	1001b
 		.endm
+
+#endif
