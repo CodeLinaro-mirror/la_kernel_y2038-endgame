@@ -3,6 +3,9 @@
  * Copyright (C) 2013 Pengutronix
  * Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>
  */
+#if CONFIG_DEBUG_UART_PHYS == 0xdeadbeef || CONFIG_DEBUG_UART_VIRT <  0xf0000000
+#include "none.S"
+#else
 
 #define UARTn_CMD		0x000c
 #define UARTn_CMD_TXEN			0x0004
@@ -40,3 +43,5 @@
 		tst	\rd, #UARTn_STATUS_TXC
 		bne	1001b
 		.endm
+
+#endif
