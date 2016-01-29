@@ -6,6 +6,12 @@
  *  Copyright (C) 1994-1999 Russell King
  *  Moved from linux/arch/arm/kernel/debug.S by Ben Dooks
 */
+#if !defined(CONFIG_DEBUG_VEXPRESS_UART0_DETECT) && \
+    !defined(CONFIG_DEBUG_UX500_UART) && \
+	(CONFIG_DEBUG_UART_PHYS == 0xdeadbeef || \
+	 CONFIG_DEBUG_UART_VIRT <  0xf0000000)
+#include "none.S"
+#else
 #include <linux/amba/serial.h>
 
 #ifdef CONFIG_DEBUG_UART_PHYS
@@ -35,3 +41,4 @@
 		tst	\rd, #UART01x_FR_BUSY
 		bne	1001b
 		.endm
+#endif
