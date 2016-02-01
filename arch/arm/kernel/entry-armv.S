@@ -1027,7 +1027,7 @@ __kuser_helper_end:
 	.macro	vector_stub, name, mode, correction=0
 	.align	5
 
-vector_\name:
+.Lvector_\name:
 	.if \correction
 	sub	lr, lr, #\correction
 	.endif
@@ -1056,7 +1056,7 @@ vector_\name:
 	mov	r0, sp
  ARM(	ldr	lr, [pc, lr, lsl #2]	)
 	movs	pc, lr			@ branch to handler in SVC mode
-ENDPROC(vector_\name)
+ENDPROC(.Lvector_\name)
 
 	.align	2
 	@ handler addresses follow this label
@@ -1064,15 +1064,15 @@ ENDPROC(vector_\name)
 	.endm
 
 	.section .stubs, "ax", %progbits
-__stubs_start:
+.L__stubs_start:
 	@ This must be the first word
 	.word	vector_swi
 
-vector_rst:
+.Lvector_rst:
  ARM(	swi	SYS_ERROR0	)
  THUMB(	svc	#0		)
  THUMB(	nop			)
-	b	vector_und
+	b	.Lvector_und
 
 /*
  * Interrupt dispatcher
@@ -1174,8 +1174,8 @@ vector_rst:
  * (they're not supposed to happen, and won't happen in 32-bit data mode).
  */
 
-vector_addrexcptn:
-	b	vector_addrexcptn
+.Lvector_addrexcptn:
+	b	.Lvector_addrexcptn
 
 /*=============================================================================
  * FIQ "NMI" handler
@@ -1203,18 +1203,18 @@ vector_addrexcptn:
 	.long	__fiq_svc			@  f
 
 	.globl	vector_fiq_offset
-	.equ	vector_fiq_offset, vector_fiq
+	.equ	vector_fiq_offset, .Lvector_fiq - .L__stubs_start + 0x1000
 
 	.section .vectors, "ax", %progbits
-__vectors_start:
-	W(b)	vector_rst
-	W(b)	vector_und
-	W(ldr)	pc, __vectors_start + 0x1000
-	W(b)	vector_pabt
-	W(b)	vector_dabt
-	W(b)	vector_addrexcptn
-	W(b)	vector_irq
-	W(b)	vector_fiq
+.L__vectors_start:
+	W(b)	.Lvector_rst
+	W(b)	.Lvector_und
+	W(ldr)	pc, .L__vectors_start + 0x1000
+	W(b)	.Lvector_pabt
+	W(b)	.Lvector_dabt
+	W(b)	.Lvector_addrexcptn
+	W(b)	.Lvector_irq
+	W(b)	.Lvector_fiq
 
 	.data
 
