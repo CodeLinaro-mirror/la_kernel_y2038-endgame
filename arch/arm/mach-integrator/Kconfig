@@ -52,7 +52,7 @@ config INTEGRATOR_IMPD1
 config INTEGRATOR_CM7TDMI
 	bool "Integrator/CM7TDMI core module"
 	depends on ARCH_INTEGRATOR_AP
-	depends on ARCH_MULTI_V4_V4T && !MMU
+	depends on ARCH_MULTI_V4T && !MMU
 	select CPU_ARM7TDMI
 
 config INTEGRATOR_CM720T
