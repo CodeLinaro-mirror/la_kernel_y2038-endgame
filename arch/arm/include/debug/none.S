@@ -1,6 +1,4 @@
 
-#warning DEBUG_LL not configured, disabling
-
 		.macro	addruart, rp, rv, tmp
 		ldr	\rp, =0
 		ldr	\rv, =0
