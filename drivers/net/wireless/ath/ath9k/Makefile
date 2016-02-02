@@ -50,6 +50,9 @@ ath9k_hw-$(CONFIG_ATH9K_BTCOEX_SUPPORT) += btcoex.o \
 					   ar9003_mci.o \
 					   ar9003_aic.o
 
+GCOV_PROFILE_ar9003_aic.o := n
+GCOV_PROFILE_ar9003_paprd.o := n
+
 ath9k_hw-$(CONFIG_ATH9K_PCOEM) += ar9003_rtt.o
 
 ath9k_hw-$(CONFIG_ATH9K_DYNACK) += dynack.o
