@@ -398,7 +398,11 @@ static struct platform_driver dt_cpufreq_platdrv = {
 
 static int __init cpufreq_dt_init(void)
 {
-	if (of_machine_is_compatible("marvell,berlin"))
+	if (of_machine_is_compatible("marvell,berlin") ||
+	    of_machine_is_compatible("fsl,imx27") ||
+	    of_machine_is_compatible("fsl,imx51") ||
+	    of_machine_is_compatible("fsl,imx53") ||
+	    of_machine_is_compatible("fsl,imx7d"))
 		return dt_cpufreq_init(NULL);
 
 	return platform_driver_register(&dt_cpufreq_platdrv);
