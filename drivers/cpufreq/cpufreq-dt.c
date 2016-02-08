@@ -351,7 +351,7 @@ static struct cpufreq_driver dt_cpufreq_driver = {
 	.suspend = cpufreq_generic_suspend,
 };
 
-static int dt_cpufreq_probe(struct platform_device *pdev)
+static int dt_cpufreq_init(void *data)
 {
 	int ret;
 
@@ -366,13 +366,20 @@ static int dt_cpufreq_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	dt_cpufreq_driver.driver_data = dev_get_platdata(&pdev->dev);
+	dt_cpufreq_driver.driver_data = data;
 
 	ret = cpufreq_register_driver(&dt_cpufreq_driver);
 	if (ret)
-		dev_err(&pdev->dev, "failed register driver: %d\n", ret);
+		pr_err("failed register driver: %d\n", ret);
 
 	return ret;
+}
+
+/* a minimal fake platform device for platforms that still call
+ * platform_device_create(). Don't use */
+static int dt_cpufreq_probe(struct platform_device *pdev)
+{
+	return dt_cpufreq_init(dev_get_platdata(&pdev->dev));
 }
 
 static int dt_cpufreq_remove(struct platform_device *pdev)
@@ -388,7 +395,24 @@ static struct platform_driver dt_cpufreq_platdrv = {
 	.probe		= dt_cpufreq_probe,
 	.remove		= dt_cpufreq_remove,
 };
-module_platform_driver(dt_cpufreq_platdrv);
+
+static int __init cpufreq_dt_init(void)
+{
+	if (of_machine_is_compatible("marvell,berlin"))
+		return dt_cpufreq_init(NULL);
+
+	return platform_driver_register(&dt_cpufreq_platdrv);
+}
+module_init(cpufreq_dt_init);
+
+static void cpufreq_dt_exit(void)
+{
+	if (dt_cpufreq_platdrv.driver.bus)
+		platform_driver_unregister(&dt_cpufreq_platdrv);
+	else
+		cpufreq_unregister_driver(&dt_cpufreq_driver);
+}
+module_exit(cpufreq_dt_exit);
 
 MODULE_ALIAS("platform:cpufreq-dt");
 MODULE_AUTHOR("Viresh Kumar <viresh.kumar@linaro.org>");
