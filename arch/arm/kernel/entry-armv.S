@@ -83,11 +83,12 @@
 	.endm
 
 #ifdef CONFIG_KPROBES
-	.section	.kprobes.text,"ax",%progbits
+#define KPROBE_TEXT	.section .kprobes.text,"ax",%progbits
 #else
-	.text
+#define KPROBE_TEXT	.text
 #endif
 
+	KPROBE_TEXT
 /*
  * Invalid mode handlers
  */
@@ -900,7 +901,7 @@ __kuser_cmpxchg64:				@ 0xffff0f60
 	rsbs	r0, r3, #0			@ set return val and C flag
 	ldmfd	sp!, {r4, r5, r6, pc}
 
-	.text
+	KPROBE_TEXT
 kuser_cmpxchg64_fixup:
 	@ Called from kuser_cmpxchg_fixup.
 	@ r4 = address of interrupted insn (must be preserved).
@@ -958,7 +959,7 @@ __kuser_cmpxchg:				@ 0xffff0fc0
 	rsbs	r0, r3, #0			@ set return val and C flag
 	usr_ret	lr
 
-	.text
+	KPROBE_TEXT
 kuser_cmpxchg32_fixup:
 	@ Called from kuser_cmpxchg_check macro.
 	@ r4 = address of interrupted insn (must be preserved).
