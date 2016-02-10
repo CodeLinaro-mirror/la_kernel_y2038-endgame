@@ -15,7 +15,6 @@ divas-$(CONFIG_ISDN_DIVAS_BRIPCI)	+= os_bri.o  s_bri.o os_4bri.o s_4bri.o
 divas-$(CONFIG_ISDN_DIVAS_PRIPCI)	+= os_pri.o  s_pri.o
 
 divacapi-y				:= capimain.o capifunc.o message.o capidtmf.o
-GCOV_PROFILE_capidtmf.o			:= n
 
 divadidd-y				:= diva_didd.o diddfunc.o dadapter.o
 
