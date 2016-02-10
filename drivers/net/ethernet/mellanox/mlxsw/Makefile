@@ -10,6 +10,3 @@ mlxsw_spectrum-objs		:= spectrum.o spectrum_buffers.o \
 				   spectrum_switchdev.o spectrum_router.o \
 				   spectrum_kvdl.o
 mlxsw_spectrum-$(CONFIG_MLXSW_SPECTRUM_DCB)	+= spectrum_dcb.o
-
-GCOV_PROFILE_switchx2.o := n
-GCOV_PROFILE_spectrum.o := n
