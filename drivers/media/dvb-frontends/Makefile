@@ -42,7 +42,6 @@ obj-$(CONFIG_DVB_MT352) += mt352.o
 obj-$(CONFIG_DVB_ZL10036) += zl10036.o
 obj-$(CONFIG_DVB_ZL10039) += zl10039.o
 obj-$(CONFIG_DVB_ZL10353) += zl10353.o
-GCOV_PROFILE_zl10353.o := n
 obj-$(CONFIG_DVB_CX22702) += cx22702.o
 obj-$(CONFIG_DVB_DRXD) += drxd.o
 obj-$(CONFIG_DVB_TDA10021) += tda10021.o

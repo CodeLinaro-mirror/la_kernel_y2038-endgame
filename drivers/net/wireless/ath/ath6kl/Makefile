@@ -31,7 +31,6 @@ ath6kl_core-y += bmi.o
 ath6kl_core-y += cfg80211.o
 ath6kl_core-y += init.o
 ath6kl_core-y += main.o
-GCOV_PROFILE_main.o := n
 ath6kl_core-y += txrx.o
 ath6kl_core-y += wmi.o
 ath6kl_core-y += core.o
