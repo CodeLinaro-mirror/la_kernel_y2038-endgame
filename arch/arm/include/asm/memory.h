@@ -56,6 +56,13 @@
 #define MODULES_VADDR		(PAGE_OFFSET - SZ_8M)
 #endif
 
+#ifdef CONFIG_XIP_KERNEL
+#undef MODULES_VADDR
+#undef TASK_SIZE
+#define MODULES_VADDR (PAGE_OFFSET - SZ_64M)
+#define TASK_SIZE (UL(CONFIG_PAGE_OFFSET) - UL(SZ_64M))
+#endif
+
 #if TASK_SIZE > MODULES_VADDR
 #error Top of user space clashes with start of module space
 #endif
