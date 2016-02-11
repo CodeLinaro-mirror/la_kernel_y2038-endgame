@@ -54,6 +54,13 @@
 #error Top of user space clashes with start of module space
 #endif
 
+#ifdef CONFIG_XIP_KERNEL
+#undef MODULES_VADDR
+#undef TASK_SIZE
+#define MODULES_VADDR (PAGE_OFFSET - SZ_64M)
+#define TASK_SIZE (UL(CONFIG_PAGE_OFFSET) - UL(SZ_64M))
+#endif
+
 /*
  * The highmem pkmap virtual space shares the end of the module area.
  */
