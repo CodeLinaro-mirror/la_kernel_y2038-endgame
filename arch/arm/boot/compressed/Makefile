@@ -23,7 +23,6 @@ OBJS		+= hyp-stub.o
 endif
 
 GCOV_PROFILE		:= n
-UBSAN_SANITIZE		:= n
 
 #
 # Architecture dependencies
