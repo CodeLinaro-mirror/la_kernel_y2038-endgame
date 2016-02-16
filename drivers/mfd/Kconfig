@@ -347,6 +347,7 @@ config MFD_MC13XXX_I2C
 config MFD_MX25_TSADC
 	tristate "Freescale i.MX25 integrated Touchscreen and ADC unit"
 	select REGMAP_MMIO
+	select IRQ_DOMAIN
 	depends on (SOC_IMX25 && OF) || COMPILE_TEST
 	help
 	  Enable support for the integrated Touchscreen and ADC unit of the
