@@ -46,6 +46,9 @@
  */
 #define __IGNORE_fadvise64_64
 #define __IGNORE_migrate_pages
+#define __IGNORE_madvisev
+#define __IGNORE_preadv2
+#define __IGNORE_pwritev2
 
 #ifdef __ARM_EABI__
 /*
