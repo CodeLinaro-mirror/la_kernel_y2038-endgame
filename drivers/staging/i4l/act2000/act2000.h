@@ -81,7 +81,7 @@ typedef struct act2000_fwid {
 #include <linux/wait.h>
 #include <linux/delay.h>
 #include <linux/ctype.h>
-#include <linux/isdnif.h>
+#include "../isdnif.h"
 
 #endif                           /* __KERNEL__ */
 

@@ -24,7 +24,7 @@
 
 #include <asm/io.h>
 
-#include <linux/isdnif.h>
+#include "../isdnif.h"
 
 #include "pcbit.h"
 #include "layer2.h"

@@ -34,7 +34,7 @@
 #include <linux/mm.h>
 #include <linux/skbuff.h>
 
-#include <linux/isdnif.h>
+#include "../isdnif.h"
 
 #include <asm/io.h>
 

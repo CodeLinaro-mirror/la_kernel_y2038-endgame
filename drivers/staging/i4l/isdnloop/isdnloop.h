@@ -45,7 +45,7 @@ typedef struct isdnloop_sdef {
 #include <linux/ioport.h>
 #include <linux/timer.h>
 #include <linux/wait.h>
-#include <linux/isdnif.h>
+#include "../isdnif.h"
 
 #endif                          /* __KERNEL__ */
 

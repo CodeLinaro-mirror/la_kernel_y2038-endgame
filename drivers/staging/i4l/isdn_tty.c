@@ -10,7 +10,7 @@
  */
 #undef ISDN_TTY_STAT_DEBUG
 
-#include <linux/isdn.h>
+#include "isdn.h"
 #include <linux/serial.h> /* ASYNC_* flags */
 #include <linux/slab.h>
 #include <linux/delay.h>

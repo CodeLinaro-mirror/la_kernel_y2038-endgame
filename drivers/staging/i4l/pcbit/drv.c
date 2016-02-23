@@ -30,7 +30,7 @@
 #include <linux/string.h>
 #include <linux/skbuff.h>
 
-#include <linux/isdnif.h>
+#include "../isdnif.h"
 #include <asm/string.h>
 #include <asm/io.h>
 #include <linux/ioport.h>

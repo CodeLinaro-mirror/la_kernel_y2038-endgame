@@ -48,7 +48,7 @@ typedef struct icn_cdef {
 #include <linux/timer.h>
 #include <linux/wait.h>
 #include <linux/delay.h>
-#include <linux/isdnif.h>
+#include "../isdnif.h"
 
 #endif                          /* __KERNEL__ */
 

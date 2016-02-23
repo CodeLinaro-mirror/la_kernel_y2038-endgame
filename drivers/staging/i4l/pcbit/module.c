@@ -15,7 +15,7 @@
 #include <linux/kernel.h>
 #include <linux/skbuff.h>
 
-#include <linux/isdnif.h>
+#include "../isdnif.h"
 #include "pcbit.h"
 
 MODULE_DESCRIPTION("ISDN4Linux: Driver for PCBIT-T card");

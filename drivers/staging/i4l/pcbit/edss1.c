@@ -25,7 +25,7 @@
 #include <linux/timer.h>
 #include <asm/io.h>
 
-#include <linux/isdnif.h>
+#include "../isdnif.h"
 
 #include "pcbit.h"
 #include "edss1.h"

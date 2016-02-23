@@ -17,9 +17,9 @@
  *
  */
 
-/* #include <linux/isdn.h> */
+/* #include "isdn.h" */
 #include <linux/netdevice.h>
-#include <linux/concap.h>
+#include "concap.h"
 #include <linux/slab.h>
 #include <linux/wanrouter.h>
 #include <net/x25device.h>

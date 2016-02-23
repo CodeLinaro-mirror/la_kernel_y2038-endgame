@@ -83,8 +83,8 @@
 
 #include <linux/ppp_defs.h>
 
-#include <linux/isdn.h>
-#include <linux/isdn_ppp.h>
+#include "isdn.h"
+#include "isdn_ppp_if.h"
 #include <linux/ip.h>
 #include <linux/tcp.h>
 #include <linux/if_arp.h>
