@@ -22,7 +22,7 @@
  *           http://i4l.zabbadoz.net/i4l/cisco-hdlc.txt
  */
 
-#include <linux/isdn.h>
+#include "isdn.h"
 #include <linux/slab.h>
 #include <net/arp.h>
 #include <net/dst.h>
@@ -34,7 +34,7 @@
 #include "isdn_ppp.h"
 #endif
 #ifdef CONFIG_ISDN_X25
-#include <linux/concap.h>
+#include "concap.h"
 #include "isdn_concap.h"
 #endif
 

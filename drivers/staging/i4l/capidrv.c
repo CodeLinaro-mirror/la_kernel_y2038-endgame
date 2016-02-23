@@ -21,8 +21,8 @@
 #include <linux/timer.h>
 #include <linux/wait.h>
 #include <linux/skbuff.h>
-#include <linux/isdn.h>
-#include <linux/isdnif.h>
+#include "isdn.h"
+#include "isdnif.h"
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/capi.h>

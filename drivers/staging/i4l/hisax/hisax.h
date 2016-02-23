@@ -20,7 +20,7 @@
 #include <linux/ioport.h>
 #include <linux/timer.h>
 #include <linux/wait.h>
-#include <linux/isdnif.h>
+#include "../isdnif.h"
 #include <linux/tty.h>
 #include <linux/serial_reg.h>
 #include <linux/netdevice.h>
@@ -311,7 +311,7 @@ struct Param {
 	int bchannel;
 	int chargeinfo;
 	int spv;		/* SPV Flag */
-	setup_parm setup;	/* from isdnif.h numbers and Serviceindicator */
+	setup_parm setup;	/* from ../isdnif.h numbers and Serviceindicator */
 	u_char moderate;	/* transfer mode and rate (bearer octet 4) */
 };
 
@@ -544,7 +544,7 @@ struct Channel {
 	int l3_protocol;
 	int data_open;
 	struct l3_process *proc;
-	setup_parm setup;	/* from isdnif.h numbers and Serviceindicator */
+	setup_parm setup;	/* from ../isdnif.h numbers and Serviceindicator */
 	u_long Flags;		/* for remembering action done in l4 */
 	int leased;
 };

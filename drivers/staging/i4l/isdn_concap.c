@@ -14,10 +14,10 @@
  */
 
 
-#include <linux/isdn.h>
+#include "isdn.h"
 #include "isdn_x25iface.h"
 #include "isdn_net.h"
-#include <linux/concap.h>
+#include "concap.h"
 #include "isdn_concap.h"
 
 

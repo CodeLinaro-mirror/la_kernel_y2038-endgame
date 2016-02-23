@@ -14,7 +14,7 @@
 #undef ISDN_TTY_FAX_STAT_DEBUG
 #undef ISDN_TTY_FAX_CMD_DEBUG
 
-#include <linux/isdn.h>
+#include "isdn.h"
 #include "isdn_common.h"
 #include "isdn_tty.h"
 #include "isdn_ttyfax.h"

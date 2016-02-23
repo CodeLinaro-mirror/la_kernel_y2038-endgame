@@ -12,7 +12,7 @@
 #ifndef _LINUX_ISDN_DIVERTIF_H
 #define _LINUX_ISDN_DIVERTIF_H
 
-#include <linux/isdnif.h>
+#include "../isdnif.h"
 #include <linux/types.h>
 #include <uapi/linux/isdn_divertif.h>
 

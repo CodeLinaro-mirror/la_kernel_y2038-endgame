@@ -19,8 +19,8 @@
 #endif
 
 #include <linux/skbuff.h>
-#include <linux/isdn.h>
-#include <linux/concap.h>
+#include "isdn.h"
+#include "concap.h"
 
 extern struct concap_proto_ops *isdn_x25iface_concap_proto_ops_pt;
 extern struct concap_proto *isdn_x25iface_proto_new(void);

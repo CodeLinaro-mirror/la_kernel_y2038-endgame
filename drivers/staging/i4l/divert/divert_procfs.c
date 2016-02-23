@@ -18,7 +18,7 @@
 #include <linux/fs.h>
 #endif
 #include <linux/sched.h>
-#include <linux/isdnif.h>
+#include "../isdnif.h"
 #include <net/net_namespace.h>
 #include <linux/mutex.h>
 #include "isdn_divert.h"

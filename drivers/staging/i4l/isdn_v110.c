@@ -15,7 +15,7 @@
 #include <linux/mm.h>
 #include <linux/delay.h>
 
-#include <linux/isdn.h>
+#include "isdn.h"
 #include "isdn_v110.h"
 
 #undef ISDN_V110_DEBUG

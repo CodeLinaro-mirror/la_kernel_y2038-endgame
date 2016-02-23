@@ -16,7 +16,7 @@
 #include <linux/poll.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
-#include <linux/isdn.h>
+#include "isdn.h"
 #include <linux/mutex.h>
 #include "isdn_common.h"
 #include "isdn_tty.h"
@@ -29,7 +29,7 @@
 #define CONFIG_ISDN_DIVERSION
 #endif
 #ifdef CONFIG_ISDN_DIVERSION
-#include <linux/isdn_divertif.h>
+#include "divert/isdn_divertif.h"
 #endif /* CONFIG_ISDN_DIVERSION */
 #include "isdn_v110.h"
 

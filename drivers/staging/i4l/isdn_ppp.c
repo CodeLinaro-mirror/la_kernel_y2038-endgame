@@ -9,7 +9,7 @@
  *
  */
 
-#include <linux/isdn.h>
+#include "isdn.h"
 #include <linux/poll.h>
 #include <linux/ppp-comp.h>
 #include <linux/slab.h>
