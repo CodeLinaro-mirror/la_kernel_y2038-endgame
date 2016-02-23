@@ -1,0 +1,3 @@
+* The hisax driver is probably still used, but a replacement driver
+  exists in drivers/isdn/mISDN, and hisax is not being actively
+  developed.

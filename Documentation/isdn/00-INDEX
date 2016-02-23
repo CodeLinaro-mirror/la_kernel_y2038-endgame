@@ -2,8 +2,6 @@
 	- this file (info on ISDN implementation for Linux)
 CREDITS
 	- list of the kind folks that brought you this stuff.
-HiSax.cert
-	- information about the ITU approval certification of the HiSax driver.
 INTERFACE
 	- description of isdn4linux Link Level and Hardware Level interfaces.
 INTERFACE.fax
@@ -14,8 +12,6 @@ README
 	- general info on what you need and what to do for Linux ISDN.
 README.FAQ
 	- general info for FAQ.
-README.HiSax
-	- info on the HiSax driver which replaces the old teles.
 README.audio
 	- info for running audio over ISDN.
 README.avmb1
@@ -28,8 +24,6 @@ README.fax
 	- info for using Fax over ISDN.
 README.gigaset
 	- info on the drivers for Siemens Gigaset ISDN adapters
-README.hfc-pci
-	- info on hfc-pci based cards.
 README.hysdn
         - info on driver for Hypercope active HYSDN cards
 README.mISDN
