@@ -64,14 +64,14 @@
 #include <linux/ppp_defs.h>
 #include <linux/ppp-ioctl.h>
 
-#include <linux/isdn_ppp.h>
+#include "isdn_ppp_if.h"
 #endif
 
 #ifdef CONFIG_ISDN_X25
-#  include <linux/concap.h>
+#  include "concap.h"
 #endif
 
-#include <linux/isdnif.h>
+#include "isdnif.h"
 
 #define ISDN_DRVIOCTL_MASK       0x7f  /* Mask for Device-ioctl */
 

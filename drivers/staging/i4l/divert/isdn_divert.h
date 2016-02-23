@@ -96,8 +96,8 @@ typedef union {
 
 #ifdef __KERNEL__
 
-#include <linux/isdnif.h>
-#include <linux/isdn_divertif.h>
+#include "../isdnif.h"
+#include "isdn_divertif.h"
 
 #define AUTODEL_TIME 30 /* timeout in s to delete internal entries */
 
