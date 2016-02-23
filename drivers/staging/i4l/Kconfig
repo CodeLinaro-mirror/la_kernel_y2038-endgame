@@ -4,6 +4,8 @@
 menu "Old ISDN4Linux (deprecated)"
 	depends on ISDN_I4L
 
+source "drivers/staging/i4l/hisax/Kconfig"
+
 source "drivers/staging/i4l/icn/Kconfig"
 
 source "drivers/staging/i4l/pcbit/Kconfig"
