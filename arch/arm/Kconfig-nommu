@@ -11,7 +11,7 @@ config SET_MEM_PARAM
 
 config DRAM_BASE
 	hex '(S)DRAM Base Address' if SET_MEM_PARAM
-	default 0x00800000
+	default 0x10800000
 
 config DRAM_SIZE
 	hex '(S)DRAM SIZE' if SET_MEM_PARAM
