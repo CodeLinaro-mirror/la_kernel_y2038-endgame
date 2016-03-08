@@ -94,7 +94,7 @@ quiet_cmd_check = CHECK   $(printdir) ($(words $(all-files)) files)
 # the "Argument list too long" error.
       cmd_check = for f in $(all-files); do                          \
                   echo "$(installdir)/$${f}"; done                      \
-                  | xargs                                            \
+                  | LC_ALL=C xargs                                            \
                   $(PERL) $< $(INSTALL_HDR_PATH)/include $(SRCARCH); \
 	          touch $@
 
