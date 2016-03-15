@@ -137,6 +137,11 @@ endif
 ifeq ($(CONFIG_CPU_ENDIAN_BE8),y)
 LDFLAGS_vmlinux += --be8
 endif
+
+ifdef CONFIG_CPU_32v4
+LDFLAGS_vmlinux += $(call ld-option,--fix-v4bx)
+endif
+
 # Report unresolved symbol references
 LDFLAGS_vmlinux += --no-undefined
 # Delete all temporary local symbols
