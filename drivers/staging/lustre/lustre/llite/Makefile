@@ -5,6 +5,3 @@ lustre-y := dcache.o dir.o file.o llite_lib.o llite_nfs.o \
 	    super25.o statahead.o glimpse.o lcommon_cl.o lcommon_misc.o \
 	    vvp_dev.o vvp_page.o vvp_lock.o vvp_io.o vvp_object.o \
 	    lproc_llite.o
-ifdef CONFIG_CPU_32v3
-CFLAGS_file.o += -O1
-endif
