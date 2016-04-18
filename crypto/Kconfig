@@ -12,14 +12,12 @@ source "crypto/async_tx/Kconfig"
 #
 # Cryptographic API Configuration
 #
-menuconfig CRYPTO
-	tristate "Cryptographic API"
+config CRYPTO
+	tristate
 	help
 	  This option provides the core Cryptographic API.
 
-if CRYPTO
-
-comment "Crypto core or helper"
+menu "Crypto core or helper"
 
 config CRYPTO_FIPS
 	bool "FIPS 200 compliance"
@@ -39,6 +37,7 @@ config CRYPTO_ALGAPI
 
 config CRYPTO_ALGAPI2
 	tristate
+	select CRYPTO
 
 config CRYPTO_AEAD
 	tristate
@@ -1079,7 +1078,6 @@ config CRYPTO_BLOWFISH_X86_64
 
 config CRYPTO_CAMELLIA
 	tristate "Camellia cipher algorithms"
-	depends on CRYPTO
 	select CRYPTO_ALGAPI
 	help
 	  Camellia cipher algorithms module.
@@ -1095,7 +1093,6 @@ config CRYPTO_CAMELLIA
 config CRYPTO_CAMELLIA_X86_64
 	tristate "Camellia cipher algorithm (x86_64)"
 	depends on X86 && 64BIT
-	depends on CRYPTO
 	select CRYPTO_ALGAPI
 	select CRYPTO_GLUE_HELPER_X86
 	select CRYPTO_LRW
@@ -1114,7 +1111,6 @@ config CRYPTO_CAMELLIA_X86_64
 config CRYPTO_CAMELLIA_AESNI_AVX_X86_64
 	tristate "Camellia cipher algorithm (x86_64/AES-NI/AVX)"
 	depends on X86 && 64BIT
-	depends on CRYPTO
 	select CRYPTO_ALGAPI
 	select CRYPTO_CRYPTD
 	select CRYPTO_ABLK_HELPER
@@ -1136,7 +1132,6 @@ config CRYPTO_CAMELLIA_AESNI_AVX_X86_64
 config CRYPTO_CAMELLIA_AESNI_AVX2_X86_64
 	tristate "Camellia cipher algorithm (x86_64/AES-NI/AVX2)"
 	depends on X86 && 64BIT
-	depends on CRYPTO
 	select CRYPTO_ALGAPI
 	select CRYPTO_CRYPTD
 	select CRYPTO_ABLK_HELPER
@@ -1159,7 +1154,6 @@ config CRYPTO_CAMELLIA_AESNI_AVX2_X86_64
 config CRYPTO_CAMELLIA_SPARC64
 	tristate "Camellia cipher algorithm (SPARC64)"
 	depends on SPARC64
-	depends on CRYPTO
 	select CRYPTO_ALGAPI
 	help
 	  Camellia cipher algorithm module (SPARC64).
@@ -1729,4 +1723,4 @@ source "drivers/crypto/Kconfig"
 source crypto/asymmetric_keys/Kconfig
 source certs/Kconfig
 
-endif	# if CRYPTO
+endmenu
