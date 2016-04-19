@@ -94,7 +94,7 @@ static struct plat_serial8250_port au1x00_uart_data[][4] __initdata = {
 };
 
 static struct platform_device au1xx0_uart_device = {
-	.name			= "serial8250",
+	.name			= "serial8250-rt28xx",
 	.id			= PLAT8250_DEV_AU1X00,
 };
 
