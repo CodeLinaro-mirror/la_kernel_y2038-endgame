@@ -115,8 +115,8 @@ ds1302_writereg(int reg, unsigned char val)
 	ds1302_wdisable();
 }
 
-void
-get_rtc_time(struct rtc_time *rtc_tm)
+static int
+ds1302_get_rtc_time(struct device *dev, struct rtc_time *rtc_tm)
 {
 	unsigned long flags;
 
@@ -152,11 +152,64 @@ get_rtc_time(struct rtc_time *rtc_tm)
 static unsigned char days_in_mo[] =
     {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
+static int
+ds1302_set_rtc_time(struct device *dev, struct rtc_time *rtc_tm)
+{
+	struct rtc_time rtc_tm;
+	unsigned char mon, day, hrs, min, sec, leap_yr;
+	unsigned int yrs;
+
+	yrs = rtc_tm.tm_year + 1900;
+	mon = rtc_tm.tm_mon + 1;   /* tm_mon starts at zero */
+	day = rtc_tm.tm_mday;
+	hrs = rtc_tm.tm_hour;
+	min = rtc_tm.tm_min;
+	sec = rtc_tm.tm_sec;
+
+	if ((yrs < 1970) || (yrs > 2069))
+		return -EINVAL;
+
+	leap_yr = ((!(yrs % 4) && (yrs % 100)) || !(yrs % 400));
+
+	if ((mon > 12) || (day == 0))
+		return -EINVAL;
+
+	if (day > (days_in_mo[mon] + ((mon == 2) && leap_yr)))
+		return -EINVAL;
+
+	if ((hrs >= 24) || (min >= 60) || (sec >= 60))
+		return -EINVAL;
+
+	if (yrs >= 2000)
+		yrs -= 2000;	/* RTC (0, 1, ... 69) */
+	else
+		yrs -= 1900;	/* RTC (70, 71, ... 99) */
+
+	sec = bin2bcd(sec);
+	min = bin2bcd(min);
+	hrs = bin2bcd(hrs);
+	day = bin2bcd(day);
+	mon = bin2bcd(mon);
+	yrs = bin2bcd(yrs);
+
+	local_irq_save(flags);
+	CMOS_WRITE(yrs, RTC_YEAR);
+	CMOS_WRITE(mon, RTC_MONTH);
+	CMOS_WRITE(day, RTC_DAY_OF_MONTH);
+	CMOS_WRITE(hrs, RTC_HOURS);
+	CMOS_WRITE(min, RTC_MINUTES);
+	CMOS_WRITE(sec, RTC_SECONDS);
+	local_irq_restore(flags);
+
+	return 0;
+}
+
+
 /* ioctl that supports RTC_RD_TIME and RTC_SET_TIME (read and set time/date). */
 
 static long rtc_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
-	unsigned long flags;
+	int ret;
 
 	switch(cmd) {
 		case RTC_RD_TIME:	/* read the time/date from RTC	*/
@@ -165,7 +218,7 @@ static long rtc_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 			memset(&rtc_tm, 0, sizeof (struct rtc_time));
 			mutex_lock(&rtc_mutex);
-			get_rtc_time(&rtc_tm);
+			get_rtc_time(NULL, &rtc_tm);
 			mutex_unlock(&rtc_mutex);
 			if (copy_to_user((struct rtc_time*)arg, &rtc_tm, sizeof(struct rtc_time)))
 				return -EFAULT;
@@ -184,49 +237,8 @@ static long rtc_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			if (copy_from_user(&rtc_tm, (struct rtc_time*)arg, sizeof(struct rtc_time)))
 				return -EFAULT;
 
-			yrs = rtc_tm.tm_year + 1900;
-			mon = rtc_tm.tm_mon + 1;   /* tm_mon starts at zero */
-			day = rtc_tm.tm_mday;
-			hrs = rtc_tm.tm_hour;
-			min = rtc_tm.tm_min;
-			sec = rtc_tm.tm_sec;
-
-
-			if ((yrs < 1970) || (yrs > 2069))
-				return -EINVAL;
-
-			leap_yr = ((!(yrs % 4) && (yrs % 100)) || !(yrs % 400));
-
-			if ((mon > 12) || (day == 0))
-				return -EINVAL;
-
-			if (day > (days_in_mo[mon] + ((mon == 2) && leap_yr)))
-				return -EINVAL;
-
-			if ((hrs >= 24) || (min >= 60) || (sec >= 60))
-				return -EINVAL;
-
-			if (yrs >= 2000)
-				yrs -= 2000;	/* RTC (0, 1, ... 69) */
-			else
-				yrs -= 1900;	/* RTC (70, 71, ... 99) */
-
-			sec = bin2bcd(sec);
-			min = bin2bcd(min);
-			hrs = bin2bcd(hrs);
-			day = bin2bcd(day);
-			mon = bin2bcd(mon);
-			yrs = bin2bcd(yrs);
-
 			mutex_lock(&rtc_mutex);
-			local_irq_save(flags);
-			CMOS_WRITE(yrs, RTC_YEAR);
-			CMOS_WRITE(mon, RTC_MONTH);
-			CMOS_WRITE(day, RTC_DAY_OF_MONTH);
-			CMOS_WRITE(hrs, RTC_HOURS);
-			CMOS_WRITE(min, RTC_MINUTES);
-			CMOS_WRITE(sec, RTC_SECONDS);
-			local_irq_restore(flags);
+			ret = ds1302_rtc_set_time(NULL, &rtc_tm;
 			mutex_unlock(&rtc_mutex);
 
 			/* Notice that at this point, the RTC is updated but
@@ -234,7 +246,7 @@ static long rtc_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			 * You need to set that separately with settimeofday
 			 * or adjtimex.
 			 */
-			return 0;
+			return ret;
 		}
 
 		case RTC_SET_CHARGE: /* set the RTC TRICKLE CHARGE register */
@@ -266,7 +278,7 @@ get_rtc_status(char *buf)
 
 	p = buf;
 
-	get_rtc_time(&tm);
+	get_rtc_time(NULL, &tm);
 
 	/*
 	 * There is no way to tell if the luser has the RTC set for local
