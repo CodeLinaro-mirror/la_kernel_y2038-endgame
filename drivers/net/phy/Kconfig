@@ -3,8 +3,9 @@
 #
 
 menuconfig PHYLIB
-	tristate "PHY Device support and infrastructure"
+	tristate "Ethernet PHY Device support and infrastructure"
 	depends on NETDEVICES
+	select MDIO
 	help
 	  Ethernet controllers are usually attached to PHY
 	  devices.  This option provides infrastructure for
@@ -168,6 +169,16 @@ config FIXED_PHY
 	  PHYs that are not connected to the real MDIO bus.
 
 	  Currently tested with mpc866ads and mpc8349e-mitx.
+endif # PHYLIB
+
+config MDIO
+	tristate
+	help
+	  The MDIO bus is typically used ethernet PHYs, but can also be
+	  used by other PHY drivers.
+
+menu "MDIO bus drivers"
+	depends on MDIO
 
 config MDIO_BITBANG
 	tristate "Support for bitbanged MDIO buses"
@@ -294,7 +305,7 @@ config INTEL_XWAY_PHY
 	  PEF 7061, PEF 7071 and PEF 7072 or integrated into the Intel
 	  SoCs xRX200, xRX300, xRX330, xRX350 and xRX550.
 
-endif # PHYLIB
+endmenu # MDIO
 
 config MICREL_KS8995MA
 	tristate "Micrel KS8995MA 5-ports 10/100 managed Ethernet switch"
