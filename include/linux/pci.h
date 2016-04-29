@@ -1159,6 +1159,9 @@ void pci_bus_put(struct pci_bus *bus);
 void pci_add_resource(struct list_head *resources, struct resource *res);
 void pci_add_resource_offset(struct list_head *resources, struct resource *res,
 			     resource_size_t offset);
+struct resource *pci_find_resource(struct list_head *resources,
+                                        unsigned long ioresource_type);
+
 void pci_free_resource_list(struct list_head *resources);
 void pci_bus_add_resource(struct pci_bus *bus, struct resource *res,
 			  unsigned int flags);
