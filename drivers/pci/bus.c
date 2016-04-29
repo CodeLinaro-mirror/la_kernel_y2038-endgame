@@ -77,6 +77,20 @@ struct resource *pci_bus_resource_n(const struct pci_bus *bus, int n)
 }
 EXPORT_SYMBOL_GPL(pci_bus_resource_n);
 
+struct resource *__pci_find_resource(struct list_head *resources,
+				   unsigned long ioresource_type)
+{
+	struct pci_bus_resource *bus_res;
+
+	list_for_each_entry(bus_res, resources, list) {
+		if ((bus_res->res->flags & IORESOURCE_TYPE_BITS) ==
+		    ioresource_type)
+			return bus_res->res;
+	}
+	return NULL;
+}
+EXPORT_SYMBOL_GPL(__pci_find_resource);
+
 void pci_bus_remove_resources(struct pci_bus *bus)
 {
 	int i;
