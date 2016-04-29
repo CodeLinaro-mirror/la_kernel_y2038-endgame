@@ -258,6 +258,7 @@ static inline struct tegra_msi *to_tegra_msi(struct msi_controller *chip)
 }
 
 struct tegra_pcie {
+	struct pci_host_bridge bridge;
 	struct device *dev;
 
 	void __iomem *pads;
@@ -607,13 +608,9 @@ static void tegra_pcie_relax_enable(struct pci_dev *dev)
 }
 DECLARE_PCI_FIXUP_FINAL(PCI_ANY_ID, PCI_ANY_ID, tegra_pcie_relax_enable);
 
-static int tegra_pcie_setup(int nr, struct pci_sys_data *sys)
+static int tegra_pcie_request_resources(struct tegra_pcie *pcie)
 {
-	struct tegra_pcie *pcie = sys_to_pcie(sys);
 	int err;
-
-	sys->mem_offset = pcie->offset.mem;
-	sys->io_offset = pcie->offset.io;
 
 	err = devm_request_resource(pcie->dev, &iomem_resource, &pcie->io);
 	if (err < 0)
@@ -621,17 +618,17 @@ static int tegra_pcie_setup(int nr, struct pci_sys_data *sys)
 
 	pci_remap_iospace(&pcie->pio, pcie->io.start);
 
-	pci_add_resource_offset(&sys->resources, &pcie->pio, sys->io_offset);
-	pci_add_resource_offset(&sys->resources, &pcie->mem, sys->mem_offset);
-	pci_add_resource_offset(&sys->resources, &pcie->prefetch,
-				sys->mem_offset);
-	pci_add_resource(&sys->resources, &pcie->busn);
+	pci_add_resource_offset(&pcie->bridge.windows, &pcie->pio, pcie->offset.io);
+	pci_add_resource_offset(&pcie->bridge.windows, &pcie->mem, pcie->offset.mem);
+	pci_add_resource_offset(&pcie->bridge.windows, &pcie->prefetch,
+				pcie->offset.mem);
+	pci_add_resource(&pcie->bridge.windows, &pcie->busn);
 
-	err = devm_request_pci_bus_resources(pcie->dev, &sys->resources);
+	err = devm_request_pci_bus_resources(pcie->dev, &pcie->bridge.windows);
 	if (err < 0)
 		return err;
 
-	return 1;
+	return 0;
 }
 
 static int tegra_pcie_map_irq(const struct pci_dev *pdev, u8 slot, u8 pin)
@@ -1520,6 +1517,7 @@ static int tegra_pcie_enable_msi(struct tegra_pcie *pcie)
 	}
 
 	/* setup AFI/FPCI range */
+	pcie->bridge.msi = &msi->chip;
 	msi->pages = __get_free_pages(GFP_KERNEL, 0);
 	base = virt_to_phys((void *)msi->pages);
 
@@ -2005,10 +2003,9 @@ retry:
 	return false;
 }
 
-static int tegra_pcie_enable(struct tegra_pcie *pcie)
+static void tegra_pcie_enable_ports(struct tegra_pcie *pcie)
 {
 	struct tegra_pcie_port *port, *tmp;
-	struct hw_pci hw;
 
 	list_for_each_entry_safe(port, tmp, &pcie->ports, list) {
 		dev_info(pcie->dev, "probing port %u, using %u lanes\n",
@@ -2024,22 +2021,6 @@ static int tegra_pcie_enable(struct tegra_pcie *pcie)
 		tegra_pcie_port_disable(port);
 		tegra_pcie_port_free(port);
 	}
-
-	memset(&hw, 0, sizeof(hw));
-
-#ifdef CONFIG_PCI_MSI
-	hw.msi_ctrl = &pcie->msi.chip;
-#endif
-
-	hw.nr_controllers = 1;
-	hw.private_data = (void **)&pcie;
-	hw.setup = tegra_pcie_setup;
-	hw.map_irq = tegra_pcie_map_irq;
-	hw.ops = &tegra_pcie_ops;
-
-	pci_common_init_dev(pcie->dev, &hw);
-
-	return 0;
 }
 
 static const struct tegra_pcie_soc_data tegra20_pcie_data = {
@@ -2203,6 +2184,8 @@ static int tegra_pcie_probe(struct platform_device *pdev)
 {
 	const struct of_device_id *match;
 	struct tegra_pcie *pcie;
+	struct pci_host_bridge *bridge;
+	struct pci_bus *child;
 	int err;
 
 	match = of_match_device(tegra_pcie_of_match, &pdev->dev);
@@ -2217,6 +2200,7 @@ static int tegra_pcie_probe(struct platform_device *pdev)
 	INIT_LIST_HEAD(&pcie->ports);
 	pcie->soc_data = match->data;
 	pcie->dev = &pdev->dev;
+	bridge = &pcie->bridge;
 
 	err = tegra_pcie_parse_dt(pcie);
 	if (err < 0)
@@ -2229,6 +2213,10 @@ static int tegra_pcie_probe(struct platform_device *pdev)
 	}
 
 	err = tegra_pcie_enable_controller(pcie);
+	if (err)
+		goto put_resources;
+
+	err = tegra_pcie_request_resources(pcie);
 	if (err)
 		goto put_resources;
 
@@ -2245,11 +2233,28 @@ static int tegra_pcie_probe(struct platform_device *pdev)
 		}
 	}
 
-	err = tegra_pcie_enable(pcie);
+	tegra_pcie_enable_ports(pcie);
+
+	pci_add_flags(PCI_REASSIGN_ALL_RSRC | PCI_REASSIGN_ALL_BUS);
+	bridge->busnr = pcie->busn.start;
+	bridge->dev.parent = &pdev->dev;
+	bridge->sysdata = pcie;
+	bridge->ops = &tegra_pcie_ops;
+	err = pci_register_host(bridge);
+
 	if (err < 0) {
-		dev_err(&pdev->dev, "failed to enable PCIe ports: %d\n", err);
+		dev_err(&pdev->dev, "failed to register host: %d\n", err);
 		goto disable_msi;
 	}
+
+        pci_fixup_irqs(pci_common_swizzle, tegra_pcie_map_irq);
+	pci_bus_size_bridges(bridge->bus);
+	pci_bus_assign_resources(bridge->bus);
+
+	list_for_each_entry(child, &bridge->bus->children, node)
+		pcie_bus_configure_settings(child);
+
+        pci_bus_add_devices(bridge->bus);
 
 	if (IS_ENABLED(CONFIG_DEBUG_FS)) {
 		err = tegra_pcie_debugfs_init(pcie);
