@@ -896,7 +896,8 @@ int fragmentation_index(struct zone *zone, unsigned int order)
 }
 #endif
 
-#if defined(CONFIG_PROC_FS) || defined(CONFIG_SYSFS) || defined(CONFIG_NUMA)
+#if defined(CONFIG_PROC_FS) || defined(CONFIG_SYSFS) || \
+    defined(CONFIG_NUMA) || defined(CONFIG_SMP)
 #ifdef CONFIG_ZONE_DMA
 #define TEXT_FOR_DMA(xx) xx "_dma",
 #else
@@ -1091,7 +1092,7 @@ const char * const vmstat_text[] = {
 #endif
 #endif /* CONFIG_VM_EVENTS_COUNTERS */
 };
-#endif /* CONFIG_PROC_FS || CONFIG_SYSFS || CONFIG_NUMA */
+#endif /* CONFIG_PROC_FS || CONFIG_SYSFS || CONFIG_NUMA || CONFIG_SMP */
 
 
 #if (defined(CONFIG_DEBUG_FS) && defined(CONFIG_COMPACTION)) || \
