@@ -42,7 +42,10 @@ int pci_bus_read_config_##size \
 	u32 data = 0;							\
 	if (PCI_##size##_BAD) return PCIBIOS_BAD_REGISTER_NUMBER;	\
 	pci_lock_config(flags);						\
-	res = bus->ops->read(bus, devfn, pos, len, &data);		\
+	if (!bus->parent && bus->ops->read_bridge)			\
+		res = bus->ops->read_bridge(bus, devfn, pos, len, &data);	\
+	else								\
+		res = bus->ops->read(bus, devfn, pos, len, &data);	\
 	*value = (type)data;						\
 	pci_unlock_config(flags);					\
 	return res;							\
@@ -56,7 +59,10 @@ int pci_bus_write_config_##size \
 	unsigned long flags;						\
 	if (PCI_##size##_BAD) return PCIBIOS_BAD_REGISTER_NUMBER;	\
 	pci_lock_config(flags);						\
-	res = bus->ops->write(bus, devfn, pos, len, value);		\
+	if (!bus->parent && bus->ops->write_bridge)			\
+		res = bus->ops->write_bridge(bus, devfn, pos, len, value);\
+	else								\
+		res = bus->ops->write(bus, devfn, pos, len, value);	\
 	pci_unlock_config(flags);					\
 	return res;							\
 }
@@ -80,7 +86,11 @@ int pci_generic_config_read(struct pci_bus *bus, unsigned int devfn,
 {
 	void __iomem *addr;
 
-	addr = bus->ops->map_bus(bus, devfn, where);
+	if (!bus->parent && bus->ops->map_bridge)
+		addr = bus->ops->map_bridge(bus, devfn, where);
+	else
+		addr = bus->ops->map_bus(bus, devfn, where);
+
 	if (!addr) {
 		*val = ~0;
 		return PCIBIOS_DEVICE_NOT_FOUND;
@@ -102,7 +112,10 @@ int pci_generic_config_write(struct pci_bus *bus, unsigned int devfn,
 {
 	void __iomem *addr;
 
-	addr = bus->ops->map_bus(bus, devfn, where);
+	if (!bus->parent && bus->ops->map_bridge)
+		addr = bus->ops->map_bridge(bus, devfn, where);
+	else
+		addr = bus->ops->map_bus(bus, devfn, where);
 	if (!addr)
 		return PCIBIOS_DEVICE_NOT_FOUND;
 
@@ -122,7 +135,10 @@ int pci_generic_config_read32(struct pci_bus *bus, unsigned int devfn,
 {
 	void __iomem *addr;
 
-	addr = bus->ops->map_bus(bus, devfn, where & ~0x3);
+	if (!bus->parent && bus->ops->map_bridge)
+		addr = bus->ops->map_bridge(bus, devfn, where);
+	else
+		addr = bus->ops->map_bus(bus, devfn, where & ~0x3);
 	if (!addr) {
 		*val = ~0;
 		return PCIBIOS_DEVICE_NOT_FOUND;
@@ -143,7 +159,10 @@ int pci_generic_config_write32(struct pci_bus *bus, unsigned int devfn,
 	void __iomem *addr;
 	u32 mask, tmp;
 
-	addr = bus->ops->map_bus(bus, devfn, where & ~0x3);
+	if (!bus->parent && bus->ops->map_bridge)
+		addr = bus->ops->map_bridge(bus, devfn, where);
+	else
+		addr = bus->ops->map_bus(bus, devfn, where & ~0x3);
 	if (!addr)
 		return PCIBIOS_DEVICE_NOT_FOUND;
 
