@@ -273,56 +273,6 @@ static void mvebu_pcie_setup_hw(struct mvebu_pcie_port *port)
 	mvebu_writel(port, mask, PCIE_MASK_OFF);
 }
 
-static int mvebu_pcie_hw_rd_conf(struct mvebu_pcie_port *port,
-				 struct pci_bus *bus,
-				 u32 devfn, int where, int size, u32 *val)
-{
-	void __iomem *conf_data = port->base + PCIE_CONF_DATA_OFF;
-
-	mvebu_writel(port, PCIE_CONF_ADDR(bus->number, devfn, where),
-		     PCIE_CONF_ADDR_OFF);
-
-	switch (size) {
-	case 1:
-		*val = readb_relaxed(conf_data + (where & 3));
-		break;
-	case 2:
-		*val = readw_relaxed(conf_data + (where & 2));
-		break;
-	case 4:
-		*val = readl_relaxed(conf_data);
-		break;
-	}
-
-	return PCIBIOS_SUCCESSFUL;
-}
-
-static int mvebu_pcie_hw_wr_conf(struct mvebu_pcie_port *port,
-				 struct pci_bus *bus,
-				 u32 devfn, int where, int size, u32 val)
-{
-	void __iomem *conf_data = port->base + PCIE_CONF_DATA_OFF;
-
-	mvebu_writel(port, PCIE_CONF_ADDR(bus->number, devfn, where),
-		     PCIE_CONF_ADDR_OFF);
-
-	switch (size) {
-	case 1:
-		writeb(val, conf_data + (where & 3));
-		break;
-	case 2:
-		writew(val, conf_data + (where & 2));
-		break;
-	case 4:
-		writel(val, conf_data);
-		break;
-	default:
-		return PCIBIOS_BAD_REGISTER_NUMBER;
-	}
-
-	return PCIBIOS_SUCCESSFUL;
-}
-
 /*
  * Remove windows, starting from the largest ones to the smallest
  * ones.
@@ -755,22 +705,44 @@ static inline struct mvebu_pcie *sys_to_pcie(struct pci_sys_data *sys)
 	return sys->private_data;
 }
 
+/* Access the emulated PCI-to-PCI bridge */
+static int mvebu_pcie_wr_bridge_conf(struct pci_bus *bus, u32 devfn,
+				     int where, int size, u32 val)
+{
+	struct mvebu_pcie *pcie = sys_to_pcie(bus->sysdata);
+	struct mvebu_pcie_port *port;
+
+	for (port = pcie->ports; port < &pcie->ports[pcie->nports]; port++)
+		if (port->devfn == devfn)
+			return mvebu_sw_pci_bridge_write(port, where, size, val);
+
+	return PCIBIOS_DEVICE_NOT_FOUND;
+}
+
+static int mvebu_pcie_rd_bridge_conf(struct pci_bus *bus, u32 devfn, int where,
+				     int size, u32 *val)
+{
+	struct mvebu_pcie *pcie = sys_to_pcie(bus->sysdata);
+	struct mvebu_pcie_port *port;
+
+	for (port = pcie->ports; port < &pcie->ports[pcie->nports]; port++)
+		if (port->devfn == devfn)
+			return mvebu_sw_pci_bridge_read(port, where, size, val);
+
+	*val = 0xffffffff;
+	return PCIBIOS_DEVICE_NOT_FOUND;
+}
+
 static struct mvebu_pcie_port *mvebu_pcie_find_port(struct mvebu_pcie *pcie,
 						    struct pci_bus *bus,
 						    int devfn)
 {
-	int i;
+	struct mvebu_pcie_port *port;
 
-	for (i = 0; i < pcie->nports; i++) {
-		struct mvebu_pcie_port *port = &pcie->ports[i];
-
-		if (bus->number == 0 && port->devfn == devfn)
-			return port;
-		if (bus->number != 0 &&
-		    bus->number >= port->bridge.secondary_bus &&
+	for (port = pcie->ports; port < &pcie->ports[pcie->nports]; port++)
+		if (bus->number >= port->bridge.secondary_bus &&
 		    bus->number <= port->bridge.subordinate_bus)
 			return port;
-	}
 
 	return NULL;
 }
@@ -781,24 +753,31 @@ static int mvebu_pcie_wr_conf(struct pci_bus *bus, u32 devfn,
 {
 	struct mvebu_pcie *pcie = sys_to_pcie(bus->sysdata);
 	struct mvebu_pcie_port *port;
-	int ret;
+	void __iomem *conf_data;
 
 	port = mvebu_pcie_find_port(pcie, bus, devfn);
-	if (!port)
+	if (!port || !mvebu_pcie_link_up(port))
 		return PCIBIOS_DEVICE_NOT_FOUND;
 
-	/* Access the emulated PCI-to-PCI bridge */
-	if (bus->number == 0)
-		return mvebu_sw_pci_bridge_write(port, where, size, val);
+	mvebu_writel(port, PCIE_CONF_ADDR(bus->number, devfn, where),
+		     PCIE_CONF_ADDR_OFF);
 
-	if (!mvebu_pcie_link_up(port))
-		return PCIBIOS_DEVICE_NOT_FOUND;
+	conf_data= port->base + PCIE_CONF_DATA_OFF;
+	switch (size) {
+	case 1:
+		writeb(val, conf_data + (where & 3));
+		break;
+	case 2:
+		writew(val, conf_data + (where & 2));
+		break;
+	case 4:
+		writel(val, conf_data);
+		break;
+	default:
+		return PCIBIOS_BAD_REGISTER_NUMBER;
+	}
 
-	/* Access the real PCIe interface */
-	ret = mvebu_pcie_hw_wr_conf(port, bus, devfn,
-				    where, size, val);
-
-	return ret;
+	return PCIBIOS_SUCCESSFUL;
 }
 
 /* PCI configuration space read function */
@@ -807,31 +786,36 @@ static int mvebu_pcie_rd_conf(struct pci_bus *bus, u32 devfn, int where,
 {
 	struct mvebu_pcie *pcie = sys_to_pcie(bus->sysdata);
 	struct mvebu_pcie_port *port;
-	int ret;
+	void __iomem *conf_data;
 
 	port = mvebu_pcie_find_port(pcie, bus, devfn);
-	if (!port) {
+	if (!port || !mvebu_pcie_link_up(port)) {
 		*val = 0xffffffff;
 		return PCIBIOS_DEVICE_NOT_FOUND;
 	}
 
-	/* Access the emulated PCI-to-PCI bridge */
-	if (bus->number == 0)
-		return mvebu_sw_pci_bridge_read(port, where, size, val);
+	mvebu_writel(port, PCIE_CONF_ADDR(bus->number, devfn, where),
+		     PCIE_CONF_ADDR_OFF);
 
-	if (!mvebu_pcie_link_up(port)) {
-		*val = 0xffffffff;
-		return PCIBIOS_DEVICE_NOT_FOUND;
+	conf_data = port->base + PCIE_CONF_DATA_OFF;
+	switch (size) {
+	case 1:
+		*val = readb_relaxed(conf_data + (where & 3));
+		break;
+	case 2:
+		*val = readw_relaxed(conf_data + (where & 2));
+		break;
+	case 4:
+		*val = readl_relaxed(conf_data);
+		break;
 	}
 
-	/* Access the real PCIe interface */
-	ret = mvebu_pcie_hw_rd_conf(port, bus, devfn,
-				    where, size, val);
-
-	return ret;
+	return PCIBIOS_SUCCESSFUL;
 }
 
 static struct pci_ops mvebu_pcie_ops = {
+	.read_bridge = mvebu_pcie_rd_bridge_conf,
+	.write_bridge = mvebu_pcie_wr_bridge_conf,
 	.read = mvebu_pcie_rd_conf,
 	.write = mvebu_pcie_wr_conf,
 };
