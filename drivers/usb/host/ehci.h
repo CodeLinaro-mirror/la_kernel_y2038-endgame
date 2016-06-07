@@ -250,7 +250,7 @@ struct ehci_hcd {			/* one per controller */
 	struct ehci_stats	stats;
 #	define COUNT(x) ((x)++)
 #else
-#	define COUNT(x)
+#	define COUNT(x) do { } while (0)
 #endif
 
 	/* debug files */
