@@ -112,7 +112,7 @@ MODULE_DESCRIPTION(LANAME);
 #ifdef MPT_LAN_IO_DEBUG
 #define dioprintk(x)  printk x
 #else
-#define dioprintk(x)
+#define dioprintk(x) do { } while (0)
 #endif
 
 #ifdef MPT_LAN_DEBUG

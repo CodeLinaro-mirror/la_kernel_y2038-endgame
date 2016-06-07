@@ -1,5 +1,5 @@
 #ifndef dprintk
-# define dprintk(x)
+# define dprintk(x) do {} while (0)
 #endif
 /* eg: if (nblank(dprintk(x))) */
 #define _nblank(x) #x
@@ -1979,7 +1979,7 @@ extern struct aac_common aac_config;
 #ifdef DBG
 #define	FIB_COUNTER_INCREMENT(counter)		(counter)++
 #else
-#define	FIB_COUNTER_INCREMENT(counter)
+#define	FIB_COUNTER_INCREMENT(counter)		do { } while (0)
 #endif
 
 /*

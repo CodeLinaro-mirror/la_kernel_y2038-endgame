@@ -1027,8 +1027,9 @@ static void synaptics_process_packet(struct psmouse *psmouse)
 					num_fingers = hw.w + 2;
 				break;
 			case 2:
-				if (SYN_MODEL_PEN(priv->model_id))
-					;   /* Nothing, treat a pen as a single finger */
+				if (SYN_MODEL_PEN(priv->model_id)) {
+					/* Nothing, treat a pen as a single finger */
+				}
 				break;
 			case 4 ... 15:
 				if (SYN_CAP_PALMDETECT(priv->capabilities))

@@ -140,7 +140,7 @@
 #endif
 
 #ifndef NCR5380_release_dma_irq
-#define NCR5380_release_dma_irq(x)
+#define NCR5380_release_dma_irq(x)	do { } while (0)
 #endif
 
 static int do_abort(struct Scsi_Host *);
