@@ -21,8 +21,8 @@
 #ifdef SAVAGEFB_DEBUG
 # define DBG(x)		printk (KERN_DEBUG "savagefb: %s\n", (x));
 #else
-# define DBG(x)
-# define SavagePrintRegs(...)
+# define DBG(x)			do {} while (0)
+# define SavagePrintRegs(...)	do {} while (0)
 #endif
 
 

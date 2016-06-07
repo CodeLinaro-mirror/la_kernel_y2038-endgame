@@ -29,7 +29,7 @@
 #ifdef DEBUG
 #define DPRINTK(stuff...) printk (stuff)
 #else
-#define DPRINTK(stuff...)
+#define DPRINTK(stuff...) do {} while (0)
 #endif
 
 /***                                *
