@@ -81,8 +81,8 @@ int esas2r_log_hexdump(const long level,
 #define esas2r_debug(f, args ...) esas2r_log(ESAS2R_LOG_DEBG, f, ## args)
 #define esas2r_hdebug(f, args ...) esas2r_log(ESAS2R_LOG_DEBG, f, ## args)
 #else
-#define esas2r_debug(f, args ...)
-#define esas2r_hdebug(f, args ...)
+#define esas2r_debug(f, args ...) do { } while (0)
+#define esas2r_hdebug(f, args ...) do { } while (0)
 #endif  /* ESAS2R_DEBUG */
 
 /*
@@ -109,10 +109,10 @@ int esas2r_log_hexdump(const long level,
 					     f, __func__, __FILE__, __LINE__, \
 					     ## args)
 #else
-#define esas2r_bugon()
-#define esas2r_trace_enter()
-#define esas2r_trace_exit()
-#define esas2r_trace(f, args ...)
+#define esas2r_bugon() do { } while (0)
+#define esas2r_trace_enter() do { } while (0)
+#define esas2r_trace_exit() do { } while (0)
+#define esas2r_trace(f, args ...) do { } while (0)
 #endif  /* ESAS2R_TRACE */
 
 #endif  /* __esas2r_log_h__ */
