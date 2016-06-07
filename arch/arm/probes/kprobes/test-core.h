@@ -101,7 +101,7 @@ struct test_arg_end {
 #if VERBOSE
 #define verbose(fmt, ...) pr_info(fmt, ##__VA_ARGS__)
 #else
-#define verbose(fmt, ...)
+#define verbose(fmt, ...) do {} while (0)
 #endif
 
 #define TEST_GROUP(title)					\

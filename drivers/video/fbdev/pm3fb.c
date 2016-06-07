@@ -44,7 +44,8 @@
 #define DPRINTK(a, b...)	\
 	printk(KERN_DEBUG "pm3fb: %s: " a, __func__ , ## b)
 #else
-#define DPRINTK(a, b...)
+#define DPRINTK(a, b...)	\
+	do { } while (0)
 #endif
 
 #define PM3_PIXMAP_SIZE	(2048 * 4)

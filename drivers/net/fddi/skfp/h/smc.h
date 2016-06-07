@@ -311,7 +311,7 @@ struct s_srf {
 /* Define the AIX-event-Notification as null function if it isn't defined */
 /* in the targetos.h file */
 #ifndef AIX_EVENT
-#define AIX_EVENT(smc,opt0,opt1,opt2,opt3)	/* nothing */
+#define AIX_EVENT(smc,opt0,opt1,opt2,opt3)	do { } while (0)
 #endif
 
 struct s_srf_evc {

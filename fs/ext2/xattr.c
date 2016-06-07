@@ -83,8 +83,8 @@
 		printk("\n"); \
 	} while (0)
 #else
-# define ea_idebug(f...)
-# define ea_bdebug(f...)
+# define ea_idebug(f...) do {} while (0)
+# define ea_bdebug(f...) do {} while (0)
 #endif
 
 static int ext2_xattr_set2(struct inode *, struct buffer_head *,

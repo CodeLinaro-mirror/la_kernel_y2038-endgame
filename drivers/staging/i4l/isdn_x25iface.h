@@ -15,7 +15,7 @@
 #ifdef DEBUG_ISDN_X25
 #   define IX25DEBUG(fmt, args...) printk(KERN_DEBUG fmt, ##args)
 #else
-#   define IX25DEBUG(fmt, args...)
+#   define IX25DEBUG(fmt, args...) do { } while (0)
 #endif
 
 #include <linux/skbuff.h>

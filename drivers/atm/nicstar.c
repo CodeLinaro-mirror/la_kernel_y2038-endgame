@@ -78,25 +78,25 @@
 #ifdef TX_DEBUG
 #define TXPRINTK(args...) printk(args)
 #else
-#define TXPRINTK(args...)
+#define TXPRINTK(args...) do { } while (0)
 #endif /* TX_DEBUG */
 
 #ifdef RX_DEBUG
 #define RXPRINTK(args...) printk(args)
 #else
-#define RXPRINTK(args...)
+#define RXPRINTK(args...) do { } while (0)
 #endif /* RX_DEBUG */
 
 #ifdef GENERAL_DEBUG
 #define PRINTK(args...) printk(args)
 #else
-#define PRINTK(args...)
+#define PRINTK(args...) do { } while (0)
 #endif /* GENERAL_DEBUG */
 
 #ifdef EXTRA_DEBUG
 #define XPRINTK(args...) printk(args)
 #else
-#define XPRINTK(args...)
+#define XPRINTK(args...) do { } while (0)
 #endif /* EXTRA_DEBUG */
 
 /* Macros */

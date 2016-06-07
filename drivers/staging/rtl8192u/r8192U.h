@@ -44,9 +44,9 @@
 #define KEY_BUF_SIZE    5
 
 #define	Rx_Smooth_Factor		20
-#define DMESG(x, a...)
-#define DMESGW(x, a...)
-#define DMESGE(x, a...)
+#define DMESG(x, a...)	do { } while (0)
+#define DMESGW(x, a...)	do { } while (0)
+#define DMESGE(x, a...)	do { } while (0)
 extern u32 rt_global_debug_component;
 #define RT_TRACE(component, x, args...) \
 	do {							\

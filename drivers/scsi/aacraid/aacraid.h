@@ -33,7 +33,7 @@
 #ifndef _AACRAID_H_
 #define _AACRAID_H_
 #ifndef dprintk
-# define dprintk(x)
+# define dprintk(x) do {} while (0)
 #endif
 /* eg: if (nblank(dprintk(x))) */
 #define _nblank(x) #x
@@ -2466,7 +2466,7 @@ struct aac_hba_info {
 #ifdef DBG
 #define	FIB_COUNTER_INCREMENT(counter)		(counter)++
 #else
-#define	FIB_COUNTER_INCREMENT(counter)
+#define	FIB_COUNTER_INCREMENT(counter)		do { } while (0)
 #endif
 
 /*
