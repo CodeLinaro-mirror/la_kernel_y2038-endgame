@@ -2106,8 +2106,9 @@ static int bind_rdev_to_array(struct md_rdev *rdev, struct mddev *mddev)
 		goto fail;
 
 	ko = &part_to_dev(rdev->bdev->bd_part)->kobj;
-	if (sysfs_create_link(&rdev->kobj, ko, "block"))
-		/* failure here is OK */;
+	if (sysfs_create_link(&rdev->kobj, ko, "block")) {
+		/* failure here is OK */
+	}
 	rdev->sysfs_state = sysfs_get_dirent_safe(rdev->kobj.sd, "state");
 
 	list_add_rcu(&rdev->same_set, &mddev->disks);
@@ -2816,8 +2817,9 @@ slot_store(struct md_rdev *rdev, const char *buf, size_t len)
 			return err;
 		} else
 			sysfs_notify_dirent_safe(rdev->sysfs_state);
-		if (sysfs_link_rdev(rdev->mddev, rdev))
-			/* failure here is OK */;
+		if (sysfs_link_rdev(rdev->mddev, rdev)) {
+			/* failure here is OK */
+		}
 		/* don't wakeup anyone, leave that to userspace. */
 	} else {
 		if (slot >= rdev->mddev->raid_disks &&
@@ -5322,8 +5324,9 @@ int md_run(struct mddev *mddev)
 	spin_unlock(&mddev->lock);
 	rdev_for_each(rdev, mddev)
 		if (rdev->raid_disk >= 0)
-			if (sysfs_link_rdev(mddev, rdev))
+			if (sysfs_link_rdev(mddev, rdev)) {
 				/* failure here is OK */;
+			}
 
 	if (mddev->degraded && !mddev->ro)
 		/* This ensures that recovering status is reported immediately
@@ -8252,8 +8255,9 @@ static int remove_and_add_spares(struct mddev *mddev,
 		}
 		if (mddev->pers->
 		    hot_add_disk(mddev, rdev) == 0) {
-			if (sysfs_link_rdev(mddev, rdev))
-				/* failure here is OK */;
+			if (sysfs_link_rdev(mddev, rdev)) {
+				/* failure here is OK */
+			}
 			if (!test_bit(Journal, &rdev->flags))
 				spares++;
 			md_new_event(mddev);

@@ -4101,8 +4101,9 @@ static int raid10_start_reshape(struct mddev *mddev)
 					else
 						rdev->recovery_offset = 0;
 
-					if (sysfs_link_rdev(mddev, rdev))
-						/* Failure here  is OK */;
+					if (sysfs_link_rdev(mddev, rdev)) {
+						/* Failure here  is OK */
+					}
 				}
 			} else if (rdev->raid_disk >= conf->prev.raid_disks
 				   && !test_bit(Faulty, &rdev->flags)) {
