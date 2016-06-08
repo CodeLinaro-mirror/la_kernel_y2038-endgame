@@ -803,6 +803,9 @@ KBUILD_CFLAGS   += $(call cc-option,-Werror=incompatible-pointer-types)
 
 KBUILD_CFLAGS += -Wextra $(call cc-disable-warning,type-limits) -Wno-unused-parameter $(call cc-disable-warning, missing-field-initializers) $(call cc-disable-warning, sign-compare)
 
+
+KBUILD_CFLAGS += $(call cc-option,-Wmissing-include-dirs)
+
 # use the deterministic mode of AR if available
 KBUILD_ARFLAGS := $(call ar-option,D)
 
