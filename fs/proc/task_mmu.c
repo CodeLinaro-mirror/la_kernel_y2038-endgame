@@ -626,6 +626,7 @@ static void show_smap_vma_flags(struct seq_file *m, struct vm_area_struct *vma)
 	/*
 	 * Don't forget to update Documentation/ on changes.
 	 */
+#pragma GCC diagnostic ignored "-Woverride-init"
 	static const char mnemonics[BITS_PER_LONG][2] = {
 		/*
 		 * In case if we meet a flag we don't know about.
@@ -674,6 +675,7 @@ static void show_smap_vma_flags(struct seq_file *m, struct vm_area_struct *vma)
 		[ilog2(VM_PKEY_BIT3)]	= "",
 #endif
 	};
+#pragma GCC diagnostic warning "-Woverride-init"
 	size_t i;
 
 	seq_puts(m, "VmFlags: ");
