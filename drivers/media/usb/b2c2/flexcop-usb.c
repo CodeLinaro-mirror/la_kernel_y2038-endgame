@@ -26,8 +26,8 @@
 
 #define DEBSTATUS ""
 #else
-#define dprintk(level, args...)
-#define debug_dump(b, l, method)
+#define dprintk(level, args...) no_printk(args)
+#define debug_dump(b, l, method) do { } while (0)
 #define DEBSTATUS " (debugging is not enabled)"
 #endif
 

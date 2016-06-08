@@ -16,7 +16,7 @@ extern int b2c2_flexcop_debug;
 #define dprintk(level,args...) \
 	do { if ((b2c2_flexcop_debug & level)) printk(args); } while (0)
 #else
-#define dprintk(level,args...)
+#define dprintk(level,args...) no_printk(args)
 #endif
 
 #define deb_info(args...) dprintk(0x01, args)
