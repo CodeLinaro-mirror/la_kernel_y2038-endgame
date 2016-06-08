@@ -21,7 +21,7 @@ MODULE_PARM_DESC(irq_chk_intv, "set the interval for IRQ streaming watchdog.");
 	do { if ((debug & level)) printk(args); } while (0)
 #define DEBSTATUS ""
 #else
-#define dprintk(level,args...)
+#define dprintk(level,args...) no_printk(args)
 #define DEBSTATUS " (debugging is not enabled)"
 #endif
 

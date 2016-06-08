@@ -50,7 +50,6 @@ EXPORT_SYMBOL_GPL(dccp_hashinfo);
 /* the maximum queue length for tx in packets. 0 is no limit */
 int sysctl_dccp_tx_qlen __read_mostly = 5;
 
-#ifdef CONFIG_IP_DCCP_DEBUG
 static const char *dccp_state_name(const int state)
 {
 	static const char *const dccp_state_names[] = {
@@ -72,7 +71,6 @@ static const char *dccp_state_name(const int state)
 	else
 		return dccp_state_names[state];
 }
-#endif
 
 void dccp_set_state(struct sock *sk, const int state)
 {
