@@ -469,6 +469,7 @@ static unsigned int __bpf_prog_run(void *ctx, const struct bpf_insn *insn)
 {
 	u64 stack[MAX_BPF_STACK / sizeof(u64)];
 	u64 regs[MAX_BPF_REG], tmp;
+#pragma GCC diagnostic ignored "-Woverride-init"
 	static const void *jumptable[256] = {
 		[0 ... 255] = &&default_label,
 		/* Now overwrite non-defaults ... */
@@ -569,6 +570,7 @@ static unsigned int __bpf_prog_run(void *ctx, const struct bpf_insn *insn)
 		[BPF_LD | BPF_IND | BPF_B] = &&LD_IND_B,
 		[BPF_LD | BPF_IMM | BPF_DW] = &&LD_IMM_DW,
 	};
+#pragma GCC diagnostic warning "-Woverride-init"
 	u32 tail_call_cnt = 0;
 	void *ptr;
 	int off;
