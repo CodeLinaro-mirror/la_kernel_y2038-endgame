@@ -1299,7 +1299,7 @@ int qib_twsi_blk_rd(struct qib_devdata *dd, int dev, int addr, void *buffer,
 int qib_twsi_blk_wr(struct qib_devdata *dd, int dev, int addr,
 		    const void *buffer, int len);
 void qib_get_eeprom_info(struct qib_devdata *);
-#define qib_inc_eeprom_err(dd, eidx, incr)
+#define qib_inc_eeprom_err(dd, eidx, incr) do {} while (0)
 void qib_dump_lookup_output_queue(struct qib_devdata *);
 void qib_force_pio_avail_update(struct qib_devdata *);
 void qib_clear_symerror_on_linkup(unsigned long opaque);

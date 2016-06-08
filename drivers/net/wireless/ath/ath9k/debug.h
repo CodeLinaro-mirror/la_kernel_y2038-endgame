@@ -32,7 +32,7 @@ struct fft_sample_tlv;
 #define ANT_LNA_INC(i, c) sc->debug.stats.ant_stats[i].lna_recv_cnt[c]++;
 #else
 #define TX_STAT_INC(q, c) do { } while (0)
-#define RX_STAT_INC(c)
+#define RX_STAT_INC(c)	  do { } while (0)
 #define RESET_STAT_INC(sc, type) do { } while (0)
 #define ANT_STAT_INC(i, c) do { } while (0)
 #define ANT_LNA_INC(i, c) do { } while (0)
