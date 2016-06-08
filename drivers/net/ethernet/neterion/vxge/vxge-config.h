@@ -2068,7 +2068,7 @@ vxge_hw_vpath_strip_fcs_check(struct __vxge_hw_device *hldev, u64 vpath_mask);
 			printk(fmt "\n", __VA_ARGS__);			       \
 } while (0)
 #else
-#define vxge_debug_ll(level, mask, fmt, ...)
+#define vxge_debug_ll(level, mask, fmt, ...) no_printk(fmt "\n", __VA_ARGS__)
 #endif
 
 enum vxge_hw_status vxge_hw_vpath_rts_rth_itable_set(
