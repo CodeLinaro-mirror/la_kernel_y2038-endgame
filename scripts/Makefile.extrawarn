@@ -17,7 +17,7 @@ endif
 ifdef KBUILD_ENABLE_EXTRA_GCC_CHECKS
 warning-  := $(empty)
 
-warning-1 += -Wunused -Wtype-limits -Woverride-init -Wmissing-include-dirs
+warning-1 += -Wunused -Wtype-limits -Woverride-init
 warning-1 += -Wmissing-declarations
 warning-1 += -Wmissing-format-attribute
 warning-1 += $(call cc-option, -Wmissing-prototypes)
