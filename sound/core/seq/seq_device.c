@@ -149,7 +149,7 @@ void snd_seq_device_load_drivers(void)
 }
 EXPORT_SYMBOL(snd_seq_device_load_drivers);
 #else
-#define queue_autoload_drivers() /* NOP */
+#define queue_autoload_drivers() do {} while (0)
 #endif
 
 /*
