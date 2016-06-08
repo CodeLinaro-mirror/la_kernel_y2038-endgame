@@ -257,11 +257,11 @@
 # if defined(AEDSP16_DEBUG_MORE)
 #  define DBG1(x) printk x
 # else
-#  define DBG1(x)
+#  define DBG1(x) do {} while (0)
 # endif
 #else
-# define DBG(x)
-# define DBG1(x)
+# define DBG(x)	  do {} while (0)
+# define DBG1(x)  do {} while (0)
 #endif
 
 /*
