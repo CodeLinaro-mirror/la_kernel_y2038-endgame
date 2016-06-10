@@ -1857,7 +1857,8 @@ config KEXEC_FILE
 	select KEXEC_CORE
 	select BUILD_BIN2C
 	depends on X86_64
-	select CRYPTO_SHA256
+	depends on CRYPTO=y
+	depends on CRYPTO_SHA256=y
 	---help---
 	  This is new version of kexec system call. This system call is
 	  file based and takes file descriptors as system call argument
