@@ -34,7 +34,7 @@ extern u8 pvclock_page
 
 #ifndef BUILD_VDSO32
 
-notrace static long vdso_fallback_gettime(long clock, struct timespec *ts)
+static notrace long vdso_fallback_gettime(long clock, struct timespec *ts)
 {
 	long ret;
 	asm("syscall" : "=a" (ret) :
@@ -42,7 +42,7 @@ notrace static long vdso_fallback_gettime(long clock, struct timespec *ts)
 	return ret;
 }
 
-notrace static long vdso_fallback_gtod(struct timeval *tv, struct timezone *tz)
+static notrace long vdso_fallback_gtod(struct timeval *tv, struct timezone *tz)
 {
 	long ret;
 
@@ -54,7 +54,7 @@ notrace static long vdso_fallback_gtod(struct timeval *tv, struct timezone *tz)
 
 #else
 
-notrace static long vdso_fallback_gettime(long clock, struct timespec *ts)
+static notrace long vdso_fallback_gettime(long clock, struct timespec *ts)
 {
 	long ret;
 
@@ -69,7 +69,7 @@ notrace static long vdso_fallback_gettime(long clock, struct timespec *ts)
 	return ret;
 }
 
-notrace static long vdso_fallback_gtod(struct timeval *tv, struct timezone *tz)
+static notrace long vdso_fallback_gtod(struct timeval *tv, struct timezone *tz)
 {
 	long ret;
 
@@ -142,7 +142,7 @@ static notrace u64 vread_pvclock(int *mode)
 }
 #endif
 
-notrace static u64 vread_tsc(void)
+static notrace u64 vread_tsc(void)
 {
 	u64 ret = (u64)rdtsc_ordered();
 	u64 last = gtod->cycle_last;
@@ -162,7 +162,7 @@ notrace static u64 vread_tsc(void)
 	return last;
 }
 
-notrace static inline u64 vgetsns(int *mode)
+static inline notrace u64 vgetsns(int *mode)
 {
 	u64 v;
 	cycles_t cycles;
@@ -180,7 +180,7 @@ notrace static inline u64 vgetsns(int *mode)
 }
 
 /* Code size doesn't matter (vdso is 4k anyway) and this is faster. */
-notrace static int __always_inline do_realtime(struct timespec *ts)
+static __always_inline notrace int do_realtime(struct timespec *ts)
 {
 	unsigned long seq;
 	u64 ns;
@@ -201,7 +201,7 @@ notrace static int __always_inline do_realtime(struct timespec *ts)
 	return mode;
 }
 
-notrace static int __always_inline do_monotonic(struct timespec *ts)
+static __always_inline notrace int do_monotonic(struct timespec *ts)
 {
 	unsigned long seq;
 	u64 ns;
@@ -222,7 +222,7 @@ notrace static int __always_inline do_monotonic(struct timespec *ts)
 	return mode;
 }
 
-notrace static void do_realtime_coarse(struct timespec *ts)
+static notrace void do_realtime_coarse(struct timespec *ts)
 {
 	unsigned long seq;
 	do {
@@ -232,7 +232,7 @@ notrace static void do_realtime_coarse(struct timespec *ts)
 	} while (unlikely(gtod_read_retry(gtod, seq)));
 }
 
-notrace static void do_monotonic_coarse(struct timespec *ts)
+static notrace void do_monotonic_coarse(struct timespec *ts)
 {
 	unsigned long seq;
 	do {
