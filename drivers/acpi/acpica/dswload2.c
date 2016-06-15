@@ -386,7 +386,7 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 
 	op = walk_state->op;
 	ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH, "Opcode [%s] Op %p State %p\n",
-			  walk_state->op_info->name, op, walk_state));
+			  op_info_name(walk_state->op_info), op, walk_state));
 
 	/* Check if opcode had an associated namespace object */
 

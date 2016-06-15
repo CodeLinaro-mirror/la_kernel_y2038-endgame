@@ -184,7 +184,7 @@ acpi_ds_detect_named_opcodes(struct acpi_walk_state *walk_state,
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
 			  "Method serialized [%4.4s] %p - [%s] (%4.4X)\n",
 			  walk_state->method_node->name.ascii,
-			  walk_state->method_node, walk_state->op_info->name,
+			  walk_state->method_node, op_info_name(walk_state->op_info),
 			  walk_state->opcode));
 
 	/* Abort the parse, no need to examine this method any further */

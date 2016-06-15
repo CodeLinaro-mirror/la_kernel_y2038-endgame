@@ -455,7 +455,9 @@
  * This is the non-debug case -- make everything go away,
  * leaving no executable debug code!
  */
-#define ACPI_DEBUG_PRINT(pl)
+#define ACPI_DEBUG_PARAMETERS NULL
+#define __ACPI_DEBUG_PRINT(level, parameters, fmt...) no_printk(fmt)
+#define ACPI_DEBUG_PRINT(pl)		__ACPI_DEBUG_PRINT pl
 #define ACPI_DEBUG_PRINT_RAW(pl)
 #define ACPI_DEBUG_EXEC(a)
 #define ACPI_DEBUG_ONLY_MEMBERS(a)

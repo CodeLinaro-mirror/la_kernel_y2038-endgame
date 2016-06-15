@@ -230,6 +230,8 @@ ACPI_GLOBAL(acpi_size *, acpi_gbl_entry_stack_pointer);
 ACPI_GLOBAL(acpi_size *, acpi_gbl_lowest_stack_pointer);
 ACPI_GLOBAL(u32, acpi_gbl_deepest_nesting);
 ACPI_INIT_GLOBAL(u32, acpi_gbl_nesting_level, 0);
+#else
+#define acpi_gbl_current_node_count (0)
 #endif
 
 /*****************************************************************************
