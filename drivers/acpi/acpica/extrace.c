@@ -55,6 +55,8 @@ static union acpi_operand_object *acpi_gbl_trace_method_object = NULL;
 
 #ifdef ACPI_DEBUG_OUTPUT
 static const char *acpi_ex_get_trace_event_name(acpi_trace_event_type type);
+#else
+#define acpi_ex_get_trace_event_name(type) ("NULL")
 #endif
 
 /*******************************************************************************

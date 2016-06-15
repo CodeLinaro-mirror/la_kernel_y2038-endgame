@@ -727,7 +727,10 @@ struct acpi_address_range {
  */
 struct acpi_opcode_info {
 #if defined(ACPI_DISASSEMBLER) || defined(ACPI_DEBUG_OUTPUT)
+#define op_info_name(op_info) ((op_info)->name)
 	char *name;		/* Opcode name (disassembler/debug only) */
+#else
+#define op_info_name(op_info) ("(none)")
 #endif
 	u32 parse_args;		/* Grammar/Parse time arguments */
 	u32 runtime_args;	/* Interpret time arguments */

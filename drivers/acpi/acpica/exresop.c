@@ -159,7 +159,7 @@ acpi_ex_resolve_operands(u16 opcode,
 
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 			  "Opcode %X [%s] RequiredOperandTypes=%8.8X\n",
-			  opcode, op_info->name, arg_types));
+			  opcode, op_info_name(op_info), arg_types));
 
 	/*
 	 * Normal exit is with (arg_types == 0) at end of argument list.
