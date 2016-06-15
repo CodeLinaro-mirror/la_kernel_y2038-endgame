@@ -216,6 +216,10 @@ acpi_status acpi_ut_init_globals(void);
 const char *acpi_ut_get_mutex_name(u32 mutex_id);
 
 const char *acpi_ut_get_notify_name(u32 notify_value, acpi_object_type type);
+#else
+#define acpi_ut_get_mutex_name(mutex_id) ("NULL")
+#define acpi_ut_get_notify_name(notify_value, type) ("NULL")
+
 #endif
 
 const char *acpi_ut_get_type_name(acpi_object_type type);

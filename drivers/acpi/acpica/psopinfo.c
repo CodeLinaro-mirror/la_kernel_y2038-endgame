@@ -68,9 +68,7 @@ static const u8 acpi_gbl_argument_count[] =
 
 const struct acpi_opcode_info *acpi_ps_get_opcode_info(u16 opcode)
 {
-#ifdef ACPI_DEBUG_OUTPUT
 	const char *opcode_name = "Unknown AML opcode";
-#endif
 
 	ACPI_FUNCTION_NAME(ps_get_opcode_info);
 
