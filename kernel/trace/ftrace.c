@@ -1186,7 +1186,7 @@ struct ftrace_page {
 static struct ftrace_page	*ftrace_pages_start;
 static struct ftrace_page	*ftrace_pages;
 
-static bool __always_inline ftrace_hash_empty(struct ftrace_hash *hash)
+static __always_inline bool ftrace_hash_empty(struct ftrace_hash *hash)
 {
 	return !hash || !hash->count;
 }
