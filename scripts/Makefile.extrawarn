@@ -14,6 +14,16 @@ ifeq ("$(origin W)", "command line")
   export KBUILD_ENABLE_EXTRA_GCC_CHECKS := $(W)
 endif
 
+KBUILD_CFLAGS += -Wformat=2 -Wno-format-nonliteral -Wuninitialized  $(call cc-option, -Wtrampolines) -Wold-style-definition $(call cc-option, -Wnormalized) $(call cc-option,-Wvolatile-register-var) -Wdisabled-optimization -Wno-format-security
+
+ifeq ($(ARCH),x86)
+#KBUILD_CFLAGS += $(call cc-disable-warning, override-init
+KBUILD_CFLAGS += -Wno-unused-variable
+endif
+
+# gcc-7 new warnings
+KBUILD_CFLAGS += $(call cc-option, -Wimplicit-fallthrough=0 -Wno-duplicate-decl-specifier -Wno-format-length -Wno-int-in-bool-context -Wno-bool-operation)
+
 ifdef KBUILD_ENABLE_EXTRA_GCC_CHECKS
 warning-  := $(empty)
 
@@ -33,6 +43,8 @@ warning-2 += -Wcast-align
 warning-2 += -Wdisabled-optimization
 warning-2 += -Wnested-externs
 warning-2 += -Wshadow
+warning-2 += -Wjump-misses-init
+warning-2 += -Wstack-protector
 warning-2 += $(call cc-option, -Wlogical-op)
 warning-2 += $(call cc-option, -Wmissing-field-initializers)
 warning-2 += $(call cc-option, -Wsign-compare)
