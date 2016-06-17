@@ -14,6 +14,8 @@ ifeq ("$(origin W)", "command line")
   export KBUILD_ENABLE_EXTRA_GCC_CHECKS := $(W)
 endif
 
+KBUILD_CFLAGS += -Wformat=2 -Wno-format-nonliteral -Wuninitialized -Wtrampolines -Wold-style-definition $(call cc-option, -Wnormalized) -Wvolatile-register-var -Wdisabled-optimization -Wno-format-security
+
 ifdef KBUILD_ENABLE_EXTRA_GCC_CHECKS
 warning-  := $(empty)
 
@@ -33,6 +35,8 @@ warning-2 += -Wcast-align
 warning-2 += -Wdisabled-optimization
 warning-2 += -Wnested-externs
 warning-2 += -Wshadow
+warning-2 += -Wjump-misses-init
+warning-2 += -Wstack-protector
 warning-2 += $(call cc-option, -Wlogical-op)
 warning-2 += $(call cc-option, -Wmissing-field-initializers)
 warning-2 += $(call cc-option, -Wsign-compare)
