@@ -2981,7 +2981,7 @@ static int brcmf_sdio_assert_info(struct seq_file *seq, struct brcmf_sdio *bus,
 {
 	int error = 0;
 	char file[80] = "?";
-	char expr[80] = "<???>";
+	char expr[80] = "<??\?>";
 
 	if ((sh->flags & SDPCM_SHARED_ASSERT_BUILT) == 0) {
 		brcmf_dbg(INFO, "firmware not built with -assert\n");
