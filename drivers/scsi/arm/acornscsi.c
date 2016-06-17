@@ -438,8 +438,8 @@ static char *acornscsi_interruptcode[] = {
     "data-in",			/* 19 */
     "cmd",			/* 1A */
     "stat",			/* 1B */
-    "??-out",			/* 1C */
-    "??-in",			/* 1D */
+    "?\?-out",			/* 1C */
+    "?\?-in",			/* 1D */
     "msg-out",			/* 1E */
     "msg-in",			/* 1F */
 
