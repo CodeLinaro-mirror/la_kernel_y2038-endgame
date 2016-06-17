@@ -641,7 +641,7 @@ static void ppa_interrupt(struct work_struct *work)
 		printk(KERN_DEBUG "ppa: told to abort\n");
 		break;
 	case DID_PARITY:
-		printk(KERN_DEBUG "ppa: parity error (???)\n");
+		printk(KERN_DEBUG "ppa: parity error (?)\n");
 		break;
 	case DID_ERROR:
 		printk(KERN_DEBUG "ppa: internal driver error\n");
@@ -650,7 +650,7 @@ static void ppa_interrupt(struct work_struct *work)
 		printk(KERN_DEBUG "ppa: told to reset device\n");
 		break;
 	case DID_BAD_INTR:
-		printk(KERN_WARNING "ppa: bad interrupt (???)\n");
+		printk(KERN_WARNING "ppa: bad interrupt (?)\n");
 		break;
 	default:
 		printk(KERN_WARNING "ppa: bad return code (%02x)\n",

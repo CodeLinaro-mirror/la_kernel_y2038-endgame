@@ -1416,7 +1416,7 @@ static int rose_info_show(struct seq_file *seq, void *v)
 			   ax2asc(buf, &rose->dest_call));
 
 		if (ax25cmp(&rose->source_call, &null_ax25_address) == 0)
-			callsign = "??????-?";
+			callsign = "?????\?-?";
 		else
 			callsign = ax2asc(buf, &rose->source_call);
 
