@@ -79,6 +79,8 @@ radeon-y += radeon_device.o radeon_asic.o radeon_kms.o \
 	ci_dpm.o dce6_afmt.o radeon_vm.o radeon_ucode.o radeon_ib.o \
 	radeon_sync.o radeon_audio.o radeon_dp_auxch.o radeon_dp_mst.o
 
+CFLAGS_si_dpm.o += -Wframe-larger-than=1280
+
 radeon-$(CONFIG_MMU_NOTIFIER) += radeon_mn.o
 
 # add async DMA block
