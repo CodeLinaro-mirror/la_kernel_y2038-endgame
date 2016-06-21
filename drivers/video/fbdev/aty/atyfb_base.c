@@ -134,7 +134,7 @@
 
 #if defined(CONFIG_PM) || defined(CONFIG_PMAC_BACKLIGHT) || \
 defined (CONFIG_FB_ATY_GENERIC_LCD) || defined(CONFIG_FB_ATY_BACKLIGHT)
-static const u32 lt_lcd_regs[] = {
+static const u32 lt_lcd_regs[LCD_REG_NUM] = {
 	CNFG_PANEL_LG,
 	LCD_GEN_CNTL_LG,
 	DSTN_CONTROL_LG,
@@ -148,7 +148,7 @@ static const u32 lt_lcd_regs[] = {
 
 void aty_st_lcd(int index, u32 val, const struct atyfb_par *par)
 {
-	if (M64_HAS(LT_LCD_REGS)) {
+	if (M64_HAS(LT_LCD_REGS) && index < ARRAY_SIZE(lt_lcd_regs)) {
 		aty_st_le32(lt_lcd_regs[index], val, par);
 	} else {
 		unsigned long temp;
@@ -163,7 +163,7 @@ void aty_st_lcd(int index, u32 val, const struct atyfb_par *par)
 
 u32 aty_ld_lcd(int index, const struct atyfb_par *par)
 {
-	if (M64_HAS(LT_LCD_REGS)) {
+	if (M64_HAS(LT_LCD_REGS) && index < ARRAY_SIZE(lt_lcd_regs)) {
 		return aty_ld_le32(lt_lcd_regs[index], par);
 	} else {
 		unsigned long temp;
