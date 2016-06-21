@@ -175,10 +175,8 @@ berlin2_avpll_vco_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 	refdiv = (reg & VCO_REFDIV_MASK) >> VCO_REFDIV_SHIFT;
 	refdiv = vco_refdiv[refdiv];
 	fbdiv = (reg & VCO_FBDIV_MASK) >> VCO_FBDIV_SHIFT;
-	freq *= fbdiv;
-	do_div(freq, refdiv);
 
-	return (unsigned long)freq;
+	return div_u64(freq * fbdiv, refdiv);
 }
 
 static const struct clk_ops berlin2_avpll_vco_ops = {
@@ -268,7 +266,7 @@ berlin2_avpll_channel_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 
 	reg = readl_relaxed(ch->base + VCO_CTRL30);
 	if ((reg & (VCO_DPLL_CH1_ENABLE << ch->index)) == 0)
-		goto skip_div;
+		return div_u64(freq, divider);
 
 	/*
 	 * Fch = (Fref * sync2) /
@@ -286,7 +284,7 @@ berlin2_avpll_channel_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 
 	/* Channel 8 has no dividers */
 	if (ch->index == 7)
-		goto skip_div;
+		return div_u64(freq, divider);
 
 	/*
 	 * HDMI divider start at VCO_CTRL11, bit 7; MSB is enable, lower 2 bit
@@ -343,9 +341,7 @@ berlin2_avpll_channel_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 	if (div_av2 && div_av3)
 		freq *= 2;
 
-skip_div:
-	do_div(freq, divider);
-	return (unsigned long)freq;
+	return div_u64(freq, divider);
 }
 
 static const struct clk_ops berlin2_avpll_channel_ops = {
