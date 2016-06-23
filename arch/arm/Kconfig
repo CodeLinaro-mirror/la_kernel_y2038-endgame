@@ -324,16 +324,15 @@ config ARCH_MMAP_RND_BITS_MAX
 	default 15 if PAGE_OFFSET=0x80000000
 	default 16
 
-#
-# The "ARM system type" choice list is ordered alphabetically by option
-# text.  Please add new entries in the option alphabetic order.
-#
-choice
-	prompt "ARM system type"
-	default ARCH_MULTIPLATFORM
+config ARM_FORCE_MULTIPLATFORM
+	bool "Only allow MULTIPLATFORM builds"
+	help
+	  this option is meant to make randconfig builds more
+	  useful, by turning on ARCH_MULTIPLATFORM half of the
+	  time.
 
 config ARCH_MULTIPLATFORM
-	bool "Allow multiple platforms to be selected"
+	def_bool ARM_FORCE_MULTIPLATFORM
 	select ARM_HAS_SG_CHAIN
 	select ARM_PATCH_PHYS_VIRT
 	select AUTO_ZRELADDR
@@ -345,6 +344,19 @@ config ARCH_MULTIPLATFORM
 	select PCI_DOMAINS if PCI
 	select SPARSE_IRQ
 	select USE_OF
+
+#
+# The "ARM system type" choice list is ordered alphabetically by option
+# text.  Please add new entries in the option alphabetic order.
+#
+choice
+	prompt "ARM system type"
+	depends on !ARM_FORCE_MULTIPLATFORM
+	default ARCH_MULTIPLATFORM
+
+config ARCH_CHOOSE_MULTIPLATFORM
+	bool "Allow multiple platforms to be selected"
+	select ARCH_MULTIPLATFORM
 
 config ARM_SINGLE_ARMV7M
 	bool "ARMv7-M based platforms (Cortex-M0/M3/M4)"
