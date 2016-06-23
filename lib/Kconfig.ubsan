@@ -5,7 +5,7 @@ config ARCH_WANTS_UBSAN_NO_NULL
 	def_bool n
 
 config UBSAN
-	def_bool y
+	bool "Undefined behaviour sanity checker"
 	help
 	  This option enables undefined behaviour sanity checker
 	  Compile-time instrumentation is used to detect various undefined
@@ -14,13 +14,14 @@ config UBSAN
 	  (see: Documentation/dev-tools/ubsan.rst).
 
 config UBSAN_SANITIZE_ALL
-	def_bool y
+	bool "Enable instrumentation for the entire kernel"
 	depends on UBSAN
 	depends on ARCH_HAS_UBSAN_SANITIZE_ALL
 
 	# We build with -Wno-maybe-uninitilzed, but we still want to
 	# use -Wmaybe-uninitilized in allmodconfig builds.
 	# So dependsy bellow used to disable this option in allmodconfig
+	depends on !COMPILE_TEST
 	default y
 	help
 	  This option activates instrumentation for the entire kernel.
