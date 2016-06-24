@@ -131,6 +131,16 @@ extern struct timespec timespec_trunc(struct timespec t, unsigned gran);
  * is the sum of its fields, but *NOTE*: the field tv_usec/tv_nsec must
  * always be non-negative.
  */
+static inline bool timespec64_inject_offset_valid(const struct timespec64 *ts)
+{
+	/* We don't check the tv_sec as it can be positive or negative */
+
+	/* Can't have more nanoseconds then a second */
+	if (ts->tv_nsec < 0 || ts->tv_nsec >= NSEC_PER_SEC)
+		return false;
+	return true;
+}
+
 static inline bool timeval_inject_offset_valid(const struct timeval *tv)
 {
 	/* We don't check the tv_sec as it can be positive or negative */
