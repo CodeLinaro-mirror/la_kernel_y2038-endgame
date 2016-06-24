@@ -681,22 +681,24 @@ int ntp_validate_timex(struct timex *txc)
 	}
 
 	if (txc->modes & ADJ_SETOFFSET) {
+		struct timespec64 ts;
+
 		/* In order to inject time, you gotta be super-user! */
 		if (!capable(CAP_SYS_TIME))
 			return -EPERM;
 
-		if (txc->modes & ADJ_NANO) {
-			struct timespec ts;
+		ts.tv_sec = txc->time.tv_sec;
+		ts.tv_nsec = txc->time.tv_usec;
 
-			ts.tv_sec = txc->time.tv_sec;
-			ts.tv_nsec = txc->time.tv_usec;
-			if (!timespec_inject_offset_valid(&ts))
+		if (!(txc->modes & ADJ_NANO)) {
+			if (ts.tv_nsec >= USEC_PER_SEC)
 				return -EINVAL;
 
-		} else {
-			if (!timeval_inject_offset_valid(&txc->time))
-				return -EINVAL;
+			ts.tv_nsec *= NSEC_PER_USEC;
 		}
+
+		if (!timespec64_inject_offset_valid(&ts))
+			return -EINVAL;
 	}
 
 	/*
