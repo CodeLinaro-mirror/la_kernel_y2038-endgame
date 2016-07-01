@@ -1309,7 +1309,7 @@ static bool validate_net_dev(struct net_device *net_dev,
 static struct net_device *cma_get_net_dev(struct ib_cm_event *ib_event,
 					  const struct cma_req_info *req)
 {
-	struct sockaddr_storage listen_addr_storage, src_addr_storage;
+	struct sockaddr_storage listen_addr_storage = {}, src_addr_storage = {};
 	struct sockaddr *listen_addr = (struct sockaddr *)&listen_addr_storage,
 			*src_addr = (struct sockaddr *)&src_addr_storage;
 	struct net_device *net_dev;
