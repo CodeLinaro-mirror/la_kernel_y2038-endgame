@@ -125,8 +125,8 @@ xenconfig: xen.config
 	@:
 
 PHONY += tinyconfig
-tinyconfig:
-	$(Q)$(MAKE) -f $(srctree)/Makefile allnoconfig tiny.config
+tinyconfig: $(obj)/conf
+	$(Q)$(MAKE) -f $(srctree)/Makefile allnoconfig KCONFIG_ALLCONFIG=$(wildcard $(srctree)/kernel/configs/tiny.config $(srctree)/arch/$(SRCARCH)/configs/tiny.config)
 
 # Help text used by make help
 help:
