@@ -208,6 +208,12 @@ void cec_transmit_done(struct cec_adapter *adap, u8 status, u8 arb_lost_cnt,
 void cec_received_msg(struct cec_adapter *adap, struct cec_msg *msg);
 
 #else
+static inline struct cec_adapter *cec_allocate_adapter(
+		const struct cec_adap_ops *ops, void *priv, const char *name,
+		u32 caps, u8 available_las, struct device *parent)
+{
+	return NULL;
+}
 
 static inline int cec_register_adapter(struct cec_adapter *adap)
 {
@@ -226,6 +232,25 @@ static inline void cec_s_phys_addr(struct cec_adapter *adap, u16 phys_addr,
 				   bool block)
 {
 }
+
+static inline int cec_transmit_msg(struct cec_adapter *adap,
+				   struct cec_msg *msg, bool block)
+{
+	return 0;
+}
+
+/* Called by the adapter */
+static inline void cec_transmit_done(struct cec_adapter *adap, u8 status,
+				     u8 arb_lost_cnt, u8 nack_cnt,
+				     u8 low_drive_cnt, u8 error_cnt)
+{
+}
+
+static inline void cec_received_msg(struct cec_adapter *adap,
+				    struct cec_msg *msg)
+{
+}
+
 
 #endif
 
