@@ -70,6 +70,7 @@ obj-$(CONFIG_ARCH_MMP)			+= mmp/
 endif
 obj-y					+= mvebu/
 obj-$(CONFIG_ARCH_MXS)			+= mxs/
+obj-$(CONFIG_ARCH_W90X900)		+= nuc900/
 obj-$(CONFIG_COMMON_CLK_NXP)		+= nxp/
 obj-$(CONFIG_MACH_PISTACHIO)		+= pistachio/
 obj-$(CONFIG_COMMON_CLK_PXA)		+= pxa/
