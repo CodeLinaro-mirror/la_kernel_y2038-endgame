@@ -129,7 +129,7 @@ static int __init aic_of_init(struct device_node *node,
 	writel(0xFFFFFFFC, aic_base + REG_AIC_MDCR);
 	writel(0xFFFFFFFF, aic_base + REG_AIC_MDCRH);
 
-	aic_domain = irq_domain_add_linear(node, NR_IRQS,
+	aic_domain = irq_domain_add_linear(node, 64,
 					   &aic_irq_domain_ops, NULL);
 
 	if (!aic_domain) {
