@@ -17,8 +17,8 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 #include <asm/mach-types.h>
-#include <mach/map.h>
 
+#include "map.h"
 #include "nuc960.h"
 
 static void __init nuc960evb_map_io(void)

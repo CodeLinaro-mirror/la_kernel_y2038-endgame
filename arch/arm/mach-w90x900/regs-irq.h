@@ -1,6 +1,4 @@
 /*
- * arch/arm/mach-w90x900/include/mach/regs-irq.h
- *
  * Copyright (c) 2008 Nuvoton technology corporation
  * All rights reserved.
  *

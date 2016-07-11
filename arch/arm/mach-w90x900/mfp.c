@@ -21,7 +21,7 @@
 #include <linux/mutex.h>
 #include <linux/io.h>
 
-#include <mach/hardware.h>
+#include "map.h"
 
 #define REG_MFSEL	(W90X900_VA_GCR + 0xC)
 
