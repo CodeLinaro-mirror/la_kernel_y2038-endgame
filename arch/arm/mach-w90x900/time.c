@@ -30,9 +30,8 @@
 #include <asm/mach/irq.h>
 #include <asm/mach/time.h>
 
-#include <mach/map.h>
+#include "map.h"
 #include "regs-timer.h"
-
 #include "nuc9xx.h"
 
 #define RESETINT	0x1f

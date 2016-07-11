@@ -17,7 +17,7 @@
 
 #include <linux/platform_device.h>
 #include <asm/mach/map.h>
-#include <mach/hardware.h>
+#include "map.h"
 #include "cpu.h"
 
 /* define specific CPU platform device */

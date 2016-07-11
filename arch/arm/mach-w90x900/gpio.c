@@ -22,7 +22,7 @@
 #include <linux/io.h>
 #include <linux/gpio/driver.h>
 
-#include <mach/hardware.h>
+#include "map.h"
 
 #define GPIO_BASE 		(W90X900_VA_GPIO)
 #define GPIO_DIR		(0x04)

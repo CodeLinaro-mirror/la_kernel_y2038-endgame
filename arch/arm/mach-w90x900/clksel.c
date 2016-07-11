@@ -21,8 +21,8 @@
 #include <linux/mutex.h>
 #include <linux/io.h>
 
-#include <mach/hardware.h>
-#include <mach/regs-clock.h>
+#include "map.h"
+#include "regs-clock.h"
 
 #define PLL0		0x00
 #define PLL1		0x01

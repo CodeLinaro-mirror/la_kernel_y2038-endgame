@@ -19,9 +19,9 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 #include <asm/mach-types.h>
-#include <mach/map.h>
 #include <linux/platform_data/video-nuc900fb.h>
 
+#include "map.h"
 #include "nuc950.h"
 
 static void __init nuc950evb_map_io(void)

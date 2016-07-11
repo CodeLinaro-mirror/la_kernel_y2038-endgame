@@ -26,9 +26,8 @@
 #include <asm/irq.h>
 #include <asm/mach/irq.h>
 
-#include <mach/hardware.h>
-#include <mach/regs-irq.h>
-
+#include "map.h"
+#include "regs-irq.h"
 #include "nuc9xx.h"
 
 struct group_irq {
