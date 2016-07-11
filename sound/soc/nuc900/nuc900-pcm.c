@@ -21,8 +21,6 @@
 #include <sound/pcm_params.h>
 #include <sound/soc.h>
 
-#include <mach/hardware.h>
-
 #include "nuc900-audio.h"
 
 static const struct snd_pcm_hardware nuc900_pcm_hardware = {
