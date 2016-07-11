@@ -52,6 +52,7 @@ static struct map_desc nuc900_iodesc[] __initdata = {
 	IODESC_ENT(GPIO),
 };
 
+#ifndef CONFIG_COMMON_CLK
 /* Initial clock declarations. */
 static DEFINE_CLK(lcd, 0);
 static DEFINE_CLK(audio, 1);
@@ -106,6 +107,7 @@ static struct clk_lookup nuc900_clkregs[] = {
 	DEF_CLKLOOK(&clk_timer3, NULL, "timer3"),
 	DEF_CLKLOOK(&clk_timer4, NULL, "timer4"),
 };
+#endif
 
 /* Initial serial platform data */
 
@@ -122,6 +124,7 @@ struct platform_device nuc900_serial_device = {
 	},
 };
 
+#ifndef CONFIG_COMMON_CLK
 /*Set NUC900 series cpu frequence*/
 static int __init nuc900_set_clkval(unsigned int cpufreq)
 {
@@ -199,6 +202,7 @@ static int __init nuc900_set_cpufreq(char *str)
 }
 
 __setup("cpufreq=", nuc900_set_cpufreq);
+#endif
 
 /*Init NUC900 evb io*/
 
@@ -222,10 +226,12 @@ void __init nuc900_map_io(struct map_desc *mach_desc, int mach_size)
 
 /*Init NUC900 clock*/
 
+#ifndef CONFIG_COMMON_CLK
 void __init nuc900_init_clocks(void)
 {
 	clkdev_add_table(nuc900_clkregs, ARRAY_SIZE(nuc900_clkregs));
 }
+#endif
 
 #define	WTCR	(TMR_BA + 0x1C)
 #define	WTCLK	(1 << 10)
