@@ -22,6 +22,7 @@
 #include <linux/device.h>
 #include <linux/io.h>
 
+#include <asm/exception.h>
 #include <asm/irq.h>
 #include <asm/mach/irq.h>
 
@@ -202,9 +203,21 @@ static struct irq_chip nuc900_irq_chip = {
 	.irq_unmask	= nuc900_irq_unmask,
 };
 
+static void __exception_irq_entry nuc900_handle_irq(struct pt_regs *regs)
+{
+	int hwirq;
+
+	(void)readl(REG_AIC_IPER);
+	hwirq = readl(REG_AIC_ISNR);
+
+	handle_IRQ(hwirq, regs);
+}
+
 void __init nuc900_init_irq(void)
 {
 	int irqno;
+
+	set_handle_irq(nuc900_handle_irq);
 
 	__raw_writel(0xFFFFFFFE, REG_AIC_MDCR);
 
