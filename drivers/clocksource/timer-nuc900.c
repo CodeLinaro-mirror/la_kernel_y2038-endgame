@@ -239,7 +239,7 @@ err_clk_prepare_enable:
 
 }
 
-static void __init nuc970_timer_of_init(struct device_node *node)
+static int __init nuc970_timer_of_init(struct device_node *node)
 {
 	struct nuc970_clockevents *nuc970_evt;
 	struct clk *clk_timer0, *clk_timer1;
@@ -292,14 +292,14 @@ static void __init nuc970_timer_of_init(struct device_node *node)
 		goto err_get_clk;
 	}
 
-	return;
+	return 0;
 
 err_get_clk:
 	iounmap(nuc970_evt->base);
 err_iomap:
 	kfree(nuc970_evt);
 err_alloc_mem:
-	return;
+	return ret;
 }
 
 CLOCKSOURCE_OF_DECLARE(nuc970, "nuvoton,nuc970-tmr", nuc970_timer_of_init);
