@@ -35,11 +35,9 @@
 #include <linux/pm.h>
 #include <linux/device.h>
 
-#include <mach/map.h>
-#include <mach/regs-clock.h>
-#include <mach/regs-ldm.h>
 #include <linux/platform_data/video-nuc900fb.h>
 
+#include "nuc900fb-regs.h"
 #include "nuc900fb.h"
 
 
@@ -373,9 +371,9 @@ static int nuc900fb_init_registers(struct fb_info *info)
 	writel(0, regs + REG_LCM_DEV_CTRL);
 
 	/* config gpio output */
-	modify_gpio(W90X900_VA_GPIO + 0x54, mach_info->gpio_dir,
+	modify_gpio(mach_info->gpio_dir_addr, mach_info->gpio_dir,
 		    mach_info->gpio_dir_mask);
-	modify_gpio(W90X900_VA_GPIO + 0x58, mach_info->gpio_data,
+	modify_gpio(mach_info->gpio_data_addr, mach_info->gpio_data,
 		    mach_info->gpio_data_mask);
 
 	return 0;

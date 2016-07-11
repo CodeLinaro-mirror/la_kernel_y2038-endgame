@@ -38,10 +38,20 @@ struct nuc900fb_hw {
 	unsigned int lcd_va_stuff;
 };
 
+enum LCM_DCCS_VA_SRC {
+	LCM_DCCS_VA_SRC_YUV422		= (0 << 8),
+	LCM_DCCS_VA_SRC_YCBCR422	= (1 << 8),
+	LCM_DCCS_VA_SRC_RGB888		= (2 << 8),
+	LCM_DCCS_VA_SRC_RGB666		= (3 << 8),
+	LCM_DCCS_VA_SRC_RGB565		= (4 << 8),
+	LCM_DCCS_VA_SRC_RGB444LOW	= (5 << 8),
+	LCM_DCCS_VA_SRC_RGB444HIGH 	= (7 << 8)
+};
+
 /* LCD Display Description */
 struct nuc900fb_display {
 	/* LCD Image type */
-	unsigned type;
+	enum LCM_DCCS_VA_SRC type;
 
 	/* LCD Screen Size */
 	unsigned short width;
@@ -72,8 +82,10 @@ struct nuc900fb_mach_info {
 	unsigned num_displays;
 	unsigned default_display;
 	/* GPIO Setting  Info */
+	void __iomem *gpio_dir_addr;
 	unsigned gpio_dir;
 	unsigned gpio_dir_mask;
+	void __iomem *gpio_data_addr;
 	unsigned gpio_data;
 	unsigned gpio_data_mask;
 };
