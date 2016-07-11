@@ -515,6 +515,7 @@ config ARCH_W90X900
 	select CPU_ARM926T
 	select GENERIC_CLOCKEVENTS
 	select GPIOLIB
+	select MULTI_IRQ_HANDLER
 	help
 	  Support for Nuvoton (Winbond logic dept.) ARM9 processor,
 	  At present, the w90x900 has been renamed nuc900, regarding
