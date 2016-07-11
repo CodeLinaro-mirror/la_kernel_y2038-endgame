@@ -26,6 +26,7 @@
 #include <asm/irq.h>
 #include <asm/mach/irq.h>
 
+#include "irq.h"
 #include "map.h"
 #include "regs-irq.h"
 #include "nuc9xx.h"

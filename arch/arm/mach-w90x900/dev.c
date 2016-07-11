@@ -38,6 +38,7 @@
 #include <linux/platform_data/video-nuc900fb.h>
 #include <linux/platform_data/keypad-w90p910.h>
 
+#include "irq.h"
 #include "map.h"
 #include "cpu.h"
 

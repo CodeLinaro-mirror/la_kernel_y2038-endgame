@@ -30,6 +30,7 @@
 #include <asm/mach/irq.h>
 #include <asm/mach/time.h>
 
+#include "irq.h"
 #include "map.h"
 #include "regs-timer.h"
 #include "nuc9xx.h"
