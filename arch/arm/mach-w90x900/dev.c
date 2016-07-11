@@ -34,12 +34,11 @@
 #include <asm/mach/irq.h>
 #include <asm/mach-types.h>
 
-#include <mach/regs-serial.h>
 #include <linux/platform_data/spi-nuc900.h>
-#include <mach/map.h>
 #include <linux/platform_data/video-nuc900fb.h>
 #include <linux/platform_data/keypad-w90p910.h>
 
+#include "map.h"
 #include "cpu.h"
 
 /*NUC900 evb norflash driver data */

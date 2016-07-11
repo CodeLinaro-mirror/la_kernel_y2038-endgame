@@ -1,6 +1,4 @@
 /*
- * arch/arm/mach-w90x900/include/mach/regs-clock.h
- *
  * Copyright (c) 2008 Nuvoton technology corporation.
  *
  * Wan ZongShun <mcuos.com@gmail.com>

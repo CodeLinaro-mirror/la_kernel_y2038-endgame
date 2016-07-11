@@ -30,9 +30,9 @@
 #include <asm/irq.h>
 #include <asm/system_misc.h>
 
-#include <mach/hardware.h>
-#include <mach/regs-serial.h>
-#include <mach/regs-clock.h>
+#include "map.h"
+#include "regs-serial.h"
+#include "regs-clock.h"
 #include "regs-ebi.h"
 #include "regs-timer.h"
 

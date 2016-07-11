@@ -20,11 +20,12 @@
 
 /* Defines for UART registers */
 
-#include <mach/regs-serial.h>
-#include <mach/map.h>
 #include <linux/serial_reg.h>
 
 #define TX_DONE	(UART_LSR_TEMT | UART_LSR_THRE)
+
+#define UART0_PA		W90X900_PA_UART
+#define W90X900_PA_UART		(0xB8000000)
 static volatile u32 * const uart_base = (u32 *)UART0_PA;
 
 static inline void putc(int ch)
