@@ -20,6 +20,7 @@
 #include <linux/ioport.h>
 #include <linux/ptrace.h>
 #include <linux/device.h>
+#include <linux/irqdomain.h>
 #include <linux/io.h>
 
 #include <asm/exception.h>
@@ -203,6 +204,8 @@ static struct irq_chip nuc900_irq_chip = {
 	.irq_unmask	= nuc900_irq_unmask,
 };
 
+static struct irq_domain *aic_domain;
+
 static void __exception_irq_entry nuc900_handle_irq(struct pt_regs *regs)
 {
 	int hwirq;
@@ -210,14 +213,31 @@ static void __exception_irq_entry nuc900_handle_irq(struct pt_regs *regs)
 	(void)readl(REG_AIC_IPER);
 	hwirq = readl(REG_AIC_ISNR);
 
-	handle_IRQ(hwirq, regs);
+	handle_domain_irq(aic_domain, hwirq, regs);
 }
+
+static int aic_irq_domain_map(struct irq_domain *d, unsigned int virq,
+			      irq_hw_number_t hw)
+{
+	irq_set_chip_and_handler(virq, &nuc900_irq_chip, handle_level_irq);
+	irq_clear_status_flags(virq, IRQ_NOREQUEST);
+
+	return 0;
+}
+
+static struct irq_domain_ops aic_irq_domain_ops = {
+	.map = aic_irq_domain_map,
+	.xlate = irq_domain_xlate_onecell,
+};
 
 void __init nuc900_init_irq(void)
 {
 	int irqno;
 
 	set_handle_irq(nuc900_handle_irq);
+
+	aic_domain = irq_domain_add_simple(NULL, 31, 1,
+					   &aic_irq_domain_ops, NULL);
 
 	__raw_writel(0xFFFFFFFE, REG_AIC_MDCR);
 
