@@ -30,6 +30,7 @@
 #include <asm/irq.h>
 #include <asm/system_misc.h>
 
+#include "irq.h"
 #include "map.h"
 #include "regs-serial.h"
 #include "regs-clock.h"
