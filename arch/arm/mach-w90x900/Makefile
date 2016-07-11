@@ -4,10 +4,12 @@
 
 # Object file lists.
 
-ifeq ($(CONFIG_SOC_NUC970),)
-obj-y				:= irq.o time.o mfp.o gpio.o clock.o
-obj-y				+= clksel.o dev.o cpu.o
+obj-y				+= mfp.o irq.o time.o gpio.o dev.o cpu.o
+
+ifndef CONFIG_COMMON_CLK
+obj-y				+= clksel.o clock.o
 endif
+
 # W90X900 CPU support files
 
 obj-$(CONFIG_CPU_W90P910)	+= nuc910.o

@@ -46,7 +46,11 @@
 /* extern file from cpu.c */
 
 extern void nuc900_clock_source(struct device *dev, unsigned char *src);
+#ifdef CONFIG_COMMON_CLK
+static inline void nuc900_init_clocks(void) {}
+#else
 extern void nuc900_init_clocks(void);
+#endif
 extern void nuc900_map_io(struct map_desc *mach_desc, int mach_size);
 extern void nuc900_board_init(struct platform_device **device, int size);
 

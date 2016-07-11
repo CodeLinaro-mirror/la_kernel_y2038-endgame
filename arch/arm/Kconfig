@@ -496,7 +496,7 @@ config ARCH_KS8695
 	  Support for Micrel/Kendin KS8695 "Centaur" (ARM922T) based
 	  System-on-Chip devices.
 
-config ARCH_W90X900
+config ARCH_W90X900_SINGLE
 	bool "Nuvoton W90X900 CPU"
 	select CLKDEV_LOOKUP
 	select CLKSRC_MMIO

@@ -1,31 +1,16 @@
-if ARCH_W90X900
+menuconfig ARCH_NUC900
+	bool "Nuvoton CPU_W90P910/NUC9xx support"
+	depends on ARCH_MULTI_V5
 
-config CPU_W90P910
-	bool
-	help
-	  Support for W90P910 of Nuvoton W90X900 CPUs.
-
-config CPU_NUC950
-	bool
-	help
-	  Support for NUCP950 of Nuvoton NUC900 CPUs.
-
-config CPU_NUC960
-	bool
-	help
-	  Support for NUCP960 of Nuvoton NUC900 CPUs.
+if ARCH_NUC900 || ARCH_W90X900_SINGLE
 
 config SOC_NUC970
 	bool "Nuvoton NUC970 SoC support"
-	select COMMON_CLK
+	select ARCH_W90X900
 	select GENERIC_IRQ_CHIP
-	select HAVE_CLK_PREPARE
-	select IRQ_DOMAIN
-	select MULTI_IRQ_HANDLER
 	select MFD_SYSCON
 	select NUC900_TIMER
 	select SOC_NUC900
-	select USE_OF
 	help
 	  Support for NUC970 of Nuvoton NUC900 SoCs.
 	  The NUC970 series runs up to 300 MHz, with 16 KB I-cache,
@@ -34,6 +19,27 @@ config SOC_NUC970
 	  Detailed information please check the following link:
 	  https://github.com/zswan/nuc900-document/blob/master/
 	  NUC970_TechnicalReferenceManual_EN_Rev1.30.pdf
+
+config ARCH_W90X900
+	def_bool ARCH_W90X900_SINGLE || ARCH_NUC900
+
+config CPU_W90P910
+	bool
+	select ARCH_W90X900
+	help
+	  Support for W90P910 of Nuvoton W90X900 CPUs.
+
+config CPU_NUC950
+	bool
+	select ARCH_W90X900
+	help
+	  Support for NUCP950 of Nuvoton NUC900 CPUs.
+
+config CPU_NUC960
+	bool
+	select ARCH_W90X900
+	help
+	  Support for NUCP960 of Nuvoton NUC900 CPUs.
 
 menu "W90P910 Machines"
 
