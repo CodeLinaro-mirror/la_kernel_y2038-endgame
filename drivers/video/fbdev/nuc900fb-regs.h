@@ -1,6 +1,4 @@
 /*
- * arch/arm/mach-w90x900/include/mach/regs-serial.h
- *
  * Copyright (c) 2009 Nuvoton technology corporation
  * All rights reserved.
  *
@@ -19,8 +17,6 @@
 #ifndef __ASM_ARM_W90X900_REGS_LDM_H
 #define __ASM_ARM_W90X900_REGS_LDM_H
 
-#include <mach/map.h>
-
 /* Display Controller Control/Status Register */
 #define REG_LCM_DCCS			(0x00)
 
@@ -32,17 +28,6 @@
 #define LCM_DCCS_CMD_ON			(1 << 5)
 #define LCM_DCCS_FIELD_INTR		(1 << 6)
 #define LCM_DCCS_SINGLE			(1 << 7)
-
-enum LCM_DCCS_VA_SRC {
-	LCM_DCCS_VA_SRC_YUV422		= (0 << 8),
-	LCM_DCCS_VA_SRC_YCBCR422	= (1 << 8),
-	LCM_DCCS_VA_SRC_RGB888		= (2 << 8),
-	LCM_DCCS_VA_SRC_RGB666		= (3 << 8),
-	LCM_DCCS_VA_SRC_RGB565		= (4 << 8),
-	LCM_DCCS_VA_SRC_RGB444LOW	= (5 << 8),
-	LCM_DCCS_VA_SRC_RGB444HIGH 	= (7 << 8)
-};
-
 
 /* Display Device Control Register */
 #define REG_LCM_DEV_CTRL		(0x04)

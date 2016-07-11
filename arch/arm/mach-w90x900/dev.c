@@ -38,7 +38,6 @@
 #include <linux/platform_data/spi-nuc900.h>
 #include <mach/map.h>
 #include <linux/platform_data/video-nuc900fb.h>
-#include <mach/regs-ldm.h>
 #include <linux/platform_data/keypad-w90p910.h>
 
 #include "cpu.h"
@@ -455,8 +454,10 @@ static struct nuc900fb_mach_info nuc900_fb_info = {
 #endif
 	.num_displays		= ARRAY_SIZE(nuc900_lcd_info),
 	.default_display	= 0,
+	.gpio_dir_addr		= W90X900_VA_GPIO + 0x54,
 	.gpio_dir		= 0x00000004,
 	.gpio_dir_mask		= 0xFFFFFFFD,
+	.gpio_data_addr		= W90X900_VA_GPIO + 0x58,
 	.gpio_data		= 0x00000004,
 	.gpio_data_mask		= 0xFFFFFFFD,
 };
