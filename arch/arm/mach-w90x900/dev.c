@@ -512,6 +512,7 @@ struct platform_device nuc900_device_ac97 = {
 	.dev              = {
 		.dma_mask               = &nuc900_device_audio_dmamask,
 		.coherent_dma_mask      = -1,
+		.platform_data		= mfp_set_groupg,
 	}
 };
 

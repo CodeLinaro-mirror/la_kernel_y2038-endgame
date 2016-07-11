@@ -22,8 +22,6 @@
 #include <sound/soc.h>
 #include <linux/clk.h>
 
-#include <mach/mfp.h>
-
 #include "nuc900-audio.h"
 
 static DEFINE_MUTEX(ac97_mutex);
@@ -320,6 +318,8 @@ static const struct snd_soc_component_driver nuc900_ac97_component = {
 
 static int nuc900_ac97_drvprobe(struct platform_device *pdev)
 {
+	void (*mfp_set_groupg)(struct device *dev, const char *subname);
+
 	struct nuc900_audio *nuc900_audio;
 	int ret;
 
@@ -361,6 +361,8 @@ static int nuc900_ac97_drvprobe(struct platform_device *pdev)
 					 &nuc900_ac97_dai, 1);
 	if (ret)
 		goto out;
+
+	mfp_set_groupg = platform_get_drvdata(pdev);
 
 	/* enbale ac97 multifunction pin */
 	mfp_set_groupg(nuc900_audio->dev, NULL);
