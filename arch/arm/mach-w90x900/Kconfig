@@ -7,10 +7,15 @@ if ARCH_NUC900 || ARCH_W90X900_SINGLE
 config SOC_NUC970
 	bool "Nuvoton NUC970 SoC support"
 	select ARCH_W90X900
+	select COMMON_CLK
 	select GENERIC_IRQ_CHIP
+	select HAVE_CLK_PREPARE
+	select IRQ_DOMAIN
+	select MULTI_IRQ_HANDLER
 	select MFD_SYSCON
 	select NUC900_TIMER
 	select SOC_NUC900
+	select USE_OF
 	help
 	  Support for NUC970 of Nuvoton NUC900 SoCs.
 	  The NUC970 series runs up to 300 MHz, with 16 KB I-cache,
