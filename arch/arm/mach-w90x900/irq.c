@@ -20,6 +20,7 @@
 #include <linux/ioport.h>
 #include <linux/ptrace.h>
 #include <linux/device.h>
+#include <linux/irqdomain.h>
 #include <linux/io.h>
 
 #include <asm/exception.h>
