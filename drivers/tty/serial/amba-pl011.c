@@ -2185,22 +2185,9 @@ static void pl011_console_putchar(struct uart_port *port, int ch)
 }
 
 static void
-pl011_console_write(struct console *co, const char *s, unsigned int count)
+__pl011_console_write(struct uart_amba_port *uap, const char *s, unsigned int count)
 {
-	struct uart_amba_port *uap = amba_ports[co->index];
 	unsigned int old_cr = 0, new_cr;
-	unsigned long flags;
-	int locked = 1;
-
-	clk_enable(uap->clk);
-
-	local_irq_save(flags);
-	if (uap->port.sysrq)
-		locked = 0;
-	else if (oops_in_progress)
-		locked = spin_trylock(&uap->port.lock);
-	else
-		spin_lock(&uap->port.lock);
 
 	/*
 	 *	First save the CR then disable the interrupts
@@ -2222,10 +2209,24 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
 		cpu_relax();
 	if (!uap->vendor->always_enabled)
 		pl011_write(old_cr, uap, REG_CR);
+}
 
-	if (locked)
-		spin_unlock(&uap->port.lock);
-	local_irq_restore(flags);
+
+static void
+pl011_console_write(struct console *co, const char *s, unsigned int count)
+{
+	struct uart_amba_port *uap = amba_ports[co->index];
+	unsigned long flags;
+
+	clk_enable(uap->clk);
+
+	if (uap->port.sysrq || oops_in_progress) {
+		__pl011_console_write(uap, s, count);
+	} else {
+		spin_lock_irqsave(&uap->port.lock, flags);
+		__pl011_console_write(uap, s, count);
+		spin_unlock_irqrestore(&uap->port.lock, flags);
+	}
 
 	clk_disable(uap->clk);
 }
