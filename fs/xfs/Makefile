@@ -19,7 +19,7 @@
 ccflags-y += -I$(src)			# needed for trace events
 ccflags-y += -I$(src)/libxfs
 
-ccflags-$(CONFIG_XFS_DEBUG) += -g
+ccflags-$(CONFIG_XFS_DEBUG) += -g -Wno-missing-declarations -Wno-missing-prototypes
 
 obj-$(CONFIG_XFS_FS)		+= xfs.o
 
