@@ -23,6 +23,7 @@
 #include <drm/drmP.h>
 #include <drm/amdgpu_drm.h>
 #include "amdgpu.h"
+#include "amdgpu_pll.h"
 #include "atom.h"
 #include "atombios_encoders.h"
 #include "amdgpu_pll.h"

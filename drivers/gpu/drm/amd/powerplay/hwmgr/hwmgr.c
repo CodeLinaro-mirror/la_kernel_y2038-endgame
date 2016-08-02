@@ -36,8 +36,6 @@
 #include "pp_acpi.h"
 #include "amd_acpi.h"
 
-extern int cz_init_function_pointers(struct pp_hwmgr *hwmgr);
-
 static int polaris_set_asic_special_caps(struct pp_hwmgr *hwmgr);
 static void hwmgr_init_default_caps(struct pp_hwmgr *hwmgr);
 static int hwmgr_set_user_specify_caps(struct pp_hwmgr *hwmgr);

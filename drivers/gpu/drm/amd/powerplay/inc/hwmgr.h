@@ -693,6 +693,13 @@ extern int smu7_init_function_pointers(struct pp_hwmgr *hwmgr);
 extern int phm_get_voltage_evv_on_sclk(struct pp_hwmgr *hwmgr, uint8_t voltage_type,
 				uint32_t sclk, uint16_t id, uint16_t *voltage);
 
+extern int cz_init_function_pointers(struct pp_hwmgr *hwmgr);
+
+extern int tonga_initializa_dynamic_state_adjustment_rule_settings(struct pp_hwmgr *hwmgr);
+extern int tonga_get_mc_microcode_version (struct pp_hwmgr *hwmgr);
+extern int tonga_notify_smc_display_config_after_ps_adjustment(struct pp_hwmgr *hwmgr);
+extern int tonga_notify_smc_display_change(struct pp_hwmgr *hwmgr, bool has_display);
+
 #define PHM_ENTIRE_REGISTER_MASK 0xFFFFFFFFU
 
 #define PHM_FIELD_SHIFT(reg, field) reg##__##field##__SHIFT

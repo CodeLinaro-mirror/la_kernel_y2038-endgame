@@ -1732,6 +1732,9 @@ void amdgpu_program_register_sequence(struct amdgpu_device *adev,
 					     const u32 *registers,
 					     const u32 array_size);
 
+int amdgpu_ttm_init(struct amdgpu_device *adev);
+void amdgpu_ttm_fini(struct amdgpu_device *adev);
+
 bool amdgpu_device_is_px(struct drm_device *dev);
 /* atpx handler */
 #if defined(CONFIG_VGA_SWITCHEROO)
