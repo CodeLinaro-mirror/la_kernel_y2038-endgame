@@ -69,7 +69,7 @@ int drm_virtio_init(struct drm_driver *driver, struct virtio_device *vdev)
 			 vga ? "virtio-vga" : "virtio-gpu-pci",
 			 pname);
 		dev->pdev = pdev;
-		if (vga)
+		if (IS_REACHABLE(CONFIG_FB) && vga)
 			virtio_pci_kick_out_firmware_fb(pdev);
 
 		snprintf(unique, sizeof(unique), "pci:%s", pname);
