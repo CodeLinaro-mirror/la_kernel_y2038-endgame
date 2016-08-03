@@ -27,6 +27,8 @@
  * FIXME: consider adjusting the reservation depending on what devices
  * are attached.
  */
+static const
+struct uwb_mas_bm uwb_mas_bm_zero = { .bm = { 0 } };
 
 static int wusbhc_bwa_set(struct wusbhc *wusbhc, u8 stream,
 	const struct uwb_mas_bm *mas)
