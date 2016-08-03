@@ -21,6 +21,8 @@
 #include "wmm.h"
 #include "cfg80211.h"
 #include "11n.h"
+#include "usb.h"
+#include "sdio.h"
 
 #define VERSION	"1.0"
 #define MFG_FIRMWARE	"mwifiex_mfg.bin"

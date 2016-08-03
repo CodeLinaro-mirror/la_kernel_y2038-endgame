@@ -22,6 +22,56 @@
 
 #define USB_VERSION	"1.0"
 
+#define USB8XXX_VID		0x1286
+
+#define USB8766_PID_1		0x2041
+#define USB8766_PID_2		0x2042
+#define USB8797_PID_1		0x2043
+#define USB8797_PID_2		0x2044
+#define USB8801_PID_1		0x2049
+#define USB8801_PID_2		0x204a
+#define USB8997_PID_1		0x2052
+#define USB8997_PID_2		0x204e
+
+
+#define USB8XXX_FW_DNLD		1
+#define USB8XXX_FW_READY	2
+#define USB8XXX_FW_MAX_RETRY	3
+
+#define MWIFIEX_USB_TIMEOUT	100
+
+#define USB8766_DEFAULT_FW_NAME	"mrvl/usb8766_uapsta.bin"
+#define USB8797_DEFAULT_FW_NAME	"mrvl/usb8797_uapsta.bin"
+#define USB8801_DEFAULT_FW_NAME	"mrvl/usb8801_uapsta.bin"
+#define USB8997_DEFAULT_FW_NAME	"mrvl/usbusb8997_combo_v4.bin"
+
+#define FW_DNLD_TX_BUF_SIZE	620
+#define FW_DNLD_RX_BUF_SIZE	2048
+#define FW_HAS_LAST_BLOCK	0x00000004
+#define FW_CMD_7		0x00000007
+
+#define FW_DATA_XMIT_SIZE \
+	(sizeof(struct fw_header) + dlen + sizeof(u32))
+
+
+struct fw_header {
+	__le32 dnld_cmd;
+	__le32 base_addr;
+	__le32 data_len;
+	__le32 crc;
+};
+
+struct fw_sync_header {
+	__le32 cmd;
+	__le32 seq_num;
+};
+
+struct fw_data {
+	struct fw_header fw_hdr;
+	__le32 seq_num;
+	u8 data[1];
+};
+
 static struct mwifiex_if_ops usb_ops;
 
 static struct usb_device_id mwifiex_usb_table[] = {
