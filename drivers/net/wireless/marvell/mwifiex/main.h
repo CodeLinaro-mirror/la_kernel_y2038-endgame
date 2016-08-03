@@ -54,9 +54,6 @@
 #include "ioctl.h"
 #include "util.h"
 #include "fw.h"
-#include "pcie.h"
-#include "usb.h"
-#include "sdio.h"
 
 extern const char driver_version[];
 extern bool mfg_mode;

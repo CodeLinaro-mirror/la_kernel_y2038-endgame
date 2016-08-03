@@ -25,6 +25,7 @@
 #include "wmm.h"
 #include "11n.h"
 #include "11ac.h"
+#include "pcie.h"
 
 static bool drcs;
 module_param(drcs, bool, 0644);
