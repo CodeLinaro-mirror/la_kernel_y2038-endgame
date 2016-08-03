@@ -265,9 +265,6 @@ struct uwb_rsv {
 	struct work_struct handle_timeout_work;
 };
 
-static const
-struct uwb_mas_bm uwb_mas_bm_zero = { .bm = { 0 } };
-
 static inline void uwb_mas_bm_copy_le(void *dst, const struct uwb_mas_bm *mas)
 {
 	bitmap_copy_le(dst, mas->bm, UWB_NUM_MAS);

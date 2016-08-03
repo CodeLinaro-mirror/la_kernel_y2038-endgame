@@ -86,6 +86,8 @@ out:
 }
 static DEVICE_ATTR_RW(wusb_trust_timeout);
 
+const struct wusb_ckhdid wusb_ckhdid_zero = { .data = { 0 } };
+
 /*
  * Show the current WUSB CHID.
  */
