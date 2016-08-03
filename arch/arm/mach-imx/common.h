@@ -110,16 +110,14 @@ int imx_mmdc_get_ddr_type(void);
 void imx_cpu_die(unsigned int cpu);
 int imx_cpu_kill(unsigned int cpu);
 
-#ifdef CONFIG_SUSPEND
-void v7_cpu_resume(void);
 void imx53_suspend(void __iomem *ocram_vbase);
 extern const u32 imx53_suspend_sz;
 void imx6_suspend(void __iomem *ocram_vbase);
+
+#ifdef CONFIG_SUSPEND
+void v7_cpu_resume(void);
 #else
 static inline void v7_cpu_resume(void) {}
-static inline void imx53_suspend(void __iomem *ocram_vbase) {}
-static const u32 imx53_suspend_sz;
-static inline void imx6_suspend(void __iomem *ocram_vbase) {}
 #endif
 
 void imx6_pm_ccm_init(const char *ccm_compat);
