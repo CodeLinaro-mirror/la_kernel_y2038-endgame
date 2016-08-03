@@ -122,7 +122,6 @@ ATOMIC64_OPS(sub, -=)
 #undef ATOMIC64_OPS
 #define ATOMIC64_OPS(op, c_op)						\
 	ATOMIC64_OP(op, c_op)						\
-	ATOMIC64_OP_RETURN(op, c_op)					\
 	ATOMIC64_FETCH_OP(op, c_op)
 
 ATOMIC64_OPS(and, &=)
