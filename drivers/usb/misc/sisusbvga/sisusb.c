@@ -50,7 +50,6 @@
 #include <linux/vmalloc.h>
 
 #include "sisusb.h"
-#include "sisusb_init.h"
 
 #ifdef INCL_SISUSB_CON
 #include <linux/font.h>
