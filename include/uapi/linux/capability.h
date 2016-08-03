@@ -352,7 +352,7 @@ struct vfs_cap_data {
 
 #define CAP_LAST_CAP         CAP_AUDIT_READ
 
-#define cap_valid(x) ((x) >= 0 && (x) <= CAP_LAST_CAP)
+#define cap_valid(x) ((unsigned long)(x) <= CAP_LAST_CAP)
 
 /*
  * Bit location of each capability (used by user-space library and kernel)
