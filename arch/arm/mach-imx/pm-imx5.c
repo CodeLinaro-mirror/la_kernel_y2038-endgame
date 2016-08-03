@@ -401,7 +401,8 @@ static int __init imx5_pm_common_init(const struct imx5_pm_data *data)
 	if (ret)
 		pr_warn("%s: cpuidle init failed %d\n", __func__, ret);
 
-	ret = imx5_suspend_init(data);
+	if (IS_ENABLED(CONFIG_SUSPEND))
+		ret = imx5_suspend_init(data);
 	if (ret)
 		pr_warn("%s: No DDR LPM support with suspend %d!\n",
 			__func__, ret);
