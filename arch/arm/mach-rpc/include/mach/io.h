@@ -14,6 +14,7 @@
 #define __ASM_ARM_ARCH_IO_H
 
 #include <mach/hardware.h>
+#include <linux/printk.h>
 
 #define IO_SPACE_LIMIT 0xffff
 
@@ -27,5 +28,17 @@
  * like an ISA bus, but with registers at the low byte of each word.
  */
 #define __io(a)		(PCIO_BASE + ((a) << 2))
+
+static inline void rpc_warn_insl_outsl(unsigned int port, const void *data, int bytelen)
+{
+	pr_warning("rpc cannot do insl/outsl");
+}
+
+#undef insl
+#undef outsl
+#define insl(p, d, l) rpc_warn_insl_outsl(p, d, l)
+#define outsl(p, d, l) rpc_warn_insl_outsl(p, d, l)
+#define insl_p(p, d, l) rpc_warn_insl_outsl(p, d, l)
+#define outsl_p(p, d, l) rpc_warn_insl_outsl(p, d, l)
 
 #endif
