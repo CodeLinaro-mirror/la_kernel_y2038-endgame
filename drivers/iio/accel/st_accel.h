@@ -50,14 +50,6 @@ enum st_accel_type {
 #define LIS3L02DQ_ACCEL_DEV_NAME	"lis3l02dq"
 #define LNG2DM_ACCEL_DEV_NAME		"lng2dm"
 
-/**
-* struct st_sensors_platform_data - default accel platform data
-* @drdy_int_pin: default accel DRDY is available on INT1 pin.
-*/
-static const struct st_sensors_platform_data default_accel_pdata = {
-	.drdy_int_pin = 1,
-};
-
 int st_accel_common_probe(struct iio_dev *indio_dev);
 void st_accel_common_remove(struct iio_dev *indio_dev);
 
