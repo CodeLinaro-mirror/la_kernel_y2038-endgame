@@ -268,11 +268,15 @@ void __iomem *pci_remap_cfgspace(resource_size_t res_cookie, size_t size);
 
 #define outsb(p,d,l)		__raw_writesb(__io(p),d,l)
 #define outsw(p,d,l)		__raw_writesw(__io(p),d,l)
+#ifndef outsl
 #define outsl(p,d,l)		__raw_writesl(__io(p),d,l)
+#endif
 
 #define insb(p,d,l)		__raw_readsb(__io(p),d,l)
 #define insw(p,d,l)		__raw_readsw(__io(p),d,l)
+#ifndef insl
 #define insl(p,d,l)		__raw_readsl(__io(p),d,l)
+#endif
 #endif
 
 /*
