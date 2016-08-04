@@ -49,15 +49,16 @@
  * This Jitterentropy RNG is based on the jitterentropy library
  * version 1.1.0 provided at http://www.chronox.de/jent.html
  */
-
 #ifdef __OPTIMIZE__
  #error "The CPU Jitter random number generator must not be compiled with optimizations. See documentation. Use the compiler switch -O0 for compiling jitterentropy.c."
 #endif
 
+#define NULL    ((void *) 0)
 typedef	unsigned long long	__u64;
 typedef	long long		__s64;
 typedef	unsigned int		__u32;
-#define NULL    ((void *) 0)
+
+#include "jitterentropy.h"
 
 /* The entropy pool */
 struct rand_data {
@@ -105,18 +106,6 @@ struct rand_data {
 				   * zero). */
 #define JENT_EMINVARVAR		6 /* Timer variations of variations is tooi
 				   * small. */
-
-/***************************************************************************
- * Helper functions
- ***************************************************************************/
-
-void jent_get_nstime(__u64 *out);
-__u64 jent_rol64(__u64 word, unsigned int shift);
-void *jent_zalloc(unsigned int len);
-void jent_zfree(void *ptr);
-int jent_fips_enabled(void);
-void jent_panic(char *s);
-void jent_memcpy(void *dest, const void *src, unsigned int n);
 
 /**
  * Update of the loop count used for the next round of
