@@ -30,7 +30,7 @@ $(obj)/version.o: include/generated/compile.h
 # actual file if its content has changed.
 
        chk_compile.h = :
- quiet_chk_compile.h = echo '  CHK     $@'
+ quiet_chk_compile.h = echo `date +%T` '  CHK     $@'
 silent_chk_compile.h = :
 include/generated/compile.h: FORCE
 	@$($(quiet)chk_compile.h)

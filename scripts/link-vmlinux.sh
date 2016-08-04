@@ -33,7 +33,7 @@ set -e
 info()
 {
 	if [ "${quiet}" != "silent_" ]; then
-		printf "  %-7s %s\n" ${1} ${2}
+		printf "%s  %-7s %s\n" "`date +%T`" ${1} ${2}
 	fi
 }
 
