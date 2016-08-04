@@ -277,7 +277,7 @@ void st_sensors_power_disable(struct iio_dev *indio_dev)
 EXPORT_SYMBOL(st_sensors_power_disable);
 
 static int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
-					struct st_sensors_platform_data *pdata)
+					const struct st_sensors_platform_data *pdata)
 {
 	struct st_sensor_data *sdata = iio_priv(indio_dev);
 
@@ -326,7 +326,7 @@ static int st_sensors_set_drdy_int_pin(struct iio_dev *indio_dev,
 
 #ifdef CONFIG_OF
 static struct st_sensors_platform_data *st_sensors_of_probe(struct device *dev,
-		struct st_sensors_platform_data *defdata)
+		const struct st_sensors_platform_data *defdata)
 {
 	struct st_sensors_platform_data *pdata;
 	struct device_node *np = dev->of_node;
@@ -347,14 +347,14 @@ static struct st_sensors_platform_data *st_sensors_of_probe(struct device *dev,
 }
 #else
 static struct st_sensors_platform_data *st_sensors_of_probe(struct device *dev,
-		struct st_sensors_platform_data *defdata)
+		const struct st_sensors_platform_data *defdata)
 {
 	return NULL;
 }
 #endif
 
 int st_sensors_init_sensor(struct iio_dev *indio_dev,
-					struct st_sensors_platform_data *pdata)
+					const struct st_sensors_platform_data *pdata)
 {
 	struct st_sensor_data *sdata = iio_priv(indio_dev);
 	struct st_sensors_platform_data *of_pdata;

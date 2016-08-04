@@ -293,7 +293,7 @@ static inline void st_sensors_deallocate_trigger(struct iio_dev *indio_dev)
 #endif
 
 int st_sensors_init_sensor(struct iio_dev *indio_dev,
-					struct st_sensors_platform_data *pdata);
+			   const struct st_sensors_platform_data *pdata);
 
 int st_sensors_set_enable(struct iio_dev *indio_dev, bool enable);
 

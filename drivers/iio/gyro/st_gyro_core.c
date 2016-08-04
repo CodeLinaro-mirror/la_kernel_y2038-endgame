@@ -343,6 +343,14 @@ static const struct iio_trigger_ops st_gyro_trigger_ops = {
 #define ST_GYRO_TRIGGER_OPS NULL
 #endif
 
+/**
+ * struct st_sensors_platform_data - gyro platform data
+ * @drdy_int_pin: DRDY on gyros is available only on INT2 pin.
+ */
+static const struct st_sensors_platform_data gyro_pdata = {
+	.drdy_int_pin = 2,
+};
+
 int st_gyro_common_probe(struct iio_dev *indio_dev)
 {
 	struct st_sensor_data *gdata = iio_priv(indio_dev);
@@ -372,8 +380,7 @@ int st_gyro_common_probe(struct iio_dev *indio_dev)
 					&gdata->sensor_settings->fs.fs_avl[0];
 	gdata->odr = gdata->sensor_settings->odr.odr_avl[0].hz;
 
-	err = st_sensors_init_sensor(indio_dev,
-				(struct st_sensors_platform_data *)&gyro_pdata);
+	err = st_sensors_init_sensor(indio_dev, &gyro_pdata);
 	if (err < 0)
 		goto st_gyro_power_off;
 
