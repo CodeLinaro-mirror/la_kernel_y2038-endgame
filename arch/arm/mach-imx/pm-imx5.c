@@ -67,6 +67,9 @@ struct imx5_pm_data {
 	phys_addr_t ccm_addr;
 	phys_addr_t cortex_addr;
 	phys_addr_t gpc_addr;
+};
+
+struct imx5_pm_suspend_data {
 	phys_addr_t m4if_addr;
 	phys_addr_t iomuxc_addr;
 	void (*suspend_asm)(void __iomem *ocram_vbase);
@@ -112,6 +115,9 @@ static const struct imx5_pm_data imx53_pm_data __initconst = {
 	.ccm_addr = 0x53fd4000,
 	.cortex_addr = 0x63fa0000,
 	.gpc_addr = 0x53fd8000,
+};
+
+static const struct imx5_pm_suspend_data imx53_pm_suspend_data __initconst = {
 	.m4if_addr = 0x63fd8000,
 	.iomuxc_addr = 0x53fa8000,
 	.suspend_asm = &imx53_suspend,
@@ -324,7 +330,7 @@ put_node:
 	return ret;
 }
 
-static int __init imx5_suspend_init(const struct imx5_pm_data *soc_data)
+static int __init imx5_suspend_init(const struct imx5_pm_suspend_data *soc_data)
 {
 	struct imx5_cpu_suspend_info *suspend_info;
 	int ret;
@@ -375,7 +381,8 @@ failed_map_m4if:
 	return ret;
 }
 
-static int __init imx5_pm_common_init(const struct imx5_pm_data *data)
+static int __init imx5_pm_common_init(const struct imx5_pm_data *data,
+				      const struct imx5_pm_suspend_data *sdata)
 {
 	int ret;
 	struct clk *gpc_dvfs_clk = clk_get(NULL, "gpc_dvfs");
@@ -402,7 +409,7 @@ static int __init imx5_pm_common_init(const struct imx5_pm_data *data)
 		pr_warn("%s: cpuidle init failed %d\n", __func__, ret);
 
 	if (IS_ENABLED(CONFIG_SUSPEND))
-		ret = imx5_suspend_init(data);
+		ret = imx5_suspend_init(sdata);
 	if (ret)
 		pr_warn("%s: No DDR LPM support with suspend %d!\n",
 			__func__, ret);
@@ -415,11 +422,11 @@ static int __init imx5_pm_common_init(const struct imx5_pm_data *data)
 void __init imx51_pm_init(void)
 {
 	if (IS_ENABLED(CONFIG_SOC_IMX51))
-		imx5_pm_common_init(&imx51_pm_data);
+		imx5_pm_common_init(&imx51_pm_data, NULL);
 }
 
 void __init imx53_pm_init(void)
 {
 	if (IS_ENABLED(CONFIG_SOC_IMX53))
-		imx5_pm_common_init(&imx53_pm_data);
+		imx5_pm_common_init(&imx53_pm_data, &imx53_pm_suspend_data);
 }
