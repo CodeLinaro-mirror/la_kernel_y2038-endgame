@@ -4768,10 +4768,7 @@ static ssize_t __FUNC(struct elevator_queue *e, const char *page, size_t count)	
 	struct cfq_data *cfqd = e->elevator_data;			\
 	unsigned int __data;						\
 	int ret = cfq_var_store(&__data, (page), count);		\
-	if (__data < (MIN))						\
-		__data = (MIN);						\
-	else if (__data > (MAX))					\
-		__data = (MAX);						\
+	__data = clamp_val(__data, MIN, MAX);				\
 	if (__CONV)							\
 		*(__PTR) = (u64)__data * NSEC_PER_MSEC;			\
 	else								\
@@ -4802,10 +4799,7 @@ static ssize_t __FUNC(struct elevator_queue *e, const char *page, size_t count)	
 	struct cfq_data *cfqd = e->elevator_data;			\
 	unsigned int __data;						\
 	int ret = cfq_var_store(&__data, (page), count);		\
-	if (__data < (MIN))						\
-		__data = (MIN);						\
-	else if (__data > (MAX))					\
-		__data = (MAX);						\
+	__data = clamp_val(__data, MIN, MAX);				\
 	*(__PTR) = (u64)__data * NSEC_PER_USEC;				\
 	return ret;							\
 }
