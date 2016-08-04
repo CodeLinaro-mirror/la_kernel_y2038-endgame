@@ -18,7 +18,7 @@ then
 	exit 0
 fi
 if [ "${quiet}" != "silent_" ]; then
-	echo "  GEN     $2/Makefile"
+	echo `date +%T` "  GEN     $2/Makefile"
 fi
 
 cat << EOF > $2/Makefile
