@@ -62,8 +62,6 @@ lkdtm-$(CONFIG_LKDTM)		+= lkdtm_heap.o
 lkdtm-$(CONFIG_LKDTM)		+= lkdtm_perms.o
 lkdtm-$(CONFIG_LKDTM)		+= lkdtm_rodata_objcopy.o
 lkdtm-$(CONFIG_LKDTM)		+= lkdtm_usercopy.o
-CFLAGS_REMOVE_lkdtm_core.o	+= -pg
-CFLAGS_REMOVE_lkdtm_rodata.o	+= -pg
 
 KCOV_INSTRUMENT_lkdtm_rodata.o	:= n
 
