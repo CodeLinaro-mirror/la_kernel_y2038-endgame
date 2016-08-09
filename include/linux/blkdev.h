@@ -1397,13 +1397,6 @@ static inline unsigned short bdev_logical_block_size(struct block_device *bdev)
 	return queue_logical_block_size(bdev_get_queue(bdev));
 }
 
-static inline sector_t bdev_logical_block_count(struct block_device *bdev)
-{
-	unsigned int block_shift = ilog2(bdev_logical_block_size(bdev));
-
-	return bdev->bd_inode->i_size >> block_shift;
-}
-
 static inline unsigned int queue_physical_block_size(struct request_queue *q)
 {
 	return q->limits.physical_block_size;
@@ -1412,13 +1405,6 @@ static inline unsigned int queue_physical_block_size(struct request_queue *q)
 static inline unsigned int bdev_physical_block_size(struct block_device *bdev)
 {
 	return queue_physical_block_size(bdev_get_queue(bdev));
-}
-
-static inline sector_t bdev_physical_block_count(struct block_device *bdev)
-{
-	unsigned int block_shift = ilog2(bdev_physical_block_size(bdev));
-
-	return bdev->bd_inode->i_size >> block_shift;
 }
 
 static inline unsigned int queue_io_min(struct request_queue *q)
