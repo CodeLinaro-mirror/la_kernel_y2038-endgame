@@ -1031,6 +1031,20 @@ config ARM_ERRATA_460075
 	  ACTLR register. Note that setting specific bits in the ACTLR register
 	  may not be available in non-secure mode.
 
+config ARM_ERRATA_657417
+	bool "ARM errata: A 32-bit branch instruction that spans two 4K regions can result in an incorrect operation"
+	depends on CPU_V7
+	depends on THUMB2_KERNEL
+	default y
+	help
+	  This option enables the workaround for the 657417 Cortex-A8 erratum.
+	  If, while executing code in Thumb or ThumbEE state, a 32-bit Thumb-2
+	  branch instruction is executed that spans two 4KB regions, and the
+	  target address of the branch falls within the first region, it is
+	  possible for the processor to behave incorrectly. This workaround
+	  enables a linker workaround that adds branch trampolines that bounce
+	  offending branches via a safe location.
+
 config ARM_ERRATA_742230
 	bool "ARM errata: DMB operation may be faulty"
 	depends on CPU_V7 && SMP
