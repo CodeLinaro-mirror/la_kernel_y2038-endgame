@@ -47,6 +47,13 @@ ifeq ($(CONFIG_FRAME_POINTER),y)
 KBUILD_CFLAGS	+=-fno-omit-frame-pointer -mapcs -mno-sched-prolog
 endif
 
+ifneq ($(CONFIG_ARM_ERRATA_657417),y)
+# ld-option has to run before we override LD otherwise it fails on
+# cross compile with mismatched endian (C compiler outputs one endian,
+# LD accepts another)
+LDFLAGS		+=$(call ld-option, --no-fix-cortex-a8,)
+endif
+
 ifeq ($(CONFIG_CPU_BIG_ENDIAN),y)
 KBUILD_CPPFLAGS	+= -mbig-endian
 AS		+= -EB
