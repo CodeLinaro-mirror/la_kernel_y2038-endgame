@@ -414,4 +414,11 @@
 #define __NR_pkey_alloc		396
 #define __NR_pkey_free		397
 
+#if 0
+377	i386	copy_file_range		sys_copy_file_range
+378	i386	preadv2			sys_preadv2			compat_sys_preadv2
+379	i386	pwritev2		sys_pwritev2			compat_sys_pwritev2
+#endif
+
+
 #endif /* _UAPI_ASM_MICROBLAZE_UNISTD_H */

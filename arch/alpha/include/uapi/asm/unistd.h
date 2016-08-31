@@ -476,4 +476,14 @@
 #define __NR_memfd_create		512
 #define __NR_execveat			513
 
+#if 0
+357     i386    bpf                     sys_bpf
+374     i386    userfaultfd             sys_userfaultfd
+375     i386    membarrier              sys_membarrier
+376     i386    mlock2                  sys_mlock2
+377     i386    copy_file_range         sys_copy_file_range
+378     i386    preadv2                 sys_preadv2                     compat_sys_preadv2
+379     i386    pwritev2                sys_pwritev2                    compat_sys_pwritev2
+#endif
+
 #endif /* _UAPI_ALPHA_UNISTD_H */

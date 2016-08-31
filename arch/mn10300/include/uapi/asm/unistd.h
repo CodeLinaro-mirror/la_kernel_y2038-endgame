@@ -351,4 +351,49 @@
 #define __NR_recvmmsg		338
 #define __NR_setns		339
 
+#if 0
+337	i386	recvmmsg		compat_sys_recvmmsg
+338	i386	fanotify_init		sys_fanotify_init
+339	i386	fanotify_mark		sys_fanotify_mark		compat_sys_fanotify_mark
+340	i386	prlimit64		sys_prlimit64
+341	i386	name_to_handle_at	sys_name_to_handle_at
+342	i386	open_by_handle_at	sys_open_by_handle_at		compat_sys_open_by_handle_at
+343	i386	clock_adjtime		compat_sys_clock_adjtime
+344	i386	syncfs			sys_syncfs
+345	i386	sendmmsg		sys_sendmmsg			compat_sys_sendmmsg
+347	i386	process_vm_readv	sys_process_vm_readv		compat_sys_process_vm_readv
+348	i386	process_vm_writev	sys_process_vm_writev		compat_sys_process_vm_writev
+349	i386	kcmp			sys_kcmp
+350	i386	finit_module		sys_finit_module
+351	i386	sched_setattr		sys_sched_setattr
+352	i386	sched_getattr		sys_sched_getattr
+353	i386	renameat2		sys_renameat2
+354	i386	seccomp			sys_seccomp
+355	i386	getrandom		sys_getrandom
+356	i386	memfd_create		sys_memfd_create
+357	i386	bpf			sys_bpf
+358	i386	execveat		sys_execveat			compat_sys_execveat
+359	i386	socket			sys_socket
+360	i386	socketpair		sys_socketpair
+361	i386	bind			sys_bind
+362	i386	connect			sys_connect
+363	i386	listen			sys_listen
+364	i386	accept4			sys_accept4
+365	i386	getsockopt		sys_getsockopt			compat_sys_getsockopt
+366	i386	setsockopt		sys_setsockopt			compat_sys_setsockopt
+367	i386	getsockname		sys_getsockname
+368	i386	getpeername		sys_getpeername
+369	i386	sendto			sys_sendto
+370	i386	sendmsg			sys_sendmsg			compat_sys_sendmsg
+371	i386	recvfrom		sys_recvfrom			compat_sys_recvfrom
+372	i386	recvmsg			sys_recvmsg			compat_sys_recvmsg
+373	i386	shutdown		sys_shutdown
+374	i386	userfaultfd		sys_userfaultfd
+375	i386	membarrier		sys_membarrier
+376	i386	mlock2			sys_mlock2
+377	i386	copy_file_range		sys_copy_file_range
+378	i386	preadv2			sys_preadv2			compat_sys_preadv2
+379	i386	pwritev2		sys_pwritev2			compat_sys_pwritev2
+#endif
+
 #endif /* _UAPI_ASM_UNISTD_H */
