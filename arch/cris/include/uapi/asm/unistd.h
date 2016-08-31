@@ -365,4 +365,28 @@
 #define __NR_bpf		358
 #define __NR_execveat		359
 
+#if 0
+359     i386    socket                  sys_socket
+360     i386    socketpair              sys_socketpair
+361     i386    bind                    sys_bind
+362     i386    connect                 sys_connect
+363     i386    listen                  sys_listen
+364     i386    accept4                 sys_accept4
+365     i386    getsockopt              sys_getsockopt                  compat_sys_getsockopt
+366     i386    setsockopt              sys_setsockopt                  compat_sys_setsockopt
+367     i386    getsockname             sys_getsockname
+368     i386    getpeername             sys_getpeername
+369     i386    sendto                  sys_sendto
+370     i386    sendmsg                 sys_sendmsg                     compat_sys_sendmsg
+371     i386    recvfrom                sys_recvfrom                    compat_sys_recvfrom
+372     i386    recvmsg                 sys_recvmsg                     compat_sys_recvmsg
+373     i386    shutdown                sys_shutdown
+374     i386    userfaultfd             sys_userfaultfd
+375     i386    membarrier              sys_membarrier
+376     i386    mlock2                  sys_mlock2
+377     i386    copy_file_range         sys_copy_file_range
+378     i386    preadv2                 sys_preadv2                     compat_sys_preadv2
+379     i386    pwritev2                sys_pwritev2                    compat_sys_pwritev2
+#endif
+
 #endif /* _UAPI_ASM_CRIS_UNISTD_H_ */

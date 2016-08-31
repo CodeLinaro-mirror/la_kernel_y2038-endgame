@@ -412,6 +412,16 @@
 #define __NR_bpf		391
 #define __NR_execveat		392
 
+#if 0
+374     i386    userfaultfd             sys_userfaultfd
+375     i386    membarrier              sys_membarrier
+376     i386    mlock2                  sys_mlock2
+377     i386    copy_file_range         sys_copy_file_range
+378     i386    preadv2                 sys_preadv2                     compat_sys_preadv2
+379     i386    pwritev2                sys_pwritev2                    compat_sys_pwritev2
+#endif
+
+
 #define __NR_syscall		393  /* For internal using, not implemented */
 #define NR_syscalls		__NR_syscall
 
