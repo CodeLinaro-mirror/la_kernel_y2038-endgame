@@ -16,17 +16,11 @@ extern struct pxa_device_desc pxa910_device_uart1;
 extern struct pxa_device_desc pxa910_device_uart2;
 extern struct pxa_device_desc pxa910_device_twsi0;
 extern struct pxa_device_desc pxa910_device_twsi1;
-extern struct pxa_device_desc pxa910_device_pwm1;
-extern struct pxa_device_desc pxa910_device_pwm2;
-extern struct pxa_device_desc pxa910_device_pwm3;
-extern struct pxa_device_desc pxa910_device_pwm4;
 extern struct pxa_device_desc pxa910_device_nand;
 extern struct platform_device pxa168_device_u2o;
 extern struct platform_device pxa168_device_u2ootg;
 extern struct platform_device pxa168_device_u2oehci;
 extern struct pxa_device_desc pxa910_device_disp;
-extern struct pxa_device_desc pxa910_device_fb;
-extern struct pxa_device_desc pxa910_device_panel;
 extern struct platform_device pxa910_device_gpio;
 extern struct platform_device pxa910_device_rtc;
 
@@ -67,22 +61,31 @@ static inline int pxa910_add_twsi(int id, struct i2c_pxa_platform_data *data,
 
 static inline int pxa910_add_pwm(int id)
 {
-	struct pxa_device_desc *d = NULL;
+	struct resource res = DEFINE_RES_MEM(0xd401a000ul + 0x400 * id, 0x10);
+	struct platform_device *dev;
 
-	switch (id) {
-	case 1: d = &pxa910_device_pwm1; break;
-	case 2: d = &pxa910_device_pwm2; break;
-	case 3: d = &pxa910_device_pwm3; break;
-	case 4: d = &pxa910_device_pwm4; break;
-	default:
-		return -EINVAL;
-	}
+	dev = platform_device_register_simple("pxa910-pwm", id, &res, 1);
 
-	return pxa_register_device(d, NULL, 0);
+	return PTR_ERR_OR_ZERO(dev);
 }
 
 static inline int pxa910_add_nand(struct pxa3xx_nand_platform_data *info)
 {
 	return pxa_register_device(&pxa910_device_nand, info, sizeof(*info));
 }
+
+static inline int pxa910_add_fb(struct mmp_buffer_driver_mach_info *fb,
+				struct mmp_mach_panel_info *panel)
+{
+	struct platform_device *dev;
+
+	dev = platform_device_register_data(NULL, "mmp-fb", -1,
+					    fb, sizeof(*fb));
+	if (!IS_ERR(dev))
+		dev = platform_device_register_data(NULL, "tpo-hvga", -1,
+						    panel, sizeof(*panel));
+
+	return PTR_ERR_OR_ZERO(dev);
+}
+
 #endif /* __ASM_MACH_PXA910_H */

@@ -39,12 +39,10 @@ int __init pxa_register_device(struct pxa_device_desc *desc,
 		nres++;
 	}
 
-	if (desc->irq != NO_IRQ) {
-		res[nres].start	= desc->irq;
-		res[nres].end	= desc->irq;
-		res[nres].flags	= IORESOURCE_IRQ;
-		nres++;
-	}
+	res[nres].start	= desc->irq;
+	res[nres].end	= desc->irq;
+	res[nres].flags	= IORESOURCE_IRQ;
+	nres++;
 
 	for (i = 0; i < MAX_RESOURCE_DMA; i++, nres++) {
 		if (desc->dma[i] == 0)
