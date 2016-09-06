@@ -25,10 +25,6 @@ extern struct pxa_device_desc pxa168_device_uart2;
 extern struct pxa_device_desc pxa168_device_uart3;
 extern struct pxa_device_desc pxa168_device_twsi0;
 extern struct pxa_device_desc pxa168_device_twsi1;
-extern struct pxa_device_desc pxa168_device_pwm1;
-extern struct pxa_device_desc pxa168_device_pwm2;
-extern struct pxa_device_desc pxa168_device_pwm3;
-extern struct pxa_device_desc pxa168_device_pwm4;
 extern struct pxa_device_desc pxa168_device_ssp1;
 extern struct pxa_device_desc pxa168_device_ssp2;
 extern struct pxa_device_desc pxa168_device_ssp3;
@@ -81,20 +77,11 @@ static inline int pxa168_add_twsi(int id, struct i2c_pxa_platform_data *data,
 	return pxa_register_device(d, data, sizeof(*data));
 }
 
-static inline int pxa168_add_pwm(int id)
+static inline void pxa168_add_pwm(int id)
 {
-	struct pxa_device_desc *d = NULL;
+	struct resource res = DEFINE_RES_MEM(0xd401a000ul + 0x400 * id, 0x10);
 
-	switch (id) {
-	case 1: d = &pxa168_device_pwm1; break;
-	case 2: d = &pxa168_device_pwm2; break;
-	case 3: d = &pxa168_device_pwm3; break;
-	case 4: d = &pxa168_device_pwm4; break;
-	default:
-		return -EINVAL;
-	}
-
-	return pxa_register_device(d, NULL, 0);
+	platform_device_register_simple("pxa910-pwm", id, &res, 1);
 }
 
 static inline int pxa168_add_ssp(int id)

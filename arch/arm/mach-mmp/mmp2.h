@@ -91,12 +91,22 @@ static inline int mmp2_add_sdhost(int id, struct sdhci_pxa_platdata *data)
 
 static inline int mmp2_add_asram(struct sram_platdata *data)
 {
-	return pxa_register_device(&mmp2_device_asram, data, sizeof(*data));
+	struct resource res = DEFINE_RES_MEM(0xe0000000, 0x4000);
+	struct platform_device *dev;
+
+	dev = platform_device_register_simple("asram", -1, &res, 1);
+
+	return PTR_ERR_OR_ZERO(dev);
 }
 
 static inline int mmp2_add_isram(struct sram_platdata *data)
 {
-	return pxa_register_device(&mmp2_device_isram, data, sizeof(*data));
+	struct resource res = DEFINE_RES_MEM(0xd1020000, 0x18000);
+	struct platform_device *dev;
+
+	dev = platform_device_register_simple("isram", -1, &res, 1);
+
+	return PTR_ERR_OR_ZERO(dev);
 }
 
 #endif /* __ASM_MACH_MMP2_H */
