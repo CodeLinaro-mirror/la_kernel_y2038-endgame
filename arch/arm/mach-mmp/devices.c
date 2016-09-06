@@ -39,7 +39,7 @@ int __init pxa_register_device(struct pxa_device_desc *desc,
 		nres++;
 	}
 
-	if (desc->irq != IRQ_MMP_NONE) {
+	if (desc->irq != NO_IRQ) {
 		res[nres].start	= desc->irq;
 		res[nres].end	= desc->irq;
 		res[nres].flags	= IORESOURCE_IRQ;
