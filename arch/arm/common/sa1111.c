@@ -428,12 +428,10 @@ static void sa1111_remove_irq(struct sa1111 *sachip)
 	sa1111_writel(0, irqbase + SA1111_WAKEEN0);
 	sa1111_writel(0, irqbase + SA1111_WAKEEN1);
 
-	if (sachip->irq != NO_IRQ) {
-		irq_set_chained_handler_and_data(sachip->irq, NULL, NULL);
-		irq_free_descs(sachip->irq_base, SA1111_IRQ_NR);
+	irq_set_chained_handler_and_data(sachip->irq, NULL, NULL);
+	irq_free_descs(sachip->irq_base, SA1111_IRQ_NR);
 
-		release_mem_region(sachip->phys + SA1111_INTC, 512);
-	}
+	release_mem_region(sachip->phys + SA1111_INTC, 512);
 }
 
 enum {
@@ -833,11 +831,9 @@ static int __sa1111_probe(struct device *me, struct resource *mem, int irq)
 	 * The interrupt controller must be initialised before any
 	 * other device to ensure that the interrupts are available.
 	 */
-	if (sachip->irq != NO_IRQ) {
-		ret = sa1111_setup_irq(sachip, pd->irq_base);
-		if (ret)
-			goto err_clk;
-	}
+	ret = sa1111_setup_irq(sachip, pd->irq_base);
+	if (ret)
+		goto err_clk;
 
 	/* Setup the GPIOs - should really be done after the IRQ setup */
 	ret = sa1111_setup_gpios(sachip);
