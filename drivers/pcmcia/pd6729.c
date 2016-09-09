@@ -36,10 +36,6 @@ MODULE_AUTHOR("Jun Komuro <komurojun-mbn@nifty.com>");
  */
 #define to_cycles(ns)	((ns)/120)
 
-#ifndef NO_IRQ
-#define NO_IRQ	((unsigned int)(0))
-#endif
-
 /*
  * PARAMETERS
  *  irq_mode=n
@@ -668,7 +664,7 @@ static int pd6729_pci_probe(struct pci_dev *dev,
 		goto err_out_disable;
 	}
 
-	if (dev->irq == NO_IRQ)
+	if (!dev->irq)
 		irq_mode = 0;	/* fall back to ISA interrupt mode */
 
 	mask = pd6729_isa_scan();
