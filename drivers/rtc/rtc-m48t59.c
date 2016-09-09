@@ -21,10 +21,6 @@
 #include <linux/bcd.h>
 #include <linux/slab.h>
 
-#ifndef NO_IRQ
-#define NO_IRQ	(-1)
-#endif
-
 #define M48T59_READ(reg) (pdata->read_byte(dev, pdata->offset + reg))
 #define M48T59_WRITE(val, reg) \
 	(pdata->write_byte(dev, pdata->offset + reg, val))
@@ -165,7 +161,7 @@ static int m48t59_rtc_readalarm(struct device *dev, struct rtc_wkalrm *alrm)
 	u8 val;
 
 	/* If no irq, we don't support ALARM */
-	if (m48t59->irq == NO_IRQ)
+	if (!m48t59->irq)
 		return -EIO;
 
 	spin_lock_irqsave(&m48t59->lock, flags);
@@ -218,7 +214,7 @@ static int m48t59_rtc_setalarm(struct device *dev, struct rtc_wkalrm *alrm)
 #endif
 
 	/* If no irq, we don't support ALARM */
-	if (m48t59->irq == NO_IRQ)
+	if (!m48t59->irq)
 		return -EIO;
 
 	if (year < 0)
@@ -446,10 +442,10 @@ static int m48t59_rtc_probe(struct platform_device *pdev)
 	 * the mode without IRQ.
 	 */
 	m48t59->irq = platform_get_irq(pdev, 0);
-	if (m48t59->irq <= 0)
-		m48t59->irq = NO_IRQ;
+	if (m48t59->irq < 0)
+		m48t59->irq = 0;
 
-	if (m48t59->irq != NO_IRQ) {
+	if (!m48t59->irq) {
 		ret = devm_request_irq(&pdev->dev, m48t59->irq,
 				m48t59_rtc_interrupt, IRQF_SHARED,
 				"rtc-m48t59", &pdev->dev);
