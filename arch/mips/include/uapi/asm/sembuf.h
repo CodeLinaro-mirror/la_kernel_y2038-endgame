@@ -26,7 +26,7 @@ struct semid64_ds {
 	unsigned long   sem_ctime;		/* last change time */
 	unsigned long	sem_nsems;		/* no. of semaphores in array */
 	unsigned long	sem_otime_high;
-	unsigned long	sem_otime_high;
+	unsigned long	sem_ctime_high;
 };
 #endif
 
