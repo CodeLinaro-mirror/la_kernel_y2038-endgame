@@ -403,7 +403,7 @@ ilr_again:
 static void dino_assign_irq(struct dino_device *dino, int local_irq, int *irqp)
 {
 	int irq = gsc_assign_irq(&dino_interrupt_type, dino);
-	if (irq == NO_IRQ)
+	if (irq == GSC_IRQ_INVALID)
 		return;
 
 	*irqp = irq;
