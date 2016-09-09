@@ -248,7 +248,7 @@ static struct megamod_pic * __init init_megamod_pic(struct device_node *np)
 		irq_hw_number_t hwirq;
 
 		irq = irq_of_parse_and_map(np, i);
-		if (irq == NO_IRQ)
+		if (!irq)
 			continue;
 
 		irq_data = irq_get_irq_data(irq);

@@ -210,7 +210,7 @@ void __init timer64_init(void)
 	pr_debug("%s: Timer registers=%p.\n", np->full_name, timer);
 
 	cd->irq	= irq_of_parse_and_map(np, 0);
-	if (cd->irq == NO_IRQ) {
+	if (!cd->irq) {
 		pr_debug("%s: Cannot find interrupt.\n", np->full_name);
 		iounmap(timer);
 		goto out;
