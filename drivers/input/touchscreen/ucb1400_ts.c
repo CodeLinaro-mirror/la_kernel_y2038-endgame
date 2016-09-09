@@ -265,10 +265,6 @@ static void ucb1400_ts_close(struct input_dev *idev)
 	ucb1400_ts_stop(ucb);
 }
 
-#ifndef NO_IRQ
-#define NO_IRQ	0
-#endif
-
 /*
  * Try to probe our interrupt, rather than relying on lots of
  * hard-coded machine dependencies.
@@ -311,7 +307,7 @@ static int ucb1400_ts_detect_irq(struct ucb1400_ts *ucb,
 
 	/* Read triggered interrupt. */
 	ucb->irq = probe_irq_off(mask);
-	if (ucb->irq < 0 || ucb->irq == NO_IRQ)
+	if (ucb->irq < 0 || ucb->irq == 0)
 		return -ENODEV;
 
 	return 0;
