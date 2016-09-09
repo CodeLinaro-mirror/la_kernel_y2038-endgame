@@ -10,9 +10,8 @@
 #include <linux/cpumask.h>
 #include <asm/types.h>
 
-#define NO_IRQ		(-1)
-
 #ifdef CONFIG_GSC
+#define GSC_IRQ_INVALID	(-1)
 #define GSC_IRQ_BASE	16
 #define GSC_IRQ_MAX	63
 #define CPU_IRQ_BASE	64

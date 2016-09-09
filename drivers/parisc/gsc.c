@@ -102,7 +102,7 @@ int gsc_find_local_irq(unsigned int irq, int *global_irqs, int limit)
 			return local_irq;
 	}
 
-	return NO_IRQ;
+	return GSC_IRQ_INVALID;
 }
 
 static void gsc_asic_mask_irq(struct irq_data *d)
