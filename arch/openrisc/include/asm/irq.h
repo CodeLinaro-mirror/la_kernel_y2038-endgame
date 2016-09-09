@@ -22,8 +22,6 @@
 #define	NR_IRQS		32
 #include <asm-generic/irq.h>
 
-#define NO_IRQ		(-1)
-
 extern void set_handle_irq(void (*handle_irq)(struct pt_regs *));
 
 #endif /* __ASM_OPENRISC_IRQ_H__ */
