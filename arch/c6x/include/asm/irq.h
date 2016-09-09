@@ -37,9 +37,6 @@
 /* Total number of virq in the platform */
 #define NR_IRQS		256
 
-/* This number is used when no interrupt has been assigned */
-#define NO_IRQ		0
-
 extern void __init init_pic_c64xplus(void);
 
 extern void init_IRQ(void);
