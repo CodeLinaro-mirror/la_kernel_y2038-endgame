@@ -398,4 +398,9 @@
 #define __IGNORE_pkey_alloc
 #define __IGNORE_pkey_free
 
+#define __IGNORE_pkey_mprotect
+#define __IGNORE_pkey_alloc
+#define __IGNORE_pkey_free
+
+
 #endif /* _UAPI_ASM_POWERPC_UNISTD_H_ */
