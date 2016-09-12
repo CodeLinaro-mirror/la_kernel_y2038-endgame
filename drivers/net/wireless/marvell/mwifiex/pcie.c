@@ -92,43 +92,6 @@
 #define MWIFIEX_SLEEP_COOKIE_SIZE			4
 #define MWIFIEX_MAX_DELAY_COUNT				100
 
-struct mwifiex_pcie_card_reg {
-	u16 cmd_addr_lo;
-	u16 cmd_addr_hi;
-	u16 fw_status;
-	u16 cmd_size;
-	u16 cmdrsp_addr_lo;
-	u16 cmdrsp_addr_hi;
-	u16 tx_rdptr;
-	u16 tx_wrptr;
-	u16 rx_rdptr;
-	u16 rx_wrptr;
-	u16 evt_rdptr;
-	u16 evt_wrptr;
-	u16 drv_rdy;
-	u16 tx_start_ptr;
-	u32 tx_mask;
-	u32 tx_wrap_mask;
-	u32 rx_mask;
-	u32 rx_wrap_mask;
-	u32 tx_rollover_ind;
-	u32 rx_rollover_ind;
-	u32 evt_rollover_ind;
-	u8 ring_flag_sop;
-	u8 ring_flag_eop;
-	u8 ring_flag_xs_sop;
-	u8 ring_flag_xs_eop;
-	u32 ring_tx_start_ptr;
-	u8 pfu_enabled;
-	u8 sleep_cookie;
-	u16 fw_dump_ctrl;
-	u16 fw_dump_start;
-	u16 fw_dump_end;
-	u8 fw_dump_host_ready;
-	u8 fw_dump_read_done;
-	u8 msix_support;
-};
-
 static const struct mwifiex_pcie_card_reg mwifiex_reg_8766 = {
 	.cmd_addr_lo = PCIE_SCRATCH_0_REG,
 	.cmd_addr_hi = PCIE_SCRATCH_1_REG,

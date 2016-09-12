@@ -58,6 +58,43 @@
 #define MWIFIEX_MAX_EVT_BD			0x08
 #define MWIFIEX_EVTBD_MASK			0x0f
 
+struct mwifiex_pcie_card_reg {
+	u16 cmd_addr_lo;
+	u16 cmd_addr_hi;
+	u16 fw_status;
+	u16 cmd_size;
+	u16 cmdrsp_addr_lo;
+	u16 cmdrsp_addr_hi;
+	u16 tx_rdptr;
+	u16 tx_wrptr;
+	u16 rx_rdptr;
+	u16 rx_wrptr;
+	u16 evt_rdptr;
+	u16 evt_wrptr;
+	u16 drv_rdy;
+	u16 tx_start_ptr;
+	u32 tx_mask;
+	u32 tx_wrap_mask;
+	u32 rx_mask;
+	u32 rx_wrap_mask;
+	u32 tx_rollover_ind;
+	u32 rx_rollover_ind;
+	u32 evt_rollover_ind;
+	u8 ring_flag_sop;
+	u8 ring_flag_eop;
+	u8 ring_flag_xs_sop;
+	u8 ring_flag_xs_eop;
+	u32 ring_tx_start_ptr;
+	u8 pfu_enabled;
+	u8 sleep_cookie;
+	u16 fw_dump_ctrl;
+	u16 fw_dump_start;
+	u16 fw_dump_end;
+	u8 fw_dump_host_ready;
+	u8 fw_dump_read_done;
+	u8 msix_support;
+};
+
 struct mwifiex_pcie_device {
 	const struct mwifiex_pcie_card_reg *reg;
 	u16 blksz_fw_dl;
