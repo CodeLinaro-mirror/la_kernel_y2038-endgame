@@ -22,7 +22,23 @@
 #include <linux/mtd/mtd.h>
 #include <linux/of_platform.h>
 #include <linux/spi/flash.h>
+#include <linux/mtd/cfi.h>
 #include <linux/mtd/spi-nor.h>
+
+/*
+ * Manufacturer IDs
+ *
+ * The first byte returned from the flash after sending opcode SPINOR_OP_RDID.
+ * Sometimes these are the same as CFI IDs, but sometimes they aren't.
+ */
+#define SNOR_MFR_ATMEL		CFI_MFR_ATMEL
+#define SNOR_MFR_GIGADEVICE	0xc8
+#define SNOR_MFR_INTEL		CFI_MFR_INTEL
+#define SNOR_MFR_MICRON		CFI_MFR_ST /* ST Micro <--> Micron */
+#define SNOR_MFR_MACRONIX	CFI_MFR_MACRONIX
+#define SNOR_MFR_SPANSION	CFI_MFR_AMD
+#define SNOR_MFR_SST		CFI_MFR_SST
+#define SNOR_MFR_WINBOND	0xef /* Also used by some Spansion */
 
 /* Define max times to check status register before we give up. */
 
