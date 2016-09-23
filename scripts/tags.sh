@@ -122,7 +122,7 @@ all_target_sources()
 	if [ -n "$COMPILED_SOURCE" ]; then
 		all_compiled_sources
 	else
-		all_sources
+		all_sources | grep -v ^./build | grep -v ^./obj | xargs git ls-files
 	fi
 }
 
