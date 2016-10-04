@@ -51,3 +51,5 @@
 #define FN_EXIT		ENDPROC(csum_partial_copy_nocheck)
 
 #include "csumpartialcopygeneric.S"
+
+EXPORT_SYMBOL(csum_partial_copy_nocheck)
