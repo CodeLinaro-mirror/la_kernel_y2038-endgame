@@ -34,6 +34,9 @@
 # ifdef CONFIG_COMPAT_TIME
 #  define __ARCH_WANT_COMPAT_SYS_TIME
 #  define __ARCH_WANT_OLD_STAT
+# endif
+
+# if defined(CONFIG_COMPAT_TIME) || defined(CONFIG_64BIT)
 #  define __ARCH_WANT_SYS_ALARM
 #  define __ARCH_WANT_SYS_TIME
 #  define __ARCH_WANT_SYS_UTIME
