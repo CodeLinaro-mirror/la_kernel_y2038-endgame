@@ -1040,6 +1040,8 @@ prepare1: prepare2 $(version_h) include/generated/utsrelease.h \
 
 archprepare: archheaders archscripts prepare1 scripts_basic
 
+scripts_basic: prepare1
+
 prepare0: archprepare gcc-plugins
 	$(Q)$(MAKE) $(build)=.
 
