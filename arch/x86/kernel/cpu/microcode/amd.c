@@ -680,6 +680,7 @@ static enum ucode_state
 load_microcode_amd(int cpu, u8 family, const u8 *data, size_t size)
 {
 	enum ucode_state ret;
+	int bootcpu = boot_cpu_data.cpu_index;
 
 	/* free old equiv table */
 	free_equiv_cpu_table();
@@ -691,7 +692,7 @@ load_microcode_amd(int cpu, u8 family, const u8 *data, size_t size)
 
 #ifdef CONFIG_X86_32
 	/* save BSP's matching patch for early load */
-	if (cpu_data(cpu).cpu_index == boot_cpu_data.cpu_index) {
+	if (cpu_data(cpu).cpu_index == bootcpu) {
 		struct ucode_patch *p = find_patch(cpu);
 		if (p) {
 			memset(amd_ucode_patch, 0, PATCH_MAX_SIZE);
