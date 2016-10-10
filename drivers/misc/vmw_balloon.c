@@ -249,7 +249,7 @@ struct vmballoon_stats {
 
 #define STATS_INC(stat) (stat)++
 #else
-#define STATS_INC(stat)
+#define STATS_INC(stat) do { } while (0)
 #endif
 
 struct vmballoon;

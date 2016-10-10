@@ -422,7 +422,7 @@ static struct thermal_device_info *initialize_sensor(int index)
  *
  * mid thermal resume: re-initializes the adc. Can sleep.
  */
-static int mid_thermal_resume(struct device *dev)
+static int __maybe_unused mid_thermal_resume(struct device *dev)
 {
 	return mid_initialize_adc(dev);
 }
@@ -434,7 +434,7 @@ static int mid_thermal_resume(struct device *dev)
  * mid thermal suspend implements the suspend functionality
  * by stopping the ADC. Can sleep.
  */
-static int mid_thermal_suspend(struct device *dev)
+static int __maybe_unused mid_thermal_suspend(struct device *dev)
 {
 	/*
 	 * This just stops the ADC and does not disable it.

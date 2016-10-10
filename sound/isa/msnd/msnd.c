@@ -554,7 +554,7 @@ static int snd_msnd_playback_trigger(struct snd_pcm_substream *substream,
 		clear_bit(F_WRITING, &chip->flags);
 		snd_msnd_send_dsp_cmd(chip, HDEX_PLAY_STOP);
 	} else {
-		snd_printd(KERN_ERR "snd_msnd_playback_trigger(?????)\n");
+		snd_printd(KERN_ERR "snd_msnd_playback_trigger(?)\n");
 		result = -EINVAL;
 	}
 

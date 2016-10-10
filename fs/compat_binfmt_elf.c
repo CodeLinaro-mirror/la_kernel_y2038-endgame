@@ -55,8 +55,8 @@
  * Compat version of cputime_to_compat_timeval, perhaps this
  * should be an inline in <linux/compat.h>.
  */
-static void cputime_to_compat_timeval(const cputime_t cputime,
-				      struct compat_timeval *value)
+static inline void cputime_to_compat_timeval(const cputime_t cputime,
+					     struct compat_timeval *value)
 {
 	struct timeval tv;
 	cputime_to_timeval(cputime, &tv);

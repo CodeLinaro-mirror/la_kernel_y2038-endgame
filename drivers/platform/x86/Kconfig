@@ -762,10 +762,10 @@ config TOSHIBA_WMI
 
 config ACPI_CMPC
 	tristate "CMPC Laptop Extras"
+	depends on BACKLIGHT_CLASS_DEVICE
 	depends on ACPI
 	depends on RFKILL || RFKILL=n
 	select INPUT
-	select BACKLIGHT_CLASS_DEVICE
 	default n
 	help
 	  Support for Intel Classmate PC ACPI devices, including some
@@ -948,7 +948,7 @@ config INTEL_OAKTRAIL
 config SAMSUNG_Q10
 	tristate "Samsung Q10 Extras"
 	depends on ACPI
-	select BACKLIGHT_CLASS_DEVICE
+	depends on BACKLIGHT_CLASS_DEVICE
 	---help---
 	  This driver provides support for backlight control on Samsung Q10
 	  and related laptops, including Dell Latitude X200.

@@ -596,7 +596,6 @@ config X86_AMD_PLATFORM_DEVICE
 
 config IOSF_MBI
 	tristate "Intel SoC IOSF Sideband support for SoC platforms"
-	depends on PCI
 	---help---
 	  This option enables sideband register access support for Intel SoC
 	  platforms. On these platforms the IOSF sideband is used in lieu of

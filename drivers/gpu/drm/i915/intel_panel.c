@@ -542,6 +542,7 @@ static u32 pwm_get_backlight(struct intel_connector *connector)
 	return DIV_ROUND_UP(duty_ns * 100, CRC_PMIC_PWM_PERIOD_NS);
 }
 
+#if IS_ENABLED(CONFIG_BACKLIGHT_CLASS_DEVICE)
 static u32 intel_panel_get_backlight(struct intel_connector *connector)
 {
 	struct drm_i915_private *dev_priv = to_i915(connector->base.dev);
@@ -560,6 +561,7 @@ static u32 intel_panel_get_backlight(struct intel_connector *connector)
 	DRM_DEBUG_DRIVER("get backlight PWM = %d\n", val);
 	return val;
 }
+#endif
 
 static void lpt_set_backlight(struct intel_connector *connector, u32 level)
 {
@@ -644,6 +646,7 @@ intel_panel_actually_set_backlight(struct intel_connector *connector, u32 level)
 	panel->backlight.set(connector, level);
 }
 
+#if IS_ENABLED(CONFIG_BACKLIGHT_CLASS_DEVICE)
 /* set backlight brightness to level in range [0..max], scaling wrt hw min */
 static void intel_panel_set_backlight(struct intel_connector *connector,
 				      u32 user_level, u32 user_max)
@@ -667,6 +670,7 @@ static void intel_panel_set_backlight(struct intel_connector *connector,
 
 	mutex_unlock(&dev_priv->backlight_lock);
 }
+#endif
 
 /* set backlight brightness to level in range [0..max], assuming hw min is
  * respected.

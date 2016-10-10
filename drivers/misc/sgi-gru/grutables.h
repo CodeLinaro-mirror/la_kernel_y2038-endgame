@@ -285,7 +285,7 @@ extern struct mcs_op_statistic mcs_op_statistics[mcsop_last];
 			printk(KERN_DEBUG "GRU:%d %s: " fmt, smp_processor_id(), __func__, x);\
 	} while (0)
 #else
-#define gru_dbg(x...)
+#define gru_dbg(dev, fmt, x...) no_printk(fmt, x)
 #endif
 
 /*-----------------------------------------------------------------------------

@@ -974,14 +974,14 @@ static void __init __efi_enter_virtual_mode(void)
 				efi.memmap.desc_size * count,
 				efi.memmap.desc_size,
 				efi.memmap.desc_version,
-				(efi_memory_desc_t *)pa);
+				(efi_memory_desc_t *)(uintptr_t)pa);
 	} else {
 		status = efi_thunk_set_virtual_address_map(
 				efi_phys.set_virtual_address_map,
 				efi.memmap.desc_size * count,
 				efi.memmap.desc_size,
 				efi.memmap.desc_version,
-				(efi_memory_desc_t *)pa);
+				(efi_memory_desc_t *)(uintptr_t)pa);
 	}
 
 	if (status != EFI_SUCCESS) {

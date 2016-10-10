@@ -94,6 +94,7 @@ static int mce_raise_notify(unsigned int cmd, struct pt_regs *regs)
 	return NMI_HANDLED;
 }
 
+#ifdef CONFIG_X86_LOCAL_APIC
 static void mce_irq_ipi(void *info)
 {
 	int cpu = smp_processor_id();
@@ -105,6 +106,7 @@ static void mce_irq_ipi(void *info)
 		raise_exception(m, NULL);
 	}
 }
+#endif
 
 /* Inject mce on current CPU */
 static int raise_local(void)
