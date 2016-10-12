@@ -767,11 +767,10 @@ static void dib0700_rc_urb_completion(struct urb *purb)
 			protocol = RC_TYPE_NEC;
 		}
 
+		rc_keydown(d->rc_dev, protocol, keycode, toggle);
 		break;
 	default:
 		deb_data("RC5 protocol\n");
-		protocol = RC_TYPE_RC5;
-		toggle = poll_reply->report_id;
 		keycode = RC_SCANCODE_RC5(poll_reply->rc5.system, poll_reply->rc5.data);
 
 		if ((poll_reply->rc5.data ^ poll_reply->rc5.not_data) != 0xff) {
@@ -779,13 +778,12 @@ static void dib0700_rc_urb_completion(struct urb *purb)
 			err("key failed integrity check: %02x %02x %02x %02x",
 			    poll_reply->rc5.not_used, poll_reply->rc5.system,
 			    poll_reply->rc5.data, poll_reply->rc5.not_data);
-			goto resubmit;
+			break;
 		}
 
+		rc_keydown(d->rc_dev, RC_TYPE_RC5, keycode, poll_reply->report_id);
 		break;
 	}
-
-	rc_keydown(d->rc_dev, protocol, keycode, toggle);
 
 resubmit:
 	/* Clean the buffer before we requeue */
