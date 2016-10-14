@@ -394,4 +394,8 @@
 #define __NR_pwritev2		381
 #define __NR_kexec_file_load	382
 
+#define __IGNORE_pkey_mprotect
+#define __IGNORE_pkey_alloc
+#define __IGNORE_pkey_free
+
 #endif /* _UAPI_ASM_POWERPC_UNISTD_H_ */
