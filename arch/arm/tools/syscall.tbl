@@ -355,7 +355,8 @@
 338	common	set_robust_list		sys_set_robust_list
 339	common	get_robust_list		sys_get_robust_list
 340	common	splice			sys_splice
-341	common	arm_sync_file_range	sys_sync_file_range2
+341	common	sync_file_range2	sys_sync_file_range2
+341	common  arm_sync_file_range
 342	common	tee			sys_tee
 343	common	vmsplice		sys_vmsplice
 344	common	move_pages		sys_move_pages
