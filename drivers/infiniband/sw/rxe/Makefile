@@ -1,5 +1,7 @@
 obj-$(CONFIG_RDMA_RXE) += rdma_rxe.o
 
+OBJECT_FILES_NON_STANDARD_rxe_comp.o := y
+
 rdma_rxe-y := \
 	rxe.o \
 	rxe_comp.o \
