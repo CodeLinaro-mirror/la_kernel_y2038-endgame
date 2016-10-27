@@ -268,6 +268,7 @@ int crypto_init_scomp_ops_async(struct crypto_tfm *tfm)
 
 	return 0;
 }
+EXPORT_SYMBOL_GPL(crypto_init_scomp_ops_async);
 
 struct acomp_req *crypto_acomp_scomp_alloc_ctx(struct acomp_req *req)
 {
@@ -287,6 +288,7 @@ struct acomp_req *crypto_acomp_scomp_alloc_ctx(struct acomp_req *req)
 
 	return req;
 }
+EXPORT_SYMBOL_GPL(crypto_acomp_scomp_alloc_ctx);
 
 void crypto_acomp_scomp_free_ctx(struct acomp_req *req)
 {
@@ -299,6 +301,7 @@ void crypto_acomp_scomp_free_ctx(struct acomp_req *req)
 	if (ctx)
 		crypto_scomp_free_ctx(scomp, ctx);
 }
+EXPORT_SYMBOL_GPL(crypto_acomp_scomp_free_ctx);
 
 static const struct crypto_type crypto_scomp_type = {
 	.extsize = crypto_alg_extsize,
