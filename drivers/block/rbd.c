@@ -3776,7 +3776,6 @@ static void rbd_watch_cb(void *arg, u64 notify_id, u64 cookie,
 	} else {
 		/* legacy notification for header updates */
 		notify_op = RBD_NOTIFY_OP_HEADER_UPDATE;
-		struct_v = 0;
 		len = 0;
 	}
 

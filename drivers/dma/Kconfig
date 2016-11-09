@@ -305,7 +305,6 @@ config MMP_TDMA
 	bool "MMP Two-Channel DMA support"
 	depends on ARCH_MMP || COMPILE_TEST
 	select DMA_ENGINE
-	select GENERIC_ALLOCATOR
 	select MMP_SRAM if ARCH_MMP
 	select GENERIC_ALLOCATOR
 	help
