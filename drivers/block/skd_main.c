@@ -2951,8 +2951,8 @@ static void skd_completion_worker(struct work_struct *work)
 
 static void skd_isr_msg_from_dev(struct skd_device *skdev);
 
-static irqreturn_t
-skd_isr(int irq, void *ptr)
+irqreturn_t
+static skd_isr(int irq, void *ptr)
 {
 	struct skd_device *skdev;
 	u32 intstat;
