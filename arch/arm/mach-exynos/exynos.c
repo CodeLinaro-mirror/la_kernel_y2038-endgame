@@ -22,6 +22,7 @@
 #include <asm/hardware/cache-l2x0.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
+#include <asm/smp_scu.h>
 
 #include <mach/map.h>
 #include <plat/cpu.h>
@@ -47,6 +48,27 @@ static struct platform_device exynos_cpuidle = {
 
 void __iomem *sysram_base_addr __ro_after_init;
 void __iomem *sysram_ns_base_addr __ro_after_init;
+
+/**
+ * exynos_scu_enable : enables SCU for Cortex-A9 based system
+ * returns 0 on success else non-zero error code
+ */
+int exynos_scu_enable(void)
+{
+	struct device_node *np;
+	void __iomem *scu_base;
+
+	np = of_find_compatible_node(NULL, NULL, "arm,cortex-a9-scu");
+	scu_base = of_iomap(np, 0);
+	of_node_put(np);
+	if (!scu_base) {
+		pr_err("%s failed to map scu_base\n", __func__);
+		return -ENOMEM;
+	}
+	scu_enable(scu_base);
+	iounmap(scu_base);
+	return 0;
+}
 
 void __init exynos_sysram_init(void)
 {
