@@ -327,6 +327,7 @@ COMPAT_SYSCALL_DEFINE2(nanosleep, struct compat_timespec __user *, rqtp,
 	return ret;
 }
 
+#ifdef CONFIG_POSIX_TIMERS
 static inline long get_compat_itimerval(struct itimerval *o,
 		struct compat_itimerval __user *i)
 {
@@ -387,6 +388,7 @@ COMPAT_SYSCALL_DEFINE3(setitimer, int, which,
 		return -EFAULT;
 	return 0;
 }
+#endif
 #endif
 
 #ifdef CONFIG_COMPAT
@@ -769,6 +771,7 @@ int put_compat_itimerspec(struct compat_itimerspec __user *dst,
 #endif
 
 #ifdef CONFIG_COMPAT
+#ifdef CONFIG_POSIX_TIMERS
 COMPAT_SYSCALL_DEFINE3(timer_create, clockid_t, which_clock,
 		       struct compat_sigevent __user *, timer_event_spec,
 		       timer_t __user *, created_timer_id)
@@ -786,6 +789,7 @@ COMPAT_SYSCALL_DEFINE3(timer_create, clockid_t, which_clock,
 
 	return sys_timer_create(which_clock, event, created_timer_id);
 }
+#endif
 
 /*
  * We currently only need the following fields from the sigevent

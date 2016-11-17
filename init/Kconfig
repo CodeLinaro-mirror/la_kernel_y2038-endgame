@@ -1611,6 +1611,7 @@ config SIGNALFD
 
 config TIMERFD
 	bool "Enable timerfd() system call" if EXPERT
+	depends on POSIX_TIMERS
 	select ANON_INODES
 	default y
 	help

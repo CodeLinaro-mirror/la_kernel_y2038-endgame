@@ -1278,8 +1278,8 @@ COMPAT_SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
 	return err;
 }
 
-COMPAT_SYSCALL_DEFINE2(clock_settime, clockid_t, which_clock,
-		       struct compat_timespec __user *, tp)
+COMPAT_SYSCALL_DEFINE2(clock_settime, const clockid_t, which_clock,
+		       const struct compat_timespec __user *, tp)
 {
 	struct timespec64 ts;
 
@@ -1288,7 +1288,7 @@ COMPAT_SYSCALL_DEFINE2(clock_settime, clockid_t, which_clock,
 	return clock_settime(which_clock, &ts);
 }
 
-COMPAT_SYSCALL_DEFINE2(clock_gettime, clockid_t, which_clock,
+COMPAT_SYSCALL_DEFINE2(clock_gettime, const clockid_t, which_clock,
 		       struct compat_timespec __user *, tp)
 {
 	long err;
@@ -1300,7 +1300,7 @@ COMPAT_SYSCALL_DEFINE2(clock_gettime, clockid_t, which_clock,
 	return err;
 }
 
-COMPAT_SYSCALL_DEFINE2(clock_adjtime, clockid_t, which_clock,
+COMPAT_SYSCALL_DEFINE2(clock_adjtime, const clockid_t, which_clock,
 		       struct compat_timex __user *, utp)
 {
 	struct __kernel_timex txc;
@@ -1319,7 +1319,7 @@ COMPAT_SYSCALL_DEFINE2(clock_adjtime, clockid_t, which_clock,
 	return ret;
 }
 
-COMPAT_SYSCALL_DEFINE2(clock_getres, clockid_t, which_clock,
+COMPAT_SYSCALL_DEFINE2(clock_getres, const clockid_t, which_clock,
 		       struct compat_timespec __user *, tp)
 {
 	int err;
@@ -1362,8 +1362,8 @@ static long compat_clock_nanosleep_restart(struct restart_block *restart)
 	return err;
 }
 
-COMPAT_SYSCALL_DEFINE4(clock_nanosleep, clockid_t, which_clock, int, flags,
-		       struct compat_timespec __user *, rqtp,
+COMPAT_SYSCALL_DEFINE4(clock_nanosleep, const clockid_t, which_clock, int, flags,
+		       const struct compat_timespec __user *, rqtp,
 		       struct compat_timespec __user *, rmtp)
 {
 	long err;

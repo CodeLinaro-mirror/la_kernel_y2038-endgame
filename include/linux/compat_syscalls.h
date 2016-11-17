@@ -103,16 +103,16 @@ asmlinkage long compat_sys_timer_settime(timer_t timer_id, int flags,
 					 struct compat_itimerspec __user *old);
 asmlinkage long compat_sys_timer_gettime(timer_t timer_id,
 				 struct compat_itimerspec __user *setting);
-asmlinkage long compat_sys_clock_settime(clockid_t which_clock,
+asmlinkage long compat_sys_clock_settime(const clockid_t which_clock,
+					 const struct compat_timespec __user *tp);
+asmlinkage long compat_sys_clock_gettime(const clockid_t which_clock,
 					 struct compat_timespec __user *tp);
-asmlinkage long compat_sys_clock_gettime(clockid_t which_clock,
-					 struct compat_timespec __user *tp);
-asmlinkage long compat_sys_clock_adjtime(clockid_t which_clock,
+asmlinkage long compat_sys_clock_adjtime(const clockid_t which_clock,
 					 struct compat_timex __user *tp);
-asmlinkage long compat_sys_clock_getres(clockid_t which_clock,
+asmlinkage long compat_sys_clock_getres(const clockid_t which_clock,
 					struct compat_timespec __user *tp);
-asmlinkage long compat_sys_clock_nanosleep(clockid_t which_clock, int flags,
-					   struct compat_timespec __user *rqtp,
+asmlinkage long compat_sys_clock_nanosleep(const clockid_t which_clock, int flags,
+					   const struct compat_timespec __user *rqtp,
 					   struct compat_timespec __user *rmtp);
 struct compat_siginfo;
 struct __kernel_timespec;
