@@ -1203,7 +1203,7 @@ out:
  * Power management
  */
 
-static int smiapp_power_on(struct device *dev)
+static int __maybe_unused smiapp_power_on(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct v4l2_subdev *subdev = i2c_get_clientdata(client);
@@ -1349,7 +1349,7 @@ out_xclk_fail:
 	return rval;
 }
 
-static int smiapp_power_off(struct device *dev)
+static int __maybe_unused smiapp_power_off(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct v4l2_subdev *subdev = i2c_get_clientdata(client);
