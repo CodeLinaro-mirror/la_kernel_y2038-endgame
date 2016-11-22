@@ -21,8 +21,8 @@
 #include <asm/mach/map.h>
 #include <asm/system_info.h>
 
-#include "hardware.h"
-#include "platform.h"
+#include <mach/hardware.h>
+#include <mach/platform.h>
 #include "common.h"
 
 /*

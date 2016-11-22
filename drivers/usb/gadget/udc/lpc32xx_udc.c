@@ -48,6 +48,8 @@
 #include <linux/seq_file.h>
 #endif
 
+#include <mach/hardware.h>
+
 /*
  * USB device configuration structure
  */
