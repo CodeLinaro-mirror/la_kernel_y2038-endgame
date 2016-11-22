@@ -811,9 +811,11 @@ static char *ovl_get_redirect(struct dentry *dentry, bool samedir)
 		goto out;
 	}
 
-	buf = ret = kmalloc(buflen, GFP_TEMPORARY);
-	if (!buf)
+	buf = kmalloc(buflen, GFP_TEMPORARY);
+	if (!buf) {
+		ret = ERR_PTR(-ENOMEM);
 		goto out;
+	}
 
 	buflen--;
 	buf[buflen] = '\0';
