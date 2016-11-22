@@ -2515,8 +2515,6 @@ static int musb_remove(struct platform_device *pdev)
 	return 0;
 }
 
-#ifdef	CONFIG_PM
-
 static void musb_save_context(struct musb *musb)
 {
 	int i;
@@ -2670,7 +2668,7 @@ static void musb_restore_context(struct musb *musb)
 	musb_writeb(musb_base, MUSB_INDEX, musb->context.index);
 }
 
-static int musb_suspend(struct device *dev)
+static int __maybe_unused musb_suspend(struct device *dev)
 {
 	struct musb	*musb = dev_to_musb(dev);
 	unsigned long	flags;
@@ -2697,7 +2695,7 @@ static int musb_suspend(struct device *dev)
 	return 0;
 }
 
-static int musb_resume(struct device *dev)
+static int __maybe_unused musb_resume(struct device *dev)
 {
 	struct musb *musb = dev_to_musb(dev);
 	unsigned long flags;
@@ -2742,7 +2740,7 @@ static int musb_resume(struct device *dev)
 	return 0;
 }
 
-static int musb_runtime_suspend(struct device *dev)
+static int __maybe_unused musb_runtime_suspend(struct device *dev)
 {
 	struct musb	*musb = dev_to_musb(dev);
 
@@ -2752,7 +2750,7 @@ static int musb_runtime_suspend(struct device *dev)
 	return 0;
 }
 
-static int musb_runtime_resume(struct device *dev)
+static int __maybe_unused musb_runtime_resume(struct device *dev)
 {
 	struct musb *musb = dev_to_musb(dev);
 	unsigned long flags;
@@ -2790,16 +2788,11 @@ static const struct dev_pm_ops musb_dev_pm_ops = {
 	.runtime_resume = musb_runtime_resume,
 };
 
-#define MUSB_DEV_PM_OPS (&musb_dev_pm_ops)
-#else
-#define	MUSB_DEV_PM_OPS	NULL
-#endif
-
 static struct platform_driver musb_driver = {
 	.driver = {
 		.name		= (char *)musb_driver_name,
 		.bus		= &platform_bus_type,
-		.pm		= MUSB_DEV_PM_OPS,
+		.pm		= &musb_dev_pm_ops,
 	},
 	.probe		= musb_probe,
 	.remove		= musb_remove,
