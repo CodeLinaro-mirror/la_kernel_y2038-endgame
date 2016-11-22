@@ -31,3 +31,5 @@ endif
 
 CFLAGS_KASAN += $(call cc-option, -fsanitize-address-use-after-scope)
 endif
+
+CFLAGS_KASAN += $(call cc-option, -fno-sanitize-address-use-after-scope)
