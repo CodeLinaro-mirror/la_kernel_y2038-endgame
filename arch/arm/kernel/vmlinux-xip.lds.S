@@ -4,8 +4,11 @@
  * Written by Martin Mares <mj@atrey.karlin.mff.cuni.cz>
  */
 
-/* No __ro_after_init data in the .rodata section - which will always be ro */
-#define RO_AFTER_INIT_DATA
+/* empty __ro_after_init data in the .rodata section - it will always be ro */
+#define RO_AFTER_INIT_DATA						\
+	VMLINUX_SYMBOL(__start_ro_after_init) = .;                      \
+	VMLINUX_SYMBOL(__end_ro_after_init) = .;
+
 
 #include <linux/sizes.h>
 
