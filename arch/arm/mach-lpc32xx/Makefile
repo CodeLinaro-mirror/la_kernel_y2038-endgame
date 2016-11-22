@@ -2,6 +2,6 @@
 # Makefile for the linux kernel.
 #
 
-obj-y	:= common.o serial.o gpio.o
+obj-y	:= common.o serial.o
 obj-y	+= pm.o suspend.o
 obj-y	+= phy3250.o
