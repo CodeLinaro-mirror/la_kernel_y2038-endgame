@@ -32,8 +32,3 @@ extern void __muldi3(void);
 extern void __ucmpdi2(void);
 extern void __udivsi3(void);
 extern void __umodsi3(void);
-
-#ifdef __GENKSYMS__
-extern void mmioset(void *, unsigned int, size_t);
-extern void mmiocpy(void *, const void *, size_t);
-#endif
