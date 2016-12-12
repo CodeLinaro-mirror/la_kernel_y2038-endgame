@@ -230,7 +230,9 @@ static int mx5_suspend_enter(suspend_state_t state)
 	}
 
 	if (state == PM_SUSPEND_MEM) {
+#ifdef CONFIG_MMU
 		local_flush_tlb_all();
+#endif
 		flush_cache_all();
 
 		/*clear the EMPGC0/1 bits */

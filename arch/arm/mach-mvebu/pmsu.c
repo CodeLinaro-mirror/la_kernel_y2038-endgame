@@ -288,7 +288,9 @@ int armada_370_xp_pmsu_idle_enter(unsigned long deepidle)
 	/* If we are here, wfi failed. As processors run out of
 	 * coherency for some time, tlbs might be stale, so flush them
 	 */
+#ifdef CONFIG_MMU
 	local_flush_tlb_all();
+#endif
 
 	ll_enable_coherency();
 

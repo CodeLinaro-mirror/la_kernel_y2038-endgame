@@ -998,7 +998,7 @@ static void __init reserve_crashkernel(void)
 
 		start = memblock_find_in_range(crash_base,
 					       crash_base + crash_size,
-					       crash_size, SECTION_SIZE);
+					       crash_size, SZ_1M);
 		if (start != crash_base) {
 			pr_err("crashkernel reservation failed - memory is in use.\n");
 			return;

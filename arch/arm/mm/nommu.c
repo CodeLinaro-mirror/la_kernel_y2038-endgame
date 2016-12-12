@@ -352,6 +352,14 @@ void __iomem *__arm_ioremap_pfn(unsigned long pfn, unsigned long offset,
 }
 EXPORT_SYMBOL(__arm_ioremap_pfn);
 
+void __iomem *
+__arm_ioremap_exec(phys_addr_t phys_addr, size_t size, bool cached)
+{
+	return __arm_ioremap_caller(phys_addr, size, 0,
+			__builtin_return_address(0));
+}
+EXPORT_SYMBOL(__arm_ioremap_exec);
+
 void __iomem *__arm_ioremap_caller(phys_addr_t phys_addr, size_t size,
 				   unsigned int mtype, void *caller)
 {

@@ -60,10 +60,9 @@ u32 omap_secure_dispatcher(u32 idx, u32 flag, u32 nargs, u32 arg1, u32 arg2,
 /* Allocate the memory to save secure ram */
 int __init omap_secure_ram_reserve_memblock(void)
 {
-	u32 size = OMAP_SECURE_RAM_STORAGE;
+	u32 size = SZ_1M;
 
-	size = ALIGN(size, SECTION_SIZE);
-	omap_secure_memblock_base = arm_memblock_steal(size, SECTION_SIZE);
+	omap_secure_memblock_base = arm_memblock_steal(size, SZ_1M);
 
 	return 0;
 }

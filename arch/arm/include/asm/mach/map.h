@@ -39,7 +39,7 @@ enum {
 };
 
 #ifdef CONFIG_MMU
-extern void iotable_init(struct map_desc *, int);
+extern void iotable_init(struct map_desc *iodesc, int nr);
 extern void vm_reserve_area_early(unsigned long addr, unsigned long size,
 				  void *caller);
 extern void create_mapping_late(struct mm_struct *mm, struct map_desc *md,
@@ -60,8 +60,10 @@ extern const struct mem_type *get_mem_type(unsigned int type);
 extern int ioremap_page(unsigned long virt, unsigned long phys,
 			const struct mem_type *mtype);
 #else
-#define iotable_init(map,num)	do { } while (0)
-#define vm_reserve_area_early(a,s,c)	do { } while (0)
+static inline void iotable_init(struct map_desc *iodesc, int nr) {}
+static inline void vm_reserve_area_early(unsigned long addr,
+		unsigned long size, void *caller) {}
+static inline void debug_ll_io_init(void) {}
 #endif
 
 #endif

@@ -351,7 +351,9 @@ static int imx6q_suspend_finish(unsigned long val)
 		 * call low level suspend function in ocram,
 		 * as we need to float DDR IO.
 		 */
+#ifdef CONFIG_MMU
 		local_flush_tlb_all();
+#endif
 		/* check if need to flush internal L2 cache */
 		if (!((struct imx6_cpu_pm_info *)
 			suspend_ocram_base)->l2_base.vbase)
