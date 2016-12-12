@@ -62,6 +62,7 @@ static void __init keystone_init(void)
 	keystone_pm_runtime_init();
 }
 
+#ifdef CONFIG_MMU
 static long long __init keystone_pv_fixup(void)
 {
 	long long offset;
@@ -89,6 +90,7 @@ static long long __init keystone_pv_fixup(void)
 
 	return offset;
 }
+#endif
 
 static const char *const keystone_match[] __initconst = {
 	"ti,k2hk",
@@ -106,5 +108,7 @@ DT_MACHINE_START(KEYSTONE, "Keystone")
 	.smp		= smp_ops(keystone_smp_ops),
 	.init_machine	= keystone_init,
 	.dt_compat	= keystone_match,
+#ifdef CONFIG_MMU
 	.pv_fixup	= keystone_pv_fixup,
+#endif
 MACHINE_END

@@ -79,7 +79,7 @@ config ARM
 	select HAVE_KERNEL_LZMA
 	select HAVE_KERNEL_LZO
 	select HAVE_KERNEL_XZ
-	select HAVE_KPROBES if !XIP_KERNEL && !CPU_ENDIAN_BE32 && !CPU_V7M
+	select HAVE_KPROBES if !XIP_KERNEL && !CPU_ENDIAN_BE32 && MMU
 	select HAVE_KRETPROBES if (HAVE_KPROBES)
 	select HAVE_MEMBLOCK
 	select HAVE_MOD_ARCH_SPECIFIC
@@ -301,6 +301,7 @@ config PHYS_OFFSET
 	default 0xc0000000 if (ARCH_DAVINCI_DA8XX && !ARCH_DAVINCI_DMx) || \
 			ARCH_CLPS711X || \
 			ARCH_SA1100
+	default 0
 	help
 	  Please provide the physical address corresponding to the
 	  location of main memory in your system.
@@ -347,7 +348,7 @@ config ARM_FORCE_MULTIPLATFORM
 config ARCH_MULTIPLATFORM
 	def_bool ARM_FORCE_MULTIPLATFORM
 	select ARM_HAS_SG_CHAIN
-	select ARM_PATCH_PHYS_VIRT
+	imply ARM_PATCH_PHYS_VIRT
 	select AUTO_ZRELADDR
 	select TIMER_OF
 	select COMMON_CLK
