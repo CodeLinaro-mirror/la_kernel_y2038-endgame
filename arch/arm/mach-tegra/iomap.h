@@ -113,11 +113,11 @@
 
 #define IO_PPSB_PHYS	0x60000000
 #define IO_PPSB_VIRT	IOMEM(0xFE200000)
-#define IO_PPSB_SIZE	SECTION_SIZE
+#define IO_PPSB_SIZE	SZ_1M
 
 #define IO_APB_PHYS	0x70000000
 #define IO_APB_VIRT	IOMEM(0xFE000000)
-#define IO_APB_SIZE	SECTION_SIZE
+#define IO_APB_SIZE	SZ_1M
 
 #define IO_TO_VIRT_BETWEEN(p, st, sz)	((p) >= (st) && (p) < ((st) + (sz)))
 #define IO_TO_VIRT_XLATE(p, pst, vst)	(((p) - (pst) + (vst)))
