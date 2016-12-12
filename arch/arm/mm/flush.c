@@ -36,6 +36,7 @@ void arm_heavy_mb(void)
 EXPORT_SYMBOL(arm_heavy_mb);
 #endif
 
+#ifdef CONFIG_MMU
 #ifdef CONFIG_CPU_CACHE_VIPT
 
 static void flush_pfn_alias(unsigned long pfn, unsigned long vaddr)
@@ -421,3 +422,4 @@ void __flush_anon_page(struct vm_area_struct *vma, struct page *page, unsigned l
 	 */
 	__cpuc_flush_dcache_area(page_address(page), PAGE_SIZE);
 }
+#endif

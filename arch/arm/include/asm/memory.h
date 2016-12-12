@@ -306,8 +306,11 @@ static inline void *phys_to_virt(phys_addr_t x)
 #define __va(x)			((void *)__phys_to_virt((phys_addr_t)(x)))
 #define pfn_to_kaddr(pfn)	__va((phys_addr_t)(pfn) << PAGE_SHIFT)
 
+#ifdef CONFIG_MMU
 extern long long arch_phys_to_idmap_offset;
-
+#else
+#define arch_phys_to_idmap_offset 0ull
+#endif
 /*
  * These are for systems that have a hardware interconnect supported alias
  * of physical memory for idmap purposes.  Most cases should leave these
