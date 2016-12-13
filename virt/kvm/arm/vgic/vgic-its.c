@@ -1582,8 +1582,8 @@ out:
 	.reg_offset = off,					\
 	.len = length,						\
 	.access_flags = acc,					\
-	.its_read = rd,						\
-	.its_write = wr,					\
+	.r.its_read = rd,						\
+	.w.its_write = wr,					\
 }
 
 #define REGISTER_ITS_DESC_UACCESS(off, rd, wr, uwr, length, acc)\
@@ -1591,9 +1591,9 @@ out:
 	.reg_offset = off,					\
 	.len = length,						\
 	.access_flags = acc,					\
-	.its_read = rd,						\
-	.its_write = wr,					\
-	.uaccess_its_write = uwr,				\
+	.r.its_read = rd,						\
+	.w.its_write = wr,					\
+	.u.uaccess_its_write = uwr,				\
 }
 
 static void its_mmio_write_wi(struct kvm *kvm, struct vgic_its *its,
@@ -1808,13 +1808,13 @@ int vgic_its_attr_regs_access(struct kvm_device *dev,
 	len = region->access_flags & VGIC_ACCESS_64bit ? 8 : 4;
 
 	if (is_write) {
-		if (region->uaccess_its_write)
-			ret = region->uaccess_its_write(dev->kvm, its, addr,
+		if (region->u.uaccess_its_write)
+			ret = region->u.uaccess_its_write(dev->kvm, its, addr,
 							len, *reg);
 		else
-			region->its_write(dev->kvm, its, addr, len, *reg);
+			region->w.its_write(dev->kvm, its, addr, len, *reg);
 	} else {
-		*reg = region->its_read(dev->kvm, its, addr, len);
+		*reg = region->r.its_read(dev->kvm, its, addr, len);
 	}
 	unlock_all_vcpus(dev->kvm);
 out:

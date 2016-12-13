@@ -425,17 +425,17 @@ static void vgic_mmio_write_pendbase(struct kvm_vcpu *vcpu,
 		.bits_per_irq = bpi,					\
 		.len = (bpi * VGIC_NR_PRIVATE_IRQS) / 8,		\
 		.access_flags = acc,					\
-		.read = vgic_mmio_read_raz,				\
-		.write = vgic_mmio_write_wi,				\
+		.r.read = vgic_mmio_read_raz,				\
+		.w.write = vgic_mmio_write_wi,				\
 	}, {								\
 		.reg_offset = off + (bpi * VGIC_NR_PRIVATE_IRQS) / 8,	\
 		.bits_per_irq = bpi,					\
 		.len = (bpi * (1024 - VGIC_NR_PRIVATE_IRQS)) / 8,	\
 		.access_flags = acc,					\
-		.read = rd,						\
-		.write = wr,						\
+		.r.read = rd,						\
+		.w.write = wr,						\
 		.uaccess_read = ur,					\
-		.uaccess_write = uw,					\
+		.u.uaccess_write = uw,					\
 	}
 
 static const struct vgic_register_region vgic_v3_dist_registers[] = {
