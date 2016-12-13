@@ -148,8 +148,7 @@ void pxa2xx_core_turbo_switch(bool on)
 	"2:	b	1b\n"
 	"3:	nop\n"
 		: "=&r" (unused)
-		: "r" (clkcfg)
-		: );
+		: "r" (clkcfg));
 
 	local_irq_restore(flags);
 }
