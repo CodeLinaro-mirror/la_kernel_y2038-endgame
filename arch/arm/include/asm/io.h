@@ -97,8 +97,12 @@ static inline void __raw_writeb(u8 val, volatile void __iomem *addr)
 #define __raw_writel __raw_writel
 static inline void __raw_writel(u32 val, volatile void __iomem *addr)
 {
+#if GCC_VERSION < 40200
+	*(volatile u32 __force *)addr = val;
+#else
 	asm volatile("str %1, %0"
 		     : : "Qo" (*(volatile u32 __force *)addr), "r" (val));
+#endif
 }
 
 #define __raw_readb __raw_readb
@@ -115,9 +119,13 @@ static inline u8 __raw_readb(const volatile void __iomem *addr)
 static inline u32 __raw_readl(const volatile void __iomem *addr)
 {
 	u32 val;
+#if GCC_VERSION < 40200
+	val = *(volatile u32 __force *)addr;
+#else
 	asm volatile("ldr %0, %1"
 		     : "=r" (val)
 		     : "Qo" (*(volatile u32 __force *)addr));
+#endif
 	return val;
 }
 

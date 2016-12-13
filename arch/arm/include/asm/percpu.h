@@ -36,9 +36,12 @@ static inline unsigned long __my_cpu_offset(void)
 	 * We want to allow caching the value, so avoid using volatile and
 	 * instead use a fake stack read to hazard against barrier().
 	 */
+#if GCC_VERSION < 40200
+	asm("mrc p15, 0, %0, c13, c0, 4" : "=r" (off) : : "memory");
+#else
 	asm("mrc p15, 0, %0, c13, c0, 4" : "=r" (off)
 		: "Q" (*(const unsigned long *)current_stack_pointer));
-
+#endif
 	return off;
 }
 #define __my_cpu_offset __my_cpu_offset()
