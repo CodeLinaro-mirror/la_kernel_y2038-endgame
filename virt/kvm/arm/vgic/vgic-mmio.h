@@ -26,14 +26,14 @@ struct vgic_register_region {
 				      unsigned int len);
 		unsigned long (*its_read)(struct kvm *kvm, struct vgic_its *its,
 					  gpa_t addr, unsigned int len);
-	};
+	} r;
 	union {
 		void (*write)(struct kvm_vcpu *vcpu, gpa_t addr,
 			      unsigned int len, unsigned long val);
 		void (*its_write)(struct kvm *kvm, struct vgic_its *its,
 				  gpa_t addr, unsigned int len,
 				  unsigned long val);
-	};
+	} w;
 	unsigned long (*uaccess_read)(struct kvm_vcpu *vcpu, gpa_t addr,
 				      unsigned int len);
 	void (*uaccess_write)(struct kvm_vcpu *vcpu, gpa_t addr,
@@ -76,8 +76,8 @@ extern struct kvm_io_device_ops kvm_io_gic_ops;
 		.bits_per_irq = bpi,					\
 		.len = bpi * 1024 / 8,					\
 		.access_flags = acc,					\
-		.read = rd,						\
-		.write = wr,						\
+		.r.read = rd,						\
+		.w.write = wr,						\
 	}
 
 #define REGISTER_DESC_WITH_LENGTH(off, rd, wr, length, acc)		\
@@ -86,8 +86,8 @@ extern struct kvm_io_device_ops kvm_io_gic_ops;
 		.bits_per_irq = 0,					\
 		.len = length,						\
 		.access_flags = acc,					\
-		.read = rd,						\
-		.write = wr,						\
+		.r.read = rd,						\
+		.w.write = wr,						\
 	}
 
 #define REGISTER_DESC_WITH_LENGTH_UACCESS(off, rd, wr, urd, uwr, length, acc) \

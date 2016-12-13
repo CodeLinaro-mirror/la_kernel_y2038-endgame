@@ -628,16 +628,16 @@ static int dispatch_mmio_read(struct kvm_vcpu *vcpu, struct kvm_io_device *dev,
 
 	switch (iodev->iodev_type) {
 	case IODEV_CPUIF:
-		data = region->read(vcpu, addr, len);
+		data = region->r.read(vcpu, addr, len);
 		break;
 	case IODEV_DIST:
-		data = region->read(vcpu, addr, len);
+		data = region->r.read(vcpu, addr, len);
 		break;
 	case IODEV_REDIST:
-		data = region->read(iodev->redist_vcpu, addr, len);
+		data = region->r.read(iodev->redist_vcpu, addr, len);
 		break;
 	case IODEV_ITS:
-		data = region->its_read(vcpu->kvm, iodev->its, addr, len);
+		data = region->r.its_read(vcpu->kvm, iodev->its, addr, len);
 		break;
 	}
 
@@ -658,16 +658,16 @@ static int dispatch_mmio_write(struct kvm_vcpu *vcpu, struct kvm_io_device *dev,
 
 	switch (iodev->iodev_type) {
 	case IODEV_CPUIF:
-		region->write(vcpu, addr, len, data);
+		region->w.write(vcpu, addr, len, data);
 		break;
 	case IODEV_DIST:
-		region->write(vcpu, addr, len, data);
+		region->w.write(vcpu, addr, len, data);
 		break;
 	case IODEV_REDIST:
-		region->write(iodev->redist_vcpu, addr, len, data);
+		region->w.write(iodev->redist_vcpu, addr, len, data);
 		break;
 	case IODEV_ITS:
-		region->its_write(vcpu->kvm, iodev->its, addr, len, data);
+		region->w.its_write(vcpu->kvm, iodev->its, addr, len, data);
 		break;
 	}
 

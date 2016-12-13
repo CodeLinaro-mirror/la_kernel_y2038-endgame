@@ -1292,8 +1292,8 @@ static void vgic_mmio_write_its_baser(struct kvm *kvm,
 	.reg_offset = off,					\
 	.len = length,						\
 	.access_flags = acc,					\
-	.its_read = rd,						\
-	.its_write = wr,					\
+	.r.its_read = rd,						\
+	.w.its_write = wr,					\
 }
 
 static void its_mmio_write_wi(struct kvm *kvm, struct vgic_its *its,
