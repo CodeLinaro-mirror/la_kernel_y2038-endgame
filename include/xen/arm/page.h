@@ -82,6 +82,7 @@ static inline unsigned long bfn_to_pfn(unsigned long bfn)
 static inline xmaddr_t arbitrary_virt_to_machine(void *vaddr)
 {
 	BUG();
+	return XMADDR(0);
 }
 
 /* TODO: this shouldn't be here but it is because the frontend drivers
