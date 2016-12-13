@@ -39,12 +39,16 @@ static u32 host_vtimer_irq_flags;
 static DEFINE_STATIC_KEY_FALSE(has_gic_active_state);
 
 static const struct kvm_irq_level default_ptimer_irq = {
-	.irq	= 30,
+	{
+		.irq	= 30,
+	},
 	.level	= 1,
 };
 
 static const struct kvm_irq_level default_vtimer_irq = {
-	.irq	= 27,
+	{
+		.irq	= 27,
+	},
 	.level	= 1,
 };
 
