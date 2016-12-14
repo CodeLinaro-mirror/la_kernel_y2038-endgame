@@ -77,6 +77,7 @@ static void ti_am335x_xbar_free(struct device *dev, void *route_data)
 	kfree(map);
 }
 
+#ifdef CONFIG_DMA_OF
 static void *ti_am335x_xbar_route_allocate(struct of_phandle_args *dma_spec,
 					   struct of_dma *ofdma)
 {
@@ -125,6 +126,7 @@ static void *ti_am335x_xbar_route_allocate(struct of_phandle_args *dma_spec,
 
 	return map;
 }
+#endif
 
 static const struct of_device_id ti_am335x_master_match[] = {
 	{ .compatible = "ti,edma3-tpcc", },
@@ -193,8 +195,10 @@ static int ti_am335x_xbar_probe(struct platform_device *pdev)
 	for (i = 0; i < xbar->dma_requests; i++)
 		ti_am335x_xbar_write(xbar->iomem, i, 0);
 
+#ifdef CONFIG_DMA_OF
 	ret = of_dma_router_register(node, ti_am335x_xbar_route_allocate,
 				     &xbar->dmarouter);
+#endif
 
 	return ret;
 }
@@ -241,6 +245,7 @@ static void ti_dra7_xbar_free(struct device *dev, void *route_data)
 	kfree(map);
 }
 
+#ifdef CONFIG_DMA_OF
 static void *ti_dra7_xbar_route_allocate(struct of_phandle_args *dma_spec,
 					 struct of_dma *ofdma)
 {
@@ -290,6 +295,7 @@ static void *ti_dra7_xbar_route_allocate(struct of_phandle_args *dma_spec,
 
 	return map;
 }
+#endif
 
 #define TI_XBAR_EDMA_OFFSET	0
 #define TI_XBAR_SDMA_OFFSET	1
@@ -425,8 +431,10 @@ static int ti_dra7_xbar_probe(struct platform_device *pdev)
 			ti_dra7_xbar_write(xbar->iomem, i, xbar->safe_val);
 	}
 
+#ifdef CONFIG_DMA_OF
 	ret = of_dma_router_register(node, ti_dra7_xbar_route_allocate,
 				     &xbar->dmarouter);
+#endif
 	if (ret) {
 		/* Restore the defaults for the crossbar */
 		for (i = 0; i < xbar->dma_requests; i++) {

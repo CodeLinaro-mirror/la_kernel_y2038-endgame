@@ -66,6 +66,7 @@ int (*pm_cpu_sleep)(unsigned long);
  * central control for sleep/resume process
 */
 
+#ifdef CONFIG_SUSPEND
 static int s3c_pm_enter(suspend_state_t state)
 {
 	int ret;
@@ -189,11 +190,14 @@ static const struct platform_suspend_ops s3c_pm_ops = {
  * from the board specific initialisation if the board supports
  * it.
 */
+#endif
 
 int __init s3c_pm_init(void)
 {
+#ifdef CONFIG_SUSPEND
 	printk("S3C Power Management, Copyright 2004 Simtec Electronics\n");
 
 	suspend_set_ops(&s3c_pm_ops);
+#endif
 	return 0;
 }
