@@ -1033,6 +1033,7 @@ err_out:
 	return rc;
 }
 
+#ifdef CONFIG_PCI
 static int rhine_init_one_pci(struct pci_dev *pdev,
 			      const struct pci_device_id *ent)
 {
@@ -1123,6 +1124,7 @@ err_out_pci_disable:
 err_out:
 	return rc;
 }
+#endif
 
 static int rhine_init_one_platform(struct platform_device *pdev)
 {
@@ -2445,7 +2447,7 @@ static int rhine_close(struct net_device *dev)
 	return 0;
 }
 
-
+#ifdef CONFIG_PCI
 static void rhine_remove_one_pci(struct pci_dev *pdev)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
@@ -2459,6 +2461,7 @@ static void rhine_remove_one_pci(struct pci_dev *pdev)
 	free_netdev(dev);
 	pci_disable_device(pdev);
 }
+#endif
 
 static int rhine_remove_one_platform(struct platform_device *pdev)
 {
@@ -2474,6 +2477,7 @@ static int rhine_remove_one_platform(struct platform_device *pdev)
 	return 0;
 }
 
+#ifdef CONFIG_PCI
 static void rhine_shutdown_pci(struct pci_dev *pdev)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
@@ -2524,6 +2528,7 @@ static void rhine_shutdown_pci(struct pci_dev *pdev)
 		pci_set_power_state(pdev, PCI_D3hot);
 	}
 }
+#endif
 
 #ifdef CONFIG_PM_SLEEP
 static int rhine_suspend(struct device *device)
@@ -2540,8 +2545,10 @@ static int rhine_suspend(struct device *device)
 
 	netif_device_detach(dev);
 
+#ifdef CONFIG_PCI
 	if (dev_is_pci(device))
 		rhine_shutdown_pci(to_pci_dev(device));
+#endif
 
 	return 0;
 }
@@ -2578,6 +2585,7 @@ static SIMPLE_DEV_PM_OPS(rhine_pm_ops, rhine_suspend, rhine_resume);
 
 #endif /* !CONFIG_PM_SLEEP */
 
+#ifdef CONFIG_PCI
 static struct pci_driver rhine_driver_pci = {
 	.name		= DRV_NAME,
 	.id_table	= rhine_pci_tbl,
@@ -2586,6 +2594,7 @@ static struct pci_driver rhine_driver_pci = {
 	.shutdown	= rhine_shutdown_pci,
 	.driver.pm	= RHINE_PM_OPS,
 };
+#endif
 
 static struct platform_driver rhine_driver_platform = {
 	.probe		= rhine_init_one_platform,
@@ -2631,7 +2640,11 @@ static int __init rhine_init(void)
 	else if (avoid_D3)
 		pr_info("avoid_D3 set\n");
 
+#ifdef CONFIG_PCI
 	ret_pci = pci_register_driver(&rhine_driver_pci);
+#else
+	ret_pci = 0;
+#endif
 	ret_platform = platform_driver_register(&rhine_driver_platform);
 	if ((ret_pci < 0) && (ret_platform < 0))
 		return ret_pci;
@@ -2643,7 +2656,9 @@ static int __init rhine_init(void)
 static void __exit rhine_cleanup(void)
 {
 	platform_driver_unregister(&rhine_driver_platform);
+#ifdef CONFIG_PCI
 	pci_unregister_driver(&rhine_driver_pci);
+#endif
 }
 
 

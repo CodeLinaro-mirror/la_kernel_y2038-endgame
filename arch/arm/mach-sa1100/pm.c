@@ -121,6 +121,8 @@ static const struct platform_suspend_ops sa11x0_pm_ops = {
 
 int __init sa11x0_pm_init(void)
 {
+#ifdef CONFIG_SUSPEND
 	suspend_set_ops(&sa11x0_pm_ops);
+#endif
 	return 0;
 }

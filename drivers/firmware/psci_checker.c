@@ -272,6 +272,9 @@ static int suspend_test_thread(void *arg)
 	/* No need for an actual callback, we just want to wake up the CPU. */
 	struct timer_list wakeup_timer;
 
+	if (!IS_ENABLED(CONFIG_CPU_IDLE))
+		return -ENXIO;
+
 	/* Wait for the main thread to give the start signal. */
 	wait_for_completion(&suspend_threads_started);
 
