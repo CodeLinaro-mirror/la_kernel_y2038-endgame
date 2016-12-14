@@ -361,7 +361,7 @@ config HAVE_GCC_PLUGINS
 
 menuconfig GCC_PLUGINS
 	bool "GCC plugins"
-	depends on HAVE_GCC_PLUGINS
+	depends on HAVE_GCC_PLUGINS && BROKEN
 	help
 	  GCC plugins are loadable modules that provide extra features to the
 	  compiler. They are useful for runtime instrumentation and static analysis.
@@ -521,6 +521,7 @@ config CC_STACKPROTECTOR_REGULAR
 config CC_STACKPROTECTOR_STRONG
 	bool "Strong"
 	select CC_STACKPROTECTOR
+	depends on BROKEN
 	help
 	  Functions will have the stack-protector canary logic added in any
 	  of the following conditions:
