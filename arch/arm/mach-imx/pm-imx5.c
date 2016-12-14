@@ -78,6 +78,7 @@ struct imx5_pm_suspend_data {
 	int suspend_io_count;
 };
 
+#ifdef CONFIG_SOC_IMX53
 static const struct imx5_suspend_io_state imx53_suspend_io_config[] = {
 #define MX53_DSE_HIGHZ_MASK (0x7 << 19)
 	{.offset = 0x584, .clear = MX53_DSE_HIGHZ_MASK}, /* DQM0 */
@@ -104,13 +105,17 @@ static const struct imx5_suspend_io_state imx53_suspend_io_config[] = {
 	/* Controls the CKE signal which is required to leave self refresh */
 	{.offset = 0x720, .clear = MX53_DSE_HIGHZ_MASK, .set = 1 << 19}, /* CTLDS */
 };
+#endif
 
+#ifdef CONFIG_SOC_IMX51
 static const struct imx5_pm_data imx51_pm_data __initconst = {
 	.ccm_addr = 0x73fd4000,
 	.cortex_addr = 0x83fa0000,
 	.gpc_addr = 0x73fd8000,
 };
+#endif
 
+#if defined(CONFIG_SOC_IMX53) && defined(CONFIG_SUSPEND)
 static const struct imx5_pm_data imx53_pm_data __initconst = {
 	.ccm_addr = 0x53fd4000,
 	.cortex_addr = 0x63fa0000,
@@ -127,6 +132,9 @@ static const struct imx5_pm_suspend_data imx53_pm_suspend_data __initconst = {
 };
 
 #define MX5_MAX_SUSPEND_IOSTATE ARRAY_SIZE(imx53_suspend_io_config)
+#else
+#define MX5_MAX_SUSPEND_IOSTATE 0
+#endif
 
 /*
  * This structure is for passing necessary data for low level ocram
@@ -273,7 +281,7 @@ static inline int imx5_cpu_do_idle(void)
 	return ret;
 }
 
-static void imx5_pm_idle(void)
+static void __maybe_unused imx5_pm_idle(void)
 {
 	imx5_cpu_do_idle();
 }
@@ -332,7 +340,7 @@ put_node:
 	return ret;
 }
 
-static int __init imx5_suspend_init(const struct imx5_pm_suspend_data *soc_data)
+static int __init __maybe_unused imx5_suspend_init(const struct imx5_pm_suspend_data *soc_data)
 {
 	struct imx5_cpu_suspend_info *suspend_info;
 	int ret;
@@ -383,7 +391,8 @@ failed_map_m4if:
 	return ret;
 }
 
-static int __init imx5_pm_common_init(const struct imx5_pm_data *data,
+#if defined(CONFIG_SUSPEND)
+static int __init __maybe_unused imx5_pm_common_init(const struct imx5_pm_data *data,
 				      const struct imx5_pm_suspend_data *sdata)
 {
 	int ret;
@@ -420,15 +429,18 @@ static int __init imx5_pm_common_init(const struct imx5_pm_data *data,
 
 	return 0;
 }
+#endif
 
 void __init imx51_pm_init(void)
 {
-	if (IS_ENABLED(CONFIG_SOC_IMX51))
-		imx5_pm_common_init(&imx51_pm_data, NULL);
+#if defined(CONFIG_SOC_IMX51) && defined(CONFIG_SUSPEND)
+	imx5_pm_common_init(&imx51_pm_data, NULL);
+#endif
 }
 
 void __init imx53_pm_init(void)
 {
-	if (IS_ENABLED(CONFIG_SOC_IMX53))
-		imx5_pm_common_init(&imx53_pm_data, &imx53_pm_suspend_data);
+#if defined(CONFIG_SOC_IMX53) && defined(CONFIG_SUSPEND)
+	imx5_pm_common_init(&imx53_pm_data, &imx53_pm_suspend_data);
+#endif
 }

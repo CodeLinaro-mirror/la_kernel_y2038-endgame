@@ -615,6 +615,9 @@ static irqreturn_t exynos_ts_isr(int irq, void *dev_id)
 	bool pressed;
 	int ret;
 
+	if (!IS_REACHABLE(CONFIG_INPUT))
+		return IRQ_HANDLED;
+
 	while (info->input->users) {
 		ret = exynos_read_s3c64xx_ts(dev, &x, &y);
 		if (ret == -ETIMEDOUT)
