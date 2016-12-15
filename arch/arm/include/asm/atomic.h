@@ -280,7 +280,10 @@ static inline long long atomic64_read(const atomic64_t *v)
 	__asm__ __volatile__("@ atomic64_read\n"
 "	ldrd	%0, %H0, [%1]"
 	: "=&r" (result)
-	: "r" (&v->counter), "Qo" (v->counter)
+	: "r" (&v->counter)
+#if GCC_VERSION >= 40600
+	, "Qo" (v->counter)
+#endif
 	);
 
 	return result;
@@ -302,7 +305,10 @@ static inline long long atomic64_read(const atomic64_t *v)
 	__asm__ __volatile__("@ atomic64_read\n"
 "	ldrexd	%0, %H0, [%1]"
 	: "=&r" (result)
-	: "r" (&v->counter), "Qo" (v->counter)
+	: "r" (&v->counter)
+#if GCC_VERSION >= 40600
+	, "Qo" (v->counter)
+#endif
 	);
 
 	return result;
