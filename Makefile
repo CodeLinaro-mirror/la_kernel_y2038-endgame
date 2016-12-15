@@ -632,6 +632,8 @@ ARCH_AFLAGS :=
 ARCH_CFLAGS :=
 include arch/$(SRCARCH)/Makefile
 
+KBUILD_CFLAGS	+= -Wextra
+
 KBUILD_CFLAGS	+= $(call cc-option,-fno-delete-null-pointer-checks,)
 KBUILD_CFLAGS	+= $(call cc-disable-warning,frame-address,)
 
@@ -655,7 +657,7 @@ endif
 endif
 
 KBUILD_CFLAGS += $(call cc-ifversion, -lt, 0409, \
-			$(call cc-disable-warning,maybe-uninitialized,))
+			$(call cc-disable-warning,uninitialized,))
 
 # Tell gcc to never replace conditional load with a non-conditional one
 KBUILD_CFLAGS	+= $(call cc-option,--param=allow-store-data-races=0)
@@ -803,7 +805,7 @@ KBUILD_CFLAGS   += $(call cc-option,-Werror=date-time)
 KBUILD_CFLAGS   += $(call cc-option,-Werror=incompatible-pointer-types)
 
 
-KBUILD_CFLAGS += -Wextra $(call cc-disable-warning,type-limits) -Wno-unused-parameter $(call cc-disable-warning, missing-field-initializers) $(call cc-disable-warning, sign-compare)
+KBUILD_CFLAGS += $(call cc-disable-warning,type-limits) -Wno-unused-parameter $(call cc-disable-warning, missing-field-initializers) $(call cc-disable-warning, sign-compare)
 
 
 KBUILD_CFLAGS += $(call cc-option,-Wmissing-include-dirs)
