@@ -14,7 +14,7 @@ ifeq ("$(origin W)", "command line")
   export KBUILD_ENABLE_EXTRA_GCC_CHECKS := $(W)
 endif
 
-KBUILD_CFLAGS += -Wformat=2 -Wno-format-nonliteral -Wuninitialized  $(call cc-option, -Wtrampolines) -Wold-style-definition $(call cc-option, -Wnormalized) $(call cc-option,-Wvolatile-register-var) -Wdisabled-optimization -Wno-format-security
+KBUILD_CFLAGS += -Wformat=2 -Wno-format-nonliteral $(call cc-option, -Wtrampolines) -Wold-style-definition $(call cc-option, -Wnormalized) $(call cc-option,-Wvolatile-register-var) -Wdisabled-optimization -Wno-format-security
 
 ifeq ($(ARCH),x86)
 #KBUILD_CFLAGS += $(call cc-disable-warning, override-init
