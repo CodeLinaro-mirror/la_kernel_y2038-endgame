@@ -376,7 +376,6 @@ config ARCH_CHOOSE_MULTIPLATFORM
 
 config ARM_SINGLE_ARMV7M
 	bool "ARMv7-M based platforms (Cortex-M0/M3/M4)"
-	depends on BROKEN
 	select ARM_NVIC
 	select AUTO_ZRELADDR
 	select CLKSRC_OF
@@ -1569,7 +1568,6 @@ config SCHED_HRTICK
 config THUMB2_KERNEL
 	bool "Compile the kernel in Thumb-2 mode" if !CPU_THUMBONLY
 	depends on (CPU_V7 || CPU_V7M) && !CPU_V6 && !CPU_V6K
-	depends on BROKEN
 	default y if CPU_THUMBONLY
 	select AEABI
 	select ARM_ASM_UNIFIED
@@ -2186,7 +2184,7 @@ config NEON
 
 config KERNEL_MODE_NEON
 	bool "Support for NEON in kernel mode"
-	depends on NEON && AEABI && BROKEN
+	depends on NEON && AEABI
 	help
 	  Say Y to include support for NEON in kernel mode.
 
