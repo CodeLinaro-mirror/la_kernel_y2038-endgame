@@ -1,6 +1,7 @@
 #
 #	KMS driver for the GMA500
 #
+CFLAGS_framebuffer.o += $(call cc-disable-warning, override-init)
 
 gma500_gfx-y += \
 	  accel_2d.o \
