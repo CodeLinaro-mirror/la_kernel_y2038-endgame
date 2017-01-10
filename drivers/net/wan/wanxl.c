@@ -115,7 +115,7 @@ static inline dma_addr_t pci_map_single_debug(struct pci_dev *pdev, void *ptr,
 
 
 /* Cable and/or personality module change interrupt service */
-static inline void wanxl_cable_intr(struct port *port)
+static void wanxl_cable_intr(struct port *port)
 {
 	u32 value = get_status(port)->cable;
 	int valid = 1;
