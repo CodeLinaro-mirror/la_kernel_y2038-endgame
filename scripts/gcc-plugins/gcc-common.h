@@ -18,9 +18,6 @@
 
 #include "tree-inline.h"
 #include "version.h"
-#if BUILDING_GCC_VERSION >= 7000
-#include "memmodel.h"
-#endif
 #include "rtl.h"
 #include "tm_p.h"
 #include "flags.h"
@@ -75,9 +72,6 @@
 #include "tree-flow.h"
 #else
 #include "tree-cfgcleanup.h"
-#if BUILDING_GCC_VERSION >= 7000
-#include "tree-vrp.h"
-#endif
 #include "tree-ssa-operands.h"
 #include "tree-into-ssa.h"
 #endif
