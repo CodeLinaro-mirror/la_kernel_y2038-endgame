@@ -490,7 +490,7 @@ static int drm_mmap_dma(struct file *filp, struct vm_area_struct *vma)
 		vma->vm_flags &= ~(VM_WRITE | VM_MAYWRITE);
 #if defined(__i386__) || defined(__x86_64__)
 		pgprot_val(vma->vm_page_prot) &= ~_PAGE_RW;
-#else
+#elif IS_ENABLED(CONFIG_MMU)
 		/* Ye gads this is ugly.  With more thought
 		   we could move this up higher and use
 		   `protection_map' instead.  */
@@ -574,7 +574,7 @@ static int drm_mmap_locked(struct file *filp, struct vm_area_struct *vma)
 		vma->vm_flags &= ~(VM_WRITE | VM_MAYWRITE);
 #if defined(__i386__) || defined(__x86_64__)
 		pgprot_val(vma->vm_page_prot) &= ~_PAGE_RW;
-#else
+#elif defined (CONFIG_MMU)
 		/* Ye gads this is ugly.  With more thought
 		   we could move this up higher and use
 		   `protection_map' instead.  */
