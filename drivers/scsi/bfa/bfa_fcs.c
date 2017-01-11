@@ -27,6 +27,10 @@
 
 BFA_TRC_FILE(FCS, FCS);
 
+static void bfa_fcs_fabric_modstop(struct bfa_fcs_s *fcs);
+static void bfa_fcs_fabric_psymb_init(struct bfa_fcs_fabric_s *fabric);
+static void bfa_fcs_fabric_nsymb_init(struct bfa_fcs_fabric_s *fabric);
+
 /*
  *  fcs_api BFA FCS API
  */
