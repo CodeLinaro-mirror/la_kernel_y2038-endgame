@@ -22,7 +22,7 @@ KBUILD_CFLAGS += -Wno-unused-variable
 endif
 
 # gcc-7 new warnings
-KBUILD_CFLAGS += $(call cc-option, -Wimplicit-fallthrough=0 -Wno-duplicate-decl-specifier -Wno-format-length -Wno-int-in-bool-context -Wno-bool-operation)
+KBUILD_CFLAGS += $(call cc-option, -Wimplicit-fallthrough=0 -Wno-duplicate-decl-specifier -Wno-format-length -Wno-int-in-bool-context -Wno-bool-operation) $(call cc-option,-Wformat-truncation=0)
 
 ifdef KBUILD_ENABLE_EXTRA_GCC_CHECKS
 warning-  := $(empty)
