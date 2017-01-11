@@ -14,7 +14,7 @@
 #include <linux/init.h>
 #include <linux/completion.h>
 #include <linux/sched.h>
-#include <linux/random.h>
+#include <linux/uuid.h>
 #define CREATE_TRACE_POINTS
 #include "internal.h"
 
