@@ -506,7 +506,7 @@ int tegra_drm_mmap(struct file *file, struct vm_area_struct *vma)
 
 		vma->vm_pgoff = vm_pgoff;
 	} else {
-		pgprot_t prot = vm_get_page_prot(vma->vm_flags);
+		pgprot_t prot __maybe_unused = vm_get_page_prot(vma->vm_flags);
 
 		vma->vm_flags |= VM_MIXEDMAP;
 		vma->vm_flags &= ~VM_PFNMAP;
