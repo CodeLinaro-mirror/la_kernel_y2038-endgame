@@ -314,8 +314,6 @@ mwifiex_pcie_txbd_not_full(struct pcie_service_card *card)
 	return 0;
 }
 
-static u8 user_rmmod;
-
 static struct mwifiex_if_ops pcie_ops;
 
 static const struct of_device_id mwifiex_pcie_of_match_table[] = {
