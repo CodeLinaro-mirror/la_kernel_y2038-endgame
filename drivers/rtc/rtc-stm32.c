@@ -92,7 +92,7 @@
 /* STM32_PWR_CR */
 #define PWR_CR				0x00
 /* STM32_PWR_CR bit field */
-#define PWR_CR_DBP			BIT(8)
+#define PWR_CR_DBP			(u32)BIT(8)
 
 struct stm32_rtc {
 	struct rtc_device *rtc_dev;
