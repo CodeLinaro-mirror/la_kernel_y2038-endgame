@@ -13,4 +13,3 @@
                 .text
 
 testop	_test_and_set_bit, orreq, streq
-EXPORT_SYMBOL(_test_and_set_bit)

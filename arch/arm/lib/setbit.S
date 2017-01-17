@@ -13,4 +13,3 @@
 		.text
 
 bitop	_set_bit, orr
-EXPORT_SYMBOL(_set_bit)
