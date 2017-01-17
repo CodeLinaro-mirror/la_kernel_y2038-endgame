@@ -13,4 +13,3 @@
                 .text
 
 testop	_test_and_change_bit, eor, str
-EXPORT_SYMBOL(_test_and_change_bit)

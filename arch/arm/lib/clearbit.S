@@ -13,4 +13,3 @@
                 .text
 
 bitop	_clear_bit, bic
-EXPORT_SYMBOL(_clear_bit)
