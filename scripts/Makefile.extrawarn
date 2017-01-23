@@ -61,9 +61,60 @@ warning-3 += -Wswitch-default
 warning-3 += $(call cc-option, -Wpacked-bitfield-compat)
 warning-3 += $(call cc-option, -Wvla)
 
+warning-4 += -Walloca
+warning-4 += -Walloca-larger-than=256
+warning-4 += -Walloc-size-larger-than=65536
+warning-4 += -Wc++-compat
+warning-4 += -Wdouble-promotion
+warning-4 += -Wduplicated-cond
+warning-4 += -Wfloat-equal
+warning-4 += -Wformat=2
+warning-4 += -Wformat-nonliteral
+warning-4 += -Wformat-security
+warning-4 += -Wformat-signedness
+warning-4 += -Wformat-y2k
+warning-4 += -Wframe-address
+warning-4 += -Wframe-larger-than=1024
+warning-4 += -Wimplicit-fallthrough=5
+warning-4 += -Winit-self
+warning-4 += -Winline
+warning-4 += -Winvalid-pch
+warning-4 += -Wjump-misses-init
+warning-4 += -Wlarger-than=4096
+warning-4 += -Wnormalized=nfkc
+warning-4 += -Wnull-dereference
+warning-4 += -Woverlength-strings
+warning-4 += -Wpedantic
+warning-4 += -Wpointer-sign
+warning-4 += -Wrestrict
+warning-4 += -Wshadow
+warning-4 += -Wshift-overflow=2
+warning-4 += -Wstack-protector
+warning-4 += -Wstack-usage=1024
+warning-4 += -Wstrict-overflow=5
+warning-4 += -Wsuggest-attribute=const
+warning-4 += -Wsuggest-attribute=noreturn
+warning-4 += -Wsuggest-attribute=pure
+warning-4 += -Wsuggest-final-methods
+warning-4 += -Wsuggest-final-types
+warning-4 += -Wswitch-enum
+warning-4 += -Wsystem-headers
+warning-4 += -Wtraditional
+warning-4 += -Wtraditional-conversion
+warning-4 += -Wtrampolines
+warning-4 += -Wtrigraphs
+warning-4 += -Wunsafe-loop-optimizations
+warning-4 += -Wunsuffixed-float-constants
+warning-4 += -Wunused-macros
+warning-4 += -Wunused-parameter
+warning-4 += -Wvariadic-macros
+warning-4 += -Wvector-operation-performance
+warning-4 += -Wwrite-strings
+
 warning := $(warning-$(findstring 1, $(KBUILD_ENABLE_EXTRA_GCC_CHECKS)))
 warning += $(warning-$(findstring 2, $(KBUILD_ENABLE_EXTRA_GCC_CHECKS)))
 warning += $(warning-$(findstring 3, $(KBUILD_ENABLE_EXTRA_GCC_CHECKS)))
+warning += $(warning-$(findstring 4, $(KBUILD_ENABLE_EXTRA_GCC_CHECKS)))
 
 ifeq ("$(strip $(warning))","")
         $(error W=$(KBUILD_ENABLE_EXTRA_GCC_CHECKS) is unknown)
