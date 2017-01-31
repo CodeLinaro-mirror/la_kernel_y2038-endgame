@@ -350,6 +350,9 @@ efi_status_t efi_parse_options(char *cmdline)
 {
 	char *str;
 
+	if (!IS_ENABLED(CONFIG_X86))
+		return EFI_SUCCESS;
+
 	/*
 	 * If no EFI parameters were specified on the cmdline we've got
 	 * nothing to do.
@@ -523,7 +526,8 @@ efi_status_t handle_cmdline_files(efi_system_table_t *sys_table_arg,
 			size = files[j].size;
 			while (size) {
 				unsigned long chunksize;
-				if (size > __chunk_size)
+				if (IS_ENABLED(CONFIG_X86) &&
+				    size > __chunk_size)
 					chunksize = __chunk_size;
 				else
 					chunksize = size;
