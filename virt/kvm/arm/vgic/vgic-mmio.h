@@ -96,8 +96,8 @@ extern struct kvm_io_device_ops kvm_io_gic_ops;
 		.bits_per_irq = 0,					\
 		.len = length,						\
 		.access_flags = acc,					\
-		.read = rd,						\
-		.write = wr,						\
+		.r.read = rd,						\
+		.w.write = wr,						\
 		.uaccess_read = urd,					\
 		.uaccess_write = uwr,					\
 	}

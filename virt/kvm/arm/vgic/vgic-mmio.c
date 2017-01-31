@@ -576,7 +576,7 @@ static int vgic_uaccess_read(struct kvm_vcpu *vcpu, struct kvm_io_device *dev,
 	if (region->uaccess_read)
 		*val = region->uaccess_read(r_vcpu, addr, sizeof(u32));
 	else
-		*val = region->read(r_vcpu, addr, sizeof(u32));
+		*val = region->r.read(r_vcpu, addr, sizeof(u32));
 
 	return 0;
 }
@@ -596,7 +596,7 @@ static int vgic_uaccess_write(struct kvm_vcpu *vcpu, struct kvm_io_device *dev,
 	if (region->uaccess_write)
 		region->uaccess_write(r_vcpu, addr, sizeof(u32), *val);
 	else
-		region->write(r_vcpu, addr, sizeof(u32), *val);
+		region->w.write(r_vcpu, addr, sizeof(u32), *val);
 
 	return 0;
 }
