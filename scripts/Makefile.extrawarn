@@ -14,18 +14,146 @@ ifeq ("$(origin W)", "command line")
   export KBUILD_ENABLE_EXTRA_GCC_CHECKS := $(W)
 endif
 
-KBUILD_CFLAGS += -Wformat=2 -Wno-format-nonliteral $(call cc-option, -Wtrampolines) -Wold-style-definition $(call cc-option, -Wnormalized) $(call cc-option,-Wvolatile-register-var) -Wdisabled-optimization -Wno-format-security
+#KBUILD_CFLAGS += -Wformat=2 -Wno-format-nonliteral $(call cc-option, -Wtrampolines) -Wold-style-definition $(call cc-option, -Wnormalized) $(call cc-option,-Wvolatile-register-var) -Wdisabled-optimization -Wno-format-security
 
 ifeq ($(ARCH),x86)
 #KBUILD_CFLAGS += $(call cc-disable-warning, override-init
-KBUILD_CFLAGS += -Wno-unused-variable
+#KBUILD_CFLAGS += -Wno-unused-variable
 endif
 
 # gcc-7 new warnings
-KBUILD_CFLAGS += $(call cc-option, -Wimplicit-fallthrough=0 -Wno-duplicate-decl-specifier -Wno-int-in-bool-context -Wno-bool-operation) $(call cc-option,-Wformat-truncation=0) $(call cc-disable-warning, format-length) $(call cc-option,-Wformat-overflow=0)
+#KBUILD_CFLAGS += $(call cc-option, -Wimplicit-fallthrough=0 -Wno-duplicate-decl-specifier -Wno-int-in-bool-context -Wno-bool-operation) $(call cc-option,-Wformat-truncation=0) $(call cc-disable-warning, format-length) $(call cc-option,-Wformat-overflow=0)
+
+KBUILD_CFLAGS += -Weverything #-Wno-disabled-macro-expansion -Wno-gnu-statement-expression -Wno-pointer-sign -Wno-reserved-id-macro -Wno-sign-conversion -Wno-language-extension-token -Wno-long-long -Wno-gnu -Wno-c11-extensions -Wno-c99-extensions -Wno-variadic-macros
+
+KBUILD_CFLAGS += -Wno-unused-command-line-argument		# W=2
+
+KBUILD_CFLAGS += -Wimplicit-int
+KBUILD_CFLAGS += -Warray-bounds					#	 10 allmodconfig W=1
+KBUILD_CFLAGS += -Warray-bounds-pointer-arithmetic		#	  5 allmodconfig W=1
+KBUILD_CFLAGS += -Wclass-varargs				#	 15 allmodconfig W=2
+KBUILD_CFLAGS += -Wconstant-logical-operand			#	  4 allmodconfig W=1
+KBUILD_CFLAGS += -Wdeprecated-declarations			#	  3 allmodconfig W=1
+KBUILD_CFLAGS += -Wdivision-by-zero				#	  2 allmodconfig W=1
+KBUILD_CFLAGS += -Wno-double-promotion				#	 28 allmodconfig float W=2
+KBUILD_CFLAGS += -Wno-duplicate-enum				#	284 allmodconfig  W=2
+KBUILD_CFLAGS += -Wno-embedded-directive				#	 21  defconfig  W=1 or W=2
+KBUILD_CFLAGS += -Wempty-body					#	  1 allmodconfig W=1
+KBUILD_CFLAGS += -Wno-empty-translation-unit			#	  6  defconfig W=2
+KBUILD_CFLAGS += -Wno-format					#	261 allmodconfig 
+KBUILD_CFLAGS += -Wformat-invalid-specifier			#	  3 allmodconfig 
+KBUILD_CFLAGS += -Wno-format-nonliteral				#	556 allmodconfig 
+KBUILD_CFLAGS += -Wno-format-security				#	130 allmodconfig 
+KBUILD_CFLAGS += -Wframe-larger-than=$(CONFIG_FRAME_WARN)				#	 11 allmodconfig 
+KBUILD_CFLAGS += -Wgcc-compat					#	  2 allmodconfig 
+KBUILD_CFLAGS += -Wheader-guard					#	  1 allmodconfig 
+KBUILD_CFLAGS += -Wignored-attributes				#	  3 allmodconfig 
+KBUILD_CFLAGS += -Wincompatible-pointer-types			#	  4 allmodconfig 
+KBUILD_CFLAGS += -Wno-initializer-overrides			#	647 allmodconfig W=2
+KBUILD_CFLAGS += -Wlogical-not-parentheses			#	  9 allmodconfig 
+KBUILD_CFLAGS += -Wmissing-braces				#	  4 allmodconfig 
+KBUILD_CFLAGS += -Wnull-dereference				#	  1 allmodconfig 
+KBUILD_CFLAGS += -Wparentheses-equality				#	 43 allmodconfig 
+KBUILD_CFLAGS += -Wsection					#	  1 allmodconfig 
+KBUILD_CFLAGS += -Wno-self-assign					#	 21 allmodconfig  Wuninitialized?
+KBUILD_CFLAGS += -Wshift-count-negative				#	 21 allmodconfig 
+KBUILD_CFLAGS += -Wshift-count-overflow				#	  7 allmodconfig 
+KBUILD_CFLAGS += -Wshift-overflow				#	  1 allmodconfig 
+KBUILD_CFLAGS += -Wsometimes-uninitialized			#	 26 allmodconfig 
+KBUILD_CFLAGS += -Wstatic-in-inline				#	 57  defconfig 
+KBUILD_CFLAGS += -Wstrlcpy-strlcat-size				#	  1 allmodconfig 
+KBUILD_CFLAGS += -Wtautological-compare				#	 82 allmodconfig 
+KBUILD_CFLAGS += -Wtautological-constant-out-of-range-compare	#	 38 allmodconfig 
+KBUILD_CFLAGS += -Wtautological-overlap-compare			#	  1 allmodconfig 
+KBUILD_CFLAGS += -Wtautological-pointer-compare			#	  9 allmodconfig 
+KBUILD_CFLAGS += -Wtentative-definition-incomplete-type		#	  1 allmodconfig 
+KBUILD_CFLAGS += -Wuninitialized				#	118 allmodconfig 
+KBUILD_CFLAGS += -Wunknown-attributes				#	  2 allmodconfig 
+KBUILD_CFLAGS += -Wunknown-pragmas				#	 12 allmodconfig 
+KBUILD_CFLAGS += -Wunneeded-internal-declaration		#	 80 allmodconfig 
+KBUILD_CFLAGS += -Wunsequenced					#	  1 allmodconfig 
+KBUILD_CFLAGS += -Wno-unused-const-variable			#	270 allmodconfig W=2
+KBUILD_CFLAGS += -Wno-unused-function				#	312 allmodconfig W=2
+KBUILD_CFLAGS += -Wunused-value					#	  7 allmodconfig 
+KBUILD_CFLAGS += -Wvarargs					#	  2 allmodconfig 
+KBUILD_CFLAGS += -W\#warnings					#	  1 allmodconfig 
+
+
+# we really want those, but they are slightly noisy still
+KBUILD_CFLAGS += -Wno-missing-prototypes			#	687 allmodconfig 
+KBUILD_CFLAGS += -Wno-missing-variable-declarations		#      1078 allmodconfig 
+
+# these are probably all for W=2
+KBUILD_CFLAGS += -Wno-assign-enum				#      2384 allmodconfig 
+KBUILD_CFLAGS += -Wno-comma					#      5454 allmodconfig 
+KBUILD_CFLAGS += -Wno-conditional-uninitialized			#      4055 allmodconfig 
+KBUILD_CFLAGS += -Wno-covered-switch-default			#      2404 allmodconfig 
+KBUILD_CFLAGS += -Wno-duplicate-decl-specifier			#      3808 allmodconfig 
+KBUILD_CFLAGS += -Wno-format-pedantic				#      2570  defconfig 
+KBUILD_CFLAGS += -Wno-overlength-strings			#      1210  defconfig 
+KBUILD_CFLAGS += -Wno-shadow					#      3077 allmodconfig 
+KBUILD_CFLAGS += -Wno-switch-enum				#      4986 allmodconfig 
+KBUILD_CFLAGS += -Wno-pointer-sign				#      4775  defconfig
+KBUILD_CFLAGS += -Wno-unreachable-code				#	410 allmodconfig 
+KBUILD_CFLAGS += -Wno-unreachable-code-break			#	344 allmodconfig 
+KBUILD_CFLAGS += -Wno-unreachable-code-loop-increment		#	  1 allmodconfig 
+KBUILD_CFLAGS += -Wno-unreachable-code-return			#	219 allmodconfig 
+KBUILD_CFLAGS += -Wno-missing-noreturn				#	252 allmodconfig 
+
+# W=2 or W=3?
+KBUILD_CFLAGS += -Wno-extended-offsetof				#	 5051 
+KBUILD_CFLAGS += -Wno-documentation				#	 6038 
+KBUILD_CFLAGS += -Wno-missing-field-initializers		#	 6466 
+KBUILD_CFLAGS += -Wno-sign-compare				#	11310 
+KBUILD_CFLAGS += -Wno-bad-function-cast				#	14177 
+KBUILD_CFLAGS += -Wno-shorten-64-to-32				#	14766 
+KBUILD_CFLAGS += -Wno-packed					#	18763 
+# KBUILD_CFLAGS += -Wconstant-conversion			#	   3  defconfig 
+# KBUILD_CFLAGS += -Wenum-conversion				#	  18  defconfig 
+# KBUILD_CFLAGS += -Wfloat-conversion				#	 173  defconfig 
+# KBUILD_CFLAGS += -Wfloat-zero-conversion			#	   3  defconfig 
+# KBUILD_CFLAGS += -Wpointer-bool-conversion			#	   5  defconfig 
+# KBUILD_CFLAGS += -Wstring-conversion				#	   1  defconfig 
+KBUILD_CFLAGS += -Wno-conversion				#	21614 plus the above
+KBUILD_CFLAGS += -Wno-extra-semi				#	22791 
+
+
+# possibly candidates for W=3, far too noisy
+KBUILD_CFLAGS += -Wno-cast-align				#	 55458 
+KBUILD_CFLAGS += -Wno-cast-qual					#	 84082 
+KBUILD_CFLAGS += -Wno-padded					#   48740
+KBUILD_CFLAGS += -Wno-shift-sign-overflow			#   54723
+KBUILD_CFLAGS += -Wno-unused-parameter				#  261804
+KBUILD_CFLAGS += -Wno-sign-conversion				#  716499 
+
+# These are all accepted style for the kernel
+# KBUILD_CFLAGS += -Wno-vla-extension				#   68988
+# KBUILD_CFLAGS += -Wno-zero-length-array			#   52485
+# KBUILD_CFLAGS += -Wno-gnu-zero-variadic-macro-arguments	#  289581 
+# KBUILD_CFLAGS += -Wno-gnu-statement-expression		# 1192696 
+# KBUILD_CFLAGS += -Wflexible-array-extensions			#     410
+KBUILD_CFLAGS += -Wno-gnu					# all the above
+KBUILD_CFLAGS += -Wno-c11-extensions				#  131372 
+KBUILD_CFLAGS += -Wno-c99-extensions				# 1014867 
+KBUILD_CFLAGS += -Wno-variadic-macros				#  454145 
+KBUILD_CFLAGS += -Wno-language-extension-token			# 7394606 
+KBUILD_CFLAGS += -Wno-long-long					# 1430219 
+KBUILD_CFLAGS += -Wno-disabled-macro-expansion			# 5866588 
+KBUILD_CFLAGS += -Wno-reserved-id-macro				# 3639650 
+KBUILD_CFLAGS += -Wno-used-but-marked-unused			#   34536
+KBUILD_CFLAGS += -Wno-documentation-unknown-command		#  169552
+KBUILD_CFLAGS += -Wno-vla					#   28238 
+KBUILD_CFLAGS += -Wno-c++-compat				#   34525 
+KBUILD_CFLAGS += -Wno-pointer-arith				#   35321 
+KBUILD_CFLAGS += -Wno-pedantic					#     10448 
+KBUILD_CFLAGS += -Wno-unused-macros				#      5611 
+KBUILD_CFLAGS += -Wno-keyword-macro				#      1194  defconfig 
+KBUILD_CFLAGS += -Wno-format-non-iso				#	537 allmodconfig 
+
 
 ifdef KBUILD_ENABLE_EXTRA_GCC_CHECKS
 warning-  := $(empty)
+
 
 warning-1 += -Wunused -Wtype-limits -Woverride-init
 warning-1 += -Wmissing-declarations
@@ -35,8 +163,8 @@ warning-1 += -Wold-style-definition
 warning-1 += $(call cc-option, -Wmissing-include-dirs)
 warning-1 += $(call cc-option, -Wunused-but-set-variable)
 warning-1 += $(call cc-option, -Wunused-const-variable)
-warning-1 += $(call cc-disable-warning, missing-field-initializers)
-warning-1 += $(call cc-disable-warning, sign-compare)
+#warning-1 += $(call cc-disable-warning, missing-field-initializers)
+#warning-1 += $(call cc-disable-warning, sign-compare)
 
 warning-2 := -Waggregate-return
 warning-2 += -Wcast-align
@@ -123,13 +251,4 @@ endif
 KBUILD_CFLAGS += $(warning)
 else
 
-ifeq ($(cc-name),clang)
-KBUILD_CFLAGS += $(call cc-disable-warning, initializer-overrides)
-KBUILD_CFLAGS += $(call cc-disable-warning, unused-value)
-KBUILD_CFLAGS += $(call cc-disable-warning, format)
-KBUILD_CFLAGS += $(call cc-disable-warning, unknown-warning-option)
-KBUILD_CFLAGS += $(call cc-disable-warning, sign-compare)
-KBUILD_CFLAGS += $(call cc-disable-warning, format-zero-length)
-KBUILD_CFLAGS += $(call cc-disable-warning, uninitialized)
-endif
 endif
