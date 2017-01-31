@@ -212,10 +212,9 @@ extern UDItype __udiv_qrnnd(UDItype *, UDItype, UDItype, UDItype);
 	: "r0", "r1", "r2")
 #else
 #define umul_ppmm(xh, xl, a, b) \
-	__asm__ ("%@ Inlined umul_ppmm\n" \
-		"umull %r1, %r0, %r2, %r3" \
-	: "=&r" ((USItype)(xh)), \
-			"=&r" ((USItype)(xl)) \
+	__asm__ ("umull %1, %0, %2, %3" \
+	: "=&r" (xh), \
+			"=&r" (xl) \
 	: "r" ((USItype)(a)), \
 			"r" ((USItype)(b)) \
 	: "r0", "r1")
