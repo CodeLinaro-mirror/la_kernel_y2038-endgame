@@ -30,8 +30,11 @@ struct completion {
 #define COMPLETION_INITIALIZER(work) \
 	{ 0, __WAIT_QUEUE_HEAD_INITIALIZER((work).wait) }
 
-#define COMPLETION_INITIALIZER_ONSTACK(work) \
+#define _COMPLETION_INITIALIZER_ONSTACK(work) \
 	(*init_completion(&work))
+
+#define COMPLETION_INITIALIZER_ONSTACK(work) \
+	({ init_completion(&work); work; })
 
 /**
  * DECLARE_COMPLETION - declare and initialize a completion structure
