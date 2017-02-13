@@ -136,4 +136,16 @@ asmlinkage long compat_sys_mq_timedreceive(mqd_t mqdes,
 asmlinkage long compat_sys_sched_rr_get_interval(compat_pid_t pid,
 						 struct compat_timespec __user *interval);
 
+asmlinkage long compat_sys_pselect6_time64(int n, compat_ulong_t __user * inp,
+	compat_ulong_t __user *outp, compat_ulong_t __user *exp,
+	struct __kernel_timespec __user *tsp, void __user *sig);
+
+asmlinkage long compat_sys_ppoll_time64(struct pollfd __user * ufds,
+	unsigned int  nfds, struct compat_timespec __user * tsp,
+	const compat_sigset_t __user * sigmask, compat_size_t sigsetsize);
+
+asmlinkage long compat_sys_waitid_time64(int which, compat_pid_t pid,
+		struct compat_siginfo __user * uinfo, int options,
+		struct compat_rusage __user * uru);
+
 #endif
