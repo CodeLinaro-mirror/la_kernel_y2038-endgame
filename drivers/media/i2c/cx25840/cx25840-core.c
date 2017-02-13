@@ -81,7 +81,7 @@ MODULE_PARM_DESC(debug, "Debugging messages [0=Off (default) 1=On]");
 /* ----------------------------------------------------------------------- */
 static void cx23888_std_setup(struct i2c_client *client);
 
-int cx25840_write(struct i2c_client *client, u16 addr, u8 value)
+noinline_if_stackbloat int cx25840_write(struct i2c_client *client, u16 addr, u8 value)
 {
 	u8 buffer[3];
 	buffer[0] = addr >> 8;
@@ -90,7 +90,7 @@ int cx25840_write(struct i2c_client *client, u16 addr, u8 value)
 	return i2c_master_send(client, buffer, 3);
 }
 
-int cx25840_write4(struct i2c_client *client, u16 addr, u32 value)
+noinline_if_stackbloat int cx25840_write4(struct i2c_client *client, u16 addr, u32 value)
 {
 	u8 buffer[6];
 	buffer[0] = addr >> 8;
