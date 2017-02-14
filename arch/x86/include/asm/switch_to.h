@@ -30,7 +30,7 @@ static inline void prepare_switch_to(struct task_struct *prev,
 	 *
 	 * To minimize cache pollution, just follow the stack pointer.
 	 */
-	READ_ONCE(*(unsigned char *)next->thread.sp);
+	(void)READ_ONCE(*(unsigned char *)next->thread.sp);
 #endif
 }
 
