@@ -163,7 +163,7 @@ extern struct mlog_bits mlog_and_bits, mlog_not_bits;
 #endif
 
 __printf(4, 5)
-void __mlog_printk(const u64 *m, const char *func, int line,
+void __mlog_printk(const u64 m, const char *func, int line,
 		   const char *fmt, ...);
 
 /*
@@ -174,7 +174,7 @@ void __mlog_printk(const u64 *m, const char *func, int line,
 do {									\
 	u64 _m = MLOG_MASK_PREFIX | (mask);				\
 	if (_m & ML_ALLOWED_BITS)					\
-		__mlog_printk(&_m, __func__, __LINE__, fmt,		\
+		__mlog_printk(_m, __func__, __LINE__, fmt,		\
 			      ##__VA_ARGS__);				\
 } while (0)
 
