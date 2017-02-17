@@ -174,14 +174,14 @@ static void rtl8187se_three_wire_io(struct ieee80211_hw *dev, u8 *data,
 	} while (0);
 }
 
-static u32 rtl8187se_rf_readreg(struct ieee80211_hw *dev, u8 addr)
+static noinline_if_stackbloat u32 rtl8187se_rf_readreg(struct ieee80211_hw *dev, u8 addr)
 {
 	u32 dataread = addr & 0x0F;
 	rtl8187se_three_wire_io(dev, (u8 *)&dataread, 16, 0);
 	return dataread;
 }
 
-static void rtl8187se_rf_writereg(struct ieee80211_hw *dev, u8 addr, u32 data)
+static noinline_if_stackbloat void rtl8187se_rf_writereg(struct ieee80211_hw *dev, u8 addr, u32 data)
 {
 	u32 outdata = (data << 4) | (u32)(addr & 0x0F);
 	rtl8187se_three_wire_io(dev, (u8 *)&outdata, 16, 1);
