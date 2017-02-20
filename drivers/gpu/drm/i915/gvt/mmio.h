@@ -71,11 +71,17 @@ bool intel_gvt_match_device(struct intel_gvt *gvt, unsigned long device);
 int intel_gvt_setup_mmio_info(struct intel_gvt *gvt);
 void intel_gvt_clean_mmio_info(struct intel_gvt *gvt);
 
-#define INTEL_GVT_MMIO_OFFSET(reg) ({ \
-	typeof(reg) __reg = reg; \
-	u32 *offset = (u32 *)&__reg; \
-	*offset; \
-})
+static inline u32 intel_gvt_mmio_offset(unsigned int offset)
+{
+	return offset;
+}
+
+#define INTEL_GVT_MMIO_OFFSET(reg) \
+__builtin_choose_expr(__builtin_types_compatible_p(typeof(reg), int), intel_gvt_mmio_offset, \
+__builtin_choose_expr(__builtin_types_compatible_p(typeof(reg), unsigned int), intel_gvt_mmio_offset, \
+__builtin_choose_expr(__builtin_types_compatible_p(typeof(reg), i915_reg_t), i915_mmio_reg_offset, \
+	(void)(0) \
+)))(reg)
 
 int intel_vgpu_init_mmio(struct intel_vgpu *vgpu);
 void intel_vgpu_reset_mmio(struct intel_vgpu *vgpu, bool dmlr);
