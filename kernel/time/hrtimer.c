@@ -96,6 +96,8 @@ DEFINE_PER_CPU(struct hrtimer_cpu_base, hrtimer_bases) =
 	}
 };
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Woverride-init"
 static const int hrtimer_clock_to_base_table[MAX_CLOCKS] = {
 	/* Make sure we catch unsupported clockids */
 	[0 ... MAX_CLOCKS - 1]	= HRTIMER_MAX_CLOCK_BASES,
@@ -105,6 +107,7 @@ static const int hrtimer_clock_to_base_table[MAX_CLOCKS] = {
 	[CLOCK_BOOTTIME]	= HRTIMER_BASE_BOOTTIME,
 	[CLOCK_TAI]		= HRTIMER_BASE_TAI,
 };
+#pragma GCC diagnostic pop
 
 /*
  * Functions and macros which are different for UP/SMP systems are kept in a
