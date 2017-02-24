@@ -409,9 +409,8 @@ static void smrt_info_get(struct mb86a16_state *state, int rate)
 
 }
 
-static int signal_det(struct mb86a16_state *state,
-		      int smrt,
-		      unsigned char *SIG)
+static noinline_for_stack int signal_det(struct mb86a16_state *state,
+					 int smrt, unsigned char *SIG)
 {
 	int ret;
 	int smrtd;
@@ -638,10 +637,8 @@ err:
 
 }
 
-static int freqerr_chk(struct mb86a16_state *state,
-		       int fTP,
-		       int smrt,
-		       int unit)
+static noinline_for_stack
+int freqerr_chk(struct mb86a16_state *state, int fTP, int smrt, int unit)
 {
 	unsigned char CRM, AFCML, AFCMH;
 	unsigned char temp1, temp2, temp3;
@@ -736,15 +733,10 @@ static unsigned char vco_dev_get(struct mb86a16_state *state, int smrt)
 	return R;
 }
 
-static void swp_info_get(struct mb86a16_state *state,
-			 int fOSC_start,
-			 int smrt,
-			 int v, int R,
-			 int swp_ofs,
-			 int *fOSC,
-			 int *afcex_freq,
-			 unsigned char *AFCEX_L,
-			 unsigned char *AFCEX_H)
+static noinline_for_stack void
+swp_info_get(struct mb86a16_state *state, int fOSC_start, int smrt, int v,
+	     int R, int swp_ofs, int *fOSC, int *afcex_freq,
+	     unsigned char *AFCEX_L, unsigned char *AFCEX_H)
 {
 	int AFCEX ;
 	int crnt_swp_freq ;
