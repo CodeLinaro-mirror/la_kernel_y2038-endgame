@@ -671,7 +671,7 @@ halbtc8723b1ant_set_fw_ignore_wlan_act(struct btc_coexist *btcoexist,
 	btcoexist->btc_fill_h2c(btcoexist, 0x63, 1, h2c_parameter);
 }
 
-static void halbtc8723b1ant_ignore_wlan_act(struct btc_coexist *btcoexist,
+static noinline_if_stackbloat void halbtc8723b1ant_ignore_wlan_act(struct btc_coexist *btcoexist,
 					    bool force_exec, bool enable)
 {
 	struct rtl_priv *rtlpriv = btcoexist->adapter;

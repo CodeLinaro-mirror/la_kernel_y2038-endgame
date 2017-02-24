@@ -489,7 +489,7 @@ bool btc8192e2ant_is_wifi_status_changed(struct btc_coexist *btcoexist)
 	return false;
 }
 
-static void btc8192e2ant_update_bt_link_info(struct btc_coexist *btcoexist)
+static noinline_if_stackbloat void btc8192e2ant_update_bt_link_info(struct btc_coexist *btcoexist)
 {
 	struct btc_bt_link_info *bt_link_info = &btcoexist->bt_link_info;
 	bool bt_hs_on = false;
@@ -785,7 +785,7 @@ static void btc8192e2ant_set_fw_dec_bt_pwr(struct btc_coexist *btcoexist,
 	btcoexist->btc_fill_h2c(btcoexist, 0x62, 1, h2c_parameter);
 }
 
-static void btc8192e2ant_dec_bt_pwr(struct btc_coexist *btcoexist,
+static noinline_if_stackbloat void btc8192e2ant_dec_bt_pwr(struct btc_coexist *btcoexist,
 				    bool force_exec, u8 dec_bt_pwr_lvl)
 {
 	struct rtl_priv *rtlpriv = btcoexist->adapter;
@@ -851,7 +851,7 @@ static void btc8192e2ant_bt_auto_report(struct btc_coexist *btcoexist,
 	coex_dm->pre_bt_auto_report = coex_dm->cur_bt_auto_report;
 }
 
-static void btc8192e2ant_fw_dac_swing_lvl(struct btc_coexist *btcoexist,
+static noinline_if_stackbloat void btc8192e2ant_fw_dac_swing_lvl(struct btc_coexist *btcoexist,
 					  bool force_exec, u8 fw_dac_swing_lvl)
 {
 	struct rtl_priv *rtlpriv = btcoexist->adapter;
@@ -1178,8 +1178,9 @@ static void btc8192e2ant_ignore_wlan_act(struct btc_coexist *btcoexist,
 	coex_dm->pre_ignore_wlan_act = coex_dm->cur_ignore_wlan_act;
 }
 
-static void btc8192e2ant_set_fw_ps_tdma(struct btc_coexist *btcoexist, u8 byte1,
-					u8 byte2, u8 byte3, u8 byte4, u8 byte5)
+static noinline_if_stackbloat void
+btc8192e2ant_set_fw_ps_tdma(struct btc_coexist *btcoexist, u8 byte1,
+			    u8 byte2, u8 byte3, u8 byte4, u8 byte5)
 {
 	struct rtl_priv *rtlpriv = btcoexist->adapter;
 
@@ -1361,8 +1362,8 @@ static void btc8192e2ant_ps_tdma(struct btc_coexist *btcoexist,
 	coex_dm->pre_ps_tdma = coex_dm->cur_ps_tdma;
 }
 
-static void btc8192e2ant_set_switch_ss_type(struct btc_coexist *btcoexist,
-					    u8 ss_type)
+static noinline_if_stackbloat void
+btc8192e2ant_set_switch_ss_type(struct btc_coexist *btcoexist, u8 ss_type)
 {
 	struct rtl_priv *rtlpriv = btcoexist->adapter;
 	u8 mimops = BTC_MIMO_PS_DYNAMIC;
@@ -1398,7 +1399,7 @@ static void btc8192e2ant_set_switch_ss_type(struct btc_coexist *btcoexist,
 	btcoexist->btc_set(btcoexist, BTC_SET_ACT_SEND_MIMO_PS, &mimops);
 }
 
-static void btc8192e2ant_switch_ss_type(struct btc_coexist *btcoexist,
+static noinline_if_stackbloat void btc8192e2ant_switch_ss_type(struct btc_coexist *btcoexist,
 					bool force_exec, u8 new_ss_type)
 {
 	struct rtl_priv *rtlpriv = btcoexist->adapter;
@@ -1465,7 +1466,7 @@ static void btc8192e2ant_action_bt_inquiry(struct btc_coexist *btcoexist)
 	btc8192e2ant_sw_mechanism2(btcoexist, false, false, false, 0x18);
 }
 
-static bool btc8192e2ant_is_common_action(struct btc_coexist *btcoexist)
+static noinline_if_stackbloat bool btc8192e2ant_is_common_action(struct btc_coexist *btcoexist)
 {
 	struct rtl_priv *rtlpriv = btcoexist->adapter;
 	struct btc_bt_link_info *bt_link_info = &btcoexist->bt_link_info;
@@ -1802,7 +1803,7 @@ static void btc8192e2ant_tdma_duration_adjust(struct btc_coexist *btcoexist,
 }
 
 /* SCO only or SCO+PAN(HS) */
-static void btc8192e2ant_action_sco(struct btc_coexist *btcoexist)
+static noinline_if_stackbloat void btc8192e2ant_action_sco(struct btc_coexist *btcoexist)
 {
 	u8 wifi_rssi_state, bt_rssi_state = BTC_RSSI_STATE_STAY_LOW;
 	u32 wifi_bw;
@@ -1864,7 +1865,7 @@ static void btc8192e2ant_action_sco(struct btc_coexist *btcoexist)
 	}
 }
 
-static void btc8192e2ant_action_sco_pan(struct btc_coexist *btcoexist)
+static noinline_if_stackbloat void btc8192e2ant_action_sco_pan(struct btc_coexist *btcoexist)
 {
 	u8 wifi_rssi_state, bt_rssi_state = BTC_RSSI_STATE_STAY_LOW;
 	u32 wifi_bw;
@@ -1926,7 +1927,7 @@ static void btc8192e2ant_action_sco_pan(struct btc_coexist *btcoexist)
 	}
 }
 
-static void btc8192e2ant_action_hid(struct btc_coexist *btcoexist)
+static noinline_if_stackbloat void btc8192e2ant_action_hid(struct btc_coexist *btcoexist)
 {
 	u8 wifi_rssi_state, bt_rssi_state = BTC_RSSI_STATE_HIGH;
 	u32 wifi_bw;
@@ -1988,7 +1989,7 @@ static void btc8192e2ant_action_hid(struct btc_coexist *btcoexist)
 }
 
 /* A2DP only / PAN(EDR) only/ A2DP+PAN(HS) */
-static void btc8192e2ant_action_a2dp(struct btc_coexist *btcoexist)
+static noinline_if_stackbloat void btc8192e2ant_action_a2dp(struct btc_coexist *btcoexist)
 {
 	struct rtl_priv *rtlpriv = btcoexist->adapter;
 	u8 wifi_rssi_state, bt_rssi_state = BTC_RSSI_STATE_HIGH;
@@ -2077,7 +2078,7 @@ static void btc8192e2ant_action_a2dp(struct btc_coexist *btcoexist)
 	}
 }
 
-static void btc8192e2ant_action_a2dp_pan_hs(struct btc_coexist *btcoexist)
+static noinline_if_stackbloat void btc8192e2ant_action_a2dp_pan_hs(struct btc_coexist *btcoexist)
 {
 	u8 wifi_rssi_state, bt_rssi_state = BTC_RSSI_STATE_HIGH;
 	u32 wifi_bw;
@@ -2136,7 +2137,7 @@ static void btc8192e2ant_action_a2dp_pan_hs(struct btc_coexist *btcoexist)
 	}
 }
 
-static void btc8192e2ant_action_pan_edr(struct btc_coexist *btcoexist)
+static noinline_if_stackbloat void btc8192e2ant_action_pan_edr(struct btc_coexist *btcoexist)
 {
 	u8 wifi_rssi_state, bt_rssi_state = BTC_RSSI_STATE_HIGH;
 	u32 wifi_bw;
@@ -2197,7 +2198,7 @@ static void btc8192e2ant_action_pan_edr(struct btc_coexist *btcoexist)
 }
 
 /* PAN(HS) only */
-static void btc8192e2ant_action_pan_hs(struct btc_coexist *btcoexist)
+static noinline_if_stackbloat void btc8192e2ant_action_pan_hs(struct btc_coexist *btcoexist)
 {
 	u8 wifi_rssi_state, bt_rssi_state = BTC_RSSI_STATE_HIGH;
 	u32 wifi_bw;
@@ -2255,7 +2256,7 @@ static void btc8192e2ant_action_pan_hs(struct btc_coexist *btcoexist)
 }
 
 /* PAN(EDR)+A2DP */
-static void btc8192e2ant_action_pan_edr_a2dp(struct btc_coexist *btcoexist)
+static noinline_if_stackbloat void btc8192e2ant_action_pan_edr_a2dp(struct btc_coexist *btcoexist)
 {
 	u8 wifi_rssi_state, bt_rssi_state = BTC_RSSI_STATE_HIGH;
 	u32 wifi_bw;
@@ -2316,7 +2317,7 @@ static void btc8192e2ant_action_pan_edr_a2dp(struct btc_coexist *btcoexist)
 	}
 }
 
-static void btc8192e2ant_action_pan_edr_hid(struct btc_coexist *btcoexist)
+static noinline_if_stackbloat void btc8192e2ant_action_pan_edr_hid(struct btc_coexist *btcoexist)
 {
 	u8 wifi_rssi_state, bt_rssi_state = BTC_RSSI_STATE_HIGH;
 	u32 wifi_bw;
@@ -2379,7 +2380,7 @@ static void btc8192e2ant_action_pan_edr_hid(struct btc_coexist *btcoexist)
 }
 
 /* HID+A2DP+PAN(EDR) */
-static void btc8192e2ant_action_hid_a2dp_pan_edr(struct btc_coexist *btcoexist)
+static noinline_if_stackbloat void btc8192e2ant_action_hid_a2dp_pan_edr(struct btc_coexist *btcoexist)
 {
 	u8 wifi_rssi_state, bt_rssi_state = BTC_RSSI_STATE_HIGH;
 	u32 wifi_bw;
@@ -2440,7 +2441,7 @@ static void btc8192e2ant_action_hid_a2dp_pan_edr(struct btc_coexist *btcoexist)
 	}
 }
 
-static void btc8192e2ant_action_hid_a2dp(struct btc_coexist *btcoexist)
+static noinline_if_stackbloat void btc8192e2ant_action_hid_a2dp(struct btc_coexist *btcoexist)
 {
 	u8 wifi_rssi_state, bt_rssi_state = BTC_RSSI_STATE_HIGH;
 	u32 wifi_bw;
@@ -2499,7 +2500,7 @@ static void btc8192e2ant_action_hid_a2dp(struct btc_coexist *btcoexist)
 	}
 }
 
-static void btc8192e2ant_run_coexist_mechanism(struct btc_coexist *btcoexist)
+static noinline_if_stackbloat void btc8192e2ant_run_coexist_mechanism(struct btc_coexist *btcoexist)
 {
 	struct rtl_priv *rtlpriv = btcoexist->adapter;
 	u8 algorithm = 0;
