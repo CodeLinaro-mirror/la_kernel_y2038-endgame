@@ -91,7 +91,7 @@ hwsq_rd32(struct hwsq *ram, struct hwsq_reg *reg)
 	return reg->data;
 }
 
-static inline void
+static noinline_for_stack void
 hwsq_wr32(struct hwsq *ram, struct hwsq_reg *reg, u32 data)
 {
 	u32 mask, off = 0;
@@ -113,7 +113,7 @@ hwsq_nuke(struct hwsq *ram, struct hwsq_reg *reg)
 	reg->force = true;
 }
 
-static inline u32
+static __maybe_unused noinline_for_stack u32
 hwsq_mask(struct hwsq *ram, struct hwsq_reg *reg, u32 mask, u32 data)
 {
 	u32 temp = hwsq_rd32(ram, reg);
