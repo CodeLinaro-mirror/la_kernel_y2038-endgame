@@ -87,7 +87,7 @@ ramfuc_rd32(struct ramfuc *ram, struct ramfuc_reg *reg)
 	return reg->data;
 }
 
-static inline void
+static noinline_for_stack void
 ramfuc_wr32(struct ramfuc *ram, struct ramfuc_reg *reg, u32 data)
 {
 	unsigned int mask, off = 0;
@@ -108,7 +108,7 @@ ramfuc_nuke(struct ramfuc *ram, struct ramfuc_reg *reg)
 	reg->force = true;
 }
 
-static inline u32
+static noinline_for_stack u32
 ramfuc_mask(struct ramfuc *ram, struct ramfuc_reg *reg, u32 mask, u32 data)
 {
 	u32 temp = ramfuc_rd32(ram, reg);
