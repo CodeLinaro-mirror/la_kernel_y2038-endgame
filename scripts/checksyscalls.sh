@@ -199,6 +199,9 @@ cat << EOF
 #define __IGNORE_putpmsg
 #define __IGNORE_vserver
 
+/* new, not yet added */
+#define __IGNORE_statx
+
 #if !defined(CONFIG_ARCH_HAS_COMPAT_TIME) || defined(CONFIG_64BIT)
 #define __IGNORE_clock_gettime64
 #define __IGNORE_clock_settime64
@@ -222,6 +225,7 @@ cat << EOF
 #define __IGNORE_rt_sigtimedwait64
 #define __IGNORE_getrusage64
 #define __IGNORE_waitid64
+
 #endif
 EOF
 }
