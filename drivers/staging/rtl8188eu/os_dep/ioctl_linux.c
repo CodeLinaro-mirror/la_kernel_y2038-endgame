@@ -97,6 +97,81 @@ void rtw_indicate_wx_disassoc_event(struct adapter *padapter)
 	wireless_send_event(padapter->pnetdev, SIOCGIWAP, &wrqu, NULL);
 }
 
+static char *translate_scan_wpa_ie(struct iw_request_info *info,
+				   struct wlan_network *pnetwork,
+				   char *start, char *stop, struct iw_event *iwe)
+{
+	u8 buf[MAX_WPA_IE_LEN];
+	u8 wpa_ie[255], rsn_ie[255];
+	u16 wpa_len = 0, rsn_len = 0;
+	u8 *p;
+	u32 i;
+
+	rtw_get_sec_ie(pnetwork->network.IEs, pnetwork->network.IELength, rsn_ie, &rsn_len, wpa_ie, &wpa_len);
+	RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_, ("rtw_wx_get_scan: ssid =%s\n", pnetwork->network.Ssid.Ssid));
+	RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_, ("rtw_wx_get_scan: wpa_len =%d rsn_len =%d\n", wpa_len, rsn_len));
+
+	if (wpa_len > 0) {
+		p = buf;
+		memset(buf, 0, MAX_WPA_IE_LEN);
+		p += sprintf(p, "wpa_ie=");
+		for (i = 0; i < wpa_len; i++)
+			p += sprintf(p, "%02x", wpa_ie[i]);
+
+		memset(iwe, 0, sizeof(*iwe));
+		iwe->cmd = IWEVCUSTOM;
+		iwe->u.data.length = strlen(buf);
+		start = iwe_stream_add_point(info, start, stop, iwe, buf);
+
+		memset(iwe, 0, sizeof(*iwe));
+		iwe->cmd = IWEVGENIE;
+		iwe->u.data.length = wpa_len;
+		start = iwe_stream_add_point(info, start, stop, iwe, wpa_ie);
+	}
+	if (rsn_len > 0) {
+		p = buf;
+		memset(buf, 0, MAX_WPA_IE_LEN);
+		p += sprintf(p, "rsn_ie=");
+		for (i = 0; i < rsn_len; i++)
+			p += sprintf(p, "%02x", rsn_ie[i]);
+		memset(iwe, 0, sizeof(*iwe));
+		iwe->cmd = IWEVCUSTOM;
+		iwe->u.data.length = strlen(buf);
+		start = iwe_stream_add_point(info, start, stop, iwe, buf);
+
+		memset(&iwe, 0, sizeof(iwe));
+		iwe->cmd = IWEVGENIE;
+		iwe->u.data.length = rsn_len;
+		start = iwe_stream_add_point(info, start, stop, iwe, rsn_ie);
+	}
+
+	return start;
+}
+
+static char *translate_scan_wps_ie(struct iw_request_info *info,
+				   struct wlan_network *pnetwork,
+				   char *start, char *stop, struct iw_event *iwe)
+{
+	uint cnt = 0, total_ielen;
+	u8 *wpsie_ptr = NULL;
+	uint wps_ielen = 0;
+	u8 *ie_ptr = pnetwork->network.IEs + _FIXED_IE_LENGTH_;
+
+	total_ielen = pnetwork->network.IELength - _FIXED_IE_LENGTH_;
+
+	while (cnt < total_ielen) {
+		if (rtw_is_wps_ie(&ie_ptr[cnt], &wps_ielen) && (wps_ielen > 2)) {
+			wpsie_ptr = &ie_ptr[cnt];
+			iwe->cmd = IWEVGENIE;
+			iwe->u.data.length = (u16)wps_ielen;
+			start = iwe_stream_add_point(info, start, stop, iwe, wpsie_ptr);
+		}
+		cnt += ie_ptr[cnt+1]+2; /* goto next */
+	}
+
+	return start;
+}
+
 static char *translate_scan(struct adapter *padapter,
 			    struct iw_request_info *info,
 			    struct wlan_network *pnetwork,
@@ -236,70 +311,8 @@ static char *translate_scan(struct adapter *padapter,
 	iwe.u.bitrate.value = max_rate * 500000;
 	start = iwe_stream_add_event(info, start, stop, &iwe, IW_EV_PARAM_LEN);
 
-	/* parsing WPA/WPA2 IE */
-	{
-		u8 buf[MAX_WPA_IE_LEN];
-		u8 wpa_ie[255], rsn_ie[255];
-		u16 wpa_len = 0, rsn_len = 0;
-		u8 *p;
-
-		rtw_get_sec_ie(pnetwork->network.IEs, pnetwork->network.IELength, rsn_ie, &rsn_len, wpa_ie, &wpa_len);
-		RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_, ("rtw_wx_get_scan: ssid =%s\n", pnetwork->network.Ssid.Ssid));
-		RT_TRACE(_module_rtl871x_mlme_c_, _drv_info_, ("rtw_wx_get_scan: wpa_len =%d rsn_len =%d\n", wpa_len, rsn_len));
-
-		if (wpa_len > 0) {
-			p = buf;
-			memset(buf, 0, MAX_WPA_IE_LEN);
-			p += sprintf(p, "wpa_ie=");
-			for (i = 0; i < wpa_len; i++)
-				p += sprintf(p, "%02x", wpa_ie[i]);
-
-			memset(&iwe, 0, sizeof(iwe));
-			iwe.cmd = IWEVCUSTOM;
-			iwe.u.data.length = strlen(buf);
-			start = iwe_stream_add_point(info, start, stop, &iwe, buf);
-
-			memset(&iwe, 0, sizeof(iwe));
-			iwe.cmd = IWEVGENIE;
-			iwe.u.data.length = wpa_len;
-			start = iwe_stream_add_point(info, start, stop, &iwe, wpa_ie);
-		}
-		if (rsn_len > 0) {
-			p = buf;
-			memset(buf, 0, MAX_WPA_IE_LEN);
-			p += sprintf(p, "rsn_ie=");
-			for (i = 0; i < rsn_len; i++)
-				p += sprintf(p, "%02x", rsn_ie[i]);
-			memset(&iwe, 0, sizeof(iwe));
-			iwe.cmd = IWEVCUSTOM;
-			iwe.u.data.length = strlen(buf);
-			start = iwe_stream_add_point(info, start, stop, &iwe, buf);
-
-			memset(&iwe, 0, sizeof(iwe));
-			iwe.cmd = IWEVGENIE;
-			iwe.u.data.length = rsn_len;
-			start = iwe_stream_add_point(info, start, stop, &iwe, rsn_ie);
-		}
-	}
-
-	{/* parsing WPS IE */
-		uint cnt = 0, total_ielen;
-		u8 *wpsie_ptr = NULL;
-		uint wps_ielen = 0;
-		u8 *ie_ptr = pnetwork->network.IEs + _FIXED_IE_LENGTH_;
-
-		total_ielen = pnetwork->network.IELength - _FIXED_IE_LENGTH_;
-
-		while (cnt < total_ielen) {
-			if (rtw_is_wps_ie(&ie_ptr[cnt], &wps_ielen) && (wps_ielen > 2)) {
-				wpsie_ptr = &ie_ptr[cnt];
-				iwe.cmd = IWEVGENIE;
-				iwe.u.data.length = (u16)wps_ielen;
-				start = iwe_stream_add_point(info, start, stop, &iwe, wpsie_ptr);
-			}
-			cnt += ie_ptr[cnt+1]+2; /* goto next */
-		}
-	}
+	start = translate_scan_wpa_ie(info, pnetwork, start, stop, &iwe);
+	start = translate_scan_wps_ie(info, pnetwork, start, stop, &iwe);
 
 	/* Add quality statistics */
 	iwe.cmd = IWEVQUAL;
