@@ -465,10 +465,10 @@ int fat_alloc_clusters(struct inode *inode, int *cluster, int nr_cluster)
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
 	const struct fatent_operations *ops = sbi->fatent_ops;
 	struct fat_entry fatent, prev_ent;
-	struct buffer_head *bhs[MAX_BUF_PER_PAGE];
+	struct buffer_head *bhs[FAT_MAX_BUF_PER_PAGE];
 	int i, count, err, nr_bhs, idx_clus;
 
-	BUG_ON(nr_cluster > (MAX_BUF_PER_PAGE / 2));	/* fixed limit */
+	BUG_ON(nr_cluster > (FAT_MAX_BUF_PER_PAGE / 2));	/* fixed limit */
 
 	lock_fat(sbi);
 	if (sbi->free_clusters != -1 && sbi->free_clus_valid &&
@@ -553,7 +553,7 @@ int fat_free_clusters(struct inode *inode, int cluster)
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
 	const struct fatent_operations *ops = sbi->fatent_ops;
 	struct fat_entry fatent;
-	struct buffer_head *bhs[MAX_BUF_PER_PAGE];
+	struct buffer_head *bhs[FAT_MAX_BUF_PER_PAGE];
 	int i, err, nr_bhs;
 	int first_cl = cluster, dirty_fsinfo = 0;
 
@@ -596,7 +596,7 @@ int fat_free_clusters(struct inode *inode, int cluster)
 			dirty_fsinfo = 1;
 		}
 
-		if (nr_bhs + fatent.nr_bhs > MAX_BUF_PER_PAGE) {
+		if (nr_bhs + fatent.nr_bhs > FAT_MAX_BUF_PER_PAGE) {
 			if (sb->s_flags & SB_SYNCHRONOUS) {
 				err = fat_sync_bhs(bhs, nr_bhs);
 				if (err)

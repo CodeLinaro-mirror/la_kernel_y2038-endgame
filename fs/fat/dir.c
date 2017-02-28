@@ -1134,7 +1134,7 @@ int fat_alloc_new_dir(struct inode *dir, struct timespec *ts)
 {
 	struct super_block *sb = dir->i_sb;
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
-	struct buffer_head *bhs[MAX_BUF_PER_PAGE];
+	struct buffer_head *bhs[FAT_MAX_BUF_PER_PAGE];
 	struct msdos_dir_entry *de;
 	sector_t blknr;
 	__le16 date, time;
@@ -1179,7 +1179,7 @@ int fat_alloc_new_dir(struct inode *dir, struct timespec *ts)
 	set_buffer_uptodate(bhs[0]);
 	mark_buffer_dirty_inode(bhs[0], dir);
 
-	err = fat_zeroed_cluster(dir, blknr, 1, bhs, MAX_BUF_PER_PAGE);
+	err = fat_zeroed_cluster(dir, blknr, 1, bhs, FAT_MAX_BUF_PER_PAGE);
 	if (err)
 		goto error_free;
 
@@ -1198,7 +1198,7 @@ static int fat_add_new_entries(struct inode *dir, void *slots, int nr_slots,
 {
 	struct super_block *sb = dir->i_sb;
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
-	struct buffer_head *bhs[MAX_BUF_PER_PAGE];
+	struct buffer_head *bhs[FAT_MAX_BUF_PER_PAGE];
 	sector_t blknr, start_blknr, last_blknr;
 	unsigned long size, copy;
 	int err, i, n, offset, cluster[2];
@@ -1254,7 +1254,7 @@ static int fat_add_new_entries(struct inode *dir, void *slots, int nr_slots,
 	*i_pos = fat_make_i_pos(sb, *bh, *de);
 
 	/* Second stage: clear the rest of cluster, and write outs */
-	err = fat_zeroed_cluster(dir, start_blknr, ++n, bhs, MAX_BUF_PER_PAGE);
+	err = fat_zeroed_cluster(dir, start_blknr, ++n, bhs, FAT_MAX_BUF_PER_PAGE);
 	if (err)
 		goto error_free;
 

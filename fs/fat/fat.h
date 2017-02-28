@@ -54,6 +54,13 @@ struct fat_mount_options {
 		 dos1xfloppy:1;	   /* Assume default BPB for DOS 1.x floppies */
 };
 
+/* limit the size of I/O during FAT and directory updates, to conserve stack memory */
+#if MAX_BUF_PER_PAGE > 32
+#define FAT_MAX_BUF_PER_PAGE 32
+#else
+#define FAT_MAX_BUF_PER_PAGE MAX_BUF_PER_PAGE
+#endif
+
 #define FAT_HASH_BITS	8
 #define FAT_HASH_SIZE	(1UL << FAT_HASH_BITS)
 
