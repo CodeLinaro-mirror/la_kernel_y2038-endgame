@@ -136,7 +136,7 @@ EXPORT_SYMBOL(strncpy);
  * of course, the buffer size is zero). It does not pad
  * out the result like strncpy() does.
  */
-size_t strlcpy(char *dest, const char *src, size_t size)
+size_t __unverified_nocapture(2) strlcpy(char *dest, const char *src, size_t size)
 {
 	size_t ret = strlen(src);
 
@@ -291,7 +291,7 @@ EXPORT_SYMBOL(strncat);
  * @src: The string to append to it
  * @count: The size of the destination buffer.
  */
-size_t strlcat(char *dest, const char *src, size_t count)
+__unverified_nocapture(2) size_t strlcat(char *dest, const char *src, size_t count)
 {
 	size_t dsize = strlen(dest);
 	size_t len = strlen(src);
@@ -855,7 +855,7 @@ EXPORT_SYMBOL(strstr);
  * @s2: The string to search for
  * @len: the maximum number of characters to search
  */
-char *strnstr(const char *s1, const char *s2, size_t len)
+__unverified_nocapture(1, 2) char *strnstr(const char *s1, const char *s2, size_t len)
 {
 	size_t l2;
 
@@ -916,7 +916,7 @@ static void *check_bytes8(const u8 *start, u8 value, unsigned int bytes)
  * returns the address of the first character other than @c, or %NULL
  * if the whole buffer contains just @c.
  */
-void *memchr_inv(const void *start, int c, size_t bytes)
+__unverified_nocapture(1) void *memchr_inv(const void *start, int c, size_t bytes)
 {
 	u8 value = c;
 	u64 value64;
