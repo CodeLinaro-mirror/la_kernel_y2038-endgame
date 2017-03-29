@@ -127,6 +127,11 @@ static inline int get_boot_cpu_id(void)
 	return __boot_cpu_id;
 }
 
+static inline bool this_cpu_online(void)
+{
+	return cpu_online(raw_smp_processor_id());
+}
+
 #else /* !SMP */
 
 static inline void smp_send_stop(void) { }
@@ -175,6 +180,11 @@ static inline void smp_init(void) { }
 static inline int get_boot_cpu_id(void)
 {
 	return 0;
+}
+
+static inline bool this_cpu_online(void)
+{
+	return true;
 }
 
 #endif /* !SMP */
