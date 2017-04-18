@@ -1875,7 +1875,6 @@ void audit_log_n_hex(struct audit_buffer *ab, const unsigned char *buf,
  * Format a string of no more than slen characters into the audit buffer,
  * enclosed in quote marks.
  */
-__unverified_nocapture(2)
 void audit_log_n_string(struct audit_buffer *ab, const char *string,
 			size_t slen)
 {

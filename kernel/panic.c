@@ -512,7 +512,7 @@ struct warn_args {
 	va_list args;
 };
 
-__unverified_nocapture(1) void __warn(const char *file, int line, void *caller, unsigned taint,
+void __warn(const char *file, int line, void *caller, unsigned taint,
 	    struct pt_regs *regs, struct warn_args *args)
 {
 	disable_trace_on_warning();

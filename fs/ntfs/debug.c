@@ -40,7 +40,7 @@
  * Note, you should be using debug.h::ntfs_warning(@sb, @fmt, @...) instead
  * as this provides the @function parameter automatically.
  */
-__unverified_nocapture(1) void __ntfs_warning(const char *function, const struct super_block *sb,
+void __ntfs_warning(const char *function, const struct super_block *sb,
 		const char *fmt, ...)
 {
 	struct va_format vaf;
@@ -83,7 +83,7 @@ __unverified_nocapture(1) void __ntfs_warning(const char *function, const struct
  * Note, you should be using debug.h::ntfs_error(@sb, @fmt, @...) instead
  * as this provides the @function parameter automatically.
  */
-__unverified_nocapture(1) void __ntfs_error(const char *function, const struct super_block *sb,
+void __ntfs_error(const char *function, const struct super_block *sb,
 		const char *fmt, ...)
 {
 	struct va_format vaf;
@@ -112,7 +112,7 @@ __unverified_nocapture(1) void __ntfs_error(const char *function, const struct s
 /* If 1, output debug messages, and if 0, don't. */
 int debug_msgs = 0;
 
-__unverified_nocapture(3) void __ntfs_debug(const char *file, int line, const char *function,
+void __ntfs_debug(const char *file, int line, const char *function,
 		const char *fmt, ...)
 {
 	struct va_format vaf;

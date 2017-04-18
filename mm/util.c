@@ -44,7 +44,7 @@ EXPORT_SYMBOL(kfree_const);
  * @s: the string to duplicate
  * @gfp: the GFP mask used in the kmalloc() call when allocating memory
  */
-__unverified_nocapture(1) char *kstrdup(const char *s, gfp_t gfp)
+char *kstrdup(const char *s, gfp_t gfp)
 {
 	size_t len;
 	char *buf;
@@ -86,7 +86,7 @@ EXPORT_SYMBOL(kstrdup_const);
  *
  * Note: Use kmemdup_nul() instead if the size is known exactly.
  */
-__unverified_nocapture(1) char *kstrndup(const char *s, size_t max, gfp_t gfp)
+char *kstrndup(const char *s, size_t max, gfp_t gfp)
 {
 	size_t len;
 	char *buf;
@@ -111,7 +111,7 @@ EXPORT_SYMBOL(kstrndup);
  * @len: memory region length
  * @gfp: GFP mask to use
  */
-__unverified_nocapture(1) void *kmemdup(const void *src, size_t len, gfp_t gfp)
+void *kmemdup(const void *src, size_t len, gfp_t gfp)
 {
 	void *p;
 
