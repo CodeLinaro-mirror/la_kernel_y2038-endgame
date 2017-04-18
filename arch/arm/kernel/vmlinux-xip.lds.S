@@ -5,8 +5,8 @@
 
 /* empty __ro_after_init data in the .rodata section - it will always be ro */
 #define RO_AFTER_INIT_DATA						\
-	__start_data_ro_after_init = .;                                 \
-	__end_data_ro_after_init = .;
+	VMLINUX_SYMBOL(__start_ro_after_init) = .;                      \
+	VMLINUX_SYMBOL(__end_ro_after_init) = .;
 
 
 #include <asm-generic/vmlinux.lds.h>
