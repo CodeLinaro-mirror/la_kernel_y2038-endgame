@@ -594,7 +594,7 @@ static void halbtc8723b2ant_SetFwDecBtPwr(
 	pBtCoexist->fBtcFillH2c(pBtCoexist, 0x62, 1, H2C_Parameter);
 }
 
-static void halbtc8723b2ant_DecBtPwr(
+static noinline_if_stackbloat void halbtc8723b2ant_DecBtPwr(
 	PBTC_COEXIST pBtCoexist, bool bForceExec, u8 decBtPwrLvl
 )
 {
@@ -1047,7 +1047,7 @@ static void halbtc8723b2ant_CoexTable(
 	pCoexDm->preVal0x6cc = pCoexDm->curVal0x6cc;
 }
 
-static void halbtc8723b2ant_CoexTableWithType(
+static noinline_if_stackbloat void halbtc8723b2ant_CoexTableWithType(
 	PBTC_COEXIST pBtCoexist, bool bForceExec, u8 type
 )
 {
@@ -1145,7 +1145,7 @@ static void halbtc8723b2ant_IgnoreWlanAct(
 	pCoexDm->bPreIgnoreWlanAct = pCoexDm->bCurIgnoreWlanAct;
 }
 
-static void halbtc8723b2ant_SetFwPstdma(
+static noinline_if_stackbloat void halbtc8723b2ant_SetFwPstdma(
 	PBTC_COEXIST pBtCoexist,
 	u8 byte1,
 	u8 byte2,
@@ -1302,7 +1302,7 @@ static void halbtc8723b2ant_SetAntPath(
 	}
 }
 
-static void halbtc8723b2ant_PsTdma(
+static noinline_if_stackbloat void halbtc8723b2ant_PsTdma(
 	PBTC_COEXIST pBtCoexist, bool bForceExec, bool bTurnOn, u8 type
 )
 {
@@ -1435,7 +1435,7 @@ static void halbtc8723b2ant_PsTdma(
 	pCoexDm->prePsTdma = pCoexDm->curPsTdma;
 }
 
-static void halbtc8723b2ant_CoexAllOff(PBTC_COEXIST pBtCoexist)
+static noinline_if_stackbloat void halbtc8723b2ant_CoexAllOff(PBTC_COEXIST pBtCoexist)
 {
 	/*  fw all off */
 	halbtc8723b2ant_PsTdma(pBtCoexist, NORMAL_EXEC, false, 1);
@@ -1463,7 +1463,7 @@ static void halbtc8723b2ant_InitCoexDm(PBTC_COEXIST pBtCoexist)
 	halbtc8723b2ant_SwMechanism2(pBtCoexist, false, false, false, 0x18);
 }
 
-static void halbtc8723b2ant_ActionBtInquiry(PBTC_COEXIST pBtCoexist)
+static noinline_if_stackbloat void halbtc8723b2ant_ActionBtInquiry(PBTC_COEXIST pBtCoexist)
 {
 	bool bWifiConnected = false;
 	bool bLowPwrDisable = true;
@@ -1491,7 +1491,7 @@ static void halbtc8723b2ant_ActionBtInquiry(PBTC_COEXIST pBtCoexist)
 	halbtc8723b2ant_SetAntPath(pBtCoexist, BTC_ANT_WIFI_AT_AUX, false, false);
 }
 
-static bool halbtc8723b2ant_IsCommonAction(PBTC_COEXIST pBtCoexist)
+static noinline_if_stackbloat bool halbtc8723b2ant_IsCommonAction(PBTC_COEXIST pBtCoexist)
 {
 	u8 btRssiState = BTC_RSSI_STATE_HIGH;
 	bool bCommon = false, bWifiConnected = false, bWifiBusy = false;
@@ -2217,7 +2217,7 @@ static void halbtc8723b2ant_TdmaDurationAdjust(
 }
 
 /*  SCO only or SCO+PAN(HS) */
-static void halbtc8723b2ant_ActionSco(PBTC_COEXIST pBtCoexist)
+static noinline_if_stackbloat void halbtc8723b2ant_ActionSco(PBTC_COEXIST pBtCoexist)
 {
 	u8 wifiRssiState, btRssiState;
 	u32 wifiBw;
@@ -2272,7 +2272,7 @@ static void halbtc8723b2ant_ActionSco(PBTC_COEXIST pBtCoexist)
 }
 
 
-static void halbtc8723b2ant_ActionHid(PBTC_COEXIST pBtCoexist)
+static noinline_if_stackbloat void halbtc8723b2ant_ActionHid(PBTC_COEXIST pBtCoexist)
 {
 	u8 wifiRssiState, btRssiState;
 	u32 wifiBw;
@@ -2333,7 +2333,7 @@ static void halbtc8723b2ant_ActionHid(PBTC_COEXIST pBtCoexist)
 }
 
 /* A2DP only / PAN(EDR) only/ A2DP+PAN(HS) */
-static void halbtc8723b2ant_ActionA2dp(PBTC_COEXIST pBtCoexist)
+static noinline_if_stackbloat void halbtc8723b2ant_ActionA2dp(PBTC_COEXIST pBtCoexist)
 {
 	u8 wifiRssiState, wifiRssiState1, btRssiState;
 	u32 wifiBw;
@@ -2414,7 +2414,7 @@ static void halbtc8723b2ant_ActionA2dp(PBTC_COEXIST pBtCoexist)
 	}
 }
 
-static void halbtc8723b2ant_ActionA2dpPanHs(PBTC_COEXIST pBtCoexist)
+static noinline_if_stackbloat void halbtc8723b2ant_ActionA2dpPanHs(PBTC_COEXIST pBtCoexist)
 {
 	u8 wifiRssiState, btRssiState;
 	u32 wifiBw;
@@ -2464,7 +2464,7 @@ static void halbtc8723b2ant_ActionA2dpPanHs(PBTC_COEXIST pBtCoexist)
 	}
 }
 
-static void halbtc8723b2ant_ActionPanEdr(PBTC_COEXIST pBtCoexist)
+static noinline_if_stackbloat void halbtc8723b2ant_ActionPanEdr(PBTC_COEXIST pBtCoexist)
 {
 	u8 wifiRssiState, btRssiState;
 	u32 wifiBw;
@@ -2522,7 +2522,7 @@ static void halbtc8723b2ant_ActionPanEdr(PBTC_COEXIST pBtCoexist)
 
 
 /* PAN(HS) only */
-static void halbtc8723b2ant_ActionPanHs(PBTC_COEXIST pBtCoexist)
+static noinline_if_stackbloat void halbtc8723b2ant_ActionPanHs(PBTC_COEXIST pBtCoexist)
 {
 	u8 wifiRssiState, btRssiState;
 	u32 wifiBw;
@@ -2572,7 +2572,7 @@ static void halbtc8723b2ant_ActionPanHs(PBTC_COEXIST pBtCoexist)
 }
 
 /* PAN(EDR)+A2DP */
-static void halbtc8723b2ant_ActionPanEdrA2dp(PBTC_COEXIST pBtCoexist)
+static noinline_if_stackbloat void halbtc8723b2ant_ActionPanEdrA2dp(PBTC_COEXIST pBtCoexist)
 {
 	u8 wifiRssiState, btRssiState;
 	u32 wifiBw;
@@ -2633,7 +2633,7 @@ static void halbtc8723b2ant_ActionPanEdrA2dp(PBTC_COEXIST pBtCoexist)
 	}
 }
 
-static void halbtc8723b2ant_ActionPanEdrHid(PBTC_COEXIST pBtCoexist)
+static noinline_if_stackbloat void halbtc8723b2ant_ActionPanEdrHid(PBTC_COEXIST pBtCoexist)
 {
 	u8 wifiRssiState, btRssiState;
 	u32 wifiBw;
@@ -2697,7 +2697,7 @@ static void halbtc8723b2ant_ActionPanEdrHid(PBTC_COEXIST pBtCoexist)
 }
 
 /*  HID+A2DP+PAN(EDR) */
-static void halbtc8723b2ant_ActionHidA2dpPanEdr(PBTC_COEXIST pBtCoexist)
+static noinline_if_stackbloat void halbtc8723b2ant_ActionHidA2dpPanEdr(PBTC_COEXIST pBtCoexist)
 {
 	u8 wifiRssiState, btRssiState;
 	u32 wifiBw;
@@ -2757,7 +2757,7 @@ static void halbtc8723b2ant_ActionHidA2dpPanEdr(PBTC_COEXIST pBtCoexist)
 	}
 }
 
-static void halbtc8723b2ant_ActionHidA2dp(PBTC_COEXIST pBtCoexist)
+static noinline_if_stackbloat void halbtc8723b2ant_ActionHidA2dp(PBTC_COEXIST pBtCoexist)
 {
 	u8 wifiRssiState, btRssiState;
 	u32 wifiBw;

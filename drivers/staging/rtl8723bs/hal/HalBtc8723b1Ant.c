@@ -339,7 +339,7 @@ static void halbtc8723b1ant_QueryBtInfo(PBTC_COEXIST pBtCoexist)
 	pBtCoexist->fBtcFillH2c(pBtCoexist, 0x61, 1, H2C_Parameter);
 }
 
-static void halbtc8723b1ant_MonitorBtCtr(PBTC_COEXIST pBtCoexist)
+static noinline_if_stackbloat void halbtc8723b1ant_MonitorBtCtr(PBTC_COEXIST pBtCoexist)
 {
 	u32 regHPTxRx, regLPTxRx, u4Tmp;
 	u32 regHPTx = 0, regHPRx = 0, regLPTx = 0, regLPRx = 0;
@@ -400,7 +400,7 @@ static void halbtc8723b1ant_MonitorBtCtr(PBTC_COEXIST pBtCoexist)
 }
 
 
-static void halbtc8723b1ant_MonitorWiFiCtr(PBTC_COEXIST pBtCoexist)
+static noinline_if_stackbloat void halbtc8723b1ant_MonitorWiFiCtr(PBTC_COEXIST pBtCoexist)
 {
 	s32	wifiRssi = 0;
 	bool bWifiBusy = false, bWifiUnderBMode = false;
