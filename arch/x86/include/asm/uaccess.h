@@ -38,8 +38,10 @@
  * Test whether a block of memory is a valid user space address.
  * Returns 0 if the range is valid, nonzero otherwise.
  */
-static inline bool __chk_range_not_ok(unsigned long addr, unsigned long size, unsigned long limit)
+static inline bool __chk_range_not_ok(const void __user *uptr,
+				      unsigned long size, unsigned long limit)
 {
+	unsigned long addr = (unsigned long __force)uptr;
 	/*
 	 * If we have used "sizeof()" for the size,
 	 * we know it won't overflow the limit (but
@@ -60,7 +62,7 @@ static inline bool __chk_range_not_ok(unsigned long addr, unsigned long size, un
 #define __range_not_ok(addr, size, limit)				\
 ({									\
 	__chk_user_ptr(addr);						\
-	__chk_range_not_ok((unsigned long __force)(addr), size, limit); \
+	__chk_range_not_ok(addr, size, limit);				\
 })
 
 #ifdef CONFIG_DEBUG_ATOMIC_SLEEP
