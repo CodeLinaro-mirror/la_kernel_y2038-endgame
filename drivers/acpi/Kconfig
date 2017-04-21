@@ -183,8 +183,8 @@ config ACPI_BUTTON
 config ACPI_VIDEO
 	tristate "Video"
 	depends on X86 && BACKLIGHT_CLASS_DEVICE
+	depends on THERMAL || THERMAL=n
 	depends on INPUT
-	depends on THERMAL
 	help
 	  This driver implements the ACPI Extensions For Display Adapters
 	  for integrated graphics devices on motherboard, as specified in
