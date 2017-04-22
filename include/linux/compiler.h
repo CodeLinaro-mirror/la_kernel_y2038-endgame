@@ -223,11 +223,6 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 #define OPTIMIZER_HIDE_VAR(var) barrier()
 #endif
 
-/* Not-quite-unique ID. */
-#ifndef __UNIQUE_ID
-# define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), __LINE__)
-#endif
-
 #include <uapi/linux/types.h>
 
 #define __READ_ONCE_SIZE						\
@@ -494,9 +489,6 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
 #endif
 
 /* Compile time object size, -1 for unknown */
-#ifndef __compiletime_object_size
-# define __compiletime_object_size(obj) -1
-#endif
 #ifndef __compiletime_warning
 # define __compiletime_warning(message)
 #endif

@@ -127,57 +127,23 @@
 #define __maybe_unused		__attribute__((unused))
 #define __always_unused		__attribute__((unused))
 #define __mode(x)               __attribute__((mode(x)))
-
-/* gcc version specific checks */
-
-#if GCC_VERSION < 30200
-# error Sorry, your compiler is too old - please upgrade it.
-#endif
-
-#if GCC_VERSION < 30300
-# define __used			__attribute__((__unused__))
-#else
-# define __used			__attribute__((__used__))
-#endif
-
-#ifdef CONFIG_GCOV_KERNEL
-# if GCC_VERSION < 30400
-#   error "GCOV profiling support for gcc versions below 3.4 not included"
-# endif /* __GNUC_MINOR__ */
-#endif /* CONFIG_GCOV_KERNEL */
-
-#if GCC_VERSION >= 30400
 #define __must_check		__attribute__((warn_unused_result))
 #define __malloc		__attribute__((__malloc__))
-#endif
-
-#if GCC_VERSION >= 40000
-
-/* GCC 4.1.[01] miscompiles __weak */
-#ifdef __KERNEL__
-# if GCC_VERSION >= 40100 &&  GCC_VERSION <= 40101
-#  error Your version of gcc miscompiles the __weak directive
-# endif
-#endif
-
 #define __used			__attribute__((__used__))
-#define __compiler_offsetof(a, b)					\
-	__builtin_offsetof(a, b)
+#define __compiler_offsetof(a, b)  __builtin_offsetof(a, b)
+#define __compiletime_object_size(obj) __builtin_object_size(obj, 0)
+#define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), __COUNTER__)
 
-#if GCC_VERSION >= 40100
-# define __compiletime_object_size(obj) __builtin_object_size(obj, 0)
-#endif
+#ifndef __CHECKER__
+# define __compiletime_warning(message) __attribute__((warning(message)))
+# define __compiletime_error(message) __attribute__((error(message)))
+#endif /* __CHECKER__ */
 
-#if GCC_VERSION >= 40300
 /* Mark functions as cold. gcc will assume any path leading to a call
  * to them will be unlikely.  This means a lot of manual unlikely()s
  * are unnecessary now for any paths leading to the usual suspects
  * like BUG(), printk(), panic() etc. [but let's keep them for now for
  * older compilers]
- *
- * Early snapshots of gcc 4.3 don't support this and we can't detect this
- * in the preprocessor, but we can live with this because they're unreleased.
- * Maketime probing would be overkill here.
  *
  * gcc also has a __attribute__((__hot__)) to move hot functions into
  * a special section, but I don't see any sense in this right now in
@@ -185,14 +151,10 @@
  */
 #define __cold			__attribute__((__cold__))
 
-#define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), __COUNTER__)
-
-#ifndef __CHECKER__
-# define __compiletime_warning(message) __attribute__((warning(message)))
-# define __compiletime_error(message) __attribute__((error(message)))
-#endif /* __CHECKER__ */
-#endif /* GCC_VERSION >= 40300 */
-
+/* gcc version specific checks */
+#if GCC_VERSION < 40300
+# error Sorry, your compiler is too old - please upgrade it.
+#endif
 #if GCC_VERSION >= 40500
 
 #ifndef __CHECKER__
@@ -313,7 +275,6 @@
  */
 #define __no_sanitize_address __attribute__((no_sanitize_address))
 #endif
-
 #if GCC_VERSION >= 50100
 /*
  * Mark structures as requiring designated initializers.
@@ -321,8 +282,6 @@
  */
 #define __designated_init __attribute__((designated_init))
 #endif
-
-#endif	/* gcc version >= 40000 specific checks */
 
 #if !defined(__noclone)
 #define __noclone	/* not needed */
