@@ -1325,7 +1325,6 @@ int compat_copy_sigset_from_user(sigset_t *out, const compat_sigset_t __user *in
 #endif
 	return 0;
 }
-#endif
 
 static long do_compat_pselect(int n, compat_ulong_t __user *inp,
 	compat_ulong_t __user *outp, compat_ulong_t __user *exp,
@@ -1379,7 +1378,6 @@ static long do_compat_pselect(int n, compat_ulong_t __user *inp,
 	return ret;
 }
 
-#ifdef CONFIG_COMPAT_TIME
 COMPAT_SYSCALL_DEFINE6(pselect6, int, n, compat_ulong_t __user *, inp,
 	compat_ulong_t __user *, outp, compat_ulong_t __user *, exp,
 	struct compat_timespec __user *, tsp, void __user *, sig)
@@ -1398,7 +1396,6 @@ COMPAT_SYSCALL_DEFINE6(pselect6, int, n, compat_ulong_t __user *, inp,
 	return do_compat_pselect(n, inp, outp, exp, tsp, compat_ptr(up),
 				 sigsetsize, 1);
 }
-#endif
 
 static int do_compat_ppoll(struct pollfd __user *ufds,
 	unsigned int nfds, void __user *tsp,
@@ -1455,7 +1452,6 @@ static int do_compat_ppoll(struct pollfd __user *ufds,
 	return ret;
 }
 
-#ifdef CONFIG_COMPAT_TIME
 COMPAT_SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds,
 	unsigned int, nfds, struct compat_timespec __user *, tsp,
 	const compat_sigset_t __user *, sigmask, compat_size_t, sigsetsize)
@@ -1490,7 +1486,4 @@ COMPAT_SYSCALL_DEFINE5(ppoll_time64, struct pollfd __user *, ufds,
 {
 	return do_compat_ppoll(ufds, nfds, tsp, sigmask, sigsetsize, 0);
 }
-
-#endif
-
 #endif
