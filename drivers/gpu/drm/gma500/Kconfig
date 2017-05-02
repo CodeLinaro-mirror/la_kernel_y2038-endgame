@@ -2,10 +2,9 @@ config DRM_GMA500
 	tristate "Intel GMA5/600 KMS Framebuffer"
 	depends on DRM && PCI && X86 && MMU
 	depends on BACKLIGHT_CLASS_DEVICE || !ACPI
+	depends on ACPI_VIDEO || !ACPI
 	select DRM_KMS_HELPER
 	select DRM_TTM
-	select ACPI_VIDEO if ACPI
-	select INPUT if ACPI
 	help
 	  Say yes for an experimental 2D KMS framebuffer driver for the
 	  Intel GMA500 ('Poulsbo') and other Intel IMG based graphics
