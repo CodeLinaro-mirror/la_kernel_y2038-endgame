@@ -17,8 +17,7 @@ endif
 KBUILD_CFLAGS += -Wformat=2 -Wno-format-nonliteral $(call cc-option, -Wtrampolines) -Wold-style-definition $(call cc-option, -Wnormalized) $(call cc-option,-Wvolatile-register-var) -Wdisabled-optimization -Wno-format-security
 
 ifeq ($(ARCH),x86)
-#KBUILD_CFLAGS += $(call cc-disable-warning, override-init
-KBUILD_CFLAGS += -Wno-unused-variable
+#KBUILD_CFLAGS += -Wno-unused-variable
 endif
 
 # gcc-7 new warnings
