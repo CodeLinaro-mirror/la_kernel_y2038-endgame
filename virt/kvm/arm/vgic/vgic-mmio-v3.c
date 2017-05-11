@@ -418,15 +418,15 @@ static void vgic_mmio_write_pendbase(struct kvm_vcpu *vcpu,
 		.bits_per_irq = bpi,					\
 		.len = (bpi * VGIC_NR_PRIVATE_IRQS) / 8,		\
 		.access_flags = acc,					\
-		.r.read = vgic_mmio_read_raz,				\
-		.w.write = vgic_mmio_write_wi,				\
+		.read = vgic_mmio_read_raz,				\
+		.write = vgic_mmio_write_wi,				\
 	}, {								\
 		.reg_offset = off + (bpi * VGIC_NR_PRIVATE_IRQS) / 8,	\
 		.bits_per_irq = bpi,					\
 		.len = (bpi * (1024 - VGIC_NR_PRIVATE_IRQS)) / 8,	\
 		.access_flags = acc,					\
-		.r.read = rd,						\
-		.w.write = wr,						\
+		.read = rd,						\
+		.write = wr,						\
 		.uaccess_read = ur,					\
 		.uaccess_write = uw,					\
 	}

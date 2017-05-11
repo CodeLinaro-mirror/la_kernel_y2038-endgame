@@ -1484,8 +1484,8 @@ static void vgic_mmio_write_its_ctlr(struct kvm *kvm, struct vgic_its *its,
 	.reg_offset = off,					\
 	.len = length,						\
 	.access_flags = acc,					\
-	.r.its_read = rd,						\
-	.w.its_write = wr,					\
+	.its_read = rd,						\
+	.its_write = wr,					\
 }
 
 #define REGISTER_ITS_DESC_UACCESS(off, rd, wr, uwr, length, acc)\
