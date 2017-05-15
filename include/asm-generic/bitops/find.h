@@ -30,7 +30,6 @@ extern unsigned long find_next_zero_bit(const unsigned long *addr, unsigned
 #endif
 
 #ifdef CONFIG_GENERIC_FIND_FIRST_BIT
-
 /**
  * find_first_bit - find the first set bit in a memory region
  * @addr: The address to start the search at
@@ -39,8 +38,44 @@ extern unsigned long find_next_zero_bit(const unsigned long *addr, unsigned
  * Returns the bit number of the first set bit.
  * If no bits are set, returns @size.
  */
-extern unsigned long find_first_bit(const unsigned long *addr,
+extern unsigned long __find_first_bit(const unsigned long *addr,
 				    unsigned long size);
+
+static inline unsigned long find_first_bit(const unsigned long *addr,
+				    unsigned long size)
+{
+	unsigned long idx;
+
+	if (!__builtin_constant_p(size))
+		return __find_first_bit(addr, size);
+
+	idx = 0;
+	switch (size) {
+	case BITS_PER_LONG * 4:
+		if (addr[0])
+			return __ffs(addr[0]) + idx;
+		addr++;
+		idx += BITS_PER_LONG;
+	case BITS_PER_LONG * 3:
+		if (addr[0])
+			return __ffs(addr[0]) + idx;
+		addr++;
+		idx += BITS_PER_LONG;
+	case BITS_PER_LONG * 2:
+		if (addr[0])
+			return __ffs(addr[0]) + idx;
+		addr++;
+		idx += BITS_PER_LONG;
+	case BITS_PER_LONG * 1:
+		if (addr[0])
+			return __ffs(addr[0]) + idx;
+		addr++;
+		idx += BITS_PER_LONG;
+		return idx;
+	}
+
+	return __find_first_bit(addr, size);
+}
 
 /**
  * find_first_zero_bit - find the first cleared bit in a memory region

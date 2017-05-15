@@ -34,7 +34,7 @@ config GENERIC_NET_UTILS
 	bool
 
 config GENERIC_FIND_FIRST_BIT
-	bool
+	def_bool y
 
 config NO_GENERIC_PCI_IOPORT_MAP
 	bool
