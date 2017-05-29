@@ -326,6 +326,7 @@ config PINCTRL_INGENIC
 	default y
 	depends on OF
 	depends on MACH_INGENIC || COMPILE_TEST
+	depends on OF
 	select GENERIC_PINCONF
 	select GENERIC_PINCTRL_GROUPS
 	select GENERIC_PINMUX_FUNCTIONS
