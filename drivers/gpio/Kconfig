@@ -246,6 +246,7 @@ config GPIO_INGENIC
 	tristate "Ingenic JZ47xx SoCs GPIO support"
 	depends on OF
 	depends on MACH_INGENIC || COMPILE_TEST
+	depends on OF
 	select GPIOLIB_IRQCHIP
 	help
 	  Say yes here to support the GPIO functionality present on the
