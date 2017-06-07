@@ -152,7 +152,7 @@
 #define __cold			__attribute__((__cold__))
 
 /* gcc version specific checks */
-#if GCC_VERSION < 40300
+#if !defined(__clang__) && GCC_VERSION < 40300
 # error Sorry, your compiler is too old - please upgrade it.
 #endif
 #if GCC_VERSION >= 40500
