@@ -36,6 +36,12 @@ struct mod_arch_specific {
 };
 #endif
 
+#if defined(CONFIG_MODULES) && defined(CONFIG_ARM64_MODULE_PLTS)
+#define module_ftrace_trampoline(mod) ((mod)->arch.ftrace_trampoline)
+#else
+#define module_ftrace_trampoline(mod) NULL
+#endif
+
 u64 module_emit_plt_entry(struct module *mod, void *loc, const Elf64_Rela *rela,
 			  Elf64_Sym *sym);
 

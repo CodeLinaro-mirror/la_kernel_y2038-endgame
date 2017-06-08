@@ -104,7 +104,7 @@ int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
 		 * is added in the future, but for now, the pr_err() below
 		 * deals with a theoretical issue only.
 		 */
-		trampoline = (unsigned long *)mod->arch.ftrace_trampoline;
+		trampoline = module_ftrace_trampoline(mod);
 		if (trampoline[0] != addr) {
 			if (trampoline[0] != 0) {
 				pr_err("ftrace: far branches to multiple entry points unsupported inside a single module\n");
