@@ -430,18 +430,18 @@ enum cfqq_state_flags {
 	CFQ_CFQQ_FLAG_wait_busy,	/* Waiting for next request */
 };
 
-#define CFQ_CFQQ_FNS(name)						\
-static inline void cfq_mark_cfqq_##name(struct cfq_queue *cfqq)		\
-{									\
-	(cfqq)->flags |= (1 << CFQ_CFQQ_FLAG_##name);			\
-}									\
-static inline void cfq_clear_cfqq_##name(struct cfq_queue *cfqq)	\
-{									\
-	(cfqq)->flags &= ~(1 << CFQ_CFQQ_FLAG_##name);			\
-}									\
-static inline int cfq_cfqq_##name(const struct cfq_queue *cfqq)		\
-{									\
-	return ((cfqq)->flags & (1 << CFQ_CFQQ_FLAG_##name)) != 0;	\
+#define CFQ_CFQQ_FNS(name)							\
+static inline void __maybe_unused cfq_mark_cfqq_##name(struct cfq_queue *cfqq)	\
+{										\
+	(cfqq)->flags |= (1 << CFQ_CFQQ_FLAG_##name);				\
+}										\
+static inline void __maybe_unused cfq_clear_cfqq_##name(struct cfq_queue *cfqq)	\
+{										\
+	(cfqq)->flags &= ~(1 << CFQ_CFQQ_FLAG_##name);				\
+}										\
+static inline int __maybe_unused cfq_cfqq_##name(const struct cfq_queue *cfqq)	\
+{										\
+	return ((cfqq)->flags & (1 << CFQ_CFQQ_FLAG_##name)) != 0;		\
 }
 
 CFQ_CFQQ_FNS(on_rr);

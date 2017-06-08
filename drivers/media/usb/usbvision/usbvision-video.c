@@ -156,12 +156,6 @@ MODULE_ALIAS(DRIVER_ALIAS);
 
 #define YES_NO(x) ((x) ? "Yes" : "No")
 
-static inline struct usb_usbvision *cd_to_usbvision(struct device *cd)
-{
-	struct video_device *vdev = to_video_device(cd);
-	return video_get_drvdata(vdev);
-}
-
 static ssize_t show_version(struct device *cd,
 			    struct device_attribute *attr, char *buf)
 {

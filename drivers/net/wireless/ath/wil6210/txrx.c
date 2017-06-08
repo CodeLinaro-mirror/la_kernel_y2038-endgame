@@ -61,11 +61,6 @@ static inline void wil_vring_advance_head(struct vring *vring, int n)
 	vring->swhead = (vring->swhead + n) % vring->size;
 }
 
-static inline int wil_vring_is_full(struct vring *vring)
-{
-	return wil_vring_next_tail(vring) == vring->swhead;
-}
-
 /* Used space in Tx Vring */
 static inline int wil_vring_used_tx(struct vring *vring)
 {

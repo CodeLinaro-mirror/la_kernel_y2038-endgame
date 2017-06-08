@@ -38,7 +38,7 @@
 #include <asm/unaligned.h>
 #include <linux/string.h>	 /* memset, memcpy */
 
-#define FORCE_INLINE __always_inline
+#define FORCE_INLINE __always_inline __maybe_unused
 
 /*-************************************
  *	Basic Types

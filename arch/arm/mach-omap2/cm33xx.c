@@ -59,19 +59,6 @@ static inline void am33xx_cm_write_reg(u32 val, u16 inst, u16 idx)
 	writel_relaxed(val, cm_base.va + inst + idx);
 }
 
-/* Read-modify-write a register in CM */
-static inline u32 am33xx_cm_rmw_reg_bits(u32 mask, u32 bits, s16 inst, s16 idx)
-{
-	u32 v;
-
-	v = am33xx_cm_read_reg(inst, idx);
-	v &= ~mask;
-	v |= bits;
-	am33xx_cm_write_reg(v, inst, idx);
-
-	return v;
-}
-
 /**
  * _clkctrl_idlest - read a CM_*_CLKCTRL register; mask & shift IDLEST bitfield
  * @inst: CM instance register offset (*_INST macro)

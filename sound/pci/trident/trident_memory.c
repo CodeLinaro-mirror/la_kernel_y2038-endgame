@@ -120,15 +120,6 @@ static inline void set_silent_tlb(struct snd_trident *trident, int page)
 
 #endif /* PAGE_SIZE */
 
-/* calculate buffer pointer from offset address */
-static inline void *offset_ptr(struct snd_trident *trident, int offset)
-{
-	char *ptr;
-	ptr = page_to_ptr(trident, get_aligned_page(offset));
-	ptr += offset % ALIGN_PAGE_SIZE;
-	return (void*)ptr;
-}
-
 /* first and last (aligned) pages of memory block */
 #define firstpg(blk)	(((struct snd_trident_memblk_arg *)snd_util_memblk_argptr(blk))->first_page)
 #define lastpg(blk)	(((struct snd_trident_memblk_arg *)snd_util_memblk_argptr(blk))->last_page)

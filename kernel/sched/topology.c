@@ -24,7 +24,7 @@ static int __init sched_debug_setup(char *str)
 }
 early_param("sched_debug", sched_debug_setup);
 
-static inline bool sched_debug(void)
+static inline bool __maybe_unused sched_debug(void)
 {
 	return sched_debug_enabled;
 }
@@ -147,7 +147,7 @@ static void sched_domain_debug(struct sched_domain *sd, int cpu)
 
 # define sched_debug_enabled 0
 # define sched_domain_debug(sd, cpu) do { } while (0)
-static inline bool sched_debug(void)
+static inline bool __maybe_unused sched_debug(void)
 {
 	return false;
 }

@@ -41,10 +41,6 @@ static int save_flags;
 static int wakeup_display_graph(struct trace_array *tr, int set);
 # define is_graph(tr) ((tr)->trace_flags & TRACE_ITER_DISPLAY_GRAPH)
 #else
-static inline int wakeup_display_graph(struct trace_array *tr, int set)
-{
-	return 0;
-}
 # define is_graph(tr) false
 #endif
 

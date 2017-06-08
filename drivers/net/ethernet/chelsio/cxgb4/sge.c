@@ -821,18 +821,6 @@ static inline unsigned int calc_tx_flits(const struct sk_buff *skb)
 }
 
 /**
- *	calc_tx_descs - calculate the number of Tx descriptors for a packet
- *	@skb: the packet
- *
- *	Returns the number of Tx descriptors needed for the given Ethernet
- *	packet, including the needed WR and CPL headers.
- */
-static inline unsigned int calc_tx_descs(const struct sk_buff *skb)
-{
-	return flits_to_desc(calc_tx_flits(skb));
-}
-
-/**
  *	write_sgl - populate a scatter/gather list for a packet
  *	@skb: the packet
  *	@q: the Tx queue we are writing into

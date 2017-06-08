@@ -318,18 +318,6 @@ struct dac_info
 };
 
 
-static inline u8 dac_read_reg(struct dac_info *info, u8 reg)
-{
-	u8 code[2] = {reg, 0};
-	info->dac_read_regs(info->data, code, 1);
-	return code[1];
-}
-
-static inline void dac_read_regs(struct dac_info *info, u8 *code, int count)
-{
-	info->dac_read_regs(info->data, code, count);
-}
-
 static inline void dac_write_reg(struct dac_info *info, u8 reg, u8 val)
 {
 	u8 code[2] = {reg, val};

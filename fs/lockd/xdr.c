@@ -104,12 +104,6 @@ nlm_decode_oh(__be32 *p, struct xdr_netobj *oh)
 	return xdr_decode_netobj(p, oh);
 }
 
-static inline __be32 *
-nlm_encode_oh(__be32 *p, struct xdr_netobj *oh)
-{
-	return xdr_encode_netobj(p, oh);
-}
-
 static __be32 *
 nlm_decode_lock(__be32 *p, struct nlm_lock *lock)
 {

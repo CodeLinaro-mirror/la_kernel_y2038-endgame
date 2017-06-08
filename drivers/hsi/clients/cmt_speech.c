@@ -136,7 +136,7 @@ static struct cs_char cs_char_data;
 static void cs_hsi_read_on_control(struct cs_hsi_iface *hi);
 static void cs_hsi_read_on_data(struct cs_hsi_iface *hi);
 
-static inline void rx_ptr_shift_too_big(void)
+static void __maybe_unused rx_ptr_shift_too_big(void)
 {
 	BUILD_BUG_ON((1LLU << RX_PTR_MAX_SHIFT) > UINT_MAX);
 }

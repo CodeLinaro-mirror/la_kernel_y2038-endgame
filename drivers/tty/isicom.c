@@ -141,12 +141,6 @@
 #define InterruptTheCard(base) outw(0, (base) + 0xc)
 #define ClearInterrupt(base) inw((base) + 0x0a)
 
-#ifdef DEBUG
-#define isicom_paranoia_check(a, b, c) __isicom_paranoia_check((a), (b), (c))
-#else
-#define isicom_paranoia_check(a, b, c) 0
-#endif
-
 static int isicom_probe(struct pci_dev *, const struct pci_device_id *);
 static void isicom_remove(struct pci_dev *);
 
@@ -373,10 +367,12 @@ static void drop_dtr_rts(struct isi_port *port)
  *	ISICOM Driver specific routines ...
  *
  */
-
-static inline int __isicom_paranoia_check(struct isi_port const *port,
+static inline int isicom_paranoia_check(struct isi_port const *port,
 	char *name, const char *routine)
 {
+	if (!IS_ENABLED(DEBUG))
+		return 0;
+
 	if (!port) {
 		pr_warn("Warning: bad isicom magic for dev %s in %s\n",
 			name, routine);

@@ -1153,20 +1153,6 @@ static int ll_init_lsm_md(struct inode *inode, struct lustre_md *md)
 	return 0;
 }
 
-static inline int lli_lsm_md_eq(const struct lmv_stripe_md *lsm_md1,
-				const struct lmv_stripe_md *lsm_md2)
-{
-	return lsm_md1->lsm_md_magic == lsm_md2->lsm_md_magic &&
-	       lsm_md1->lsm_md_stripe_count == lsm_md2->lsm_md_stripe_count &&
-	       lsm_md1->lsm_md_master_mdt_index ==
-			lsm_md2->lsm_md_master_mdt_index &&
-	       lsm_md1->lsm_md_hash_type == lsm_md2->lsm_md_hash_type &&
-	       lsm_md1->lsm_md_layout_version ==
-			lsm_md2->lsm_md_layout_version &&
-	       !strcmp(lsm_md1->lsm_md_pool_name,
-		       lsm_md2->lsm_md_pool_name);
-}
-
 static int ll_update_lsm_md(struct inode *inode, struct lustre_md *md)
 {
 	struct ll_inode_info *lli = ll_i2info(inode);

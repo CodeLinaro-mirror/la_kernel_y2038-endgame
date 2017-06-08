@@ -179,7 +179,6 @@ static inline int at91_is_sam##_model(const struct at91_priv *priv) \
 }
 
 AT91_IS(9263);
-AT91_IS(9X5);
 
 static inline unsigned int get_mb_rx_first(const struct at91_priv *priv)
 {

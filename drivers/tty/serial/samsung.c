@@ -1130,19 +1130,6 @@ static void s3c24xx_serial_pm(struct uart_port *port, unsigned int level,
 
 #define MAX_CLK_NAME_LENGTH 15
 
-static inline int s3c24xx_serial_getsource(struct uart_port *port)
-{
-	struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
-	unsigned int ucon;
-
-	if (info->num_clks == 1)
-		return 0;
-
-	ucon = rd_regl(port, S3C2410_UCON);
-	ucon &= info->clksel_mask;
-	return ucon >> info->clksel_shift;
-}
-
 static void s3c24xx_serial_setsource(struct uart_port *port,
 			unsigned int clk_sel)
 {
@@ -1991,6 +1978,19 @@ s3c24xx_port_configured(unsigned int ucon)
 {
 	/* consider the serial port configured if the tx/rx mode set */
 	return (ucon & 0xf) != 0;
+}
+
+static inline int s3c24xx_serial_getsource(struct uart_port *port)
+{
+	struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
+	unsigned int ucon;
+
+	if (info->num_clks == 1)
+		return 0;
+
+	ucon = rd_regl(port, S3C2410_UCON);
+	ucon &= info->clksel_mask;
+	return ucon >> info->clksel_shift;
 }
 
 #ifdef CONFIG_CONSOLE_POLL

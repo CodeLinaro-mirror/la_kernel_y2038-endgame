@@ -1531,16 +1531,6 @@ static inline int is_imx25_nfc(struct mxc_nand_host *host)
 	return host->devtype_data == &imx25_nand_devtype_data;
 }
 
-static inline int is_imx51_nfc(struct mxc_nand_host *host)
-{
-	return host->devtype_data == &imx51_nand_devtype_data;
-}
-
-static inline int is_imx53_nfc(struct mxc_nand_host *host)
-{
-	return host->devtype_data == &imx53_nand_devtype_data;
-}
-
 static const struct platform_device_id mxcnd_devtype[] = {
 	{
 		.name = "imx21-nand",

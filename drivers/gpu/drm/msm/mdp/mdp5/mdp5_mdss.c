@@ -37,11 +37,6 @@ struct msm_mdss {
 	} irqcontroller;
 };
 
-static inline void mdss_write(struct msm_mdss *mdss, u32 reg, u32 data)
-{
-	msm_writel(data, mdss->mmio + reg);
-}
-
 static inline u32 mdss_read(struct msm_mdss *mdss, u32 reg)
 {
 	return msm_readl(mdss->mmio + reg);

@@ -397,20 +397,6 @@ static inline int io_write_clr_set(struct v4l2_subdev *sd, u8 reg, u8 mask,
 	return io_write(sd, reg, (io_read(sd, reg) & ~mask) | val);
 }
 
-static inline int avlink_read(struct v4l2_subdev *sd, u8 reg)
-{
-	struct adv76xx_state *state = to_state(sd);
-
-	return adv76xx_read_check(state, ADV7604_PAGE_AVLINK, reg);
-}
-
-static inline int avlink_write(struct v4l2_subdev *sd, u8 reg, u8 val)
-{
-	struct adv76xx_state *state = to_state(sd);
-
-	return regmap_write(state->regmap[ADV7604_PAGE_AVLINK], reg, val);
-}
-
 static inline int cec_read(struct v4l2_subdev *sd, u8 reg)
 {
 	struct adv76xx_state *state = to_state(sd);
@@ -438,20 +424,6 @@ static inline int infoframe_read(struct v4l2_subdev *sd, u8 reg)
 	return adv76xx_read_check(state, ADV76XX_PAGE_INFOFRAME, reg);
 }
 
-static inline int infoframe_write(struct v4l2_subdev *sd, u8 reg, u8 val)
-{
-	struct adv76xx_state *state = to_state(sd);
-
-	return regmap_write(state->regmap[ADV76XX_PAGE_INFOFRAME], reg, val);
-}
-
-static inline int afe_read(struct v4l2_subdev *sd, u8 reg)
-{
-	struct adv76xx_state *state = to_state(sd);
-
-	return adv76xx_read_check(state, ADV76XX_PAGE_AFE, reg);
-}
-
 static inline int afe_write(struct v4l2_subdev *sd, u8 reg, u8 val)
 {
 	struct adv76xx_state *state = to_state(sd);
@@ -476,20 +448,6 @@ static inline int rep_write(struct v4l2_subdev *sd, u8 reg, u8 val)
 static inline int rep_write_clr_set(struct v4l2_subdev *sd, u8 reg, u8 mask, u8 val)
 {
 	return rep_write(sd, reg, (rep_read(sd, reg) & ~mask) | val);
-}
-
-static inline int edid_read(struct v4l2_subdev *sd, u8 reg)
-{
-	struct adv76xx_state *state = to_state(sd);
-
-	return adv76xx_read_check(state, ADV76XX_PAGE_EDID, reg);
-}
-
-static inline int edid_write(struct v4l2_subdev *sd, u8 reg, u8 val)
-{
-	struct adv76xx_state *state = to_state(sd);
-
-	return regmap_write(state->regmap[ADV76XX_PAGE_EDID], reg, val);
 }
 
 static inline int edid_write_block(struct v4l2_subdev *sd,
@@ -562,13 +520,6 @@ static inline int hdmi_write_clr_set(struct v4l2_subdev *sd, u8 reg, u8 mask, u8
 	return hdmi_write(sd, reg, (hdmi_read(sd, reg) & ~mask) | val);
 }
 
-static inline int test_write(struct v4l2_subdev *sd, u8 reg, u8 val)
-{
-	struct adv76xx_state *state = to_state(sd);
-
-	return regmap_write(state->regmap[ADV76XX_PAGE_TEST], reg, val);
-}
-
 static inline int cp_read(struct v4l2_subdev *sd, u8 reg)
 {
 	struct adv76xx_state *state = to_state(sd);
@@ -591,20 +542,6 @@ static inline int cp_write(struct v4l2_subdev *sd, u8 reg, u8 val)
 static inline int cp_write_clr_set(struct v4l2_subdev *sd, u8 reg, u8 mask, u8 val)
 {
 	return cp_write(sd, reg, (cp_read(sd, reg) & ~mask) | val);
-}
-
-static inline int vdp_read(struct v4l2_subdev *sd, u8 reg)
-{
-	struct adv76xx_state *state = to_state(sd);
-
-	return adv76xx_read_check(state, ADV7604_PAGE_VDP, reg);
-}
-
-static inline int vdp_write(struct v4l2_subdev *sd, u8 reg, u8 val)
-{
-	struct adv76xx_state *state = to_state(sd);
-
-	return regmap_write(state->regmap[ADV7604_PAGE_VDP], reg, val);
 }
 
 #define ADV76XX_REG(page, offset)	(((page) << 8) | (offset))

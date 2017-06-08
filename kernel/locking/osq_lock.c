@@ -21,7 +21,7 @@ static inline int encode_cpu(int cpu_nr)
 	return cpu_nr + 1;
 }
 
-static inline int node_cpu(struct optimistic_spin_node *node)
+static inline int __maybe_unused node_cpu(struct optimistic_spin_node *node)
 {
 	return node->cpu - 1;
 }

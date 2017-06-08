@@ -61,12 +61,6 @@ static inline struct mtk_pwm_chip *to_mtk_pwm_chip(struct pwm_chip *chip)
 	return container_of(chip, struct mtk_pwm_chip, chip);
 }
 
-static inline u32 mtk_pwm_readl(struct mtk_pwm_chip *chip, unsigned int num,
-				unsigned int offset)
-{
-	return readl(chip->regs + 0x10 + (num * 0x40) + offset);
-}
-
 static inline void mtk_pwm_writel(struct mtk_pwm_chip *chip,
 				  unsigned int num, unsigned int offset,
 				  u32 value)

@@ -300,20 +300,6 @@ static inline int is_imx1_uart(struct imx_port *sport)
 	return sport->devdata->devtype == IMX1_UART;
 }
 
-static inline int is_imx21_uart(struct imx_port *sport)
-{
-	return sport->devdata->devtype == IMX21_UART;
-}
-
-static inline int is_imx53_uart(struct imx_port *sport)
-{
-	return sport->devdata->devtype == IMX53_UART;
-}
-
-static inline int is_imx6q_uart(struct imx_port *sport)
-{
-	return sport->devdata->devtype == IMX6Q_UART;
-}
 /*
  * Save and restore functions for UCR1, UCR2 and UCR3 registers
  */

@@ -31,16 +31,6 @@
 #include "i40e_prototype.h"
 
 /**
- * i40e_is_nvm_update_op - return true if this is an NVM update operation
- * @desc: API request descriptor
- **/
-static inline bool i40e_is_nvm_update_op(struct i40e_aq_desc *desc)
-{
-	return (desc->opcode == i40e_aqc_opc_nvm_erase) ||
-	       (desc->opcode == i40e_aqc_opc_nvm_update);
-}
-
-/**
  *  i40e_adminq_init_regs - Initialize AdminQ registers
  *  @hw: pointer to the hardware structure
  *

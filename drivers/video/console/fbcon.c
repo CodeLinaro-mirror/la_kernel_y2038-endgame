@@ -118,12 +118,12 @@ static int fbcon_has_console_bind;
 #ifdef CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY
 static int map_override;
 
-static inline void fbcon_map_override(void)
+static inline void __maybe_unused fbcon_map_override(void)
 {
 	map_override = 1;
 }
 #else
-static inline void fbcon_map_override(void)
+static inline void __maybe_unused fbcon_map_override(void)
 {
 }
 #endif /* CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY */

@@ -544,12 +544,6 @@ static inline void _aty_st_le32(volatile unsigned int regindex, u32 val,
 	writel (val, par->regbase + regindex);
 }
 
-static inline u8 _aty_ld_8(unsigned int regindex,
-			   const struct aty128fb_par *par)
-{
-	return readb (par->regbase + regindex);
-}
-
 static inline void _aty_st_8(unsigned int regindex, u8 val,
 			     const struct aty128fb_par *par)
 {
@@ -558,7 +552,6 @@ static inline void _aty_st_8(unsigned int regindex, u8 val,
 
 #define aty_ld_le32(regindex)		_aty_ld_le32(regindex, par)
 #define aty_st_le32(regindex, val)	_aty_st_le32(regindex, val, par)
-#define aty_ld_8(regindex)		_aty_ld_8(regindex, par)
 #define aty_st_8(regindex, val)		_aty_st_8(regindex, val, par)
 
     /*

@@ -53,19 +53,9 @@ static inline u32 omap3_l3_decode_addr(u64 error_addr)
 	return error_addr & 0xffffffff;
 }
 
-static inline unsigned omap3_l3_decode_cmd(u64 error)
-{
-	return (error & 0x07) >> L3_ERROR_LOG_CMD;
-}
-
 static inline enum omap3_l3_initiator_id omap3_l3_decode_initid(u64 error)
 {
 	return (error & 0xff00) >> L3_ERROR_LOG_INITID;
-}
-
-static inline unsigned omap3_l3_decode_req_info(u64 error)
-{
-	return (error >> 32) & 0xffff;
 }
 
 static char *omap3_l3_code_string(u8 code)

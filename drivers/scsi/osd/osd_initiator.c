@@ -62,7 +62,7 @@ MODULE_AUTHOR("Boaz Harrosh <ooo@electrozaur.com>");
 MODULE_DESCRIPTION("open-osd initiator library libosd.ko");
 MODULE_LICENSE("GPL");
 
-static inline void build_test(void)
+static void __unused build_test(void)
 {
 	/* structures were not packed */
 	BUILD_BUG_ON(sizeof(struct osd_capability) != OSD_CAP_LEN);

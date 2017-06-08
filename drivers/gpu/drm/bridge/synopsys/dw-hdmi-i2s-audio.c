@@ -24,13 +24,6 @@ static inline void hdmi_write(struct dw_hdmi_i2s_audio_data *audio,
 	audio->write(hdmi, val, offset);
 }
 
-static inline u8 hdmi_read(struct dw_hdmi_i2s_audio_data *audio, int offset)
-{
-	struct dw_hdmi *hdmi = audio->hdmi;
-
-	return audio->read(hdmi, offset);
-}
-
 static int dw_hdmi_i2s_hw_params(struct device *dev, void *data,
 				 struct hdmi_codec_daifmt *fmt,
 				 struct hdmi_codec_params *hparms)

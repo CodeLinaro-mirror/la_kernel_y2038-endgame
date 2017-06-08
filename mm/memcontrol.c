@@ -4064,7 +4064,7 @@ static struct cftype mem_cgroup_legacy_files[] = {
 
 static DEFINE_IDR(mem_cgroup_idr);
 
-static void mem_cgroup_id_get_many(struct mem_cgroup *memcg, unsigned int n)
+static void __maybe_unused mem_cgroup_id_get_many(struct mem_cgroup *memcg, unsigned int n)
 {
 	VM_BUG_ON(atomic_read(&memcg->id.ref) <= 0);
 	atomic_add(n, &memcg->id.ref);
@@ -4080,11 +4080,6 @@ static void mem_cgroup_id_put_many(struct mem_cgroup *memcg, unsigned int n)
 		/* Memcg ID pins CSS */
 		css_put(&memcg->css);
 	}
-}
-
-static inline void mem_cgroup_id_get(struct mem_cgroup *memcg)
-{
-	mem_cgroup_id_get_many(memcg, 1);
 }
 
 static inline void mem_cgroup_id_put(struct mem_cgroup *memcg)

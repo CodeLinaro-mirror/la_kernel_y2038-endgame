@@ -221,12 +221,6 @@ struct u132 {
 #define u132_write_pcimem(u132, member, data) \
 	usb_ftdi_elan_write_pcimem(u132->platform_dev, offsetof(struct \
 	ohci_regs, member), 0, data);
-static inline struct u132 *udev_to_u132(struct u132_udev *udev)
-{
-	u8 udev_number = udev->udev_number;
-	return container_of(udev, struct u132, udev[udev_number]);
-}
-
 static inline struct u132 *hcd_to_u132(struct usb_hcd *hcd)
 {
 	return (struct u132 *)(hcd->hcd_priv);

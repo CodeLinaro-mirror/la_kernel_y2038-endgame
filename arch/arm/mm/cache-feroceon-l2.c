@@ -65,11 +65,6 @@ static inline void l2_put_va(unsigned long vaddr)
 #endif
 }
 
-static inline void l2_clean_pa(unsigned long addr)
-{
-	__asm__("mcr p15, 1, %0, c15, c9, 3" : : "r" (addr));
-}
-
 static inline void l2_clean_pa_range(unsigned long start, unsigned long end)
 {
 	unsigned long va_start, va_end, flags;
@@ -94,11 +89,6 @@ static inline void l2_clean_pa_range(unsigned long start, unsigned long end)
 static inline void l2_clean_inv_pa(unsigned long addr)
 {
 	__asm__("mcr p15, 1, %0, c15, c10, 3" : : "r" (addr));
-}
-
-static inline void l2_inv_pa(unsigned long addr)
-{
-	__asm__("mcr p15, 1, %0, c15, c11, 3" : : "r" (addr));
 }
 
 static inline void l2_inv_pa_range(unsigned long start, unsigned long end)

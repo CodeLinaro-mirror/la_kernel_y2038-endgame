@@ -296,17 +296,6 @@ static inline int at_xdmac_chan_is_paused(struct at_xdmac_chan *atchan)
 	return test_bit(AT_XDMAC_CHAN_IS_PAUSED, &atchan->status);
 }
 
-static inline int at_xdmac_csize(u32 maxburst)
-{
-	int csize;
-
-	csize = ffs(maxburst) - 1;
-	if (csize > 4)
-		csize = -EINVAL;
-
-	return csize;
-};
-
 static inline u8 at_xdmac_get_dwidth(u32 cfg)
 {
 	return (cfg & AT_XDMAC_CC_DWIDTH_MASK) >> AT_XDMAC_CC_DWIDTH_OFFSET;

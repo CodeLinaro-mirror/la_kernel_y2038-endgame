@@ -168,16 +168,6 @@ if (debug >= level)							\
 } while (0)
 
 
-static inline u32 MulDiv32(u32 a, u32 b, u32 c)
-{
-	u64 tmp64;
-
-	tmp64 = (u64) a * (u64) b;
-	do_div(tmp64, c);
-
-	return (u32) tmp64;
-}
-
 static inline u32 Frac28a(u32 a, u32 c)
 {
 	int i = 0;

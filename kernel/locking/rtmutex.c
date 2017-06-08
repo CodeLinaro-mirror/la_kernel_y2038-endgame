@@ -59,12 +59,6 @@ rt_mutex_set_owner(struct rt_mutex *lock, struct task_struct *owner)
 	lock->owner = (struct task_struct *)val;
 }
 
-static inline void clear_rt_mutex_waiters(struct rt_mutex *lock)
-{
-	lock->owner = (struct task_struct *)
-			((unsigned long)lock->owner & ~RT_MUTEX_HAS_WAITERS);
-}
-
 static void fixup_rt_mutex_waiters(struct rt_mutex *lock)
 {
 	unsigned long owner, *p = (unsigned long *) &lock->owner;
@@ -157,6 +151,12 @@ static inline void mark_rt_mutex_waiters(struct rt_mutex *lock)
 		owner = *p;
 	} while (cmpxchg_relaxed(p, owner,
 				 owner | RT_MUTEX_HAS_WAITERS) != owner);
+}
+
+static inline void clear_rt_mutex_waiters(struct rt_mutex *lock)
+{
+	lock->owner = (struct task_struct *)
+			((unsigned long)lock->owner & ~RT_MUTEX_HAS_WAITERS);
 }
 
 /*

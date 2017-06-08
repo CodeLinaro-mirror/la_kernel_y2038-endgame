@@ -61,16 +61,6 @@ static void init_hardware(void);
 static void drop_hardware(void);
 /* Initialisation */
 
-static inline unsigned int sinp(int offset)
-{
-	return inb(io + offset);
-}
-
-static inline void soutp(int offset, int value)
-{
-	outb(value, io + offset);
-}
-
 /* SECTION: Communication with user-space */
 static int sir_tx_ir(struct rc_dev *dev, unsigned int *tx_buf,
 		     unsigned int count)

@@ -136,26 +136,6 @@
  */
 #define LDLM_POOL_SLV_SHIFT (10)
 
-static inline __u64 dru(__u64 val, __u32 shift, int round_up)
-{
-	return (val + (round_up ? (1 << shift) - 1 : 0)) >> shift;
-}
-
-static inline __u64 ldlm_pool_slv_max(__u32 L)
-{
-	/*
-	 * Allow to have all locks for 1 client for 10 hrs.
-	 * Formula is the following: limit * 10h / 1 client.
-	 */
-	__u64 lim = (__u64)L *  LDLM_POOL_MAX_AGE / 1;
-	return lim;
-}
-
-static inline __u64 ldlm_pool_slv_min(__u32 L)
-{
-	return 1;
-}
-
 enum {
 	LDLM_POOL_FIRST_STAT = 0,
 	LDLM_POOL_GRANTED_STAT = LDLM_POOL_FIRST_STAT,
@@ -171,37 +151,6 @@ enum {
 	LDLM_POOL_TIMING_STAT,
 	LDLM_POOL_LAST_STAT
 };
-
-/**
- * Calculates suggested grant_step in % of available locks for passed
- * \a period. This is later used in grant_plan calculations.
- */
-static inline int ldlm_pool_t2gsp(unsigned int t)
-{
-	/*
-	 * This yields 1% grant step for anything below LDLM_POOL_GSP_STEP
-	 * and up to 30% for anything higher than LDLM_POOL_GSP_STEP.
-	 *
-	 * How this will affect execution is the following:
-	 *
-	 * - for thread period 1s we will have grant_step 1% which good from
-	 * pov of taking some load off from server and push it out to clients.
-	 * This is like that because 1% for grant_step means that server will
-	 * not allow clients to get lots of locks in short period of time and
-	 * keep all old locks in their caches. Clients will always have to
-	 * get some locks back if they want to take some new;
-	 *
-	 * - for thread period 10s (which is default) we will have 23% which
-	 * means that clients will have enough of room to take some new locks
-	 * without getting some back. All locks from this 23% which were not
-	 * taken by clients in current period will contribute in SLV growing.
-	 * SLV growing means more locks cached on clients until limit or grant
-	 * plan is reached.
-	 */
-	return LDLM_POOL_MAX_GSP -
-		((LDLM_POOL_MAX_GSP - LDLM_POOL_MIN_GSP) >>
-		 (t >> LDLM_POOL_GSP_STEP_SHIFT));
-}
 
 /**
  * Recalculates next stats on passed \a pl.

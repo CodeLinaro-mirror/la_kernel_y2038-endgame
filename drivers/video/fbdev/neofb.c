@@ -142,11 +142,6 @@ static biosMode bios32[] = {
 };
 #endif
 
-static inline void write_le32(int regindex, u32 val, const struct neofb_par *par)
-{
-	writel(val, par->neo2200 + par->cursorOff + regindex);
-}
-
 static int neoFindMode(int xres, int yres, int depth)
 {
 	int xres_s;

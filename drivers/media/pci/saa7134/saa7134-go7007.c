@@ -64,11 +64,6 @@ struct saa7134_go7007 {
 	dma_addr_t bottom_dma;
 };
 
-static inline struct saa7134_go7007 *to_state(struct v4l2_subdev *sd)
-{
-	return container_of(sd, struct saa7134_go7007, sd);
-}
-
 static const struct go7007_board_info board_voyager = {
 	.flags		 = 0,
 	.sensor_flags	 = GO7007_SENSOR_656 |

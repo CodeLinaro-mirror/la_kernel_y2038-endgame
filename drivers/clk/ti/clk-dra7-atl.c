@@ -72,11 +72,6 @@ static inline void atl_write(struct dra7_atl_clock_info *cinfo, u32 reg,
 	__raw_writel(val, cinfo->iobase + reg);
 }
 
-static inline int atl_read(struct dra7_atl_clock_info *cinfo, u32 reg)
-{
-	return __raw_readl(cinfo->iobase + reg);
-}
-
 static int atl_clk_enable(struct clk_hw *hw)
 {
 	struct dra7_atl_desc *cdesc = to_atl_desc(hw);

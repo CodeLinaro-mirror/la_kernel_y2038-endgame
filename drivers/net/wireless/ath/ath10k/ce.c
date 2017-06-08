@@ -267,17 +267,6 @@ static inline void ath10k_ce_watermark_intr_disable(struct ath10k *ar,
 			   host_ie_addr & ~(wm_regs->wm_mask));
 }
 
-static inline void ath10k_ce_error_intr_enable(struct ath10k *ar,
-					       u32 ce_ctrl_addr)
-{
-	struct ath10k_hw_ce_misc_regs *misc_regs = ar->hw_ce_regs->misc_regs;
-	u32 misc_ie_addr = ath10k_pci_read32(ar, ce_ctrl_addr +
-					ar->hw_ce_regs->misc_ie_addr);
-
-	ath10k_pci_write32(ar, ce_ctrl_addr + ar->hw_ce_regs->misc_ie_addr,
-			   misc_ie_addr | misc_regs->err_mask);
-}
-
 static inline void ath10k_ce_error_intr_disable(struct ath10k *ar,
 						u32 ce_ctrl_addr)
 {

@@ -300,11 +300,6 @@ static int s3c2410wdt_start(struct watchdog_device *wdd)
 	return 0;
 }
 
-static inline int s3c2410wdt_is_running(struct s3c2410_wdt *wdt)
-{
-	return readl(wdt->reg_base + S3C2410_WTCON) & S3C2410_WTCON_ENABLE;
-}
-
 static int s3c2410wdt_set_heartbeat(struct watchdog_device *wdd,
 				    unsigned int timeout)
 {
@@ -420,6 +415,10 @@ static irqreturn_t s3c2410wdt_irq(int irqno, void *param)
 }
 
 #ifdef CONFIG_ARM_S3C24XX_CPUFREQ
+static inline int s3c2410wdt_is_running(struct s3c2410_wdt *wdt)
+{
+	return readl(wdt->reg_base + S3C2410_WTCON) & S3C2410_WTCON_ENABLE;
+}
 
 static int s3c2410wdt_cpufreq_transition(struct notifier_block *nb,
 					  unsigned long val, void *data)

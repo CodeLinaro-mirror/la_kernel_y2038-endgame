@@ -61,11 +61,6 @@ profile[MLX5_CQ_PERIOD_NUM_MODES][MLX5E_PARAMS_AM_NUM_PROFILES] = {
 	MLX5_AM_CQE_PROFILES,
 };
 
-static inline struct mlx5e_cq_moder mlx5e_am_get_profile(u8 cq_period_mode, int ix)
-{
-	return profile[cq_period_mode][ix];
-}
-
 struct mlx5e_cq_moder mlx5e_am_get_def_profile(u8 rx_cq_period_mode)
 {
 	int default_profile_ix;

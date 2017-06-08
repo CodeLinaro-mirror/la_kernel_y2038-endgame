@@ -723,26 +723,6 @@ char *lustre_msg_string(struct lustre_msg *m, u32 index, u32 max_len)
 	return str;
 }
 
-/* Wrap up the normal fixed length cases */
-static inline void *__lustre_swab_buf(struct lustre_msg *msg, u32 index,
-				      u32 min_size, void *swabber)
-{
-	void *ptr = NULL;
-
-	switch (msg->lm_magic) {
-	case LUSTRE_MSG_MAGIC_V2:
-		ptr = lustre_msg_buf_v2(msg, index, min_size);
-		break;
-	default:
-		CERROR("incorrect message magic: %08x\n", msg->lm_magic);
-	}
-
-	if (ptr && swabber)
-		((void (*)(void *))swabber)(ptr);
-
-	return ptr;
-}
-
 static inline struct ptlrpc_body *lustre_msg_ptlrpc_body(struct lustre_msg *msg)
 {
 	return lustre_msg_buf_v2(msg, MSG_PTLRPC_BODY_OFF,

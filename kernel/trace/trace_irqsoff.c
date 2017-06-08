@@ -60,10 +60,6 @@ irq_trace(void)
 static int irqsoff_display_graph(struct trace_array *tr, int set);
 # define is_graph(tr) ((tr)->trace_flags & TRACE_ITER_DISPLAY_GRAPH)
 #else
-static inline int irqsoff_display_graph(struct trace_array *tr, int set)
-{
-	return -EINVAL;
-}
 # define is_graph(tr) false
 #endif
 

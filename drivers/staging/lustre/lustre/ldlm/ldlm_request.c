@@ -959,11 +959,6 @@ out:
 	return sent ? sent : rc;
 }
 
-static inline struct ldlm_pool *ldlm_imp2pl(struct obd_import *imp)
-{
-	return &imp->imp_obd->obd_namespace->ns_pool;
-}
-
 /**
  * Update client's OBD pool related fields with new SLV and Limit from \a req.
  */

@@ -240,20 +240,6 @@ static inline void dw_hdmi_dwc_write(struct meson_dw_hdmi *dw_hdmi,
 	spin_unlock_irqrestore(&reg_lock, flags);
 }
 
-/* Helper to change specific bits in controller registers */
-static inline void dw_hdmi_dwc_write_bits(struct meson_dw_hdmi *dw_hdmi,
-					  unsigned int addr,
-					  unsigned int mask,
-					  unsigned int val)
-{
-	unsigned int data = dw_hdmi_dwc_read(dw_hdmi, addr);
-
-	data &= ~mask;
-	data |= val;
-
-	dw_hdmi_dwc_write(dw_hdmi, addr, data);
-}
-
 /* Bridge */
 
 /* Setup PHY bandwidth modes */

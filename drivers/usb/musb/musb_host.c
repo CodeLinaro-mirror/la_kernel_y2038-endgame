@@ -1556,11 +1556,12 @@ static int musb_rx_dma_iso_cppi41(struct dma_controller *dma,
 				   (u32)buf, length);
 }
 #else
-static inline int musb_rx_dma_iso_cppi41(struct dma_controller *dma,
-					 struct musb_hw_ep *hw_ep,
-					 struct musb_qh *qh,
-					 struct urb *urb,
-					 size_t len)
+static inline int __maybe_unused
+musb_rx_dma_iso_cppi41(struct dma_controller *dma,
+		       struct musb_hw_ep *hw_ep,
+		       struct musb_qh *qh,
+		       struct urb *urb,
+		       size_t len)
 {
 	return false;
 }
