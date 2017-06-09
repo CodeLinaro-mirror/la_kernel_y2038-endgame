@@ -277,7 +277,7 @@ static int mt2063_write(struct mt2063_state *state, u8 reg, u8 *data, u32 len)
 /*
  * mt2063_write - Write register data into the I2C bus, caching the value
  */
-static noinline_if_stackbloat int mt2063_setreg(struct mt2063_state *state, u8 reg, u8 val)
+static int mt2063_setreg(struct mt2063_state *state, u8 reg, u8 val)
 {
 	int status;
 

@@ -656,88 +656,6 @@ static int mtdchar_write_ioctl(struct mtd_info *mtd,
 	return ret;
 }
 
-static int mtdchar_memerase_ioctl(struct mtd_info *mtd, u_int cmd, void __user *argp)
-{
-	int ret;
-	struct erase_info *erase;
-	wait_queue_head_t waitq;
-	DECLARE_WAITQUEUE(wait, current);
-
-	erase = kzalloc(sizeof(struct erase_info), GFP_KERNEL);
-	if (!erase)
-		return -ENOMEM;
-
-	init_waitqueue_head(&waitq);
-
-	if (cmd == MEMERASE64) {
-		struct erase_info_user64 einfo64;
-
-		if (copy_from_user(&einfo64, argp,
-				   sizeof(struct erase_info_user64))) {
-			kfree(erase);
-			return -EFAULT;
-		}
-		erase->addr = einfo64.start;
-		erase->len = einfo64.length;
-	} else {
-		struct erase_info_user einfo32;
-
-		if (copy_from_user(&einfo32, argp,
-				   sizeof(struct erase_info_user))) {
-			kfree(erase);
-			return -EFAULT;
-		}
-		erase->addr = einfo32.start;
-		erase->len = einfo32.length;
-	}
-	erase->mtd = mtd;
-	erase->callback = mtdchar_erase_callback;
-	erase->priv = (unsigned long)&waitq;
-
-	/*
-	  FIXME: Allow INTERRUPTIBLE. Which means
-	  not having the wait_queue head on the stack.
-
-	  If the wq_head is on the stack, and we
-	  leave because we got interrupted, then the
-	  wq_head is no longer there when the
-	  callback routine tries to wake us up.
-	*/
-	ret = mtd_erase(mtd, erase);
-	if (!ret) {
-		set_current_state(TASK_UNINTERRUPTIBLE);
-		add_wait_queue(&waitq, &wait);
-		if (erase->state != MTD_ERASE_DONE &&
-		    erase->state != MTD_ERASE_FAILED)
-			schedule();
-		remove_wait_queue(&waitq, &wait);
-		set_current_state(TASK_RUNNING);
-
-		ret = (erase->state == MTD_ERASE_FAILED)?-EIO:0;
-	}
-	kfree(erase);
-
-	return ret;
-}
-
-static int mtdchar_memgetoobsel_ioctl(struct mtd_info *mtd, struct nand_oobinfo __user *argp)
-{
-	struct nand_oobinfo oi;
-	int ret;
-
-	if (!mtd->ooblayout)
-		return -EOPNOTSUPP;
-
-	ret = get_oobinfo(mtd, &oi);
-	if (ret)
-		return ret;
-
-	if (copy_to_user(argp, &oi, sizeof(struct nand_oobinfo)))
-		ret = -EFAULT;
-
-	return ret;
-}
-
 static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 {
 	struct mtd_file_info *mfi = file->private_data;
@@ -803,11 +721,71 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 
 	case MEMERASE:
 	case MEMERASE64:
+	{
+		struct erase_info *erase;
+
 		if(!(file->f_mode & FMODE_WRITE))
 			return -EPERM;
 
-		ret = mtdchar_memerase_ioctl(mtd, cmd, argp);
+		erase=kzalloc(sizeof(struct erase_info),GFP_KERNEL);
+		if (!erase)
+			ret = -ENOMEM;
+		else {
+			wait_queue_head_t waitq;
+			DECLARE_WAITQUEUE(wait, current);
+
+			init_waitqueue_head(&waitq);
+
+			if (cmd == MEMERASE64) {
+				struct erase_info_user64 einfo64;
+
+				if (copy_from_user(&einfo64, argp,
+					    sizeof(struct erase_info_user64))) {
+					kfree(erase);
+					return -EFAULT;
+				}
+				erase->addr = einfo64.start;
+				erase->len = einfo64.length;
+			} else {
+				struct erase_info_user einfo32;
+
+				if (copy_from_user(&einfo32, argp,
+					    sizeof(struct erase_info_user))) {
+					kfree(erase);
+					return -EFAULT;
+				}
+				erase->addr = einfo32.start;
+				erase->len = einfo32.length;
+			}
+			erase->mtd = mtd;
+			erase->callback = mtdchar_erase_callback;
+			erase->priv = (unsigned long)&waitq;
+
+			/*
+			  FIXME: Allow INTERRUPTIBLE. Which means
+			  not having the wait_queue head on the stack.
+
+			  If the wq_head is on the stack, and we
+			  leave because we got interrupted, then the
+			  wq_head is no longer there when the
+			  callback routine tries to wake us up.
+			*/
+			ret = mtd_erase(mtd, erase);
+			if (!ret) {
+				set_current_state(TASK_UNINTERRUPTIBLE);
+				add_wait_queue(&waitq, &wait);
+				if (erase->state != MTD_ERASE_DONE &&
+				    erase->state != MTD_ERASE_FAILED)
+					schedule();
+				remove_wait_queue(&waitq, &wait);
+				set_current_state(TASK_RUNNING);
+
+				ret = (erase->state == MTD_ERASE_FAILED)?-EIO:0;
+			}
+			kfree(erase);
+		}
 		break;
+	}
 
 	case MEMWRITEOOB:
 	{
@@ -871,6 +849,7 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 		      (struct mtd_write_req __user *)arg);
 		break;
 	}
+
 	case MEMLOCK:
 	{
 		struct erase_info_user einfo;
@@ -906,8 +885,20 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 
 	/* Legacy interface */
 	case MEMGETOOBSEL:
-		ret = mtdchar_memgetoobsel_ioctl(mtd, argp);
+	{
+		struct nand_oobinfo oi;
+
+		if (!mtd->ooblayout)
+			return -EOPNOTSUPP;
+
+		ret = get_oobinfo(mtd, &oi);
+		if (ret)
+			return ret;
+
+		if (copy_to_user(argp, &oi, sizeof(struct nand_oobinfo)))
+			return -EFAULT;
 		break;
+	}
 
 	case MEMGETBADBLOCK:
 	{
@@ -1037,6 +1028,7 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 		file->f_pos = 0;
 		break;
 	}
+
 	case BLKPG:
 	{
 		struct blkpg_ioctl_arg __user *blk_arg = argp;
@@ -1055,6 +1047,7 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 		ret = 0;
 		break;
 	}
+
 	default:
 		ret = -ENOTTY;
 	}

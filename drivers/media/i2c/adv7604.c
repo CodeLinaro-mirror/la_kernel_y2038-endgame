@@ -340,8 +340,8 @@ static inline unsigned vtotal(const struct v4l2_bt_timings *t)
 
 /* ----------------------------------------------------------------------- */
 
-static noinline_if_stackbloat int adv76xx_read_check(struct adv76xx_state *state,
-						 int client_page, u8 reg)
+static int adv76xx_read_check(struct adv76xx_state *state,
+			     int client_page, u8 reg)
 {
 	struct i2c_client *client = state->i2c_clients[client_page];
 	int err;

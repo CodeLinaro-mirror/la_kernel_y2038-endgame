@@ -242,8 +242,8 @@ static int wl3501_get_flash_mac_addr(struct wl3501_card *this)
  *
  * Move 'size' bytes from PC to card. (Shouldn't be interrupted)
  */
-static noinline_if_stackbloat void wl3501_set_to_wla(struct wl3501_card *this,
-						 u16 dest, void *src, int size)
+static void wl3501_set_to_wla(struct wl3501_card *this, u16 dest, void *src,
+			      int size)
 {
 	/* switch to SRAM Page 0 */
 	wl3501_switch_page(this, (dest & 0x8000) ? WL3501_BSS_SPAGE1 :
@@ -264,8 +264,8 @@ static noinline_if_stackbloat void wl3501_set_to_wla(struct wl3501_card *this,
  *
  * Move 'size' bytes from card to PC. (Shouldn't be interrupted)
  */
-static noinline_if_stackbloat void wl3501_get_from_wla(struct wl3501_card *this,
-						u16 src, void *dest, int size)
+static void wl3501_get_from_wla(struct wl3501_card *this, u16 src, void *dest,
+				int size)
 {
 	/* switch to SRAM Page 0 */
 	wl3501_switch_page(this, (src & 0x8000) ? WL3501_BSS_SPAGE1 :
@@ -1037,7 +1037,7 @@ static inline void wl3501_auth_confirm_interrupt(struct wl3501_card *this,
 		wl3501_mgmt_resync(this);
 }
 
-static noinline_if_stackbloat void wl3501_rx_interrupt(struct net_device *dev)
+static inline void wl3501_rx_interrupt(struct net_device *dev)
 {
 	int morepkts;
 	u16 addr;

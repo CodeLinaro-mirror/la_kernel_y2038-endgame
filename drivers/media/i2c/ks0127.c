@@ -349,7 +349,7 @@ static void ks0127_write(struct v4l2_subdev *sd, u8 reg, u8 val)
 
 
 /* generic bit-twiddling */
-static noinline_if_stackbloat void ks0127_and_or(struct v4l2_subdev *sd, u8 reg, u8 and_v, u8 or_v)
+static void ks0127_and_or(struct v4l2_subdev *sd, u8 reg, u8 and_v, u8 or_v)
 {
 	struct ks0127 *ks = to_ks0127(sd);
 

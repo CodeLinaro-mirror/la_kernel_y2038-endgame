@@ -90,7 +90,7 @@ hwsq_rd32(struct hwsq *ram, struct hwsq_reg *reg)
 	return reg->data;
 }
 
-static noinline_if_stackbloat void
+static inline void
 hwsq_wr32(struct hwsq *ram, struct hwsq_reg *reg, u32 data)
 {
 	u32 mask, off = 0;
@@ -112,7 +112,7 @@ hwsq_nuke(struct hwsq *ram, struct hwsq_reg *reg)
 	reg->force = true;
 }
 
-static noinline_if_stackbloat u32
+static inline u32
 hwsq_mask(struct hwsq *ram, struct hwsq_reg *reg, u32 mask, u32 data)
 {
 	u32 temp = hwsq_rd32(ram, reg);

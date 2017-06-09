@@ -513,7 +513,7 @@ static inline void dma_free_attrs(struct device *dev, size_t size,
 	ops->free(dev, size, cpu_addr, dma_handle, attrs);
 }
 
-static noinline_if_stackbloat void *dma_alloc_coherent(struct device *dev, size_t size,
+static inline void *dma_alloc_coherent(struct device *dev, size_t size,
 		dma_addr_t *dma_handle, gfp_t flag)
 {
 	return dma_alloc_attrs(dev, size, dma_handle, flag, 0);
@@ -525,7 +525,7 @@ static inline void dma_free_coherent(struct device *dev, size_t size,
 	return dma_free_attrs(dev, size, cpu_addr, dma_handle, 0);
 }
 
-static noinline_if_stackbloat void *dma_alloc_noncoherent(struct device *dev, size_t size,
+static inline void *dma_alloc_noncoherent(struct device *dev, size_t size,
 		dma_addr_t *dma_handle, gfp_t gfp)
 {
 	return dma_alloc_attrs(dev, size, dma_handle, gfp,
@@ -756,7 +756,7 @@ static inline void dmam_release_declared_memory(struct device *dev)
 }
 #endif /* CONFIG_HAVE_GENERIC_DMA_COHERENT */
 
-static noinline_if_stackbloat void *dma_alloc_wc(struct device *dev, size_t size,
+static inline void *dma_alloc_wc(struct device *dev, size_t size,
 				 dma_addr_t *dma_addr, gfp_t gfp)
 {
 	return dma_alloc_attrs(dev, size, dma_addr, gfp,

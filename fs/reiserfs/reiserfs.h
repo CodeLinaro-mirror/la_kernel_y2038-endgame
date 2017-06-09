@@ -1979,10 +1979,10 @@ extern void make_empty_dir_item(char *body, __le32 dirid, __le32 objid,
  */
 struct reiserfs_dir_entry {
 	struct buffer_head *de_bh;
-	struct item_head *de_ih;
-	struct reiserfs_de_head *de_deh;
 	int de_item_num;
+	struct item_head *de_ih;
 	int de_entry_num;
+	struct reiserfs_de_head *de_deh;
 	int de_entrylen;
 	int de_namelen;
 	char *de_name;

@@ -279,10 +279,6 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
 	}
 }
 
-#define __ALIGNED_WORD(x)						\
-	((sizeof(x) == 1 || sizeof(x) == 2 || sizeof(x) == 4 ||		\
-	  sizeof(x) == sizeof(long)) && (sizeof(x) == __alignof__(x)))	\
-
 /*
  * Prevent the compiler from merging or refetching reads or writes. The
  * compiler is also forbidden from reordering successive instances of
@@ -304,13 +300,8 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  * mutilate accesses that either do not require ordering or that interact
  * with an explicit memory barrier or atomic instruction that provides the
  * required ordering.
- *
- * Unaligned data is particularly tricky here: if the type that gets
- * passed in is not naturally aligned, we cast to a type of higher
- * alignment, which is not well-defined in C. This is fine as long
- * as the actual data is aligned, but otherwise might require a trap
- * to satisfy the load.
  */
+
 #define __READ_ONCE(x, check)						\
 ({									\
 	union { typeof(x) __val; char __c[1]; } __u;			\
@@ -320,32 +311,7 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
 		__read_once_size_nocheck(&(x), __u.__c, sizeof(x));	\
 	__u.__val;							\
 })
-
-#define __WRITE_ONCE(x, val)						\
-({									\
-	union { typeof(x) __val; char __c[1]; } __u =			\
-		{ .__val = (__force typeof(x)) (val) };			\
-	__write_once_size(&(x), __u.__c, sizeof(x));			\
-	__u.__val;							\
-})
-
-
-/*
- * the common case is simple: x is naturally aligned, not an array,
- * and accessible with a single load, avoiding the need for local
- * variables. With KASAN, this is important as any call to
- *__write_once_size(),__read_once_size_nocheck() or __read_once_size()
- * uses significant amounts of stack space for checking that we don't
- * overflow the union.
- */
-#define __READ_ONCE_SIMPLE(x)						\
-	(typeof(x))(*(volatile typeof(&(x)))&(x))
-
-#define __WRITE_ONCE_SIMPLE(x, val)					\
-	({*(volatile typeof(&(x)))&(x) = (val); })
-
-#define READ_ONCE(x) __builtin_choose_expr(__ALIGNED_WORD(x), 		\
-	__READ_ONCE_SIMPLE(x), __READ_ONCE(x, 1))
+#define READ_ONCE(x) __READ_ONCE(x, 1)
 
 /*
  * Use READ_ONCE_NOCHECK() instead of READ_ONCE() if you need
@@ -353,8 +319,13 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  */
 #define READ_ONCE_NOCHECK(x) __READ_ONCE(x, 0)
 
-#define WRITE_ONCE(x, val) do { __builtin_choose_expr(__ALIGNED_WORD(x), \
-	__WRITE_ONCE_SIMPLE(x, val), __WRITE_ONCE(x, val)); } while (0)
+#define WRITE_ONCE(x, val) \
+({							\
+	union { typeof(x) __val; char __c[1]; } __u =	\
+		{ .__val = (__force typeof(x)) (val) }; \
+	__write_once_size(&(x), __u.__c, sizeof(x));	\
+	__u.__val;					\
+})
 
 #endif /* __KERNEL__ */
 
@@ -435,17 +406,6 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  * noinline_for_stack instead.  For documentation reasons.
  */
 #define noinline_for_stack noinline
-
-/*
- * CONFIG_KASAN can lead to extreme stack usage with certain patterns when
- * one function gets inlined many times and each instance requires a stack
- * ckeck.
- */
-#ifdef CONFIG_KASAN
-#define noinline_if_stackbloat noinline __maybe_unused
-#else
-#define noinline_if_stackbloat inline
-#endif
 
 #ifndef __always_inline
 #define __always_inline inline

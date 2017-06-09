@@ -33,8 +33,8 @@ struct tuner_i2c_props {
 	char *name;
 };
 
-static noinline_if_stackbloat int
-tuner_i2c_xfer_send(struct tuner_i2c_props *props, unsigned char *buf, int len)
+static inline int tuner_i2c_xfer_send(struct tuner_i2c_props *props,
+				      unsigned char *buf, int len)
 {
 	struct i2c_msg msg = { .addr = props->addr, .flags = 0,
 			       .buf = buf, .len = len };
@@ -43,8 +43,8 @@ tuner_i2c_xfer_send(struct tuner_i2c_props *props, unsigned char *buf, int len)
 	return (ret == 1) ? len : ret;
 }
 
-static noinline_if_stackbloat int
-tuner_i2c_xfer_recv(struct tuner_i2c_props *props, unsigned char *buf, int len)
+static inline int tuner_i2c_xfer_recv(struct tuner_i2c_props *props,
+				      unsigned char *buf, int len)
 {
 	struct i2c_msg msg = { .addr = props->addr, .flags = I2C_M_RD,
 			       .buf = buf, .len = len };
@@ -53,10 +53,9 @@ tuner_i2c_xfer_recv(struct tuner_i2c_props *props, unsigned char *buf, int len)
 	return (ret == 1) ? len : ret;
 }
 
-static noinline_if_stackbloat int
-tuner_i2c_xfer_send_recv(struct tuner_i2c_props *props,
-			 unsigned char *obuf, int olen,
-			 unsigned char *ibuf, int ilen)
+static inline int tuner_i2c_xfer_send_recv(struct tuner_i2c_props *props,
+					   unsigned char *obuf, int olen,
+					   unsigned char *ibuf, int ilen)
 {
 	struct i2c_msg msg[2] = { { .addr = props->addr, .flags = 0,
 				    .buf = obuf, .len = olen },

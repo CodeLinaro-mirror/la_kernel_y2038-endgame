@@ -419,7 +419,7 @@ void set_sense_data(struct rtsx_chip *chip, unsigned int lun, u8 err_code,
 	}
 }
 
-static noinline_if_stackbloat int test_unit_ready(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int test_unit_ready(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned int lun = SCSI_LUN(srb);
 
@@ -471,7 +471,7 @@ static unsigned char formatter_inquiry_str[20] = {
 	0x20, 0x20, 0x20, /* Byte[53:55] */
 };
 
-static noinline_if_stackbloat int inquiry(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int inquiry(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned int lun = SCSI_LUN(srb);
 	char *inquiry_default = (char *)"Generic-xD/SD/M.S.      1.00 ";
@@ -558,7 +558,7 @@ static noinline_if_stackbloat int inquiry(struct scsi_cmnd *srb, struct rtsx_chi
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int start_stop_unit(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int start_stop_unit(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned int lun = SCSI_LUN(srb);
 
@@ -593,7 +593,7 @@ static noinline_if_stackbloat int start_stop_unit(struct scsi_cmnd *srb, struct 
 	return TRANSPORT_ERROR;
 }
 
-static noinline_if_stackbloat int allow_medium_removal(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int allow_medium_removal(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	int prevent;
 
@@ -611,7 +611,7 @@ static noinline_if_stackbloat int allow_medium_removal(struct scsi_cmnd *srb, st
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int request_sense(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int request_sense(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	struct sense_data_t *sense;
 	unsigned int lun = SCSI_LUN(srb);
@@ -751,7 +751,7 @@ static void ms_mode_sense(struct rtsx_chip *chip, u8 cmd,
 	}
 }
 
-static noinline_if_stackbloat int mode_sense(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int mode_sense(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned int lun = SCSI_LUN(srb);
 	unsigned int data_size;
@@ -851,7 +851,7 @@ static noinline_if_stackbloat int mode_sense(struct scsi_cmnd *srb, struct rtsx_
 	return status;
 }
 
-static noinline_if_stackbloat int read_write(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int read_write(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 #ifdef SUPPORT_SD_LOCK
 	struct sd_info *sd_card = &chip->sd_card;
@@ -994,7 +994,7 @@ exit:
 	return retval;
 }
 
-static noinline_if_stackbloat int read_format_capacity(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int read_format_capacity(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned char *buf;
 	unsigned int lun = SCSI_LUN(srb);
@@ -1075,7 +1075,7 @@ static noinline_if_stackbloat int read_format_capacity(struct scsi_cmnd *srb, st
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int read_capacity(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int read_capacity(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned char *buf;
 	unsigned int lun = SCSI_LUN(srb);
@@ -1118,7 +1118,7 @@ static noinline_if_stackbloat int read_capacity(struct scsi_cmnd *srb, struct rt
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int read_eeprom(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int read_eeprom(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned short len, i;
 	int retval;
@@ -1169,7 +1169,7 @@ static noinline_if_stackbloat int read_eeprom(struct scsi_cmnd *srb, struct rtsx
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int write_eeprom(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int write_eeprom(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned short len, i;
 	int retval;
@@ -1229,7 +1229,7 @@ static noinline_if_stackbloat int write_eeprom(struct scsi_cmnd *srb, struct rts
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int read_mem(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int read_mem(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned short addr, len, i;
 	int retval;
@@ -1287,7 +1287,7 @@ static noinline_if_stackbloat int read_mem(struct scsi_cmnd *srb, struct rtsx_ch
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int write_mem(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int write_mem(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned short addr, len, i;
 	int retval;
@@ -1345,7 +1345,7 @@ static noinline_if_stackbloat int write_mem(struct scsi_cmnd *srb, struct rtsx_c
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int get_sd_csd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int get_sd_csd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	struct sd_info *sd_card = &chip->sd_card;
 	unsigned int lun = SCSI_LUN(srb);
@@ -1368,7 +1368,7 @@ static noinline_if_stackbloat int get_sd_csd(struct scsi_cmnd *srb, struct rtsx_
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int toggle_gpio_cmd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int toggle_gpio_cmd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	u8 gpio = srb->cmnd[2];
 
@@ -1388,7 +1388,7 @@ static noinline_if_stackbloat int toggle_gpio_cmd(struct scsi_cmnd *srb, struct 
 }
 
 #ifdef _MSG_TRACE
-static noinline_if_stackbloat int trace_msg_cmd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int trace_msg_cmd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned char *ptr, *buf = NULL;
 	int i, msg_cnt;
@@ -1458,7 +1458,7 @@ static noinline_if_stackbloat int trace_msg_cmd(struct scsi_cmnd *srb, struct rt
 }
 #endif
 
-static noinline_if_stackbloat int read_host_reg(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int read_host_reg(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	u8 addr, buf[4];
 	u32 val;
@@ -1489,7 +1489,7 @@ static noinline_if_stackbloat int read_host_reg(struct scsi_cmnd *srb, struct rt
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int write_host_reg(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int write_host_reg(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	u8 addr, buf[4];
 	u32 val;
@@ -1517,7 +1517,7 @@ static noinline_if_stackbloat int write_host_reg(struct scsi_cmnd *srb, struct r
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int set_variable(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int set_variable(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned int lun = SCSI_LUN(srb);
 
@@ -1582,7 +1582,7 @@ static noinline_if_stackbloat int set_variable(struct scsi_cmnd *srb, struct rts
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int get_variable(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int get_variable(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned int lun = SCSI_LUN(srb);
 
@@ -1626,7 +1626,7 @@ static noinline_if_stackbloat int get_variable(struct scsi_cmnd *srb, struct rts
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int dma_access_ring_buffer(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int dma_access_ring_buffer(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	int retval;
 	unsigned int lun = SCSI_LUN(srb);
@@ -1667,7 +1667,7 @@ static noinline_if_stackbloat int dma_access_ring_buffer(struct scsi_cmnd *srb, 
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int get_dev_status(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int get_dev_status(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	struct sd_info *sd_card = &chip->sd_card;
 	struct ms_info *ms_card = &chip->ms_card;
@@ -1798,7 +1798,7 @@ static noinline_if_stackbloat int get_dev_status(struct scsi_cmnd *srb, struct r
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int set_chip_mode(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int set_chip_mode(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	int phy_debug_mode;
 	int retval;
@@ -1928,7 +1928,7 @@ static int rw_mem_cmd_buf(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int suit_cmd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int suit_cmd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	switch (srb->cmnd[3]) {
 	case INIT_BATCHCMD:
@@ -1941,7 +1941,7 @@ static noinline_if_stackbloat int suit_cmd(struct scsi_cmnd *srb, struct rtsx_ch
 	}
 }
 
-static noinline_if_stackbloat int read_phy_register(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int read_phy_register(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned short addr, len, i;
 	int retval;
@@ -2004,7 +2004,7 @@ static noinline_if_stackbloat int read_phy_register(struct scsi_cmnd *srb, struc
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int write_phy_register(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int write_phy_register(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned short addr, len, i;
 	int retval;
@@ -2065,7 +2065,7 @@ static noinline_if_stackbloat int write_phy_register(struct scsi_cmnd *srb, stru
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int erase_eeprom2(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int erase_eeprom2(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned short addr;
 	int retval;
@@ -2115,7 +2115,7 @@ static noinline_if_stackbloat int erase_eeprom2(struct scsi_cmnd *srb, struct rt
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int read_eeprom2(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int read_eeprom2(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned short addr, len, i;
 	int retval;
@@ -2167,7 +2167,7 @@ static noinline_if_stackbloat int read_eeprom2(struct scsi_cmnd *srb, struct rts
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int write_eeprom2(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int write_eeprom2(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned short addr, len, i;
 	int retval;
@@ -2218,7 +2218,7 @@ static noinline_if_stackbloat int write_eeprom2(struct scsi_cmnd *srb, struct rt
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int read_efuse(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int read_efuse(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	int retval;
 	u8 addr, len, i;
@@ -2270,7 +2270,7 @@ static noinline_if_stackbloat int read_efuse(struct scsi_cmnd *srb, struct rtsx_
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int write_efuse(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int write_efuse(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	int retval, result = TRANSPORT_GOOD;
 	u16 val;
@@ -2398,7 +2398,7 @@ exit:
 	return result;
 }
 
-static noinline_if_stackbloat int read_cfg_byte(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int read_cfg_byte(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	int retval;
 	bool func_max;
@@ -2457,7 +2457,7 @@ static noinline_if_stackbloat int read_cfg_byte(struct scsi_cmnd *srb, struct rt
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int write_cfg_byte(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int write_cfg_byte(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	int retval;
 	bool func_max;
@@ -2515,7 +2515,7 @@ static noinline_if_stackbloat int write_cfg_byte(struct scsi_cmnd *srb, struct r
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int app_cmd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int app_cmd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	int result;
 
@@ -2604,7 +2604,7 @@ static noinline_if_stackbloat int app_cmd(struct scsi_cmnd *srb, struct rtsx_chi
 	return result;
 }
 
-static noinline_if_stackbloat int read_status(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int read_status(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	u8 rtsx_status[16];
 	int buf_len;
@@ -2733,7 +2733,7 @@ static noinline_if_stackbloat int read_status(struct scsi_cmnd *srb, struct rtsx
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int get_card_bus_width(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int get_card_bus_width(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned int lun = SCSI_LUN(srb);
 	u8 card, bus_width;
@@ -2759,7 +2759,7 @@ static noinline_if_stackbloat int get_card_bus_width(struct scsi_cmnd *srb, stru
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int spi_vendor_cmd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int spi_vendor_cmd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	int result;
 	unsigned int lun = SCSI_LUN(srb);
@@ -2831,7 +2831,7 @@ static noinline_if_stackbloat int spi_vendor_cmd(struct scsi_cmnd *srb, struct r
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int vendor_cmnd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int vendor_cmnd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	int result;
 
@@ -3092,7 +3092,7 @@ static int get_ms_information(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 }
 #endif
 
-static noinline_if_stackbloat int ms_sp_cmnd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int ms_sp_cmnd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	int retval = TRANSPORT_ERROR;
 
@@ -3107,7 +3107,7 @@ static noinline_if_stackbloat int ms_sp_cmnd(struct scsi_cmnd *srb, struct rtsx_
 }
 
 #ifdef SUPPORT_CPRM
-static noinline_if_stackbloat int sd_extension_cmnd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int sd_extension_cmnd(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	unsigned int lun = SCSI_LUN(srb);
 	int result;
@@ -3169,7 +3169,7 @@ static noinline_if_stackbloat int sd_extension_cmnd(struct scsi_cmnd *srb, struc
 #endif
 
 #ifdef SUPPORT_MAGIC_GATE
-static noinline_if_stackbloat int mg_report_key(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int mg_report_key(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	struct ms_info *ms_card = &chip->ms_card;
 	unsigned int lun = SCSI_LUN(srb);
@@ -3282,7 +3282,7 @@ static noinline_if_stackbloat int mg_report_key(struct scsi_cmnd *srb, struct rt
 	return TRANSPORT_GOOD;
 }
 
-static noinline_if_stackbloat int mg_send_key(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+static int mg_send_key(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 {
 	struct ms_info *ms_card = &chip->ms_card;
 	unsigned int lun = SCSI_LUN(srb);

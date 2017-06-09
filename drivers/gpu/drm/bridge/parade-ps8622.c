@@ -77,7 +77,7 @@ static inline struct ps8622_bridge *
 	return container_of(connector, struct ps8622_bridge, connector);
 }
 
-static noinline_if_stackbloat int ps8622_set(struct i2c_client *client, u8 page, u8 reg, u8 val)
+static int ps8622_set(struct i2c_client *client, u8 page, u8 reg, u8 val)
 {
 	int ret;
 	struct i2c_adapter *adap = client->adapter;
