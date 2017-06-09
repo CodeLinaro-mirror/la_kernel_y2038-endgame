@@ -4,7 +4,7 @@ config HAVE_ARCH_KASAN
 if HAVE_ARCH_KASAN
 
 config KASAN
-	bool "KASan: runtime memory debugger"
+	def_bool y
 	depends on SLUB || SLAB
 	select CONSTRUCTORS
 	select STACKDEPOT
@@ -22,7 +22,7 @@ config KASAN
 
 config KASAN_EXTRA
 	bool "KAsan: extra checks"
-	depends on KASAN
+	depends on KASAN && BROKEN
 	help
 	  This enables further checks in the kernel address sanitizer, for now
 	  it only includes the address-use-after-scope check which requires the

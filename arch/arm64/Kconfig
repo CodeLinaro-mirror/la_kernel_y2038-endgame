@@ -595,9 +595,6 @@ config ARM64_VA_BITS_47
 	bool "47-bit"
 	depends on ARM64_16K_PAGES
 
-config ARM64_VA_BITS_48
-	bool "48-bit"
-
 endchoice
 
 config ARM64_VA_BITS
