@@ -42,7 +42,7 @@ struct vgic_register_region {
 		int (*uaccess_its_write)(struct kvm *kvm, struct vgic_its *its,
 					 gpa_t addr, unsigned int len,
 					 unsigned long val);
-	} u;
+	};
 };
 
 extern struct kvm_io_device_ops kvm_io_gic_ops;
