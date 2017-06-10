@@ -14157,7 +14157,7 @@ static void wlc_phy_bphy_init_nphy(struct brcms_phy *pi)
 	write_phy_reg(pi, NPHY_TO_BPHY_OFF + BPHY_STEP, 0x668);
 }
 
-noinline_if_stackbloat void
+void
 wlc_phy_table_write_nphy(struct brcms_phy *pi, u32 id, u32 len, u32 offset,
 			 u32 width, const void *data)
 {
@@ -14171,7 +14171,7 @@ wlc_phy_table_write_nphy(struct brcms_phy *pi, u32 id, u32 len, u32 offset,
 	wlc_phy_write_table_nphy(pi, &tbl);
 }
 
-noinline_if_stackbloat void
+void
 wlc_phy_table_read_nphy(struct brcms_phy *pi, u32 id, u32 len, u32 offset,
 			u32 width, void *data)
 {
