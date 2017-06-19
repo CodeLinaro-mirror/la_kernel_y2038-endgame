@@ -781,7 +781,7 @@ int get_itimerspec(struct itimerspec64 *it, const struct __kernel_itimerspec __u
 	return ret;
 }
 
-int put_itimerspec(const struct itimerspec *it, struct __kernel_itimerspec __user *uit)
+int put_itimerspec(const struct itimerspec64 *it, struct __kernel_itimerspec __user *uit)
 {
 	struct __kernel_itimerspec kit;
 	int ret;
