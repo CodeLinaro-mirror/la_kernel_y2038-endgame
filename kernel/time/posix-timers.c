@@ -764,40 +764,6 @@ COMPAT_SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
 }
 #endif
 
-int get_itimerspec(struct itimerspec64 *it, const struct __kernel_itimerspec __user *uit)
-{
-	struct __kernel_itimerspec kit;
-	int ret;
-
-	ret = copy_from_user(&kit, uit, sizeof(kit));
-	if (ret)
-		return -EFAULT;
-
-	it->it_interval.tv_sec = kit.it_interval.tv_sec;
-	it->it_interval.tv_nsec = kit.it_interval.tv_nsec;
-	it->it_value.tv_sec = kit.it_value.tv_sec;
-	it->it_value.tv_nsec = kit.it_value.tv_nsec;
-
-	return ret;
-}
-
-int put_itimerspec(const struct itimerspec64 *it, struct __kernel_itimerspec __user *uit)
-{
-	struct __kernel_itimerspec kit;
-	int ret;
-
-	kit.it_interval.tv_sec = it->it_interval.tv_sec;
-	kit.it_interval.tv_nsec = it->it_interval.tv_nsec;
-	kit.it_value.tv_sec = it->it_value.tv_sec;
-	kit.it_value.tv_nsec = it->it_value.tv_nsec;
-
-	ret = copy_to_user(uit, &kit, sizeof(kit));
-	if (ret)
-		return -EFAULT;
-
-	return ret;
-}
-
 /*
  * Get the number of overruns of a POSIX.1b interval timer.  This is to
  * be the overrun of the timer last delivered.  At the same time we are
