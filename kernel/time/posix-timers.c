@@ -912,7 +912,7 @@ static int do_timer_settime(timer_t timer_id, int flags,
 
 	if (old_spec64)
 		memset(old_spec64, 0, sizeof(*old_spec64));
-retry:
+
 	timr = lock_timer(timer_id, &flag);
 	if (!timr)
 		return -EINVAL;
