@@ -48,8 +48,8 @@ SYS_NI(alarm);
  * is also included for convenience as at least systemd uses it.
  */
 
-SYSCALL_DEFINE2(clock_settime, const clockid_t, which_clock,
-		const struct timespec __user *, tp)
+SYSCALL_DEFINE2(clock_settime, clockid_t, which_clock,
+		const struct __kernel_timespec __user *, tp)
 {
 	struct timespec64 new_tp;
 
@@ -79,8 +79,8 @@ int do_clock_gettime(clockid_t which_clock, struct timespec64 *tp)
 
 	return 0;
 }
-SYSCALL_DEFINE2(clock_gettime, const clockid_t, which_clock,
-		struct timespec __user *, tp)
+SYSCALL_DEFINE2(clock_gettime, clockid_t, which_clock,
+		struct __kernel_timespec __user *, tp)
 {
 	int ret;
 	struct timespec64 kernel_tp;
@@ -94,7 +94,7 @@ SYSCALL_DEFINE2(clock_gettime, const clockid_t, which_clock,
 	return 0;
 }
 
-SYSCALL_DEFINE2(clock_getres, const clockid_t, which_clock, struct timespec __user *, tp)
+SYSCALL_DEFINE2(clock_getres, clockid_t, which_clock, struct __kernel_timespec __user *, tp)
 {
 	struct timespec64 rtn_tp = {
 		.tv_sec = 0,
@@ -113,12 +113,11 @@ SYSCALL_DEFINE2(clock_getres, const clockid_t, which_clock, struct timespec __us
 	}
 }
 
-SYSCALL_DEFINE4(clock_nanosleep, const clockid_t, which_clock, int, flags,
-		const struct timespec __user *, rqtp,
-		struct timespec __user *, rmtp)
+SYSCALL_DEFINE4(clock_nanosleep, clockid_t, which_clock, int, flags,
+		const struct __kernel_timespec __user *, rqtp,
+		struct __kernel_timespec __user *, rmtp)
 {
 	struct timespec64 t64;
-	struct timespec t;
 
 	switch (which_clock) {
 	case CLOCK_REALTIME:
@@ -129,9 +128,8 @@ SYSCALL_DEFINE4(clock_nanosleep, const clockid_t, which_clock, int, flags,
 		return -EINVAL;
 	}
 
-	if (copy_from_user(&t, rqtp, sizeof (struct timespec)))
+	if (get_timespec64(&t64, rqtp))
 		return -EFAULT;
-	t64 = timespec_to_timespec64(t);
 	if (!timespec64_valid(&t64))
 		return -EINVAL;
 	if (flags & TIMER_ABSTIME)
@@ -151,7 +149,7 @@ COMPAT_SYS_NI(timer_gettime);
 COMPAT_SYS_NI(getitimer);
 COMPAT_SYS_NI(setitimer);
 
-COMPAT_SYSCALL_DEFINE2(clock_settime, const clockid_t, which_clock,
+COMPAT_SYSCALL_DEFINE2(clock_settime, clockid_t, which_clock,
 		       struct compat_timespec __user *, tp)
 {
 	struct timespec64 new_tp;

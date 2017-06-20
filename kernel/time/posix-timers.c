@@ -1039,7 +1039,7 @@ static int clock_settime(clockid_t which_clock, struct timespec64 *tp)
 	return kc->clock_set(which_clock, tp);
 }
 
-SYSCALL_DEFINE2(clock_settime, const clockid_t, which_clock,
+SYSCALL_DEFINE2(clock_settime, clockid_t, which_clock,
 		const struct __kernel_timespec __user *, tp)
 {
 	struct timespec64 new_tp;
@@ -1063,7 +1063,7 @@ static int clock_gettime(clockid_t which_clock, struct timespec64 *tp)
 	return error;
 }
 
-SYSCALL_DEFINE2(clock_gettime, const clockid_t, which_clock,
+SYSCALL_DEFINE2(clock_gettime, clockid_t, which_clock,
 		struct __kernel_timespec __user *,tp)
 {
 	struct timespec64 kernel_tp;
