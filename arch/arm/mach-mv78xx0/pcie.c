@@ -222,6 +222,7 @@ static int __init mv78xx0_pcie_map_irq(const struct pci_dev *dev, u8 slot,
 }
 
 static struct hw_pci mv78xx0_pci __initdata = {
+	.ops		= &pcie_ops,
 	.nr_controllers	= 8,
 	.preinit	= mv78xx0_pcie_preinit,
 	.setup		= mv78xx0_pcie_setup,
