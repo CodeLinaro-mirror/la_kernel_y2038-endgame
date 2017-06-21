@@ -24,7 +24,6 @@ struct dev_archdata {
 	const struct dma_map_ops *dev_dma_ops;
 #endif
 	bool dma_coherent;
-	u64 parent_dma_mask;
 };
 
 struct pdev_archdata {
