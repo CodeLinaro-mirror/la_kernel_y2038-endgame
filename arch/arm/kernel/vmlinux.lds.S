@@ -17,7 +17,7 @@
 #define PROC_INFO							\
 	. = ALIGN(4);							\
 	VMLINUX_SYMBOL(__proc_info_begin) = .;				\
-	KEEP(*(.proc.info.init))					\
+	*(.proc.info.init)						\
 	VMLINUX_SYMBOL(__proc_info_end) = .;
 
 #define HYPERVISOR_TEXT							\
@@ -34,16 +34,6 @@
 	VMLINUX_SYMBOL(__hyp_idmap_text_start) = .;			\
 	*(.hyp.idmap.text)						\
 	VMLINUX_SYMBOL(__hyp_idmap_text_end) = .;
-
-#undef TEXT_TEXT
-#define TEXT_TEXT							\
-		ALIGN_FUNCTION();					\
-		*(.text.hot .text.hot.*)				\
-		*(.text.unlikely .text.unlikely.*)			\
-		*(.text .text.*)					\
-		*(.ref.text)						\
-	MEM_KEEP(init.text)						\
-	MEM_KEEP(exit.text)						\
 
 #ifdef CONFIG_HOTPLUG_CPU
 #define ARM_CPU_DISCARD(x)
@@ -180,7 +170,7 @@ SECTIONS
 	 */
 	__vectors_start = .;
 	.vectors 0xffff0000 : AT(__vectors_start) {
-		KEEP(*(.vectors))
+		*(.vectors)
 	}
 	. = __vectors_start + SIZEOF(.vectors);
 	__vectors_end = .;
@@ -203,24 +193,24 @@ SECTIONS
 	}
 	.init.arch.info : {
 		__arch_info_begin = .;
-		KEEP(*(.arch.info.init))
+		*(.arch.info.init)
 		__arch_info_end = .;
 	}
 	.init.tagtable : {
 		__tagtable_begin = .;
-		KEEP(*(.taglist.init))
+		*(.taglist.init)
 		__tagtable_end = .;
 	}
 #ifdef CONFIG_SMP_ON_UP
 	.init.smpalt : {
 		__smpalt_begin = .;
-		KEEP(*(.alt.smp.init))
+		*(.alt.smp.init)
 		__smpalt_end = .;
 	}
 #endif
 	.init.pv_table : {
 		__pv_table_begin = .;
-		KEEP(*(.pv_table))
+		*(.pv_table)
 		__pv_table_end = .;
 	}
 	.init.data : {
