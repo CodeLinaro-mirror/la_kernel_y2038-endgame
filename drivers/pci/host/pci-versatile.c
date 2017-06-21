@@ -129,7 +129,7 @@ static int versatile_pci_probe(struct platform_device *pdev)
 	struct pci_host_bridge *bridge;
 	LIST_HEAD(pci_res);
 
-	bridge = devm_pci_alloc_host_bridge(dev, 0);
+	bridge = devm_pci_alloc_host_bridge(&pdev->dev, 0);
 	if (!bridge)
 		return -ENOMEM;
 
