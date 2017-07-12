@@ -72,9 +72,12 @@
 
 #include "sfi_core.h"
 
-#define ON_SAME_PAGE(addr1, addr2) \
-	(((unsigned long)(addr1) & PAGE_MASK) == \
-	((unsigned long)(addr2) & PAGE_MASK))
+static inline bool on_same_page(unsigned long addr1, unsigned long addr2)
+{
+	return (addr1 & PAGE_MASK) == (addr2 & PAGE_MASK);
+}
+
+#define ON_SAME_PAGE(addr1, addr2) on_same_page((unsigned long)addr1, (unsigned long)addr2)
 #define TABLE_ON_PAGE(page, table, size) (ON_SAME_PAGE(page, table) && \
 				ON_SAME_PAGE(page, table + size))
 
