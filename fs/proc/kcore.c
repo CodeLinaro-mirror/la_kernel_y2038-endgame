@@ -619,14 +619,12 @@ static void __init proc_kcore_text_init(void)
 /*
  * MODULES_VADDR has no intersection with VMALLOC_ADDR.
  */
-static struct kcore_list kcore_modules;
+struct kcore_list kcore_modules;
 static void __init add_modules_range(void)
 {
-	void *start = (void *)MODULES_VADDR;
-	size_t len = MODULES_END - MODULES_VADDR;
-
-	if (start != (void *)VMALLOC_START && len != VMALLOC_END - VMALLOC_START) {
-		kclist_add(&kcore_modules, start, len, KCORE_VMALLOC);
+	if (MODULES_VADDR != VMALLOC_START && MODULES_END != VMALLOC_END) {
+		kclist_add(&kcore_modules, (void *)MODULES_VADDR,
+			MODULES_END - MODULES_VADDR, KCORE_VMALLOC);
 	}
 }
 #else
