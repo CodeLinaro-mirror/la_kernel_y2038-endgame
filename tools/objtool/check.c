@@ -1980,6 +1980,9 @@ static int validate_branch(struct objtool_file *file, struct instruction *first,
 
 			break;
 
+		case INSN_BUG:
+			return 0;
+
 		default:
 			break;
 		}
