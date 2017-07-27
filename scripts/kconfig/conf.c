@@ -731,8 +731,9 @@ int main(int ac, char **av)
 {
 	const char *progname = av[0];
 	int opt;
-	const char *name, *defconfig_file = NULL /* gcc uninit */;
+	const char *arch, *name, *defconfig_file = NULL /* gcc uninit */;
 	int no_conf_write = 0;
+	char fullname[PATH_MAX+1];
 
 	tty_stdio = isatty(0) && isatty(1);
 
@@ -826,14 +827,24 @@ int main(int ac, char **av)
 		case randconfig:	name = "allrandom.config"; break;
 		default: break;
 		}
-		if (conf_read_simple(name, S_DEF_USER) &&
-		    conf_read_simple("all.config", S_DEF_USER)) {
-			fprintf(stderr,
-				"*** KCONFIG_ALLCONFIG set, but no \"%s\" or \"all.config\" file found\n",
-				name);
-			exit(1);
+		/* try ./name, arch/$(ARCH)/configs/name and kernel/config/name */
+		if (!conf_read_simple(name, S_DEF_USER))
+			break;
+		arch = getenv("ARCH");
+		if (arch) {
+			snprintf(fullname, sizeof(fullname), "arch/%s/configs/%s",
+				 arch, name);
+			if (!conf_read_simple(fullname, S_DEF_USER))
+				break;
 		}
-		break;
+		snprintf(fullname, sizeof(fullname), "kernel/configs/%s", name);
+		if (!conf_read_simple(fullname, S_DEF_USER))
+			break;
+
+		fprintf(stderr,
+			"*** KCONFIG_ALLCONFIG set, but no \"%s\" or \"all.config\" file found\n",
+				name);
+		exit(1);
 	default:
 		break;
 	}
