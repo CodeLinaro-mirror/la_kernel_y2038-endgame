@@ -336,7 +336,7 @@ void __exit pnpbios_proc_exit(void)
 		return;
 
 	for (i = 0; i < 0xff; i++) {
-		sprintf(name, "%02x", i);
+		snprintf(name, sizeof(name), "%02hhx", i);
 		if (!pnpbios_dont_use_current_config)
 			remove_proc_entry(name, proc_pnp);
 		remove_proc_entry(name, proc_pnp_boot);

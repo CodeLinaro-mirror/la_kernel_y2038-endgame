@@ -834,7 +834,7 @@ static int fsl_sai_probe(struct platform_device *pdev)
 
 	sai->mclk_clk[0] = sai->bus_clk;
 	for (i = 1; i < FSL_SAI_MCLK_MAX; i++) {
-		sprintf(tmp, "mclk%d", i);
+		sprintf(tmp, "mclk%hhd", i);
 		sai->mclk_clk[i] = devm_clk_get(&pdev->dev, tmp);
 		if (IS_ERR(sai->mclk_clk[i])) {
 			dev_err(&pdev->dev, "failed to get mclk%d clock: %ld\n",

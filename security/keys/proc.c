@@ -228,15 +228,15 @@ static int proc_keys_show(struct seq_file *m, void *v)
 		timo = expiry - now;
 
 		if (timo < 60)
-			sprintf(xbuf, "%llus", timo);
+			sprintf(xbuf, "%us", (unsigned char)timo);
 		else if (timo < 60*60)
-			sprintf(xbuf, "%llum", div_u64(timo, 60));
+			sprintf(xbuf, "%um", (unsigned char)div_u64(timo, 60));
 		else if (timo < 60*60*24)
-			sprintf(xbuf, "%lluh", div_u64(timo, 60 * 60));
+			sprintf(xbuf, "%uh", (unsigned char)div_u64(timo, 60 * 60));
 		else if (timo < 60*60*24*7)
-			sprintf(xbuf, "%llud", div_u64(timo, 60 * 60 * 24));
+			sprintf(xbuf, "%ud", (unsigned char)div_u64(timo, 60 * 60 * 24));
 		else
-			sprintf(xbuf, "%lluw", div_u64(timo, 60 * 60 * 24 * 7));
+			sprintf(xbuf, "%uw", (unsigned char)div_u64(timo, 60 * 60 * 24 * 7));
 	}
 
 	state = key_read_state(key);

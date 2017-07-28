@@ -303,22 +303,22 @@ static void mvneta_bm_pools_init(struct mvneta_bm *priv)
 		mvneta_bm_write(priv, MVNETA_BM_POOL_WRITE_PTR_REG(i), 0);
 
 		/* Configure pool size according to DT or use default value */
-		sprintf(prop, "pool%d,capacity", i);
+		snprintf(prop, sizeof(prop), "pool%hhd,capacity", i);
 		if (of_property_read_u32(dn, prop, &size)) {
 			size = MVNETA_BM_POOL_CAP_DEF;
 		} else if (size > MVNETA_BM_POOL_CAP_MAX) {
 			dev_warn(&priv->pdev->dev,
-				 "Illegal pool %d capacity %d, set to %d\n",
+				 "Illegal pool %hhd capacity %d, set to %d\n",
 				 i, size, MVNETA_BM_POOL_CAP_MAX);
 			size = MVNETA_BM_POOL_CAP_MAX;
 		} else if (size < MVNETA_BM_POOL_CAP_MIN) {
 			dev_warn(&priv->pdev->dev,
-				 "Illegal pool %d capacity %d, set to %d\n",
+				 "Illegal pool %hhd capacity %d, set to %d\n",
 				 i, size, MVNETA_BM_POOL_CAP_MIN);
 			size = MVNETA_BM_POOL_CAP_MIN;
 		} else if (!IS_ALIGNED(size, MVNETA_BM_POOL_CAP_ALIGN)) {
 			dev_warn(&priv->pdev->dev,
-				 "Illegal pool %d capacity %d, round to %d\n",
+				 "Illegal pool %hhd capacity %d, round to %d\n",
 				 i, size, ALIGN(size,
 				 MVNETA_BM_POOL_CAP_ALIGN));
 			size = ALIGN(size, MVNETA_BM_POOL_CAP_ALIGN);
@@ -329,7 +329,7 @@ static void mvneta_bm_pools_init(struct mvneta_bm *priv)
 				bm_pool->hwbm_pool.size);
 
 		/* Obtain custom pkt_size from DT */
-		sprintf(prop, "pool%d,pkt-size", i);
+		snprintf(prop,  sizeof(prop), "pool%hhd,pkt-size", i);
 		if (of_property_read_u32(dn, prop, &bm_pool->pkt_size))
 			bm_pool->pkt_size = 0;
 	}
