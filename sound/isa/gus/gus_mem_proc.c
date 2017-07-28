@@ -69,7 +69,7 @@ int snd_gf1_mem_proc_init(struct snd_gus_card * gus)
 			if (priv == NULL)
 				return -ENOMEM;
 			priv->gus = gus;
-			sprintf(name, "gus-ram-%i", idx);
+			sprintf(name, "gus-ram-%hhi", idx);
 			if (! snd_card_proc_new(gus->card, name, &entry)) {
 				entry->content = SNDRV_INFO_CONTENT_DATA;
 				entry->private_data = priv;
@@ -87,7 +87,7 @@ int snd_gf1_mem_proc_init(struct snd_gus_card * gus)
 				return -ENOMEM;
 			priv->rom = 1;
 			priv->gus = gus;
-			sprintf(name, "gus-rom-%i", idx);
+			sprintf(name, "gus-rom-%hhi", idx);
 			if (! snd_card_proc_new(gus->card, name, &entry)) {
 				entry->content = SNDRV_INFO_CONTENT_DATA;
 				entry->private_data = priv;
