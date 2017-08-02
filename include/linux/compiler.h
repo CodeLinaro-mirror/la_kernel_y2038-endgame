@@ -590,4 +590,15 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
 	(_________p1); \
 })
 
+/*
+ * Force the compiler to emit 'sym' as a symbol, so that we can reference
+ * it from inline assembler. Necessary in case 'sym' could be inlined
+ * otherwise, or eliminated entirely due to lack of references that are
+ * visibile to the compiler.
+ */
+#define __ADDRESSABLE(sym) \
+	static void * __attribute__((section(".discard.text"), used))	\
+		__PASTE(__discard_##sym,__LINE__)(void)			\
+			{ return (void *)&sym; }			\
+
 #endif /* __LINUX_COMPILER_H */
