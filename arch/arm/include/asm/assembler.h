@@ -247,7 +247,7 @@
 9999:	x;					\
 	.pushsection __ex_table,"a";		\
 	.align	3;				\
-	.long	9999b,9001f;			\
+	.long	9999b - ., 9001f - .;		\
 	.popsection
 
 #ifdef CONFIG_SMP
@@ -383,7 +383,7 @@ THUMB(	orr	\reg , \reg , #PSR_T_BIT	)
 
 	.pushsection __ex_table,"a"
 	.align	3
-	.long	9999b, \abort
+	.long	9999b - ., \abort - .
 	.popsection
 	.endm
 
@@ -424,7 +424,7 @@ THUMB(	orr	\reg , \reg , #PSR_T_BIT	)
 
 	.pushsection __ex_table,"a"
 	.align	3
-	.long	9999b, \abort
+	.long	9999b - ., \abort - .
 	.popsection
 	.endr
 	.endm

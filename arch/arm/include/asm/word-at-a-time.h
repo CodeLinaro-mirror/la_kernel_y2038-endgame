@@ -86,7 +86,7 @@ static inline unsigned long load_unaligned_zeropad(const void *addr)
 	"	.popsection\n"
 	"	.pushsection __ex_table,\"a\"\n"
 	"	.align	3\n"
-	"	.long	1b, 3b\n"
+	"	.long	1b - ., 3b - .\n"
 	"	.popsection"
 	: "=&r" (ret), "=&r" (offset)
 	: "r" (addr), "Qo" (*(unsigned long *)addr));

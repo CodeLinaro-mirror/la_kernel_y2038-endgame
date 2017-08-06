@@ -295,7 +295,7 @@ do {									\
 	"	.popsection\n"					\
 	"	.pushsection __ex_table,\"a\"\n"		\
 	"	.align	3\n"					\
-	"	.long	1b, 3b\n"				\
+	"	.long	1b - ., 3b - .\n"			\
 	"	.popsection"					\
 	: "+r" (err), "=&r" (x)					\
 	: "r" (addr), "i" (-EFAULT)				\
@@ -385,7 +385,7 @@ do {									\
 	"	.popsection\n"					\
 	"	.pushsection __ex_table,\"a\"\n"		\
 	"	.align	3\n"					\
-	"	.long	1b, 3b\n"				\
+	"	.long	1b - ., 3b - .\n"			\
 	"	.popsection"					\
 	: "+r" (err)						\
 	: "r" (x), "r" (__pu_addr), "i" (-EFAULT)		\
@@ -435,8 +435,8 @@ do {									\
 	"	.popsection\n"					\
 	"	.pushsection __ex_table,\"a\"\n"		\
 	"	.align	3\n"					\
-	"	.long	1b, 4b\n"				\
-	"	.long	2b, 4b\n"				\
+	"	.long	1b - ., 4b - .\n"			\
+	"	.long	2b - ., 4b - .\n"			\
 	"	.popsection"					\
 	: "+r" (err), "+r" (__pu_addr)				\
 	: "r" (x), "i" (-EFAULT)				\

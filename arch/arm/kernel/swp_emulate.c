@@ -50,8 +50,8 @@
 	"	.previous\n"					\
 	"	.section	 __ex_table,\"a\"\n"		\
 	"	.align		3\n"				\
-	"	.long		0b, 3b\n"			\
-	"	.long		1b, 3b\n"			\
+	"	.long		0b - ., 3b - .\n"		\
+	"	.long		1b - ., 3b - .\n"		\
 	"	.previous"					\
 	: "=&r" (res), "+r" (data), "=&r" (temp)		\
 	: "r" (addr), "i" (-EAGAIN), "i" (-EFAULT)		\

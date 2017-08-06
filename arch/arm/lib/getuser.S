@@ -133,17 +133,17 @@ ENDPROC(__get_user_bad)
 ENDPROC(__get_user_bad8)
 
 .pushsection __ex_table, "a"
-	.long	1b, __get_user_bad
-	.long	2b, __get_user_bad
-	.long	3b, __get_user_bad
-	.long	4b, __get_user_bad
-	.long	5b, __get_user_bad8
-	.long	6b, __get_user_bad8
+	.long	1b - ., __get_user_bad - .
+	.long	2b - ., __get_user_bad - .
+	.long	3b - ., __get_user_bad - .
+	.long	4b - ., __get_user_bad - .
+	.long	5b - ., __get_user_bad8 - .
+	.long	6b - ., __get_user_bad8 - .
 #ifdef __ARMEB__
-	.long   7b, __get_user_bad
-	.long	8b, __get_user_bad8
-	.long	9b, __get_user_bad8
-	.long	10b, __get_user_bad8
-	.long	11b, __get_user_bad8
+	.long   7b - ., __get_user_bad - .
+	.long	8b - ., __get_user_bad8 - .
+	.long	9b - ., __get_user_bad8 - .
+	.long	10b - ., __get_user_bad8 - .
+	.long	11b - ., __get_user_bad8 - .
 #endif
 .popsection

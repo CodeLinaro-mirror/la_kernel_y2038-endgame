@@ -121,5 +121,5 @@ next:
 
 	.pushsection __ex_table,"a"
 	.align	3
-	.long	.Lx1, .Lfix
+	.long	.Lx1 - ., .Lfix - .
 	.popsection

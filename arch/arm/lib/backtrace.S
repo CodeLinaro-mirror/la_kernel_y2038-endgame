@@ -107,10 +107,10 @@ ENDPROC(c_backtrace)
 		
 		.pushsection __ex_table,"a"
 		.align	3
-		.long	1001b, 1006b
-		.long	1002b, 1006b
-		.long	1003b, 1006b
-		.long	1004b, 1006b
+		.long	1001b - ., 1006b - .
+		.long	1002b - ., 1006b - .
+		.long	1003b - ., 1006b - .
+		.long	1004b - ., 1006b - .
 		.popsection
 
 .Lbad:		.asciz	"Backtrace aborted due to bad frame pointer <%p>\n"

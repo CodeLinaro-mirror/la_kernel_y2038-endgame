@@ -11,7 +11,7 @@
 	"3:\n"							\
 	"	.pushsection __ex_table,\"a\"\n"		\
 	"	.align	3\n"					\
-	"	.long	1b, 4f, 2b, 4f\n"			\
+	"	.long	1b - ., 4f - ., 2b - ., 4f - .\n"	\
 	"	.popsection\n"					\
 	"	.pushsection .text.fixup,\"ax\"\n"		\
 	"	.align	2\n"					\
