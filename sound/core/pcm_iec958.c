@@ -46,6 +46,13 @@ static int create_iec958_consumer(uint rate, uint sample_width,
 		return -EINVAL;
 	}
 
+	memset(cs, 0, len);
+
+	cs[0] = IEC958_AES0_CON_NOT_COPYRIGHT | IEC958_AES0_CON_EMPHASIS_NONE;
+	cs[1] = IEC958_AES1_CON_GENERAL;
+	cs[2] = IEC958_AES2_CON_SOURCE_UNSPEC | IEC958_AES2_CON_CHANNEL_UNSPEC;
+	cs[3] = IEC958_AES3_CON_CLOCK_1000PPM | fs;
+
 	if (len > 4) {
 		switch (sample_width) {
 		case 16:
@@ -67,17 +74,9 @@ static int create_iec958_consumer(uint rate, uint sample_width,
 		default:
 			return -EINVAL;
 		}
-	}
 
-	memset(cs, 0, len);
-
-	cs[0] = IEC958_AES0_CON_NOT_COPYRIGHT | IEC958_AES0_CON_EMPHASIS_NONE;
-	cs[1] = IEC958_AES1_CON_GENERAL;
-	cs[2] = IEC958_AES2_CON_SOURCE_UNSPEC | IEC958_AES2_CON_CHANNEL_UNSPEC;
-	cs[3] = IEC958_AES3_CON_CLOCK_1000PPM | fs;
-
-	if (len > 4)
 		cs[4] = ws;
+	}
 
 	return len;
 }
