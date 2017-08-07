@@ -60,15 +60,14 @@
 ENTRY(__cpu_suspend)
 	stmfd	sp!, {r4 - r11, lr}
 #ifdef MULTI_CPU
-	ldr	r10, =processor
-	ldr	r4, [r10, #CPU_SLEEP_SIZE] @ size of CPU sleep state
+	ldr_l	r4, processor + CPU_SLEEP_SIZE	@ size of CPU sleep state
 #else
-	ldr	r4, =cpu_suspend_size
+	adr_l	r4, cpu_suspend_size
 #endif
 	mov	r5, sp			@ current virtual SP
 	add	r4, r4, #12		@ Space for pgd, virt sp, phys resume fn
 	sub	sp, sp, r4		@ allocate CPU state on stack
-	ldr	r3, =sleep_save_sp
+	adr_l	r3, sleep_save_sp
 	stmfd	sp!, {r0, r1}		@ save suspend func arg and pointer
 	ldr	r3, [r3, #SLEEP_SAVE_SP_VIRT]
 	ALT_SMP(W(nop))			@ don't use adr_l inside ALT_SMP()
@@ -101,13 +100,13 @@ ENDPROC(cpu_suspend_abort)
 	.align	5
 	.pushsection	.idmap.text,"ax"
 ENTRY(cpu_resume_mmu)
-	ldr	r3, =cpu_resume_after_mmu
 	instr_sync
 	mcr	p15, 0, r0, c1, c0, 0	@ turn on MMU, I-cache, etc
 	mrc	p15, 0, r0, c0, c0, 0	@ read id reg
 	instr_sync
 	mov	r0, r0
 	mov	r0, r0
+	ldr	r3, =cpu_resume_after_mmu
 	ret	r3			@ jump to virtual address
 ENDPROC(cpu_resume_mmu)
 	.popsection
