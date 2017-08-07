@@ -2085,6 +2085,10 @@ config DMI
 	  firmware need to be enabled. This would require the DMI subsystem
 	  to be enabled much earlier than we do on ARM, which is non-trivial.
 
+config RELOCATABLE
+	bool
+	select HAVE_ARCH_PREL32_RELOCATIONS
+
 endmenu
 
 menu "CPU Power Management"

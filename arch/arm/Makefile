@@ -52,6 +52,11 @@ AS		+= -EL
 LD		+= -EL
 endif
 
+ifeq ($(CONFIG_RELOCATABLE),y)
+KBUILD_CFLAGS	+= -mword-relocations
+LDFLAGS_vmlinux	+= -pie -shared -Bsymbolic
+endif
+
 #
 # The Scalar Replacement of Aggregates (SRA) optimization pass in GCC 4.9 and
 # later may result in code being generated that handles signed short and signed
