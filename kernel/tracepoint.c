@@ -28,8 +28,8 @@
 #include <linux/sched/task.h>
 #include <linux/static_key.h>
 
-extern struct tracepoint * const __start___tracepoints_ptrs[];
-extern struct tracepoint * const __stop___tracepoints_ptrs[];
+extern const unsigned char __start___tracepoints_ptrs[];
+extern const unsigned char __stop___tracepoints_ptrs[];
 
 /* Set to 1 to enable tracepoint debug output */
 static const int tracepoint_debug;
@@ -503,17 +503,26 @@ static __init int init_tracepoints(void)
 __initcall(init_tracepoints);
 #endif /* CONFIG_MODULES */
 
-static void for_each_tracepoint_range(struct tracepoint * const *begin,
-		struct tracepoint * const *end,
+static void for_each_tracepoint_range(const void *begin, const void *end,
 		void (*fct)(struct tracepoint *tp, void *priv),
 		void *priv)
 {
+#ifdef CONFIG_HAVE_ARCH_PREL32_RELOCATIONS
+	const signed int *iter;
+
+	if (!begin)
+		return;
+	for (iter = begin; iter < (signed int *)end; iter++) {
+		fct((struct tracepoint *)((unsigned long)iter + *iter), priv);
+	}
+#else
 	struct tracepoint * const *iter;
 
 	if (!begin)
 		return;
-	for (iter = begin; iter < end; iter++)
+	for (iter = begin; iter < (struct tracepoint * const *)end; iter++)
 		fct(*iter, priv);
+#endif
 }
 
 /**
