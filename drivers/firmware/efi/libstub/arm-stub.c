@@ -133,6 +133,7 @@ unsigned long efi_entry(void *handle, efi_system_table_t *sys_table,
 	unsigned long reserve_size = 0;
 	enum efi_secureboot_mode secure_boot;
 	struct screen_info *si;
+	bool have_chosen_initrd;
 
 	/* Check if we were booted by the EFI firmware */
 	if (sys_table->hdr.signature != EFI_SYSTEM_TABLE_SIGNATURE)
@@ -183,15 +184,6 @@ unsigned long efi_entry(void *handle, efi_system_table_t *sys_table,
 
 	si = setup_graphics(sys_table);
 
-	status = handle_kernel_image(sys_table, image_addr, &image_size,
-				     &reserve_addr,
-				     &reserve_size,
-				     dram_base, image);
-	if (status != EFI_SUCCESS) {
-		pr_efi_err(sys_table, "Failed to relocate kernel\n");
-		goto fail_free_cmdline;
-	}
-
 	secure_boot = efi_get_secureboot(sys_table);
 
 	/*
@@ -209,7 +201,7 @@ unsigned long efi_entry(void *handle, efi_system_table_t *sys_table,
 
 		if (status != EFI_SUCCESS) {
 			pr_efi_err(sys_table, "Failed to load device tree!\n");
-			goto fail_free_image;
+			goto fail_free_cmdline;
 		}
 	}
 
@@ -222,16 +214,33 @@ unsigned long efi_entry(void *handle, efi_system_table_t *sys_table,
 			pr_efi(sys_table, "Using DTB from configuration table\n");
 	}
 
-	if (!fdt_addr)
+	if (!fdt_addr) {
 		pr_efi(sys_table, "Generating empty DTB\n");
+		have_chosen_initrd = false;
+	} else {
+		status = efi_reserve_dtb_initrd(sys_table, (void *)fdt_addr);
+		have_chosen_initrd = (status != EFI_NOT_FOUND);
+	}
 
-	status = handle_cmdline_files(sys_table, image, cmdline_ptr, "initrd=",
-				      efi_get_max_initrd_addr(dram_base,
-							      *image_addr),
-				      (unsigned long *)&initrd_addr,
-				      (unsigned long *)&initrd_size);
-	if (status != EFI_SUCCESS)
-		pr_efi_err(sys_table, "Failed initrd from command line!\n");
+	status = handle_kernel_image(sys_table, image_addr, &image_size,
+				     &reserve_addr, &reserve_size,
+				     dram_base, image);
+	if (status != EFI_SUCCESS) {
+		pr_efi_err(sys_table, "Failed to relocate kernel\n");
+		goto fail_free_fdt;
+	}
+
+	if (!have_chosen_initrd) {
+		status = handle_cmdline_files(sys_table, image, cmdline_ptr,
+					      "initrd=",
+					      efi_get_max_initrd_addr(dram_base,
+								      *image_addr),
+					      (unsigned long *)&initrd_addr,
+					      (unsigned long *)&initrd_size);
+		if (status != EFI_SUCCESS)
+			pr_efi_err(sys_table,
+				   "Failed initrd from command line!\n");
+	}
 
 	efi_random_get_seed(sys_table);
 
@@ -272,11 +281,11 @@ unsigned long efi_entry(void *handle, efi_system_table_t *sys_table,
 	pr_efi_err(sys_table, "Failed to update FDT and exit boot services\n");
 
 	efi_free(sys_table, initrd_size, initrd_addr);
-	efi_free(sys_table, fdt_size, fdt_addr);
-
-fail_free_image:
 	efi_free(sys_table, image_size, *image_addr);
 	efi_free(sys_table, reserve_size, reserve_addr);
+
+fail_free_fdt:
+	efi_free(sys_table, fdt_size, fdt_addr);
 fail_free_cmdline:
 	free_screen_info(sys_table, si);
 	efi_free(sys_table, cmdline_size, (unsigned long)cmdline_ptr);

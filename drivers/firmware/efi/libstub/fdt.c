@@ -385,3 +385,45 @@ void *get_fdt(efi_system_table_t *sys_table, unsigned long *fdt_size)
 
 	return fdt;
 }
+
+efi_status_t efi_reserve_dtb_initrd(efi_system_table_t *sys_table_arg,
+				    const void *fdt)
+{
+	int chosen, len;
+	const void *prop;
+	efi_physical_addr_t start, end;
+	unsigned long num_pages;
+	efi_status_t status;
+
+	chosen = fdt_path_offset(fdt, "/chosen");
+	if (chosen == -FDT_ERR_NOTFOUND)
+		return EFI_NOT_FOUND;
+
+	prop = fdt_getprop(fdt, chosen, "linux,initrd-start", &len);
+	if (!prop)
+		return EFI_NOT_FOUND;
+
+	start = (len == sizeof(fdt32_t)) ? fdt32_to_cpu(*(fdt32_t *)prop)
+					 : fdt64_to_cpu(*(fdt64_t *)prop);
+
+	prop = fdt_getprop(fdt, chosen, "linux,initrd-end", &len);
+	if (!prop)
+		return EFI_NOT_FOUND;
+
+	end = (len == sizeof(fdt32_t)) ? fdt32_to_cpu(*(fdt32_t *)prop)
+				       : fdt64_to_cpu(*(fdt64_t *)prop);
+
+	start = round_down(start, EFI_PAGE_SIZE);
+	num_pages = round_up(end - start, EFI_PAGE_SIZE) / EFI_PAGE_SIZE;
+
+	status = efi_call_early(allocate_pages, EFI_ALLOCATE_ADDRESS,
+				EFI_LOADER_DATA, num_pages, &start);
+
+	if (status != EFI_SUCCESS)
+		pr_efi_err(sys_table_arg,
+			   "Failed to reserve initrd area found in /chosen\n");
+	else
+		pr_efi(sys_table_arg, "Using initrd found in /chosen\n");
+
+	return status;
+}
