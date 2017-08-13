@@ -125,5 +125,21 @@ section_table:
 
 		.align	9
 __efi_start:
+#ifdef CONFIG_RANDOMIZE_BASE
+		/*
+		 * The KASLR routines in the decompressor are unaware of any
+		 * memory regions that may be reserved for UEFI runtime services
+		 * or otherwise marked reserved in the UEFI memory map. So if
+		 * we are booting via UEFI, either let the UEFI stub perform the
+		 * randomization, or run unrandomized.
+		 */
+		mov		r0, #1			@ .rodata is still r/w
+		str_l		r0, __efi_boot, r1	@ at this point
+
+		.pushsection	".rodata", "a", %progbits
+		.align		2
+__efi_boot:	.long		0
+		.popsection
+#endif
 #endif
 		.endm

@@ -200,6 +200,10 @@ not_angel:
 		 */
 		mov	r4, pc
 		and	r4, r4, #0xf8000000
+#ifdef CONFIG_RANDOMIZE_BASE
+		ldr_l	r0, kaslr_offset
+		add	r4, r4, r0
+#endif
 		/* Determine final kernel image address. */
 		add	r4, r4, #TEXT_OFFSET
 #else
@@ -376,6 +380,42 @@ restart:	adr	r0, LC0
 		add	r10, r10, r5
 		add	sp, sp, r5
 dtb_check_done:
+#endif
+
+#ifdef CONFIG_RANDOMIZE_BASE
+		ldr_l	r1, kaslr_offset	@ check if the kaslr_offset is
+		cmp	r1, #0			@ already set
+#ifdef CONFIG_EFI_STUB
+		ldr_l	r1, __efi_boot		@ UEFI has its own KASLR init
+		cmpeq	r1, #0			@ routine so skip over this one
+#endif
+		bne	1f
+
+		stmfd	sp!, {r0-r3, ip, lr}
+		adr_l	r2, _text		@ start of zImage
+		stmfd	sp!, {r2, r8, r10}	@ pass stack arguments
+
+#if defined(CONFIG_CPU_V6) || defined(CONFIG_CPU_V6K) || defined(CONFIG_CPU_V7)
+		/*
+		 * Get some pseudo-entropy from the low bits of the generic
+		 * timer if it is implemented.
+		 */
+		mrc	p15, 0, r1, c0, c1, 1	@ read ID_PFR1 register
+		tst	r1, #0x10000		@ have generic timer?
+		beq	0f
+		mrrc	p15, 1, r3, r1, c14	@ read CNTVCT
+#endif
+0:		adr_l	r0, kaslr_offset	@ pass &kaslr_offset in r0
+		mov	r1, r4			@ pass base address
+		mov	r2, r9			@ pass decompressed image size
+		eor	r3, r3, r3, ror #16	@ pass initial seed
+		bl	kaslr_early_init
+		add	sp, sp, #12
+		cmp	r0, #0
+		addne	r4, r4, r0		@ add offset to base address
+		ldmfd	sp!, {r0-r3, ip, lr}
+		bne	restart
+1:
 #endif
 
 /*
@@ -1353,6 +1393,10 @@ __hyp_reentry_vectors:
 
 __enter_kernel:
 		mov	r0, #0			@ must be 0
+#ifdef CONFIG_RANDOMIZE_BASE
+		ldr_l	r3, kaslr_offset
+		add	r4, r4, #4		@ skip first instruction
+#endif
  ARM(		mov	pc, r4		)	@ call kernel
  M_CLASS(	add	r4, r4, #1	)	@ enter in Thumb mode for M class
  THUMB(		bx	r4		)	@ entry point is always ARM for A/R classes
