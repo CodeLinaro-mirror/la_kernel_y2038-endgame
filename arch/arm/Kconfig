@@ -1825,6 +1825,21 @@ config XEN
 	help
 	  Say Y if you want to run Linux in a Virtual Machine on Xen on ARM.
 
+config RANDOMIZE_BASE
+	bool "Randomize the address of the kernel image"
+	depends on MMU && AUTO_ZRELADDR
+	depends on !XIP_KERNEL && !ZBOOT_ROM && !HAVE_TCM
+	select RELOCATABLE
+	help
+	  Randomizes the virtual and physical address at which the kernel
+	  image is loaded, as a security feature that deters exploit attempts
+	  relying on knowledge of the location of kernel internals.
+
+	  This relies on the UEFI stub to invoke the EFI_RNG_PROTOCOL to
+	  randomize the load address of the decompressed kernel in the
+	  physical space. The same offset is applied to the virtual mapping
+	  of the kernel in the virtual space by the kernel proper.
+
 endmenu
 
 menu "Boot options"
