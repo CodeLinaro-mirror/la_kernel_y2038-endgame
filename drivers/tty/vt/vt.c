@@ -752,6 +752,16 @@ static void visual_init(struct vc_data *vc, int num, int init)
 	vc->vc_screenbuf_size = vc->vc_rows * vc->vc_size_row;
 }
 
+static void vt_destruct(struct tty_port *port)
+{
+	struct vc_data *vc = container_of(port, struct vc_data, port);
+	kfree(vc);
+}
+
+static const struct tty_port_operations vt_port_operations = {
+	.destruct = vt_destruct,
+};
+
 int vc_allocate(unsigned int currcons)	/* return 0 on success */
 {
 	struct vt_notifier_param param;
@@ -777,6 +787,7 @@ int vc_allocate(unsigned int currcons)	/* return 0 on success */
 
 	vc_cons[currcons].d = vc;
 	tty_port_init(&vc->port);
+	vc->port.ops = &vt_port_operations;
 	INIT_WORK(&vc_cons[currcons].SAK_work, vc_SAK);
 
 	visual_init(vc, currcons, 1);
@@ -2884,14 +2895,16 @@ static int con_install(struct tty_driver *driver, struct tty_struct *tty)
 	vc = vc_cons[currcons].d;
 
 	/* Still being freed */
-	if (vc->port.tty) {
+	if (vc->port.tty || !tty_port_get(&vc->port)) {
 		ret = -ERESTARTSYS;
 		goto unlock;
 	}
 
 	ret = tty_port_install(&vc->port, driver, tty);
-	if (ret)
+	if (ret) {
+		tty_port_put(&vc->port);
 		goto unlock;
+	}
 
 	tty->driver_data = vc;
 	vc->port.tty = tty;
@@ -2928,6 +2941,11 @@ static void con_shutdown(struct tty_struct *tty)
 	console_lock();
 	vc->port.tty = NULL;
 	console_unlock();
+}
+
+static void con_cleanup(struct tty_struct *tty)
+{
+	tty_port_put(tty->port);
 }
 
 static int default_color           = 7; /* white */
@@ -3054,7 +3072,8 @@ static const struct tty_operations con_ops = {
 	.throttle = con_throttle,
 	.unthrottle = con_unthrottle,
 	.resize = vt_resize,
-	.shutdown = con_shutdown
+	.shutdown = con_shutdown,
+	.cleanup = con_cleanup,
 };
 
 static struct cdev vc0_cdev;
