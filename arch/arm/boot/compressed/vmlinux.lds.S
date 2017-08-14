@@ -6,6 +6,8 @@
  * published by the Free Software Foundation.
  */
 
+#include <asm/zimage.h>
+
 #ifdef CONFIG_CPU_ENDIAN_BE8
 #define ZIMAGE_MAGIC(x) ( (((x) >> 24) & 0x000000ff) | \
 			  (((x) >>  8) & 0x0000ff00) | \
@@ -72,9 +74,10 @@ SECTIONS
   .pad			: { BYTE(0); . = ALIGN(8); }
   _edata = .;
 
-  _magic_sig = ZIMAGE_MAGIC(0x016f2818);
   _magic_start = ZIMAGE_MAGIC(_start);
   _magic_end = ZIMAGE_MAGIC(_edata);
+
+  PROVIDE(__zimage_opt_header_offset_le = ZIMAGE_MAGIC(__zimage_opt_header - __zimage_opt_header_ref));
 
   . = BSS_START;
   __bss_start = .;

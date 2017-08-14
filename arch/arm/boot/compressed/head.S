@@ -11,6 +11,7 @@
 #include <linux/linkage.h>
 #include <asm/assembler.h>
 #include <asm/v7m.h>
+#include <asm/zimage.h>
 
 #include "efi-header.S"
 
@@ -139,11 +140,7 @@ start:
 #endif
 		W(b)	1f
 
-		.word	_magic_sig	@ Magic numbers to help the loader
-		.word	_magic_start	@ absolute load/run zImage address
-		.word	_magic_end	@ zImage end address
-		.word	0x04030201	@ endianness flag
-
+		__ZIMAGE_HEADER
 		__EFI_HEADER
 1:
  ARM_BE8(	setend	be		)	@ go BE8 if compiled for BE8
