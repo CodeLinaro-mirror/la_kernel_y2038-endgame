@@ -141,7 +141,7 @@ void *memset(void *s, int c, size_t count)
 	return s;
 }
 
-char *strstr(const char *s1, const char *s2)
+__weak char *strstr(const char *s1, const char *s2)
 {
 	int l1, l2;
 
