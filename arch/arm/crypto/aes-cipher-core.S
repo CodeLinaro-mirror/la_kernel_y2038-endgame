@@ -137,7 +137,7 @@
 	eor		r6, r6, r10
 	eor		r7, r7, r11
 
-	__adrl		ttab, \ttab
+	@__adrl		ttab, \ttab
 
 	tst		rounds, #2
 	bne		1f
@@ -151,7 +151,7 @@
 	\round		r4, r5, r6, r7, r8, r9, r10, r11
 	b		0b
 
-2:	__adrl		ttab, \ltab
+2:	@__adrl		ttab, \ltab
 	\round		r4, r5, r6, r7, r8, r9, r10, r11, \bsz, b
 
 #ifdef CONFIG_CPU_BIG_ENDIAN
