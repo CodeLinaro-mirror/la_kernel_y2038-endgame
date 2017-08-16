@@ -102,30 +102,32 @@ unsigned long get_wchan(struct task_struct *p);
 /*
  * Prefetching support - only ARMv5.
  */
-#if __LINUX_ARM_ARCH__ >= 5
-
 #define ARCH_HAS_PREFETCH
+#define ARCH_HAS_PREFETCHW
+
 static inline void prefetch(const void *ptr)
 {
+#if __LINUX_ARM_ARCH__ >= 5
 	__asm__ __volatile__(
 		"pld\t%a0"
-		:: "p" (ptr));
+		:: "r" (ptr));
+#endif
 }
 
-#if __LINUX_ARM_ARCH__ >= 7 && defined(CONFIG_SMP)
-#define ARCH_HAS_PREFETCHW
 static inline void prefetchw(const void *ptr)
 {
+#if __LINUX_ARM_ARCH__ >= 7 && defined(CONFIG_SMP)
 	__asm__ __volatile__(
 		".arch_extension	mp\n"
 		__ALT_SMP_ASM(
 			WASM(pldw)		"\t%a0",
 			WASM(pld)		"\t%a0"
 		)
-		:: "p" (ptr));
+		:: "r" (ptr));
+#else
+	prefetch(ptr);
+#endif
 }
-#endif
-#endif
 
 #define HAVE_ARCH_PICK_MMAP_LAYOUT
 
