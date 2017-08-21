@@ -369,7 +369,7 @@ static void wil_rx_add_radiotap_header(struct wil6210_priv *wil,
 		u8 vendor_ns;
 		__le16 vendor_skip;
 		u8 vendor_data[0];
-	} __packed;
+	} __packed __aligned(2);
 	struct vring_rx_desc *d = wil_skb_rxdesc(skb);
 	struct wil6210_rtap_vendor *rtap_vendor;
 	int rtap_len = sizeof(struct wil6210_rtap);

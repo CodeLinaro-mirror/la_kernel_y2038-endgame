@@ -108,7 +108,7 @@ struct iwl_tdls_channel_switch_frame {
 	__le32 switch_time_offset;
 	struct iwl_tx_cmd tx_cmd;
 	u8 data[IWL_TDLS_CH_SW_FRAME_MAX_SIZE];
-} __packed; /* TDLS_STA_CHANNEL_SWITCH_FRAME_API_S_VER_1 */
+} __packed __aligned(4); /* TDLS_STA_CHANNEL_SWITCH_FRAME_API_S_VER_1 */
 
 /**
  * struct iwl_tdls_channel_switch_cmd - TDLS channel switch command
@@ -127,8 +127,9 @@ struct iwl_tdls_channel_switch_cmd {
 	__le32 peer_sta_id;
 	struct iwl_fw_channel_info ci;
 	struct iwl_tdls_channel_switch_timing timing;
+	/* pad !!! */
 	struct iwl_tdls_channel_switch_frame frame;
-} __packed; /* TDLS_STA_CHANNEL_SWITCH_CMD_API_S_VER_1 */
+}; /* TDLS_STA_CHANNEL_SWITCH_CMD_API_S_VER_1 */
 
 /**
  * struct iwl_tdls_channel_switch_notif - TDLS channel switch start notification
@@ -180,7 +181,7 @@ struct iwl_tdls_config_cmd {
 	__le32 pti_req_data_offset;
 	struct iwl_tx_cmd pti_req_tx_cmd;
 	u8 pti_req_template[0];
-} __packed; /* TDLS_CONFIG_CMD_API_S_VER_1 */
+} __packed __aligned(4); /* TDLS_CONFIG_CMD_API_S_VER_1 */
 
 /**
  * struct iwl_tdls_config_sta_info_res - TDLS per-station config information

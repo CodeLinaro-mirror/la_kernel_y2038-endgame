@@ -103,7 +103,7 @@ enum {
 struct cgw_frame_mod {
 	struct can_frame cf;
 	__u8 modtype;
-} __attribute__((packed));
+} __attribute((packed)) __aligned(1);
 
 #define CGW_MODATTR_LEN sizeof(struct cgw_frame_mod)
 
@@ -112,7 +112,7 @@ struct cgw_csum_xor {
 	__s8 to_idx;
 	__s8 result_idx;
 	__u8 init_xor_val;
-} __attribute__((packed));
+} __packed;
 
 struct cgw_csum_crc8 {
 	__s8 from_idx;
@@ -123,7 +123,7 @@ struct cgw_csum_crc8 {
 	__u8 crctab[256];
 	__u8 profile;
 	__u8 profile_data[20];
-} __attribute__((packed));
+} __packed;
 
 /* length of checksum operation parameters. idx = index in CAN frame data[] */
 #define CGW_CS_XOR_LEN  sizeof(struct cgw_csum_xor)

@@ -1410,7 +1410,7 @@ struct il3945_tx_cmd {
 	 */
 	u8 payload[0];
 	struct ieee80211_hdr hdr[0];
-} __packed;
+} __packed __aligned(4);
 
 /*
  * C_TX = 0x1c (response)
@@ -1512,7 +1512,7 @@ struct il_tx_cmd {
 	 */
 	u8 payload[0];
 	struct ieee80211_hdr hdr[0];
-} __packed;
+} __packed __aligned(4);
 
 /* TX command response is sent after *3945* transmission attempts.
  *
@@ -2521,7 +2521,7 @@ struct il3945_scan_cmd {
 	 * before requesting another scan.
 	 */
 	u8 data[0];
-} __packed;
+} __packed __aligned(4);
 
 struct il_scan_cmd {
 	__le16 len;
@@ -2565,7 +2565,7 @@ struct il_scan_cmd {
 	 * before requesting another scan.
 	 */
 	u8 data[0];
-} __packed;
+} __packed __aligned(4);
 
 /* Can abort will notify by complete notification with abort status. */
 #define CAN_ABORT_STATUS	cpu_to_le32(0x1)
@@ -2646,14 +2646,14 @@ struct il3945_beacon_notif {
 	__le32 low_tsf;
 	__le32 high_tsf;
 	__le32 ibss_mgr_status;
-} __packed;
+} __packed __aligned(4);
 
 struct il4965_beacon_notif {
 	struct il4965_tx_resp beacon_notify_hdr;
 	__le32 low_tsf;
 	__le32 high_tsf;
 	__le32 ibss_mgr_status;
-} __packed;
+} __packed __aligned(4);
 
 /*
  * C_TX_BEACON= 0x91 (command, has simple generic response)
@@ -2665,7 +2665,7 @@ struct il3945_tx_beacon_cmd {
 	u8 tim_size;
 	u8 reserved1;
 	struct ieee80211_hdr frame[0];	/* beacon frame */
-} __packed;
+} __packed __aligned(4);
 
 struct il_tx_beacon_cmd {
 	struct il_tx_cmd tx;
@@ -2673,7 +2673,7 @@ struct il_tx_beacon_cmd {
 	u8 tim_size;
 	u8 reserved1;
 	struct ieee80211_hdr frame[0];	/* beacon frame */
-} __packed;
+} __packed __aligned(4);
 
 /******************************************************************************
  * (10)
@@ -3365,6 +3365,6 @@ struct il_rx_pkt {
 		__le32 status;
 		u8 raw[0];
 	} u;
-} __packed;
+} __packed __aligned(4);
 
 #endif /* __il_commands_h__ */

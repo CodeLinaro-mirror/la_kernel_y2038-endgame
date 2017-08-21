@@ -1232,7 +1232,7 @@ struct iwl_dram_scratch {
 	u8 try_cnt;		/* Tx attempts */
 	u8 bt_kill_cnt;		/* Tx attempts blocked by Bluetooth device */
 	__le16 reserved;
-} __packed;
+};
 
 struct iwl_tx_cmd {
 	/*
@@ -1311,7 +1311,7 @@ struct iwl_tx_cmd {
 	 */
 	u8 payload[0];
 	struct ieee80211_hdr hdr[0];
-} __packed;
+} __packed __aligned(4);
 
 /*
  * TX command response is sent after *agn* transmission attempts.
@@ -2386,7 +2386,7 @@ struct iwl_scan_cmd {
 	 * before requesting another scan.
 	 */
 	u8 data[0];
-} __packed;
+} __packed __aligned(4);
 
 /* Can abort will notify by complete notification with abort status. */
 #define CAN_ABORT_STATUS	cpu_to_le32(0x1)
@@ -2481,7 +2481,7 @@ struct iwl_tx_beacon_cmd {
 	u8 tim_size;
 	u8 reserved1;
 	struct ieee80211_hdr frame[0];	/* beacon frame */
-} __packed;
+} __packed __aligned(4);
 
 /******************************************************************************
  * (10)

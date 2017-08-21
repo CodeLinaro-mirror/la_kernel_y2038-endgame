@@ -72,5 +72,8 @@ KBUILD_CFLAGS += $(call cc-disable-warning, format)
 KBUILD_CFLAGS += $(call cc-disable-warning, sign-compare)
 KBUILD_CFLAGS += $(call cc-disable-warning, format-zero-length)
 KBUILD_CFLAGS += $(call cc-disable-warning, uninitialized)
+else
+# noisy gcc-8 warnings
+KBUILD_CFLAGS += $(call cc-disable-warning, packed-not-aligned)
 endif
 endif

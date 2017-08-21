@@ -193,7 +193,7 @@ static inline const char *state_to_string(int state)
 /* BD Address */
 typedef struct {
 	__u8 b[6];
-} __packed bdaddr_t;
+} bdaddr_t;
 
 /* BD Address type */
 #define BDADDR_BREDR		0x00

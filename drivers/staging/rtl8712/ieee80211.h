@@ -145,7 +145,7 @@ struct ieee80211_hdr {
 	u8 addr3[ETH_ALEN];
 	__le16 seq_ctl;
 	u8 addr4[ETH_ALEN];
-}  __packed __aligned(2);
+}  __packed ;
 
 struct ieee80211_hdr_3addr {
 	__le16 frame_ctl;
@@ -154,7 +154,7 @@ struct ieee80211_hdr_3addr {
 	u8 addr2[ETH_ALEN];
 	u8 addr3[ETH_ALEN];
 	__le16 seq_ctl;
-}  __packed __aligned(2);
+}  __packed ;
 
 struct	ieee80211_hdr_qos {
 	__le16 frame_ctl;
@@ -165,7 +165,7 @@ struct	ieee80211_hdr_qos {
 	__le16 seq_ctl;
 	u8 addr4[ETH_ALEN];
 	__le16	qc;
-}   __packed __aligned(2);
+}   __packed ;
 
 struct  ieee80211_hdr_3addr_qos {
 	__le16 frame_ctl;

@@ -97,7 +97,7 @@ static inline void set_hsr_tag_LSDU_size(struct hsr_tag *ht, u16 LSDU_size)
 struct hsr_ethhdr {
 	struct ethhdr	ethhdr;
 	struct hsr_tag	hsr_tag;
-} __packed;
+} __packed __aligned(2);
 
 
 /* HSR Supervision Frame data types.
