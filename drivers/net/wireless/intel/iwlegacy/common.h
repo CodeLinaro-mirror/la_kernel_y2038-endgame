@@ -570,8 +570,8 @@ struct il_device_cmd {
 		u32 val32;
 		struct il_tx_cmd tx;
 		u8 payload[DEF_CMD_PAYLOAD_SIZE];
-	} __packed cmd;
-} __packed;
+	} cmd;
+};
 
 #define TFD_MAX_PAYLOAD_SIZE (sizeof(struct il_device_cmd))
 

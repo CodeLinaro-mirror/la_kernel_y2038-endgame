@@ -337,7 +337,7 @@ struct _carl9170_tx_superframe {
 
 struct ar9170_rx_head {
 	u8 plcp[12];
-} __packed;
+};
 
 #define	AR9170_RX_HEAD_LEN			12
 
@@ -347,13 +347,13 @@ struct ar9170_rx_phystatus {
 			u8 rssi_ant0, rssi_ant1, rssi_ant2,
 				rssi_ant0x, rssi_ant1x, rssi_ant2x,
 				rssi_combined;
-		} __packed;
+		};
 		u8 rssi[7];
-	} __packed;
+	};
 
 	u8 evm_stream0[6], evm_stream1[6];
 	u8 phy_err;
-} __packed;
+};
 
 #define	AR9170_RX_PHYSTATUS_LEN			20
 
@@ -361,7 +361,7 @@ struct ar9170_rx_macstatus {
 	u8 SAidx, DAidx;
 	u8 error;
 	u8 status;
-} __packed;
+};
 
 #define	AR9170_RX_MACSTATUS_LEN			4
 
@@ -370,24 +370,24 @@ struct ar9170_rx_frame_single {
 	struct ieee80211_hdr i3e;
 	struct ar9170_rx_phystatus phy_tail;
 	struct ar9170_rx_macstatus macstatus;
-} __packed;
+};
 
 struct ar9170_rx_frame_head {
 	struct ar9170_rx_head phy_head;
 	struct ieee80211_hdr i3e;
 	struct ar9170_rx_macstatus macstatus;
-} __packed;
+};
 
 struct ar9170_rx_frame_middle {
 	struct ieee80211_hdr i3e;
 	struct ar9170_rx_macstatus macstatus;
-} __packed;
+};
 
 struct ar9170_rx_frame_tail {
 	struct ieee80211_hdr i3e;
 	struct ar9170_rx_phystatus phy_tail;
 	struct ar9170_rx_macstatus macstatus;
-} __packed;
+};
 
 struct ar9170_rx_frame {
 	union {
@@ -395,8 +395,8 @@ struct ar9170_rx_frame {
 		struct ar9170_rx_frame_head head;
 		struct ar9170_rx_frame_middle middle;
 		struct ar9170_rx_frame_tail tail;
-	} __packed;
-} __packed;
+	};
+};
 
 static inline u8 ar9170_get_decrypt_type(struct ar9170_rx_macstatus *t)
 {

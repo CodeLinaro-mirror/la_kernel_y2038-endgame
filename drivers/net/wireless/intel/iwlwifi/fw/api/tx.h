@@ -294,7 +294,7 @@ struct iwl_tx_cmd {
 	__le16 reserved4;
 	u8 payload[0];
 	struct ieee80211_hdr hdr[0];
-} __packed; /* TX_CMD_API_S_VER_6 */
+} __packed __aligned(4); /* TX_CMD_API_S_VER_6 */
 
 struct iwl_dram_sec_info {
 	__le32 pn_low;
@@ -320,7 +320,7 @@ struct iwl_tx_cmd_gen2 {
 	struct iwl_dram_sec_info dram_info;
 	__le32 rate_n_flags;
 	struct ieee80211_hdr hdr[0];
-} __packed; /* TX_CMD_API_S_VER_7 */
+} __packed __aligned(4); /* TX_CMD_API_S_VER_7 */
 
 /**
  * struct iwl_tx_cmd_gen3 - TX command struct to FW for 22560 devices
@@ -785,7 +785,7 @@ struct iwl_mac_beacon_cmd_v6 {
 	__le32 tim_idx;
 	__le32 tim_size;
 	struct ieee80211_hdr frame[0];
-} __packed; /* BEACON_TEMPLATE_CMD_API_S_VER_6 */
+} __packed __aligned(4); /* BEACON_TEMPLATE_CMD_API_S_VER_6 */
 
 /**
  * struct iwl_mac_beacon_cmd_v7 - beacon template command with offloaded CSA
@@ -806,7 +806,7 @@ struct iwl_mac_beacon_cmd_v7 {
 	__le32 ecsa_offset;
 	__le32 csa_offset;
 	struct ieee80211_hdr frame[0];
-} __packed; /* BEACON_TEMPLATE_CMD_API_S_VER_7 */
+} __packed __aligned(4); /* BEACON_TEMPLATE_CMD_API_S_VER_7 */
 
 enum iwl_mac_beacon_flags {
 	IWL_MAC_BEACON_CCK	= BIT(8),
@@ -838,7 +838,7 @@ struct iwl_mac_beacon_cmd {
 	__le32 ecsa_offset;
 	__le32 csa_offset;
 	struct ieee80211_hdr frame[0];
-} __packed; /* BEACON_TEMPLATE_CMD_API_S_VER_9 */
+} __packed __aligned(4); /* BEACON_TEMPLATE_CMD_API_S_VER_9 */
 
 struct iwl_beacon_notif {
 	struct iwl_mvm_tx_resp beacon_notify_hdr;
