@@ -2168,7 +2168,8 @@ static int l3dss1_cmd_global(struct PStack *st, isdn_ctrl *ic)
 { u_char id;
 	u_char temp[265];
 	u_char *p = temp;
-	int i, l, proc_len;
+	int i;
+	unsigned int l, proc_len;
 	struct sk_buff *skb;
 	struct l3_process *pc = NULL;
 
