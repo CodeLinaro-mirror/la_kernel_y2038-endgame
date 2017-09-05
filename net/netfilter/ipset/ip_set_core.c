@@ -2021,12 +2021,8 @@ ip_set_sockfn_get(struct sock *sk, int optval, void __user *user, int *len)
 		}
 		nfnl_lock(NFNL_SUBSYS_IPSET);
 		set = ip_set(inst, req_get->set.index);
-		if (set)
-			strncpy(req_get->set.name, set->name,
-				sizeof(req_get->set.name));
-		else
-			memset(req_get->set.name, '\0',
-			       sizeof(req_get->set.name));
+		strncpy(req_get->set.name, set ? set->name : "",
+			IPSET_MAXNAMELEN);
 		nfnl_unlock(NFNL_SUBSYS_IPSET);
 		goto copy;
 	}
