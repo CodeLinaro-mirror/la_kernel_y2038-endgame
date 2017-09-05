@@ -10,7 +10,7 @@
  */
 
 #include <linux/soc/renesas/rcar-sysc.h>
-
+#include <linux/init.h>
 #include <asm/io.h>
 
 #include "r8a7779.h"

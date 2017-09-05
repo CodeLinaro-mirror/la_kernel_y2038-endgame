@@ -17,6 +17,7 @@
  */
 
 #include <linux/init.h>
+#include <linux/module.h>
 
 #include <asm/mach/map.h>
 #include <asm/system_info.h>
