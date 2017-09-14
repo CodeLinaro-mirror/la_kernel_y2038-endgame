@@ -391,6 +391,7 @@ static int __init nocache_trampoline(unsigned long _arg)
 	phys_reset = (phys_reset_t)(unsigned long)__pa_symbol(cpu_reset);
 	phys_reset(__pa_symbol(mcpm_entry_point), false);
 	BUG();
+	return 0;
 }
 
 int __init mcpm_loopback(void (*cache_disable)(void))
