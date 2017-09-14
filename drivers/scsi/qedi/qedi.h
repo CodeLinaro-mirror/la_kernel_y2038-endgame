@@ -70,7 +70,7 @@ struct qedi_endpoint;
 
 #define QEDI_PAGE_SIZE		4096
 #define QEDI_HW_DMA_BOUNDARY	0xfff
-#define QEDI_PATH_HANDLE	0xFE0000000UL
+#define QEDI_PATH_HANDLE	0xFE0000000ULL
 
 enum qedi_nvm_tgts {
 	QEDI_NVM_TGT_PRI,

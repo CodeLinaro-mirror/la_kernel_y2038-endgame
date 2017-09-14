@@ -576,7 +576,7 @@ static int tegra_ivc_check_params(unsigned long rx, unsigned long tx,
 	BUILD_BUG_ON(!IS_ALIGNED(sizeof(struct tegra_ivc_header),
 				 TEGRA_IVC_ALIGN));
 
-	if ((uint64_t)num_frames * (uint64_t)frame_size >= 0x100000000UL) {
+	if ((uint64_t)num_frames * (uint64_t)frame_size >= 0x100000000ULL) {
 		pr_err("num_frames * frame_size overflows\n");
 		return -EINVAL;
 	}

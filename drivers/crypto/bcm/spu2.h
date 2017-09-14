@@ -110,15 +110,15 @@ struct SPU2_FMD {
 #define SPU2_HASH_FIRST           0x1000000 /* 1: hash input is input pkt
 					     * data
 					     */
-#define SPU2_CHK_TAG              0x2000000 /* 1: check digest provided */
-#define SPU2_HASH_TYPE          0x1F0000000 /* one of spu2_hash_type */
+#define SPU2_CHK_TAG              0x2000000    /* 1: check digest provided */
+#define SPU2_HASH_TYPE          0x1F0000000ull /* one of spu2_hash_type */
 #define SPU2_HASH_TYPE_SHIFT             28
-#define SPU2_HASH_MODE         0xF000000000 /* one of spu2_hash_mode */
+#define SPU2_HASH_MODE         0xF000000000ull /* one of spu2_hash_mode */
 #define SPU2_HASH_MODE_SHIFT             36
-#define SPU2_CIPH_PAD_EN     0x100000000000 /* 1: Add pad to end of payload for
-					     *    enc
-					     */
-#define SPU2_CIPH_PAD      0xFF000000000000 /* cipher pad value */
+#define SPU2_CIPH_PAD_EN     0x100000000000ull /* 1: Add pad to end of payload
+						*    forenc
+					        */
+#define SPU2_CIPH_PAD      0xFF000000000000ull /* cipher pad value */
 #define SPU2_CIPH_PAD_SHIFT              48
 
 /* FMD ctrl1 field masks */
@@ -139,36 +139,36 @@ struct SPU2_FMD {
 #define SPU2_RET_IV              0x40000000 /* 1: return IV in output msg
 					     *    b4 payload
 					     */
-#define SPU2_RET_IV_LEN         0xF00000000 /* length in bytes of IV returned.
+#define SPU2_RET_IV_LEN         0xF00000000ull /* length in bytes of IV returned.
 					     * 0 = 16 bytes
 					     */
 #define SPU2_RET_IV_LEN_SHIFT            32
-#define SPU2_IV_OFFSET         0xF000000000 /* gen IV offset */
+#define SPU2_IV_OFFSET         0xF000000000ull /* gen IV offset */
 #define SPU2_IV_OFFSET_SHIFT             36
-#define SPU2_IV_LEN          0x1F0000000000 /* length of input IV in bytes */
+#define SPU2_IV_LEN          0x1F0000000000ull /* length of input IV in bytes */
 #define SPU2_IV_LEN_SHIFT                40
-#define SPU2_HASH_TAG_LEN  0x7F000000000000 /* hash tag length in bytes */
+#define SPU2_HASH_TAG_LEN  0x7F000000000000ull /* hash tag length in bytes */
 #define SPU2_HASH_TAG_LEN_SHIFT          48
-#define SPU2_RETURN_MD    0x300000000000000 /* return metadata */
+#define SPU2_RETURN_MD    0x300000000000000ull /* return metadata */
 #define SPU2_RETURN_MD_SHIFT             56
-#define SPU2_RETURN_FD    0x400000000000000
-#define SPU2_RETURN_AAD1  0x800000000000000
-#define SPU2_RETURN_NAAD 0x1000000000000000
-#define SPU2_RETURN_AAD2 0x2000000000000000
-#define SPU2_RETURN_PAY  0x4000000000000000 /* return payload */
+#define SPU2_RETURN_FD    0x400000000000000ull
+#define SPU2_RETURN_AAD1  0x800000000000000ull
+#define SPU2_RETURN_NAAD 0x1000000000000000ull
+#define SPU2_RETURN_AAD2 0x2000000000000000ull
+#define SPU2_RETURN_PAY  0x4000000000000000ull /* return payload */
 
 /* FMD ctrl2 field masks */
-#define SPU2_AAD1_OFFSET              0xFFF /* byte offset of AAD1 field */
-#define SPU2_AAD1_LEN               0xFF000 /* length of AAD1 in bytes */
+#define SPU2_AAD1_OFFSET              0xFFFull /* byte offset of AAD1 field */
+#define SPU2_AAD1_LEN               0xFF000ull /* length of AAD1 in bytes */
 #define SPU2_AAD1_LEN_SHIFT              12
-#define SPU2_AAD2_OFFSET         0xFFF00000 /* byte offset of AAD2 field */
+#define SPU2_AAD2_OFFSET         0xFFF00000ull /* byte offset of AAD2 field */
 #define SPU2_AAD2_OFFSET_SHIFT           20
-#define SPU2_PL_OFFSET   0xFFFFFFFF00000000 /* payload offset from AAD2 */
+#define SPU2_PL_OFFSET   0xFFFFFFFF00000000ull /* payload offset from AAD2 */
 #define SPU2_PL_OFFSET_SHIFT             32
 
 /* FMD ctrl3 field masks */
-#define SPU2_PL_LEN              0xFFFFFFFF /* payload length in bytes */
-#define SPU2_TLS_LEN         0xFFFF00000000 /* TLS encrypt: cipher len
+#define SPU2_PL_LEN              0xFFFFFFFFull /* payload length in bytes */
+#define SPU2_TLS_LEN         0xFFFF00000000ull /* TLS encrypt: cipher len
 					     * TLS decrypt: compressed len
 					     */
 #define SPU2_TLS_LEN_SHIFT               32

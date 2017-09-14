@@ -30,7 +30,7 @@
 #define HINIC_CMDQ_CTXT_CEQ_EN_SHIFT                    62
 #define HINIC_CMDQ_CTXT_WRAPPED_SHIFT                   63
 
-#define HINIC_CMDQ_CTXT_CURR_WQE_PAGE_PFN_MASK          0xFFFFFFFFFFFFF
+#define HINIC_CMDQ_CTXT_CURR_WQE_PAGE_PFN_MASK          0xFFFFFFFFFFFFFull
 #define HINIC_CMDQ_CTXT_EQ_ID_MASK                      0x1F
 #define HINIC_CMDQ_CTXT_CEQ_ARM_MASK                    0x1
 #define HINIC_CMDQ_CTXT_CEQ_EN_MASK                     0x1
@@ -47,7 +47,7 @@
 #define HINIC_CMDQ_CTXT_WQ_BLOCK_PFN_SHIFT              0
 #define HINIC_CMDQ_CTXT_CI_SHIFT                        52
 
-#define HINIC_CMDQ_CTXT_WQ_BLOCK_PFN_MASK               0xFFFFFFFFFFFFF
+#define HINIC_CMDQ_CTXT_WQ_BLOCK_PFN_MASK               0xFFFFFFFFFFFFFull
 #define HINIC_CMDQ_CTXT_CI_MASK                         0xFFF
 
 #define HINIC_CMDQ_CTXT_BLOCK_INFO_SET(val, member)     \

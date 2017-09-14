@@ -73,7 +73,7 @@ static u64 tpu_clocksource_read(struct clocksource *cs)
 
 	raw_spin_lock_irqsave(&p->lock, flags);
 	if (tpu_get_counter(p, &value))
-		value += 0x100000000;
+		value += 0x100000000ull;
 	raw_spin_unlock_irqrestore(&p->lock, flags);
 
 	return value;
