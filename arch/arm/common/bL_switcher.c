@@ -131,6 +131,7 @@ static int bL_switchpoint(unsigned long _arg)
 	stack += clusterid * STACK_SIZE + STACK_SIZE;
 	call_with_stack(bL_do_switch, (void *)_arg, stack);
 	BUG();
+	return 0;
 }
 
 /*

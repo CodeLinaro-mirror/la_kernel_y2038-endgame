@@ -83,6 +83,7 @@ static inline unsigned long bfn_to_pfn(unsigned long bfn)
 static inline xmaddr_t arbitrary_virt_to_machine(void *vaddr)
 {
 	BUG();
+	return XMADDR(0);
 }
 
 extern int set_foreign_p2m_mapping(struct gnttab_map_grant_ref *map_ops,
