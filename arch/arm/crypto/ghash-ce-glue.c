@@ -136,7 +136,7 @@ static int ghash_setkey(struct crypto_shash *tfm,
 	key->b = (b << 1) | (a >> 63);
 
 	if (b >> 63)
-		key->b ^= 0xc200000000000000UL;
+		key->b ^= 0xc200000000000000ULL;
 
 	return 0;
 }

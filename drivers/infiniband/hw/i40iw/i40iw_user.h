@@ -96,7 +96,7 @@ enum i40iw_device_capabilities_const {
 #define i40iw_physical_fragment u64
 #define i40iw_address_list u64 *
 
-#define	I40IW_MAX_MR_SIZE	0x10000000000L
+#define	I40IW_MAX_MR_SIZE	0x10000000000LL
 #define	I40IW_MAX_RQ_WQE_SHIFT	2
 
 struct i40iw_qp_uk;

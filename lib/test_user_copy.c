@@ -110,7 +110,7 @@ static int __init test_user_copy_init(void)
 	test_legit(u16, 0x5a5b);
 	test_legit(u32, 0x5a5b5c5d);
 #ifdef TEST_U64
-	test_legit(u64, 0x5a5b5c5d6a6b6c6d);
+	test_legit(u64, 0x5a5b5c5d6a6b6c6dull);
 #endif
 #undef test_legit
 
@@ -168,7 +168,7 @@ static int __init test_user_copy_init(void)
 	test_illegal(u16, 0x5a5b);
 	test_illegal(u32, 0x5a5b5c5d);
 #ifdef TEST_U64
-	test_illegal(u64, 0x5a5b5c5d6a6b6c6d);
+	test_illegal(u64, 0x5a5b5c5d6a6b6c6dull);
 #endif
 #undef test_illegal
 

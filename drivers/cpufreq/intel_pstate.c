@@ -1217,7 +1217,7 @@ static int core_get_max_pstate_physical(void)
 static int core_get_tdp_ratio(u64 plat_info)
 {
 	/* Check how many TDP levels present */
-	if (plat_info & 0x600000000) {
+	if (plat_info & 0x600000000ull) {
 		u64 tdp_ctrl;
 		u64 tdp_ratio;
 		int tdp_msr;

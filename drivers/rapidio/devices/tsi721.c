@@ -1111,7 +1111,7 @@ static int tsi721_rio_map_inb_mem(struct rio_mport *mport, dma_addr_t lstart,
 	int ret = -EBUSY;
 
 	/* Max IBW size supported by HW is 16GB */
-	if (size > 0x400000000UL)
+	if (size > 0x400000000ULL)
 		return -EINVAL;
 
 	if (direct) {
@@ -1128,7 +1128,7 @@ static int tsi721_rio_map_inb_mem(struct rio_mport *mport, dma_addr_t lstart,
 			ibw_size *= 2;
 			ibw_start = lstart & ~(ibw_size - 1);
 			/* Check for crossing IBW max size 16GB */
-			if (ibw_size > 0x400000000UL)
+			if (ibw_size > 0x400000000ULL)
 				return -EBUSY;
 		}
 
