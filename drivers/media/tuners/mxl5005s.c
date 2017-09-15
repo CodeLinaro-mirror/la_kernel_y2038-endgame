@@ -402,320 +402,322 @@ static int mxl5005s_SetRfFreqHz(struct dvb_frontend *fe, unsigned long RfFreqHz)
 static u16 MXL5005_RegisterInit(struct dvb_frontend *fe)
 {
 	struct mxl5005s_state *state = fe->tuner_priv;
-	state->TunerRegs_Num = TUNER_REGS_NUM ;
-
-	state->TunerRegs[0].Reg_Num = 9 ;
-	state->TunerRegs[0].Reg_Val = 0x40 ;
-
-	state->TunerRegs[1].Reg_Num = 11 ;
-	state->TunerRegs[1].Reg_Val = 0x19 ;
-
-	state->TunerRegs[2].Reg_Num = 12 ;
-	state->TunerRegs[2].Reg_Val = 0x60 ;
-
-	state->TunerRegs[3].Reg_Num = 13 ;
-	state->TunerRegs[3].Reg_Val = 0x00 ;
-
-	state->TunerRegs[4].Reg_Num = 14 ;
-	state->TunerRegs[4].Reg_Val = 0x00 ;
-
-	state->TunerRegs[5].Reg_Num = 15 ;
-	state->TunerRegs[5].Reg_Val = 0xC0 ;
-
-	state->TunerRegs[6].Reg_Num = 16 ;
-	state->TunerRegs[6].Reg_Val = 0x00 ;
-
-	state->TunerRegs[7].Reg_Num = 17 ;
-	state->TunerRegs[7].Reg_Val = 0x00 ;
-
-	state->TunerRegs[8].Reg_Num = 18 ;
-	state->TunerRegs[8].Reg_Val = 0x00 ;
-
-	state->TunerRegs[9].Reg_Num = 19 ;
-	state->TunerRegs[9].Reg_Val = 0x34 ;
-
-	state->TunerRegs[10].Reg_Num = 21 ;
-	state->TunerRegs[10].Reg_Val = 0x00 ;
-
-	state->TunerRegs[11].Reg_Num = 22 ;
-	state->TunerRegs[11].Reg_Val = 0x6B ;
-
-	state->TunerRegs[12].Reg_Num = 23 ;
-	state->TunerRegs[12].Reg_Val = 0x35 ;
-
-	state->TunerRegs[13].Reg_Num = 24 ;
-	state->TunerRegs[13].Reg_Val = 0x70 ;
-
-	state->TunerRegs[14].Reg_Num = 25 ;
-	state->TunerRegs[14].Reg_Val = 0x3E ;
-
-	state->TunerRegs[15].Reg_Num = 26 ;
-	state->TunerRegs[15].Reg_Val = 0x82 ;
-
-	state->TunerRegs[16].Reg_Num = 31 ;
-	state->TunerRegs[16].Reg_Val = 0x00 ;
-
-	state->TunerRegs[17].Reg_Num = 32 ;
-	state->TunerRegs[17].Reg_Val = 0x40 ;
-
-	state->TunerRegs[18].Reg_Num = 33 ;
-	state->TunerRegs[18].Reg_Val = 0x53 ;
-
-	state->TunerRegs[19].Reg_Num = 34 ;
-	state->TunerRegs[19].Reg_Val = 0x81 ;
-
-	state->TunerRegs[20].Reg_Num = 35 ;
-	state->TunerRegs[20].Reg_Val = 0xC9 ;
-
-	state->TunerRegs[21].Reg_Num = 36 ;
-	state->TunerRegs[21].Reg_Val = 0x01 ;
-
-	state->TunerRegs[22].Reg_Num = 37 ;
-	state->TunerRegs[22].Reg_Val = 0x00 ;
-
-	state->TunerRegs[23].Reg_Num = 41 ;
-	state->TunerRegs[23].Reg_Val = 0x00 ;
-
-	state->TunerRegs[24].Reg_Num = 42 ;
-	state->TunerRegs[24].Reg_Val = 0xF8 ;
-
-	state->TunerRegs[25].Reg_Num = 43 ;
-	state->TunerRegs[25].Reg_Val = 0x43 ;
-
-	state->TunerRegs[26].Reg_Num = 44 ;
-	state->TunerRegs[26].Reg_Val = 0x20 ;
-
-	state->TunerRegs[27].Reg_Num = 45 ;
-	state->TunerRegs[27].Reg_Val = 0x80 ;
-
-	state->TunerRegs[28].Reg_Num = 46 ;
-	state->TunerRegs[28].Reg_Val = 0x88 ;
-
-	state->TunerRegs[29].Reg_Num = 47 ;
-	state->TunerRegs[29].Reg_Val = 0x86 ;
-
-	state->TunerRegs[30].Reg_Num = 48 ;
-	state->TunerRegs[30].Reg_Val = 0x00 ;
-
-	state->TunerRegs[31].Reg_Num = 49 ;
-	state->TunerRegs[31].Reg_Val = 0x00 ;
-
-	state->TunerRegs[32].Reg_Num = 53 ;
-	state->TunerRegs[32].Reg_Val = 0x94 ;
-
-	state->TunerRegs[33].Reg_Num = 54 ;
-	state->TunerRegs[33].Reg_Val = 0xFA ;
-
-	state->TunerRegs[34].Reg_Num = 55 ;
-	state->TunerRegs[34].Reg_Val = 0x92 ;
-
-	state->TunerRegs[35].Reg_Num = 56 ;
-	state->TunerRegs[35].Reg_Val = 0x80 ;
-
-	state->TunerRegs[36].Reg_Num = 57 ;
-	state->TunerRegs[36].Reg_Val = 0x41 ;
-
-	state->TunerRegs[37].Reg_Num = 58 ;
-	state->TunerRegs[37].Reg_Val = 0xDB ;
-
-	state->TunerRegs[38].Reg_Num = 59 ;
-	state->TunerRegs[38].Reg_Val = 0x00 ;
-
-	state->TunerRegs[39].Reg_Num = 60 ;
-	state->TunerRegs[39].Reg_Val = 0x00 ;
-
-	state->TunerRegs[40].Reg_Num = 61 ;
-	state->TunerRegs[40].Reg_Val = 0x00 ;
-
-	state->TunerRegs[41].Reg_Num = 62 ;
-	state->TunerRegs[41].Reg_Val = 0x00 ;
-
-	state->TunerRegs[42].Reg_Num = 65 ;
-	state->TunerRegs[42].Reg_Val = 0xF8 ;
-
-	state->TunerRegs[43].Reg_Num = 66 ;
-	state->TunerRegs[43].Reg_Val = 0xE4 ;
-
-	state->TunerRegs[44].Reg_Num = 67 ;
-	state->TunerRegs[44].Reg_Val = 0x90 ;
-
-	state->TunerRegs[45].Reg_Num = 68 ;
-	state->TunerRegs[45].Reg_Val = 0xC0 ;
-
-	state->TunerRegs[46].Reg_Num = 69 ;
-	state->TunerRegs[46].Reg_Val = 0x01 ;
-
-	state->TunerRegs[47].Reg_Num = 70 ;
-	state->TunerRegs[47].Reg_Val = 0x50 ;
-
-	state->TunerRegs[48].Reg_Num = 71 ;
-	state->TunerRegs[48].Reg_Val = 0x06 ;
-
-	state->TunerRegs[49].Reg_Num = 72 ;
-	state->TunerRegs[49].Reg_Val = 0x00 ;
-
-	state->TunerRegs[50].Reg_Num = 73 ;
-	state->TunerRegs[50].Reg_Val = 0x20 ;
-
-	state->TunerRegs[51].Reg_Num = 76 ;
-	state->TunerRegs[51].Reg_Val = 0xBB ;
-
-	state->TunerRegs[52].Reg_Num = 77 ;
-	state->TunerRegs[52].Reg_Val = 0x13 ;
-
-	state->TunerRegs[53].Reg_Num = 81 ;
-	state->TunerRegs[53].Reg_Val = 0x04 ;
-
-	state->TunerRegs[54].Reg_Num = 82 ;
-	state->TunerRegs[54].Reg_Val = 0x75 ;
-
-	state->TunerRegs[55].Reg_Num = 83 ;
-	state->TunerRegs[55].Reg_Val = 0x00 ;
-
-	state->TunerRegs[56].Reg_Num = 84 ;
-	state->TunerRegs[56].Reg_Val = 0x00 ;
-
-	state->TunerRegs[57].Reg_Num = 85 ;
-	state->TunerRegs[57].Reg_Val = 0x00 ;
-
-	state->TunerRegs[58].Reg_Num = 91 ;
-	state->TunerRegs[58].Reg_Val = 0x70 ;
-
-	state->TunerRegs[59].Reg_Num = 92 ;
-	state->TunerRegs[59].Reg_Val = 0x00 ;
-
-	state->TunerRegs[60].Reg_Num = 93 ;
-	state->TunerRegs[60].Reg_Val = 0x00 ;
-
-	state->TunerRegs[61].Reg_Num = 94 ;
-	state->TunerRegs[61].Reg_Val = 0x00 ;
-
-	state->TunerRegs[62].Reg_Num = 95 ;
-	state->TunerRegs[62].Reg_Val = 0x0C ;
-
-	state->TunerRegs[63].Reg_Num = 96 ;
-	state->TunerRegs[63].Reg_Val = 0x00 ;
-
-	state->TunerRegs[64].Reg_Num = 97 ;
-	state->TunerRegs[64].Reg_Val = 0x00 ;
-
-	state->TunerRegs[65].Reg_Num = 98 ;
-	state->TunerRegs[65].Reg_Val = 0xE2 ;
-
-	state->TunerRegs[66].Reg_Num = 99 ;
-	state->TunerRegs[66].Reg_Val = 0x00 ;
-
-	state->TunerRegs[67].Reg_Num = 100 ;
-	state->TunerRegs[67].Reg_Val = 0x00 ;
-
-	state->TunerRegs[68].Reg_Num = 101 ;
-	state->TunerRegs[68].Reg_Val = 0x12 ;
-
-	state->TunerRegs[69].Reg_Num = 102 ;
-	state->TunerRegs[69].Reg_Val = 0x80 ;
-
-	state->TunerRegs[70].Reg_Num = 103 ;
-	state->TunerRegs[70].Reg_Val = 0x32 ;
-
-	state->TunerRegs[71].Reg_Num = 104 ;
-	state->TunerRegs[71].Reg_Val = 0xB4 ;
-
-	state->TunerRegs[72].Reg_Num = 105 ;
-	state->TunerRegs[72].Reg_Val = 0x60 ;
-
-	state->TunerRegs[73].Reg_Num = 106 ;
-	state->TunerRegs[73].Reg_Val = 0x83 ;
-
-	state->TunerRegs[74].Reg_Num = 107 ;
-	state->TunerRegs[74].Reg_Val = 0x84 ;
-
-	state->TunerRegs[75].Reg_Num = 108 ;
-	state->TunerRegs[75].Reg_Val = 0x9C ;
-
-	state->TunerRegs[76].Reg_Num = 109 ;
-	state->TunerRegs[76].Reg_Val = 0x02 ;
-
-	state->TunerRegs[77].Reg_Num = 110 ;
-	state->TunerRegs[77].Reg_Val = 0x81 ;
-
-	state->TunerRegs[78].Reg_Num = 111 ;
-	state->TunerRegs[78].Reg_Val = 0xC0 ;
-
-	state->TunerRegs[79].Reg_Num = 112 ;
-	state->TunerRegs[79].Reg_Val = 0x10 ;
-
-	state->TunerRegs[80].Reg_Num = 131 ;
-	state->TunerRegs[80].Reg_Val = 0x8A ;
-
-	state->TunerRegs[81].Reg_Num = 132 ;
-	state->TunerRegs[81].Reg_Val = 0x10 ;
-
-	state->TunerRegs[82].Reg_Num = 133 ;
-	state->TunerRegs[82].Reg_Val = 0x24 ;
-
-	state->TunerRegs[83].Reg_Num = 134 ;
-	state->TunerRegs[83].Reg_Val = 0x00 ;
-
-	state->TunerRegs[84].Reg_Num = 135 ;
-	state->TunerRegs[84].Reg_Val = 0x00 ;
-
-	state->TunerRegs[85].Reg_Num = 136 ;
-	state->TunerRegs[85].Reg_Val = 0x7E ;
-
-	state->TunerRegs[86].Reg_Num = 137 ;
-	state->TunerRegs[86].Reg_Val = 0x40 ;
-
-	state->TunerRegs[87].Reg_Num = 138 ;
-	state->TunerRegs[87].Reg_Val = 0x38 ;
-
-	state->TunerRegs[88].Reg_Num = 146 ;
-	state->TunerRegs[88].Reg_Val = 0xF6 ;
-
-	state->TunerRegs[89].Reg_Num = 147 ;
-	state->TunerRegs[89].Reg_Val = 0x1A ;
-
-	state->TunerRegs[90].Reg_Num = 148 ;
-	state->TunerRegs[90].Reg_Val = 0x62 ;
-
-	state->TunerRegs[91].Reg_Num = 149 ;
-	state->TunerRegs[91].Reg_Val = 0x33 ;
-
-	state->TunerRegs[92].Reg_Num = 150 ;
-	state->TunerRegs[92].Reg_Val = 0x80 ;
-
-	state->TunerRegs[93].Reg_Num = 156 ;
-	state->TunerRegs[93].Reg_Val = 0x56 ;
-
-	state->TunerRegs[94].Reg_Num = 157 ;
-	state->TunerRegs[94].Reg_Val = 0x17 ;
-
-	state->TunerRegs[95].Reg_Num = 158 ;
-	state->TunerRegs[95].Reg_Val = 0xA9 ;
-
-	state->TunerRegs[96].Reg_Num = 159 ;
-	state->TunerRegs[96].Reg_Val = 0x00 ;
-
-	state->TunerRegs[97].Reg_Num = 160 ;
-	state->TunerRegs[97].Reg_Val = 0x00 ;
-
-	state->TunerRegs[98].Reg_Num = 161 ;
-	state->TunerRegs[98].Reg_Val = 0x00 ;
-
-	state->TunerRegs[99].Reg_Num = 162 ;
-	state->TunerRegs[99].Reg_Val = 0x40 ;
-
-	state->TunerRegs[100].Reg_Num = 166 ;
-	state->TunerRegs[100].Reg_Val = 0xAE ;
-
-	state->TunerRegs[101].Reg_Num = 167 ;
-	state->TunerRegs[101].Reg_Val = 0x1B ;
-
-	state->TunerRegs[102].Reg_Num = 168 ;
-	state->TunerRegs[102].Reg_Val = 0xF2 ;
-
-	state->TunerRegs[103].Reg_Num = 195 ;
-	state->TunerRegs[103].Reg_Val = 0x00 ;
-
+	static const struct TunerReg init[TUNER_REGS_NUM] = {
+	{
+		.Reg_Num = 9,
+		.Reg_Val = 0x40,
+	}, {
+		.Reg_Num = 11,
+		.Reg_Val = 0x19,
+	}, {
+		.Reg_Num = 12,
+		.Reg_Val = 0x60,
+	}, {
+		.Reg_Num = 13,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 14,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 15,
+		.Reg_Val = 0xC0,
+	}, {
+		.Reg_Num = 16,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 17,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 18,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 19,
+		.Reg_Val = 0x34,
+	}, {
+		.Reg_Num = 21,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 22,
+		.Reg_Val = 0x6B,
+	}, {
+		.Reg_Num = 23,
+		.Reg_Val = 0x35,
+	}, {
+		.Reg_Num = 24,
+		.Reg_Val = 0x70,
+	}, {
+		.Reg_Num = 25,
+		.Reg_Val = 0x3E,
+	}, {
+		.Reg_Num = 26,
+		.Reg_Val = 0x82,
+	}, {
+		.Reg_Num = 31,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 32,
+		.Reg_Val = 0x40,
+	}, {
+		.Reg_Num = 33,
+		.Reg_Val = 0x53,
+	}, {
+		.Reg_Num = 34,
+		.Reg_Val = 0x81,
+	}, {
+		.Reg_Num = 35,
+		.Reg_Val = 0xC9,
+	}, {
+		.Reg_Num = 36,
+		.Reg_Val = 0x01,
+	}, {
+		.Reg_Num = 37,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 41,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 42,
+		.Reg_Val = 0xF8,
+	}, {
+		.Reg_Num = 43,
+		.Reg_Val = 0x43,
+	}, {
+		.Reg_Num = 44,
+		.Reg_Val = 0x20,
+	}, {
+		.Reg_Num = 45,
+		.Reg_Val = 0x80,
+	}, {
+		.Reg_Num = 46,
+		.Reg_Val = 0x88,
+	}, {
+		.Reg_Num = 47,
+		.Reg_Val = 0x86,
+	}, {
+		.Reg_Num = 48,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 49,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 53,
+		.Reg_Val = 0x94,
+	}, {
+		.Reg_Num = 54,
+		.Reg_Val = 0xFA,
+	}, {
+		.Reg_Num = 55,
+		.Reg_Val = 0x92,
+	}, {
+		.Reg_Num = 56,
+		.Reg_Val = 0x80,
+	}, {
+		.Reg_Num = 57,
+		.Reg_Val = 0x41,
+	}, {
+		.Reg_Num = 58,
+		.Reg_Val = 0xDB,
+	}, {
+		.Reg_Num = 59,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 60,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 61,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 62,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 65,
+		.Reg_Val = 0xF8,
+	}, {
+		.Reg_Num = 66,
+		.Reg_Val = 0xE4,
+	}, {
+		.Reg_Num = 67,
+		.Reg_Val = 0x90,
+	}, {
+		.Reg_Num = 68,
+		.Reg_Val = 0xC0,
+	}, {
+		.Reg_Num = 69,
+		.Reg_Val = 0x01,
+	}, {
+		.Reg_Num = 70,
+		.Reg_Val = 0x50,
+	}, {
+		.Reg_Num = 71,
+		.Reg_Val = 0x06,
+	}, {
+		.Reg_Num = 72,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 73,
+		.Reg_Val = 0x20,
+	}, {
+		.Reg_Num = 76,
+		.Reg_Val = 0xBB,
+	}, {
+		.Reg_Num = 77,
+		.Reg_Val = 0x13,
+	}, {
+		.Reg_Num = 81,
+		.Reg_Val = 0x04,
+	}, {
+		.Reg_Num = 82,
+		.Reg_Val = 0x75,
+	}, {
+		.Reg_Num = 83,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 84,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 85,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 91,
+		.Reg_Val = 0x70,
+	}, {
+		.Reg_Num = 92,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 93,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 94,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 95,
+		.Reg_Val = 0x0C,
+	}, {
+		.Reg_Num = 96,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 97,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 98,
+		.Reg_Val = 0xE2,
+	}, {
+		.Reg_Num = 99,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 100,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 101,
+		.Reg_Val = 0x12,
+	}, {
+		.Reg_Num = 102,
+		.Reg_Val = 0x80,
+	}, {
+		.Reg_Num = 103,
+		.Reg_Val = 0x32,
+	}, {
+		.Reg_Num = 104,
+		.Reg_Val = 0xB4,
+	}, {
+		.Reg_Num = 105,
+		.Reg_Val = 0x60,
+	}, {
+		.Reg_Num = 106,
+		.Reg_Val = 0x83,
+	}, {
+		.Reg_Num = 107,
+		.Reg_Val = 0x84,
+	}, {
+		.Reg_Num = 108,
+		.Reg_Val = 0x9C,
+	}, {
+		.Reg_Num = 109,
+		.Reg_Val = 0x02,
+	}, {
+		.Reg_Num = 110,
+		.Reg_Val = 0x81,
+	}, {
+		.Reg_Num = 111,
+		.Reg_Val = 0xC0,
+	}, {
+		.Reg_Num = 112,
+		.Reg_Val = 0x10,
+	}, {
+		.Reg_Num = 131,
+		.Reg_Val = 0x8A,
+	}, {
+		.Reg_Num = 132,
+		.Reg_Val = 0x10,
+	}, {
+		.Reg_Num = 133,
+		.Reg_Val = 0x24,
+	}, {
+		.Reg_Num = 134,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 135,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 136,
+		.Reg_Val = 0x7E,
+	}, {
+		.Reg_Num = 137,
+		.Reg_Val = 0x40,
+	}, {
+		.Reg_Num = 138,
+		.Reg_Val = 0x38,
+	}, {
+		.Reg_Num = 146,
+		.Reg_Val = 0xF6,
+	}, {
+		.Reg_Num = 147,
+		.Reg_Val = 0x1A,
+	}, {
+		.Reg_Num = 148,
+		.Reg_Val = 0x62,
+	}, {
+		.Reg_Num = 149,
+		.Reg_Val = 0x33,
+	}, {
+		.Reg_Num = 150,
+		.Reg_Val = 0x80,
+	}, {
+		.Reg_Num = 156,
+		.Reg_Val = 0x56,
+	}, {
+		.Reg_Num = 157,
+		.Reg_Val = 0x17,
+	}, {
+		.Reg_Num = 158,
+		.Reg_Val = 0xA9,
+	}, {
+		.Reg_Num = 159,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 160,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 161,
+		.Reg_Val = 0x00,
+	}, {
+		.Reg_Num = 162,
+		.Reg_Val = 0x40,
+	}, {
+		.Reg_Num = 166,
+		.Reg_Val = 0xAE,
+	}, {
+		.Reg_Num = 167,
+		.Reg_Val = 0x1B,
+	}, {
+		.Reg_Num = 168,
+		.Reg_Val = 0xF2,
+	}, {
+		.Reg_Num = 195,
+		.Reg_Val = 0x00,
+	}};
+	memcpy(state, &init, sizeof(init));
+	state->TunerRegs_Num = TUNER_REGS_NUM;
 	return 0 ;
 }
 
@@ -1174,488 +1176,560 @@ static u16 MXL5005_ControlInit(struct dvb_frontend *fe)
 	state->Init_Ctrl[39].bit[0] = 3;
 	state->Init_Ctrl[39].val[0] = 1;
 
+	return 0;
+}
 
-	state->CH_Ctrl_Num = CHCTRL_NUM ;
+static u16 MXL5005_CH_ControlInit(struct dvb_frontend *fe)
+{
+	struct mxl5005s_state *state = fe->tuner_priv;
+	static const struct TunerControl init[CHCTRL_NUM] = {
+	[0] {
+		.Ctrl_Num = DN_POLY,
+		.size = 2,
+		.addr[0] = 68,
+		.bit[0] = 6,
+		.val[0] = 1,
+		.addr[1] = 68,
+		.bit[1] = 7,
+		.val[1] = 1,
+	},
+	[1] = {
+		.Ctrl_Num = DN_RFGAIN,
+		.size = 2,
+		.addr[0] = 70,
+		.bit[0] = 6,
+		.val[0] = 1,
+		.addr[1] = 70,
+		.bit[1] = 7,
+		.val[1] = 0,
+	},
+	[2] = {
+		.Ctrl_Num = DN_CAP_RFLPF,
+		.size = 9,
+		.addr[0] = 69,
+		.bit[0] = 5,
+		.val[0] = 0,
+		.addr[1] = 69,
+		.bit[1] = 6,
+		.val[1] = 0,
+		.addr[2] = 69,
+		.bit[2] = 7,
+		.val[2] = 0,
+		.addr[3] = 68,
+		.bit[3] = 0,
+		.val[3] = 0,
+		.addr[4] = 68,
+		.bit[4] = 1,
+		.val[4] = 0,
+		.addr[5] = 68,
+		.bit[5] = 2,
+		.val[5] = 0,
+		.addr[6] = 68,
+		.bit[6] = 3,
+		.val[6] = 0,
+		.addr[7] = 68,
+		.bit[7] = 4,
+		.val[7] = 0,
+		.addr[8] = 68,
+		.bit[8] = 5,
+		.val[8] = 0,
+	},
+	[3] = {
+		.Ctrl_Num = DN_EN_VHFUHFBAR,
+		.size = 1,
+		.addr[0] = 70,
+		.bit[0] = 5,
+		.val[0] = 0,
+	},
+	[4] = {
+		.Ctrl_Num = DN_GAIN_ADJUST,
+		.size = 3,
+		.addr[0] = 73,
+		.bit[0] = 4,
+		.val[0] = 0,
+		.addr[1] = 73,
+		.bit[1] = 5,
+		.val[1] = 1,
+		.addr[2] = 73,
+		.bit[2] = 6,
+		.val[2] = 0,
+	},
+	[5] = {
+		.Ctrl_Num = DN_IQTNBUF_AMP,
+		.size = 4,
+		.addr[0] = 70,
+		.bit[0] = 0,
+		.val[0] = 0,
+		.addr[1] = 70,
+		.bit[1] = 1,
+		.val[1] = 0,
+		.addr[2] = 70,
+		.bit[2] = 2,
+		.val[2] = 0,
+		.addr[3] = 70,
+		.bit[3] = 3,
+		.val[3] = 0,
+	},
+	[6] = {
+		.Ctrl_Num = DN_IQTNGNBFBIAS_BST,
+		.size = 1,
+		.addr[0] = 70,
+		.bit[0] = 4,
+		.val[0] = 1,
+	},
+	[7] = {
+		.Ctrl_Num = RFSYN_EN_OUTMUX,
+		.size = 1,
+		.addr[0] = 111,
+		.bit[0] = 4,
+		.val[0] = 0,
+	},
+	[8] = {
+		.Ctrl_Num = RFSYN_SEL_VCO_OUT,
+		.size = 1,
+		.addr[0] = 111,
+		.bit[0] = 7,
+		.val[0] = 1,
+	},
+	[9] = {
+		.Ctrl_Num = RFSYN_SEL_VCO_HI,
+		.size = 1,
+		.addr[0] = 111,
+		.bit[0] = 6,
+		.val[0] = 1,
+	},
+	[10] = {
+		.Ctrl_Num = RFSYN_SEL_DIVM,
+		.size = 1,
+		.addr[0] = 111,
+		.bit[0] = 5,
+		.val[0] = 0,
+	},
+	[11] = {
+		.Ctrl_Num = RFSYN_RF_DIV_BIAS,
+		.size = 2,
+		.addr[0] = 110,
+		.bit[0] = 0,
+		.val[0] = 1,
+		.addr[1] = 110,
+		.bit[1] = 1,
+		.val[1] = 0,
 
-	state->CH_Ctrl[0].Ctrl_Num = DN_POLY ;
-	state->CH_Ctrl[0].size = 2 ;
-	state->CH_Ctrl[0].addr[0] = 68;
-	state->CH_Ctrl[0].bit[0] = 6;
-	state->CH_Ctrl[0].val[0] = 1;
-	state->CH_Ctrl[0].addr[1] = 68;
-	state->CH_Ctrl[0].bit[1] = 7;
-	state->CH_Ctrl[0].val[1] = 1;
+	},
+	[12] = {
+		.Ctrl_Num = DN_SEL_FREQ,
+		.size = 3,
+		.addr[0] = 69,
+		.bit[0] = 2,
+		.val[0] = 0,
+		.addr[1] = 69,
+		.bit[1] = 3,
+		.val[1] = 0,
+		.addr[2] = 69,
+		.bit[2] = 4,
+		.val[2] = 0,
 
-	state->CH_Ctrl[1].Ctrl_Num = DN_RFGAIN ;
-	state->CH_Ctrl[1].size = 2 ;
-	state->CH_Ctrl[1].addr[0] = 70;
-	state->CH_Ctrl[1].bit[0] = 6;
-	state->CH_Ctrl[1].val[0] = 1;
-	state->CH_Ctrl[1].addr[1] = 70;
-	state->CH_Ctrl[1].bit[1] = 7;
-	state->CH_Ctrl[1].val[1] = 0;
+	},
+	[13] = {
+		.Ctrl_Num = RFSYN_VCO_BIAS,
+		.size = 6,
+		.addr[0] = 110,
+		.bit[0] = 2,
+		.val[0] = 0,
+		.addr[1] = 110,
+		.bit[1] = 3,
+		.val[1] = 0,
+		.addr[2] = 110,
+		.bit[2] = 4,
+		.val[2] = 0,
+		.addr[3] = 110,
+		.bit[3] = 5,
+		.val[3] = 0,
+		.addr[4] = 110,
+		.bit[4] = 6,
+		.val[4] = 0,
+		.addr[5] = 110,
+		.bit[5] = 7,
+		.val[5] = 1,
 
-	state->CH_Ctrl[2].Ctrl_Num = DN_CAP_RFLPF ;
-	state->CH_Ctrl[2].size = 9 ;
-	state->CH_Ctrl[2].addr[0] = 69;
-	state->CH_Ctrl[2].bit[0] = 5;
-	state->CH_Ctrl[2].val[0] = 0;
-	state->CH_Ctrl[2].addr[1] = 69;
-	state->CH_Ctrl[2].bit[1] = 6;
-	state->CH_Ctrl[2].val[1] = 0;
-	state->CH_Ctrl[2].addr[2] = 69;
-	state->CH_Ctrl[2].bit[2] = 7;
-	state->CH_Ctrl[2].val[2] = 0;
-	state->CH_Ctrl[2].addr[3] = 68;
-	state->CH_Ctrl[2].bit[3] = 0;
-	state->CH_Ctrl[2].val[3] = 0;
-	state->CH_Ctrl[2].addr[4] = 68;
-	state->CH_Ctrl[2].bit[4] = 1;
-	state->CH_Ctrl[2].val[4] = 0;
-	state->CH_Ctrl[2].addr[5] = 68;
-	state->CH_Ctrl[2].bit[5] = 2;
-	state->CH_Ctrl[2].val[5] = 0;
-	state->CH_Ctrl[2].addr[6] = 68;
-	state->CH_Ctrl[2].bit[6] = 3;
-	state->CH_Ctrl[2].val[6] = 0;
-	state->CH_Ctrl[2].addr[7] = 68;
-	state->CH_Ctrl[2].bit[7] = 4;
-	state->CH_Ctrl[2].val[7] = 0;
-	state->CH_Ctrl[2].addr[8] = 68;
-	state->CH_Ctrl[2].bit[8] = 5;
-	state->CH_Ctrl[2].val[8] = 0;
+	},
+	[14] = {
+		.Ctrl_Num = CHCAL_INT_MOD_RF,
+		.size = 7,
+		.addr[0] = 14,
+		.bit[0] = 0,
+		.val[0] = 0,
+		.addr[1] = 14,
+		.bit[1] = 1,
+		.val[1] = 0,
+		.addr[2] = 14,
+		.bit[2] = 2,
+		.val[2] = 0,
+		.addr[3] = 14,
+		.bit[3] = 3,
+		.val[3] = 0,
+		.addr[4] = 14,
+		.bit[4] = 4,
+		.val[4] = 0,
+		.addr[5] = 14,
+		.bit[5] = 5,
+		.val[5] = 0,
+		.addr[6] = 14,
+		.bit[6] = 6,
+		.val[6] = 0,
 
-	state->CH_Ctrl[3].Ctrl_Num = DN_EN_VHFUHFBAR ;
-	state->CH_Ctrl[3].size = 1 ;
-	state->CH_Ctrl[3].addr[0] = 70;
-	state->CH_Ctrl[3].bit[0] = 5;
-	state->CH_Ctrl[3].val[0] = 0;
+	},
+	[15] = {
+		.Ctrl_Num = CHCAL_FRAC_MOD_RF,
+		.size = 18,
+		.addr[0] = 17,
+		.bit[0] = 6,
+		.val[0] = 0,
+		.addr[1] = 17,
+		.bit[1] = 7,
+		.val[1] = 0,
+		.addr[2] = 16,
+		.bit[2] = 0,
+		.val[2] = 0,
+		.addr[3] = 16,
+		.bit[3] = 1,
+		.val[3] = 0,
+		.addr[4] = 16,
+		.bit[4] = 2,
+		.val[4] = 0,
+		.addr[5] = 16,
+		.bit[5] = 3,
+		.val[5] = 0,
+		.addr[6] = 16,
+		.bit[6] = 4,
+		.val[6] = 0,
+		.addr[7] = 16,
+		.bit[7] = 5,
+		.val[7] = 0,
+		.addr[8] = 16,
+		.bit[8] = 6,
+		.val[8] = 0,
+		.addr[9] = 16,
+		.bit[9] = 7,
+		.val[9] = 0,
+		.addr[10] = 15,
+		.bit[10] = 0,
+		.val[10] = 0,
+		.addr[11] = 15,
+		.bit[11] = 1,
+		.val[11] = 0,
+		.addr[12] = 15,
+		.bit[12] = 2,
+		.val[12] = 0,
+		.addr[13] = 15,
+		.bit[13] = 3,
+		.val[13] = 0,
+		.addr[14] = 15,
+		.bit[14] = 4,
+		.val[14] = 0,
+		.addr[15] = 15,
+		.bit[15] = 5,
+		.val[15] = 0,
+		.addr[16] = 15,
+		.bit[16] = 6,
+		.val[16] = 1,
+		.addr[17] = 15,
+		.bit[17] = 7,
+		.val[17] = 1,
 
-	state->CH_Ctrl[4].Ctrl_Num = DN_GAIN_ADJUST ;
-	state->CH_Ctrl[4].size = 3 ;
-	state->CH_Ctrl[4].addr[0] = 73;
-	state->CH_Ctrl[4].bit[0] = 4;
-	state->CH_Ctrl[4].val[0] = 0;
-	state->CH_Ctrl[4].addr[1] = 73;
-	state->CH_Ctrl[4].bit[1] = 5;
-	state->CH_Ctrl[4].val[1] = 1;
-	state->CH_Ctrl[4].addr[2] = 73;
-	state->CH_Ctrl[4].bit[2] = 6;
-	state->CH_Ctrl[4].val[2] = 0;
+	},
+	[16] = {
+		.Ctrl_Num = RFSYN_LPF_R,
+		.size = 5,
+		.addr[0] = 112,
+		.bit[0] = 0,
+		.val[0] = 0,
+		.addr[1] = 112,
+		.bit[1] = 1,
+		.val[1] = 0,
+		.addr[2] = 112,
+		.bit[2] = 2,
+		.val[2] = 0,
+		.addr[3] = 112,
+		.bit[3] = 3,
+		.val[3] = 0,
+		.addr[4] = 112,
+		.bit[4] = 4,
+		.val[4] = 1,
 
-	state->CH_Ctrl[5].Ctrl_Num = DN_IQTNBUF_AMP ;
-	state->CH_Ctrl[5].size = 4 ;
-	state->CH_Ctrl[5].addr[0] = 70;
-	state->CH_Ctrl[5].bit[0] = 0;
-	state->CH_Ctrl[5].val[0] = 0;
-	state->CH_Ctrl[5].addr[1] = 70;
-	state->CH_Ctrl[5].bit[1] = 1;
-	state->CH_Ctrl[5].val[1] = 0;
-	state->CH_Ctrl[5].addr[2] = 70;
-	state->CH_Ctrl[5].bit[2] = 2;
-	state->CH_Ctrl[5].val[2] = 0;
-	state->CH_Ctrl[5].addr[3] = 70;
-	state->CH_Ctrl[5].bit[3] = 3;
-	state->CH_Ctrl[5].val[3] = 0;
+	},
+	[17] = {
+		.Ctrl_Num = CHCAL_EN_INT_RF,
+		.size = 1,
+		.addr[0] = 14,
+		.bit[0] = 7,
+		.val[0] = 0,
 
-	state->CH_Ctrl[6].Ctrl_Num = DN_IQTNGNBFBIAS_BST ;
-	state->CH_Ctrl[6].size = 1 ;
-	state->CH_Ctrl[6].addr[0] = 70;
-	state->CH_Ctrl[6].bit[0] = 4;
-	state->CH_Ctrl[6].val[0] = 1;
+	},
+	[18] = {
+		.Ctrl_Num = TG_LO_DIVVAL,
+		.size = 4,
+		.addr[0] = 107,
+		.bit[0] = 3,
+		.val[0] = 0,
+		.addr[1] = 107,
+		.bit[1] = 4,
+		.val[1] = 0,
+		.addr[2] = 107,
+		.bit[2] = 5,
+		.val[2] = 0,
+		.addr[3] = 107,
+		.bit[3] = 6,
+		.val[3] = 0,
 
-	state->CH_Ctrl[7].Ctrl_Num = RFSYN_EN_OUTMUX ;
-	state->CH_Ctrl[7].size = 1 ;
-	state->CH_Ctrl[7].addr[0] = 111;
-	state->CH_Ctrl[7].bit[0] = 4;
-	state->CH_Ctrl[7].val[0] = 0;
+	},
+	[19] = {
+		.Ctrl_Num = TG_LO_SELVAL,
+		.size = 3,
+		.addr[0] = 107,
+		.bit[0] = 7,
+		.val[0] = 1,
+		.addr[1] = 106,
+		.bit[1] = 0,
+		.val[1] = 1,
+		.addr[2] = 106,
+		.bit[2] = 1,
+		.val[2] = 1,
 
-	state->CH_Ctrl[8].Ctrl_Num = RFSYN_SEL_VCO_OUT ;
-	state->CH_Ctrl[8].size = 1 ;
-	state->CH_Ctrl[8].addr[0] = 111;
-	state->CH_Ctrl[8].bit[0] = 7;
-	state->CH_Ctrl[8].val[0] = 1;
+	},
+	[20] = {
+		.Ctrl_Num = TG_DIV_VAL,
+		.size = 11,
+		.addr[0] = 109,
+		.bit[0] = 2,
+		.val[0] = 0,
+		.addr[1] = 109,
+		.bit[1] = 3,
+		.val[1] = 0,
+		.addr[2] = 109,
+		.bit[2] = 4,
+		.val[2] = 0,
+		.addr[3] = 109,
+		.bit[3] = 5,
+		.val[3] = 0,
+		.addr[4] = 109,
+		.bit[4] = 6,
+		.val[4] = 0,
+		.addr[5] = 109,
+		.bit[5] = 7,
+		.val[5] = 0,
+		.addr[6] = 108,
+		.bit[6] = 0,
+		.val[6] = 0,
+		.addr[7] = 108,
+		.bit[7] = 1,
+		.val[7] = 0,
+		.addr[8] = 108,
+		.bit[8] = 2,
+		.val[8] = 1,
+		.addr[9] = 108,
+		.bit[9] = 3,
+		.val[9] = 1,
+		.addr[10] = 108,
+		.bit[10] = 4,
+		.val[10] = 1,
 
-	state->CH_Ctrl[9].Ctrl_Num = RFSYN_SEL_VCO_HI ;
-	state->CH_Ctrl[9].size = 1 ;
-	state->CH_Ctrl[9].addr[0] = 111;
-	state->CH_Ctrl[9].bit[0] = 6;
-	state->CH_Ctrl[9].val[0] = 1;
+	},
+	[21] = {
+		.Ctrl_Num = TG_VCO_BIAS,
+		.size = 6,
+		.addr[0] = 106,
+		.bit[0] = 2,
+		.val[0] = 0,
+		.addr[1] = 106,
+		.bit[1] = 3,
+		.val[1] = 0,
+		.addr[2] = 106,
+		.bit[2] = 4,
+		.val[2] = 0,
+		.addr[3] = 106,
+		.bit[3] = 5,
+		.val[3] = 0,
+		.addr[4] = 106,
+		.bit[4] = 6,
+		.val[4] = 0,
+		.addr[5] = 106,
+		.bit[5] = 7,
+		.val[5] = 1,
 
-	state->CH_Ctrl[10].Ctrl_Num = RFSYN_SEL_DIVM ;
-	state->CH_Ctrl[10].size = 1 ;
-	state->CH_Ctrl[10].addr[0] = 111;
-	state->CH_Ctrl[10].bit[0] = 5;
-	state->CH_Ctrl[10].val[0] = 0;
+	},
+	[22] = {
+		.Ctrl_Num = SEQ_EXTPOWERUP,
+		.size = 1,
+		.addr[0] = 138,
+		.bit[0] = 4,
+		.val[0] = 1,
 
-	state->CH_Ctrl[11].Ctrl_Num = RFSYN_RF_DIV_BIAS ;
-	state->CH_Ctrl[11].size = 2 ;
-	state->CH_Ctrl[11].addr[0] = 110;
-	state->CH_Ctrl[11].bit[0] = 0;
-	state->CH_Ctrl[11].val[0] = 1;
-	state->CH_Ctrl[11].addr[1] = 110;
-	state->CH_Ctrl[11].bit[1] = 1;
-	state->CH_Ctrl[11].val[1] = 0;
+	},
+	[23] = {
+		.Ctrl_Num = OVERRIDE_2,
+		.size = 1,
+		.addr[0] = 17,
+		.bit[0] = 5,
+		.val[0] = 0,
 
-	state->CH_Ctrl[12].Ctrl_Num = DN_SEL_FREQ ;
-	state->CH_Ctrl[12].size = 3 ;
-	state->CH_Ctrl[12].addr[0] = 69;
-	state->CH_Ctrl[12].bit[0] = 2;
-	state->CH_Ctrl[12].val[0] = 0;
-	state->CH_Ctrl[12].addr[1] = 69;
-	state->CH_Ctrl[12].bit[1] = 3;
-	state->CH_Ctrl[12].val[1] = 0;
-	state->CH_Ctrl[12].addr[2] = 69;
-	state->CH_Ctrl[12].bit[2] = 4;
-	state->CH_Ctrl[12].val[2] = 0;
+	},
+	[24] = {
+		.Ctrl_Num = OVERRIDE_3,
+		.size = 1,
+		.addr[0] = 111,
+		.bit[0] = 3,
+		.val[0] = 0,
 
-	state->CH_Ctrl[13].Ctrl_Num = RFSYN_VCO_BIAS ;
-	state->CH_Ctrl[13].size = 6 ;
-	state->CH_Ctrl[13].addr[0] = 110;
-	state->CH_Ctrl[13].bit[0] = 2;
-	state->CH_Ctrl[13].val[0] = 0;
-	state->CH_Ctrl[13].addr[1] = 110;
-	state->CH_Ctrl[13].bit[1] = 3;
-	state->CH_Ctrl[13].val[1] = 0;
-	state->CH_Ctrl[13].addr[2] = 110;
-	state->CH_Ctrl[13].bit[2] = 4;
-	state->CH_Ctrl[13].val[2] = 0;
-	state->CH_Ctrl[13].addr[3] = 110;
-	state->CH_Ctrl[13].bit[3] = 5;
-	state->CH_Ctrl[13].val[3] = 0;
-	state->CH_Ctrl[13].addr[4] = 110;
-	state->CH_Ctrl[13].bit[4] = 6;
-	state->CH_Ctrl[13].val[4] = 0;
-	state->CH_Ctrl[13].addr[5] = 110;
-	state->CH_Ctrl[13].bit[5] = 7;
-	state->CH_Ctrl[13].val[5] = 1;
+	},
+	[25] = {
+		.Ctrl_Num = OVERRIDE_4,
+		.size = 1,
+		.addr[0] = 112,
+		.bit[0] = 7,
+		.val[0] = 0,
 
-	state->CH_Ctrl[14].Ctrl_Num = CHCAL_INT_MOD_RF ;
-	state->CH_Ctrl[14].size = 7 ;
-	state->CH_Ctrl[14].addr[0] = 14;
-	state->CH_Ctrl[14].bit[0] = 0;
-	state->CH_Ctrl[14].val[0] = 0;
-	state->CH_Ctrl[14].addr[1] = 14;
-	state->CH_Ctrl[14].bit[1] = 1;
-	state->CH_Ctrl[14].val[1] = 0;
-	state->CH_Ctrl[14].addr[2] = 14;
-	state->CH_Ctrl[14].bit[2] = 2;
-	state->CH_Ctrl[14].val[2] = 0;
-	state->CH_Ctrl[14].addr[3] = 14;
-	state->CH_Ctrl[14].bit[3] = 3;
-	state->CH_Ctrl[14].val[3] = 0;
-	state->CH_Ctrl[14].addr[4] = 14;
-	state->CH_Ctrl[14].bit[4] = 4;
-	state->CH_Ctrl[14].val[4] = 0;
-	state->CH_Ctrl[14].addr[5] = 14;
-	state->CH_Ctrl[14].bit[5] = 5;
-	state->CH_Ctrl[14].val[5] = 0;
-	state->CH_Ctrl[14].addr[6] = 14;
-	state->CH_Ctrl[14].bit[6] = 6;
-	state->CH_Ctrl[14].val[6] = 0;
+	},
+	[26] = {
+		.Ctrl_Num = SEQ_FSM_PULSE,
+		.size = 1,
+		.addr[0] = 136,
+		.bit[0] = 7,
+		.val[0] = 0,
 
-	state->CH_Ctrl[15].Ctrl_Num = CHCAL_FRAC_MOD_RF ;
-	state->CH_Ctrl[15].size = 18 ;
-	state->CH_Ctrl[15].addr[0] = 17;
-	state->CH_Ctrl[15].bit[0] = 6;
-	state->CH_Ctrl[15].val[0] = 0;
-	state->CH_Ctrl[15].addr[1] = 17;
-	state->CH_Ctrl[15].bit[1] = 7;
-	state->CH_Ctrl[15].val[1] = 0;
-	state->CH_Ctrl[15].addr[2] = 16;
-	state->CH_Ctrl[15].bit[2] = 0;
-	state->CH_Ctrl[15].val[2] = 0;
-	state->CH_Ctrl[15].addr[3] = 16;
-	state->CH_Ctrl[15].bit[3] = 1;
-	state->CH_Ctrl[15].val[3] = 0;
-	state->CH_Ctrl[15].addr[4] = 16;
-	state->CH_Ctrl[15].bit[4] = 2;
-	state->CH_Ctrl[15].val[4] = 0;
-	state->CH_Ctrl[15].addr[5] = 16;
-	state->CH_Ctrl[15].bit[5] = 3;
-	state->CH_Ctrl[15].val[5] = 0;
-	state->CH_Ctrl[15].addr[6] = 16;
-	state->CH_Ctrl[15].bit[6] = 4;
-	state->CH_Ctrl[15].val[6] = 0;
-	state->CH_Ctrl[15].addr[7] = 16;
-	state->CH_Ctrl[15].bit[7] = 5;
-	state->CH_Ctrl[15].val[7] = 0;
-	state->CH_Ctrl[15].addr[8] = 16;
-	state->CH_Ctrl[15].bit[8] = 6;
-	state->CH_Ctrl[15].val[8] = 0;
-	state->CH_Ctrl[15].addr[9] = 16;
-	state->CH_Ctrl[15].bit[9] = 7;
-	state->CH_Ctrl[15].val[9] = 0;
-	state->CH_Ctrl[15].addr[10] = 15;
-	state->CH_Ctrl[15].bit[10] = 0;
-	state->CH_Ctrl[15].val[10] = 0;
-	state->CH_Ctrl[15].addr[11] = 15;
-	state->CH_Ctrl[15].bit[11] = 1;
-	state->CH_Ctrl[15].val[11] = 0;
-	state->CH_Ctrl[15].addr[12] = 15;
-	state->CH_Ctrl[15].bit[12] = 2;
-	state->CH_Ctrl[15].val[12] = 0;
-	state->CH_Ctrl[15].addr[13] = 15;
-	state->CH_Ctrl[15].bit[13] = 3;
-	state->CH_Ctrl[15].val[13] = 0;
-	state->CH_Ctrl[15].addr[14] = 15;
-	state->CH_Ctrl[15].bit[14] = 4;
-	state->CH_Ctrl[15].val[14] = 0;
-	state->CH_Ctrl[15].addr[15] = 15;
-	state->CH_Ctrl[15].bit[15] = 5;
-	state->CH_Ctrl[15].val[15] = 0;
-	state->CH_Ctrl[15].addr[16] = 15;
-	state->CH_Ctrl[15].bit[16] = 6;
-	state->CH_Ctrl[15].val[16] = 1;
-	state->CH_Ctrl[15].addr[17] = 15;
-	state->CH_Ctrl[15].bit[17] = 7;
-	state->CH_Ctrl[15].val[17] = 1;
+	},
+	[27] = {
+		.Ctrl_Num = GPIO_4B,
+		.size = 1,
+		.addr[0] = 149,
+		.bit[0] = 7,
+		.val[0] = 0,
 
-	state->CH_Ctrl[16].Ctrl_Num = RFSYN_LPF_R ;
-	state->CH_Ctrl[16].size = 5 ;
-	state->CH_Ctrl[16].addr[0] = 112;
-	state->CH_Ctrl[16].bit[0] = 0;
-	state->CH_Ctrl[16].val[0] = 0;
-	state->CH_Ctrl[16].addr[1] = 112;
-	state->CH_Ctrl[16].bit[1] = 1;
-	state->CH_Ctrl[16].val[1] = 0;
-	state->CH_Ctrl[16].addr[2] = 112;
-	state->CH_Ctrl[16].bit[2] = 2;
-	state->CH_Ctrl[16].val[2] = 0;
-	state->CH_Ctrl[16].addr[3] = 112;
-	state->CH_Ctrl[16].bit[3] = 3;
-	state->CH_Ctrl[16].val[3] = 0;
-	state->CH_Ctrl[16].addr[4] = 112;
-	state->CH_Ctrl[16].bit[4] = 4;
-	state->CH_Ctrl[16].val[4] = 1;
+	},
+	[28] = {
+		.Ctrl_Num = GPIO_3B,
+		.size = 1,
+		.addr[0] = 149,
+		.bit[0] = 6,
+		.val[0] = 0,
 
-	state->CH_Ctrl[17].Ctrl_Num = CHCAL_EN_INT_RF ;
-	state->CH_Ctrl[17].size = 1 ;
-	state->CH_Ctrl[17].addr[0] = 14;
-	state->CH_Ctrl[17].bit[0] = 7;
-	state->CH_Ctrl[17].val[0] = 0;
+	},
+	[29] = {
+		.Ctrl_Num = GPIO_4,
+		.size = 1,
+		.addr[0] = 149,
+		.bit[0] = 5,
+		.val[0] = 1,
 
-	state->CH_Ctrl[18].Ctrl_Num = TG_LO_DIVVAL ;
-	state->CH_Ctrl[18].size = 4 ;
-	state->CH_Ctrl[18].addr[0] = 107;
-	state->CH_Ctrl[18].bit[0] = 3;
-	state->CH_Ctrl[18].val[0] = 0;
-	state->CH_Ctrl[18].addr[1] = 107;
-	state->CH_Ctrl[18].bit[1] = 4;
-	state->CH_Ctrl[18].val[1] = 0;
-	state->CH_Ctrl[18].addr[2] = 107;
-	state->CH_Ctrl[18].bit[2] = 5;
-	state->CH_Ctrl[18].val[2] = 0;
-	state->CH_Ctrl[18].addr[3] = 107;
-	state->CH_Ctrl[18].bit[3] = 6;
-	state->CH_Ctrl[18].val[3] = 0;
+	},
+	[30] = {
+		.Ctrl_Num = GPIO_3,
+		.size = 1,
+		.addr[0] = 149,
+		.bit[0] = 4,
+		.val[0] = 1,
 
-	state->CH_Ctrl[19].Ctrl_Num = TG_LO_SELVAL ;
-	state->CH_Ctrl[19].size = 3 ;
-	state->CH_Ctrl[19].addr[0] = 107;
-	state->CH_Ctrl[19].bit[0] = 7;
-	state->CH_Ctrl[19].val[0] = 1;
-	state->CH_Ctrl[19].addr[1] = 106;
-	state->CH_Ctrl[19].bit[1] = 0;
-	state->CH_Ctrl[19].val[1] = 1;
-	state->CH_Ctrl[19].addr[2] = 106;
-	state->CH_Ctrl[19].bit[2] = 1;
-	state->CH_Ctrl[19].val[2] = 1;
+	},
+	[31] = {
+		.Ctrl_Num = GPIO_1B,
+		.size = 1,
+		.addr[0] = 149,
+		.bit[0] = 3,
+		.val[0] = 0,
 
-	state->CH_Ctrl[20].Ctrl_Num = TG_DIV_VAL ;
-	state->CH_Ctrl[20].size = 11 ;
-	state->CH_Ctrl[20].addr[0] = 109;
-	state->CH_Ctrl[20].bit[0] = 2;
-	state->CH_Ctrl[20].val[0] = 0;
-	state->CH_Ctrl[20].addr[1] = 109;
-	state->CH_Ctrl[20].bit[1] = 3;
-	state->CH_Ctrl[20].val[1] = 0;
-	state->CH_Ctrl[20].addr[2] = 109;
-	state->CH_Ctrl[20].bit[2] = 4;
-	state->CH_Ctrl[20].val[2] = 0;
-	state->CH_Ctrl[20].addr[3] = 109;
-	state->CH_Ctrl[20].bit[3] = 5;
-	state->CH_Ctrl[20].val[3] = 0;
-	state->CH_Ctrl[20].addr[4] = 109;
-	state->CH_Ctrl[20].bit[4] = 6;
-	state->CH_Ctrl[20].val[4] = 0;
-	state->CH_Ctrl[20].addr[5] = 109;
-	state->CH_Ctrl[20].bit[5] = 7;
-	state->CH_Ctrl[20].val[5] = 0;
-	state->CH_Ctrl[20].addr[6] = 108;
-	state->CH_Ctrl[20].bit[6] = 0;
-	state->CH_Ctrl[20].val[6] = 0;
-	state->CH_Ctrl[20].addr[7] = 108;
-	state->CH_Ctrl[20].bit[7] = 1;
-	state->CH_Ctrl[20].val[7] = 0;
-	state->CH_Ctrl[20].addr[8] = 108;
-	state->CH_Ctrl[20].bit[8] = 2;
-	state->CH_Ctrl[20].val[8] = 1;
-	state->CH_Ctrl[20].addr[9] = 108;
-	state->CH_Ctrl[20].bit[9] = 3;
-	state->CH_Ctrl[20].val[9] = 1;
-	state->CH_Ctrl[20].addr[10] = 108;
-	state->CH_Ctrl[20].bit[10] = 4;
-	state->CH_Ctrl[20].val[10] = 1;
+	},
+	[32] = {
+		.Ctrl_Num = DAC_A_ENABLE,
+		.size = 1,
+		.addr[0] = 93,
+		.bit[0] = 1,
+		.val[0] = 0,
 
-	state->CH_Ctrl[21].Ctrl_Num = TG_VCO_BIAS ;
-	state->CH_Ctrl[21].size = 6 ;
-	state->CH_Ctrl[21].addr[0] = 106;
-	state->CH_Ctrl[21].bit[0] = 2;
-	state->CH_Ctrl[21].val[0] = 0;
-	state->CH_Ctrl[21].addr[1] = 106;
-	state->CH_Ctrl[21].bit[1] = 3;
-	state->CH_Ctrl[21].val[1] = 0;
-	state->CH_Ctrl[21].addr[2] = 106;
-	state->CH_Ctrl[21].bit[2] = 4;
-	state->CH_Ctrl[21].val[2] = 0;
-	state->CH_Ctrl[21].addr[3] = 106;
-	state->CH_Ctrl[21].bit[3] = 5;
-	state->CH_Ctrl[21].val[3] = 0;
-	state->CH_Ctrl[21].addr[4] = 106;
-	state->CH_Ctrl[21].bit[4] = 6;
-	state->CH_Ctrl[21].val[4] = 0;
-	state->CH_Ctrl[21].addr[5] = 106;
-	state->CH_Ctrl[21].bit[5] = 7;
-	state->CH_Ctrl[21].val[5] = 1;
+	},
+	[33] = {
+		.Ctrl_Num = DAC_B_ENABLE,
+		.size = 1,
+		.addr[0] = 93,
+		.bit[0] = 0,
+		.val[0] = 0,
 
-	state->CH_Ctrl[22].Ctrl_Num = SEQ_EXTPOWERUP ;
-	state->CH_Ctrl[22].size = 1 ;
-	state->CH_Ctrl[22].addr[0] = 138;
-	state->CH_Ctrl[22].bit[0] = 4;
-	state->CH_Ctrl[22].val[0] = 1;
+	},
+	[34] = {
+		.Ctrl_Num = DAC_DIN_A,
+		.size = 6,
+		.addr[0] = 92,
+		.bit[0] = 2,
+		.val[0] = 0,
+		.addr[1] = 92,
+		.bit[1] = 3,
+		.val[1] = 0,
+		.addr[2] = 92,
+		.bit[2] = 4,
+		.val[2] = 0,
+		.addr[3] = 92,
+		.bit[3] = 5,
+		.val[3] = 0,
+		.addr[4] = 92,
+		.bit[4] = 6,
+		.val[4] = 0,
+		.addr[5] = 92,
+		.bit[5] = 7,
+		.val[5] = 0,
 
-	state->CH_Ctrl[23].Ctrl_Num = OVERRIDE_2 ;
-	state->CH_Ctrl[23].size = 1 ;
-	state->CH_Ctrl[23].addr[0] = 17;
-	state->CH_Ctrl[23].bit[0] = 5;
-	state->CH_Ctrl[23].val[0] = 0;
-
-	state->CH_Ctrl[24].Ctrl_Num = OVERRIDE_3 ;
-	state->CH_Ctrl[24].size = 1 ;
-	state->CH_Ctrl[24].addr[0] = 111;
-	state->CH_Ctrl[24].bit[0] = 3;
-	state->CH_Ctrl[24].val[0] = 0;
-
-	state->CH_Ctrl[25].Ctrl_Num = OVERRIDE_4 ;
-	state->CH_Ctrl[25].size = 1 ;
-	state->CH_Ctrl[25].addr[0] = 112;
-	state->CH_Ctrl[25].bit[0] = 7;
-	state->CH_Ctrl[25].val[0] = 0;
-
-	state->CH_Ctrl[26].Ctrl_Num = SEQ_FSM_PULSE ;
-	state->CH_Ctrl[26].size = 1 ;
-	state->CH_Ctrl[26].addr[0] = 136;
-	state->CH_Ctrl[26].bit[0] = 7;
-	state->CH_Ctrl[26].val[0] = 0;
-
-	state->CH_Ctrl[27].Ctrl_Num = GPIO_4B ;
-	state->CH_Ctrl[27].size = 1 ;
-	state->CH_Ctrl[27].addr[0] = 149;
-	state->CH_Ctrl[27].bit[0] = 7;
-	state->CH_Ctrl[27].val[0] = 0;
-
-	state->CH_Ctrl[28].Ctrl_Num = GPIO_3B ;
-	state->CH_Ctrl[28].size = 1 ;
-	state->CH_Ctrl[28].addr[0] = 149;
-	state->CH_Ctrl[28].bit[0] = 6;
-	state->CH_Ctrl[28].val[0] = 0;
-
-	state->CH_Ctrl[29].Ctrl_Num = GPIO_4 ;
-	state->CH_Ctrl[29].size = 1 ;
-	state->CH_Ctrl[29].addr[0] = 149;
-	state->CH_Ctrl[29].bit[0] = 5;
-	state->CH_Ctrl[29].val[0] = 1;
-
-	state->CH_Ctrl[30].Ctrl_Num = GPIO_3 ;
-	state->CH_Ctrl[30].size = 1 ;
-	state->CH_Ctrl[30].addr[0] = 149;
-	state->CH_Ctrl[30].bit[0] = 4;
-	state->CH_Ctrl[30].val[0] = 1;
-
-	state->CH_Ctrl[31].Ctrl_Num = GPIO_1B ;
-	state->CH_Ctrl[31].size = 1 ;
-	state->CH_Ctrl[31].addr[0] = 149;
-	state->CH_Ctrl[31].bit[0] = 3;
-	state->CH_Ctrl[31].val[0] = 0;
-
-	state->CH_Ctrl[32].Ctrl_Num = DAC_A_ENABLE ;
-	state->CH_Ctrl[32].size = 1 ;
-	state->CH_Ctrl[32].addr[0] = 93;
-	state->CH_Ctrl[32].bit[0] = 1;
-	state->CH_Ctrl[32].val[0] = 0;
-
-	state->CH_Ctrl[33].Ctrl_Num = DAC_B_ENABLE ;
-	state->CH_Ctrl[33].size = 1 ;
-	state->CH_Ctrl[33].addr[0] = 93;
-	state->CH_Ctrl[33].bit[0] = 0;
-	state->CH_Ctrl[33].val[0] = 0;
-
-	state->CH_Ctrl[34].Ctrl_Num = DAC_DIN_A ;
-	state->CH_Ctrl[34].size = 6 ;
-	state->CH_Ctrl[34].addr[0] = 92;
-	state->CH_Ctrl[34].bit[0] = 2;
-	state->CH_Ctrl[34].val[0] = 0;
-	state->CH_Ctrl[34].addr[1] = 92;
-	state->CH_Ctrl[34].bit[1] = 3;
-	state->CH_Ctrl[34].val[1] = 0;
-	state->CH_Ctrl[34].addr[2] = 92;
-	state->CH_Ctrl[34].bit[2] = 4;
-	state->CH_Ctrl[34].val[2] = 0;
-	state->CH_Ctrl[34].addr[3] = 92;
-	state->CH_Ctrl[34].bit[3] = 5;
-	state->CH_Ctrl[34].val[3] = 0;
-	state->CH_Ctrl[34].addr[4] = 92;
-	state->CH_Ctrl[34].bit[4] = 6;
-	state->CH_Ctrl[34].val[4] = 0;
-	state->CH_Ctrl[34].addr[5] = 92;
-	state->CH_Ctrl[34].bit[5] = 7;
-	state->CH_Ctrl[34].val[5] = 0;
-
-	state->CH_Ctrl[35].Ctrl_Num = DAC_DIN_B ;
-	state->CH_Ctrl[35].size = 6 ;
-	state->CH_Ctrl[35].addr[0] = 93;
-	state->CH_Ctrl[35].bit[0] = 2;
-	state->CH_Ctrl[35].val[0] = 0;
-	state->CH_Ctrl[35].addr[1] = 93;
-	state->CH_Ctrl[35].bit[1] = 3;
-	state->CH_Ctrl[35].val[1] = 0;
-	state->CH_Ctrl[35].addr[2] = 93;
-	state->CH_Ctrl[35].bit[2] = 4;
-	state->CH_Ctrl[35].val[2] = 0;
-	state->CH_Ctrl[35].addr[3] = 93;
-	state->CH_Ctrl[35].bit[3] = 5;
-	state->CH_Ctrl[35].val[3] = 0;
-	state->CH_Ctrl[35].addr[4] = 93;
-	state->CH_Ctrl[35].bit[4] = 6;
-	state->CH_Ctrl[35].val[4] = 0;
-	state->CH_Ctrl[35].addr[5] = 93;
-	state->CH_Ctrl[35].bit[5] = 7;
-	state->CH_Ctrl[35].val[5] = 0;
-
+	},
+	[35] = {
+		.Ctrl_Num = DAC_DIN_B,
+		.size = 6,
+		.addr[0] = 93,
+		.bit[0] = 2,
+		.val[0] = 0,
+		.addr[1] = 93,
+		.bit[1] = 3,
+		.val[1] = 0,
+		.addr[2] = 93,
+		.bit[2] = 4,
+		.val[2] = 0,
+		.addr[3] = 93,
+		.bit[3] = 5,
+		.val[3] = 0,
+		.addr[4] = 93,
+		.bit[4] = 6,
+		.val[4] = 0,
+		.addr[5] = 93,
+		.bit[5] = 7,
+		.val[5] = 0,
+	},
 #ifdef _MXL_PRODUCTION
-	state->CH_Ctrl[36].Ctrl_Num = RFSYN_EN_DIV ;
-	state->CH_Ctrl[36].size = 1 ;
-	state->CH_Ctrl[36].addr[0] = 109;
-	state->CH_Ctrl[36].bit[0] = 1;
-	state->CH_Ctrl[36].val[0] = 1;
+	[36] = {
+		.Ctrl_Num = RFSYN_EN_DIV,
+		.size = 1,
+		.addr[0] = 109,
+		.bit[0] = 1,
+		.val[0] = 1,
 
-	state->CH_Ctrl[37].Ctrl_Num = RFSYN_DIVM ;
-	state->CH_Ctrl[37].size = 2 ;
-	state->CH_Ctrl[37].addr[0] = 112;
-	state->CH_Ctrl[37].bit[0] = 5;
-	state->CH_Ctrl[37].val[0] = 0;
-	state->CH_Ctrl[37].addr[1] = 112;
-	state->CH_Ctrl[37].bit[1] = 6;
-	state->CH_Ctrl[37].val[1] = 0;
+	},
+	[37] = {
+		.Ctrl_Num = RFSYN_DIVM,
+		.size = 2,
+		.addr[0] = 112,
+		.bit[0] = 5,
+		.val[0] = 0,
+		.addr[1] = 112,
+		.bit[1] = 6,
+		.val[1] = 0,
 
-	state->CH_Ctrl[38].Ctrl_Num = DN_BYPASS_AGC_I2C ;
-	state->CH_Ctrl[38].size = 1 ;
-	state->CH_Ctrl[38].addr[0] = 65;
-	state->CH_Ctrl[38].bit[0] = 1;
-	state->CH_Ctrl[38].val[0] = 0;
+	},
+	[38] = {
+		.Ctrl_Num = DN_BYPASS_AGC_I2C,
+		.size = 1,
+		.addr[0] = 65,
+		.bit[0] = 1,
+		.val[0] = 0,
+	},
 #endif
-
+	};
+	state->CH_Ctrl_Num = CHCTRL_NUM,
+	memcpy(state->CH_Ctrl, &init, sizeof(init));
 	return 0 ;
 }
 
@@ -1663,6 +1737,7 @@ static void InitTunerControls(struct dvb_frontend *fe)
 {
 	MXL5005_RegisterInit(fe);
 	MXL5005_ControlInit(fe);
+	MXL5005_CH_ControlInit(fe);
 #ifdef _MXL_INTERNAL
 	MXL5005_MXLControlInit(fe);
 #endif
