@@ -653,6 +653,9 @@ endif
 KBUILD_CFLAGS += $(call cc-ifversion, -lt, 0408, \
 			$(call cc-disable-warning,uninitialized,))
 
+KBUILD_CFLAGS += $(call cc-ifversion, -lt, 0408, \
+			$(call cc-disable-warning,array-bounds,))
+
 KBUILD_CFLAGS += $(call cc-ifversion, -eq, 0408, \
 			$(call cc-disable-warning,maybe-uninitialized,))
 
