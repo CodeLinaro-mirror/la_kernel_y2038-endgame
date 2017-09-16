@@ -259,7 +259,12 @@ static inline unsigned long long __cmpxchg64(unsigned long long *ptr,
 "	teq		%0, #0\n"
 "	bne		1b\n"
 "2:"
-	: "=&r" (res), "=&r" (oldval), "+Qo" (*ptr)
+	: "=&r" (res), "=&r" (oldval),
+#if GCC_VERSION >= 40700
+	  "+Qo" (*ptr)
+#else
+	  "+m" (*ptr)
+#endif
 	: "r" (ptr), "r" (old), "r" (new)
 	: "cc");
 
