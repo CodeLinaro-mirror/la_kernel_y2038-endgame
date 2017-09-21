@@ -1,5 +1,6 @@
 config HAVE_ARCH_KASAN
 	bool
+	select KASAN if SLUB || (SLAB && !DEBUG_SLAB)
 
 if HAVE_ARCH_KASAN
 
