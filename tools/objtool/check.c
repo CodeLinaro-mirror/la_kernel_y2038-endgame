@@ -1855,9 +1855,9 @@ static int validate_branch(struct objtool_file *file, struct instruction *first,
 			/* fallthrough */
 		case INSN_CALL_DYNAMIC:
 			if (!no_fp && func && !has_valid_stack_frame(&state)) {
-				WARN_FUNC("call without frame pointer save/setup",
-					  sec, insn->offset);
-				return 1;
+//				WARN_FUNC("call without frame pointer save/setup",
+//					  sec, insn->offset);
+//				return 1;
 			}
 			break;
 
@@ -1872,9 +1872,9 @@ static int validate_branch(struct objtool_file *file, struct instruction *first,
 					return 1;
 
 			} else if (func && has_modified_stack_frame(&state)) {
-				WARN_FUNC("sibling call from callable instruction with modified stack frame",
-					  sec, insn->offset);
-				return 1;
+//				WARN_FUNC("sibling call from callable instruction with modified stack frame",
+//					  sec, insn->offset);
+//				return 1;
 			}
 
 			if (insn->type == INSN_JUMP_UNCONDITIONAL)
