@@ -25,6 +25,7 @@ ti,ctrl_mod: reference to the "reset module" node
 reg-names: phy
 The PHY should have a "phy" alias numbered properly in the alias
 node.
+#phy-cells: optional, should be <0>
 
 USB
 ~~~
@@ -92,6 +93,7 @@ usb: usb@47400000 {
 
 	usb0_phy: usb-phy@47401300 {
 		compatible = "ti,am335x-usb-phy";
+		#phy-cells = <0>;
 		reg = <0x47401300 0x100>;
 		reg-names = "phy";
 		ti,ctrl_mod = <&ctrl_mod>;
