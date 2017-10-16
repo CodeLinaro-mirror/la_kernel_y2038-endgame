@@ -30,7 +30,6 @@
 
 #ifndef __ASSEMBLY__
 #include <asm/bootparam.h>
-#include <asm/x86_init.h>
 
 extern u64 relocated_ramdisk;
 
