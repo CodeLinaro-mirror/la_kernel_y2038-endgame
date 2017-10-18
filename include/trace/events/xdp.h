@@ -7,6 +7,7 @@
 
 #include <linux/netdevice.h>
 #include <linux/filter.h>
+#include <linux/bpf.h>
 #include <linux/tracepoint.h>
 #include <linux/bpf.h>
 
