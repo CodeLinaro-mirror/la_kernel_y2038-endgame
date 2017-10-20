@@ -144,23 +144,10 @@ struct cache_deferred_req {
 					   int too_many);
 };
 
-/*
- * timestamps kept in the cache are expressed in seconds
- * since boot.  This is the best for measuring differences in
- * real time.
- */
-static inline time_t seconds_since_boot(void)
+static inline time64_t convert_to_wallclock(time_t monotonic)
 {
-	struct timespec boot;
-	getboottime(&boot);
-	return get_seconds() - boot.tv_sec;
-}
-
-static inline time_t convert_to_wallclock(time_t sinceboot)
-{
-	struct timespec boot;
-	getboottime(&boot);
-	return boot.tv_sec + sinceboot;
+	/* this could be improved by removing the ktime_divns */
+	return ktime_divns(ktime_mono_to_real(ktime_set(monotonic, 0)), NSEC_PER_SEC);
 }
 
 extern const struct file_operations cache_file_operations_pipefs;
@@ -200,7 +187,7 @@ static inline bool cache_is_expired(struct cache_detail *detail, struct cache_he
 	if (!test_bit(CACHE_VALID, &h->flags))
 		return false;
 
-	return  (h->expiry_time < seconds_since_boot()) ||
+	return  (h->expiry_time < ktime_get_seconds()) ||
 		(detail->flush_time >= h->last_refresh);
 }
 
@@ -268,10 +255,10 @@ static inline int get_uint(char **bpp, unsigned int *anint)
 	return 0;
 }
 
-static inline int get_time(char **bpp, time_t *time)
+static inline int get_time(char **bpp, time64_t *time)
 {
 	char buf[50];
-	long long ll;
+	time64_t ll;
 	int len = qword_get(bpp, buf, sizeof(buf));
 
 	if (len < 0)
@@ -282,21 +269,20 @@ static inline int get_time(char **bpp, time_t *time)
 	if (kstrtoll(buf, 0, &ll))
 		return -EINVAL;
 
-	*time = (time_t)ll;
+	*time = ll;
 	return 0;
 }
 
 static inline time_t get_expiry(char **bpp)
 {
-	time_t rv;
-	struct timespec boot;
+	ktime_t mono_offset = ktime_mono_to_real(ns_to_ktime(0));
+	time64_t rv;
 
 	if (get_time(bpp, &rv))
 		return 0;
 	if (rv < 0)
 		return 0;
-	getboottime(&boot);
-	return rv - boot.tv_sec;
+	return rv + ktime_divns(mono_offset, NSEC_PER_SEC);
 }
 
 #endif /*  _LINUX_SUNRPC_CACHE_H_ */
