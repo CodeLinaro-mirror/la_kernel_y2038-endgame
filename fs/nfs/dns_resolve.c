@@ -175,7 +175,7 @@ static int nfs_dns_show(struct seq_file *m, struct cache_detail *cd,
 		return 0;
 	}
 	item = container_of(h, struct nfs_dns_ent, h);
-	ttl = item->h.expiry_time - seconds_since_boot();
+	ttl = item->h.expiry_time - ktime_get_seconds();
 	if (ttl < 0)
 		ttl = 0;
 
@@ -248,7 +248,7 @@ static int nfs_dns_parse(struct cache_detail *cd, char *buf, int buflen)
 		goto out;
 	if (ttl == 0)
 		goto out;
-	key.h.expiry_time = ttl + seconds_since_boot();
+	key.h.expiry_time = ttl + ktime_get_seconds();
 
 	ret = -ENOMEM;
 	item = nfs_dns_lookup(cd, &key);
@@ -295,7 +295,7 @@ static int do_cache_lookup_nowait(struct cache_detail *cd,
 		goto out_err;
 	ret = -ETIMEDOUT;
 	if (!test_bit(CACHE_VALID, &(*item)->h.flags)
-			|| (*item)->h.expiry_time < seconds_since_boot()
+			|| (*item)->h.expiry_time < ktime_get_seconds()
 			|| cd->flush_time > (*item)->h.last_refresh)
 		goto out_put;
 	ret = -ENOENT;

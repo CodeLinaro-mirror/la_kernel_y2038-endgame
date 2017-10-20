@@ -43,7 +43,7 @@ static void cache_revisit_request(struct cache_head *item);
 
 static void cache_init(struct cache_head *h, struct cache_detail *detail)
 {
-	time_t now = seconds_since_boot();
+	time_t now = ktime_get_seconds();
 	INIT_HLIST_NODE(&h->cache_list);
 	h->flags = 0;
 	kref_init(&h->ref);
@@ -122,7 +122,7 @@ static void cache_dequeue(struct cache_detail *detail, struct cache_head *ch);
 static void cache_fresh_locked(struct cache_head *head, time_t expiry,
 			       struct cache_detail *detail)
 {
-	time_t now = seconds_since_boot();
+	time_t now = ktime_get_seconds();
 	if (now <= detail->flush_time)
 		/* ensure it isn't immediately treated as expired */
 		now = detail->flush_time + 1;
@@ -227,7 +227,7 @@ static int try_to_negate_entry(struct cache_detail *detail, struct cache_head *h
 	rv = cache_is_valid(h);
 	if (rv == -EAGAIN) {
 		set_bit(CACHE_NEGATIVE, &h->flags);
-		cache_fresh_locked(h, seconds_since_boot()+CACHE_NEW_EXPIRY,
+		cache_fresh_locked(h, ktime_get_seconds()+CACHE_NEW_EXPIRY,
 				   detail);
 		rv = -ENOENT;
 	}
@@ -261,7 +261,7 @@ int cache_check(struct cache_detail *detail,
 
 	/* now see if we want to start an upcall */
 	refresh_age = (h->expiry_time - h->last_refresh);
-	age = seconds_since_boot() - h->last_refresh;
+	age = ktime_get_seconds() - h->last_refresh;
 
 	if (rqstp == NULL) {
 		if (rv == -EAGAIN)
@@ -400,11 +400,11 @@ static int cache_clean(void)
 			return -1;
 		}
 		current_detail = list_entry(next, struct cache_detail, others);
-		if (current_detail->nextcheck > seconds_since_boot())
+		if (current_detail->nextcheck > ktime_get_seconds())
 			current_index = current_detail->hash_size;
 		else {
 			current_index = 0;
-			current_detail->nextcheck = seconds_since_boot()+30*60;
+			current_detail->nextcheck = ktime_get_seconds()+30*60;
 		}
 	}
 
@@ -1035,7 +1035,7 @@ static int cache_release(struct inode *inode, struct file *filp,
 		filp->private_data = NULL;
 		kfree(rp);
 
-		cd->last_close = seconds_since_boot();
+		cd->last_close = ktime_get_seconds();
 		atomic_dec(&cd->readers);
 	}
 	module_put(cd->owner);
@@ -1149,7 +1149,7 @@ static bool cache_listeners_exist(struct cache_detail *detail)
 	if (detail->last_close == 0)
 		/* This cache was never opened */
 		return false;
-	if (detail->last_close < seconds_since_boot() - 30)
+	if (detail->last_close < ktime_get_seconds() - 30)
 		/*
 		 * We allow for the possibility that someone might
 		 * restart a userspace daemon without restarting the
@@ -1367,7 +1367,7 @@ static int c_show(struct seq_file *m, void *p)
 		return cd->cache_show(m, cd, NULL);
 
 	ifdebug(CACHE)
-		seq_printf(m, "# expiry=%ld refcnt=%d flags=%lx\n",
+		seq_printf(m, "# expiry=%lld refcnt=%d flags=%lx\n",
 			   convert_to_wallclock(cp->expiry_time),
 			   kref_read(&cp->ref), cp->flags);
 	cache_get(cp);
@@ -1440,7 +1440,7 @@ static ssize_t read_flush(struct file *file, char __user *buf,
 	char tbuf[22];
 	size_t len;
 
-	len = snprintf(tbuf, sizeof(tbuf), "%lu\n",
+	len = snprintf(tbuf, sizeof(tbuf), "%llu\n",
 			convert_to_wallclock(cd->flush_time));
 	return simple_read_from_buffer(buf, count, ppos, tbuf, len);
 }
@@ -1466,7 +1466,7 @@ static ssize_t write_flush(struct file *file, const char __user *buf,
 	 * Making use of the number leads to races.
 	 */
 
-	now = seconds_since_boot();
+	now = ktime_get_seconds();
 	/* Always flush everything, so behave like cache_purge()
 	 * Do this by advancing flush_time to the current time,
 	 * or by one second if it has already reached the current time.

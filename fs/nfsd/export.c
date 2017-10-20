@@ -609,7 +609,7 @@ static int svc_export_parse(struct cache_detail *cd, char *mesg, int mlen)
 		 * Also, this protects exportfs's dummy export from the
 		 * anon_uid/anon_gid checks:
 		 */
-		if (exp.h.expiry_time < seconds_since_boot())
+		if (exp.h.expiry_time < ktime_get_seconds())
 			goto out4;
 		/*
 		 * For some reason exportfs has been passing down an
