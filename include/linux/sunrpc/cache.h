@@ -47,8 +47,8 @@
  */
 struct cache_head {
 	struct hlist_node	cache_list;
-	time_t		expiry_time;	/* After time time, don't use the data */
-	time_t		last_refresh;   /* If CACHE_PENDING, this is when upcall was
+	time64_t	expiry_time;	/* After time time, don't use the data */
+	time64_t	last_refresh;   /* If CACHE_PENDING, this is when upcall was
 					 * sent, else this is when update was
 					 * received, though it is alway set to
 					 * be *after* ->flush_time.
@@ -96,22 +96,22 @@ struct cache_detail {
 	/* fields below this comment are for internal use
 	 * and should not be touched by cache owners
 	 */
-	time_t			flush_time;		/* flush all cache items with
+	time64_t		flush_time;		/* flush all cache items with
 							 * last_refresh at or earlier
 							 * than this.  last_refresh
 							 * is never set at or earlier
 							 * than this.
 							 */
 	struct list_head	others;
-	time_t			nextcheck;
+	time64_t		nextcheck;
 	int			entries;
 
 	/* fields for communication over channel */
 	struct list_head	queue;
 
 	atomic_t		readers;		/* how many time is /chennel open */
-	time_t			last_close;		/* if no readers, when did last close */
-	time_t			last_warn;		/* when we last warned about no readers */
+	time64_t		last_close;		/* if no readers, when did last close */
+	time64_t		last_warn;		/* when we last warned about no readers */
 
 	union {
 		struct proc_dir_entry	*procfs;
@@ -144,7 +144,7 @@ struct cache_deferred_req {
 					   int too_many);
 };
 
-static inline time64_t convert_to_wallclock(time_t monotonic)
+static inline time64_t convert_to_wallclock(time64_t monotonic)
 {
 	/* this could be improved by removing the ktime_divns */
 	return ktime_divns(ktime_mono_to_real(ktime_set(monotonic, 0)), NSEC_PER_SEC);
@@ -273,7 +273,7 @@ static inline int get_time(char **bpp, time64_t *time)
 	return 0;
 }
 
-static inline time_t get_expiry(char **bpp)
+static inline time64_t get_expiry(char **bpp)
 {
 	ktime_t mono_offset = ktime_mono_to_real(ns_to_ktime(0));
 	time64_t rv;
