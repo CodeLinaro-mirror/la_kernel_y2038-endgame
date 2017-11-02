@@ -1476,6 +1476,7 @@ static int amdgpu_device_ip_early_init(struct amdgpu_device *adev)
 			return r;
 		break;
 #endif
+#ifdef CONFIG_DRM_AMDGPU_SOC15
 	case CHIP_VEGA10:
 	case CHIP_VEGA12:
 	case CHIP_VEGA20:
@@ -1489,6 +1490,7 @@ static int amdgpu_device_ip_early_init(struct amdgpu_device *adev)
 		if (r)
 			return r;
 		break;
+#endif
 	default:
 		/* FIXME: not supported yet */
 		return -EINVAL;

@@ -23,6 +23,13 @@ config DRM_AMDGPU_CIK
 
 	  radeon.cik_support=0 amdgpu.cik_support=1
 
+config DRM_AMDGPU_SOC15
+	bool "Enable amdgpu support for SOC15 parts"
+	depends on DRM_AMDGPU
+	select DRM_AMD_DC
+	help
+	  Choose this option if you want to enable support for SOC15 asics.
+
 config DRM_AMDGPU_USERPTR
 	bool "Always enable userptr write support"
 	depends on DRM_AMDGPU
