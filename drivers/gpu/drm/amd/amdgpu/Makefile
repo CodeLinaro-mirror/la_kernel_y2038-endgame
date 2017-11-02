@@ -61,14 +61,16 @@ amdgpu-$(CONFIG_DRM_AMDGPU_CIK)+= cik.o cik_ih.o kv_smc.o kv_dpm.o \
 
 amdgpu-$(CONFIG_DRM_AMDGPU_SI)+= si.o gmc_v6_0.o gfx_v6_0.o si_ih.o si_dma.o dce_v6_0.o si_dpm.o si_smc.o
 
-amdgpu-y += \
-	vi.o mxgpu_vi.o nbio_v6_1.o soc15.o emu_soc.o mxgpu_ai.o nbio_v7_0.o vega10_reg_init.o
+amdgpu-y += vi.o mxgpu_vi.o emu_soc.o
+
+amdgpu-$(CONFIG_DRM_AMDGPU_SOC15) += gmc_v9_0.o nbio_v6_1.o soc15.o mxgpu_ai.o nbio_v7_0.o \
+	gfx_v9_0.o vega10_ih.o sdma_v4_0.o vega10_reg_init.o
 
 # add GMC block
 amdgpu-y += \
 	gmc_v7_0.o \
 	gmc_v8_0.o \
-	gfxhub_v1_0.o mmhub_v1_0.o gmc_v9_0.o
+	gfxhub_v1_0.o mmhub_v1_0.o
 
 # add IH block
 amdgpu-y += \
@@ -76,8 +78,7 @@ amdgpu-y += \
 	amdgpu_ih.o \
 	iceland_ih.o \
 	tonga_ih.o \
-	cz_ih.o \
-	vega10_ih.o
+	cz_ih.o
 
 # add PSP block
 amdgpu-y += \
@@ -98,14 +99,12 @@ amdgpu-y += \
 # add GFX block
 amdgpu-y += \
 	amdgpu_gfx.o \
-	gfx_v8_0.o \
-	gfx_v9_0.o
+	gfx_v8_0.o
 
 # add async DMA block
 amdgpu-y += \
 	sdma_v2_4.o \
-	sdma_v3_0.o \
-	sdma_v4_0.o
+	sdma_v3_0.o
 
 # add UVD block
 amdgpu-y += \
