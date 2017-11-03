@@ -213,7 +213,7 @@ EXPORT_SYMBOL(qcom_scm_pas_supported);
  */
 int qcom_scm_pas_init_image(u32 peripheral, const void *metadata, size_t size)
 {
-	dma_addr_t mdata_phys;
+	dma_addr_t mdata_dma;
 	void *mdata_buf;
 	int ret;
 
@@ -222,7 +222,7 @@ int qcom_scm_pas_init_image(u32 peripheral, const void *metadata, size_t size)
 	 * data blob, so make sure it's physically contiguous, 4K aligned and
 	 * non-cachable to avoid XPU violations.
 	 */
-	mdata_buf = dma_alloc_coherent(__scm->dev, size, &mdata_phys,
+	mdata_buf = dma_alloc_coherent(__scm->dev, size, &mdata_dma,
 				       GFP_KERNEL);
 	if (!mdata_buf) {
 		dev_err(__scm->dev, "Allocation of metadata buffer failed.\n");
@@ -234,12 +234,12 @@ int qcom_scm_pas_init_image(u32 peripheral, const void *metadata, size_t size)
 	if (ret)
 		goto free_metadata;
 
-	ret = __qcom_scm_pas_init_image(__scm->dev, peripheral, mdata_phys);
+	ret = __qcom_scm_pas_init_image(__scm->dev, peripheral, mdata_dma);
 
 	qcom_scm_clk_disable();
 
 free_metadata:
-	dma_free_coherent(__scm->dev, size, mdata_buf, mdata_phys);
+	dma_free_coherent(__scm->dev, size, mdata_buf, mdata_dma);
 
 	return ret;
 }
@@ -446,9 +446,9 @@ int qcom_scm_assign_mem(phys_addr_t mem_addr, size_t mem_sz,
 {
 	struct qcom_scm_current_perm_info *destvm;
 	struct qcom_scm_mem_map_info *mem_to_map;
-	phys_addr_t mem_to_map_phys;
-	phys_addr_t dest_phys;
-	phys_addr_t ptr_phys;
+	dma_addr_t mem_to_map_dma;
+	dma_addr_t dest_dma;
+	dma_addr_t ptr_dma;
 	size_t mem_to_map_sz;
 	size_t dest_sz;
 	size_t src_sz;
@@ -466,7 +466,7 @@ int qcom_scm_assign_mem(phys_addr_t mem_addr, size_t mem_sz,
 	ptr_sz = ALIGN(src_sz, SZ_64) + ALIGN(mem_to_map_sz, SZ_64) +
 			ALIGN(dest_sz, SZ_64);
 
-	ptr = dma_alloc_coherent(__scm->dev, ptr_sz, &ptr_phys, GFP_KERNEL);
+	ptr = dma_alloc_coherent(__scm->dev, ptr_sz, &ptr_dma, GFP_KERNEL);
 	if (!ptr)
 		return -ENOMEM;
 
@@ -480,14 +480,14 @@ int qcom_scm_assign_mem(phys_addr_t mem_addr, size_t mem_sz,
 
 	/* Fill details of mem buff to map */
 	mem_to_map = ptr + ALIGN(src_sz, SZ_64);
-	mem_to_map_phys = ptr_phys + ALIGN(src_sz, SZ_64);
+	mem_to_map_dma = ptr_dma + ALIGN(src_sz, SZ_64);
 	mem_to_map[0].mem_addr = cpu_to_le64(mem_addr);
 	mem_to_map[0].mem_size = cpu_to_le64(mem_sz);
 
 	next_vm = 0;
 	/* Fill details of next vmid detail */
 	destvm = ptr + ALIGN(mem_to_map_sz, SZ_64) + ALIGN(src_sz, SZ_64);
-	dest_phys = ptr_phys + ALIGN(mem_to_map_sz, SZ_64) + ALIGN(src_sz, SZ_64);
+	dest_dma = ptr_dma + ALIGN(mem_to_map_sz, SZ_64) + ALIGN(src_sz, SZ_64);
 	for (i = 0; i < dest_cnt; i++) {
 		destvm[i].vmid = cpu_to_le32(newvm[i].vmid);
 		destvm[i].perm = cpu_to_le32(newvm[i].perm);
@@ -496,9 +496,9 @@ int qcom_scm_assign_mem(phys_addr_t mem_addr, size_t mem_sz,
 		next_vm |= BIT(newvm[i].vmid);
 	}
 
-	ret = __qcom_scm_assign_mem(__scm->dev, mem_to_map_phys, mem_to_map_sz,
-				    ptr_phys, src_sz, dest_phys, dest_sz);
-	dma_free_coherent(__scm->dev, ALIGN(ptr_sz, SZ_64), ptr, ptr_phys);
+	ret = __qcom_scm_assign_mem(__scm->dev, mem_to_map_dma, mem_to_map_sz,
+				    ptr_dma, src_sz, dest_dma, dest_sz);
+	dma_free_coherent(__scm->dev, ALIGN(ptr_sz, SZ_64), ptr, ptr_dma);
 	if (ret) {
 		dev_err(__scm->dev,
 			"Assign memory protection call failed %d.\n", ret);
