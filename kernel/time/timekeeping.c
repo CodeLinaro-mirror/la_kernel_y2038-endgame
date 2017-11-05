@@ -476,7 +476,7 @@ EXPORT_SYMBOL_GPL(ktime_get_raw_fast_ns);
 /*
  * See comment for __ktime_get_fast_ns() vs. timestamp ordering
  */
-static __always_inline u64 __ktime_get_real_fast_ns(struct tk_fast *tkf)
+static __always_inline u64 __ktime_get_real_fast_ns(struct tk_fast *tkf, bool coarse)
 {
 	struct tk_read_base *tkr;
 	unsigned int seq;
@@ -486,12 +486,12 @@ static __always_inline u64 __ktime_get_real_fast_ns(struct tk_fast *tkf)
 		seq = raw_read_seqcount_latch(&tkf->seq);
 		tkr = tkf->base + (seq & 0x01);
 		now = ktime_to_ns(tkr->base_real);
-
-		now += timekeeping_delta_to_ns(tkr,
-				clocksource_delta(
-					tk_clock_read(tkr),
-					tkr->cycle_last,
-					tkr->mask));
+		if (!coarse)
+			now += timekeeping_delta_to_ns(tkr,
+					clocksource_delta(
+						tk_clock_read(tkr),
+						tkr->cycle_last,
+						tkr->mask));
 	} while (read_seqcount_retry(&tkf->seq, seq));
 
 	return now;
@@ -502,7 +502,15 @@ static __always_inline u64 __ktime_get_real_fast_ns(struct tk_fast *tkf)
  */
 u64 ktime_get_real_fast_ns(void)
 {
-	return __ktime_get_real_fast_ns(&tk_fast_mono);
+	return __ktime_get_real_fast_ns(&tk_fast_mono, false);
+}
+
+/**
+ * ktime_get_real_coarse_fast_ns: - NMI safe and fast access to approximate clock realtime
+ */
+u64 ktime_get_coarse_real_fast_ns(void)
+{
+	return __ktime_get_real_fast_ns(&tk_fast_mono, true);
 }
 EXPORT_SYMBOL_GPL(ktime_get_real_fast_ns);
 
