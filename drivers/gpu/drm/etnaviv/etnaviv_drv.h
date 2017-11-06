@@ -60,8 +60,7 @@ struct drm_gem_object *etnaviv_gem_prime_import_sg_table(struct drm_device *dev,
 int etnaviv_gem_prime_pin(struct drm_gem_object *obj);
 void etnaviv_gem_prime_unpin(struct drm_gem_object *obj);
 void *etnaviv_gem_vmap(struct drm_gem_object *obj);
-int etnaviv_gem_cpu_prep(struct drm_gem_object *obj, u32 op,
-		struct timespec *timeout);
+int etnaviv_gem_cpu_prep(struct drm_gem_object *obj, u32 op, ktime_t timeout);
 int etnaviv_gem_cpu_fini(struct drm_gem_object *obj);
 void etnaviv_gem_free_object(struct drm_gem_object *obj);
 int etnaviv_gem_new_handle(struct drm_device *dev, struct drm_file *file,
@@ -106,22 +105,20 @@ static inline size_t size_vstruct(size_t nelem, size_t elem_size, size_t base)
  * We need to calculate the timeout in terms of number of jiffies
  * between the specified timeout and the current CLOCK_MONOTONIC time.
  */
-static inline unsigned long etnaviv_timeout_to_jiffies(
-	const struct timespec *timeout)
+static inline unsigned long etnaviv_timeout_to_jiffies(ktime_t timeout)
 {
-	struct timespec64 ts, to;
-
-	to = timespec_to_timespec64(*timeout);
-
-	ktime_get_ts64(&ts);
+	s64 remain = ktime_to_ns(ktime_sub(timeout, ktime_get()));
 
 	/* timeouts before "now" have already expired */
-	if (timespec64_compare(&to, &ts) <= 0)
+	if (remain < 0)
 		return 0;
 
-	ts = timespec64_sub(to, ts);
+#ifndef CONFIG_64BIT
+	if (remain > ((s64)MAX_JIFFY_OFFSET * NSEC_PER_SEC / HZ))
+		return MAX_JIFFY_OFFSET;
+#endif
 
-	return timespec64_to_jiffies(&ts);
+	return nsecs_to_jiffies(remain);
 }
 
 #endif /* __ETNAVIV_DRV_H__ */
