@@ -76,8 +76,7 @@ struct drm_gem_object *etnaviv_gem_prime_import_sg_table(struct drm_device *dev,
 int etnaviv_gem_prime_pin(struct drm_gem_object *obj);
 void etnaviv_gem_prime_unpin(struct drm_gem_object *obj);
 void *etnaviv_gem_vmap(struct drm_gem_object *obj);
-int etnaviv_gem_cpu_prep(struct drm_gem_object *obj, u32 op,
-		struct timespec *timeout);
+int etnaviv_gem_cpu_prep(struct drm_gem_object *obj, u32 op, ktime_t timeout);
 int etnaviv_gem_cpu_fini(struct drm_gem_object *obj);
 void etnaviv_gem_free_object(struct drm_gem_object *obj);
 int etnaviv_gem_new_handle(struct drm_device *dev, struct drm_file *file,
@@ -132,19 +131,17 @@ static inline bool fence_after_eq(u32 a, u32 b)
 	return (s32)(a - b) >= 0;
 }
 
-static inline unsigned long etnaviv_timeout_to_jiffies(
-	const struct timespec *timeout)
+static inline unsigned long etnaviv_timeout_to_jiffies(ktime_t timeout)
 {
-	unsigned long timeout_jiffies = timespec_to_jiffies(timeout);
-	unsigned long start_jiffies = jiffies;
-	unsigned long remaining_jiffies;
+	s64 remain = ktime_to_ns(ktime_sub(timeout, ktime_get()));
 
-	if (time_after(start_jiffies, timeout_jiffies))
-		remaining_jiffies = 0;
-	else
-		remaining_jiffies = timeout_jiffies - start_jiffies;
+	if (remain < 0)
+		return 0;
 
-	return remaining_jiffies;
+	if (remain > ((s64)MAX_JIFFY_OFFSET * NSEC_PER_SEC / HZ))
+		return MAX_JIFFY_OFFSET;
+
+	return nsecs_to_jiffies(remain);
 }
 
 #endif /* __ETNAVIV_DRV_H__ */

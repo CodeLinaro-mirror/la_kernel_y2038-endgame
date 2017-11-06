@@ -312,16 +312,13 @@ static int etnaviv_ioctl_gem_new(struct drm_device *dev, void *data,
 			args->flags, &args->handle);
 }
 
-#define TS(t) ((struct timespec){ \
-	.tv_sec = (t).tv_sec, \
-	.tv_nsec = (t).tv_nsec \
-})
-
 static int etnaviv_ioctl_gem_cpu_prep(struct drm_device *dev, void *data,
 		struct drm_file *file)
 {
 	struct drm_etnaviv_gem_cpu_prep *args = data;
 	struct drm_gem_object *obj;
+	ktime_t timeout = ktime_set(args->timeout.tv_sec,
+				    args->timeout.tv_nsec);
 	int ret;
 
 	if (args->op & ~(ETNA_PREP_READ | ETNA_PREP_WRITE | ETNA_PREP_NOSYNC))
@@ -331,7 +328,7 @@ static int etnaviv_ioctl_gem_cpu_prep(struct drm_device *dev, void *data,
 	if (!obj)
 		return -ENOENT;
 
-	ret = etnaviv_gem_cpu_prep(obj, args->op, &TS(args->timeout));
+	ret = etnaviv_gem_cpu_prep(obj, args->op, timeout);
 
 	drm_gem_object_put_unlocked(obj);
 
@@ -384,7 +381,8 @@ static int etnaviv_ioctl_wait_fence(struct drm_device *dev, void *data,
 {
 	struct drm_etnaviv_wait_fence *args = data;
 	struct etnaviv_drm_private *priv = dev->dev_private;
-	struct timespec *timeout = &TS(args->timeout);
+	ktime_t timeout = ktime_set(args->timeout.tv_sec,
+				    args->timeout.tv_nsec);
 	struct etnaviv_gpu *gpu;
 
 	if (args->flags & ~(ETNA_WAIT_NONBLOCK))
@@ -398,7 +396,7 @@ static int etnaviv_ioctl_wait_fence(struct drm_device *dev, void *data,
 		return -ENXIO;
 
 	if (args->flags & ETNA_WAIT_NONBLOCK)
-		timeout = NULL;
+		timeout = ktime_set(0, 0);
 
 	return etnaviv_gpu_wait_fence_interruptible(gpu, args->fence,
 						    timeout);
@@ -439,7 +437,8 @@ static int etnaviv_ioctl_gem_wait(struct drm_device *dev, void *data,
 {
 	struct etnaviv_drm_private *priv = dev->dev_private;
 	struct drm_etnaviv_gem_wait *args = data;
-	struct timespec *timeout = &TS(args->timeout);
+	ktime_t timeout = ktime_set(args->timeout.tv_sec,
+				    args->timeout.tv_nsec);
 	struct drm_gem_object *obj;
 	struct etnaviv_gpu *gpu;
 	int ret;
@@ -459,7 +458,7 @@ static int etnaviv_ioctl_gem_wait(struct drm_device *dev, void *data,
 		return -ENOENT;
 
 	if (args->flags & ETNA_WAIT_NONBLOCK)
-		timeout = NULL;
+		timeout = ktime_set(0, 0);
 
 	ret = etnaviv_gem_wait_bo(gpu, obj, timeout);
 
