@@ -970,15 +970,6 @@ put_tv32(struct timeval32 __user *o, struct timespec64 *i)
 }
 
 static inline long
-put_tv_to_tv32(struct timeval32 __user *o, struct timeval *i)
-{
-	return copy_to_user(o, &(struct timeval32){
-				.tv_sec = i->tv_sec,
-				.tv_usec = i->tv_usec},
-			    sizeof(struct timeval32));
-}
-
-static inline long
 get_it32(struct itimerval *o, struct itimerval32 __user *i)
 {
 	struct itimerval32 itv;
@@ -1283,7 +1274,7 @@ SYSCALL_DEFINE1(old_adjtimex, struct timex32 __user *, txc_p)
 	if (copy_to_user(txc_p, &txc, offsetof(struct timex32, time)) ||
 	    (copy_to_user(&txc_p->tick, &txc.tick, sizeof(struct timex32) - 
 			  offsetof(struct timex32, tick))) ||
-	    (put_tv_to_tv32(&txc_p->time, &txc.time)))
+	    (put_tv32(&txc_p->time, &txc.time)))
 	  return -EFAULT;
 
 	return ret;
