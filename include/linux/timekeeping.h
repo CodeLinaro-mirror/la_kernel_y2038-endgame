@@ -139,6 +139,28 @@ static inline time64_t ktime_get_clocktai_seconds(void)
 }
 
 /*
+ * We don't provide coarse raw time, but provide the interfaces
+ * for completeness. Again these could be done faster if necessary.
+ */
+static inline void ktime_get_coarse_raw_ts64(struct timespec64 *ts)
+{
+	return ktime_get_raw_ts64(ts);
+}
+
+static inline ktime_t ktime_get_coarse_raw(struct timespec64 *ts)
+{
+	return ktime_get_raw();
+}
+
+static inline time64_t ktime_get_raw_seconds(void)
+{
+	struct timespec64 ts;
+
+	ktime_get_raw_ts64(&ts);
+	return ts.tv_sec;
+}
+
+/*
  * RTC specific
  */
 extern bool timekeeping_rtc_skipsuspend(void);
