@@ -26,6 +26,8 @@
 #include <asm/signal.h>
 #endif
 
+#endif
+
 #ifndef COMPAT_USE_64BIT_TIME
 #define COMPAT_USE_64BIT_TIME 0
 #endif
