@@ -132,7 +132,7 @@ int main(void)
   DEFINE(VDSO_TZ_MINWEST,	offsetof(struct vdso_data, tz_minuteswest));
   DEFINE(VDSO_TZ_DSTTIME,	offsetof(struct vdso_data, tz_dsttime));
   BLANK();
-  DEFINE(TVAL_TV_SEC,		offsetof(struct timeval, tv_sec));
+  DEFINE(TVAL_TV_SEC,		offsetof(struct __kernel_old_timeval, tv_sec));
   DEFINE(TSPEC_TV_SEC,		offsetof(struct timespec, tv_sec));
   BLANK();
   DEFINE(TZ_MINWEST,		offsetof(struct timezone, tz_minuteswest));
