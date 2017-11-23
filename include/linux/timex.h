@@ -151,6 +151,7 @@ extern unsigned long tick_nsec;		/* SHIFTED_HZ period (nsec) */
 #define NTP_INTERVAL_FREQ  (HZ)
 #define NTP_INTERVAL_LENGTH (NSEC_PER_SEC/NTP_INTERVAL_FREQ)
 
+extern int timex_get_delta(struct timex *txc, struct timespec64 *delta);
 extern int do_adjtimex(struct timex *);
 extern void hardpps(const struct timespec64 *, const struct timespec64 *);
 
