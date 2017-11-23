@@ -20,11 +20,11 @@
 
 #ifdef CONFIG_MIPS_CLOCK_VSYSCALL
 
-static __always_inline long gettimeofday_fallback(struct timeval *_tv,
+static __always_inline long gettimeofday_fallback(struct __kernel_old_timeval *_tv,
 					  struct timezone *_tz)
 {
 	register struct timezone *tz asm("a1") = _tz;
-	register struct timeval *tv asm("a0") = _tv;
+	register struct __kernel_old_timeval *tv asm("a0") = _tv;
 	register long ret asm("v0");
 	register long nr asm("v0") = __NR_gettimeofday;
 	register long error asm("a3");
@@ -219,7 +219,7 @@ static __always_inline int do_monotonic(struct timespec *ts,
  * can do without it. When libc fails the symbol lookup it should fall back on
  * the standard syscall path.
  */
-int __vdso_gettimeofday(struct timeval *tv, struct timezone *tz)
+int __vdso_gettimeofday(struct __kernel_old_timeval *tv, struct timezone *tz)
 {
 	const union mips_vdso_data *data = get_vdso_data();
 	struct timespec ts;
