@@ -1023,10 +1023,10 @@ static inline bool in_compat_syscall(void) { return is_compat_task(); }
  */
 static inline struct compat_timeval ns_to_compat_timeval(s64 nsec)
 {
-	struct timeval tv;
+	struct __kernel_old_timeval tv;
 	struct compat_timeval ctv;
 
-	tv = ns_to_timeval(nsec);
+	tv = ns_to_kernel_old_timeval(nsec);
 	ctv.tv_sec = tv.tv_sec;
 	ctv.tv_usec = tv.tv_usec;
 
