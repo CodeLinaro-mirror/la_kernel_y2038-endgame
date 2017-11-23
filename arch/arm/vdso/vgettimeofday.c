@@ -226,11 +226,11 @@ notrace int __vdso_clock_gettime(clockid_t clkid, struct timespec *ts)
 	return ret;
 }
 
-static notrace long gettimeofday_fallback(struct timeval *_tv,
+static notrace long gettimeofday_fallback(struct __kernel_old_timeval *_tv,
 					  struct timezone *_tz)
 {
 	register struct timezone *tz asm("r1") = _tz;
-	register struct timeval *tv asm("r0") = _tv;
+	register struct __kernel_old_timeval *tv asm("r0") = _tv;
 	register long ret asm ("r0");
 	register long nr asm("r7") = __NR_gettimeofday;
 
@@ -243,7 +243,7 @@ static notrace long gettimeofday_fallback(struct timeval *_tv,
 	return ret;
 }
 
-notrace int __vdso_gettimeofday(struct timeval *tv, struct timezone *tz)
+notrace int __vdso_gettimeofday(struct __kernel_old_timeval *tv, struct timezone *tz)
 {
 	struct timespec ts;
 	struct vdso_data *vdata;
