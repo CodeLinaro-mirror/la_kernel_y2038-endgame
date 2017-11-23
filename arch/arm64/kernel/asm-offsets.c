@@ -122,8 +122,8 @@ int main(void)
   DEFINE(VDSO_TZ_DSTTIME,	offsetof(struct vdso_data, tz_dsttime));
   DEFINE(VDSO_USE_SYSCALL,	offsetof(struct vdso_data, use_syscall));
   BLANK();
-  DEFINE(TVAL_TV_SEC,		offsetof(struct timeval, tv_sec));
-  DEFINE(TVAL_TV_USEC,		offsetof(struct timeval, tv_usec));
+  DEFINE(TVAL_TV_SEC,		offsetof(struct __kernel_old_timeval, tv_sec));
+  DEFINE(TVAL_TV_USEC,		offsetof(struct __kernel_old_timeval, tv_usec));
   DEFINE(TSPEC_TV_SEC,		offsetof(struct timespec, tv_sec));
   DEFINE(TSPEC_TV_NSEC,		offsetof(struct timespec, tv_nsec));
   BLANK();
