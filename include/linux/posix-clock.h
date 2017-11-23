@@ -51,7 +51,8 @@ struct posix_clock;
 struct posix_clock_operations {
 	struct module *owner;
 
-	int  (*clock_adjtime)(struct posix_clock *pc, struct timex *tx);
+	int  (*clock_adjtime)(struct posix_clock *pc, struct timex *tx,
+			      struct timespec64 *ts);
 
 	int  (*clock_gettime)(struct posix_clock *pc, struct timespec64 *ts);
 

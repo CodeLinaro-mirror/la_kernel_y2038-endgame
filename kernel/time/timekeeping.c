@@ -2259,31 +2259,6 @@ static int timekeeping_validate_timex(struct timex *txc)
 			return -EINVAL;
 	}
 
-	if (txc->modes & ADJ_SETOFFSET) {
-		/* In order to inject time, you gotta be super-user! */
-		if (!capable(CAP_SYS_TIME))
-			return -EPERM;
-
-		/*
-		 * Validate if a timespec/timeval used to inject a time
-		 * offset is valid.  Offsets can be postive or negative, so
-		 * we don't check tv_sec. The value of the timeval/timespec
-		 * is the sum of its fields,but *NOTE*:
-		 * The field tv_usec/tv_nsec must always be non-negative and
-		 * we can't have more nanoseconds/microseconds than a second.
-		 */
-		if (txc->time.tv_usec < 0)
-			return -EINVAL;
-
-		if (txc->modes & ADJ_NANO) {
-			if (txc->time.tv_usec >= NSEC_PER_SEC)
-				return -EINVAL;
-		} else {
-			if (txc->time.tv_usec >= USEC_PER_SEC)
-				return -EINVAL;
-		}
-	}
-
 	/*
 	 * Check for potential multiplication overflows that can
 	 * only happen on 64-bit systems:
@@ -2298,6 +2273,66 @@ static int timekeeping_validate_timex(struct timex *txc)
 	return 0;
 }
 
+int timex_get_delta(struct timex *txc, struct timespec64 *delta)
+{
+	long usec;
+
+	if (!(txc->modes & ADJ_SETOFFSET))
+		return -EINVAL;
+
+	/* In order to inject time, you gotta be super-user! */
+	if (!capable(CAP_SYS_TIME))
+		return -EPERM;
+
+	/*
+	 * Validate if a timespec/timeval used to inject a time
+	 * offset is valid.  Offsets can be postive or negative, so
+	 * we don't check tv_sec. The value of the timeval/timespec
+	 * is the sum of its fields,but *NOTE*:
+	 * The field tv_usec/tv_nsec must always be non-negative and
+	 * we can't have more nanoseconds/microseconds than a second.
+	 */
+	if (txc->time.tv_usec < 0)
+		return -EINVAL;
+
+	/*
+	 * We have two time fields. Make sure they are either set
+	 * to identical values, or only one of them is set.
+	 * The cast to s32 deals with y2038 overflow when an
+	 * application sets both fields.
+	 */
+	if ((txc->time.tv_usec  || txc->time.tv_sec) &&
+	    (txc->time_usec     || txc->time_sec) &&
+	    ((s32)txc->time_sec != (s32)txc->time.tv_sec) &&
+	    (txc->time_usec     != txc->time.tv_usec))
+		return -EINVAL;
+
+	/*
+	 * Use the 64-bit fields unless they are all zeroes
+	 */
+	if (txc->time_sec || txc->time_usec) {
+		delta->tv_sec = txc->time_sec;
+		usec = txc->time_usec;
+	} else {
+		delta->tv_sec = txc->time.tv_sec;
+		usec = txc->time.tv_usec;
+	}
+
+	/*
+	 * check range and convert to nanoseconds
+	 */
+	if (txc->modes & ADJ_NANO) {
+		if (usec >= NSEC_PER_SEC)
+			return -EINVAL;
+		delta->tv_nsec = usec;
+	} else {
+		if (usec >= USEC_PER_SEC)
+			return -EINVAL;
+		delta->tv_nsec = usec * NSEC_PER_USEC;
+	}
+
+	return 0;
+}
 
 /**
  * do_adjtimex() - Accessor function to NTP __do_adjtimex function
@@ -2317,10 +2352,10 @@ int do_adjtimex(struct timex *txc)
 
 	if (txc->modes & ADJ_SETOFFSET) {
 		struct timespec64 delta;
-		delta.tv_sec  = txc->time.tv_sec;
-		delta.tv_nsec = txc->time.tv_usec;
-		if (!(txc->modes & ADJ_NANO))
-			delta.tv_nsec *= 1000;
+
+		ret = timex_get_delta(txc, &delta);
+		if (ret)
+			return ret;
 		ret = timekeeping_inject_offset(&delta);
 		if (ret)
 			return ret;

@@ -62,34 +62,37 @@
  * to discipline kernel clock oscillator
  */
 struct timex {
-	unsigned int modes;	/* mode selector */
-	__kernel_long_t offset;	/* time offset (usec) */
-	__kernel_long_t freq;	/* frequency offset (scaled ppm) */
-	__kernel_long_t maxerror;/* maximum error (usec) */
-	__kernel_long_t esterror;/* estimated error (usec) */
-	int status;		/* clock command/status */
-	__kernel_long_t constant;/* pll time constant */
-	__kernel_long_t precision;/* clock precision (usec) (read only) */
-	__kernel_long_t tolerance;/* clock frequency tolerance (ppm)
-				   * (read only)
-				   */
-	struct timeval time;	/* (read only, except for ADJ_SETOFFSET) */
-	__kernel_long_t tick;	/* (modified) usecs between clock ticks */
+	unsigned int modes;		/* mode selector */
+	__kernel_long_t offset;		/* time offset (usec) */
+	__kernel_long_t freq;		/* frequency offset (scaled ppm) */
+	__kernel_long_t maxerror;	/* maximum error (usec) */
+	__kernel_long_t esterror;	/* estimated error (usec) */
+	int status;			/* clock command/status */
+	__kernel_long_t constant;	/* pll time constant */
+	__kernel_long_t precision;	/* clock precision (usec) (read only) */
+	__kernel_long_t tolerance;	/* clock frequency tolerance (ppm)
+					 * (read only)
+					 */
+	struct __kernel_old_timeval time;/* (read only, except for ADJ_SETOFFSET) */
+	__kernel_long_t tick;		/* (modified) usecs between
+					 * clock ticks */
 
-	__kernel_long_t ppsfreq;/* pps frequency (scaled ppm) (ro) */
-	__kernel_long_t jitter; /* pps jitter (us) (ro) */
-	int shift;              /* interval duration (s) (shift) (ro) */
-	__kernel_long_t stabil;            /* pps stability (scaled ppm) (ro) */
-	__kernel_long_t jitcnt; /* jitter limit exceeded (ro) */
-	__kernel_long_t calcnt; /* calibration intervals (ro) */
-	__kernel_long_t errcnt; /* calibration errors (ro) */
-	__kernel_long_t stbcnt; /* stability limit exceeded (ro) */
+	__kernel_long_t ppsfreq;	/* pps frequency (scaled ppm) (ro) */
+	__kernel_long_t jitter;		/* pps jitter (us) (ro) */
+	int shift;			/* interval duration (s) (shift) (ro) */
+	__kernel_long_t stabil;         /* pps stability (scaled ppm) (ro) */
+	__kernel_long_t jitcnt;		/* jitter limit exceeded (ro) */
+	__kernel_long_t calcnt;		/* calibration intervals (ro) */
+	__kernel_long_t errcnt;		/* calibration errors (ro) */
+	__kernel_long_t stbcnt;		/* stability limit exceeded (ro) */
 
-	int tai;		/* TAI offset (ro) */
+	int tai;			/* TAI offset (ro) */
+	int  :32;			/* pad to 64 bit */
 
+	__s64 time_sec;			/* y2038-safe replacement for 'time' */
+	__s64 time_usec;
 	int  :32; int  :32; int  :32; int  :32;
-	int  :32; int  :32; int  :32; int  :32;
-	int  :32; int  :32; int  :32;
+	int  :32; int  :32;
 };
 
 /*

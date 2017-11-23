@@ -244,6 +244,7 @@ static void put_clock_desc(struct posix_clock_desc *cd)
 static int pc_clock_adjtime(clockid_t id, struct timex *tx)
 {
 	struct posix_clock_desc cd;
+	struct timespec64 ts;
 	int err;
 
 	err = get_clock_desc(id, &cd);
@@ -255,8 +256,12 @@ static int pc_clock_adjtime(clockid_t id, struct timex *tx)
 		goto out;
 	}
 
+	err = timex_get_delta(tx, &ts);
+	if (err)
+		goto out;
+
 	if (cd.clk->ops.clock_adjtime)
-		err = cd.clk->ops.clock_adjtime(cd.clk, tx);
+		err = cd.clk->ops.clock_adjtime(cd.clk, tx, &ts);
 	else
 		err = -EOPNOTSUPP;
 out:

@@ -121,7 +121,7 @@ static int ptp_clock_gettime(struct posix_clock *pc, struct timespec64 *tp)
 	return err;
 }
 
-static int ptp_clock_adjtime(struct posix_clock *pc, struct timex *tx)
+static int ptp_clock_adjtime(struct posix_clock *pc, struct timex *tx, struct timespec64 *ts)
 {
 	struct ptp_clock *ptp = container_of(pc, struct ptp_clock, clock);
 	struct ptp_clock_info *ops;
@@ -130,21 +130,7 @@ static int ptp_clock_adjtime(struct posix_clock *pc, struct timex *tx)
 	ops = ptp->info;
 
 	if (tx->modes & ADJ_SETOFFSET) {
-		struct timespec64 ts;
-		ktime_t kt;
-		s64 delta;
-
-		ts.tv_sec  = tx->time.tv_sec;
-		ts.tv_nsec = tx->time.tv_usec;
-
-		if (!(tx->modes & ADJ_NANO))
-			ts.tv_nsec *= 1000;
-
-		if ((unsigned long) ts.tv_nsec >= NSEC_PER_SEC)
-			return -EINVAL;
-
-		kt = timespec64_to_ktime(ts);
-		delta = ktime_to_ns(kt);
+		u64 delta = timespec64_to_ns(ts);
 		err = ops->adjtime(ops, delta);
 	} else if (tx->modes & ADJ_FREQUENCY) {
 		s32 ppb = scaled_ppm_to_ppb(tx->freq);
