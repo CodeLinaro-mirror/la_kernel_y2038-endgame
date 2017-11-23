@@ -1184,6 +1184,7 @@ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
 		struct rusage32 __user *, ur)
 {
 	unsigned int status = 0;
+	struct rusage32 r32;
 	struct rusage r;
 	long err = kernel_wait4(pid, &status, options, &r);
 	if (err <= 0)
@@ -1192,12 +1193,14 @@ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
 		return -EFAULT;
 	if (!ur)
 		return err;
-	if (put_tv_to_tv32(&ur->ru_utime, &r.ru_utime))
-		return -EFAULT;
-	if (put_tv_to_tv32(&ur->ru_stime, &r.ru_stime))
-		return -EFAULT;
-	if (copy_to_user(&ur->ru_maxrss, &r.ru_maxrss,
-	      sizeof(struct rusage32) - offsetof(struct rusage32, ru_maxrss)))
+	r32.ru_utime.tv_sec  = r.ru_utime.tv_sec;
+	r32.ru_utime.tv_usec = r.ru_utime.tv_usec;
+	r32.ru_stime.tv_sec  = r.ru_stime.tv_sec;
+	r32.ru_stime.tv_usec = r.ru_stime.tv_usec;
+	memcpy(&r32.ru_maxrss, &r.ru_maxrss,
+	      sizeof(struct rusage32) - offsetof(struct rusage32, ru_maxrss));
+
+	if (copy_to_user(ur, &r32, sizeof(r32)))
 		return -EFAULT;
 	return err;
 }
