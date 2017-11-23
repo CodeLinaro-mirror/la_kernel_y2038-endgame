@@ -103,7 +103,7 @@ jiffies_to_compat_timeval(unsigned long jiffies, struct compat_timeval *value)
 #undef TASK_SIZE
 #define TASK_SIZE TASK_SIZE32
 
-#undef ns_to_timeval
-#define ns_to_timeval ns_to_compat_timeval
+#undef ns_to_kernel_old_timeval
+#define ns_to_kernel_old_timeval ns_to_compat_timeval
 
 #include "../../../fs/binfmt_elf.c"

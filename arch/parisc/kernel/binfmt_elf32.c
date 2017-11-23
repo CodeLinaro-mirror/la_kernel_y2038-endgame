@@ -92,7 +92,7 @@ struct elf_prpsinfo32
 	current->thread.map_base = DEFAULT_MAP_BASE32; \
 	current->thread.task_size = DEFAULT_TASK_SIZE32 \
 
-#undef ns_to_timeval
-#define ns_to_timeval ns_to_compat_timeval
+#undef ns_to_kernel_old_timeval
+#define ns_to_kernel_old_timeval ns_to_compat_timeval
 
 #include "../../../fs/binfmt_elf.c"
