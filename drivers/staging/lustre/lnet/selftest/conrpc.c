@@ -470,13 +470,14 @@ lstcon_rpc_trans_interpreter(struct lstcon_rpc_trans *trans,
 {
 	struct list_head tmp;
 	struct list_head __user *next;
-	struct lstcon_rpc_ent *ent;
+	struct lstcon_rpc_ent __user *ent;
 	struct srpc_generic_reply *rep;
 	struct lstcon_rpc *crpc;
 	struct srpc_msg *msg;
 	struct lstcon_node *nd;
 	long dur;
-	struct timeval tv;
+	struct __kernel_old_timeval tv;
+	struct timespec64 ts;
 	int error;
 
 	LASSERT(head_up);
@@ -502,7 +503,13 @@ lstcon_rpc_trans_interpreter(struct lstcon_rpc_trans *trans,
 
 		dur = (long)cfs_time_sub(crpc->crp_stamp,
 		      (unsigned long)console_session.ses_id.ses_stamp);
-		jiffies_to_timeval(dur, &tv);
+		jiffies_to_timespec64(dur, &ts);
+		/*
+		 * no y2038 overflow since this is relative time,
+		 * but note that jiffies can overflow after 49 days
+		 */
+		tv.tv_sec = (u32)ts.tv_sec;
+		tv.tv_usec = ts.tv_nsec / NSEC_PER_USEC;
 
 		if (copy_to_user(&ent->rpe_peer, &nd->nd_id,
 				 sizeof(struct lnet_process_id)) ||
