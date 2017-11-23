@@ -163,7 +163,7 @@ bool emulate_vsyscall(struct pt_regs *regs, unsigned long address)
 	 */
 	switch (vsyscall_nr) {
 	case 0:
-		if (!write_ok_or_segv(regs->di, sizeof(struct timeval)) ||
+		if (!write_ok_or_segv(regs->di, sizeof(struct __kernel_old_timeval)) ||
 		    !write_ok_or_segv(regs->si, sizeof(struct timezone))) {
 			ret = -EFAULT;
 			goto check_fault;
