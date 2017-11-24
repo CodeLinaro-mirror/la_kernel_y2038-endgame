@@ -784,7 +784,7 @@ static void v4l_print_event(const void *arg, bool write_only)
 	const struct v4l2_event *p = arg;
 	const struct v4l2_event_ctrl *c;
 
-	pr_cont("type=0x%x, pending=%u, sequence=%u, id=%u, timestamp=%lu.%9.9lu\n",
+	pr_cont("type=0x%x, pending=%u, sequence=%u, id=%u, timestamp=%llu.%9.9llu\n",
 			p->type, p->pending, p->sequence, p->id,
 			p->timestamp.tv_sec, p->timestamp.tv_nsec);
 	switch (p->type) {
@@ -2820,15 +2820,86 @@ static int check_array_args(unsigned int cmd, void *parg, size_t *array_size,
 	return ret;
 }
 
-void v4l2_convert_event(void *parg)
+int video_copyin(void **buf, size_t buflen, unsigned int *cmdp,
+		 void __user *arg, bool *always_copy)
+{
+	void *mbuf = NULL;
+	unsigned int cmd;
+	int err;
+
+	switch (*cmdp) {
+	case VIDIOC_DQEVENT32:
+		*cmdp = VIDIOC_DQEVENT;
+		break;
+	}
+	cmd = *cmdp;
+
+	if (_IOC_SIZE(cmd) > sizeof(buflen)) {
+		/* too big to allocate from stack */
+		mbuf = kvmalloc(_IOC_SIZE(cmd), GFP_KERNEL);
+		if (NULL == mbuf)
+			return -ENOMEM;
+		*buf = mbuf;
+	}
+
+	err = -EFAULT;
+	if (_IOC_DIR(cmd) & _IOC_WRITE) {
+		unsigned int n = _IOC_SIZE(cmd);
+
+		/*
+		 * In some cases, only a few fields are used as input,
+		 * i.e. when the app sets "index" and then the driver
+		 * fills in the rest of the structure for the thing
+		 * with that index.  We only need to copy up the first
+		 * non-input field.
+		 */
+		if (v4l2_is_known_ioctl(cmd)) {
+			u32 flags = v4l2_ioctls[_IOC_NR(cmd)].flags;
+
+			if (flags & INFO_FL_CLEAR_MASK)
+				n = (flags & INFO_FL_CLEAR_MASK) >> 16;
+			*always_copy = flags & INFO_FL_ALWAYS_COPY;
+		}
+
+		if (copy_from_user(*buf, (void __user *)arg, n))
+			goto out;
+
+		/* zero out anything we don't copy from userspace */
+		if (n < _IOC_SIZE(cmd))
+			memset((u8 *)*buf + n, 0, _IOC_SIZE(cmd) - n);
+	} else {
+		/* read-only ioctl */
+		memset(*buf, 0, _IOC_SIZE(cmd));
+	}
+
+out:
+	return err;
+}
+
+int video_copyout(unsigned int cmd, void __user *arg, void *parg)
 {
 	struct v4l2_event32 *ev32 = parg;
 	struct v4l2_event *ev64 = parg;
+	int ret = 0;
 
-	ev32.timestamp.tv_sec = ev64.timestamp.tv_sec;
-	ev32.timestamp.tv_usec = ev64.timestamp.tv_usec;
-	ev32.id = ev64.id;
-	memset(ev32->reserved, 0, sizeof(ev32->reserved));
+	switch (cmd) {
+	case VIDIOC_DQEVENT32:
+		ev32->timestamp.tv_sec  = ev64->timestamp.tv_sec;
+		ev32->timestamp.tv_nsec = ev64->timestamp.tv_nsec;
+		ev32->id = ev64->id;
+		memset(ev32->reserved, 0, sizeof(ev32->reserved));
+		break;
+	}
+
+	switch (_IOC_DIR(cmd)) {
+	case _IOC_READ:
+	case (_IOC_WRITE | _IOC_READ):
+		if (copy_to_user((void __user *)arg, parg, _IOC_SIZE(cmd)))
+			ret = -EFAULT;
+		break;
+	}
+
+	return ret;
 }
 
 long
@@ -2844,49 +2915,16 @@ video_usercopy(struct file *file, unsigned int cmd, unsigned long arg,
 	size_t  array_size = 0;
 	void __user *user_ptr = NULL;
 	void	**kernel_ptr = NULL;
-	size_t	size = _IOC_SIZE(cmd);
+	unsigned int real_cmd = cmd;
 
 	/*  Copy arguments into temp kernel buffer  */
 	if (_IOC_DIR(cmd) != _IOC_NONE) {
-		if (size <= sizeof(sbuf)) {
-			parg = sbuf;
-		} else {
-			/* too big to allocate from stack */
-			mbuf = kvmalloc(size, GFP_KERNEL);
-			if (NULL == mbuf)
-				return -ENOMEM;
-			parg = mbuf;
-		}
-
-		err = -EFAULT;
-		if (_IOC_DIR(cmd) & _IOC_WRITE) {
-			unsigned int n = size;
-
-			/*
-			 * In some cases, only a few fields are used as input,
-			 * i.e. when the app sets "index" and then the driver
-			 * fills in the rest of the structure for the thing
-			 * with that index.  We only need to copy up the first
-			 * non-input field.
-			 */
-			if (v4l2_is_known_ioctl(cmd)) {
-				u32 flags = v4l2_ioctls[_IOC_NR(cmd)].flags;
-
-				if (flags & INFO_FL_CLEAR_MASK)
-					n = (flags & INFO_FL_CLEAR_MASK) >> 16;
-				always_copy = flags & INFO_FL_ALWAYS_COPY;
-			}
-
-			if (copy_from_user(parg, (void __user *)arg, n))
-				goto out;
-
-			/* zero out anything we don't copy from userspace */
-			if (n < size)
-				memset((u8 *)parg + n, 0, size - n);
-		} else {
-			/* read-only ioctl */
-			memset(parg, 0, size);
-		}
+		parg = sbuf;
+		real_cmd = cmd;
+		err = video_copyin(&parg, sizeof (sbuf), &cmd,
+				   (void __user *)arg, &always_copy);
+		if (err)
+			goto out;
 	}
 
 	err = check_array_args(cmd, parg, &array_size, &user_ptr, &kernel_ptr);
@@ -2919,14 +2957,10 @@ video_usercopy(struct file *file, unsigned int cmd, unsigned long arg,
 	}
 
 	if (err == 0) {
-		switch (cmd) {
-		case VIDIOC_DQBUF:
+		if (cmd == VIDIOC_DQBUF)
 			trace_v4l2_dqbuf(video_devdata(file)->minor, parg);
-		case VIDIOC_QBUF:
+		else if (cmd == VIDIOC_QBUF)
 			trace_v4l2_qbuf(video_devdata(file)->minor, parg);
-		case VIDIOC_DQEVENT32:
-			v4l2_convert_event(parg);
-		}
 	}
 
 	if (has_array_args) {
@@ -2944,13 +2978,7 @@ video_usercopy(struct file *file, unsigned int cmd, unsigned long arg,
 
 out_array_args:
 	/*  Copy results into user buffer  */
-	switch (_IOC_DIR(cmd)) {
-	case _IOC_READ:
-	case (_IOC_WRITE | _IOC_READ):
-		if (copy_to_user((void __user *)arg, parg, size))
-			err = -EFAULT;
-		break;
-	}
+	err = video_copyout(real_cmd, (void __user *)arg, parg);
 
 out:
 	kvfree(mbuf);
