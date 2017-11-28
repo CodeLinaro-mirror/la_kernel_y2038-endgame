@@ -117,7 +117,9 @@ struct packet_sock {
 				origdev:1,
 				has_vnet_hdr:1,
 				tp_loss:1,
-				tp_tx_has_off:1;
+				tp_tx_has_off:1,
+				tp_skiptstamp:1,
+				tp_tstamp_ns64:1;
 	int			pressure;
 	int			ifindex;	/* bound device		*/
 	__be16			num;
