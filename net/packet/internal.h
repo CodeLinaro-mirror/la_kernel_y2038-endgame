@@ -127,6 +127,8 @@ struct packet_sock {
 	unsigned int		tp_reserve;
 	unsigned int		tp_loss:1;
 	unsigned int		tp_tx_has_off:1;
+	unsigned int		tp_skiptstamp:1;
+	unsigned int		tp_tstamp_ns64:1;
 	unsigned int		tp_tstamp;
 	struct net_device __rcu	*cached_dev;
 	int			(*xmit)(struct sk_buff *skb);

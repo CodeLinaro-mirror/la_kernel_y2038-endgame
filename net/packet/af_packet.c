@@ -200,7 +200,7 @@ static void prb_retire_current_block(struct tpacket_kbdq_core *,
 		struct packet_sock *, unsigned int status);
 static int prb_queue_frozen(struct tpacket_kbdq_core *);
 static void prb_open_block(struct tpacket_kbdq_core *,
-		struct tpacket_block_desc *);
+		struct tpacket_block_desc *, struct packet_sock *);
 static void prb_retire_rx_blk_timer_expired(struct timer_list *);
 static void _prb_refresh_rx_retire_blk_timer(struct tpacket_kbdq_core *);
 static void prb_fill_rxhash(struct tpacket_kbdq_core *, struct tpacket3_hdr *);
@@ -440,52 +440,91 @@ static int __packet_get_status(struct packet_sock *po, void *frame)
 	}
 }
 
-static __u32 tpacket_get_timestamp(struct sk_buff *skb, struct timespec64 *ts,
-				   unsigned int flags)
+static __u32 tpacket_get_timestamp(struct sk_buff *skb, __u32 *hi, __u32 *lo)
 {
+	struct packet_sock *po = pkt_sk(skb->sk);
 	struct skb_shared_hwtstamps *shhwtstamps = skb_hwtstamps(skb);
+	ktime_t stamp;
+	u32 type;
+
+	if (po->tp_skiptstamp)
+		return 0;
 
 	if (shhwtstamps &&
-	    (flags & SOF_TIMESTAMPING_RAW_HARDWARE) &&
-	    ktime_to_timespec64_cond(shhwtstamps->hwtstamp, ts))
-		return TP_STATUS_TS_RAW_HARDWARE;
+	    (po->tp_tstamp & SOF_TIMESTAMPING_RAW_HARDWARE) &&
+	    shhwtstamps->hwtstamp) {
+		stamp = shhwtstamps->hwtstamp;
+		type = TP_STATUS_TS_RAW_HARDWARE;
+	} else if (skb->tstamp) {
+		stamp = skb->tstamp;
+		type = TP_STATUS_TS_SOFTWARE;
+	} else {
+		return 0;
+	}
 
-	if (ktime_to_timespec64_cond(skb->tstamp, ts))
-		return TP_STATUS_TS_SOFTWARE;
+	if (po->tp_tstamp_ns64) {
+		__u64 ns = ktime_to_ns(stamp);
 
-	return 0;
+		*hi = upper_32_bits(ns);
+		*lo = lower_32_bits(ns);
+	} else {
+		struct timespec64 ts = ktime_to_timespec64(stamp);
+
+		*hi = ts.tv_sec;
+		if (po->tp_version > TPACKET_V1)
+			*lo = ts.tv_nsec;
+		else
+			*lo = ts.tv_nsec / NSEC_PER_USEC;
+	}
+
+	return type;
+}
+
+static void packet_get_time(struct packet_sock *po, __u32 *hi, __u32 *lo)
+{
+	if (po->tp_skiptstamp) {
+		*hi = 0;
+		*lo = 0;
+	} else if (po->tp_tstamp_ns64) {
+		__u64 ns = ktime_get_real_ns();
+
+		*hi = upper_32_bits(ns);
+		*hi = lower_32_bits(ns);
+	} else {
+		struct timespec64 ts;
+
+		ktime_get_real_ts64(&ts);
+		/* unsigned seconds overflow in y2106 here */
+		*hi = ts.tv_sec;
+		if (po->tp_version > TPACKET_V1)
+			*lo = ts.tv_nsec;
+		else
+			*lo = ts.tv_nsec / NSEC_PER_USEC;
+	}
 }
 
 static __u32 __packet_set_timestamp(struct packet_sock *po, void *frame,
 				    struct sk_buff *skb)
 {
 	union tpacket_uhdr h;
-	struct timespec64 ts;
-	__u32 ts_status;
+	__u32 ts_status, hi, lo;
 
-	if (!(ts_status = tpacket_get_timestamp(skb, &ts, po->tp_tstamp)))
+	if (!(ts_status = tpacket_get_timestamp(skb, &hi, &lo)))
 		return 0;
 
 	h.raw = frame;
-	/*
-	 * versions 1 through 3 overflow the timestamps in y2106, since they
-	 * all store the seconds in a 32-bit unsigned integer.
-	 * If we create a version 4, that should have a 64-bit timestamp,
-	 * either 64-bit seconds + 32-bit nanoseconds, or just 64-bit
-	 * nanoseconds.
-	 */
 	switch (po->tp_version) {
 	case TPACKET_V1:
-		h.h1->tp_sec = ts.tv_sec;
-		h.h1->tp_usec = ts.tv_nsec / NSEC_PER_USEC;
+		h.h1->tp_sec = hi;
+		h.h1->tp_usec = lo;
 		break;
 	case TPACKET_V2:
-		h.h2->tp_sec = ts.tv_sec;
-		h.h2->tp_nsec = ts.tv_nsec;
+		h.h2->tp_sec = hi;
+		h.h2->tp_nsec = lo;
 		break;
 	case TPACKET_V3:
-		h.h3->tp_sec = ts.tv_sec;
-		h.h3->tp_nsec = ts.tv_nsec;
+		h.h3->tp_sec = hi;
+		h.h3->tp_nsec = lo;
 		break;
 	default:
 		WARN(1, "TPACKET version not supported.\n");
@@ -634,7 +673,7 @@ static void init_prb_bdqc(struct packet_sock *po,
 	p1->max_frame_len = p1->kblk_size - BLK_PLUS_PRIV(p1->blk_sizeof_priv);
 	prb_init_ft_ops(p1, req_u);
 	prb_setup_retire_blk_timer(po);
-	prb_open_block(p1, pbd);
+	prb_open_block(p1, pbd, po);
 }
 
 /*  Do NOT update the last_blk_num first.
@@ -731,7 +770,7 @@ static void prb_retire_rx_blk_timer_expired(struct timer_list *t)
 				* opening a block thaws the queue,restarts timer
 				* Thawing/timer-refresh is a side effect.
 				*/
-				prb_open_block(pkc, pbd);
+				prb_open_block(pkc, pbd, po);
 				goto out;
 			}
 		}
@@ -813,10 +852,8 @@ static void prb_close_block(struct tpacket_kbdq_core *pkc1,
 		 * It shouldn't really happen as we don't close empty
 		 * blocks. See prb_retire_rx_blk_timer_expired().
 		 */
-		struct timespec64 ts;
-		ktime_get_real_ts64(&ts);
-		h1->ts_last_pkt.ts_sec = ts.tv_sec;
-		h1->ts_last_pkt.ts_nsec	= ts.tv_nsec;
+		packet_get_time(po, &h1->ts_last_pkt.ts_sec,
+				&h1->ts_last_pkt.ts_nsec);
 	}
 
 	smp_wmb();
@@ -842,9 +879,8 @@ static void prb_thaw_queue(struct tpacket_kbdq_core *pkc)
  *
  */
 static void prb_open_block(struct tpacket_kbdq_core *pkc1,
-	struct tpacket_block_desc *pbd1)
+	struct tpacket_block_desc *pbd1, struct packet_sock *po)
 {
-	struct timespec64 ts;
 	struct tpacket_hdr_v1 *h1 = &pbd1->hdr.bh1;
 
 	smp_rmb();
@@ -857,10 +893,8 @@ static void prb_open_block(struct tpacket_kbdq_core *pkc1,
 	BLOCK_NUM_PKTS(pbd1) = 0;
 	BLOCK_LEN(pbd1) = BLK_PLUS_PRIV(pkc1->blk_sizeof_priv);
 
-	ktime_get_real_ts64(&ts);
-
-	h1->ts_first_pkt.ts_sec = ts.tv_sec;
-	h1->ts_first_pkt.ts_nsec = ts.tv_nsec;
+	packet_get_time(po, &h1->ts_first_pkt.ts_sec,
+			&h1->ts_first_pkt.ts_nsec);
 
 	pkc1->pkblk_start = (char *)pbd1;
 	pkc1->nxt_offset = pkc1->pkblk_start + BLK_PLUS_PRIV(pkc1->blk_sizeof_priv);
@@ -937,7 +971,7 @@ static void *prb_dispatch_next_block(struct tpacket_kbdq_core *pkc,
 	 * open this block and return the offset where the first packet
 	 * needs to get stored.
 	 */
-	prb_open_block(pkc, pbd);
+	prb_open_block(pkc, pbd, po);
 	return (void *)pkc->nxt_offset;
 }
 
@@ -1069,7 +1103,7 @@ static void *__packet_lookup_frame_in_block(struct packet_sock *po,
 			 * opening a block also thaws the queue.
 			 * Thawing is a side effect.
 			 */
-			prb_open_block(pkc, pbd);
+			prb_open_block(pkc, pbd, po);
 		}
 	}
 
@@ -2185,8 +2219,8 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
 	unsigned long status = TP_STATUS_USER;
 	unsigned short macoff, netoff, hdrlen;
 	struct sk_buff *copy_skb = NULL;
-	struct timespec64 ts;
 	__u32 ts_status;
+	__u32 tstamp_hi, tstamp_lo;
 	bool is_drop_n_account = false;
 	bool do_vnet = false;
 
@@ -2312,8 +2346,8 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
 
 	skb_copy_bits(skb, 0, h.raw + macoff, snaplen);
 
-	if (!(ts_status = tpacket_get_timestamp(skb, &ts, po->tp_tstamp)))
-		ktime_get_real_ts64(&ts);
+	if (!(ts_status = tpacket_get_timestamp(skb, &tstamp_hi, &tstamp_lo)))
+		packet_get_time(po, &tstamp_hi, &tstamp_lo);
 
 	status |= ts_status;
 
@@ -2323,8 +2357,8 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
 		h.h1->tp_snaplen = snaplen;
 		h.h1->tp_mac = macoff;
 		h.h1->tp_net = netoff;
-		h.h1->tp_sec = ts.tv_sec;
-		h.h1->tp_usec = ts.tv_nsec / NSEC_PER_USEC;
+		h.h1->tp_sec = tstamp_hi;
+		h.h1->tp_usec = tstamp_lo;
 		hdrlen = sizeof(*h.h1);
 		break;
 	case TPACKET_V2:
@@ -2332,8 +2366,8 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
 		h.h2->tp_snaplen = snaplen;
 		h.h2->tp_mac = macoff;
 		h.h2->tp_net = netoff;
-		h.h2->tp_sec = ts.tv_sec;
-		h.h2->tp_nsec = ts.tv_nsec;
+		h.h2->tp_sec = tstamp_hi;
+		h.h2->tp_nsec = tstamp_lo;
 		if (skb_vlan_tag_present(skb)) {
 			h.h2->tp_vlan_tci = skb_vlan_tag_get(skb);
 			h.h2->tp_vlan_tpid = ntohs(skb->vlan_proto);
@@ -2354,8 +2388,8 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
 		h.h3->tp_snaplen = snaplen;
 		h.h3->tp_mac = macoff;
 		h.h3->tp_net = netoff;
-		h.h3->tp_sec  = ts.tv_sec;
-		h.h3->tp_nsec = ts.tv_nsec;
+		h.h3->tp_sec  = tstamp_hi;
+		h.h3->tp_nsec = tstamp_lo;
 		memset(h.h3->tp_padding, 0, sizeof(h.h3->tp_padding));
 		hdrlen = sizeof(*h.h3);
 		break;
@@ -3790,6 +3824,30 @@ packet_setsockopt(struct socket *sock, int level, int optname, char __user *optv
 		po->tp_tstamp = val;
 		return 0;
 	}
+	case PACKET_SKIPTIMESTAMP:
+	{
+		int val;
+
+		if (optlen != sizeof(val))
+			return -EINVAL;
+		if (copy_from_user(&val, optval, sizeof(val)))
+			return -EFAULT;
+
+		po->tp_skiptstamp = val;
+		return 0;
+	}
+	case PACKET_TIMESTAMP_NS64:
+	{
+		int val;
+
+		if (optlen != sizeof(val))
+			return -EINVAL;
+		if (copy_from_user(&val, optval, sizeof(val)))
+			return -EFAULT;
+
+		po->tp_tstamp_ns64 = val;
+		return 0;
+	}
 	case PACKET_FANOUT:
 	{
 		int val;
@@ -3917,6 +3975,12 @@ static int packet_getsockopt(struct socket *sock, int level, int optname,
 		break;
 	case PACKET_TIMESTAMP:
 		val = po->tp_tstamp;
+		break;
+	case PACKET_SKIPTIMESTAMP:
+		val = po->tp_skiptstamp;
+		break;
+	case PACKET_TIMESTAMP_NS64:
+		val = po->tp_tstamp_ns64;
 		break;
 	case PACKET_FANOUT:
 		val = (po->fanout ?
