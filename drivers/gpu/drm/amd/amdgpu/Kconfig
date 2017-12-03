@@ -25,6 +25,7 @@ config DRM_AMDGPU_CIK
 
 config DRM_AMDGPU_SOC15
 	bool "Enable amdgpu support for SOC15 parts"
+	depends on !X86 || !(KCOV_INSTRUMENT_ALL && KCOV_ENABLE_COMPARISONS) || BROKEN
 	depends on DRM_AMDGPU
 	select DRM_AMD_DC
 	help
