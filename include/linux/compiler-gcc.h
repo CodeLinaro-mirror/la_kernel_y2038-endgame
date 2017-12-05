@@ -172,8 +172,52 @@
 #define __diag_str(s)		__diag_str1(s)
 #define __diag(s)		_Pragma(__diag_str(GCC diagnostic s))
 
+#define __diag_GCC_4_6(s)	__diag(s)
+
+#if GCC_VERSION >= 40700
+#define __diag_GCC_4_7(s)	__diag(s)
+#else
+#define __diag_GCC_4_7(s)
+#endif
+
+#if GCC_VERSION >= 40800
+#define __diag_GCC_4_8(s)	__diag(s)
+#else
+#define __diag_GCC_4_8(s)
+#endif
+
+#if GCC_VERSION >= 40900
+#define __diag_GCC_4_9(s)	__diag(s)
+#else
+#define __diag_GCC_4_9(s)
+#endif
+
+#if GCC_VERSION >= 50000
+#define __diag_GCC_5(s)		__diag(s)
+#else
+#define __diag_GCC_5(s)
+#endif
+
+#if GCC_VERSION >= 60000
+#define __diag_GCC_6(s)		__diag(s)
+#else
+#define __diag_GCC_6(s)
+#endif
+
+#if GCC_VERSION >= 70000
+#define __diag_GCC_7(s)		__diag(s)
+#else
+#define __diag_GCC_7(s)
+#endif
+
 #if GCC_VERSION >= 80000
 #define __diag_GCC_8(s)		__diag(s)
 #else
 #define __diag_GCC_8(s)
+#endif
+
+#if GCC_VERSION >= 90000
+#define __diag_GCC_9(s)		__diag(s)
+#else
+#define __diag_GCC_9(s)
 #endif
