@@ -367,7 +367,7 @@ config ARCH_MULTIPLATFORM
 choice
 	prompt "ARM system type"
 	depends on !ARM_FORCE_MULTIPLATFORM
-	default ARCH_MULTIPLATFORM
+	default ARCH_CHOOSE_MULTIPLATFORM
 
 config ARCH_CHOOSE_MULTIPLATFORM
 	bool "Allow multiple platforms to be selected"
