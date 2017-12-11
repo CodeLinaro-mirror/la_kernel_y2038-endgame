@@ -1485,6 +1485,10 @@ static int __send_changing_extent_only(struct clone_info *ci, struct dm_target *
 	unsigned len;
 	unsigned num_bios;
 
+	ti = dm_table_find_target(ci->map, ci->sector);
+	if (!dm_target_is_valid(ti))
+		return -EIO;
+
 	/*
 	 * Even though the device advertised support for this type of
 	 * request, that does not mean every target supports it, and
