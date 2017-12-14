@@ -298,7 +298,7 @@ void print_oops_end_marker(void);
 extern int oops_may_print(void);
 void do_exit(long error_code) __noreturn;
 void complete_and_exit(struct completion *, long) __noreturn;
-
+#define panic(args...) do { barrier(); panic(args); } while (0)
 #ifdef CONFIG_ARCH_HAS_REFCOUNT
 void refcount_error_report(struct pt_regs *regs, const char *err);
 #else
