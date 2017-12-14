@@ -94,7 +94,7 @@
 #ifndef assert
 #define	assert(expression) { \
 	if (!(expression)) { \
-		(void)panic( \
+		panic( \
 			"assertion \"%s\" failed: file \"%s\", line %d\n", \
 			#expression, \
 			__FILE__, __LINE__); \
