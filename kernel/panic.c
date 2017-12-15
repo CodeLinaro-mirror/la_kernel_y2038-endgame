@@ -132,7 +132,6 @@ EXPORT_SYMBOL(nmi_panic);
  *
  *	This function never returns.
  */
-#undef panic
 void panic(const char *fmt, ...)
 {
 	static char buf[1024];
