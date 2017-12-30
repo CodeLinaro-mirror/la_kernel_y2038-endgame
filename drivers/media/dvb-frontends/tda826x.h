@@ -36,7 +36,7 @@
  *
  * return: FE pointer on success, NULL on failure.
  */
-#if IS_REACHABLE(CONFIG_DVB_TDA826X)
+#if IS_ENABLED(CONFIG_DVB_TDA826X)
 extern struct dvb_frontend* tda826x_attach(struct dvb_frontend *fe, int addr,
 					   struct i2c_adapter *i2c,
 					   int has_loopthrough);

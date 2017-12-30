@@ -67,7 +67,7 @@ struct ts2020_config {
 };
 
 /* Do not add new ts2020_attach() users! Use I2C bindings instead. */
-#if IS_REACHABLE(CONFIG_DVB_TS2020)
+#if IS_ENABLED(CONFIG_DVB_TS2020)
 extern struct dvb_frontend *ts2020_attach(
 	struct dvb_frontend *fe,
 	const struct ts2020_config *config,

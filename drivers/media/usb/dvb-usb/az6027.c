@@ -910,11 +910,11 @@ static int az6027_frontend_attach(struct dvb_usb_adapter *adap)
 	az6027_frontend_reset(adap);
 
 	deb_info("adap = %p, dev = %p\n", adap, adap->dev);
-	adap->fe_adap[0].fe = stb0899_attach(&az6027_stb0899_config, &adap->dev->i2c_adap);
+	adap->fe_adap[0].fe = dvb_attach(stb0899_attach, &az6027_stb0899_config, &adap->dev->i2c_adap);
 
 	if (adap->fe_adap[0].fe) {
 		deb_info("found STB0899 DVB-S/DVB-S2 frontend @0x%02x", az6027_stb0899_config.demod_address);
-		if (stb6100_attach(adap->fe_adap[0].fe, &az6027_stb6100_config, &adap->dev->i2c_adap)) {
+		if (dvb_attach(stb6100_attach, adap->fe_adap[0].fe, &az6027_stb6100_config, &adap->dev->i2c_adap)) {
 			deb_info("found STB6100 DVB-S/DVB-S2 frontend @0x%02x", az6027_stb6100_config.tuner_address);
 			adap->fe_adap[0].fe->ops.set_voltage = az6027_set_voltage;
 			az6027_ci_init(adap);

@@ -26,7 +26,7 @@
 #include <linux/i2c.h>
 #include <media/dvb_frontend.h>
 
-#if IS_REACHABLE(CONFIG_DVB_STB6000)
+#if IS_ENABLED(CONFIG_DVB_STB6000)
 /**
  * Attach a stb6000 tuner to the supplied frontend structure.
  *

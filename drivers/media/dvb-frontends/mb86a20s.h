@@ -32,7 +32,7 @@ struct mb86a20s_config {
 	bool	is_serial;
 };
 
-#if IS_REACHABLE(CONFIG_DVB_MB86A20S)
+#if IS_ENABLED(CONFIG_DVB_MB86A20S)
 /**
  * Attach a mb86a20s demod
  *

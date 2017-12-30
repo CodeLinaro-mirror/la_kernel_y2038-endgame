@@ -30,7 +30,7 @@
 #define DVB_PLL_TDEE4		       18
 #define DVB_PLL_THOMSON_DTT7520X       19
 
-#if IS_REACHABLE(CONFIG_DVB_PLL)
+#if IS_ENABLED(CONFIG_DVB_PLL)
 /**
  * Attach a dvb-pll to the supplied frontend structure.
  *

@@ -48,7 +48,7 @@ struct helene_config {
 	enum helene_xtal xtal;
 };
 
-#if IS_REACHABLE(CONFIG_DVB_HELENE)
+#if IS_ENABLED(CONFIG_DVB_HELENE)
 /**
  * Attach a helene tuner (terrestrial and cable standards)
  *

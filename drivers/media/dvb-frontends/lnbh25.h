@@ -36,7 +36,7 @@ struct lnbh25_config {
 	u8	data2_config;
 };
 
-#if IS_REACHABLE(CONFIG_DVB_LNBH25)
+#if IS_ENABLED(CONFIG_DVB_LNBH25)
 struct dvb_frontend *lnbh25_attach(
 	struct dvb_frontend *fe,
 	struct lnbh25_config *cfg,

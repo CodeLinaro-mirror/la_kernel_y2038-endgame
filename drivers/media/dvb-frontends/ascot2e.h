@@ -40,7 +40,7 @@ struct ascot2e_config {
 	int	(*set_tuner_callback)(void *, int);
 };
 
-#if IS_REACHABLE(CONFIG_DVB_ASCOT2E)
+#if IS_ENABLED(CONFIG_DVB_ASCOT2E)
 /**
  * Attach an ascot2e tuner
  *

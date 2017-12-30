@@ -12,7 +12,7 @@ struct stv0910_cfg {
 	u8  single;
 };
 
-#if IS_REACHABLE(CONFIG_DVB_STV0910)
+#if IS_ENABLED(CONFIG_DVB_STV0910)
 
 struct dvb_frontend *stv0910_attach(struct i2c_adapter *i2c,
 				    struct stv0910_cfg *cfg, int nr);

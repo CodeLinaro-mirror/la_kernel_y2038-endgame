@@ -20,7 +20,7 @@ struct mxl5xx_cfg {
 	void *fw_priv;
 };
 
-#if IS_REACHABLE(CONFIG_DVB_MXL5XX)
+#if IS_ENABLED(CONFIG_DVB_MXL5XX)
 
 extern struct dvb_frontend *mxl5xx_attach(struct i2c_adapter *i2c,
 	struct mxl5xx_cfg *cfg, u32 demod, u32 tuner,
