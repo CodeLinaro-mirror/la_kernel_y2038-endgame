@@ -41,7 +41,7 @@ struct cx24120_config {
 	u16 i2c_wr_max;
 };
 
-#if IS_REACHABLE(CONFIG_DVB_CX24120)
+#if IS_ENABLED(CONFIG_DVB_CX24120)
 struct dvb_frontend *cx24120_attach(const struct cx24120_config *config,
 				    struct i2c_adapter *i2c);
 #else

@@ -36,7 +36,7 @@ struct dvb_pll_config {
 	struct dvb_frontend *fe;
 };
 
-#if IS_REACHABLE(CONFIG_DVB_PLL)
+#if IS_ENABLED(CONFIG_DVB_PLL)
 /**
  * Attach a dvb-pll to the supplied frontend structure.
  *

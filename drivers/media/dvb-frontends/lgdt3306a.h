@@ -62,7 +62,7 @@ struct lgdt3306a_config {
 	struct i2c_adapter **i2c_adapter;
 };
 
-#if IS_REACHABLE(CONFIG_DVB_LGDT3306A)
+#if IS_ENABLED(CONFIG_DVB_LGDT3306A)
 struct dvb_frontend *lgdt3306a_attach(const struct lgdt3306a_config *config,
 				      struct i2c_adapter *i2c_adap);
 #else

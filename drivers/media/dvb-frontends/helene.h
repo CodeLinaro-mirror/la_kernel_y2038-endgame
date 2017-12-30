@@ -51,7 +51,7 @@ struct helene_config {
 	struct dvb_frontend *fe;
 };
 
-#if IS_REACHABLE(CONFIG_DVB_HELENE)
+#if IS_ENABLED(CONFIG_DVB_HELENE)
 /**
  * Attach a helene tuner (terrestrial and cable standards)
  *

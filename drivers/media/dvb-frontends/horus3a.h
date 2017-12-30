@@ -40,7 +40,7 @@ struct horus3a_config {
 	int	(*set_tuner_callback)(void *, int);
 };
 
-#if IS_REACHABLE(CONFIG_DVB_HORUS3A)
+#if IS_ENABLED(CONFIG_DVB_HORUS3A)
 /**
  * Attach a horus3a tuner
  *

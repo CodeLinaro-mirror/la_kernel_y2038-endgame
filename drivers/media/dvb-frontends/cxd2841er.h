@@ -45,7 +45,7 @@ struct cxd2841er_config {
 	u32	flags;
 };
 
-#if IS_REACHABLE(CONFIG_DVB_CXD2841ER)
+#if IS_ENABLED(CONFIG_DVB_CXD2841ER)
 extern struct dvb_frontend *cxd2841er_attach_s(struct cxd2841er_config *cfg,
 					       struct i2c_adapter *i2c);
 

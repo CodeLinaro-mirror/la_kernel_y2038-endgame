@@ -107,7 +107,7 @@ struct cxd2820r_config {
 };
 
 
-#if IS_REACHABLE(CONFIG_DVB_CXD2820R)
+#if IS_ENABLED(CONFIG_DVB_CXD2820R)
 /**
  * Attach a cxd2820r demod
  *

@@ -25,7 +25,7 @@ struct zl10036_config {
 	int rf_loop_enable;
 };
 
-#if IS_REACHABLE(CONFIG_DVB_ZL10036)
+#if IS_ENABLED(CONFIG_DVB_ZL10036)
 /**
  * Attach a zl10036 tuner to the supplied frontend structure.
  *

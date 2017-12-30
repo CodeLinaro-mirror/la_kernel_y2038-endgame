@@ -37,7 +37,7 @@ struct ix2505v_config {
 
 };
 
-#if IS_REACHABLE(CONFIG_DVB_IX2505V)
+#if IS_ENABLED(CONFIG_DVB_IX2505V)
 /**
  * Attach a ix2505v tuner to the supplied frontend structure.
  *

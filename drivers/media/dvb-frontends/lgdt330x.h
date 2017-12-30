@@ -52,7 +52,7 @@ struct lgdt330x_config
 	struct dvb_frontend* (*get_dvb_frontend)(struct i2c_client *);
 };
 
-#if IS_REACHABLE(CONFIG_DVB_LGDT330X)
+#if IS_ENABLED(CONFIG_DVB_LGDT330X)
 struct dvb_frontend *lgdt330x_attach(const struct lgdt330x_config *config,
 				     u8 demod_address,
 				     struct i2c_adapter *i2c);
