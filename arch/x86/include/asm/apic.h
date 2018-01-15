@@ -188,6 +188,8 @@ static inline void lapic_assign_system_vectors(void) { }
 static inline void lapic_assign_legacy_vector(unsigned int i, bool r) { }
 #endif /* !CONFIG_X86_LOCAL_APIC */
 
+extern int x2apic_mode;
+extern int x2apic_phys;
 #ifdef CONFIG_X86_X2APIC
 /*
  * Make previous memory operations globally visible before
@@ -249,8 +251,6 @@ static inline u64 native_x2apic_icr_read(void)
 	return val;
 }
 
-extern int x2apic_mode;
-extern int x2apic_phys;
 extern void __init check_x2apic(void);
 extern void x2apic_setup(void);
 static inline int x2apic_enabled(void)
