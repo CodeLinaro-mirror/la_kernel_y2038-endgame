@@ -38,7 +38,7 @@ config PCI_DRA7XX_HOST
 config PCI_DRA7XX_EP
 	bool "TI DRA7xx PCIe controller Endpoint Mode"
 	depends on SOC_DRA7XX || COMPILE_TEST
-	depends on PCI_ENDPOINT
+	depends on PCI && PCI_ENDPOINT
 	depends on OF && HAS_IOMEM && TI_PIPE3
 	select PCIE_DW_EP
 	select PCI_DRA7XX
