@@ -170,6 +170,19 @@ config SND_SOC_INTEL_BYT_CHT_NOCODEC_MACH
 
 	  If unsure select "N".
 
+config SND_SOC_INTEL_MRFLD_MACH
+	tristate "Merrifield/Edison platform"
+	depends on X86_INTEL_LPSS && I2C && PCI
+	select SND_SST_IPC_PCI
+	help
+	  This adds support for ASoC PCI driver for the Merrifield
+	  (platform) used e.g. on Intel Edison.  If you have
+	  Merrifield/Edison platform, then enable this option by saying
+	  Y or m. Distros will typically not enable this option: while
+	  Merrifield/Edison can run a mainline kernel with limited
+	  functionality it will require a firmware file which is not in
+	  the standard firmware tree.
+
 endif ## SND_SST_ATOM_HIFI2_PLATFORM
 
 if SND_SOC_INTEL_SKYLAKE
