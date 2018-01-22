@@ -781,7 +781,7 @@ void __init generic_calibrate_decr(void)
 	}
 }
 
-int update_persistent_clock(struct timespec now)
+int update_persistent_clock64(struct timespec64 now)
 {
 	struct rtc_time tm;
 
@@ -1141,53 +1141,23 @@ void __init time_init(void)
 #endif
 }
 
-
-#define FEBRUARY	2
-#define	STARTOFTIME	1970
-#define SECDAY		86400L
-#define SECYR		(SECDAY * 365)
-#define	leapyear(year)		((year) % 4 == 0 && \
-				 ((year) % 100 != 0 || (year) % 400 == 0))
-#define	days_in_year(a) 	(leapyear(a) ? 366 : 365)
-#define	days_in_month(a) 	(month_days[(a) - 1])
-
-static int month_days[12] = {
-	31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
-};
-
-void to_tm(int tim, struct rtc_time * tm)
+void to_tm(time64_t tim, struct rtc_time * rtctm)
 {
-	register int    i;
-	register long   hms, day;
-
-	day = tim / SECDAY;
-	hms = tim % SECDAY;
-
-	/* Hours, minutes, seconds are easy */
-	tm->tm_hour = hms / 3600;
-	tm->tm_min = (hms % 3600) / 60;
-	tm->tm_sec = (hms % 3600) % 60;
-
-	/* Number of years in days */
-	for (i = STARTOFTIME; day >= days_in_year(i); i++)
-		day -= days_in_year(i);
-	tm->tm_year = i;
-
-	/* Number of months in days left */
-	if (leapyear(tm->tm_year))
-		days_in_month(FEBRUARY) = 29;
-	for (i = 1; day >= days_in_month(i); i++)
-		day -= days_in_month(i);
-	days_in_month(FEBRUARY) = 28;
-	tm->tm_mon = i;
-
-	/* Days are what is left over (+1) from all that. */
-	tm->tm_mday = day + 1;
-
+	struct tm tm;
 	/*
-	 * No-one uses the day of the week.
+	 * we want to just call rtc_time64_to_tm() here, but that is only
+	 * available when CONFIG_RTC_CLASS is enabled
 	 */
-	tm->tm_wday = -1;
+	time64_to_tm(tim, 0, &tm);
+
+	rtctm->tm_hour = tm.tm_hour;
+	rtctm->tm_min  = tm.tm_min;
+	rtctm->tm_sec  = tm.tm_sec;
+	rtctm->tm_year = tm.tm_year + 1900;
+	rtctm->tm_mon  = tm.tm_mon;
+	rtctm->tm_mday = tm.tm_mday;
+	rtctm->tm_wday = tm.tm_wday;
+	rtctm->tm_yday = tm.tm_yday;
 }
 EXPORT_SYMBOL(to_tm);
 

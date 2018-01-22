@@ -85,7 +85,7 @@ long __init pmac_time_init(void)
 }
 
 #if defined(CONFIG_ADB_CUDA) || defined(CONFIG_ADB_PMU)
-static void to_rtc_time(unsigned long now, struct rtc_time *tm)
+static void to_rtc_time(time64_t now, struct rtc_time *tm)
 {
 	to_tm(now, tm);
 	tm->tm_year -= 1900;
@@ -117,14 +117,14 @@ static time64_t cuda_get_time(void)
 		       req.reply_len);
 	now = (req.reply[3] << 24) + (req.reply[4] << 16)
 		+ (req.reply[5] << 8) + req.reply[6];
-	return ((unsigned long)now) - RTC_OFFSET;
+	return now - RTC_OFFSET;
 }
 
 #define cuda_get_rtc_time(tm)	to_rtc_time(cuda_get_time(), (tm))
 
 static int cuda_set_rtc_time(struct rtc_time *tm)
 {
-	unsigned int nowtime;
+	time64_t nowtime;
 	struct adb_request req;
 
 	nowtime = from_rtc_time(tm) + RTC_OFFSET;
@@ -160,14 +160,14 @@ static time64_t pmu_get_time(void)
 		       req.reply_len);
 	now = (req.reply[0] << 24) + (req.reply[1] << 16)
 		+ (req.reply[2] << 8) + req.reply[3];
-	return ((unsigned long)now) - RTC_OFFSET;
+	return now - RTC_OFFSET;
 }
 
 #define pmu_get_rtc_time(tm)	to_rtc_time(pmu_get_time(), (tm))
 
 static int pmu_set_rtc_time(struct rtc_time *tm)
 {
-	unsigned int nowtime;
+	time64_t nowtime;
 	struct adb_request req;
 
 	nowtime = from_rtc_time(tm) + RTC_OFFSET;
