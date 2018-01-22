@@ -95,18 +95,18 @@ static void to_rtc_time(unsigned long now, struct rtc_time *tm)
 
 #if defined(CONFIG_ADB_CUDA) || defined(CONFIG_ADB_PMU) || \
     defined(CONFIG_PMAC_SMU)
-static unsigned long from_rtc_time(struct rtc_time *tm)
+static time64_t from_rtc_time(struct rtc_time *tm)
 {
-	return mktime(tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday,
+	return mktime64(tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday,
 		      tm->tm_hour, tm->tm_min, tm->tm_sec);
 }
 #endif
 
 #ifdef CONFIG_ADB_CUDA
-static unsigned long cuda_get_time(void)
+static time64_t cuda_get_time(void)
 {
 	struct adb_request req;
-	unsigned int now;
+	time64_t now;
 
 	if (cuda_request(&req, NULL, 2, CUDA_PACKET, CUDA_GET_TIME) < 0)
 		return 0;
@@ -147,10 +147,10 @@ static int cuda_set_rtc_time(struct rtc_time *tm)
 #endif
 
 #ifdef CONFIG_ADB_PMU
-static unsigned long pmu_get_time(void)
+static time64_t pmu_get_time(void)
 {
 	struct adb_request req;
-	unsigned int now;
+	time64_t now;
 
 	if (pmu_request(&req, NULL, 1, PMU_READ_RTC) < 0)
 		return 0;
@@ -188,7 +188,7 @@ static int pmu_set_rtc_time(struct rtc_time *tm)
 #endif
 
 #ifdef CONFIG_PMAC_SMU
-static unsigned long smu_get_time(void)
+static time64_t smu_get_time(void)
 {
 	struct rtc_time tm;
 
@@ -204,7 +204,7 @@ static unsigned long smu_get_time(void)
 #endif
 
 /* Can't be __init, it's called when suspending and resuming */
-unsigned long pmac_get_boot_time(void)
+time64_t pmac_get_boot_time(void)
 {
 	/* Get the time from the RTC, used only at boot time */
 	switch (sys_ctrler) {

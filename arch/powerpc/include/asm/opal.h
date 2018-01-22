@@ -322,7 +322,7 @@ extern int opal_async_wait_response_interruptible(uint64_t token,
 extern int opal_get_sensor_data(u32 sensor_hndl, u32 *sensor_data);
 
 struct rtc_time;
-extern unsigned long opal_get_boot_time(void);
+extern time64_t opal_get_boot_time(void);
 extern void opal_nvram_init(void);
 extern void opal_flash_update_init(void);
 extern void opal_flash_term_callback(void);
