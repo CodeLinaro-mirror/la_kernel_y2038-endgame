@@ -336,12 +336,6 @@ static int __init nios2_time_init(struct device_node *timer)
 	return ret;
 }
 
-void read_persistent_clock(struct timespec *ts)
-{
-	ts->tv_sec = mktime(2007, 1, 1, 0, 0, 0);
-	ts->tv_nsec = 0;
-}
-
 void __init time_init(void)
 {
 	struct device_node *np;
