@@ -33,10 +33,10 @@
 static void (*rom_reset)(void);
 
 #ifdef CONFIG_ADB_CUDA
-static long cuda_read_time(void)
+static time64_t cuda_read_time(void)
 {
 	struct adb_request req;
-	long time;
+	u32 time;
 
 	if (cuda_request(&req, NULL, 2, CUDA_PACKET, CUDA_GET_TIME) < 0)
 		return 0;
@@ -45,10 +45,10 @@ static long cuda_read_time(void)
 
 	time = (req.reply[3] << 24) | (req.reply[4] << 16) |
 	       (req.reply[5] << 8) | req.reply[6];
-	return time - RTC_OFFSET;
+	return (u32)(time - RTC_OFFSET);
 }
 
-static void cuda_write_time(long data)
+static void cuda_write_time(time64_t data)
 {
 	struct adb_request req;
 
@@ -86,10 +86,10 @@ static void cuda_write_pram(int offset, __u8 data)
 #endif /* CONFIG_ADB_CUDA */
 
 #ifdef CONFIG_ADB_PMU68K
-static long pmu_read_time(void)
+static time64_t pmu_read_time(void)
 {
 	struct adb_request req;
-	long time;
+	u32 time;
 
 	if (pmu_request(&req, NULL, 1, PMU_READ_RTC) < 0)
 		return 0;
@@ -98,10 +98,10 @@ static long pmu_read_time(void)
 
 	time = (req.reply[1] << 24) | (req.reply[2] << 16) |
 	       (req.reply[3] << 8) | req.reply[4];
-	return time - RTC_OFFSET;
+	return (u32)(time - RTC_OFFSET);
 }
 
-static void pmu_write_time(long data)
+static void pmu_write_time(time64_t data)
 {
 	struct adb_request req;
 
@@ -245,11 +245,11 @@ static void via_write_pram(int offset, __u8 data)
  * is basically any machine with Mac II-style ADB.
  */
 
-static long via_read_time(void)
+static time64_t via_read_time(void)
 {
 	union {
 		__u8 cdata[4];
-		long idata;
+		u32 idata;
 	} result, last_result;
 	int count = 1;
 
@@ -270,7 +270,7 @@ static long via_read_time(void)
 		via_pram_command(0x8D, &result.cdata[0]);
 
 		if (result.idata == last_result.idata)
-			return result.idata - RTC_OFFSET;
+			return (u32)(result.idata - RTC_OFFSET);
 
 		if (++count > 10)
 			break;
@@ -291,7 +291,7 @@ static long via_read_time(void)
  * is basically any machine with Mac II-style ADB.
  */
 
-static void via_write_time(long time)
+static void via_write_time(time64_t time)
 {
 	union {
 		__u8 cdata[4];
@@ -304,7 +304,7 @@ static void via_write_time(long time)
 	temp = 0x55;
 	via_pram_command(0x35, &temp);
 
-	data.idata = time + RTC_OFFSET;
+	data.idata = (u32)(time + RTC_OFFSET);
 	via_pram_command(0x01, &data.cdata[3]);
 	via_pram_command(0x05, &data.cdata[2]);
 	via_pram_command(0x09, &data.cdata[1]);
@@ -657,7 +657,7 @@ static void unmktime(unsigned long time, long offset,
 
 int mac_hwclk(int op, struct rtc_time *t)
 {
-	unsigned long now;
+	time64_t now;
 
 	if (!op) { /* read */
 		switch (macintosh_config->adb_type) {
@@ -682,7 +682,7 @@ int mac_hwclk(int op, struct rtc_time *t)
 		}
 
 		t->tm_wday = 0;
-		unmktime(now, 0,
+		unmktime((u32)now, 0,
 			 &t->tm_year, &t->tm_mon, &t->tm_mday,
 			 &t->tm_hour, &t->tm_min, &t->tm_sec);
 		pr_debug("%s: read %04d-%02d-%-2d %02d:%02d:%02d\n",
@@ -693,8 +693,8 @@ int mac_hwclk(int op, struct rtc_time *t)
 		         __func__, t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
 		         t->tm_hour, t->tm_min, t->tm_sec);
 
-		now = mktime(t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
-			     t->tm_hour, t->tm_min, t->tm_sec);
+		now = mktime64(t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+			       t->tm_hour, t->tm_min, t->tm_sec);
 
 		switch (macintosh_config->adb_type) {
 		case MAC_ADB_IOP:
