@@ -172,7 +172,7 @@ void __init plat_time_init(void)
 	setup_pit_timer();
 }
 
-void read_persistent_clock(struct timespec *ts)
+void read_persistent_clock64(struct timespec64 *ts)
 {
 	ts->tv_sec = -1;
 	ts->tv_nsec = 0;

@@ -27,8 +27,8 @@ extern spinlock_t rtc_lock;
  *	rtc_mips_set_mmss - similar to rtc_set_time, but only min and sec need
  *			to be set.  Used by RTC sync-up.
  */
-extern int rtc_mips_set_time(unsigned long);
-extern int rtc_mips_set_mmss(unsigned long);
+extern int rtc_mips_set_time(time64_t);
+extern int rtc_mips_set_mmss(time64_t);
 
 /*
  * board specific routines required by time_init().

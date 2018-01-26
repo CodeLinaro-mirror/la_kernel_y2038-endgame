@@ -53,7 +53,7 @@ int proc_dolasatstring(struct ctl_table *table, int write,
 }
 
 #ifdef CONFIG_DS1603
-static int rtctmp;
+static unsigned int rtctmp;
 
 /* proc function to read/write RealTime Clock */
 int proc_dolasatrtc(struct ctl_table *table, int write,
@@ -69,7 +69,7 @@ int proc_dolasatrtc(struct ctl_table *table, int write,
 		if (rtctmp < 0)
 			rtctmp = 0;
 	}
-	r = proc_dointvec(table, write, buffer, lenp, ppos);
+	r = proc_douintvec(table, write, buffer, lenp, ppos);
 	if (r)
 		return r;
 

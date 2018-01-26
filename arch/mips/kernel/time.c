@@ -34,17 +34,17 @@
 DEFINE_SPINLOCK(rtc_lock);
 EXPORT_SYMBOL(rtc_lock);
 
-int __weak rtc_mips_set_time(unsigned long sec)
+int __weak rtc_mips_set_time(time64_t sec)
 {
 	return -ENODEV;
 }
 
-int __weak rtc_mips_set_mmss(unsigned long nowtime)
+int __weak rtc_mips_set_mmss(time64_t nowtime)
 {
 	return rtc_mips_set_time(nowtime);
 }
 
-int update_persistent_clock(struct timespec now)
+int update_persistent_clock64(struct timespec64 now)
 {
 	return rtc_mips_set_mmss(now.tv_sec);
 }
