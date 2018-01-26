@@ -143,7 +143,6 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
  */
 #ifndef KENTRY
 # define KENTRY(sym)						\
-	extern typeof(sym) sym;					\
 	static const unsigned long __kentry_##sym		\
 	__used							\
 	__attribute__((section("___kentry" "+" #sym ), used))	\
