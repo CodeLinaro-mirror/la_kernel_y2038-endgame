@@ -17,11 +17,10 @@
 #include <asm/thread_notify.h>
 #include <asm/cputype.h>
 
-asm("	.arch armv5te\n");
-
 static inline void dsp_save_state(u32 *state)
 {
 	__asm__ __volatile__ (
+		".arch	armv5te\n\t"
 		"mrrc	p0, 0, %0, %1, c0\n"
 		: "=r" (state[0]), "=r" (state[1]));
 }
@@ -29,6 +28,7 @@ static inline void dsp_save_state(u32 *state)
 static inline void dsp_load_state(u32 *state)
 {
 	__asm__ __volatile__ (
+		".arch	armv5te\n\t"
 		"mcrr	p0, 0, %0, %1, c0\n"
 		: : "r" (state[0]), "r" (state[1]));
 }
@@ -134,7 +134,8 @@ static int __init cpu_has_iwmmxt(void)
 	 *	tmrrc	%0, %1, wR0
 	 */
 	__asm__ __volatile__ (
-		"mcrr	p0, 0, %2, %3, c0\n"
+		".arch	armv5te\n\t"
+		"mcrr	p0, 0, %2, %3, c0\n\t"
 		"mrrc	p0, 0, %0, %1, c0\n"
 		: "=r" (lo), "=r" (hi)
 		: "r" (0), "r" (0x100));
