@@ -53,6 +53,11 @@ static struct crypto_alg aes_alg = {
 
 static int __init aes_init(void)
 {
+	/* ugly hack to force a link time dependency */
+	if (&crypto_it_tab == &crypto_ft_tab ||
+	    &crypto_fl_tab == &crypto_il_tab)
+		return 0;
+
 	return crypto_register_alg(&aes_alg);
 }
 
