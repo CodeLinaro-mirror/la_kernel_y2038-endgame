@@ -856,6 +856,7 @@ static const char *const section_white_list[] =
 static void check_section(const char *modname, struct elf_info *elf,
 			  Elf_Shdr *sechdr)
 {
+#if 0
 	const char *sec = sech_name(elf, sechdr);
 
 	if (sechdr->sh_type == SHT_PROGBITS &&
@@ -867,6 +868,7 @@ static void check_section(const char *modname, struct elf_info *elf,
 		     "section definitions for use in .S files.\n\n",
 		     modname, sec);
 	}
+#endif
 }
 
 
