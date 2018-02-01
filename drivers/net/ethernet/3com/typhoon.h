@@ -77,7 +77,7 @@ struct typhoon_indexes {
 	volatile __le32 cmdCleared;
 	volatile __le32 respReady;
 	volatile __le32 rxHiReady;
-} __packed;
+};
 
 /* The host<->Typhoon interface
  * Our means of communicating where things are
