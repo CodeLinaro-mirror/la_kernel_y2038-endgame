@@ -123,7 +123,7 @@ static int snd_trident_probe(struct pci_dev *pci,
 	} else {
 		strcpy(card->shortname, "Trident ");
 	}
-	strcat(card->shortname, card->driver);
+	strlcat(card->shortname, card->driver, sizeof(card->shortname));
 	sprintf(card->longname, "%s PCI Audio at 0x%lx, irq %d",
 		card->shortname, trident->port, trident->irq);
 

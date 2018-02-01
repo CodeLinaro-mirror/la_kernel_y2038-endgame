@@ -227,27 +227,19 @@ static int
 ncp_get_charsets(struct ncp_server* server, struct ncp_nls_ioctl __user *arg)
 {
 	struct ncp_nls_ioctl user;
-	int len;
 
 	memset(&user, 0, sizeof(user));
 	mutex_lock(&server->root_setup_lock);
-	if (server->nls_vol && server->nls_vol->charset) {
-		len = strlen(server->nls_vol->charset);
-		if (len > NCP_IOCSNAME_LEN)
-			len = NCP_IOCSNAME_LEN;
-		strncpy(user.codepage, server->nls_vol->charset, len);
-		user.codepage[len] = 0;
-	}
+	if (server->nls_vol && server->nls_vol->charset)
+		strscpy(user.codepage, server->nls_vol->charset,
+			sizeof(user.codepage));
 
 	if (NCP_IS_FLAG(server, NCP_FLAG_UTF8))
 		strcpy(user.iocharset, "utf8");
-	else if (server->nls_io && server->nls_io->charset) {
-		len = strlen(server->nls_io->charset);
-		if (len > NCP_IOCSNAME_LEN)
-			len = NCP_IOCSNAME_LEN;
-		strncpy(user.iocharset,	server->nls_io->charset, len);
-		user.iocharset[len] = 0;
-	}
+	else if (server->nls_io && server->nls_io->charset)
+		strscpy(user.iocharset,	server->nls_io->charset,
+			sizeof(user.iocharset));
+
 	mutex_unlock(&server->root_setup_lock);
 
 	if (copy_to_user(arg, &user, sizeof(user)))

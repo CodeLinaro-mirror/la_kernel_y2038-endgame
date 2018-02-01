@@ -585,7 +585,7 @@ CIFSSMBNegotiate(const unsigned int xid, struct cifs_ses *ses)
 
 	count = 0;
 	for (i = 0; i < CIFS_NUM_PROT; i++) {
-		strncpy(pSMB->DialectsArray+count, protocols[i].name, 16);
+		strlcpy(pSMB->DialectsArray+count, protocols[i].name, 16);
 		count += strlen(protocols[i].name) + 1;
 		/* null at end of source and target buffers anyway */
 	}

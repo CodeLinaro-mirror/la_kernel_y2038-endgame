@@ -128,7 +128,7 @@ static void kgdboc_unregister_kbd(void)
 #define kgdboc_restore_input()
 #endif /* ! CONFIG_KDB_KEYBOARD */
 
-static int kgdboc_option_setup(char *opt)
+static int __maybe_unused kgdboc_option_setup(char *opt)
 {
 	if (strlen(opt) >= MAX_CONFIG_LEN) {
 		printk(KERN_ERR "kgdboc: config string too long\n");
@@ -153,14 +153,17 @@ static void cleanup_kgdboc(void)
 static int configure_kgdboc(void)
 {
 	struct tty_driver *p;
+	size_t len;
 	int tty_line = 0;
 	int err;
 	char *cptr = config;
 	struct console *cons;
 
-	err = kgdboc_option_setup(config);
-	if (err || !strlen(config) || isspace(config[0]))
+	len = strlen(config);
+	if (len <= 0 || len >=MAX_CONFIG_LEN || isspace(config[0])) {
+		err = -EINVAL;
 		goto noconfig;
+	}
 
 	err = -ENODEV;
 	kgdboc_io_ops.is_console = 0;
