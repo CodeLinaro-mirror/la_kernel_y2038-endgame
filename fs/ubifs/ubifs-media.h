@@ -772,7 +772,7 @@ struct ubifs_idx_node {
 	__le16 child_cnt;
 	__le16 level;
 	__u8 branches[];
-} __packed;
+};
 
 /**
  * struct ubifs_cs_node - commit start node.

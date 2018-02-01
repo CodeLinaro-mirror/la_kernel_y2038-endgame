@@ -162,7 +162,7 @@ struct sata_device {
 
 	struct ata_port *ap;
 	struct ata_host ata_host;
-	struct smp_resp rps_resp ____cacheline_aligned; /* report_phy_sata_resp */
+	struct smp_resp rps_resp; /* report_phy_sata_resp */
 	u8     fis[ATA_RESP_FIS_SIZE];
 };
 

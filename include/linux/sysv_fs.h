@@ -2,12 +2,14 @@
 #ifndef _LINUX_SYSV_FS_H
 #define _LINUX_SYSV_FS_H
 
-#define __packed2__	__attribute__((packed, aligned(2)))
+__diag_ignore(GCC_8, "-Wattributes");
+
+#define __packed2__	__attribute__((packed,aligned(2)))
 
 
 #ifndef __KERNEL__
 typedef u16 __fs16;
-typedef u32 __fs16;
+typedef u32 __fs32;
 #endif
 
 /* inode numbers are 16 bit */

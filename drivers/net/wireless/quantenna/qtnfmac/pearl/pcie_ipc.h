@@ -119,8 +119,8 @@ struct qtnf_pcie_bda {
 	__le32 bda_rc_tx_bd_base;
 	__le32 bda_rc_tx_bd_num;
 	u8 bda_pcie_mac[QTN_ENET_ADDR_LENGTH];
-	struct qtnf_shm_ipc_region bda_shm_reg1 __aligned(4096); /* host TX */
-	struct qtnf_shm_ipc_region bda_shm_reg2 __aligned(4096); /* host RX */
+	struct qtnf_shm_ipc_region bda_shm_reg1 ; /* host TX */
+	struct qtnf_shm_ipc_region bda_shm_reg2 ; /* host RX */
 } __packed;
 
 struct qtnf_tx_bd {
