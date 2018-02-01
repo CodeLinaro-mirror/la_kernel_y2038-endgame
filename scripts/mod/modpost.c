@@ -866,6 +866,7 @@ static const char *const section_white_list[] =
 static void check_section(const char *modname, struct elf_info *elf,
 			  Elf_Shdr *sechdr)
 {
+#if 0
 	const char *sec = sech_name(elf, sechdr);
 
 	if (sechdr->sh_type == SHT_PROGBITS &&
@@ -877,6 +878,7 @@ static void check_section(const char *modname, struct elf_info *elf,
 		     "section definitions for use in .S files.\n\n",
 		     modname, sec);
 	}
+#endif
 }
 
 
@@ -1962,10 +1964,12 @@ static void read_symbols(char *modname)
 	}
 
 	license = get_modinfo(info.modinfo, info.modinfo_len, "license");
+#if 0
 	if (!license && !is_vmlinux(modname))
 		warn("modpost: missing MODULE_LICENSE() in %s\n"
 		     "see include/linux/module.h for "
 		     "more information\n", modname);
+#endif
 	while (license) {
 		if (license_is_gpl_compatible(license))
 			mod->gpl_compatible = 1;

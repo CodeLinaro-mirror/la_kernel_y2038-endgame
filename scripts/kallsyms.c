@@ -396,7 +396,7 @@ static void write_src(void)
 				offset = relative_base - table[i].addr - 1;
 				overflow = (offset < INT_MIN || offset >= 0);
 			}
-			if (overflow) {
+			if (0 && overflow) {
 				fprintf(stderr, "kallsyms failure: "
 					"%s symbol value %#llx out of range in relative mode\n",
 					symbol_absolute(&table[i]) ? "absolute" : "relative",
