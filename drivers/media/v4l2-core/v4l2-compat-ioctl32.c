@@ -1184,10 +1184,6 @@ static long do_video_ioctl(struct file *file, unsigned int cmd, unsigned long ar
 		err = put_v4l2_framebuffer32(up_native, up);
 		break;
 
-	case VIDIOC_DQEVENT:
-		err = put_v4l2_event32(up_native, up);
-		break;
-
 	case VIDIOC_G_EDID:
 		err = put_v4l2_edid32(up_native, up);
 		break;
