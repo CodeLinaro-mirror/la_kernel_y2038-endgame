@@ -35,10 +35,11 @@ extern char _sdata[];
  * stack then there is no need to clean up before returning.
  */
 
+static __initdata struct inflate_state state;
+
 int __init __inflate_kernel_data(void)
 {
 	struct z_stream_s stream, *strm = &stream;
-	struct inflate_state state;
 	char *in = __data_loc;
 	int rc;
 
