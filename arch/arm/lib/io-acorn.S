@@ -27,6 +27,10 @@
  */
 ENTRY(insl)
 ENTRY(outsl)
+#ifdef CONFIG_PRINTK
 		adr	r0, .Liosl_warning
 		mov	r1, lr
 		b	printk
+#else
+		ret	lr
+#endif
