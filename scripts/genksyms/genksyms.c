@@ -692,7 +692,7 @@ void export_symbol(const char *name)
 			fputs(">\n", debugfile);
 
 		/* Used as a linker script. */
-		printf(!flag_rel_crcs ? "__crc_%s = 0x%08lx;\n" :
+		printf(!flag_rel_crcs ? "__crc_%s = ABSOLUTE(0x%08lx);\n" :
 		       "SECTIONS { .rodata : ALIGN(4) { "
 		       "__crc_%s = .; LONG(0x%08lx); } }\n",
 		       name, crc);
