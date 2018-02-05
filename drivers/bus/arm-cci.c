@@ -110,7 +110,7 @@ struct cci_ace_port {
 	struct device_node *dn;
 };
 
-static struct cci_ace_port *ports;
+struct cci_ace_port *ports;
 static unsigned int nb_cci_ports;
 
 struct cpu_port {
@@ -145,7 +145,7 @@ static inline bool cpu_port_match(struct cpu_port *port, u64 mpidr)
 	return port->mpidr == (mpidr & MPIDR_HWID_BITMASK);
 }
 
-static struct cpu_port cpu_port[NR_CPUS];
+struct cpu_port cpu_port[NR_CPUS];
 
 /**
  * __cci_ace_get_port - Function to retrieve the port index connected to
@@ -295,7 +295,7 @@ EXPORT_SYMBOL_GPL(cci_disable_port_by_cpu);
  * any failure this never returns as the inability to enable the CCI is
  * fatal and there is no possible recovery at this stage.
  */
-asmlinkage void __naked cci_enable_port_for_self(void)
+asmlinkage void __naked __visible cci_enable_port_for_self(void)
 {
 	asm volatile ("\n"
 "	.arch armv7-a\n"
