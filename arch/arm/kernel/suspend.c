@@ -16,6 +16,7 @@ extern int __cpu_suspend(unsigned long, int (*)(unsigned long), u32 cpuid);
 extern void cpu_resume_mmu(void);
 
 #ifdef CONFIG_MMU
+__visible
 int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
 {
 	struct mm_struct *mm = current->active_mm;
@@ -41,6 +42,7 @@ int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
 	return ret;
 }
 #else
+__visible
 int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
 {
 	u32 __mpidr = cpu_logical_map(smp_processor_id());

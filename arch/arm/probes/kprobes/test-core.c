@@ -245,6 +245,7 @@ static void __used __naked __arm_kprobes_test_func(void)
 	__asm__ __volatile__ (
 		".arm					\n\t"
 		".type arm_func, %%function		\n\t"
+		".globl arm_func			\n\t"
 		"arm_func:				\n\t"
 		"adds	r0, r0, r1			\n\t"
 		"mov	pc, lr				\n\t"
@@ -917,7 +918,7 @@ static void coverage_end(void)
  * Framework for instruction set test cases
  */
 
-void __naked __kprobes_test_case_start(void)
+void __naked __used __visible __kprobes_test_case_start(void)
 {
 	__asm__ __volatile__ (
 		"mov	r2, sp					\n\t"
@@ -934,7 +935,7 @@ void __naked __kprobes_test_case_start(void)
 
 #ifndef CONFIG_THUMB2_KERNEL
 
-void __naked __kprobes_test_case_end_32(void)
+void __naked __used __visible __kprobes_test_case_end_32(void)
 {
 	__asm__ __volatile__ (
 		"mov	r4, lr					\n\t"
@@ -951,7 +952,7 @@ void __naked __kprobes_test_case_end_32(void)
 
 #else /* CONFIG_THUMB2_KERNEL */
 
-void __naked __kprobes_test_case_end_16(void)
+void __naked __used __visible __kprobes_test_case_end_16(void)
 {
 	__asm__ __volatile__ (
 		"mov	r4, lr					\n\t"
@@ -966,7 +967,7 @@ void __naked __kprobes_test_case_end_16(void)
 	);
 }
 
-void __naked __kprobes_test_case_end_32(void)
+void __naked __used __visible __kprobes_test_case_end_32(void)
 {
 	__asm__ __volatile__ (
 		".arm						\n\t"
@@ -1315,7 +1316,7 @@ static unsigned long next_instruction(unsigned long pc)
 	return pc + 4;
 }
 
-static uintptr_t __used kprobes_test_case_start(const char **title, void *stack)
+uintptr_t __used __visible kprobes_test_case_start(const char **title, void *stack)
 {
 	struct test_arg *args;
 	struct test_arg_end *end_arg;

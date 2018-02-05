@@ -400,7 +400,7 @@ static int brcmstb_pm_s2(void)
  * generate stack references on the old stack). It cannot be made static because
  * it is referenced from brcmstb_pm_s3()
  */
-noinline int brcmstb_pm_s3_finish(void)
+__visible noinline int brcmstb_pm_s3_finish(void)
 {
 	struct brcmstb_s3_params *params = ctrl.s3_params;
 	dma_addr_t params_pa = ctrl.s3_params_pa;

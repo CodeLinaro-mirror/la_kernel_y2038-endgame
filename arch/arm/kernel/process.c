@@ -41,7 +41,7 @@
 
 #ifdef CONFIG_CC_STACKPROTECTOR
 #include <linux/stackprotector.h>
-unsigned long __stack_chk_guard __read_mostly;
+unsigned long __stack_chk_guard __read_mostly __visible;
 EXPORT_SYMBOL(__stack_chk_guard);
 #endif
 
