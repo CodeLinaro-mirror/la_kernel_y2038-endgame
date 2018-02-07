@@ -976,7 +976,7 @@ void dml1_rq_dlg_get_rq_params(
 /* Note: currently taken in as is.
  * Nice to decouple code from hw register implement and extract code that are repeated for luma and chroma.
  */
-void dml1_rq_dlg_get_dlg_params(
+void noinline_for_stack dml1_rq_dlg_get_dlg_params(
 		struct display_mode_lib *mode_lib,
 		struct _vcs_dpi_display_dlg_regs_st *disp_dlg_regs,
 		struct _vcs_dpi_display_ttu_regs_st *disp_ttu_regs,
