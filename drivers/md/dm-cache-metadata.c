@@ -68,7 +68,7 @@ struct cache_disk_superblock {
 	__le64 magic;
 	__le32 version;
 
-	__u8 policy_name[CACHE_POLICY_NAME_SIZE];
+	char policy_name[CACHE_POLICY_NAME_SIZE] __nonstring;
 	__le32 policy_hint_size;
 
 	__u8 metadata_space_map_root[SPACE_MAP_ROOT_SIZE];
@@ -128,7 +128,7 @@ struct dm_cache_metadata {
 	bool changed:1;
 	bool clean_when_opened:1;
 
-	char policy_name[CACHE_POLICY_NAME_SIZE];
+	char policy_name[CACHE_POLICY_NAME_SIZE] __nonstring;
 	unsigned policy_version[CACHE_POLICY_VERSION_SIZE];
 	size_t policy_hint_size;
 	struct dm_cache_statistics stats;

@@ -157,7 +157,7 @@ static void nvmet_execute_identify_disc_ctrl(struct nvmet_req *req)
 	}
 
 	memset(id->fr, ' ', sizeof(id->fr));
-	strncpy((char *)id->fr, UTS_RELEASE, sizeof(id->fr));
+	strncpy(id->fr, UTS_RELEASE, sizeof(id->fr));
 
 	/* no limit on data transfer sizes for now */
 	id->mdts = 0;

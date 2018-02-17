@@ -215,4 +215,8 @@ struct ftrace_likely_data {
  */
 #define noinline_for_stack noinline
 
+#ifndef __nonstring
+# define __nonstring
+#endif
+
 #endif /* __LINUX_COMPILER_TYPES_H */

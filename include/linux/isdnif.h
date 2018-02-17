@@ -13,7 +13,6 @@
 #ifndef __ISDNIF_H__
 #define __ISDNIF_H__
 
-
 #include <linux/skbuff.h>
 #include <uapi/linux/isdnif.h>
 
@@ -358,7 +357,7 @@ typedef struct {
 		__u32 PLCI;
 		__u32 NCCI;
 	} adr;
-	__u8 para[MAX_CAPI_PARA_LEN];
+	char para[MAX_CAPI_PARA_LEN] __nonstring;
 } capi_msg;
 
 /*

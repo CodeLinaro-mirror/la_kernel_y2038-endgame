@@ -578,7 +578,7 @@ enum task_attribute {
 struct sas_ssp_task {
 	u8     retry_count;	  /* hardware retry, should be > 0 */
 
-	u8     LUN[8];
+	char   LUN[8] __nonstring;
 	u8     enable_first_burst:1;
 	enum   task_attribute task_attr;
 	u8     task_prio;

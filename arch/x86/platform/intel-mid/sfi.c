@@ -427,7 +427,7 @@ static void __init sfi_handle_sd_dev(struct sfi_device_table_entry *pentry,
 	void *pdata;
 
 	memset(&sd_info, 0, sizeof(sd_info));
-	strncpy(sd_info.name, pentry->name, SFI_NAME_LEN);
+	strncpy(sd_info.name, pentry->name, SFI_NAME_LEN - 1);
 	sd_info.bus_num = pentry->host_num;
 	sd_info.max_clk = pentry->max_freq;
 	sd_info.addr = pentry->addr;

@@ -2685,7 +2685,7 @@ static void dbx500_fw_version_init(struct platform_device *pdev,
 	fw_info.version.api_version = (version >> 8) & 0xFF;
 	fw_info.version.func_version = (version >> 16) & 0xFF;
 	fw_info.version.errata = (version >> 24) & 0xFF;
-	strncpy(fw_info.version.project_name,
+	strscpy(fw_info.version.project_name,
 		fw_project_name(fw_info.version.project),
 		PRCMU_FW_PROJECT_NAME_LEN);
 	fw_info.valid = true;
