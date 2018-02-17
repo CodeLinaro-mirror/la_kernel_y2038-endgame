@@ -1365,7 +1365,7 @@ static int ceu_notify_complete(struct v4l2_async_notifier *notifier)
 		return ret;
 
 	/* Register the video device. */
-	strncpy(vdev->name, DRIVER_NAME, strlen(DRIVER_NAME));
+	strscpy(vdev->name, DRIVER_NAME, strlen(DRIVER_NAME));
 	vdev->v4l2_dev		= v4l2_dev;
 	vdev->lock		= &ceudev->mlock;
 	vdev->queue		= &ceudev->vb2_vq;

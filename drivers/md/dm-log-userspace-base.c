@@ -43,7 +43,7 @@ struct log_c {
 	uint32_t region_size;
 	region_t region_count;
 	uint64_t luid;
-	char uuid[DM_UUID_LEN];
+	char uuid[DM_UUID_LEN] __nonstring;
 
 	/*
 	 * Mark and clear requests are held until a flush is issued

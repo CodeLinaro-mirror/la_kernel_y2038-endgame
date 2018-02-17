@@ -616,7 +616,7 @@ typedef union TAG_TW_Response_Queue {
 /* Compatibility information structure */
 typedef struct TAG_TW_Compatibility_Info
 {
-	char driver_version[32];
+	char driver_version[32] __attribute__((nonstring));
 	unsigned short working_srl;
 	unsigned short working_branch;
 	unsigned short working_build;

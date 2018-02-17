@@ -877,7 +877,7 @@ isdn_tty_resume(char *id, modem_info *info, atemu *m)
 		cmd.parm.cmsg.para[3] = 5; /* 16 bit 0x0005 Resume */
 		cmd.parm.cmsg.para[4] = 0;
 		cmd.parm.cmsg.para[5] = l;
-		strncpy(&cmd.parm.cmsg.para[6], id, l);
+		strncpy(&cmd.parm.cmsg.para[6], id, sizeof(cmd.parm.cmsg.para) - 6 - 1);
 		cmd.command = CAPI_PUT_MESSAGE;
 		info->dialing = 1;
 //		strcpy(dev->num[i], n);
@@ -2051,7 +2051,7 @@ isdn_tty_stat_callback(int i, isdn_ctrl *c)
 			printk(KERN_DEBUG "tty_STAT_CAUSE ttyI%d\n", info->line);
 #endif
 			/* Signal cause to tty-device */
-			strncpy(info->last_cause, c->parm.num, 5);
+			strscpy(info->last_cause, c->parm.num, 5);
 			return 1;
 		case ISDN_STAT_DISPLAY:
 #ifdef ISDN_TTY_STAT_DEBUG

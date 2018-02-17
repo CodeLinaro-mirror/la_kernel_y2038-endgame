@@ -1114,7 +1114,7 @@ static int create_component(struct vchiq_mmal_instance *instance,
 	/* build component create message */
 	m.h.type = MMAL_MSG_TYPE_COMPONENT_CREATE;
 	m.u.component_create.client_component = (u32)(unsigned long)component;
-	strncpy(m.u.component_create.name, name,
+	strscpy(m.u.component_create.name, name,
 		sizeof(m.u.component_create.name));
 
 	ret = send_synchronous_mmal_msg(instance, &m,

@@ -470,13 +470,13 @@ static void uevent_notify(struct charger_manager *cm, const char *event)
 		if (env_str_save[0] == 0) {
 			if (!strncmp(env_str, event, UEVENT_BUF_SIZE))
 				return; /* status not changed */
-			strncpy(env_str_save, event, UEVENT_BUF_SIZE);
+			strscpy(env_str_save, event, UEVENT_BUF_SIZE);
 			return;
 		}
 
 		if (!strncmp(env_str_save, event, UEVENT_BUF_SIZE))
 			return; /* Duplicated. */
-		strncpy(env_str_save, event, UEVENT_BUF_SIZE);
+		strscpy(env_str_save, event, UEVENT_BUF_SIZE);
 		return;
 	}
 
@@ -485,7 +485,7 @@ static void uevent_notify(struct charger_manager *cm, const char *event)
 		if (!env_str_save[0])
 			return;
 
-		strncpy(env_str, env_str_save, UEVENT_BUF_SIZE);
+		strscpy(env_str, env_str_save, UEVENT_BUF_SIZE);
 		kobject_uevent(&cm->dev->kobj, KOBJ_CHANGE);
 		env_str_save[0] = 0;
 
@@ -497,7 +497,7 @@ static void uevent_notify(struct charger_manager *cm, const char *event)
 		return;
 
 	/* save the status and notify the update */
-	strncpy(env_str, event, UEVENT_BUF_SIZE);
+	strscpy(env_str, event, UEVENT_BUF_SIZE);
 	kobject_uevent(&cm->dev->kobj, KOBJ_CHANGE);
 
 	dev_info(cm->dev, "%s\n", event);
@@ -1718,9 +1718,9 @@ static int charger_manager_probe(struct platform_device *pdev)
 	memcpy(&cm->charger_psy_desc, &psy_default, sizeof(psy_default));
 
 	if (!desc->psy_name)
-		strncpy(cm->psy_name_buf, psy_default.name, PSY_NAME_MAX);
+		strscpy(cm->psy_name_buf, psy_default.name, PSY_NAME_MAX);
 	else
-		strncpy(cm->psy_name_buf, desc->psy_name, PSY_NAME_MAX);
+		strscpy(cm->psy_name_buf, desc->psy_name, PSY_NAME_MAX);
 	cm->charger_psy_desc.name = cm->psy_name_buf;
 
 	/* Allocate for psy properties because they may vary */

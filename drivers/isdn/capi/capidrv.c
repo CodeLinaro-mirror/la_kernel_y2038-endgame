@@ -1796,7 +1796,7 @@ static int capidrv_command(isdn_ctrl *c, capidrv_contr *card)
 
 	switch (c->command) {
 	case ISDN_CMD_DIAL: {
-		u8 calling[ISDN_MSNLEN + 3];
+		char calling[ISDN_MSNLEN + 3] __nonstring;
 		u8 called[ISDN_MSNLEN + 2];
 
 		if (debugmode)
@@ -1824,8 +1824,8 @@ static int capidrv_command(isdn_ctrl *c, capidrv_contr *card)
 		bchan->si1 = c->parm.setup.si1;
 		bchan->si2 = c->parm.setup.si2;
 
-		strncpy(bchan->num, c->parm.setup.phone, sizeof(bchan->num));
-		strncpy(bchan->mynum, c->parm.setup.eazmsn, sizeof(bchan->mynum));
+		strscpy(bchan->num, c->parm.setup.phone, sizeof(bchan->num));
+		strscpy(bchan->mynum, c->parm.setup.eazmsn, sizeof(bchan->mynum));
 		rc = FVteln2capi20(bchan->num, AdditionalInfo);
 		isleasedline = (rc == 0);
 		if (rc < 0)
@@ -2013,7 +2013,7 @@ static int capidrv_command(isdn_ctrl *c, capidrv_contr *card)
 			       card->contrnr,
 			       c->parm.num, c->arg);
 		bchan = &card->bchans[c->arg % card->nbchan];
-		strncpy(bchan->msn, c->parm.num, ISDN_MSNLEN);
+		strscpy(bchan->msn, c->parm.num, ISDN_MSNLEN);
 		return 0;
 
 	case ISDN_CMD_CLREAZ:
@@ -2298,7 +2298,7 @@ static int capidrv_addcontr(u16 contr, struct capi_profile *profp)
 	if (profp->support1 & (1 << 8))
 		card->interface.features |= ISDN_FEATURE_L2_MODEM;
 	card->interface.hl_hdrlen = 22; /* len of DATA_B3_REQ */
-	strncpy(card->interface.id, id, sizeof(card->interface.id) - 1);
+	strscpy(card->interface.id, id, sizeof(card->interface.id));
 
 
 	card->q931_read = card->q931_buf;

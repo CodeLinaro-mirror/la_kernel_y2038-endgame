@@ -35,8 +35,8 @@ struct nv_device_info_v0 {
 	__u8  pad06[2];
 	__u64 ram_size;
 	__u64 ram_user;
-	char  chip[16];
-	char  name[64];
+	char  chip[16] __nonstring;
+	char  name[64] __nonstring;
 };
 
 struct nv_device_time_v0 {

@@ -2672,7 +2672,7 @@ static int atmel_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 
 		priv->firmware = new_firmware;
 		priv->firmware_length = com.len;
-		strncpy(priv->firmware_id, com.id, 31);
+		strscpy(priv->firmware_id, com.id, 31);
 		priv->firmware_id[31] = '\0';
 		break;
 

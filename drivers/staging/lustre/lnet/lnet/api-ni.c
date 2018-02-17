@@ -1678,7 +1678,7 @@ lnet_fill_ni_info(struct lnet_ni *ni, struct lnet_ioctl_config_data *config)
 		if (!ni->ni_interfaces[i])
 			break;
 
-		strncpy(net_config->ni_interfaces[i],
+		strscpy(net_config->ni_interfaces[i],
 			ni->ni_interfaces[i],
 			sizeof(net_config->ni_interfaces[i]));
 	}

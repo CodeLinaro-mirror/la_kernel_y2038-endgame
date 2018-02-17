@@ -167,7 +167,7 @@ struct dm_target_spec {
 	 */
 	__u32 next;
 
-	char target_type[DM_MAX_TYPE_NAME];
+	char target_type[DM_MAX_TYPE_NAME] __nonstring;
 
 	/*
 	 * Parameter string starts immediately after this object.

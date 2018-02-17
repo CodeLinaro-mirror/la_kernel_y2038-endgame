@@ -480,7 +480,7 @@ static noinline_for_stack int inquiry(struct scsi_cmnd *srb, struct rtsx_chip *c
 	char *inquiry_ms =      (char *)"Generic-MemoryStick     1.00 ";
 	char *inquiry_string;
 	unsigned char sendbytes;
-	unsigned char *buf;
+	char *buf __nonstring;
 	u8 card = get_lun_card(chip, lun);
 	bool pro_formatter_flag = false;
 	unsigned char inquiry_buf[] = {
@@ -521,22 +521,15 @@ static noinline_for_stack int inquiry(struct scsi_cmnd *srb, struct rtsx_chip *c
 		if (!card || (card == MS_CARD))
 			pro_formatter_flag = true;
 
-	if (pro_formatter_flag) {
-		if (scsi_bufflen(srb) < 56)
-			sendbytes = (unsigned char)(scsi_bufflen(srb));
-		else
-			sendbytes = 56;
-
-	} else {
-		if (scsi_bufflen(srb) < 36)
-			sendbytes = (unsigned char)(scsi_bufflen(srb));
-		else
-			sendbytes = 36;
-	}
+	if (pro_formatter_flag)
+		sendbytes = min(scsi_bufflen(srb), 56u);
+	else
+		sendbytes = min(scsi_bufflen(srb), 36u);
 
 	if (sendbytes > 8) {
+		memset(buf, 0, sendbytes); /* crap workaround for gcc-8 warning */
 		memcpy(buf, inquiry_buf, 8);
-		strncpy(buf + 8, inquiry_string, sendbytes - 8);
+		strscpy(buf + 8, inquiry_string, sendbytes - 8);
 		if (pro_formatter_flag) {
 			/* Additional Length */
 			buf[4] = 0x33;

@@ -407,7 +407,7 @@ static int name_len(const char *xattr_name, int xattr_name_len)
 	return len;
 }
 
-static int copy_name(char *buffer, const char *xattr_name, int name_len)
+static int copy_name(char __attribute__((nonstring)) *buffer, const char *xattr_name, int name_len)
 {
 	int len = name_len;
 	int offset = 0;

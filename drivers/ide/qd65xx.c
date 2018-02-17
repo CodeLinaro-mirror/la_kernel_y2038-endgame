@@ -157,7 +157,7 @@ static int qd_find_disk_type (ide_drive_t *drive,
 	if (*m == 0)
 		return 0;
 
-	strncpy(model, m, ATA_ID_PROD_LEN);
+	strscpy(model, m, ATA_ID_PROD_LEN);
 	ide_fixstring(model, ATA_ID_PROD_LEN, 1); /* byte-swap */
 
 	for (p = qd65xx_timing ; p->offset != -1 ; p++) {

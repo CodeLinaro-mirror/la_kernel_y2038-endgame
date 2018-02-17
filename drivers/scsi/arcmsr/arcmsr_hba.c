@@ -2949,7 +2949,7 @@ static void arcmsr_handle_virtual_command(struct AdapterControlBlock *acb,
 {
 	switch (cmd->cmnd[0]) {
 	case INQUIRY: {
-		unsigned char inqdata[36];
+		char inqdata[36];
 		char *buffer;
 		struct scatterlist *sg;
 
@@ -2966,11 +2966,11 @@ static void arcmsr_handle_virtual_command(struct AdapterControlBlock *acb,
 		/* ISO, ECMA, & ANSI versions */
 		inqdata[4] = 31;
 		/* length of additional data */
-		strncpy(&inqdata[8], "Areca   ", 8);
+		memcpy(&inqdata[8], "Areca   ", 8);
 		/* Vendor Identification */
-		strncpy(&inqdata[16], "RAID controller ", 16);
+		memcpy(&inqdata[16], "RAID controller ", 16);
 		/* Product Identification */
-		strncpy(&inqdata[32], "R001", 4); /* Product Revision */
+		memcpy(&inqdata[32], "R001", 4); /* Product Revision */
 
 		sg = scsi_sglist(cmd);
 		buffer = kmap_atomic(sg_page(sg)) + sg->offset;

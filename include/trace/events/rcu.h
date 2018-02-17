@@ -691,7 +691,7 @@ TRACE_EVENT(rcu_torture_read,
 	),
 
 	TP_fast_assign(
-		strncpy(__entry->rcutorturename, rcutorturename,
+		strscpy(__entry->rcutorturename, rcutorturename,
 			RCUTORTURENAME_LEN);
 		__entry->rcutorturename[RCUTORTURENAME_LEN - 1] = 0;
 		__entry->rhp = rhp;

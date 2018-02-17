@@ -272,7 +272,7 @@ static inline int fc_ct_ms_fill(struct fc_lport *lport,
 		put_unaligned_be16(FC_FDMI_HBA_ATTR_MANUFACTURER,
 				   &entry->type);
 		put_unaligned_be16(len, &entry->len);
-		strncpy((char *)&entry->value,
+		strscpy((char *)&entry->value,
 			fc_host_manufacturer(lport->host),
 			FC_FDMI_HBA_ATTR_MANUFACTURER_LEN);
 
@@ -284,7 +284,7 @@ static inline int fc_ct_ms_fill(struct fc_lport *lport,
 		put_unaligned_be16(FC_FDMI_HBA_ATTR_SERIALNUMBER,
 				   &entry->type);
 		put_unaligned_be16(len, &entry->len);
-		strncpy((char *)&entry->value,
+		strscpy((char *)&entry->value,
 			fc_host_serial_number(lport->host),
 			FC_FDMI_HBA_ATTR_SERIALNUMBER_LEN);
 

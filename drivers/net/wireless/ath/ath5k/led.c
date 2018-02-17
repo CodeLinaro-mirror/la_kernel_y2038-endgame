@@ -129,7 +129,7 @@ ath5k_register_led(struct ath5k_hw *ah, struct ath5k_led *led,
 	int err;
 
 	led->ah = ah;
-	strncpy(led->name, name, sizeof(led->name));
+	strscpy(led->name, name, sizeof(led->name));
 	led->name[sizeof(led->name)-1] = 0;
 	led->led_dev.name = led->name;
 	led->led_dev.default_trigger = trigger;

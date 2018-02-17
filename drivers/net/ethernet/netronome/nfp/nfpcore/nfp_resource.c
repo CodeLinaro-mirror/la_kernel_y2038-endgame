@@ -105,7 +105,7 @@ static int nfp_cpp_resource_find(struct nfp_cpp *cpp, struct nfp_resource *res)
 
 	cpp_id = NFP_CPP_ID(NFP_RESOURCE_TBL_TARGET, 3, 0);  /* Atomic read */
 
-	strncpy(name_pad, res->name, sizeof(name_pad));
+	strscpy(name_pad, res->name, sizeof(name_pad));
 
 	/* Search for a matching entry */
 	if (!memcmp(name_pad, NFP_RESOURCE_TBL_NAME "\0\0\0\0\0\0\0\0", 8)) {
@@ -192,7 +192,7 @@ nfp_resource_acquire(struct nfp_cpp *cpp, const char *name)
 	if (!res)
 		return ERR_PTR(-ENOMEM);
 
-	strncpy(res->name, name, NFP_RESOURCE_ENTRY_NAME_SZ);
+	strscpy(res->name, name, NFP_RESOURCE_ENTRY_NAME_SZ);
 
 	dev_mutex = nfp_cpp_mutex_alloc(cpp, NFP_RESOURCE_TBL_TARGET,
 					NFP_RESOURCE_TBL_BASE,

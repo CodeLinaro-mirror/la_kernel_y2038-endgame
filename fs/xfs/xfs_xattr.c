@@ -170,9 +170,6 @@ xfs_xattr_put_listent(
 	int		namelen,
 	int		valuelen)
 {
-	char *prefix;
-	int prefix_len;
-
 	ASSERT(context->count >= 0);
 
 	if (flags & XFS_ATTR_ROOT) {
@@ -203,19 +200,18 @@ xfs_xattr_put_listent(
 		if (!capable(CAP_SYS_ADMIN))
 			return;
 
-		prefix = XATTR_TRUSTED_PREFIX;
-		prefix_len = XATTR_TRUSTED_PREFIX_LEN;
+		__xfs_xattr_put_listent(context, XATTR_TRUSTED_PREFIX,
+					XATTR_TRUSTED_PREFIX_LEN,
+					name, namelen);
 	} else if (flags & XFS_ATTR_SECURE) {
-		prefix = XATTR_SECURITY_PREFIX;
-		prefix_len = XATTR_SECURITY_PREFIX_LEN;
+		__xfs_xattr_put_listent(context, XATTR_SECURITY_PREFIX,
+					XATTR_SECURITY_PREFIX_LEN,
+					name, namelen);
 	} else {
-		prefix = XATTR_USER_PREFIX;
-		prefix_len = XATTR_USER_PREFIX_LEN;
+		__xfs_xattr_put_listent(context, XATTR_SECURITY_PREFIX,
+					XATTR_SECURITY_PREFIX_LEN,
+					name, namelen);
 	}
-
-	__xfs_xattr_put_listent(context, prefix, prefix_len, name,
-				namelen);
-	return;
 }
 
 ssize_t

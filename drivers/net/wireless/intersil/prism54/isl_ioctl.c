@@ -264,7 +264,7 @@ prism54_get_name(struct net_device *ndev, struct iw_request_info *info,
 	int rvalue;
 
 	if (islpci_get_state(priv) < PRV_STATE_INIT) {
-		strncpy(cwrq, "NOT READY!", IFNAMSIZ);
+		strscpy(cwrq, "NOT READY!", IFNAMSIZ);
 		return 0;
 	}
 	rvalue = mgt_get_request(priv, OID_INL_PHYCAPABILITIES, 0, NULL, &r);
@@ -281,7 +281,7 @@ prism54_get_name(struct net_device *ndev, struct iw_request_info *info,
 		capabilities = "IEEE 802.11b/g";	/* Default */
 		break;
 	}
-	strncpy(cwrq, capabilities, IFNAMSIZ);
+	strscpy(cwrq, capabilities, IFNAMSIZ);
 	return rvalue;
 }
 

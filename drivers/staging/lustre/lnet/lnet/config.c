@@ -1004,8 +1004,7 @@ lnet_splitnets(char *source, struct list_head *nets)
 		if (!tb2)
 			return -ENOMEM;
 
-		strncpy(tb2->ltb_text, sep, len);
-		tb2->ltb_text[len] = '\0';
+		strcpy(tb2->ltb_text, sep);
 		list_add_tail(&tb2->ltb_list, nets);
 
 		tb = tb2;
@@ -1048,8 +1047,7 @@ lnet_match_networks(char **networksp, char *ip2nets, __u32 *ipaddrs, int nip)
 	rc = 0;
 
 	list_for_each_entry_safe(tb, temp, &raw_entries, ltb_list) {
-		strncpy(source, tb->ltb_text, sizeof(source));
-		source[sizeof(source) - 1] = '\0';
+		strscpy(source, tb->ltb_text, sizeof(source));
 
 		/* replace ltb_text with the network(s) add on match */
 		rc = lnet_match_network_tokens(tb->ltb_text, ipaddrs, nip);

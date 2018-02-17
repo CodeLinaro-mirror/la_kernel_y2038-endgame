@@ -1167,7 +1167,7 @@ static int ip_set_rename(struct net *net, struct sock *ctnl,
 			goto out;
 		}
 	}
-	strncpy(set->name, name2, IPSET_MAXNAMELEN);
+	strscpy(set->name, name2, IPSET_MAXNAMELEN);
 
 out:
 	read_unlock_bh(&ip_set_ref_lock);

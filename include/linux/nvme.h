@@ -203,7 +203,7 @@ struct nvme_id_ctrl {
 	__le16			ssvid;
 	char			sn[20];
 	char			mn[40];
-	char			fr[8];
+	char			fr[8] __nonstring;
 	__u8			rab;
 	__u8			ieee[3];
 	__u8			cmic;
