@@ -470,7 +470,6 @@ static int nmi_setup(void)
 		memcpy(per_cpu(cpu_msrs, cpu).controls,
 		       per_cpu(cpu_msrs, 0).controls,
 		       sizeof(struct op_msr) * model->num_controls);
-
 		mux_clone(cpu);
 	}
 
