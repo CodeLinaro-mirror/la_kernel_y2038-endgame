@@ -98,7 +98,7 @@ lnet_ipif_query(char *name, int *up, __u32 *ip, __u32 *mask)
 
 	if (strlen(name) > sizeof(ifr.ifr_name) - 1)
 		return -E2BIG;
-	strncpy(ifr.ifr_name, name, sizeof(ifr.ifr_name));
+	strscpy(ifr.ifr_name, name, sizeof(ifr.ifr_name));
 
 	rc = lnet_sock_ioctl(SIOCGIFFLAGS, (unsigned long)&ifr);
 	if (rc) {
@@ -116,7 +116,7 @@ lnet_ipif_query(char *name, int *up, __u32 *ip, __u32 *mask)
 
 	if (strlen(name) > sizeof(ifr.ifr_name) - 1)
 		return -E2BIG;
-	strncpy(ifr.ifr_name, name, sizeof(ifr.ifr_name));
+	strscpy(ifr.ifr_name, name, sizeof(ifr.ifr_name));
 
 	ifr.ifr_addr.sa_family = AF_INET;
 	rc = lnet_sock_ioctl(SIOCGIFADDR, (unsigned long)&ifr);
@@ -130,7 +130,7 @@ lnet_ipif_query(char *name, int *up, __u32 *ip, __u32 *mask)
 
 	if (strlen(name) > sizeof(ifr.ifr_name) - 1)
 		return -E2BIG;
-	strncpy(ifr.ifr_name, name, sizeof(ifr.ifr_name));
+	strscpy(ifr.ifr_name, name, sizeof(ifr.ifr_name));
 
 	ifr.ifr_addr.sa_family = AF_INET;
 	rc = lnet_sock_ioctl(SIOCGIFNETMASK, (unsigned long)&ifr);

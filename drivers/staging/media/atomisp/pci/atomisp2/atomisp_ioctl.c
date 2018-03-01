@@ -582,7 +582,7 @@ static int atomisp_enum_input(struct file *file, void *fh,
 		return -EINVAL;
 
 	memset(input, 0, sizeof(struct v4l2_input));
-	strncpy(input->name, isp->inputs[index].camera->name,
+	strscpy(input->name, isp->inputs[index].camera->name,
 		sizeof(input->name) - 1);
 
 	/*
@@ -603,7 +603,7 @@ static int atomisp_enum_input(struct file *file, void *fh,
 
 		if (max_size > 1) {
 			input->name[cur_len] = '+';
-			strncpy(&input->name[cur_len + 1],
+			strscpy(&input->name[cur_len + 1],
 #ifndef ISP2401
 				isp->inputs[index].motor->name, max_size - 1);
 #else

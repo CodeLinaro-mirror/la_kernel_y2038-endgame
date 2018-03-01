@@ -211,7 +211,7 @@ lstcon_group_alloc(char *name, struct lstcon_group **grpp)
 			kfree(grp);
 			return -E2BIG;
 		}
-		strncpy(grp->grp_name, name, sizeof(grp->grp_name));
+		strscpy(grp->grp_name, name, sizeof(grp->grp_name));
 	}
 
 	INIT_LIST_HEAD(&grp->grp_link);
@@ -886,7 +886,7 @@ lstcon_batch_add(char *name)
 		kfree(bat);
 		return -E2BIG;
 	}
-	strncpy(bat->bat_name, name, sizeof(bat->bat_name));
+	strscpy(bat->bat_name, name, sizeof(bat->bat_name));
 	bat->bat_hdr.tsb_index = 0;
 	bat->bat_hdr.tsb_id.bat_id = ++console_session.ses_id_cookie;
 
