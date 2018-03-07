@@ -1,5 +1,5 @@
 menuconfig ARCH_NPCM
-	bool "Nuvoton NPCM Architecture"
+	bool "Nuvoton NPCM Architecture" if ARCH_MULTI_V7
 	select ARCH_REQUIRE_GPIOLIB
 	select USE_OF
 	select PINCTRL
@@ -10,7 +10,7 @@ if ARCH_NPCM
 comment "NPCM7XX CPU type"
 
 config ARCH_NPCM750
-	depends on ARCH_NPCM && ARCH_MULTI_V7
+	depends on ARCH_NPCM
 	bool "Support for NPCM750 BMC CPU (Poleg)"
 	select CACHE_L2X0
 	select CPU_V7
