@@ -400,10 +400,10 @@ config DM_MULTIPATH
 	tristate "Multipath target"
 	depends on BLK_DEV_DM
 	# nasty syntax but means make DM_MULTIPATH independent
-	# of SCSI_DH if the latter isn't defined but if
+	# of SCSI if the latter isn't defined but if
 	# it is, DM_MULTIPATH must depend on it.  We get a build
-	# error if SCSI_DH=m and DM_MULTIPATH=y
-	depends on !SCSI_DH || SCSI
+	# error if SCSI=m and DM_MULTIPATH=y
+	depends on !SCSI || SCSI
 	---help---
 	  Allow volume managers to support multipath hardware.
 
