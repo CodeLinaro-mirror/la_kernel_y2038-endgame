@@ -425,6 +425,7 @@
 
 			#address-cells = <3>;
 			#size-cells = <2>;
+			bus-range = <0x00 0xff>;
 			ranges;
 
 			nvidia,num-lanes = <2>;
@@ -438,6 +439,7 @@
 
 			#address-cells = <3>;
 			#size-cells = <2>;
+			bus-range = <0x00 0xff>;
 			ranges;
 
 			nvidia,num-lanes = <1>;
@@ -451,6 +453,7 @@
 
 			#address-cells = <3>;
 			#size-cells = <2>;
+			bus-range = <0x00 0xff>;
 			ranges;
 
 			nvidia,num-lanes = <1>;
