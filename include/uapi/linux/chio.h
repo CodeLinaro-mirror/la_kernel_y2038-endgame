@@ -35,13 +35,13 @@ struct changer_params {
 };
 struct changer_vendor_params {
 	int  cvp_n1;       /* number of vendor specific elems   (CHET_V1) */
-	char cvp_label1[16];
+	char cvp_label1[16] __nonstring;
 	int  cvp_n2;       /* number of vendor specific elems   (CHET_V2) */
-	char cvp_label2[16];
+	char cvp_label2[16] __nonstring;
 	int  cvp_n3;       /* number of vendor specific elems   (CHET_V3) */
-	char cvp_label3[16];
+	char cvp_label3[16] __nonstring;
 	int  cvp_n4;       /* number of vendor specific elems   (CHET_V4) */
-	char cvp_label4[16];
+	char cvp_label4[16] __nonstring;
 	int  reserved[8];
 };
 
