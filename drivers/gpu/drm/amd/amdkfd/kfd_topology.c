@@ -20,7 +20,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <linux/amd-iommu.h>
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/pci.h>
