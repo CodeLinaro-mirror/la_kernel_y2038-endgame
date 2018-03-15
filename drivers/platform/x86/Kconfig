@@ -122,6 +122,7 @@ config DELL_SMBIOS_WMI
 	bool "Dell SMBIOS driver WMI backend"
 	default y
 	depends on ACPI_WMI
+	depends on ACPI_WMI=y || DELL_SMBIOS=m
 	select DELL_WMI_DESCRIPTOR
 	depends on DELL_SMBIOS
 	---help---
