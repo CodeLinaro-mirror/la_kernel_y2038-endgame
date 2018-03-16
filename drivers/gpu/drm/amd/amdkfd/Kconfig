@@ -4,6 +4,7 @@
 
 config HSA_AMD
 	tristate "HSA kernel driver for AMD GPU devices"
+	select MMU_NOTIFIER
 	depends on DRM_AMDGPU && X86_64
 	imply AMD_IOMMU_V2
 	help
