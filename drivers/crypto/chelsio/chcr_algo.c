@@ -95,6 +95,7 @@ static u32 round_constant[11] = {
 
 static int chcr_handle_cipher_resp(struct ablkcipher_request *req,
 				   unsigned char *input, int err);
+static int chcr_ahash_continue(struct ahash_request *req);
 
 static inline  struct chcr_aead_ctx *AEAD_CTX(struct chcr_context *ctx)
 {
