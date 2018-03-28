@@ -298,6 +298,7 @@ static int temp_to_code(struct exynos_tmu_data *data, u8 temp)
 		break;
 	default:
 		WARN_ON(1);
+		temp_code = 0;
 		break;
 	}
 
@@ -324,6 +325,7 @@ static int code_to_temp(struct exynos_tmu_data *data, u16 temp_code)
 		break;
 	default:
 		WARN_ON(1);
+		temp = 0;
 		break;
 	}
 
