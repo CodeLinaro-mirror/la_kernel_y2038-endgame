@@ -338,10 +338,6 @@ static const struct arm64_cpu_capabilities arm64_bp_harden_list[] = {
 		CAP_MIDR_RANGE_LIST(arm64_bp_harden_smccc_cpus),
 		.cpu_enable = enable_smccc_arch_workaround_1,
 	},
-	{
-		CAP_MIDR_RANGE_LIST(qcom_bp_harden_cpus),
-		.cpu_enable = qcom_enable_link_stack_sanitization,
-	},
 	{},
 };
 
@@ -498,10 +494,6 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
 		.matches = multi_entry_cap_matches,
 		.cpu_enable = multi_entry_cap_cpu_enable,
 		.match_list = arm64_bp_harden_list,
-	},
-	{
-		.capability = ARM64_HARDEN_BP_POST_GUEST_EXIT,
-		ERRATA_MIDR_RANGE_LIST(qcom_bp_harden_cpus),
 	},
 #endif
 #ifdef CONFIG_HARDEN_EL2_VECTORS
