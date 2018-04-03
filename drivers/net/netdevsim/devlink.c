@@ -273,13 +273,13 @@ static struct pernet_operations nsim_devlink_net_ops __net_initdata = {
 	.size = sizeof(bool),
 };
 
-void nsim_devlink_exit(void)
+void __exit nsim_devlink_exit(void)
 {
 	unregister_pernet_subsys(&nsim_devlink_net_ops);
 	nsim_fib_exit();
 }
 
-int nsim_devlink_init(void)
+int __init nsim_devlink_init(void)
 {
 	int err;
 
