@@ -1103,6 +1103,10 @@ static int rk_iommu_of_xlate(struct device *dev,
 		return -ENOMEM;
 
 	iommu_dev = of_find_device_by_node(args->np);
+	if (!iommu_dev) {
+		kfree(data);
+		return -ENODEV;
+	}
 
 	data->iommu = platform_get_drvdata(iommu_dev);
 	dev->archdata.iommu = data;
