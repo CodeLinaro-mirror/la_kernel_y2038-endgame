@@ -24,7 +24,7 @@ unsigned int __machine_arch_type;
 #include <linux/linkage.h>
 
 static void putstr(const char *ptr);
-extern void error(char *x);
+extern void error(char *x) __noreturn;
 
 #include CONFIG_UNCOMPRESS_INCLUDE
 
