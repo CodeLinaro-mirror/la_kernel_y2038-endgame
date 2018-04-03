@@ -895,7 +895,7 @@ struct rndis_params *rndis_register(void (*resp_avail)(void *v), void *v)
 #ifdef	CONFIG_USB_GADGET_DEBUG_FILES
 	{
 		struct proc_dir_entry *proc_entry;
-		char name[20];
+		char name[32];
 
 		sprintf(name, NAME_TEMPLATE, i);
 		proc_entry = proc_create_data(name, 0660, NULL,
