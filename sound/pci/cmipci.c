@@ -469,7 +469,7 @@ struct cmipci {
 	struct snd_pcm *pcm2;	/* 2nd DAC */
 	struct snd_pcm *pcm_spdif;	/* SPDIF */
 
-	int chip_version;
+	unsigned int chip_version;
 	int max_channels;
 	unsigned int can_ac3_sw: 1;
 	unsigned int can_ac3_hw: 1;
