@@ -277,7 +277,7 @@ typedef u32 phys_cpuid_t;
 
 static inline bool invalid_logical_cpuid(u32 cpuid)
 {
-	return (int)cpuid < 0;
+	return cpuid > nr_cpumask_bits;
 }
 
 static inline bool invalid_phys_cpuid(phys_cpuid_t phys_id)
