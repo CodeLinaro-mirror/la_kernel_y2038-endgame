@@ -1394,6 +1394,7 @@ static bool rbd_img_is_write(struct rbd_img_request *img_req)
 	default:
 		rbd_assert(0);
 	}
+	return false;
 }
 
 static void rbd_obj_handle_request(struct rbd_obj_request *obj_req);
@@ -2468,6 +2469,7 @@ again:
 	default:
 		rbd_assert(0);
 	}
+	return true;
 }
 
 /*
@@ -2496,6 +2498,7 @@ static bool __rbd_obj_handle_request(struct rbd_obj_request *obj_req)
 	default:
 		rbd_assert(0);
 	}
+	return true;
 }
 
 static void rbd_obj_end_request(struct rbd_obj_request *obj_req)
