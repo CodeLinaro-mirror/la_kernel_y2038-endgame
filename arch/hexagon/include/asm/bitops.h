@@ -194,7 +194,7 @@ static inline int __test_bit(int nr, const volatile unsigned long *addr)
  *
  * Undefined if no zero exists, so code should check against ~0UL first.
  */
-static inline long ffz(int x)
+static inline int ffz(int x)
 {
 	int r;
 
