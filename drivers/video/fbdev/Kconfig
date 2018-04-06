@@ -334,6 +334,7 @@ config FB_CLPS711X
 	tristate "CLPS711X LCD support"
 	depends on FB && (ARCH_CLPS711X || COMPILE_TEST)
 	depends on BACKLIGHT_CLASS_DEVICE
+	depends on LCD_CLASS_DEVICE
 	select FB_CLPS711X_OLD if ARCH_CLPS711X && !ARCH_MULTIPLATFORM
 	select FB_MODE_HELPERS
 	select FB_SYS_FILLRECT
@@ -361,7 +362,8 @@ config FB_SA1100
 config FB_IMX
 	tristate "Freescale i.MX1/21/25/27 LCD support"
 	depends on FB && ARCH_MXC
-	depends on BACKLIGHT_LCD_SUPPORT
+	depends on BACKLIGHT_CLASS_DEVICE
+	depends on LCD_CLASS_DEVICE
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
