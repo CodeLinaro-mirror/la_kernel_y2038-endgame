@@ -60,6 +60,8 @@ config NOUVEAU_DEBUG_MMU
 config DRM_NOUVEAU_BACKLIGHT
 	bool "Support for backlight control"
 	depends on DRM_NOUVEAU
+	depends on BACKLIGHT_CLASS_DEVICE
+	depends on BACKLIGHT_CLASS_DEVICE=y || DRM_NOUVEAU=m
 	default y
 	help
 	  Say Y here if you want to control the backlight of your display

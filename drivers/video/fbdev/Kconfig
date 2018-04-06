@@ -198,9 +198,6 @@ config FB_MACMODES
 
 config FB_BACKLIGHT
 	bool
-	depends on FB
-	select BACKLIGHT_LCD_SUPPORT
-	select BACKLIGHT_CLASS_DEVICE
 	default n
 
 config FB_MODE_HELPERS
@@ -292,13 +289,12 @@ config FB_ARMCLCD
 	tristate "ARM PrimeCell PL110 support"
 	depends on ARM || ARM64 || COMPILE_TEST
 	depends on FB && ARM_AMBA && HAS_IOMEM
+	depends on BACKLIGHT_CLASS_DEVICE || !OF
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
 	select FB_MODE_HELPERS if OF
 	select VIDEOMODE_HELPERS if OF
-	select BACKLIGHT_LCD_SUPPORT if OF
-	select BACKLIGHT_CLASS_DEVICE if OF
 	help
 	  This framebuffer device driver is for the ARM PrimeCell PL110
 	  Colour LCD controller.  ARM PrimeCells provide the building
@@ -337,13 +333,12 @@ config FB_CLPS711X_OLD
 config FB_CLPS711X
 	tristate "CLPS711X LCD support"
 	depends on FB && (ARCH_CLPS711X || COMPILE_TEST)
+	depends on BACKLIGHT_CLASS_DEVICE
 	select FB_CLPS711X_OLD if ARCH_CLPS711X && !ARCH_MULTIPLATFORM
-	select BACKLIGHT_LCD_SUPPORT
 	select FB_MODE_HELPERS
 	select FB_SYS_FILLRECT
 	select FB_SYS_COPYAREA
 	select FB_SYS_IMAGEBLIT
-	select LCD_CLASS_DEVICE
 	select VIDEOMODE_HELPERS
 	help
 	  Say Y to enable the Framebuffer driver for the Cirrus Logic
@@ -366,8 +361,7 @@ config FB_SA1100
 config FB_IMX
 	tristate "Freescale i.MX1/21/25/27 LCD support"
 	depends on FB && ARCH_MXC
-	select BACKLIGHT_LCD_SUPPORT
-	select LCD_CLASS_DEVICE
+	depends on BACKLIGHT_LCD_SUPPORT
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
@@ -892,6 +886,7 @@ config FB_S1D13XXX
 config FB_ATMEL
 	tristate "AT91/AT32 LCD Controller support"
 	depends on FB && HAVE_FB_ATMEL
+	depends on BACKLIGHT_CLASS_DEVICE
 	select FB_BACKLIGHT
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
@@ -904,6 +899,7 @@ config FB_ATMEL
 config FB_NVIDIA
 	tristate "nVidia Framebuffer Support"
 	depends on FB && PCI
+	depends on BACKLIGHT_CLASS_DEVICE
 	select FB_BACKLIGHT if FB_NVIDIA_BACKLIGHT
 	select FB_MODE_HELPERS
 	select FB_CFB_FILLRECT
@@ -953,6 +949,7 @@ config FB_NVIDIA_BACKLIGHT
 config FB_RIVA
 	tristate "nVidia Riva support"
 	depends on FB && PCI
+	depends on BACKLIGHT_CLASS_DEVICE
 	select FB_BACKLIGHT if FB_RIVA_BACKLIGHT
 	select FB_MODE_HELPERS
 	select FB_CFB_FILLRECT
@@ -1240,6 +1237,7 @@ config FB_MATROX_MAVEN
 config FB_RADEON
 	tristate "ATI Radeon display support"
 	depends on FB && PCI
+	depends on BACKLIGHT_CLASS_DEVICE
 	select FB_BACKLIGHT if FB_RADEON_BACKLIGHT
 	select FB_MODE_HELPERS
 	select FB_CFB_FILLRECT
@@ -1281,6 +1279,7 @@ config FB_RADEON_DEBUG
 
 config FB_ATY128
 	tristate "ATI Rage128 display support"
+	depends on BACKLIGHT_CLASS_DEVICE
 	depends on FB && PCI
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
@@ -1304,6 +1303,7 @@ config FB_ATY128_BACKLIGHT
 
 config FB_ATY
 	tristate "ATI Mach64 display support" if PCI || ATARI
+	depends on BACKLIGHT_CLASS_DEVICE
 	depends on FB && !SPARC32
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
@@ -1899,6 +1899,7 @@ config FB_W100
 config FB_SH_MOBILE_LCDC
 	tristate "SuperH Mobile LCDC framebuffer support"
 	depends on FB && (SUPERH || ARCH_RENESAS) && HAVE_CLK
+	depends on BACKLIGHT_CLASS_DEVICE
 	select FB_SYS_FILLRECT
 	select FB_SYS_COPYAREA
 	select FB_SYS_IMAGEBLIT
@@ -2238,8 +2239,7 @@ config FB_PRE_INIT_FB
 config FB_MX3
 	tristate "MX3 Framebuffer support"
 	depends on FB && MX3_IPU
-	select BACKLIGHT_CLASS_DEVICE
-	select BACKLIGHT_LCD_SUPPORT
+	depends on BACKLIGHT_CLASS_DEVICE
 	select FB_CFB_FILLRECT
 	select FB_CFB_COPYAREA
 	select FB_CFB_IMAGEBLIT
@@ -2328,6 +2328,7 @@ config FB_SSD1307
 	depends on FB && I2C
 	depends on OF
 	depends on GPIOLIB || COMPILE_TEST
+	depends on BACKLIGHT_CLASS_DEVICE
 	select FB_SYS_FOPS
 	select FB_SYS_FILLRECT
 	select FB_SYS_COPYAREA
