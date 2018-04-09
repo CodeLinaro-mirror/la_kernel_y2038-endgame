@@ -209,7 +209,7 @@ TRACE_EVENT(fscache_netfs,
 
 	    TP_fast_assign(
 		    __entry->cookie		= netfs->primary_index;
-		    strncpy(__entry->name, netfs->name, 8);
+		    strscpy(__entry->name, netfs->name, 8);
 		    __entry->name[7]		= 0;
 			   ),
 
