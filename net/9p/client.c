@@ -1154,7 +1154,7 @@ error:
 EXPORT_SYMBOL(p9_client_attach);
 
 struct p9_fid *p9_client_walk(struct p9_fid *oldfid, uint16_t nwname,
-		const unsigned char * const *wnames, int clone)
+		const char * const *wnames, int clone)
 {
 	int err;
 	struct p9_client *clnt;

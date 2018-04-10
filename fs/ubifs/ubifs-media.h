@@ -552,7 +552,7 @@ struct ubifs_dent_node {
 	__u8 type;
 	__le16 nlen;
 	__le32 cookie;
-	__u8 name[];
+	char name[];
 } __packed;
 
 /**

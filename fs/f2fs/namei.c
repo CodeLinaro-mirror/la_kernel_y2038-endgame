@@ -636,7 +636,7 @@ err_out:
 out_f2fs_handle_failed_inode:
 	f2fs_handle_failed_inode(inode);
 out_free_encrypted_link:
-	if (disk_link.name != (unsigned char *)symname)
+	if (disk_link.name != symname)
 		kfree(disk_link.name);
 	return err;
 }

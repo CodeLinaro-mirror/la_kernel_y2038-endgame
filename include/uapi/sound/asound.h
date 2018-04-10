@@ -118,8 +118,8 @@ enum {
 struct snd_hwdep_info {
 	unsigned int device;		/* WR: device number */
 	int card;			/* R: card number */
-	unsigned char id[64];		/* ID (user selectable) */
-	unsigned char name[80];		/* hwdep name */
+	char id[64];			/* ID (user selectable) */
+	char name[80];			/* hwdep name */
 	int iface;			/* hwdep interface */
 	unsigned char reserved[64];	/* reserved for future */
 };
@@ -127,7 +127,7 @@ struct snd_hwdep_info {
 /* generic DSP loader */
 struct snd_hwdep_dsp_status {
 	unsigned int version;		/* R: driver-specific version */
-	unsigned char id[32];		/* R: driver-specific ID string */
+	char id[32];			/* R: driver-specific ID string */
 	unsigned int num_dsps;		/* R: number of DSP images to transfer */
 	unsigned int dsp_loaded;	/* R: bit flags indicating the loaded DSPs */
 	unsigned int chip_ready;	/* R: 1 = initialization finished */
@@ -136,7 +136,7 @@ struct snd_hwdep_dsp_status {
 
 struct snd_hwdep_dsp_image {
 	unsigned int index;		/* W: DSP index */
-	unsigned char name[64];		/* W: ID (e.g. file name) */
+	char name[64];			/* W: ID (e.g. file name) */
 	unsigned char __user *image;	/* W: binary image */
 	size_t length;			/* W: size of image in bytes */
 	unsigned long driver_data;	/* W: driver-specific data */
@@ -331,9 +331,9 @@ struct snd_pcm_info {
 	unsigned int subdevice;		/* RO/WR (control): subdevice number */
 	int stream;			/* RO/WR (control): stream direction */
 	int card;			/* R: card number */
-	unsigned char id[64];		/* ID (user selectable) */
-	unsigned char name[80];		/* name of this device */
-	unsigned char subname[32];	/* subdevice name */
+	char id[64];			/* ID (user selectable) */
+	char name[80];			/* name of this device */
+	char subname[32];		/* subdevice name */
 	int dev_class;			/* SNDRV_PCM_CLASS_* */
 	int dev_subclass;		/* SNDRV_PCM_SUBCLASS_* */
 	unsigned int subdevices_count;
@@ -659,9 +659,9 @@ struct snd_rawmidi_info {
 	int stream;			/* WR: stream */
 	int card;			/* R: card number */
 	unsigned int flags;		/* SNDRV_RAWMIDI_INFO_XXXX */
-	unsigned char id[64];		/* ID (user selectable) */
-	unsigned char name[80];		/* name of device */
-	unsigned char subname[32];	/* name of active or selected subdevice */
+	char id[64];			/* ID (user selectable) */
+	char name[80];			/* name of device */
+	char subname[32];		/* name of active or selected subdevice */
 	unsigned int subdevices_count;
 	unsigned int subdevices_avail;
 	unsigned char reserved[64];	/* reserved for future use */
@@ -735,8 +735,8 @@ struct snd_timer_ginfo {
 	struct snd_timer_id tid;	/* requested timer ID */
 	unsigned int flags;		/* timer flags - SNDRV_TIMER_FLG_* */
 	int card;			/* card number */
-	unsigned char id[64];		/* timer identification */
-	unsigned char name[80];		/* timer name */
+	char id[64];		/* timer identification */
+	char name[80];		/* timer name */
 	unsigned long reserved0;	/* reserved for future use */
 	unsigned long resolution;	/* average period resolution in ns */
 	unsigned long resolution_min;	/* minimal period resolution in ns */
@@ -854,12 +854,12 @@ struct snd_timer_tread {
 struct snd_ctl_card_info {
 	int card;			/* card number */
 	int pad;			/* reserved for future (was type) */
-	unsigned char id[16];		/* ID of card (user selectable) */
-	unsigned char driver[16];	/* Driver name */
-	unsigned char name[32];		/* Short name of soundcard */
-	unsigned char longname[80];	/* name + info text about soundcard */
+	char id[16];			/* ID of card (user selectable) */
+	char driver[16];		/* Driver name */
+	char name[32];			/* Short name of soundcard */
+	char longname[80];		/* name + info text about soundcard */
 	unsigned char reserved_[16];	/* reserved for future (was ID of mixer) */
-	unsigned char mixername[80];	/* visual mixer identification */
+	char mixername[80];		/* visual mixer identification */
 	unsigned char components[128];	/* card components / fine identification, delimited with one space (AC97 etc..) */
 };
 
@@ -914,7 +914,7 @@ struct snd_ctl_elem_id {
 	snd_ctl_elem_iface_t iface;	/* interface identifier */
 	unsigned int device;		/* device/client number */
 	unsigned int subdevice;		/* subdevice (substream) number */
-	unsigned char name[SNDRV_CTL_ELEM_ID_NAME_MAXLEN];		/* ASCII name of item */
+	char name[SNDRV_CTL_ELEM_ID_NAME_MAXLEN]; /* ASCII name of item */
 	unsigned int index;		/* index of item */
 };
 

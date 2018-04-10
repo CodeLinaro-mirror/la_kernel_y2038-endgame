@@ -51,7 +51,7 @@ struct qstr {
 		};
 		u64 hash_len;
 	};
-	const unsigned char *name;
+	const char *name;
 };
 
 #define QSTR_INIT(n,l) { { { .len = l } }, .name = n }
@@ -94,7 +94,7 @@ struct dentry {
 	struct qstr d_name;
 	struct inode *d_inode;		/* Where the name belongs to - NULL is
 					 * negative */
-	unsigned char d_iname[DNAME_INLINE_LEN];	/* small names */
+	char d_iname[DNAME_INLINE_LEN];	/* small names */
 
 	/* Ref lookup also touches following */
 	struct lockref d_lockref;	/* per-dentry lock and refcount */
@@ -593,8 +593,8 @@ static inline struct inode *d_real_inode(const struct dentry *dentry)
 }
 
 struct name_snapshot {
-	const unsigned char *name;
-	unsigned char inline_name[DNAME_INLINE_LEN];
+	const char *name;
+	char inline_name[DNAME_INLINE_LEN];
 };
 void take_dentry_name_snapshot(struct name_snapshot *, struct dentry *);
 void release_dentry_name_snapshot(struct name_snapshot *);

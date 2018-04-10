@@ -246,7 +246,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct dentry *dentry,
 	int err = 0;
 	kgid_t gid;
 	umode_t mode;
-	const unsigned char *name = NULL;
+	const char *name = NULL;
 	struct p9_qid qid;
 	struct inode *inode;
 	struct p9_fid *fid = NULL;
@@ -387,7 +387,7 @@ static int v9fs_vfs_mkdir_dotl(struct inode *dir,
 	struct v9fs_session_info *v9ses;
 	struct p9_fid *fid = NULL, *dfid = NULL;
 	kgid_t gid;
-	const unsigned char *name;
+	const char *name;
 	umode_t mode;
 	struct inode *inode;
 	struct p9_qid qid;
@@ -681,7 +681,7 @@ v9fs_vfs_symlink_dotl(struct inode *dir, struct dentry *dentry,
 {
 	int err;
 	kgid_t gid;
-	const unsigned char *name;
+	const char *name;
 	struct p9_qid qid;
 	struct inode *inode;
 	struct p9_fid *dfid;
@@ -815,7 +815,7 @@ v9fs_vfs_mknod_dotl(struct inode *dir, struct dentry *dentry, umode_t omode,
 {
 	int err;
 	kgid_t gid;
-	const unsigned char *name;
+	const char *name;
 	umode_t mode;
 	struct v9fs_session_info *v9ses;
 	struct p9_fid *fid = NULL, *dfid = NULL;

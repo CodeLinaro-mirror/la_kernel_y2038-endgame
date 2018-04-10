@@ -114,7 +114,7 @@ static inline int fscrypt_setup_filename(struct inode *dir,
 
 	memset(fname, 0, sizeof(struct fscrypt_name));
 	fname->usr_fname = iname;
-	fname->disk_name.name = (unsigned char *)iname->name;
+	fname->disk_name.name = (char *)iname->name;
 	fname->disk_name.len = iname->len;
 	return 0;
 }
@@ -145,7 +145,7 @@ static inline int fscrypt_fname_disk_to_usr(struct inode *inode,
 }
 
 static inline bool fscrypt_match_name(const struct fscrypt_name *fname,
-				      const u8 *de_name, u32 de_name_len)
+				      const char *de_name, u32 de_name_len)
 {
 	/* Encryption support disabled; use standard comparison */
 	if (de_name_len != fname->disk_name.len)

@@ -15,7 +15,7 @@ static unsigned char bad_chars[] = "*?<>|\"";
 static unsigned char bad_if_strict[] = "+=,; ";
 
 /***** Formats an MS-DOS file name. Rejects invalid names. */
-static int msdos_format_name(const unsigned char *name, int len,
+static int msdos_format_name(const char *name, int len,
 			     unsigned char *res, struct fat_mount_options *opts)
 	/*
 	 * name is the proposed name, len is its length, res is
@@ -115,7 +115,7 @@ static int msdos_format_name(const unsigned char *name, int len,
 }
 
 /***** Locates a directory entry.  Uses unformatted name. */
-static int msdos_find(struct inode *dir, const unsigned char *name, int len,
+static int msdos_find(struct inode *dir, const char *name, int len,
 		      struct fat_slot_info *sinfo)
 {
 	struct msdos_sb_info *sbi = MSDOS_SB(dir->i_sb);

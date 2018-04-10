@@ -22,7 +22,7 @@ struct fscrypt_ctx;
 struct fscrypt_info;
 
 struct fscrypt_str {
-	unsigned char *name;
+	char *name;
 	u32 len;
 };
 
@@ -219,7 +219,7 @@ static inline int fscrypt_prepare_symlink(struct inode *dir,
 	if (IS_ENCRYPTED(dir) || fscrypt_dummy_context_enabled(dir))
 		return __fscrypt_prepare_symlink(dir, len, max_len, disk_link);
 
-	disk_link->name = (unsigned char *)target;
+	disk_link->name = (char *)target;
 	disk_link->len = len + 1;
 	if (disk_link->len > max_len)
 		return -ENAMETOOLONG;

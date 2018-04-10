@@ -242,7 +242,7 @@ struct external_name {
 		atomic_t count;
 		struct rcu_head head;
 	} u;
-	unsigned char name[];
+	char name[];
 };
 
 static inline struct external_name *external_name(struct dentry *dentry)

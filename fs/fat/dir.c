@@ -139,13 +139,13 @@ static inline int fat_get_entry(struct inode *dir, loff_t *pos,
  * but ignore that right now.
  * Ahem... Stack smashing in ring 0 isn't fun. Fixed.
  */
-static int uni16_to_x8(struct super_block *sb, unsigned char *ascii,
+static int uni16_to_x8(struct super_block *sb, char *ascii,
 		       const wchar_t *uni, int len, struct nls_table *nls)
 {
 	int uni_xlate = MSDOS_SB(sb)->options.unicode_xlate;
 	const wchar_t *ip;
 	wchar_t ec;
-	unsigned char *op;
+	char *op;
 	int charlen;
 
 	ip = uni;
@@ -180,7 +180,7 @@ static int uni16_to_x8(struct super_block *sb, unsigned char *ascii,
 }
 
 static inline int fat_uni_to_x8(struct super_block *sb, const wchar_t *uni,
-				unsigned char *buf, int size)
+				char *buf, int size)
 {
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
 	if (sbi->options.utf8)
@@ -191,7 +191,7 @@ static inline int fat_uni_to_x8(struct super_block *sb, const wchar_t *uni,
 }
 
 static inline int
-fat_short2uni(struct nls_table *t, unsigned char *c, int clen, wchar_t *uni)
+fat_short2uni(struct nls_table *t, char *c, int clen, wchar_t *uni)
 {
 	int charlen;
 
@@ -204,7 +204,7 @@ fat_short2uni(struct nls_table *t, unsigned char *c, int clen, wchar_t *uni)
 }
 
 static inline int
-fat_short2lower_uni(struct nls_table *t, unsigned char *c,
+fat_short2lower_uni(struct nls_table *t, char *c,
 		    int clen, wchar_t *uni)
 {
 	int charlen;
@@ -215,7 +215,7 @@ fat_short2lower_uni(struct nls_table *t, unsigned char *c,
 		*uni = 0x003f;	/* a question mark */
 		charlen = 1;
 	} else if (charlen <= 1) {
-		unsigned char nc = t->charset2lower[*c];
+		char nc = t->charset2lower[(unsigned char)*c];
 
 		if (!nc)
 			nc = *c;
@@ -232,7 +232,7 @@ fat_short2lower_uni(struct nls_table *t, unsigned char *c,
 }
 
 static inline int
-fat_shortname2uni(struct nls_table *nls, unsigned char *buf, int buf_size,
+fat_shortname2uni(struct nls_table *nls, char *buf, int buf_size,
 		  wchar_t *uni_buf, unsigned short opt, int lower)
 {
 	int len = 0;
@@ -253,8 +253,8 @@ fat_shortname2uni(struct nls_table *nls, unsigned char *buf, int buf_size,
 }
 
 static inline int fat_name_match(struct msdos_sb_info *sbi,
-				 const unsigned char *a, int a_len,
-				 const unsigned char *b, int b_len)
+				 const char *a, int a_len,
+				 const char *b, int b_len)
 {
 	if (a_len != b_len)
 		return 0;
@@ -349,7 +349,7 @@ parse_long:
  */
 static int fat_parse_short(struct super_block *sb,
 			   const struct msdos_dir_entry *de,
-			   unsigned char *name, int dot_hidden)
+			   char *name, int dot_hidden)
 {
 	const struct msdos_sb_info *sbi = MSDOS_SB(sb);
 	int isvfat = sbi->options.isvfat;
@@ -357,8 +357,9 @@ static int fat_parse_short(struct super_block *sb,
 	unsigned short opt_shortname = sbi->options.shortname;
 	struct nls_table *nls_disk = sbi->nls_disk;
 	wchar_t uni_name[14];
-	unsigned char c, work[MSDOS_NAME];
-	unsigned char *ptname = name;
+	unsigned char c;
+	char work[MSDOS_NAME];
+	char *ptname = name;
 	int chi, chl, i, j, k;
 	int dotoffset = 0;
 	int name_len = 0, uni_len = 0;
@@ -461,7 +462,7 @@ static int fat_parse_short(struct super_block *sb,
 /*
  * Return values: negative -> error/not found, 0 -> found.
  */
-int fat_search_long(struct inode *inode, const unsigned char *name,
+int fat_search_long(struct inode *inode, const char *name,
 		    int name_len, struct fat_slot_info *sinfo)
 {
 	struct super_block *sb = inode->i_sb;
@@ -561,7 +562,7 @@ static int __fat_readdir(struct inode *inode, struct file *file,
 	struct msdos_dir_entry *de;
 	unsigned char nr_slots;
 	wchar_t *unicode = NULL;
-	unsigned char bufname[FAT_MAX_SHORT_SIZE];
+	char bufname[FAT_MAX_SHORT_SIZE];
 	int isvfat = sbi->options.isvfat;
 	const char *fill_name = NULL;
 	int fake_offset = 0;
@@ -953,7 +954,7 @@ int fat_subdirs(struct inode *dir)
  * Scans a directory for a given file (name points to its formatted name).
  * Returns an error code or zero.
  */
-int fat_scan(struct inode *dir, const unsigned char *name,
+int fat_scan(struct inode *dir, const char *name,
 	     struct fat_slot_info *sinfo)
 {
 	struct super_block *sb = dir->i_sb;

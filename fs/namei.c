@@ -2470,7 +2470,7 @@ static int lookup_one_len_common(const char *name, struct dentry *base,
 	}
 
 	while (len--) {
-		unsigned int c = *(const unsigned char *)name++;
+		unsigned int c = (unsigned char)*name++;
 		if (c == '/' || c == '\0')
 			return -EACCES;
 	}

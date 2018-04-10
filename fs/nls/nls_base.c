@@ -184,9 +184,9 @@ static inline unsigned long get_utf16(unsigned c, enum utf16_endian endian)
 }
 
 int utf16s_to_utf8s(const wchar_t *pwcs, int inlen, enum utf16_endian endian,
-		u8 *s, int maxout)
+		char *s, int maxout)
 {
-	u8 *op;
+	char *op;
 	int size;
 	unsigned long u, v;
 

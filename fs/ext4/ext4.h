@@ -1294,7 +1294,7 @@ struct ext4_super_block {
 	__le64	s_last_error_block;	/* block involved of last error */
 	__u8	s_last_error_func[32] __nonstring;	/* function where the error happened */
 #define EXT4_S_ERR_END offsetof(struct ext4_super_block, s_mount_opts)
-	__u8	s_mount_opts[64];
+	char	s_mount_opts[64];
 	__le32	s_usr_quota_inum;	/* inode for tracking user quota */
 	__le32	s_grp_quota_inum;	/* inode for tracking group quota */
 	__le32	s_overhead_clusters;	/* overhead blocks/clusters in fs */
@@ -2320,7 +2320,7 @@ static inline int ext4_fname_setup_filename(struct inode *dir,
 		int lookup, struct ext4_filename *fname)
 {
 	fname->usr_fname = iname;
-	fname->disk_name.name = (unsigned char *) iname->name;
+	fname->disk_name.name = (char *) iname->name;
 	fname->disk_name.len = iname->len;
 	return 0;
 }

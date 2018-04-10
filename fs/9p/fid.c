@@ -91,10 +91,10 @@ static struct p9_fid *v9fs_fid_find(struct dentry *dentry, kuid_t uid, int any)
  * dentry names.
  */
 static int build_path_from_dentry(struct v9fs_session_info *v9ses,
-				  struct dentry *dentry, const unsigned char ***names)
+				  struct dentry *dentry, const char ***names)
 {
 	int n = 0, i;
-	const unsigned char **wnames;
+	const char **wnames;
 	struct dentry *ds;
 
 	for (ds = dentry; !IS_ROOT(ds); ds = ds->d_parent)
@@ -117,7 +117,7 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
 					       kuid_t uid, int any)
 {
 	struct dentry *ds;
-	const unsigned char **wnames, *uname;
+	const char **wnames, *uname;
 	int i, n, l, clone, access;
 	struct v9fs_session_info *v9ses;
 	struct p9_fid *fid, *old_fid = NULL;

@@ -139,7 +139,7 @@ static __be32 ic_addrservaddr = NONE;	/* IP Address of the IP addresses'server *
 __be32 ic_servaddr = NONE;	/* Boot server IP address */
 
 __be32 root_server_addr = NONE;	/* Address of NFS server */
-u8 root_server_path[256] = { 0, };	/* Path to mount as root */
+char root_server_path[256] = { 0, };	/* Path to mount as root */
 
 /* vendor class identifier */
 static char vendor_class_identifier[253] __initdata;

@@ -1318,7 +1318,7 @@ const char * const volume_ramp_rate[] = {
 int rsnd_kctrl_new(struct rsnd_mod *mod,
 		   struct rsnd_dai_stream *io,
 		   struct snd_soc_pcm_runtime *rtd,
-		   const unsigned char *name,
+		   const char *name,
 		   int (*accept)(struct rsnd_dai_stream *io),
 		   void (*update)(struct rsnd_dai_stream *io,
 				  struct rsnd_mod *mod),

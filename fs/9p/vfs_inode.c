@@ -664,7 +664,7 @@ v9fs_create(struct v9fs_session_info *v9ses, struct inode *dir,
 		struct dentry *dentry, char *extension, u32 perm, u8 mode)
 {
 	int err;
-	const unsigned char *name;
+	const  char *name;
 	struct p9_fid *dfid, *ofid, *fid;
 	struct inode *inode;
 
@@ -809,7 +809,7 @@ struct dentry *v9fs_vfs_lookup(struct inode *dir, struct dentry *dentry,
 	struct v9fs_session_info *v9ses;
 	struct p9_fid *dfid, *fid;
 	struct inode *inode;
-	const unsigned char *name;
+	const char *name;
 
 	p9_debug(P9_DEBUG_VFS, "dir: %p dentry: (%pd) %p flags: %x\n",
 		 dir, dentry, dentry, flags);

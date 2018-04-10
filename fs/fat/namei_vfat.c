@@ -133,7 +133,7 @@ static int vfat_hash(const struct dentry *dentry, struct qstr *qstr)
 static int vfat_hashi(const struct dentry *dentry, struct qstr *qstr)
 {
 	struct nls_table *t = MSDOS_SB(dentry->d_sb)->nls_io;
-	const unsigned char *name;
+	const char *name;
 	unsigned int len;
 	unsigned long hash;
 
@@ -507,7 +507,7 @@ static int vfat_create_shortname(struct inode *dir, struct nls_table *nls,
 
 /* Translate a string, including coded sequences into Unicode */
 static int
-xlate_to_uni(const unsigned char *name, int len, unsigned char *outname,
+xlate_to_uni(const unsigned char *name, int len, char *outname,
 	     int *longlen, int *outlen, int escape, int utf8,
 	     struct nls_table *nls)
 {
@@ -575,7 +575,7 @@ xlate_to_uni(const unsigned char *name, int len, unsigned char *outname,
 	return 0;
 }
 
-static int vfat_build_slots(struct inode *dir, const unsigned char *name,
+static int vfat_build_slots(struct inode *dir, const char *name,
 			    int len, int is_dir, int cluster,
 			    struct timespec64 *ts,
 			    struct msdos_dir_slot *slots, int *nr_slots)
@@ -585,7 +585,7 @@ static int vfat_build_slots(struct inode *dir, const unsigned char *name,
 	struct msdos_dir_slot *ps;
 	struct msdos_dir_entry *de;
 	unsigned char cksum, lcase;
-	unsigned char msdos_name[MSDOS_NAME];
+	char msdos_name[MSDOS_NAME];
 	wchar_t *uname;
 	__le16 time, date;
 	u8 time_cs;

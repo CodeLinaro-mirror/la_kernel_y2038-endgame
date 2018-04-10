@@ -16,7 +16,7 @@ extern __be32 ic_gateway;		/* Gateway IP address */
 extern __be32 ic_servaddr;		/* Boot server IP address */
 
 extern __be32 root_server_addr;	/* Address of NFS server */
-extern u8 root_server_path[];	/* Path to mount as root */
+extern char root_server_path[];	/* Path to mount as root */
 
 
 /* bits in ic_proto_{enabled,used} */

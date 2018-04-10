@@ -1345,7 +1345,7 @@ static struct buffer_head * ext4_find_entry (struct inode *dir,
 	struct buffer_head *bh_use[NAMEI_RA_SIZE];
 	struct buffer_head *bh, *ret = NULL;
 	ext4_lblk_t start, block;
-	const u8 *name = d_name->name;
+	const char *name = d_name->name;
 	size_t ra_max = 0;	/* Number of bh's in the readahead
 				   buffer, bh_use[] */
 	size_t ra_ptr = 0;	/* Current index into readahead
@@ -3174,7 +3174,7 @@ err_drop_inode:
 	unlock_new_inode(inode);
 	iput(inode);
 out_free_encrypted_link:
-	if (disk_link.name != (unsigned char *)symname)
+	if (disk_link.name != symname)
 		kfree(disk_link.name);
 	return err;
 }

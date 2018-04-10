@@ -201,7 +201,7 @@ void p9_client_begin_disconnect(struct p9_client *clnt);
 struct p9_fid *p9_client_attach(struct p9_client *clnt, struct p9_fid *afid,
 				const char *uname, kuid_t n_uname, const char *aname);
 struct p9_fid *p9_client_walk(struct p9_fid *oldfid, uint16_t nwname,
-		const unsigned char * const *wnames, int clone);
+		const char * const *wnames, int clone);
 int p9_client_open(struct p9_fid *fid, int mode);
 int p9_client_fcreate(struct p9_fid *fid, const char *name, u32 perm, int mode,
 							char *extension);

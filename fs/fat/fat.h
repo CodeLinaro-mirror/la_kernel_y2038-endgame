@@ -301,11 +301,11 @@ extern int fat_bmap(struct inode *inode, sector_t sector, sector_t *phys,
 
 /* fat/dir.c */
 extern const struct file_operations fat_dir_operations;
-extern int fat_search_long(struct inode *inode, const unsigned char *name,
+extern int fat_search_long(struct inode *inode, const char *name,
 			   int name_len, struct fat_slot_info *sinfo);
 extern int fat_dir_empty(struct inode *dir);
 extern int fat_subdirs(struct inode *dir);
-extern int fat_scan(struct inode *dir, const unsigned char *name,
+extern int fat_scan(struct inode *dir, const char *name,
 		    struct fat_slot_info *sinfo);
 extern int fat_scan_logstart(struct inode *dir, int i_logstart,
 			     struct fat_slot_info *sinfo);

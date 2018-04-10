@@ -460,9 +460,9 @@ struct inode *fat_iget(struct super_block *sb, loff_t i_pos)
 	return inode;
 }
 
-static int is_exec(unsigned char *extension)
+static int is_exec(char *extension)
 {
-	unsigned char exe_extensions[] = "EXECOMBAT", *walk;
+	char exe_extensions[] = "EXECOMBAT", *walk;
 
 	for (walk = exe_extensions; *walk; walk += 3)
 		if (!strncmp(extension, walk, 3))

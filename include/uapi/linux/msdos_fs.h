@@ -175,7 +175,7 @@ struct fat_boot_fsinfo {
 };
 
 struct msdos_dir_entry {
-	__u8	name[MSDOS_NAME];/* name and extension */
+	char	name[MSDOS_NAME];/* name and extension */
 	__u8	attr;		/* attribute bits */
 	__u8    lcase;		/* Case for base and extension */
 	__u8	ctime_cs;	/* Creation time, centiseconds (0-199) */

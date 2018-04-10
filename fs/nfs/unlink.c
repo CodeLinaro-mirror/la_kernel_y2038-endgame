@@ -445,7 +445,7 @@ int
 nfs_sillyrename(struct inode *dir, struct dentry *dentry)
 {
 	static unsigned int sillycounter;
-	unsigned char silly[SILLYNAME_LEN + 1];
+	char silly[SILLYNAME_LEN + 1];
 	unsigned long long fileid;
 	struct dentry *sdentry;
 	struct inode *inode = d_inode(dentry);
