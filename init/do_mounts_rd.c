@@ -63,7 +63,7 @@ identify_ramdisk_image(int fd, int start_block, decompress_fn *decompressor)
 	struct cramfs_super *cramfsb;
 	struct squashfs_super_block *squashfsb;
 	int nblocks = -1;
-	unsigned char *buf;
+	char *buf;
 	const char *compress_name;
 	unsigned long n;
 

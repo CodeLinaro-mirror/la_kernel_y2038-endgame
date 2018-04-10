@@ -134,7 +134,8 @@ snd_hdac_regmap_get_amp(struct hdac_device *codec, hda_nid_t nid,
 			int ch, int dir, int idx)
 {
 	unsigned int cmd = snd_hdac_regmap_encode_amp(nid, ch, dir, idx);
-	int err, val;
+	int err;
+	unsigned int val;
 
 	err = snd_hdac_regmap_read_raw(codec, cmd, &val);
 	return err < 0 ? err : val;
@@ -179,7 +180,8 @@ snd_hdac_regmap_get_amp_stereo(struct hdac_device *codec, hda_nid_t nid,
 			       int dir, int idx)
 {
 	unsigned int cmd = snd_hdac_regmap_encode_amp_stereo(nid, dir, idx);
-	int err, val;
+	int err;
+	unsigned int val;
 
 	err = snd_hdac_regmap_read_raw(codec, cmd, &val);
 	return err < 0 ? err : val;

@@ -3403,7 +3403,7 @@ int snd_soc_of_get_slot_mask(struct device_node *np,
 			     const char *prop_name,
 			     unsigned int *mask)
 {
-	u32 val;
+	int val;
 	const __be32 *of_slot_mask = of_get_property(np, prop_name, &val);
 	int i;
 

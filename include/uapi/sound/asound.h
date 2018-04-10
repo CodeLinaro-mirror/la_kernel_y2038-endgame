@@ -768,8 +768,8 @@ struct snd_timer_select {
 struct snd_timer_info {
 	unsigned int flags;		/* timer flags - SNDRV_TIMER_FLG_* */
 	int card;			/* card number */
-	unsigned char id[64];		/* timer identificator */
-	unsigned char name[80];		/* timer name */
+	char id[64];			/* timer identificator */
+	char name[80];			/* timer name */
 	unsigned long reserved0;	/* reserved for future use */
 	unsigned long resolution;	/* average period resolution in ns */
 	unsigned char reserved[64];	/* reserved */

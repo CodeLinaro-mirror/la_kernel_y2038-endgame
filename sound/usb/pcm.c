@@ -1163,7 +1163,7 @@ static int snd_usb_pcm_check_knot(struct snd_pcm_runtime *runtime,
 				  struct snd_usb_substream *subs)
 {
 	struct audioformat *fp;
-	int *rate_list;
+	unsigned int *rate_list;
 	int count = 0, needs_knot = 0;
 	int err;
 
