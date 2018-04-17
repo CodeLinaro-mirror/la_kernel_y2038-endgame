@@ -112,11 +112,6 @@ struct compat_itimerspec {
 	struct compat_timespec it_value;
 };
 
-struct compat_utimbuf {
-	compat_time_t		actime;
-	compat_time_t		modtime;
-};
-
 struct compat_itimerval {
 	struct compat_timeval	it_interval;
 	struct compat_timeval	it_value;
