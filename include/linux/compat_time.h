@@ -17,6 +17,11 @@ struct compat_timeval {
 	s32		tv_usec;
 };
 
+struct compat_utimbuf {
+	compat_time_t		actime;
+	compat_time_t		modtime;
+};
+
 extern int compat_get_timespec64(struct timespec64 *, const void __user *);
 extern int compat_put_timespec64(const struct timespec64 *, void __user *);
 
