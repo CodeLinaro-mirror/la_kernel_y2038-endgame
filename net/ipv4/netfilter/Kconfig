@@ -111,7 +111,7 @@ config NF_NAT_MASQUERADE_IPV4
 
 if NF_TABLES
 config NFT_CHAIN_NAT_IPV4
-	depends on NF_TABLES_IPV4
+	depends on NF_TABLES_IPV4 && NF_TABLES
 	tristate "IPv4 nf_tables nat chain support"
 	help
 	  This option enables the "nat" chain for IPv4 in nf_tables. This
