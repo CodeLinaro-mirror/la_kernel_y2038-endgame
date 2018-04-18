@@ -810,9 +810,9 @@ COMPAT_SYSCALL_DEFINE6(recvfrom, int, fd, void __user *, buf, compat_size_t, len
 	return __compat_sys_recvfrom(fd, buf, len, flags, addr, addrlen);
 }
 
-static int __compat_sys_recvmmsg(int fd, struct compat_mmsghdr __user *mmsg,
+static int __compat_sys_recvmmsg_time64(int fd, struct compat_mmsghdr __user *mmsg,
 				 unsigned int vlen, unsigned int flags,
-				 struct compat_timespec __user *timeout)
+				 struct __kernel_timespec __user *timeout)
 {
 	int datagrams;
 	struct timespec64 ktspec;
@@ -821,22 +821,22 @@ static int __compat_sys_recvmmsg(int fd, struct compat_mmsghdr __user *mmsg,
 		return __sys_recvmmsg(fd, (struct mmsghdr __user *)mmsg, vlen,
 				      flags | MSG_CMSG_COMPAT, NULL);
 
-	if (compat_get_timespec64(&ktspec, timeout))
+	if (get_timespec64(&ktspec, timeout))
 		return -EFAULT;
 
 	datagrams = __sys_recvmmsg(fd, (struct mmsghdr __user *)mmsg, vlen,
 				   flags | MSG_CMSG_COMPAT, &ktspec);
-	if (datagrams > 0 && compat_put_timespec64(&ktspec, timeout))
+	if (datagrams > 0 && put_timespec64(&ktspec, timeout))
 		datagrams = -EFAULT;
 
 	return datagrams;
 }
 
-COMPAT_SYSCALL_DEFINE5(recvmmsg, int, fd, struct compat_mmsghdr __user *, mmsg,
+COMPAT_SYSCALL_DEFINE5(recvmmsg_time64, int, fd, struct compat_mmsghdr __user *, mmsg,
 		       unsigned int, vlen, unsigned int, flags,
-		       struct compat_timespec __user *, timeout)
+		       struct __kernel_timespec __user *, timeout)
 {
-	return __compat_sys_recvmmsg(fd, mmsg, vlen, flags, timeout);
+	return __compat_sys_recvmmsg_time64(fd, mmsg, vlen, flags, timeout);
 }
 
 COMPAT_SYSCALL_DEFINE2(socketcall, int, call, u32 __user *, args)

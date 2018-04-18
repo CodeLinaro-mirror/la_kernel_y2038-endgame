@@ -2,8 +2,8 @@
 #ifndef _LINUX_SOCKET_H
 #define _LINUX_SOCKET_H
 
-
 #include <asm/socket.h>			/* arch-dependent defines	*/
+#include <linux/errno.h>
 #include <linux/sockios.h>		/* the SIOCxxx I/O controls	*/
 #include <linux/uio.h>			/* iovec support		*/
 #include <linux/types.h>		/* pid_t			*/
@@ -346,6 +346,7 @@ extern int move_addr_to_kernel(void __user *uaddr, int ulen, struct sockaddr_sto
 extern int put_cmsg(struct msghdr*, int level, int type, int len, void *data);
 
 struct timespec64;
+struct compat_timespec;
 
 /* The __sys_...msg variants allow MSG_CMSG_COMPAT iff
  * forbid_cmsg_compat==false
@@ -356,6 +357,18 @@ extern long __sys_sendmsg(int fd, struct user_msghdr __user *msg,
 			  unsigned int flags, bool forbid_cmsg_compat);
 extern int __sys_recvmmsg(int fd, struct mmsghdr __user *mmsg, unsigned int vlen,
 			  unsigned int flags, struct timespec64 *timeout);
+#ifdef CONFIG_COMPAT_32BIT_TIME
+extern int __compat_sys_recvmmsg(int fd, struct mmsghdr __user *mmsg,
+				 unsigned int vlen, unsigned int flags,
+				 struct compat_timespec __user *timeout);
+#else
+static inline int __compat_sys_recvmmsg(int fd, struct mmsghdr __user *mmsg,
+					unsigned int vlen, unsigned int flags,
+					struct compat_timespec __user *timeout)
+{
+	return -EINVAL;
+}
+#endif
 extern int __sys_sendmmsg(int fd, struct mmsghdr __user *mmsg,
 			  unsigned int vlen, unsigned int flags,
 			  bool forbid_cmsg_compat);
