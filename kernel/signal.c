@@ -3027,7 +3027,22 @@ int copy_siginfo_from_user32(struct siginfo *to,
 	}
 	return 0;
 }
-#endif /* CONFIG_COMPAT */
+
+#else /* !CONFIG_COMPAT */
+
+/* 32-bit architectures only need to convert compat_time_t, not siginfo or sigset_t */
+
+#define compat_siginfo siginfo
+#define compat_sigset_t sigset_t
+#define copy_siginfo_to_user32 copy_siginfo_to_user
+static inline int get_compat_sigset(sigset_t *set, const sigset_t __user *compat)
+{
+	if (copy_from_user(set, compat, sizeof *set))
+		return -EFAULT;
+
+	return 0;
+}
+#endif /* !CONFIG_COMPAT */
 
 /**
  *  do_sigtimedwait - wait for queued signals specified in @which
@@ -3125,7 +3140,7 @@ SYSCALL_DEFINE4(rt_sigtimedwait, const sigset_t __user *, uthese,
 	return ret;
 }
 
-#ifdef CONFIG_COMPAT
+#ifdef CONFIG_COMPAT_32BIT_TIME
 COMPAT_SYSCALL_DEFINE4(rt_sigtimedwait, compat_sigset_t __user *, uthese,
 		struct compat_siginfo __user *, uinfo,
 		struct compat_timespec __user *, uts, compat_size_t, sigsetsize)
