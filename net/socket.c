@@ -2527,6 +2527,37 @@ SYSCALL_DEFINE5(recvmmsg, int, fd, struct mmsghdr __user *, mmsg,
 	return do_sys_recvmmsg(fd, mmsg, vlen, flags, timeout);
 }
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
+int __compat_sys_recvmmsg(int fd, struct mmsghdr __user *mmsg,
+			  unsigned int vlen, unsigned int flags,
+			  struct compat_timespec __user *timeout)
+{
+	int datagrams;
+	struct timespec64 ktspec;
+
+	if (timeout == NULL)
+		return __sys_recvmmsg(fd, (struct mmsghdr __user *)mmsg, vlen,
+				      flags | MSG_CMSG_COMPAT, NULL);
+
+	if (compat_get_timespec64(&ktspec, timeout))
+		return -EFAULT;
+
+	datagrams = __sys_recvmmsg(fd, (struct mmsghdr __user *)mmsg, vlen,
+				   flags | MSG_CMSG_COMPAT, &ktspec);
+	if (datagrams > 0 && compat_put_timespec64(&ktspec, timeout))
+		datagrams = -EFAULT;
+
+	return datagrams;
+}
+
+COMPAT_SYSCALL_DEFINE5(recvmmsg, int, fd, struct mmsghdr __user *, mmsg,
+		       unsigned int, vlen, unsigned int, flags,
+		       struct compat_timespec __user *, timeout)
+{
+	return __compat_sys_recvmmsg(fd, mmsg, vlen, flags, timeout);
+}
+#endif
+
 #ifdef __ARCH_WANT_SYS_SOCKETCALL
 /* Argument list sizes for sys_socketcall */
 #define AL(x) ((x) * sizeof(unsigned long))
@@ -2644,8 +2675,12 @@ SYSCALL_DEFINE2(socketcall, int, call, unsigned long __user *, args)
 				    a[2], true);
 		break;
 	case SYS_RECVMMSG:
-		err = do_sys_recvmmsg(a0, (struct mmsghdr __user *)a1, a[2],
-				      a[3], (struct __kernel_timespec __user *)a[4]);
+		if (IS_ENABLED(CONFIG_64BIT) || !IS_ENABLED(CONFIG_64BIT_TIME))
+			err = do_sys_recvmmsg(a0, (struct mmsghdr __user *)a1, a[2],
+					      a[3], (struct __kernel_timespec __user *)a[4]);
+		else
+			err = __compat_sys_recvmmsg(a0, (struct mmsghdr __user *)a1, a[2],
+					      a[3], (struct compat_timespec __user *)a[4]);
 		break;
 	case SYS_ACCEPT4:
 		err = __sys_accept4(a0, (struct sockaddr __user *)a1,
