@@ -11,7 +11,7 @@
 #include <linux/uaccess.h>
 
 struct task_struct;
-struct rusage;
+struct __kernel_rusage;
 union thread_union;
 
 /* All the bits taken by the old clone syscall. */
@@ -94,7 +94,7 @@ extern long do_fork(unsigned long, unsigned long, unsigned long, int __user *, i
 struct task_struct *fork_idle(int);
 struct mm_struct *copy_init_mm(void);
 extern pid_t kernel_thread(int (*fn)(void *), void *arg, unsigned long flags);
-extern long kernel_wait4(pid_t, int __user *, int, struct rusage *);
+extern long kernel_wait4(pid_t, int __user *, int, struct __kernel_rusage *);
 
 extern void free_task(struct task_struct *tsk);
 
