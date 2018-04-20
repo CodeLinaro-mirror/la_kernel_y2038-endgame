@@ -701,7 +701,7 @@ SYSCALL_DEFINE5(select, int, n, fd_set __user *, inp, fd_set __user *, outp,
 }
 
 static long do_pselect(int n, fd_set __user *inp, fd_set __user *outp,
-		       fd_set __user *exp, struct timespec __user *tsp,
+		       fd_set __user *exp, struct __kernel_timespec __user *tsp,
 		       const sigset_t __user *sigmask, size_t sigsetsize)
 {
 	sigset_t ksigmask, sigsaved;
@@ -755,7 +755,7 @@ static long do_pselect(int n, fd_set __user *inp, fd_set __user *outp,
  * the sigset size.
  */
 SYSCALL_DEFINE6(pselect6, int, n, fd_set __user *, inp, fd_set __user *, outp,
-		fd_set __user *, exp, struct timespec __user *, tsp,
+		fd_set __user *, exp, struct __kernel_timespec __user *, tsp,
 		void __user *, sig)
 {
 	size_t sigsetsize = 0;
@@ -1045,7 +1045,7 @@ SYSCALL_DEFINE3(poll, struct pollfd __user *, ufds, unsigned int, nfds,
 }
 
 SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds, unsigned int, nfds,
-		struct timespec __user *, tsp, const sigset_t __user *, sigmask,
+		struct __kernel_timespec __user *, tsp, const sigset_t __user *, sigmask,
 		size_t, sigsetsize)
 {
 	sigset_t ksigmask, sigsaved;
@@ -1095,7 +1095,7 @@ SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds, unsigned int, nfds,
 	return ret;
 }
 
-#ifdef CONFIG_COMPAT
+#ifdef CONFIG_COMPAT_32BIT_TIME
 #define __COMPAT_NFDBITS       (8 * sizeof(compat_ulong_t))
 
 static
@@ -1145,6 +1145,7 @@ sticky:
 	return ret;
 }
 
+#ifdef CONFIG_COMPAT
 /*
  * Ooo, nasty.  We need here to frob 32-bit unsigned longs to
  * 64-bit unsigned longs.
@@ -1169,7 +1170,17 @@ int compat_set_fd_set(unsigned long nr, compat_ulong_t __user *ufdset,
 		return 0;
 	return compat_put_bitmap(ufdset, fdset, nr);
 }
+#else
+#define compat_get_fd_set get_fd_set
+#define compat_set_fd_set set_fd_set
+static inline int get_compat_sigset(sigset_t *set, const sigset_t __user *compat)
+{
+        if (copy_from_user(set, compat, sizeof *set))
+                return -EFAULT;
 
+        return 0;
+}
+#endif
 
 /*
  * This is a virtual copy of sys_select from fs/select.c and probably
