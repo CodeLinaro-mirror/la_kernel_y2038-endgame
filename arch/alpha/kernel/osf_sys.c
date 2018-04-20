@@ -1177,7 +1177,7 @@ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
 		struct rusage32 __user *, ur)
 {
 	struct rusage32 r32;
-	struct rusage r;
+	struct __kernel_rusage r;
 	long err = kernel_wait4(pid, ustatus, options, &r);
 	if (err <= 0)
 		return err;
