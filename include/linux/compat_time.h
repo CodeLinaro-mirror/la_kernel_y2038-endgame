@@ -22,6 +22,11 @@ struct compat_itimerspec {
 	struct compat_timespec it_value;
 };
 
+struct compat_itimerval {
+	struct compat_timeval	it_interval;
+	struct compat_timeval	it_value;
+};
+
 struct compat_utimbuf {
 	compat_time_t	actime;
 	compat_time_t	modtime;
@@ -33,5 +38,11 @@ extern int get_compat_itimerspec64(struct itimerspec64 *its,
 			const struct compat_itimerspec __user *uits);
 extern int put_compat_itimerspec64(const struct itimerspec64 *its,
 			struct compat_itimerspec __user *uits);
+
+extern int compat_get_timeval(struct timeval *, const void __user *);
+extern int compat_put_timeval(const struct timeval *, void __user *);
+struct itimerval;
+extern int get_compat_itimerval(struct itimerval *, const struct compat_itimerval __user *);
+extern int put_compat_itimerval(struct compat_itimerval __user *, const struct itimerval *);
 
 #endif /* _LINUX_COMPAT_TIME_H */
