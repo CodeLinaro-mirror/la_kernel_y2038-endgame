@@ -1699,7 +1699,7 @@ SYSCALL_DEFINE2(setrlimit, unsigned int, resource, struct rlimit __user *, rlim)
  *
  */
 
-static void accumulate_thread_rusage(struct task_struct *t, struct rusage *r)
+static void accumulate_thread_rusage(struct task_struct *t, struct __kernel_rusage *r)
 {
 	r->ru_nvcsw += t->nvcsw;
 	r->ru_nivcsw += t->nivcsw;
@@ -1709,12 +1709,13 @@ static void accumulate_thread_rusage(struct task_struct *t, struct rusage *r)
 	r->ru_oublock += task_io_get_oublock(t);
 }
 
-void getrusage(struct task_struct *p, int who, struct rusage *r)
+void getrusage(struct task_struct *p, int who, struct __kernel_rusage *r)
 {
 	struct task_struct *t;
 	unsigned long flags;
 	u64 tgutime, tgstime, utime, stime;
 	unsigned long maxrss = 0;
+	struct timespec64 ts;
 
 	memset((char *)r, 0, sizeof (*r));
 	utime = stime = 0;
@@ -1769,8 +1770,12 @@ void getrusage(struct task_struct *p, int who, struct rusage *r)
 	unlock_task_sighand(p, &flags);
 
 out:
-	r->ru_utime = ns_to_kernel_old_timeval(utime);
-	r->ru_stime = ns_to_kernel_old_timeval(stime);
+	ts = ns_to_timespec64(utime);
+	r->ru_utime.tv_sec = ts.tv_sec;
+	r->ru_utime.tv_usec = ts.tv_nsec / NSEC_PER_USEC;
+	ts = ns_to_timespec64(stime);
+	r->ru_stime.tv_sec = ts.tv_sec;
+	r->ru_stime.tv_usec = ts.tv_nsec / NSEC_PER_USEC;
 
 	if (who != RUSAGE_CHILDREN) {
 		struct mm_struct *mm = get_task_mm(p);
@@ -1783,9 +1788,53 @@ out:
 	r->ru_maxrss = maxrss * (PAGE_SIZE / 1024); /* convert pages to KBs */
 }
 
-SYSCALL_DEFINE2(getrusage, int, who, struct rusage __user *, ru)
+int put_rusage(const struct __kernel_rusage *rk, struct rusage __user *ru)
 {
 	struct rusage r;
+
+	if (IS_ENABLED(CONFIG_64BIT))
+		return copy_to_user(ru, &rk, sizeof(rk)) ? -EFAULT : 0;
+
+	memset(&r, 0, sizeof(r));
+	r.ru_utime.tv_sec = rk->ru_utime.tv_sec;
+	r.ru_utime.tv_usec = rk->ru_utime.tv_usec;
+	r.ru_stime.tv_sec = rk->ru_stime.tv_sec;
+	r.ru_stime.tv_usec = rk->ru_stime.tv_usec;
+	r.ru_maxrss = rk->ru_maxrss;
+	r.ru_ixrss = rk->ru_ixrss;
+	r.ru_idrss = rk->ru_idrss;
+	r.ru_isrss = rk->ru_isrss;
+	r.ru_minflt = rk->ru_minflt;
+	r.ru_majflt = rk->ru_majflt;
+	r.ru_nswap = rk->ru_nswap;
+	r.ru_inblock = rk->ru_inblock;
+	r.ru_oublock = rk->ru_oublock;
+	r.ru_msgsnd = rk->ru_msgsnd;
+	r.ru_msgrcv = rk->ru_msgrcv;
+	r.ru_nsignals = rk->ru_nsignals;
+	r.ru_nvcsw = rk->ru_nvcsw;
+	r.ru_nivcsw = rk->ru_nivcsw;
+	if (copy_to_user(ru, &r, sizeof(r)))
+		return -EFAULT;
+	return 0;
+}
+
+SYSCALL_DEFINE2(getrusage, int, who, struct rusage __user *, ru)
+{
+	struct __kernel_rusage r;
+
+	if (who != RUSAGE_SELF && who != RUSAGE_CHILDREN &&
+	    who != RUSAGE_THREAD)
+		return -EINVAL;
+
+	getrusage(current, who, &r);
+	return put_rusage(&r, ru);
+}
+
+#ifndef CONFIG_64BIT
+SYSCALL_DEFINE2(getrusage_time64, int, who, struct __kernel_rusage __user *, ru)
+{
+	struct __kernel_rusage r;
 
 	if (who != RUSAGE_SELF && who != RUSAGE_CHILDREN &&
 	    who != RUSAGE_THREAD)
@@ -1794,11 +1843,12 @@ SYSCALL_DEFINE2(getrusage, int, who, struct rusage __user *, ru)
 	getrusage(current, who, &r);
 	return copy_to_user(ru, &r, sizeof(r)) ? -EFAULT : 0;
 }
+#endif
 
 #ifdef CONFIG_COMPAT
 COMPAT_SYSCALL_DEFINE2(getrusage, int, who, struct compat_rusage __user *, ru)
 {
-	struct rusage r;
+	struct __kernel_rusage r;
 
 	if (who != RUSAGE_SELF && who != RUSAGE_CHILDREN &&
 	    who != RUSAGE_THREAD)
@@ -1806,6 +1856,18 @@ COMPAT_SYSCALL_DEFINE2(getrusage, int, who, struct compat_rusage __user *, ru)
 
 	getrusage(current, who, &r);
 	return put_compat_rusage(&r, ru);
+}
+
+COMPAT_SYSCALL_DEFINE2(getrusage_time64, int, who, struct compat_rusage_time64 __user *, ru)
+{
+	struct __kernel_rusage r;
+
+	if (who != RUSAGE_SELF && who != RUSAGE_CHILDREN &&
+	    who != RUSAGE_THREAD)
+		return -EINVAL;
+
+	getrusage(current, who, &r);
+	return put_compat_rusage_time64(&r, ru);
 }
 #endif
 

@@ -1185,7 +1185,7 @@ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
 {
 	unsigned int status = 0;
 	struct rusage32 r32;
-	struct rusage r;
+	struct __kernel_rusage r;
 	long err = kernel_wait4(pid, &status, options, &r);
 	if (err <= 0)
 		return err;
