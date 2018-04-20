@@ -118,7 +118,7 @@ SYSCALL_DEFINE2(getitimer, int, which, struct itimerval __user *, value)
 	return error;
 }
 
-#ifdef CONFIG_COMPAT
+#ifdef CONFIG_COMPAT_32BIT_TIME
 COMPAT_SYSCALL_DEFINE2(getitimer, int, which,
 		       struct compat_itimerval __user *, it)
 {
@@ -314,7 +314,7 @@ SYSCALL_DEFINE3(setitimer, int, which, struct itimerval __user *, value,
 	return 0;
 }
 
-#ifdef CONFIG_COMPAT
+#ifdef CONFIG_COMPAT_32BIT_TIME
 COMPAT_SYSCALL_DEFINE3(setitimer, int, which,
 		       struct compat_itimerval __user *, in,
 		       struct compat_itimerval __user *, out)

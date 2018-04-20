@@ -154,10 +154,6 @@ SYSCALL_DEFINE4(clock_nanosleep, const clockid_t, which_clock, int, flags,
 #ifdef CONFIG_COMPAT
 COMPAT_SYS_NI(timer_create);
 COMPAT_SYS_NI(clock_adjtime);
-COMPAT_SYS_NI(timer_settime);
-COMPAT_SYS_NI(timer_gettime);
-COMPAT_SYS_NI(getitimer);
-COMPAT_SYS_NI(setitimer);
 #endif
 
 #ifdef CONFIG_COMPAT_32BIT_TIME
@@ -236,4 +232,10 @@ COMPAT_SYSCALL_DEFINE4(clock_nanosleep, clockid_t, which_clock, int, flags,
 				 HRTIMER_MODE_ABS : HRTIMER_MODE_REL,
 				 which_clock);
 }
+
+COMPAT_SYS_NI(getitimer);
+COMPAT_SYS_NI(setitimer);
+COMPAT_SYS_NI(timer_settime);
+COMPAT_SYS_NI(timer_gettime);
+
 #endif
