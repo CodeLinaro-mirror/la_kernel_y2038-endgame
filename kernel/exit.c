@@ -948,7 +948,7 @@ struct wait_opts {
 
 	struct waitid_info	*wo_info;
 	int			wo_stat;
-	struct rusage		*wo_rusage;
+	struct __kernel_rusage	*wo_rusage;
 
 	wait_queue_entry_t		child_wait;
 	int			notask_error;
@@ -1510,7 +1510,7 @@ static struct pid *pidfd_get_pid(unsigned int fd)
 }
 
 static long kernel_waitid(int which, pid_t upid, struct waitid_info *infop,
-			  int options, struct rusage *ru)
+			  int options, struct __kernel_rusage *ru)
 {
 	struct wait_opts wo;
 	struct pid *pid = NULL;
@@ -1571,7 +1571,7 @@ static long kernel_waitid(int which, pid_t upid, struct waitid_info *infop,
 SYSCALL_DEFINE5(waitid, int, which, pid_t, upid, struct siginfo __user *,
 		infop, int, options, struct rusage __user *, ru)
 {
-	struct rusage r;
+	struct __kernel_rusage r;
 	struct waitid_info info = {.status = 0};
 	long err = kernel_waitid(which, upid, &info, options, ru ? &r : NULL);
 	int signo = 0;
@@ -1579,7 +1579,40 @@ SYSCALL_DEFINE5(waitid, int, which, pid_t, upid, struct siginfo __user *,
 	if (err > 0) {
 		signo = SIGCHLD;
 		err = 0;
-		if (ru && copy_to_user(ru, &r, sizeof(struct rusage)))
+		if (ru && put_rusage(&r, ru))
+			return -EFAULT;
+	}
+	if (!infop)
+		return err;
+
+	if (!user_access_begin(infop, sizeof(*infop)))
+		return -EFAULT;
+
+	unsafe_put_user(signo, &infop->si_signo, Efault);
+	unsafe_put_user(0, &infop->si_errno, Efault);
+	unsafe_put_user(info.cause, &infop->si_code, Efault);
+	unsafe_put_user(info.pid, &infop->si_pid, Efault);
+	unsafe_put_user(info.uid, &infop->si_uid, Efault);
+	unsafe_put_user(info.status, &infop->si_status, Efault);
+	user_access_end();
+	return err;
+Efault:
+	user_access_end();
+	return -EFAULT;
+}
+
+SYSCALL_DEFINE5(waitid_time64, int, which, pid_t, upid, struct siginfo __user *,
+		infop, int, options, struct __kernel_rusage __user *, ru)
+{
+	struct __kernel_rusage r;
+	struct waitid_info info = {.status = 0};
+	long err = kernel_waitid(which, upid, &info, options, ru ? &r : NULL);
+	int signo = 0;
+
+	if (err > 0) {
+		signo = SIGCHLD;
+		err = 0;
+		if (ru && copy_to_user(ru, &r, sizeof(struct __kernel_rusage)))
 			return -EFAULT;
 	}
 	if (!infop)
@@ -1602,7 +1635,7 @@ Efault:
 }
 
 long kernel_wait4(pid_t upid, int __user *stat_addr, int options,
-		  struct rusage *ru)
+		  struct __kernel_rusage *ru)
 {
 	struct wait_opts wo;
 	struct pid *pid = NULL;
@@ -1647,11 +1680,24 @@ long kernel_wait4(pid_t upid, int __user *stat_addr, int options,
 SYSCALL_DEFINE4(wait4, pid_t, upid, int __user *, stat_addr,
 		int, options, struct rusage __user *, ru)
 {
-	struct rusage r;
+	struct __kernel_rusage r;
 	long err = kernel_wait4(upid, stat_addr, options, ru ? &r : NULL);
 
 	if (err > 0) {
-		if (ru && copy_to_user(ru, &r, sizeof(struct rusage)))
+		if (ru && put_rusage(&r, ru))
+			return -EFAULT;
+	}
+	return err;
+}
+
+SYSCALL_DEFINE4(wait4_time64, pid_t, upid, int __user *, stat_addr,
+		int, options, struct __kernel_rusage __user *, ru)
+{
+	struct __kernel_rusage r;
+	long err = kernel_wait4(upid, stat_addr, options, ru ? &r : NULL);
+
+	if (err > 0) {
+		if (ru && copy_to_user(ru, &r, sizeof(struct __kernel_rusage)))
 			return -EFAULT;
 	}
 	return err;
@@ -1677,10 +1723,25 @@ COMPAT_SYSCALL_DEFINE4(wait4,
 	int, options,
 	struct compat_rusage __user *, ru)
 {
-	struct rusage r;
+	struct __kernel_rusage r;
 	long err = kernel_wait4(pid, stat_addr, options, ru ? &r : NULL);
 	if (err > 0) {
 		if (ru && put_compat_rusage(&r, ru))
+			return -EFAULT;
+	}
+	return err;
+}
+
+COMPAT_SYSCALL_DEFINE4(wait4_time64,
+	compat_pid_t, pid,
+	compat_uint_t __user *, stat_addr,
+	int, options,
+	struct compat_rusage_time64 __user *, ru)
+{
+	struct __kernel_rusage r;
+	long err = kernel_wait4(pid, stat_addr, options, ru ? &r : NULL);
+	if (err > 0) {
+		if (ru && put_compat_rusage_time64(&r, ru))
 			return -EFAULT;
 	}
 	return err;
@@ -1691,7 +1752,7 @@ COMPAT_SYSCALL_DEFINE5(waitid,
 		struct compat_siginfo __user *, infop, int, options,
 		struct compat_rusage __user *, uru)
 {
-	struct rusage ru;
+	struct __kernel_rusage ru;
 	struct waitid_info info = {.status = 0};
 	long err = kernel_waitid(which, pid, &info, options, uru ? &ru : NULL);
 	int signo = 0;
@@ -1704,6 +1765,45 @@ COMPAT_SYSCALL_DEFINE5(waitid,
 				err = copy_to_user(uru, &ru, sizeof(ru));
 			else
 				err = put_compat_rusage(&ru, uru);
+			if (err)
+				return -EFAULT;
+		}
+	}
+
+	if (!infop)
+		return err;
+
+	if (!user_access_begin(infop, sizeof(*infop)))
+		return -EFAULT;
+
+	unsafe_put_user(signo, &infop->si_signo, Efault);
+	unsafe_put_user(0, &infop->si_errno, Efault);
+	unsafe_put_user(info.cause, &infop->si_code, Efault);
+	unsafe_put_user(info.pid, &infop->si_pid, Efault);
+	unsafe_put_user(info.uid, &infop->si_uid, Efault);
+	unsafe_put_user(info.status, &infop->si_status, Efault);
+	user_access_end();
+	return err;
+Efault:
+	user_access_end();
+	return -EFAULT;
+}
+
+COMPAT_SYSCALL_DEFINE5(waitid_time64,
+		int, which, compat_pid_t, pid,
+		struct compat_siginfo __user *, infop, int, options,
+		struct compat_rusage_time64 __user *, uru)
+{
+	struct __kernel_rusage ru;
+	struct waitid_info info = {.status = 0};
+	long err = kernel_waitid(which, pid, &info, options, uru ? &ru : NULL);
+	int signo = 0;
+	if (err > 0) {
+		signo = SIGCHLD;
+		err = 0;
+		if (uru) {
+			/* kernel_waitid() overwrites everything in ru */
+			err = put_compat_rusage_time64(&ru, uru);
 			if (err)
 				return -EFAULT;
 		}
