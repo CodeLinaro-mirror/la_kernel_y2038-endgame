@@ -107,20 +107,6 @@ typedef __compat_gid32_t	compat_gid_t;
 struct compat_sel_arg_struct;
 struct __kernel_rusage;
 
-struct compat_itimerspec {
-	struct compat_timespec it_interval;
-	struct compat_timespec it_value;
-};
-
-struct compat_itimerval {
-	struct compat_timeval	it_interval;
-	struct compat_timeval	it_value;
-};
-
-struct itimerval;
-int get_compat_itimerval(struct itimerval *, const struct compat_itimerval __user *);
-int put_compat_itimerval(struct compat_itimerval __user *, const struct itimerval *);
-
 struct compat_tms {
 	compat_clock_t		tms_utime;
 	compat_clock_t		tms_stime;
@@ -285,12 +271,6 @@ typedef struct compat_siginfo {
  */
 extern int compat_get_timespec(struct timespec *, const void __user *);
 extern int compat_put_timespec(const struct timespec *, void __user *);
-extern int compat_get_timeval(struct timeval *, const void __user *);
-extern int compat_put_timeval(const struct timeval *, void __user *);
-extern int get_compat_itimerspec64(struct itimerspec64 *its,
-			const struct compat_itimerspec __user *uits);
-extern int put_compat_itimerspec64(const struct itimerspec64 *its,
-			struct compat_itimerspec __user *uits);
 
 struct compat_iovec {
 	compat_uptr_t	iov_base;
