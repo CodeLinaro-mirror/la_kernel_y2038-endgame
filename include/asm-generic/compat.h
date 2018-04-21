@@ -22,4 +22,24 @@ typedef u32 compat_ulong_t;
 typedef u32 compat_uptr_t;
 typedef u32 compat_aio_context_t;
 
+/*
+ * A pointer passed in from user mode. This should not
+ * be used for syscall parameters, just declare them
+ * as pointers because the syscall entry code will have
+ * appropriately converted them already.
+ */
+#ifndef compat_ptr
+static inline void __user *compat_ptr(compat_uptr_t uptr)
+{
+	return (void __user *)(unsigned long)uptr;
+}
+#endif
+
+#ifndef ptr_to_compat
+static inline compat_uptr_t ptr_to_compat(void __user *uptr)
+{
+	return (u32)(unsigned long)uptr;
+}
+#endif
+
 #endif
