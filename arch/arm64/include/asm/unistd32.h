@@ -817,6 +817,43 @@ __SYSCALL(__NR_pkey_alloc, sys_pkey_alloc)
 __SYSCALL(__NR_pkey_free, sys_pkey_free)
 #define __NR_statx 397
 __SYSCALL(__NR_statx, sys_statx)
+/* space left to simplify rebasing */
+#define __NR_clock_gettime64 400
+__SYSCALL(__NR_clock_gettime64, sys_clock_gettime)
+#define __NR_clock_settime64 401
+__SYSCALL(__NR_clock_settime64, sys_clock_settime)
+#define __NR_clock_adjtime64 402
+__SYSCALL(__NR_clock_adjtime64, sys_clock_adjtime)
+#define __NR_clock_getres_time64 403
+__SYSCALL(__NR_clock_getres_time64, sys_clock_getres)
+#define __NR_timer_gettime64 404
+__SYSCALL(__NR_timer_gettime64, sys_timer_gettime)
+#define __NR_timer_settime64 405
+__SYSCALL(__NR_timer_settime64, sys_timer_settime)
+#define __NR_timerfd_gettime64 406
+__SYSCALL(__NR_timerfd_gettime64, sys_timerfd_gettime)
+#define __NR_timerfd_settime64 407
+__SYSCALL(__NR_timerfd_settime64, sys_timerfd_settime)
+#define __NR_pselect6_time64 408
+__SYSCALL(__NR_pselect6_time64, compat_sys_pselect6_time64)
+#define __NR_ppoll_time64 409
+__SYSCALL(__NR_ppoll_time64, compat_sys_ppoll_time64)
+#define __NR_io_getevents_time64 410
+__SYSCALL(__NR_io_getevents_time64, sys_io_getevents)
+#define __NR_recvmmsg_time64 411
+__SYSCALL(__NR_recvmmsg_time64, compat_sys_recvmmsg_time64)
+#define __NR_mq_timedsend_time64 412
+__SYSCALL(__NR_mq_timedsend_time64, sys_mq_timedsend)
+#define __NR_mq_timedreceiv_time64 413
+__SYSCALL(__NR_mq_timedreceiv_time64, sys_mq_timedreceive)
+#define __NR_utimensat_time64 415
+__SYSCALL(__NR_utimensat_time64, sys_utimensat)
+#define __NR_rt_sigtimedwait_time64 416
+__SYSCALL(__NR_rt_sigtimedwait_time64, sys_rt_sigtimedwait)
+#define __NR_futex_time64 417
+__SYSCALL(__NR_futex_time64, sys_futex)
+#define __NR_sched_rr_get_interval_time64 418
+__SYSCALL(__NR_sched_rr_get_interval_time64, sys_sched_rr_get_interval)
 
 /*
  * Please add new compat syscalls above this comment and update
