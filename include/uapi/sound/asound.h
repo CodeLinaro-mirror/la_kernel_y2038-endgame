@@ -457,6 +457,7 @@ enum {
 
 struct snd_pcm_status {
 	snd_pcm_state_t state;		/* stream state */
+	unsigned char pad1[sizeof(time_t) - sizeof(snd_pcm_state_t)]; /* align to timespec */
 	struct timespec trigger_tstamp;	/* time when stream was started/stopped/paused */
 	struct timespec tstamp;		/* reference timestamp */
 	snd_pcm_uframes_t appl_ptr;	/* appl ptr */
