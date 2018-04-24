@@ -496,19 +496,30 @@ struct snd_pcm_status {
 #define __snd_pcm_mmap_status64		snd_pcm_mmap_status
 #define __snd_pcm_mmap_control64	snd_pcm_mmap_control
 #define __snd_pcm_sync_ptr64		snd_pcm_sync_ptr
+#define __snd_timespec64		timespec
+struct __snd_timespec {
+	__s32 tv_sec;
+	__s32 tv_nsec;
+};
 #else
 #define __snd_pcm_mmap_status		snd_pcm_mmap_status
 #define __snd_pcm_mmap_control		snd_pcm_mmap_control
 #define __snd_pcm_sync_ptr		snd_pcm_sync_ptr
+#define __snd_timespec			timespec
+struct __snd_timespec64 {
+	__s64 tv_sec;
+	__s64 tv_nsec;
+};
+
 #endif
 
 struct __snd_pcm_mmap_status {
 	snd_pcm_state_t state;		/* RO: state - SNDRV_PCM_STATE_XXXX */
 	int pad1;			/* Needed for 64 bit alignment */
 	snd_pcm_uframes_t hw_ptr;	/* RO: hw ptr (0...boundary-1) */
-	struct timespec tstamp;		/* Timestamp */
+	struct __snd_timespec tstamp;	/* Timestamp */
 	snd_pcm_state_t suspended_state; /* RO: suspended stream state */
-	struct timespec audio_tstamp;	/* from sample counter or wall clock */
+	struct __snd_timespec audio_tstamp; /* from sample counter or wall clock */
 };
 
 struct __snd_pcm_mmap_control {
@@ -530,11 +541,6 @@ struct __snd_pcm_sync_ptr {
 		struct __snd_pcm_mmap_control control;
 		unsigned char reserved[64];
 	} c;
-};
-
-struct __snd_timespec64 {
-	__s64 tv_sec;
-	__s64 tv_nsec;
 };
 
 #if defined(__BYTE_ORDER) ? __BYTE_ORDER == __BIG_ENDIAN : defined(__BIG_ENDIAN)
