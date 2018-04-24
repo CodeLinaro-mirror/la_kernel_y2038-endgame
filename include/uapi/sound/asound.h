@@ -650,6 +650,7 @@ struct snd_rawmidi_params {
 
 struct snd_rawmidi_status {
 	int stream;
+	unsigned char pad1[sizeof(time_t) - sizeof(int)];
 	struct timespec tstamp;		/* Timestamp */
 	size_t avail;			/* available bytes */
 	size_t xruns;			/* count of overruns since last status (in bytes) */
