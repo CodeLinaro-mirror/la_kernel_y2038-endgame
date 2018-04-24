@@ -224,8 +224,10 @@ static int snd_pcm_status_user_compat(struct snd_pcm_substream *substream,
 	if (clear_user(src, sizeof(*src)))
 		return -EFAULT;
 	if (put_user(status.state, &src->state) ||
-	    compat_put_timespec(&status.trigger_tstamp, &src->trigger_tstamp) ||
-	    compat_put_timespec(&status.tstamp, &src->tstamp) ||
+	    put_user(status.trigger_tstamp.tv_sec, &src->trigger_tstamp.tv_sec) ||
+	    put_user(status.trigger_tstamp.tv_sec, &src->trigger_tstamp.tv_nsec) ||
+	    put_user(status.tstamp.tv_sec, &src->tstamp.tv_sec) ||
+	    put_user(status.tstamp.tv_nsec, &src->tstamp.tv_nsec) ||
 	    put_user(status.appl_ptr, &src->appl_ptr) ||
 	    put_user(status.hw_ptr, &src->hw_ptr) ||
 	    put_user(status.delay, &src->delay) ||
@@ -234,8 +236,10 @@ static int snd_pcm_status_user_compat(struct snd_pcm_substream *substream,
 	    put_user(status.overrange, &src->overrange) ||
 	    put_user(status.suspended_state, &src->suspended_state) ||
 	    put_user(status.audio_tstamp_data, &src->audio_tstamp_data) ||
-	    compat_put_timespec(&status.audio_tstamp, &src->audio_tstamp) ||
-	    compat_put_timespec(&status.driver_tstamp, &src->driver_tstamp) ||
+	    put_user(status.audio_tstamp.tv_sec, &src->audio_tstamp.tv_sec) ||
+	    put_user(status.audio_tstamp.tv_nsec, &src->audio_tstamp.tv_nsec) ||
+	    put_user(status.driver_tstamp.tv_sec, &src->driver_tstamp.tv_sec) ||
+	    put_user(status.driver_tstamp.tv_nsec, &src->driver_tstamp.tv_nsec) ||
 	    put_user(status.audio_tstamp_accuracy, &src->audio_tstamp_accuracy))
 		return -EFAULT;
 
@@ -247,8 +251,8 @@ static int snd_pcm_status_user_compat(struct snd_pcm_substream *substream,
 struct snd_pcm_status_x32 {
 	s32 state;
 	u32 rsvd; /* alignment */
-	struct timespec trigger_tstamp;
-	struct timespec tstamp;
+	struct __kernel_timespec trigger_tstamp;
+	struct __kernel_timespec tstamp;
 	u32 appl_ptr;
 	u32 hw_ptr;
 	s32 delay;
@@ -257,8 +261,8 @@ struct snd_pcm_status_x32 {
 	u32 overrange;
 	s32 suspended_state;
 	u32 audio_tstamp_data;
-	struct timespec audio_tstamp;
-	struct timespec driver_tstamp;
+	struct __kernel_timespec audio_tstamp;
+	struct __kernel_timespec driver_tstamp;
 	u32 audio_tstamp_accuracy;
 	unsigned char reserved[52-2*sizeof(struct timespec)];
 } __packed;
@@ -288,8 +292,10 @@ static int snd_pcm_status_user_x32(struct snd_pcm_substream *substream,
 	if (clear_user(src, sizeof(*src)))
 		return -EFAULT;
 	if (put_user(status.state, &src->state) ||
-	    put_timespec(&status.trigger_tstamp, &src->trigger_tstamp) ||
-	    put_timespec(&status.tstamp, &src->tstamp) ||
+	    put_user(status.trigger_tstamp.tv_sec, &src->trigger_tstamp.tv_sec) ||
+	    put_user(status.trigger_tstamp.tv_sec, &src->trigger_tstamp.tv_nsec) ||
+	    put_user(status.tstamp.tv_sec, &src->tstamp.tv_sec) ||
+	    put_user(status.tstamp.tv_nsec, &src->tstamp.tv_nsec) ||
 	    put_user(status.appl_ptr, &src->appl_ptr) ||
 	    put_user(status.hw_ptr, &src->hw_ptr) ||
 	    put_user(status.delay, &src->delay) ||
@@ -298,8 +304,10 @@ static int snd_pcm_status_user_x32(struct snd_pcm_substream *substream,
 	    put_user(status.overrange, &src->overrange) ||
 	    put_user(status.suspended_state, &src->suspended_state) ||
 	    put_user(status.audio_tstamp_data, &src->audio_tstamp_data) ||
-	    put_timespec(&status.audio_tstamp, &src->audio_tstamp) ||
-	    put_timespec(&status.driver_tstamp, &src->driver_tstamp) ||
+	    put_user(status.audio_tstamp.tv_sec, &src->audio_tstamp.tv_sec) ||
+	    put_user(status.audio_tstamp.tv_nsec, &src->audio_tstamp.tv_nsec) ||
+	    put_user(status.driver_tstamp.tv_sec, &src->driver_tstamp.tv_sec) ||
+	    put_user(status.driver_tstamp.tv_nsec, &src->driver_tstamp.tv_nsec) ||
 	    put_user(status.audio_tstamp_accuracy, &src->audio_tstamp_accuracy))
 		return -EFAULT;
 
