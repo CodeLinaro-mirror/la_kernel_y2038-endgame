@@ -55,7 +55,7 @@ static int snd_rawmidi_ioctl_params_compat(struct snd_rawmidi_file *rfile,
 
 struct snd_rawmidi_status32 {
 	s32 stream;
-	struct compat_timespec tstamp;
+	struct snd_monotonic_timestamp tstamp;
 	u32 avail;
 	u32 xruns;
 	unsigned char reserved[16];
@@ -85,7 +85,8 @@ static int snd_rawmidi_ioctl_status_compat(struct snd_rawmidi_file *rfile,
 	if (err < 0)
 		return err;
 
-	if (compat_put_timespec(&status.tstamp, &src->tstamp) ||
+	if (put_user(status.tstamp.tv_sec, &src->tstamp.tv_sec) ||
+	    put_user(status.tstamp.tv_nsec, &src->tstamp.tv_nsec) ||
 	    put_user(status.avail, &src->avail) ||
 	    put_user(status.xruns, &src->xruns))
 		return -EFAULT;
@@ -98,13 +99,11 @@ static int snd_rawmidi_ioctl_status_compat(struct snd_rawmidi_file *rfile,
 struct snd_rawmidi_status_x32 {
 	s32 stream;
 	u32 rsvd; /* alignment */
-	struct timespec tstamp;
+	struct __kernel_timespec tstamp;
 	u32 avail;
 	u32 xruns;
 	unsigned char reserved[16];
 } __attribute__((packed));
-
-#define put_timespec(src, dst) copy_to_user(dst, src, sizeof(*dst))
 
 static int snd_rawmidi_ioctl_status_x32(struct snd_rawmidi_file *rfile,
 					struct snd_rawmidi_status_x32 __user *src)
@@ -130,7 +129,8 @@ static int snd_rawmidi_ioctl_status_x32(struct snd_rawmidi_file *rfile,
 	if (err < 0)
 		return err;
 
-	if (put_timespec(&status.tstamp, &src->tstamp) ||
+	if (put_user(status.tstamp.tv_sec, &src->tstamp.tv_sec) ||
+	    put_user(status.tstamp.tv_nsec, &src->tstamp.tv_nsec) ||
 	    put_user(status.avail, &src->avail) ||
 	    put_user(status.xruns, &src->xruns))
 		return -EFAULT;

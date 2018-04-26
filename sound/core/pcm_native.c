@@ -925,14 +925,13 @@ int snd_pcm_status(struct snd_pcm_substream *substream,
 	status->suspended_state = runtime->status->suspended_state;
 	if (status->state == SNDRV_PCM_STATE_OPEN)
 		goto _end;
-	status->trigger_tstamp = timespec64_to_timespec(runtime->trigger_tstamp);
+	status->trigger_tstamp = timespec64_to_snd_monotonic_timestamp(runtime->trigger_tstamp);
 	if (snd_pcm_running(substream)) {
 		snd_pcm_update_hw_ptr(substream);
 		if (runtime->tstamp_mode == SNDRV_PCM_TSTAMP_ENABLE) {
 			status->tstamp = runtime->status->tstamp;
-			status->driver_tstamp = timespec64_to_timespec(runtime->driver_tstamp);
-			status->audio_tstamp =
-				runtime->status->audio_tstamp;
+			status->driver_tstamp = timespec64_to_snd_monotonic_timestamp(runtime->driver_tstamp);
+			status->audio_tstamp = runtime->status->audio_tstamp;
 			if (runtime->audio_tstamp_report.valid == 1)
 				/* backwards compatibility, no report provided in COMPAT mode */
 				snd_pcm_pack_audio_tstamp_report(&status->audio_tstamp_data,
@@ -947,7 +946,7 @@ int snd_pcm_status(struct snd_pcm_substream *substream,
 			struct timespec64 tstamp;
 
 			snd_pcm_gettime(runtime, &tstamp);
-			status->tstamp = timespec64_to_timespec(tstamp);
+			status->tstamp = timespec64_to_snd_monotonic_timestamp(tstamp);
 		}
 	}
  _tstamp_end:
