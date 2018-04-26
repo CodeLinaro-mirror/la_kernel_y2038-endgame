@@ -543,7 +543,11 @@ static int azx_get_time_info(struct snd_pcm_substream *substream,
 			break;
 
 		default:
+#ifdef CONFIG_SND_TSTAMP_REALTIME
 			*system_ts = ktime_to_timespec64(xtstamp.sys_realtime);
+#else
+			*system_ts = ktime_to_timespec64(xtstamp.sys_monoraw);
+#endif
 			break;
 
 		}
