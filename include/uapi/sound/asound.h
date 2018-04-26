@@ -542,8 +542,10 @@ struct snd_xfern {
 };
 
 enum {
+#if !(__BITS_PER_LONG == 32 && defined(__USE_TIME_BITS64))
 	SNDRV_PCM_TSTAMP_TYPE_GETTIMEOFDAY = 0,	/* gettimeofday equivalent */
-	SNDRV_PCM_TSTAMP_TYPE_MONOTONIC,	/* posix_clock_monotonic equivalent */
+#endif
+	SNDRV_PCM_TSTAMP_TYPE_MONOTONIC = 1,	/* posix_clock_monotonic equivalent */
 	SNDRV_PCM_TSTAMP_TYPE_MONOTONIC_RAW,    /* monotonic_raw (no NTP) */
 	SNDRV_PCM_TSTAMP_TYPE_LAST = SNDRV_PCM_TSTAMP_TYPE_MONOTONIC_RAW,
 };

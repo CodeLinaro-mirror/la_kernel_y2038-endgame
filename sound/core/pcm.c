@@ -1028,6 +1028,9 @@ int snd_pcm_attach_substream(struct snd_pcm *pcm, int stream,
 
 	init_waitqueue_head(&runtime->sleep);
 	init_waitqueue_head(&runtime->tsleep);
+#ifdef CONFIG_SND_TSTAMP_REALTIME
+	runtime->tstamp_type = SNDRV_PCM_TSTAMP_TYPE_MONOTONIC_RAW;
+#endif
 
 	runtime->status->state = SNDRV_PCM_STATE_OPEN;
 
