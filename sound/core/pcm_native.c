@@ -840,6 +840,11 @@ static int snd_pcm_sw_params(struct snd_pcm_substream *substream,
 	if (params->proto >= SNDRV_PROTOCOL_VERSION(2, 0, 12) &&
 	    params->tstamp_type > SNDRV_PCM_TSTAMP_TYPE_LAST)
 		return -EINVAL;
+#ifndef CONFIG_SND_TSTAMP_REALTIME
+	/* all other types are invalid here, and fall back to raw mono */
+	if (params->tstamp_type != SNDRV_PCM_TSTAMP_TYPE_MONOTONIC)
+		params->tstamp_type = SNDRV_PCM_TSTAMP_TYPE_MONOTONIC_RAW;
+#endif
 	if (params->avail_min == 0)
 		return -EINVAL;
 	if (params->silence_size >= runtime->boundary) {
@@ -2758,6 +2763,11 @@ static int snd_pcm_tstamp(struct snd_pcm_substream *substream, int __user *_arg)
 		return -EFAULT;
 	if (arg < 0 || arg > SNDRV_PCM_TSTAMP_TYPE_LAST)
 		return -EINVAL;
+#ifndef CONFIG_SND_TSTAMP_REALTIME
+	/* all other types are invalid here, and fall back to raw mono */
+	if (arg != SNDRV_PCM_TSTAMP_TYPE_MONOTONIC)
+		arg = SNDRV_PCM_TSTAMP_TYPE_MONOTONIC_RAW;
+#endif
 	runtime->tstamp_type = arg;
 	return 0;
 }

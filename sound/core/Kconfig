@@ -100,6 +100,17 @@ config SND_HRTIMER
 	  To compile this driver as a module, choose M here: the module
 	  will be called snd-hrtimer.
 
+config SND_TSTAMP_REALTIME
+	bool "allow CLOCK_REALTIME timestamps"
+	help
+	  Say Y here if you have user space applications that rely on
+	  the traditional CLOCK_REALTIME based timestamps rather than
+	  using CLOCK_MONOTONIC or CLOCK_MONOTONIC_RAW.
+	  CLOCK_REALTIME has problems with overflow in year 2038, with
+	  leap seconds and concurrent time updates (e.g. through NTP).
+
+	  If unsure, say N.
+
 config SND_DYNAMIC_MINORS
 	bool "Dynamic device file minor numbers"
 	help
