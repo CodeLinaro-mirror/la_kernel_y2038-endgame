@@ -37,4 +37,12 @@
 #endif
 
 #include <uapi/sound/asound.h>
+
+
+static inline struct snd_monotonic_timestamp
+timespec64_to_snd_monotonic_timestamp(struct timespec64 ts)
+{
+	return (struct snd_monotonic_timestamp) { (u32)ts.tv_sec, ts.tv_nsec };
+};
+
 #endif /* __SOUND_ASOUND_H */
