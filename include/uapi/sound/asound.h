@@ -455,10 +455,36 @@ enum {
 	SNDRV_PCM_AUDIO_TSTAMP_TYPE_LAST = SNDRV_PCM_AUDIO_TSTAMP_TYPE_LINK_SYNCHRONIZED
 };
 
+#if (__BITS_PER_LONG == 32 && defined(__USE_TIME_BITS64)) || defined __KERNEL__
+/*
+ * We used to use 'struct timespec' here, but that no longer works on
+ * 32 bit architectures since the migration to 64-bit time_t in user
+ * space. Rather than updating all ioctls, we change the internal type
+ * to a new one with the same binary layout as before.
+ *
+ * We use a 'unsigned long' as the base type here to give us a little
+ * extra range over the traditional signed type, but this really
+ * should only be used for CLOCK_MONOTONIC timestamps, not CLOCK_REALTIME,
+ * to avoid all issues with y2038 overflow, hence the name.
+ *
+ * alsa-lib 1.1.6 and earlier are incompatible with this definition and
+ * will break either at compile time or at runtime if built against
+ * an older header while using a 64-bit time_t on a 32-bit architecture,
+ * so if you run into a build problem here, please upgrade to the latest
+ * alsa-lib.
+ */
+struct snd_monotonic_timestamp {
+	__kernel_ulong_t tv_sec;
+	__kernel_ulong_t tv_nsec;
+};
+#else
+#define snd_monotonic_timestamp timespec
+#endif
+
 struct snd_pcm_status {
 	snd_pcm_state_t state;		/* stream state */
-	struct timespec trigger_tstamp;	/* time when stream was started/stopped/paused */
-	struct timespec tstamp;		/* reference timestamp */
+	struct snd_monotonic_timestamp trigger_tstamp;/* time when stream was started/stopped/paused */
+	struct snd_monotonic_timestamp tstamp;	/* reference timestamp */
 	snd_pcm_uframes_t appl_ptr;	/* appl ptr */
 	snd_pcm_uframes_t hw_ptr;	/* hw ptr */
 	snd_pcm_sframes_t delay;	/* current delay in frames */
@@ -467,19 +493,19 @@ struct snd_pcm_status {
 	snd_pcm_uframes_t overrange;	/* count of ADC (capture) overrange detections from last status */
 	snd_pcm_state_t suspended_state; /* suspended stream state */
 	__u32 audio_tstamp_data;	 /* needed for 64-bit alignment, used for configs/report to/from userspace */
-	struct timespec audio_tstamp;	/* sample counter, wall clock, PHC or on-demand sync'ed */
-	struct timespec driver_tstamp;	/* useful in case reference system tstamp is reported with delay */
+	struct snd_monotonic_timestamp audio_tstamp;	/* sample counter, wall clock, PHC or on-demand sync'ed */
+	struct snd_monotonic_timestamp driver_tstamp;	/* useful in case reference system tstamp is reported with delay */
 	__u32 audio_tstamp_accuracy;	/* in ns units, only valid if indicated in audio_tstamp_data */
-	unsigned char reserved[52-2*sizeof(struct timespec)]; /* must be filled with zero */
+	unsigned char reserved[52-2*sizeof(struct snd_monotonic_timestamp)]; /* must be filled with zero */
 };
 
 struct snd_pcm_mmap_status {
 	snd_pcm_state_t state;		/* RO: state - SNDRV_PCM_STATE_XXXX */
 	int pad1;			/* Needed for 64 bit alignment */
 	snd_pcm_uframes_t hw_ptr;	/* RO: hw ptr (0...boundary-1) */
-	struct timespec tstamp;		/* Timestamp */
+	struct snd_monotonic_timestamp tstamp; /* Timestamp */
 	snd_pcm_state_t suspended_state; /* RO: suspended stream state */
-	struct timespec audio_tstamp;	/* from sample counter or wall clock */
+	struct snd_monotonic_timestamp audio_tstamp;	/* from sample counter or wall clock */
 };
 
 struct snd_pcm_mmap_control {
@@ -649,7 +675,7 @@ struct snd_rawmidi_params {
 
 struct snd_rawmidi_status {
 	int stream;
-	struct timespec tstamp;		/* Timestamp */
+	struct snd_monotonic_timestamp tstamp; /* Timestamp */
 	size_t avail;			/* available bytes */
 	size_t xruns;			/* count of overruns since last status (in bytes) */
 	unsigned char reserved[16];	/* reserved for future use */
@@ -761,7 +787,7 @@ struct snd_timer_params {
 };
 
 struct snd_timer_status {
-	struct timespec tstamp;		/* Timestamp - last update */
+	struct snd_monotonic_timestamp tstamp;		/* Timestamp - last update */
 	unsigned int resolution;	/* current period resolution in ns */
 	unsigned int lost;		/* counter of master tick lost */
 	unsigned int overrun;		/* count of read queue overruns */
@@ -811,7 +837,7 @@ enum {
 
 struct snd_timer_tread {
 	int event;
-	struct timespec tstamp;
+	struct snd_monotonic_timestamp tstamp;
 	unsigned int val;
 };
 
