@@ -23,6 +23,8 @@
 #include <linux/compat.h>
 #include <linux/slab.h>
 
+#include "compat.h"
+
 static int snd_pcm_ioctl_delay_compat(struct snd_pcm_substream *substream,
 				      s32 __user *src)
 {
@@ -184,8 +186,8 @@ static int snd_pcm_channel_info_user(struct snd_pcm_substream *substream,
 
 struct snd_pcm_status32 {
 	s32 state;
-	struct compat_timespec trigger_tstamp;
-	struct compat_timespec tstamp;
+	struct compat_snd_monotonic_timestamp trigger_tstamp;
+	struct compat_snd_monotonic_timestamp tstamp;
 	u32 appl_ptr;
 	u32 hw_ptr;
 	s32 delay;
@@ -194,10 +196,10 @@ struct snd_pcm_status32 {
 	u32 overrange;
 	s32 suspended_state;
 	u32 audio_tstamp_data;
-	struct compat_timespec audio_tstamp;
-	struct compat_timespec driver_tstamp;
+	struct compat_snd_monotonic_timestamp audio_tstamp;
+	struct compat_snd_monotonic_timestamp driver_tstamp;
 	u32 audio_tstamp_accuracy;
-	unsigned char reserved[52-2*sizeof(struct compat_timespec)];
+	unsigned char reserved[52-2*sizeof(struct compat_snd_monotonic_timestamp)];
 } __attribute__((packed));
 
 
@@ -264,10 +266,8 @@ struct snd_pcm_status_x32 {
 	struct __kernel_timespec audio_tstamp;
 	struct __kernel_timespec driver_tstamp;
 	u32 audio_tstamp_accuracy;
-	unsigned char reserved[52-2*sizeof(struct timespec)];
+	unsigned char reserved[52-2*sizeof(struct __kernel_timespec)];
 } __packed;
-
-#define put_timespec(src, dst) copy_to_user(dst, src, sizeof(*dst))
 
 static int snd_pcm_status_user_x32(struct snd_pcm_substream *substream,
 				   struct snd_pcm_status_x32 __user *src,
@@ -458,14 +458,13 @@ static int snd_pcm_ioctl_xfern_compat(struct snd_pcm_substream *substream,
 	return err;
 }
 
-
 struct snd_pcm_mmap_status32 {
 	s32 state;
 	s32 pad1;
 	u32 hw_ptr;
-	struct compat_timespec tstamp;
+	struct compat_snd_monotonic_timestamp tstamp;
 	s32 suspended_state;
-	struct compat_timespec audio_tstamp;
+	struct compat_snd_monotonic_timestamp audio_tstamp;
 } __attribute__((packed));
 
 struct snd_pcm_mmap_control32 {
@@ -532,10 +531,11 @@ static int snd_pcm_ioctl_sync_ptr_compat(struct snd_pcm_substream *substream,
 	snd_pcm_stream_unlock_irq(substream);
 	if (put_user(sstatus.state, &src->s.status.state) ||
 	    put_user(sstatus.hw_ptr, &src->s.status.hw_ptr) ||
-	    compat_put_timespec(&sstatus.tstamp, &src->s.status.tstamp) ||
+	    put_user(sstatus.tstamp.tv_sec, &src->s.status.tstamp.tv_sec) ||
+	    put_user(sstatus.tstamp.tv_nsec, &src->s.status.tstamp.tv_nsec) ||
 	    put_user(sstatus.suspended_state, &src->s.status.suspended_state) ||
-	    compat_put_timespec(&sstatus.audio_tstamp,
-		    &src->s.status.audio_tstamp) ||
+	    put_user(sstatus.audio_tstamp.tv_sec, &src->s.status.audio_tstamp.tv_sec) ||
+	    put_user(sstatus.audio_tstamp.tv_nsec, &src->s.status.audio_tstamp.tv_nsec) ||
 	    put_user(scontrol.appl_ptr, &src->c.control.appl_ptr) ||
 	    put_user(scontrol.avail_min, &src->c.control.avail_min))
 		return -EFAULT;
@@ -550,10 +550,10 @@ struct snd_pcm_mmap_status_x32 {
 	s32 pad1;
 	u32 hw_ptr;
 	u32 pad2; /* alignment */
-	struct timespec tstamp;
+	struct __kernel_timespec tstamp;
 	s32 suspended_state;
 	s32 pad3;
-	struct timespec audio_tstamp;
+	struct __kernel_timespec audio_tstamp;
 } __packed;
 
 struct snd_pcm_mmap_control_x32 {
@@ -621,9 +621,11 @@ static int snd_pcm_ioctl_sync_ptr_x32(struct snd_pcm_substream *substream,
 	snd_pcm_stream_unlock_irq(substream);
 	if (put_user(sstatus.state, &src->s.status.state) ||
 	    put_user(sstatus.hw_ptr, &src->s.status.hw_ptr) ||
-	    put_timespec(&sstatus.tstamp, &src->s.status.tstamp) ||
+	    put_user(sstatus.tstamp.tv_sec, &src->s.status.tstamp.tv_sec) ||
+	    put_user(sstatus.tstamp.tv_nsec, &src->s.status.tstamp.tv_nsec) ||
 	    put_user(sstatus.suspended_state, &src->s.status.suspended_state) ||
-	    put_timespec(&sstatus.audio_tstamp, &src->s.status.audio_tstamp) ||
+	    put_user(sstatus.audio_tstamp.tv_sec, &src->s.status.audio_tstamp.tv_sec) ||
+	    put_user(sstatus.audio_tstamp.tv_nsec, &src->s.status.audio_tstamp.tv_nsec) ||
 	    put_user(scontrol.appl_ptr, &src->c.control.appl_ptr) ||
 	    put_user(scontrol.avail_min, &src->c.control.avail_min))
 		return -EFAULT;
