@@ -108,6 +108,7 @@ static void emac_sgmii_link_init(struct emac_adapter *adpt)
 	writel(val, phy->base + EMAC_SGMII_PHY_AUTONEG_CFG2);
 }
 
+#ifdef CONFIG_ACPI
 static int emac_sgmii_irq_clear(struct emac_adapter *adpt, u8 irq_bits)
 {
 	struct emac_sgmii *phy = &adpt->phy;
