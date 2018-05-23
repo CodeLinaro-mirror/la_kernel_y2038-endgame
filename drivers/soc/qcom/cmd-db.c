@@ -140,7 +140,7 @@ static int cmd_db_get_header(const char *id, struct entry_header *eh,
 	struct rsc_hdr *rsc_hdr;
 	struct entry_header *ent;
 	int ret, i, j;
-	u8 query[8];
+	u8 query[8] __nonstring;
 
 	ret = cmd_db_ready();
 	if (ret)
