@@ -422,7 +422,7 @@ static inline u32 scaler_get_int_status(struct scaler_context *scaler)
 
 static inline int scaler_task_done(u32 val)
 {
-	return val & SCALER_INT_STATUS_FRAME_END ? 0 : -EINVAL;
+	return (val & SCALER_INT_STATUS_FRAME_END) ? 0 : -EINVAL;
 }
 
 static irqreturn_t scaler_irq_handler(int irq, void *arg)
