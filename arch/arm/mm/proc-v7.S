@@ -547,6 +547,11 @@ __v7_setup_stack_ptr:
 	.word	PHYS_RELATIVE(__v7_setup_stack, .)
 ENDPROC(__v7_setup)
 
+	.weak cpu_v7_bugs_init
+ENTRY(cpu_v7_bugs_init)
+	ret	lr
+ENDPROC(cpu_v7_bugs_init)
+
 	.bss
 	.align	2
 __v7_setup_stack:
