@@ -338,6 +338,7 @@ config DM_CACHE_SMQ
 config DM_WRITECACHE
 	tristate "Writecache target"
 	depends on BLK_DEV_DM
+	depends on DAX
 	---help---
 	   The writecache target caches writes on persistent memory or SSD.
 	   It is intended for databases or other programs that need extremely
