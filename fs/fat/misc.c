@@ -190,7 +190,9 @@ void fat_time_fat2unix(struct msdos_sb_info *sbi, struct timespec *ts,
 		       __le16 __time, __le16 __date, u8 time_cs)
 {
 	u16 time = le16_to_cpu(__time), date = le16_to_cpu(__date);
-	time_t second, day, leap_day, month, year;
+	time64_t second;
+	long day, leap_day, month;
+	long long year;
 
 	year  = date >> 9;
 	month = max(1, (date >> 5) & 0xf);
@@ -228,7 +230,7 @@ void fat_time_unix2fat(struct msdos_sb_info *sbi, struct timespec *ts,
 		       __le16 *time, __le16 *date, u8 *time_cs)
 {
 	struct tm tm;
-	time_to_tm(ts->tv_sec,
+	time64_to_tm(ts->tv_sec,
 		   (sbi->options.tz_set ? sbi->options.time_offset :
 		   -sys_tz.tz_minuteswest) * SECS_PER_MIN, &tm);
 
