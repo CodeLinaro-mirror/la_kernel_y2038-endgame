@@ -153,17 +153,17 @@ struct cache_deferred_req {
  * back to wallclock (CLOCK_REALTIME), that error often
  * cancels out during the reverse operation.
  */
-static inline time_t seconds_since_boot(void)
+static inline time64_t seconds_since_boot(void)
 {
-	struct timespec boot;
-	getboottime(&boot);
-	return get_seconds() - boot.tv_sec;
+	struct timespec64 boot;
+	getboottime64(&boot);
+	return ktime_get_real_seconds() - boot.tv_sec;
 }
 
-static inline time_t convert_to_wallclock(time_t sinceboot)
+static inline time64_t convert_to_wallclock(time64_t sinceboot)
 {
-	struct timespec boot;
-	getboottime(&boot);
+	struct timespec64 boot;
+	getboottime64(&boot);
 	return boot.tv_sec + sinceboot;
 }
 
@@ -272,7 +272,7 @@ static inline int get_uint(char **bpp, unsigned int *anint)
 	return 0;
 }
 
-static inline int get_time(char **bpp, time_t *time)
+static inline int get_time(char **bpp, time64_t *time)
 {
 	char buf[50];
 	long long ll;
@@ -286,20 +286,20 @@ static inline int get_time(char **bpp, time_t *time)
 	if (kstrtoll(buf, 0, &ll))
 		return -EINVAL;
 
-	*time = (time_t)ll;
+	*time = (time64_t)ll;
 	return 0;
 }
 
-static inline time_t get_expiry(char **bpp)
+static inline time64_t get_expiry(char **bpp)
 {
-	time_t rv;
-	struct timespec boot;
+	time64_t rv;
+	struct timespec64 boot;
 
 	if (get_time(bpp, &rv))
 		return 0;
 	if (rv < 0)
 		return 0;
-	getboottime(&boot);
+	getboottime64(&boot);
 	return rv - boot.tv_sec;
 }
 
