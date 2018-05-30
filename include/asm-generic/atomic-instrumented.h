@@ -1,15 +1,3 @@
-/*
- * This file provides wrappers with KASAN instrumentation for atomic operations.
- * To use this functionality an arch's atomic.h file needs to define all
- * atomic operations with arch_ prefix (e.g. arch_atomic_read()) and include
- * this file at the end. This file provides atomic_read() that forwards to
- * arch_atomic_read() for actual atomic operation.
- * Note: if an arch atomic operation is implemented by means of other atomic
- * operations (e.g. atomic_read()/atomic_cmpxchg() loop), then it needs to use
- * arch_ variants (i.e. arch_atomic_read()/arch_atomic_cmpxchg()) to avoid
- * double instrumentation.
- */
-
 #ifndef _LINUX_ATOMIC_INSTRUMENTED_H
 #define _LINUX_ATOMIC_INSTRUMENTED_H
 
