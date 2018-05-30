@@ -220,8 +220,6 @@ cat << EOF
 #define __IGNORE_futex_time64
 #define __IGNORE_sched_rr_get_interval_time64
 
-#define __IGNORE_io_pgetevents
-
 EOF
 }
 
