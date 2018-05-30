@@ -149,17 +149,17 @@ struct cache_deferred_req {
  * since boot.  This is the best for measuring differences in
  * real time.
  */
-static inline time64_t seconds_since_boot(void)
+static inline time_t seconds_since_boot(void)
 {
-	struct timespec64 boot;
-	getboottime64(&boot);
-	return ktime_get_real_seconds() - boot.tv_sec;
+	struct timespec boot;
+	getboottime(&boot);
+	return get_seconds() - boot.tv_sec;
 }
 
-static inline time64_t convert_to_wallclock(time64_t sinceboot)
+static inline time_t convert_to_wallclock(time_t sinceboot)
 {
-	struct timespec64 boot;
-	getboottime64(&boot);
+	struct timespec boot;
+	getboottime(&boot);
 	return boot.tv_sec + sinceboot;
 }
 
@@ -268,7 +268,7 @@ static inline int get_uint(char **bpp, unsigned int *anint)
 	return 0;
 }
 
-static inline int get_time(char **bpp, time64_t *time)
+static inline int get_time(char **bpp, time_t *time)
 {
 	char buf[50];
 	long long ll;
@@ -282,20 +282,20 @@ static inline int get_time(char **bpp, time64_t *time)
 	if (kstrtoll(buf, 0, &ll))
 		return -EINVAL;
 
-	*time = (time64_t)ll;
+	*time = (time_t)ll;
 	return 0;
 }
 
-static inline time64_t get_expiry(char **bpp)
+static inline time_t get_expiry(char **bpp)
 {
-	time64_t rv;
-	struct timespec64 boot;
+	time_t rv;
+	struct timespec boot;
 
 	if (get_time(bpp, &rv))
 		return 0;
 	if (rv < 0)
 		return 0;
-	getboottime64(&boot);
+	getboottime(&boot);
 	return rv - boot.tv_sec;
 }
 
