@@ -1187,7 +1187,7 @@ static inline void snd_pcm_gettime(struct snd_pcm_runtime *runtime,
 		ktime_get_ts64(tv);
 		break;
 	case SNDRV_PCM_TSTAMP_TYPE_MONOTONIC_RAW:
-		getrawmonotonic64(tv);
+		ktime_get_raw_ts64(tv);
 		break;
 	default:
 #ifdef CONFIG_SND_TSTAMP_REALTIME
