@@ -200,6 +200,8 @@ cat << EOF
 #define __IGNORE_putpmsg
 #define __IGNORE_vserver
 
+#define __IGNORE_rseq
+
 #define __IGNORE_clock_gettime64
 #define __IGNORE_clock_settime64
 #define __IGNORE_clock_getres_time64
