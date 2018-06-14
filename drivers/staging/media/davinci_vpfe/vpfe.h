@@ -77,6 +77,8 @@ struct vpfe_config {
 	char *card_name;
 	/* setup function for the input path */
 	int (*setup_input)(enum vpfe_subdev_id id);
+	/* point to dm365_isif_setup_pinmux() */
+	void (*isif_setup_pinmux)(void);
 	/* number of clocks */
 	int num_clocks;
 	/* clocks used for vpfe capture */

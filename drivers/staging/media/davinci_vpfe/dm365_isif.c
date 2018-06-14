@@ -20,6 +20,7 @@
  */
 
 #include <linux/delay.h>
+#include "vpfe.h"
 #include "dm365_isif.h"
 #include "vpfe_mc_capture.h"
 
@@ -1988,6 +1989,7 @@ int vpfe_isif_init(struct vpfe_isif_device *isif, struct platform_device *pdev)
 	struct v4l2_subdev *sd = &isif->subdev;
 	struct media_pad *pads = &isif->pads[0];
 	struct media_entity *me = &sd->entity;
+	struct vpfe_config *cfg = pdev->dev.platform_data;
 	static resource_size_t res_len;
 	struct resource *res;
 	void __iomem *addr;
@@ -2028,11 +2030,7 @@ int vpfe_isif_init(struct vpfe_isif_device *isif, struct platform_device *pdev)
 		}
 		i++;
 	}
-	davinci_cfg_reg(DM365_VIN_CAM_WEN);
-	davinci_cfg_reg(DM365_VIN_CAM_VD);
-	davinci_cfg_reg(DM365_VIN_CAM_HD);
-	davinci_cfg_reg(DM365_VIN_YIN4_7_EN);
-	davinci_cfg_reg(DM365_VIN_YIN0_3_EN);
+	cfg->isif_setup_pinmux();
 
 	/* queue ops */
 	isif->video_out.ops = &isif_video_ops;
