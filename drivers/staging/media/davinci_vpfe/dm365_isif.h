@@ -24,8 +24,6 @@
 
 #include <linux/platform_device.h>
 
-#include <mach/mux.h>
-
 #include <media/davinci/vpfe_types.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
