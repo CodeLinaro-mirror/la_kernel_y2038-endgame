@@ -148,6 +148,10 @@ struct cache_deferred_req {
  * timestamps kept in the cache are expressed in seconds
  * since boot.  This is the best for measuring differences in
  * real time.
+ * This reimplemnts ktime_get_boottime_seconds() in a slightly
+ * faster but less accurate way. When we end up converting
+ * back to wallclock (CLOCK_REALTIME), that error often
+ * cancels out during the reverse operation.
  */
 static inline time64_t seconds_since_boot(void)
 {
