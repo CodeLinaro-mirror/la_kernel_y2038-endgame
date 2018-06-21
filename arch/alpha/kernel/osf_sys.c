@@ -1176,21 +1176,18 @@ SYSCALL_DEFINE2(osf_getrusage, int, who, struct rusage32 __user *, ru)
 SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
 		struct rusage32 __user *, ur)
 {
-	struct rusage32 r32;
 	struct rusage r;
 	long err = kernel_wait4(pid, ustatus, options, &r);
 	if (err <= 0)
 		return err;
 	if (!ur)
 		return err;
-	r32.ru_utime.tv_sec  = r.ru_utime.tv_sec;
-	r32.ru_utime.tv_usec = r.ru_utime.tv_usec;
-	r32.ru_stime.tv_sec  = r.ru_stime.tv_sec;
-	r32.ru_stime.tv_usec = r.ru_stime.tv_usec;
-	memcpy(&r32.ru_maxrss, &r.ru_maxrss,
-	      sizeof(struct rusage32) - offsetof(struct rusage32, ru_maxrss));
-
-	if (copy_to_user(ur, &r32, sizeof(r32)))
+	if (put_tv_to_tv32(&ur->ru_utime, &r.ru_utime))
+		return -EFAULT;
+	if (put_tv_to_tv32(&ur->ru_stime, &r.ru_stime))
+		return -EFAULT;
+	if (copy_to_user(&ur->ru_maxrss, &r.ru_maxrss,
+	      sizeof(struct rusage32) - offsetof(struct rusage32, ru_maxrss)))
 		return -EFAULT;
 	return err;
 }
