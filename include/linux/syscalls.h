@@ -36,7 +36,6 @@ struct pollfd;
 struct rlimit;
 struct rlimit64;
 struct rusage;
-struct __kernel_rusage;
 struct sched_param;
 struct sched_attr;
 struct sel_arg_struct;
@@ -568,10 +567,6 @@ asmlinkage long sys_waitid(int which, pid_t pid,
 			   struct siginfo __user *infop,
 			   int options, struct rusage __user *ru);
 
-asmlinkage long sys_waitid_time64(int which, pid_t pid,
-			   struct siginfo __user *infop,
-			   int options, struct __kernel_rusage __user *ru);
-
 /* kernel/fork.c */
 asmlinkage long sys_set_tid_address(int __user *tidptr);
 asmlinkage long sys_unshare(unsigned long unshare_flags);
@@ -731,7 +726,6 @@ asmlinkage long sys_getrlimit(unsigned int resource,
 asmlinkage long sys_setrlimit(unsigned int resource,
 				struct rlimit __user *rlim);
 asmlinkage long sys_getrusage(int who, struct rusage __user *ru);
-asmlinkage long sys_getrusage_time64(int who, struct __kernel_rusage __user *ru);
 asmlinkage long sys_umask(int mask);
 asmlinkage long sys_prctl(int option, unsigned long arg2, unsigned long arg3,
 			unsigned long arg4, unsigned long arg5);
@@ -918,8 +912,6 @@ asmlinkage long sys_recvmmsg_time32(int fd, struct mmsghdr __user *msg,
 
 asmlinkage long sys_wait4(pid_t pid, int __user *stat_addr,
 				int options, struct rusage __user *ru);
-asmlinkage long sys_wait4_time64(pid_t pid, int __user *stat_addr,
-				int options, struct __kernel_rusage __user *ru);
 asmlinkage long sys_prlimit64(pid_t pid, unsigned int resource,
 				const struct rlimit64 __user *new_rlim,
 				struct rlimit64 __user *old_rlim);
