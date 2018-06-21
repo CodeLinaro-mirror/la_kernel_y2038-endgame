@@ -1618,12 +1618,12 @@ SYSCALL_DEFINE5(waitid, int, which, pid_t, upid, struct siginfo __user *,
 		return -EFAULT;
 
 	user_access_begin();
-	unsafe_put_user(signo, &infop->si_signo, Efault);
-	unsafe_put_user(0, &infop->si_errno, Efault);
-	unsafe_put_user(info.cause, &infop->si_code, Efault);
-	unsafe_put_user(info.pid, &infop->si_pid, Efault);
-	unsafe_put_user(info.uid, &infop->si_uid, Efault);
-	unsafe_put_user(info.status, &infop->si_status, Efault);
+	unsafe_put_user(signo,		&infop->si_signo,	Efault);
+	unsafe_put_user(0,		&infop->si_errno,	Efault);
+	unsafe_put_user(info.cause,	&infop->si_code,	Efault);
+	unsafe_put_user(info.pid,	&infop->si_pid,		Efault);
+	unsafe_put_user(info.uid,	&infop->si_uid,		Efault);
+	unsafe_put_user(info.status,	&infop->si_status,	Efault);
 	user_access_end();
 	return err;
 Efault:
@@ -1846,12 +1846,12 @@ COMPAT_SYSCALL_DEFINE5(waitid_time64,
 		return -EFAULT;
 
 	user_access_begin();
-	unsafe_put_user(signo, &infop->si_signo, Efault);
-	unsafe_put_user(0, &infop->si_errno, Efault);
-	unsafe_put_user(info.cause, &infop->si_code, Efault);
-	unsafe_put_user(info.pid, &infop->si_pid, Efault);
-	unsafe_put_user(info.uid, &infop->si_uid, Efault);
-	unsafe_put_user(info.status, &infop->si_status, Efault);
+	unsafe_put_user(signo,		&infop->si_signo,	Efault);
+	unsafe_put_user(0,		&infop->si_errno,	Efault);
+	unsafe_put_user(info.cause,	&infop->si_code,	Efault);
+	unsafe_put_user(info.pid,	&infop->si_pid,		Efault);
+	unsafe_put_user(info.uid,	&infop->si_uid,		Efault);
+	unsafe_put_user(info.status,	&infop->si_status,	Efault);
 	user_access_end();
 	return err;
 Efault:
