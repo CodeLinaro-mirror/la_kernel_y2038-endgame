@@ -122,8 +122,8 @@ struct compat_itimerval {
 };
 
 struct itimerval;
-int get_compat_itimerval(struct itimerval *, const struct compat_itimerval __user *);
-int put_compat_itimerval(struct compat_itimerval __user *, const struct itimerval *);
+int get_compat_itimerval(struct itimerspec64 *, const struct compat_itimerval __user *);
+int put_compat_itimerval(struct compat_itimerval __user *, const struct itimerspec64 *);
 
 struct compat_tms {
 	compat_clock_t		tms_utime;
