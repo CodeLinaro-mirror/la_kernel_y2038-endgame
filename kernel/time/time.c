@@ -894,27 +894,27 @@ int compat_put_timespec(const struct timespec *ts, void __user *uts)
 }
 EXPORT_SYMBOL_GPL(compat_put_timespec);
 
-int get_compat_itimerval(struct itimerval *o, const struct compat_itimerval __user *i)
+int get_compat_itimerval(struct itimerspec64 *o, const struct compat_itimerval __user *i)
 {
 	struct compat_itimerval v32;
 
 	if (copy_from_user(&v32, i, sizeof(struct compat_itimerval)))
 		return -EFAULT;
 	o->it_interval.tv_sec = v32.it_interval.tv_sec;
-	o->it_interval.tv_usec = v32.it_interval.tv_usec;
+	o->it_interval.tv_nsec = v32.it_interval.tv_usec * NSEC_PER_USEC;
 	o->it_value.tv_sec = v32.it_value.tv_sec;
-	o->it_value.tv_usec = v32.it_value.tv_usec;
+	o->it_value.tv_nsec = v32.it_value.tv_usec * NSEC_PER_USEC;
 	return 0;
 }
 
-int put_compat_itimerval(struct compat_itimerval __user *o, const struct itimerval *i)
+int put_compat_itimerval(struct compat_itimerval __user *o, const struct itimerspec64 *i)
 {
 	struct compat_itimerval v32;
 
 	v32.it_interval.tv_sec = i->it_interval.tv_sec;
-	v32.it_interval.tv_usec = i->it_interval.tv_usec;
+	v32.it_interval.tv_usec = i->it_interval.tv_nsec / NSEC_PER_USEC;
 	v32.it_value.tv_sec = i->it_value.tv_sec;
-	v32.it_value.tv_usec = i->it_value.tv_usec;
+	v32.it_value.tv_usec = i->it_value.tv_nsec / NSEC_PER_USEC;
 	return copy_to_user(o, &v32, sizeof(struct compat_itimerval)) ? -EFAULT : 0;
 }
 

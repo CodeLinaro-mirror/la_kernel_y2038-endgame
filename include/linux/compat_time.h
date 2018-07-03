@@ -41,8 +41,7 @@ extern int put_compat_itimerspec64(const struct itimerspec64 *its,
 
 extern int compat_get_timeval(struct timeval *, const void __user *);
 extern int compat_put_timeval(const struct timeval *, void __user *);
-struct itimerval;
-extern int get_compat_itimerval(struct itimerval *, const struct compat_itimerval __user *);
-extern int put_compat_itimerval(struct compat_itimerval __user *, const struct itimerval *);
+extern int get_compat_itimerval(struct itimerspec64 *, const struct compat_itimerval __user *);
+extern int put_compat_itimerval(struct compat_itimerval __user *, const struct itimerspec64 *);
 
 #endif /* _LINUX_COMPAT_TIME_H */

@@ -976,20 +976,20 @@ put_tv_to_tv32(struct timeval32 __user *o, struct timeval *i)
 }
 
 static inline long
-get_it32(struct itimerval *o, struct itimerval32 __user *i)
+get_it32(struct itimerspec64 *o, struct itimerval32 __user *i)
 {
 	struct itimerval32 itv;
 	if (copy_from_user(&itv, i, sizeof(struct itimerval32)))
 		return -EFAULT;
 	o->it_interval.tv_sec = itv.it_interval.tv_sec;
-	o->it_interval.tv_usec = itv.it_interval.tv_usec;
+	o->it_interval.tv_nsec = itv.it_interval.tv_usec * NSEC_PER_USEC;
 	o->it_value.tv_sec = itv.it_value.tv_sec;
-	o->it_value.tv_usec = itv.it_value.tv_usec;
+	o->it_value.tv_nsec = itv.it_value.tv_usec * NSEC_PER_USEC;
 	return 0;
 }
 
 static inline long
-put_it32(struct itimerval32 __user *o, struct itimerval *i)
+put_it32(struct itimerval32 __user *o, struct itimerspec64 *i)
 {
 	return copy_to_user(o, &(struct itimerval32){
 				.it_interval.tv_sec = o->it_interval.tv_sec,
@@ -1045,7 +1045,7 @@ asmlinkage long sys_ni_posix_timers(void);
 
 SYSCALL_DEFINE2(osf_getitimer, int, which, struct itimerval32 __user *, it)
 {
-	struct itimerval kit;
+	struct itimerspec64 kit;
 	int error;
 
 	if (!IS_ENABLED(CONFIG_POSIX_TIMERS))
@@ -1061,7 +1061,7 @@ SYSCALL_DEFINE2(osf_getitimer, int, which, struct itimerval32 __user *, it)
 SYSCALL_DEFINE3(osf_setitimer, int, which, struct itimerval32 __user *, in,
 		struct itimerval32 __user *, out)
 {
-	struct itimerval kin, kout;
+	struct itimerspec64 kin, kout;
 	int error;
 
 	if (!IS_ENABLED(CONFIG_POSIX_TIMERS))

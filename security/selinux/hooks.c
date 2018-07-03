@@ -2690,7 +2690,7 @@ static void selinux_bprm_committing_creds(struct linux_binprm *bprm)
 static void selinux_bprm_committed_creds(struct linux_binprm *bprm)
 {
 	const struct task_security_struct *tsec = current_security();
-	struct itimerval itimer;
+	struct itimerspec64 itimer;
 	u32 osid, sid;
 	int rc, i;
 
