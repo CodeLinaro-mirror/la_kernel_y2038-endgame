@@ -35,10 +35,9 @@ extern time64_t mktime64(const unsigned int year, const unsigned int mon,
 extern u32 (*arch_gettimeoffset)(void);
 #endif
 
-struct itimerval;
-extern int do_setitimer(int which, struct itimerval *value,
-			struct itimerval *ovalue);
-extern int do_getitimer(int which, struct itimerval *value);
+extern int do_setitimer(int which, struct itimerspec64 *value,
+			struct itimerspec64 *ovalue);
+extern int do_getitimer(int which, struct itimerspec64 *value);
 
 extern long do_utimes(int dfd, const char __user *filename, struct timespec64 *times, int flags);
 
