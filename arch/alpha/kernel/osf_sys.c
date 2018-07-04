@@ -1191,9 +1191,9 @@ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
 	if (!ur)
 		return err;
 	r32.ru_utime.tv_sec  = r.ru_utime.tv_sec;
-	r32.ru_utime.tv_usec = r.ru_utime.tv_usec;
+	r32.ru_utime.tv_usec = r.ru_utime.tv_nsec / NSEC_PER_USEC;
 	r32.ru_stime.tv_sec  = r.ru_stime.tv_sec;
-	r32.ru_stime.tv_usec = r.ru_stime.tv_usec;
+	r32.ru_stime.tv_usec = r.ru_stime.tv_nsec / NSEC_PER_USEC;
 	memcpy(&r32.ru_maxrss, &r.ru_maxrss,
 	      sizeof(struct rusage32) - offsetof(struct rusage32, ru_maxrss));
 

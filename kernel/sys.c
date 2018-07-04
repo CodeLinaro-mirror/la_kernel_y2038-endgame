@@ -1779,10 +1779,10 @@ void getrusage(struct task_struct *p, int who, struct __kernel_rusage *r)
 out:
 	ts = ns_to_timespec64(utime);
 	r->ru_utime.tv_sec = ts.tv_sec;
-	r->ru_utime.tv_usec = ts.tv_nsec / NSEC_PER_USEC;
+	r->ru_utime.tv_nsec = ts.tv_nsec;
 	ts = ns_to_timespec64(stime);
 	r->ru_stime.tv_sec = ts.tv_sec;
-	r->ru_stime.tv_usec = ts.tv_nsec / NSEC_PER_USEC;
+	r->ru_stime.tv_nsec = ts.tv_nsec;
 
 	if (who != RUSAGE_CHILDREN) {
 		struct mm_struct *mm = get_task_mm(p);
@@ -1804,9 +1804,9 @@ int put_rusage(const struct __kernel_rusage *rk, struct rusage __user *ru)
 
 	memset(&r, 0, sizeof(r));
 	r.ru_utime.tv_sec = rk->ru_utime.tv_sec;
-	r.ru_utime.tv_usec = rk->ru_utime.tv_usec;
+	r.ru_utime.tv_usec = (u32)rk->ru_utime.tv_nsec / 1000;
 	r.ru_stime.tv_sec = rk->ru_stime.tv_sec;
-	r.ru_stime.tv_usec = rk->ru_stime.tv_usec;
+	r.ru_stime.tv_usec = (u32)rk->ru_stime.tv_nsec / 1000;
 	r.ru_maxrss = rk->ru_maxrss;
 	r.ru_ixrss = rk->ru_ixrss;
 	r.ru_idrss = rk->ru_idrss;

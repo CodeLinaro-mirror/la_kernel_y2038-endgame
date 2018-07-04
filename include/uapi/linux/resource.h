@@ -61,8 +61,8 @@ struct __kernel_rusage_timeval {
 };
 
 struct	__kernel_rusage {
-	struct __kernel_rusage_timeval	ru_utime; /* user time used */
-	struct __kernel_rusage_timeval	ru_stime; /* system time used */
+	struct __kernel_timespec ru_utime; /* user time used */
+	struct __kernel_timespec ru_stime; /* system time used */
 	__kernel_long_t	ru_maxrss;	/* maximum resident set size */
 	__kernel_long_t	ru_ixrss;	/* integral shared memory size */
 	__kernel_long_t	ru_idrss;	/* integral unshared data size */
