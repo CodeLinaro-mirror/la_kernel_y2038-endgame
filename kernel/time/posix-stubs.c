@@ -48,6 +48,8 @@ SYS_NI(timer_delete);
 SYS_NI(clock_adjtime);
 SYS_NI(getitimer);
 SYS_NI(setitimer);
+SYS_NI(getitimer64);
+SYS_NI(setitimer64);
 #ifdef __ARCH_WANT_SYS_ALARM
 SYS_NI(alarm);
 #endif
