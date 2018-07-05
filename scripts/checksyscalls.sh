@@ -201,6 +201,12 @@ cat << EOF
 #define __IGNORE_vserver
 
 #define __IGNORE_rseq
+#define __IGNORE_open_tree
+#define __IGNORE_move_mount
+#define __IGNORE_fsopen
+#define __IGNORE_fsmount
+#define __IGNORE_fspick
+#define __IGNORE_fsinfo
 
 #define __IGNORE_clock_gettime64
 #define __IGNORE_clock_settime64
@@ -221,6 +227,13 @@ cat << EOF
 #define __IGNORE_rt_sigtimedwait_time64
 #define __IGNORE_futex_time64
 #define __IGNORE_sched_rr_get_interval_time64
+#define __IGNORE_clock_adjtime64
+#define __IGNORE_waitid_time64
+#define __IGNORE_getrusage_time64
+#define __IGNORE_getitimer64
+#define __IGNORE_setitimer64
+#define __IGNORE_clock_nanosleep_time64
+
 
 EOF
 }
