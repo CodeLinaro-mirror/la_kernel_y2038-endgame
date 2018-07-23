@@ -18,6 +18,7 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
+#include <linux/io.h>
 #include <linux/slab.h>
 
 #include <linux/mtd/mtd.h>
