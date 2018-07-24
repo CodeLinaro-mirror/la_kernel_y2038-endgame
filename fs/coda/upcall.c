@@ -365,7 +365,7 @@ int venus_readlink(struct super_block *sb, struct CodaFid *fid,
 		if (retlen >= *length)
 			retlen = *length - 1;
 		*length = retlen;
-		result =  (char *)outp + outp->coda_readlink.data;
+		result =  (char *)outp + (long)outp->coda_readlink.data;
 		memcpy(buffer, result, retlen);
 		*(buffer + retlen) = '\0';
 	}
@@ -505,7 +505,7 @@ int venus_pioctl(struct super_block *sb, struct CodaFid *fid,
     
         /* in->coda_ioctl.rwflag = flag; */
         inp->coda_ioctl.len = data->vi.in_size;
-        inp->coda_ioctl.data = INSIZE(ioctl);
+        inp->coda_ioctl.data = (char *)(INSIZE(ioctl));
      
         /* get the data out of user space */
 	if (copy_from_user((char *)inp + (long)inp->coda_ioctl.data,
