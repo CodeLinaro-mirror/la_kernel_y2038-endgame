@@ -100,14 +100,20 @@ typedef unsigned long long u_quad_t;
 #if defined(__linux__)
 #include <linux/time.h>
 #define cdev_t u_quad_t
+#if defined(__alpha__) || defined(__s390__)
+#define cino_t u_int32_t
+#else
+#define cino_t u_quad_t
+#endif
 #ifndef __KERNEL__
 #if !defined(_UQUAD_T_) && (!defined(__GLIBC__) || __GLIBC__ < 2)
 #define _UQUAD_T_ 1
-typedef unsigned long long u_quad_t;
+typedef unsigned long long u_quad_t __attribute__((aligned(8)));
 #endif
 #endif /* __KERNEL__ */
 #else
 #define cdev_t dev_t
+#define cino_t ino_t
 #endif
 
 #ifdef __CYGWIN32__
@@ -218,28 +224,29 @@ enum coda_vtype	{ C_VNON, C_VREG, C_VDIR, C_VBLK, C_VCHR, C_VLNK, C_VSOCK, C_VFI
  * architectures.
  */
 struct vtimespec {
-	long		tv_sec;		/* seconds */
-	long		tv_nsec;	/* nanoseconds */
+	u_quad_t	tv_sec;		/* seconds */
+	u_quad_t	tv_nsec;	/* nanoseconds */
 };
 #else
 #define vtimespec timespec
 #endif
 
+// XXX different
 struct coda_vattr {
-	long     	va_type;	/* vnode type (for create) */
+	u_quad_t     	va_type;	/* vnode type (for create) */
 	u_short		va_mode;	/* files access mode and type */
 	short		va_nlink;	/* number of references to file */
 	vuid_t		va_uid;		/* owner user id */
 	vgid_t		va_gid;		/* owner group id */
-	long		va_fileid;	/* file id */
+	u_quad_t	va_fileid;	/* file id */
 	u_quad_t	va_size;	/* file size in bytes */
-	long		va_blocksize;	/* blocksize preferred for i/o */
+	u_quad_t	va_blocksize;	/* blocksize preferred for i/o */
 	struct vtimespec va_atime;	/* time of last access */
 	struct vtimespec va_mtime;	/* time of last modification */
 	struct vtimespec va_ctime;	/* time file changed */
 	u_long		va_gen;		/* generation number of file */
 	u_long		va_flags;	/* flags defined for file */
-	cdev_t	        va_rdev;	/* device special file represents */
+	u_quad_t        va_rdev;	/* device special file represents */
 	u_quad_t	va_bytes;	/* bytes of disk space held by file */
 	u_quad_t	va_filerev;	/* file modification number */
 };
@@ -341,7 +348,7 @@ struct coda_open_in {
 struct coda_open_out {
     struct coda_out_hdr oh;
     cdev_t	dev;
-    ino_t	inode;
+    cino_t	inode;
 };
 
 
@@ -385,13 +392,13 @@ struct coda_ioctl_in {
     int	cmd;
     int	len;
     int	rwflag;
-    char *data;			/* Place holder for data. */
+    u_quad_t data;		/* Place holder for data. */
 };
 
 struct coda_ioctl_out {
     struct coda_out_hdr oh;
     int	len;
-    caddr_t	data;		/* Place holder for data. */
+    u_quad_t data;		/* Place holder for data. */
 };
 
 
@@ -551,7 +558,7 @@ struct coda_readlink_in {
 struct coda_readlink_out {
     struct coda_out_hdr oh;
     int	count;
-    caddr_t	data;		/* Place holder for data. */
+    u_quad_t	data;		/* Place holder for data. */
 };
 
 
