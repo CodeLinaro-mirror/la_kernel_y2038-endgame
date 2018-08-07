@@ -446,7 +446,7 @@ struct hv_pcibus_device {
 	struct resource *high_mmio_res;
 	struct completion *survey_event;
 	struct completion remove_event;
-	struct pci_bus *pci_bus;
+	struct pci_host_bridge *bridge;
 	spinlock_t config_lock;	/* Avoid two threads writing index page */
 	spinlock_t device_list_lock;	/* Protect lists below */
 	void __iomem *cfg_addr;
@@ -1482,41 +1482,13 @@ static void hv_pci_assign_slots(struct hv_pcibus_device *hbus)
 
 		slot_nr = PCI_SLOT(wslot_to_devfn(hpdev->desc.win_slot.slot));
 		snprintf(name, SLOT_NAME_SIZE, "%u", hpdev->desc.ser);
-		hpdev->pci_slot = pci_create_slot(hbus->pci_bus, slot_nr,
+		hpdev->pci_slot = pci_create_slot(hbus->bridge->bus, slot_nr,
 					  name, NULL);
 		if (IS_ERR(hpdev->pci_slot)) {
 			pr_warn("pci_create slot %s failed\n", name);
 			hpdev->pci_slot = NULL;
 		}
 	}
-}
-
-static struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
-		struct pci_ops *ops, void *sysdata, struct list_head *resources)
-{
-	int error;
-	struct pci_host_bridge *bridge;
-
-	bridge = pci_alloc_host_bridge(0);
-	if (!bridge)
-		return NULL;
-
-	bridge->dev.parent = parent;
-
-	list_splice_init(resources, &bridge->windows);
-	bridge->sysdata = sysdata;
-	bridge->busnr = bus;
-	bridge->ops = ops;
-
-	error = pci_register_host_bridge(bridge);
-	if (error < 0)
-		goto err_out;
-
-	return bridge->bus;
-
-err_out:
-	kfree(bridge);
-	return NULL;
 }
 
 /**
@@ -1527,26 +1499,35 @@ err_out:
  */
 static int create_root_hv_pci_bus(struct hv_pcibus_device *hbus)
 {
-	/* Register the device */
-	hbus->pci_bus = pci_create_root_bus(&hbus->hdev->device,
-					    0, /* bus number is always zero */
-					    &hv_pcifront_ops,
-					    &hbus->sysdata,
-					    &hbus->resources_for_children);
-	if (!hbus->pci_bus)
-		return -ENODEV;
+	struct pci_host_bridge *bridge;
+	int ret;
 
-	hbus->pci_bus->msi = &hbus->msi_chip;
-	hbus->pci_bus->msi->dev = &hbus->hdev->device;
+	bridge = pci_alloc_host_bridge(0);
+	if (!bridge)
+		return -ENOMEM;
+
+	hbus->bridge = bridge;
+	bridge->dev.parent = &hbus->hdev->device;
+	list_splice_init(&hbus->resources_for_children, &bridge->windows);
+	bridge->sysdata = &hbus->sysdata;
+	bridge->ops = &hv_pcifront_ops;
+	bridge->msi = &hbus->msi_chip;
+	bridge->msi->dev = &hbus->hdev->device;
 
 	pci_lock_rescan_remove();
-	pci_scan_child_bus(hbus->pci_bus);
-	pci_bus_assign_resources(hbus->pci_bus);
+	/* ideally we should use pci_host_probe here */
+	ret = pci_scan_root_bus_bridge(bridge);
+	if (ret < 0) {
+		pci_free_host_bridge(bridge);
+		goto error;
+	}
 	hv_pci_assign_slots(hbus);
-	pci_bus_add_devices(hbus->pci_bus);
-	pci_unlock_rescan_remove();
+	pci_bus_assign_resources(bridge->bus);
+	pci_bus_add_devices(bridge->bus);
 	hbus->state = hv_pcibus_installed;
-	return 0;
+error:
+	pci_unlock_rescan_remove();
+	return ret;
 }
 
 struct q_res_req_compl {
@@ -1804,7 +1785,7 @@ static void pci_devices_present_work(struct work_struct *work)
 		 * because there may have been changes.
 		 */
 		pci_lock_rescan_remove();
-		pci_scan_child_bus(hbus->pci_bus);
+		pci_scan_child_bus(hbus->bridge->bus);
 		hv_pci_assign_slots(hbus);
 		pci_unlock_rescan_remove();
 		break;
@@ -2708,8 +2689,8 @@ static int hv_pci_remove(struct hv_device *hdev)
 	if (hbus->state == hv_pcibus_installed) {
 		/* Remove the bus from PCI's point of view. */
 		pci_lock_rescan_remove();
-		pci_stop_root_bus(hbus->pci_bus);
-		pci_remove_root_bus(hbus->pci_bus);
+		pci_stop_root_bus(hbus->bridge->bus);
+		pci_remove_root_bus(hbus->bridge->bus);
 		pci_unlock_rescan_remove();
 		hbus->state = hv_pcibus_removed;
 	}
