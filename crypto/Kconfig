@@ -264,6 +264,16 @@ config CRYPTO_ECRDSA
 	  standard algorithms (called GOST algorithms). Only signature verification
 	  is implemented.
 
+config CRYPTO_ARCH_HAVE_LIB_CURVE25519
+	tristate
+
+config CRYPTO_ARCH_HAVE_LIB_CURVE25519_BASE
+	bool
+
+config CRYPTO_LIB_CURVE25519
+	tristate "Curve25519 scalar multiplication library"
+	depends on CRYPTO_ARCH_HAVE_LIB_CURVE25519 || !CRYPTO_ARCH_HAVE_LIB_CURVE25519
+
 comment "Authenticated Encryption with Associated Data"
 
 config CRYPTO_CCM
