@@ -920,6 +920,8 @@ struct pci_bus *acpi_pci_root_create(struct acpi_pci_root *root,
 	host_bridge->busnr = busnum;
 	host_bridge->ops = ops->pci_ops;
 	host_bridge->prepare = acpi_pci_root_bridge_prepare;
+	host_bridge->add_bus = acpi_pci_add_bus;
+	host_bridge->remove_bus = acpi_pci_remove_bus;
 	pci_set_host_bridge_release(host_bridge, acpi_pci_root_release_info,
 				    info);
 
