@@ -1032,6 +1032,13 @@ config CRYPTO_GHASH_CLMUL_NI_INTEL
 	  This is the x86_64 CLMUL-NI accelerated implementation of
 	  GHASH, the hash function used in GCM (Galois/Counter mode).
 
+config CRYPTO_ARCH_HAVE_LIB_BLAKE2S
+	tristate
+
+config CRYPTO_LIB_BLAKE2S
+	tristate "BLAKE2s hash function library"
+	depends on CRYPTO_ARCH_HAVE_LIB_BLAKE2S || !CRYPTO_ARCH_HAVE_LIB_BLAKE2S
+
 comment "Ciphers"
 
 config CRYPTO_LIB_AES
