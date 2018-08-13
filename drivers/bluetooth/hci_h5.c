@@ -841,7 +841,6 @@ static void h5_serdev_remove(struct serdev_device *serdev)
 	hci_uart_unregister_device(&h5->serdev_hu);
 }
 
-#ifdef CONFIG_BT_HCIUART_RTL
 static int h5_btrtl_setup(struct h5 *h5)
 {
 	struct btrtl_device_info *btrtl_dev;
@@ -923,24 +922,21 @@ static struct h5_vnd rtl_vnd = {
 	.close		= h5_btrtl_close,
 	.acpi_gpio_map	= acpi_btrtl_gpios,
 };
-#endif
 
-#ifdef CONFIG_ACPI
 static const struct acpi_device_id h5_acpi_match[] = {
-#ifdef CONFIG_BT_HCIUART_RTL
 	{ "OBDA8723", (kernel_ulong_t)&rtl_vnd },
-#endif
 	{ },
 };
 MODULE_DEVICE_TABLE(acpi, h5_acpi_match);
-#endif
 
 static struct serdev_device_driver h5_serdev_driver = {
 	.probe = h5_serdev_probe,
 	.remove = h5_serdev_remove,
 	.driver = {
 		.name = "hci_uart_h5",
-		.acpi_match_table = ACPI_PTR(h5_acpi_match),
+		.acpi_match_table = (IS_ENABLED(CONFIG_BT_HCIUART_RTL) &&
+				     IS_ENABLED(CONFIG_ACPI)) ?
+					h5_acpi_match : 0,
 	},
 };
 
