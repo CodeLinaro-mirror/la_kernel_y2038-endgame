@@ -207,6 +207,7 @@ cat << EOF
 #define __IGNORE_fsmount
 #define __IGNORE_fspick
 #define __IGNORE_fsinfo
+#define __IGNORE_fsconfig
 
 #define __IGNORE_clock_gettime64
 #define __IGNORE_clock_settime64
