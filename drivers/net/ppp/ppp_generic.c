@@ -270,7 +270,7 @@ static void ppp_mp_insert(struct ppp *ppp, struct sk_buff *skb);
 static struct sk_buff *ppp_mp_reconstruct(struct ppp *ppp);
 static int ppp_mp_explode(struct ppp *ppp, struct sk_buff *skb);
 #endif /* CONFIG_PPP_MULTILINK */
-static int ppp_set_compress(struct ppp *ppp, unsigned long arg);
+static int ppp_set_compress(struct ppp *ppp, struct ppp_option_data *data);
 static void ppp_ccp_peek(struct ppp *ppp, struct sk_buff *skb, int inbound);
 static void ppp_ccp_closed(struct ppp *ppp);
 static struct compressor *find_compressor(int type);
@@ -584,6 +584,7 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	struct ppp *ppp;
 	int err = -EFAULT, val, val2, i;
 	struct ppp_idle idle;
+	struct ppp_option_data data;
 	struct npioctl npi;
 	int unit, cflags;
 	struct slcompress *vj;
@@ -679,7 +680,11 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		break;
 
 	case PPPIOCSCOMPRESS:
-		err = ppp_set_compress(ppp, arg);
+		err = -EFAULT;
+		if (copy_from_user(&data, p, sizeof(data)))
+			break;
+
+		err = ppp_set_compress(ppp, &data);
 		break;
 
 	case PPPIOCGUNIT:
@@ -827,6 +832,55 @@ out:
 	return err;
 }
 
+#ifdef CONFIG_COMPAT
+struct ppp_option_data32 {
+	compat_uptr_t		ptr;
+	u32			length;
+	compat_int_t		transmit;
+};
+#define PPPIOCSCOMPRESS32	_IOW('t', 77, struct ppp_option_data32)
+
+static long ppp_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
+	struct ppp_file *pf;
+	struct ppp *ppp;
+	int err = -ENOIOCTLCMD;
+	struct ppp_option_data32 data32;
+	struct ppp_option_data data;
+	void __user *argp = compat_ptr(arg);
+
+	mutex_lock(&ppp_mutex);
+
+	pf = file->private_data;
+	if (!pf || pf->kind != INTERFACE)
+		goto out;
+
+	ppp = PF_TO_PPP(pf);
+	switch (cmd) {
+	case PPPIOCSCOMPRESS32:
+		if (copy_from_user(&data32, argp, sizeof(data32))) {
+			err = -EFAULT;
+			goto out;
+		}
+
+		data.ptr = compat_ptr(data32.ptr);
+		data.length = data32.length;
+		data.transmit = data32.transmit;
+
+		err = ppp_set_compress(ppp, &data);
+		break;
+
+	default:
+		break;
+	}
+
+out:
+	mutex_unlock(&ppp_mutex);
+
+	return err;
+}
+#endif
+
 static int ppp_unattached_ioctl(struct net *net, struct ppp_file *pf,
 			struct file *file, unsigned int cmd, unsigned long arg)
 {
@@ -895,6 +949,9 @@ static const struct file_operations ppp_device_fops = {
 	.write		= ppp_write,
 	.poll		= ppp_poll,
 	.unlocked_ioctl	= ppp_ioctl,
+#ifdef CONFIG_COMPAT
+	.compat_ioctl	= ppp_compat_ioctl,
+#endif
 	.open		= ppp_open,
 	.release	= ppp_release,
 	.llseek		= noop_llseek,
@@ -2734,24 +2791,21 @@ ppp_output_wakeup(struct ppp_channel *chan)
 
 /* Process the PPPIOCSCOMPRESS ioctl. */
 static int
-ppp_set_compress(struct ppp *ppp, unsigned long arg)
+ppp_set_compress(struct ppp *ppp, struct ppp_option_data *data)
 {
 	int err;
 	struct compressor *cp, *ocomp;
-	struct ppp_option_data data;
 	void *state, *ostate;
 	unsigned char ccp_option[CCP_MAX_OPTION_LENGTH];
 
 	err = -EFAULT;
-	if (copy_from_user(&data, (void __user *) arg, sizeof(data)))
+	if (data->length > CCP_MAX_OPTION_LENGTH)
 		goto out;
-	if (data.length > CCP_MAX_OPTION_LENGTH)
-		goto out;
-	if (copy_from_user(ccp_option, (void __user *) data.ptr, data.length))
+	if (copy_from_user(ccp_option, (void __user *) data->ptr, data->length))
 		goto out;
 
 	err = -EINVAL;
-	if (data.length < 2 || ccp_option[1] < 2 || ccp_option[1] > data.length)
+	if (data->length < 2 || ccp_option[1] < 2 || ccp_option[1] > data->length)
 		goto out;
 
 	cp = try_then_request_module(
@@ -2761,8 +2815,8 @@ ppp_set_compress(struct ppp *ppp, unsigned long arg)
 		goto out;
 
 	err = -ENOBUFS;
-	if (data.transmit) {
-		state = cp->comp_alloc(ccp_option, data.length);
+	if (data->transmit) {
+		state = cp->comp_alloc(ccp_option, data->length);
 		if (state) {
 			ppp_xmit_lock(ppp);
 			ppp->xstate &= ~SC_COMP_RUN;
@@ -2780,7 +2834,7 @@ ppp_set_compress(struct ppp *ppp, unsigned long arg)
 			module_put(cp->owner);
 
 	} else {
-		state = cp->decomp_alloc(ccp_option, data.length);
+		state = cp->decomp_alloc(ccp_option, data->length);
 		if (state) {
 			ppp_recv_lock(ppp);
 			ppp->rstate &= ~SC_DECOMP_RUN;
