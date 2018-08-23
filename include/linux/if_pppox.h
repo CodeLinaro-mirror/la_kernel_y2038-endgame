@@ -80,6 +80,14 @@ extern int register_pppox_proto(int proto_num, const struct pppox_proto *pp);
 extern void unregister_pppox_proto(int proto_num);
 extern void pppox_unbind_sock(struct sock *sk);/* delete ppp-channel binding */
 extern int pppox_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg);
+static inline int pppox_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
+{
+#ifdef CONFIG_COMPAT
+	return pppox_ioctl(sock, cmd, (unsigned long)compat_ptr(arg));
+#else
+	return -ENOIOCTLCMD;
+#endif
+}
 
 #define PPPOEIOCSFWD32    _IOW(0xB1 ,0, compat_size_t)
 

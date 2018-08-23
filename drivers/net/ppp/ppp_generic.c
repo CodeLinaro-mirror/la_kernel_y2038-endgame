@@ -902,6 +902,9 @@ static long ppp_compat_ioctl(struct file *file, unsigned int cmd, unsigned long 
 out:
 	mutex_unlock(&ppp_mutex);
 
+	if (err == -ENOIOCTLCMD)
+		err = ppp_ioctl(file, cmd, (unsigned long)compat_ptr(arg));
+
 	return err;
 }
 #endif
