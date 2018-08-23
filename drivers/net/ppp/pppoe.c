@@ -52,6 +52,7 @@
  * License:
  */
 
+#include <linux/compat.h>
 #include <linux/string.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -779,6 +780,9 @@ static int pppoe_ioctl(struct socket *sock, unsigned int cmd,
 		err = 0;
 		break;
 
+#ifdef CONFIG_COMPAT
+	case PPPOEIOCSFWD32:
+#endif
 	case PPPOEIOCSFWD:
 	{
 		struct pppox_sock *relay_po;
