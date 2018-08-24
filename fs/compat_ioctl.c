@@ -73,43 +73,6 @@ static int do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	return vfs_ioctl(file, cmd, arg);
 }
 
-#ifdef CONFIG_BLOCK
-struct compat_sg_req_info { /* used by SG_GET_REQUEST_TABLE ioctl() */
-	char req_state;
-	char orphan;
-	char sg_io_owned;
-	char problem;
-	int pack_id;
-	compat_uptr_t usr_ptr;
-	unsigned int duration;
-	int unused;
-};
-
-static int sg_grt_trans(struct file *file,
-		unsigned int cmd, struct compat_sg_req_info __user *o)
-{
-	int err, i;
-	sg_req_info_t __user *r;
-	r = compat_alloc_user_space(sizeof(sg_req_info_t)*SG_MAX_QUEUE);
-	err = do_ioctl(file, cmd, (unsigned long)r);
-	if (err < 0)
-		return err;
-	for (i = 0; i < SG_MAX_QUEUE; i++) {
-		void __user *ptr;
-		int d;
-
-		if (copy_in_user(o + i, r + i, offsetof(sg_req_info_t, usr_ptr)) ||
-		    get_user(ptr, &r[i].usr_ptr) ||
-		    get_user(d, &r[i].duration) ||
-		    put_user((u32)(unsigned long)(ptr), &o[i].usr_ptr) ||
-		    put_user(d, &o[i].duration))
-			return -EFAULT;
-	}
-	return err;
-}
-
-#endif /* CONFIG_BLOCK */
-
 /* on ia32 l_start is on a 32-bit boundary */
 #if defined(CONFIG_IA64) || defined(CONFIG_X86_64)
 struct space_resv_32 {
@@ -224,26 +187,6 @@ COMPATIBLE_IOCTL(WDIOC_SETPRETIMEOUT)
 COMPATIBLE_IOCTL(WDIOC_GETPRETIMEOUT)
 };
 
-/*
- * Convert common ioctl arguments based on their command number
- *
- * Please do not add any code in here. Instead, implement
- * a compat_ioctl operation in the place that handleѕ the
- * ioctl for the native case.
- */
-static long do_ioctl_trans(unsigned int cmd,
-		 unsigned long arg, struct file *file)
-{
-	switch (cmd) {
-#ifdef CONFIG_BLOCK
-	case SG_GET_REQUEST_TABLE:
-		return sg_grt_trans(file, cmd, compat_ptr(arg));
-#endif
-	}
-
-	return -ENOIOCTLCMD;
-}
-
 static int compat_ioctl_check_table(unsigned int xcmd)
 {
 	int i;
@@ -330,16 +273,9 @@ COMPAT_SYSCALL_DEFINE3(ioctl, unsigned int, fd, unsigned int, cmd,
 		break;
 	}
 
-	if (compat_ioctl_check_table(XFORM(cmd)))
-		goto found_handler;
+	if (!compat_ioctl_check_table(XFORM(cmd)))
+		goto out_fput;
 
-	error = do_ioctl_trans(cmd, arg, f.file);
-	if (error == -ENOIOCTLCMD)
-		error = -ENOTTY;
-
-	goto out_fput;
-
- found_handler:
 	arg = (unsigned long)compat_ptr(arg);
  do_ioctl:
 	error = do_vfs_ioctl(f.file, fd, cmd, arg);
