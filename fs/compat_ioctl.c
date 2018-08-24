@@ -235,40 +235,6 @@ static int sg_ioctl_trans(struct file *file, unsigned int cmd,
 	return err;
 }
 
-struct compat_sg_req_info { /* used by SG_GET_REQUEST_TABLE ioctl() */
-	char req_state;
-	char orphan;
-	char sg_io_owned;
-	char problem;
-	int pack_id;
-	compat_uptr_t usr_ptr;
-	unsigned int duration;
-	int unused;
-};
-
-static int sg_grt_trans(struct file *file,
-		unsigned int cmd, struct compat_sg_req_info __user *o)
-{
-	int err, i;
-	sg_req_info_t __user *r;
-	r = compat_alloc_user_space(sizeof(sg_req_info_t)*SG_MAX_QUEUE);
-	err = do_ioctl(file, cmd, (unsigned long)r);
-	if (err < 0)
-		return err;
-	for (i = 0; i < SG_MAX_QUEUE; i++) {
-		void __user *ptr;
-		int d;
-
-		if (copy_in_user(o + i, r + i, offsetof(sg_req_info_t, usr_ptr)) ||
-		    get_user(ptr, &r[i].usr_ptr) ||
-		    get_user(d, &r[i].duration) ||
-		    put_user((u32)(unsigned long)(ptr), &o[i].usr_ptr) ||
-		    put_user(d, &o[i].duration))
-			return -EFAULT;
-	}
-	return err;
-}
-
 struct mtget32 {
 	compat_long_t	mt_type;
 	compat_long_t	mt_resid;
