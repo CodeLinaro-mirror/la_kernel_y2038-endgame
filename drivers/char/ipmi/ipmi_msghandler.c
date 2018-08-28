@@ -4818,7 +4818,7 @@ static void device_id_fetcher(struct ipmi_smi *intf, struct ipmi_recv_msg *msg)
 static void send_panic_events(struct ipmi_smi *intf, char *str)
 {
 	struct kernel_ipmi_msg msg;
-	unsigned char data[16];
+	unsigned char data[16] __nonstring;
 	struct ipmi_system_interface_addr *si;
 	struct ipmi_addr addr;
 	char *p = str;
@@ -4954,7 +4954,7 @@ static void send_panic_events(struct ipmi_smi *intf, char *str)
 		 * Always give 11 bytes, so strncpy will fill
 		 * it with zeroes for me.
 		 */
-		strncpy(data+5, p, 11);
+		strlcpy(data+5, p, 11);
 		p += size;
 
 		ipmi_panic_request_and_wait(intf, &addr, &msg);
