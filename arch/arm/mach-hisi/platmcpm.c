@@ -178,7 +178,7 @@ static void hip04_cpu_die(unsigned int l_cpu)
 	if (last_man) {
 		/* Since it's Cortex A15, disable L2 prefetching. */
 		asm volatile(
-		".arch armv7\n\t"
+		".arch armv7-a\n\t"
 		"mcr	p15, 1, %0, c15, c0, 3 \n\t"
 		"isb	\n\t"
 		"dsb	"
