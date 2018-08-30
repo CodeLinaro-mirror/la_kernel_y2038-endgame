@@ -72,6 +72,8 @@
 #define MX6Q_GPC_IMR4	0x14
 #define MX6Q_CCM_CCR	0x0
 
+	.arch armv7-a
+
 	.align 3
 
 	.macro  sync_l2_cache

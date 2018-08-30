@@ -19,6 +19,7 @@
 #include <asm/tlbflush.h>
 #include "proc-macros.S"
 
+.arch	armv7-a
 /*
  *	v7wbi_flush_user_tlb_range(start, end, vma)
  *

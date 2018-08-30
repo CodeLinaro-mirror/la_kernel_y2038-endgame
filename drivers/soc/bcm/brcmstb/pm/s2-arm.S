@@ -18,6 +18,7 @@
 
 	.text
 	.align	3
+	.arch armv7-a
 
 #define AON_CTRL_REG		r10
 #define DDR_PHY_STATUS_REG	r11

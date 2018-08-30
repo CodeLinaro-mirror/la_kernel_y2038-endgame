@@ -21,6 +21,8 @@
 
 #include "omap44xx.h"
 
+.arch	armv7ve
+
 /* Physical address needed since MMU not enabled yet on secondary core */
 #define AUX_CORE_BOOT0_PA			0x48281800
 #define API_HYP_ENTRY				0x102

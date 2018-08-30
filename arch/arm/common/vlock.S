@@ -30,6 +30,8 @@
 #define MANY(x...)
 #endif
 
+.arch armv7-a
+
 @ voting lock for first-man coordination
 
 .macro voting_begin rbase:req, rcpu:req, rscratch:req

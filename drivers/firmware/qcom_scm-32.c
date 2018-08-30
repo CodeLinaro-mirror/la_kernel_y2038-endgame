@@ -141,6 +141,7 @@ static u32 smc(u32 cmd_addr)
 			__asmeq("%1", "r0")
 			__asmeq("%2", "r1")
 			__asmeq("%3", "r2")
+			".arch armv7-a\n\t"
 #ifdef REQUIRES_SEC
 			".arch_extension sec\n"
 #endif
@@ -257,6 +258,7 @@ static s32 qcom_scm_call_atomic1(u32 svc, u32 cmd, u32 arg1)
 			__asmeq("%1", "r0")
 			__asmeq("%2", "r1")
 			__asmeq("%3", "r2")
+			".arch armv7-a\n\t"
 #ifdef REQUIRES_SEC
 			".arch_extension sec\n"
 #endif
@@ -292,6 +294,7 @@ static s32 qcom_scm_call_atomic2(u32 svc, u32 cmd, u32 arg1, u32 arg2)
 			__asmeq("%2", "r1")
 			__asmeq("%3", "r2")
 			__asmeq("%4", "r3")
+			".arch armv7-a\n\t"
 #ifdef REQUIRES_SEC
 			".arch_extension sec\n"
 #endif
@@ -322,6 +325,7 @@ u32 qcom_scm_get_version(void)
 			__asmeq("%1", "r1")
 			__asmeq("%2", "r0")
 			__asmeq("%3", "r1")
+			".arch armv7-a\n\t"
 #ifdef REQUIRES_SEC
 			".arch_extension sec\n"
 #endif

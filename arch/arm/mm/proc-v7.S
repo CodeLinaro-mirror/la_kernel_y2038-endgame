@@ -21,6 +21,8 @@
 
 #include "proc-macros.S"
 
+.arch	armv7-a
+
 #ifdef CONFIG_ARM_LPAE
 #include "proc-v7-3level.S"
 #else

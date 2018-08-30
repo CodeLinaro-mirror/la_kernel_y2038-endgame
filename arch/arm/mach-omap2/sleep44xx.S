@@ -21,6 +21,8 @@
 #include "omap44xx.h"
 #include "omap4-sar-layout.h"
 
+.arch	armv7ve
+
 #if defined(CONFIG_SMP) && defined(CONFIG_PM)
 
 .macro	DO_SMC

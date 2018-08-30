@@ -23,6 +23,7 @@
 /* replicated define because linux/bitops.h cannot be included in assembly */
 #define BIT(nr)			(1 << (nr))
 
+	.arch	armv7ve
 	.arm
 	.align 3
 

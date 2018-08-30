@@ -11,6 +11,8 @@
 
 #include <linux/linkage.h>
 
+.arch	armv7ve
+
 /**
  * u32 keystone_cpu_smc(u32 command, u32 cpu, u32 addr)
  *

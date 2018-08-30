@@ -23,6 +23,10 @@ pmc	.req	r0
 tmp1	.req	r4
 tmp2	.req	r5
 
+#if defined(CONFIG_CPU_V7)
+	.arch armv7-a
+#endif
+
 /*
  * Wait until master clock is ready (after switching master clock source)
  */

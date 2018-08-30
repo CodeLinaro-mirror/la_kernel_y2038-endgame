@@ -16,6 +16,7 @@
 
 	.text
 	.align
+	.arch	armv7ve
 
 	/*
 	 * sleep magic, to allow the bootloader to check for an valid

@@ -34,6 +34,7 @@ static void __iomem *ns_sram_base_addr __ro_after_init;
  */
 #define exynos_v7_exit_coherency_flush(level) \
 	asm volatile( \
+	".arch armv7-a\n\t"\
 	"stmfd	sp!, {fp, ip}\n\t"\
 	"mrc	p15, 0, r0, c1, c0, 0	@ get SCTLR\n\t" \
 	"bic	r0, r0, #"__stringify(CR_C)"\n\t" \
@@ -133,6 +134,7 @@ static void exynos_cluster_cache_disable(void)
 		 * L2 prefetching before flushing the cache.
 		 */
 		asm volatile(
+		".arch armv7-a\n\t"
 		"mcr	p15, 1, %0, c15, c0, 3\n\t"
 		"isb\n\t"
 		"dsb"

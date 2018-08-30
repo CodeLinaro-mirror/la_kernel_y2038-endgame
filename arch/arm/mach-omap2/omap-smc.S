@@ -14,6 +14,8 @@
 
 #include <linux/linkage.h>
 
+.arch	armv7ve
+
 /*
  * This is common routine to manage secure monitor API
  * used to modify the PL310 secure registers.

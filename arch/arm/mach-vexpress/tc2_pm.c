@@ -104,6 +104,7 @@ static void tc2_pm_cluster_cache_disable(void)
 		 * L2 prefetching before flushing the cache.
 		 */
 		asm volatile(
+		".arch armv7-a\n\t"
 		"mcr	p15, 1, %0, c15, c0, 3 \n\t"
 		"isb	\n\t"
 		"dsb	"

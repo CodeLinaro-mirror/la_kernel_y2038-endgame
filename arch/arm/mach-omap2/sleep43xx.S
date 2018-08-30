@@ -56,6 +56,7 @@
 #define RTC_PMIC_EXT_WAKEUP_EN				BIT(0)
 
 	.arm
+	.arch armv7ve
 	.align 3
 
 ENTRY(am43xx_do_wfi)

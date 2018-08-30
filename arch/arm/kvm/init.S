@@ -46,6 +46,7 @@
  * that is less than HVC_STUB_HCALL_NR.
  */
 
+	.arch armv7ve
 	.text
 	.pushsection    .hyp.idmap.text,"ax"
 	.align 5

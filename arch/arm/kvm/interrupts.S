@@ -19,6 +19,7 @@
 #include <linux/linkage.h>
 
 	.text
+	.arch armv7ve
 
 /********************************************************************
  *  Call function in Hyp mode

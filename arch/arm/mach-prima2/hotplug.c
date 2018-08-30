@@ -16,7 +16,7 @@ static inline void platform_do_lowpower(unsigned int cpu)
 {
 	/* we put the platform to just WFI */
 	for (;;) {
-		__asm__ __volatile__("dsb\n\t" "wfi\n\t"
+		__asm__ __volatile__(".arch armv7-a\n\tdsb\n\t" "wfi\n\t"
 			: : : "memory");
 		if (pen_release == cpu_logical_map(cpu)) {
 			/*

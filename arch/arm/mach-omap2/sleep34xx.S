@@ -71,6 +71,7 @@
  * with non-Thumb-2-capable firmware.
  */
 	.arm
+	.arch	armv7ve
 
 /*
  * API functions

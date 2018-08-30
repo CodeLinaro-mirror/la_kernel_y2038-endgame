@@ -7,6 +7,8 @@
 
 #include <linux/linkage.h>
 
+.arch	armv7ve
+
 /*
  * Function signature: void exynos_smc(u32 cmd, u32 arg1, u32 arg2, u32 arg3)
  */

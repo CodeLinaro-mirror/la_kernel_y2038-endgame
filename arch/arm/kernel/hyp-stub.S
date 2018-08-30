@@ -22,6 +22,8 @@
 #include <asm/assembler.h>
 #include <asm/virt.h>
 
+	.arch armv7ve
+
 #ifndef ZIMAGE
 /*
  * For the kernel proper, we need to find out the CPU boot mode long after

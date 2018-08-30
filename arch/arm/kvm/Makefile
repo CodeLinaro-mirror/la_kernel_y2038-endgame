@@ -12,9 +12,6 @@ ccflags-y += -Iarch/arm/kvm -Ivirt/kvm/arm/vgic
 CFLAGS_arm.o := -I. $(plus_virt_def)
 CFLAGS_mmu.o := -I.
 
-AFLAGS_init.o := -Wa,-march=armv7-a$(plus_virt)
-AFLAGS_interrupts.o := -Wa,-march=armv7-a$(plus_virt)
-
 KVM := ../../../virt/kvm
 kvm-arm-y = $(KVM)/kvm_main.o $(KVM)/coalesced_mmio.o $(KVM)/eventfd.o $(KVM)/vfio.o
 

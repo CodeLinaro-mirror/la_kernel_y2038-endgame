@@ -31,6 +31,8 @@
 
 #define RESET_DATA(x)	((TEGRA_RESET_##x)*4)
 
+.arch	armv7-a
+
 #ifdef CONFIG_PM_SLEEP
 /*
  *	tegra_resume

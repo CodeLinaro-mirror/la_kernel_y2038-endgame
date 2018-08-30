@@ -23,6 +23,8 @@
 .error "cpus must be the first member of struct mcpm_sync_struct"
 .endif
 
+.arch	armv7-a
+
 	.macro	pr_dbg	string
 #if defined(CONFIG_DEBUG_LL) && defined(DEBUG)
 	b	1901f
