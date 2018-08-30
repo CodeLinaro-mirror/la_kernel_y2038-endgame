@@ -45,8 +45,8 @@ KBUILD_CFLAGS	+=-fno-omit-frame-pointer -mapcs -mno-sched-prolog
 endif
 
 ifeq ($(CONFIG_CPU_BIG_ENDIAN),y)
-KBUILD_CPPFLAGS	+= -mbig-endian
-KBUILD_BIARCHFLAGS += -mbig-endian
+KBUILD_CPPFLAGS	+= -mbig-endian -Wa,-EB
+KBUILD_BIARCHFLAGS += -mbig-endian -Wa,-EB
 CHECKFLAGS	+= -D__ARMEB__
 AS		+= -EB
 KBUILD_LDFLAGS	+= -EB
