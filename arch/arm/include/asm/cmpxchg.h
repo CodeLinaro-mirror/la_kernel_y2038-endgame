@@ -260,7 +260,7 @@ static inline unsigned long long __cmpxchg64(unsigned long long *ptr,
 "	bne		1b\n"
 "2:"
 	: "=&r" (res), "=&r" (oldval),
-#if GCC_VERSION >= 40700
+#if defined(__clang__) || GCC_VERSION >= 40700
 	  "+Qo" (*ptr)
 #else
 	  "+m" (*ptr)
