@@ -67,7 +67,7 @@ static inline uint32_t __div64_32(uint64_t *n, uint32_t base)
  */
 #define do_div(n, base) __div64_32(&(n), base)
 
-#elif GCC_VERSION < 40700
+#elif defined (__clang__) || GCC_VERSION < 40700
 
 /*
  * gcc-4.4 through gcc-4.6 tend to run out of registers in their
