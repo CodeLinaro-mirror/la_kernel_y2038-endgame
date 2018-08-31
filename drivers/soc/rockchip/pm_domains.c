@@ -86,34 +86,38 @@ struct rockchip_pmu {
 
 #define to_rockchip_pd(gpd) container_of(gpd, struct rockchip_pm_domain, genpd)
 
+#define __COND_BIT(x, y) \
+	__builtin_choose_expr(x >= 0, (y<0?-y:y), 0)
+#define COND_BIT(x) __COND_BIT(x, x)
+
 #define DOMAIN(pwr, status, req, idle, ack, wakeup)	\
-{						\
-	.pwr_mask = (pwr >= 0) ? BIT(pwr) : 0,		\
-	.status_mask = (status >= 0) ? BIT(status) : 0,	\
-	.req_mask = (req >= 0) ? BIT(req) : 0,		\
-	.idle_mask = (idle >= 0) ? BIT(idle) : 0,	\
-	.ack_mask = (ack >= 0) ? BIT(ack) : 0,		\
+{							\
+	.pwr_mask = COND_BIT(pwr),			\
+	.status_mask = COND_BIT(status),		\
+	.req_mask = COND_BIT(req),			\
+	.idle_mask = COND_BIT(idle),			\
+	.ack_mask = COND_BIT(ack) ,			\
 	.active_wakeup = wakeup,			\
 }
 
 #define DOMAIN_M(pwr, status, req, idle, ack, wakeup)	\
 {							\
-	.pwr_w_mask = (pwr >= 0) ? BIT(pwr + 16) : 0,	\
-	.pwr_mask = (pwr >= 0) ? BIT(pwr) : 0,		\
-	.status_mask = (status >= 0) ? BIT(status) : 0,	\
-	.req_w_mask = (req >= 0) ?  BIT(req + 16) : 0,	\
-	.req_mask = (req >= 0) ?  BIT(req) : 0,		\
-	.idle_mask = (idle >= 0) ? BIT(idle) : 0,	\
-	.ack_mask = (ack >= 0) ? BIT(ack) : 0,		\
+	.pwr_w_mask = __COND_BIT(pwr, pwr + 16),	\
+	.pwr_mask = COND_BIT(pwr),			\
+	.status_mask = COND_BIT(status),		\
+	.req_w_mask = __COND_BIT(req, req + 16),	\
+	.req_mask = COND_BIT(req),			\
+	.idle_mask = COND_BIT(idle),			\
+	.ack_mask = COND_BIT(ack) ,			\
 	.active_wakeup = wakeup,			\
 }
 
 #define DOMAIN_RK3036(req, ack, idle, wakeup)		\
 {							\
-	.req_mask = (req >= 0) ? BIT(req) : 0,		\
-	.req_w_mask = (req >= 0) ?  BIT(req + 16) : 0,	\
-	.ack_mask = (ack >= 0) ? BIT(ack) : 0,		\
-	.idle_mask = (idle >= 0) ? BIT(idle) : 0,	\
+	.req_mask = COND_BIT(req),			\
+	.req_w_mask = __COND_BIT(req, req + 16),	\
+	.ack_mask = COND_BIT(ack) ,			\
+	.idle_mask = COND_BIT(idle),			\
 	.active_wakeup = wakeup,			\
 }
 
