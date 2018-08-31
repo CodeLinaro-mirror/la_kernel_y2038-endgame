@@ -712,6 +712,7 @@ config ARM64_PA_BITS
 
 config CPU_BIG_ENDIAN
        bool "Build big-endian kernel"
+	depends on !CC_IS_CLANG || CLANG_VERSION >= 80000
        help
          Say Y if you plan on running a kernel in big-endian mode.
 
