@@ -46,6 +46,7 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr, int size
 		"1:	ldrexb	%0, [%3]\n"
 		"	strexb	%1, %2, [%3]\n"
 		"	teq	%1, #0\n"
+		"	it	ne\n"
 		"	bne	1b"
 			: "=&r" (ret), "=&r" (tmp)
 			: "r" (x), "r" (ptr)
@@ -56,6 +57,7 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr, int size
 		"1:	ldrexh	%0, [%3]\n"
 		"	strexh	%1, %2, [%3]\n"
 		"	teq	%1, #0\n"
+		"	it	ne\n"
 		"	bne	1b"
 			: "=&r" (ret), "=&r" (tmp)
 			: "r" (x), "r" (ptr)
@@ -67,6 +69,7 @@ static inline unsigned long __xchg(unsigned long x, volatile void *ptr, int size
 		"1:	ldrex	%0, [%3]\n"
 		"	strex	%1, %2, [%3]\n"
 		"	teq	%1, #0\n"
+		"	it	ne\n"
 		"	bne	1b"
 			: "=&r" (ret), "=&r" (tmp)
 			: "r" (x), "r" (ptr)
@@ -168,6 +171,7 @@ static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
 			"	ldrexb	%1, [%2]\n"
 			"	mov	%0, #0\n"
 			"	teq	%1, %3\n"
+			"	it	eq\n"
 			"	strexbeq %0, %4, [%2]\n"
 				: "=&r" (res), "=&r" (oldval)
 				: "r" (ptr), "Ir" (old), "r" (new)
@@ -180,6 +184,7 @@ static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
 			"	ldrexh	%1, [%2]\n"
 			"	mov	%0, #0\n"
 			"	teq	%1, %3\n"
+			"	it	eq\n"
 			"	strexheq %0, %4, [%2]\n"
 				: "=&r" (res), "=&r" (oldval)
 				: "r" (ptr), "Ir" (old), "r" (new)
@@ -193,6 +198,7 @@ static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
 			"	ldrex	%1, [%2]\n"
 			"	mov	%0, #0\n"
 			"	teq	%1, %3\n"
+			"	it	eq\n"
 			"	strexeq %0, %4, [%2]\n"
 				: "=&r" (res), "=&r" (oldval)
 				: "r" (ptr), "Ir" (old), "r" (new)
@@ -253,10 +259,13 @@ static inline unsigned long long __cmpxchg64(unsigned long long *ptr,
 	__asm__ __volatile__(
 "1:	ldrexd		%1, %H1, [%3]\n"
 "	teq		%1, %4\n"
+"	it		eq\n"
 "	teqeq		%H1, %H4\n"
+"	it		ne\n"
 "	bne		2f\n"
 "	strexd		%0, %5, %H5, [%3]\n"
 "	teq		%0, #0\n"
+"	it		ne\n"
 "	bne		1b\n"
 "2:"
 	: "=&r" (res), "=&r" (oldval),
