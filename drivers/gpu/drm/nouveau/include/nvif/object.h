@@ -100,7 +100,7 @@ struct nvif_mclass {
 })
 
 #define nvif_sclass(o,m,u) ({                                                  \
-	const typeof(m[0]) *_mclass = (m);                                     \
+	typeof(m[0]) *_mclass = (m);                                           \
 	s32 _oclass = (u);                                                     \
 	int _cid;                                                              \
 	if (_oclass) {                                                         \

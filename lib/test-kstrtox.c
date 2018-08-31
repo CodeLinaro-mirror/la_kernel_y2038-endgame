@@ -47,7 +47,7 @@ struct test_fail {
 	unsigned int i;							\
 									\
 	for_each_test(i, test) {					\
-		const typeof(test[0]) *t = &test[i];			\
+		typeof(test[0]) *t = &test[i];			\
 		type res;						\
 		int rv;							\
 									\
