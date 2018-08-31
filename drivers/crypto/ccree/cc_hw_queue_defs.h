@@ -462,7 +462,7 @@ static inline void set_cipher_mode(struct cc_hw_desc *pdesc,
  * @mode: Any one of the modes defined in [CC7x-DESC]
  */
 static inline void set_cipher_config0(struct cc_hw_desc *pdesc,
-				      enum drv_crypto_direction mode)
+				      unsigned long mode)
 {
 	pdesc->word[4] |= FIELD_PREP(WORD4_CIPHER_CONF0, mode);
 }

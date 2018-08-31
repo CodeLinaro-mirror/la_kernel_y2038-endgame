@@ -1640,7 +1640,7 @@ static void cc_set_ghash_desc(struct aead_request *req,
 	set_dout_no_dma(&desc[idx], 0, 0, 1);
 	set_flow_mode(&desc[idx], S_DIN_to_HASH);
 	set_aes_not_hash_mode(&desc[idx]);
-	set_cipher_mode(&desc[idx], DRV_HASH_HW_GHASH);
+	set_cipher_mode(&desc[idx], (enum drv_cipher_mode)DRV_HASH_HW_GHASH);
 	set_cipher_config1(&desc[idx], HASH_PADDING_ENABLED);
 	set_setup_mode(&desc[idx], SETUP_LOAD_KEY0);
 	idx++;
@@ -1655,7 +1655,7 @@ static void cc_set_ghash_desc(struct aead_request *req,
 	set_dout_no_dma(&desc[idx], 0, 0, 1);
 	set_flow_mode(&desc[idx], S_DIN_to_HASH);
 	set_aes_not_hash_mode(&desc[idx]);
-	set_cipher_mode(&desc[idx], DRV_HASH_HW_GHASH);
+	set_cipher_mode(&desc[idx], (enum drv_cipher_mode)DRV_HASH_HW_GHASH);
 	set_cipher_do(&desc[idx], 1); //1=AES_SK RKEK
 	set_cipher_config0(&desc[idx], DRV_CRYPTO_DIRECTION_ENCRYPT);
 	set_cipher_config1(&desc[idx], HASH_PADDING_ENABLED);
@@ -1670,7 +1670,7 @@ static void cc_set_ghash_desc(struct aead_request *req,
 	set_dout_no_dma(&desc[idx], 0, 0, 1);
 	set_flow_mode(&desc[idx], S_DIN_to_HASH);
 	set_aes_not_hash_mode(&desc[idx]);
-	set_cipher_mode(&desc[idx], DRV_HASH_HW_GHASH);
+	set_cipher_mode(&desc[idx], (enum drv_cipher_mode)DRV_HASH_HW_GHASH);
 	set_cipher_config1(&desc[idx], HASH_PADDING_ENABLED);
 	set_setup_mode(&desc[idx], SETUP_LOAD_STATE0);
 	idx++;
@@ -1739,7 +1739,7 @@ static void cc_proc_gcm_result(struct aead_request *req,
 
 	/* Store GHASH state after GHASH(Associated Data + Cipher +LenBlock) */
 	hw_desc_init(&desc[idx]);
-	set_cipher_mode(&desc[idx], DRV_HASH_HW_GHASH);
+	set_cipher_mode(&desc[idx], (enum drv_cipher_mode)DRV_HASH_HW_GHASH);
 	set_din_no_dma(&desc[idx], 0, 0xfffff0);
 	set_dout_dlli(&desc[idx], req_ctx->mac_buf_dma_addr, AES_BLOCK_SIZE,
 		      NS_BIT, 0);
