@@ -51,7 +51,7 @@ acornscsi_in8:	adds	r2, r2, #8
 		and	r4, r5, lr
 		orr	r4, r4, r6, lsl #16
 		stmia	r1!, {r3 - r4}
-		LOADREGS(eqfd, sp!, {r4 - r7, pc})
+		LOADREGS(fdeq, sp!, {r4 - r7, pc})
 		sub	r2, r2, #8
 
 acornscsi_in4:	adds	r2, r2, #4
@@ -60,7 +60,7 @@ acornscsi_in4:	adds	r2, r2, #4
 		and	r3, r3, lr
 		orr	r3, r3, r4, lsl #16
 		str	r3, [r1], #4
-		LOADREGS(eqfd, sp!, {r4 - r7, pc})
+		LOADREGS(fdeq, sp!, {r4 - r7, pc})
 		sub	r2, r2, #4
 
 acornscsi_in2:	adds	r2, r2, #2
@@ -68,7 +68,7 @@ acornscsi_in2:	adds	r2, r2, #2
 		and	r3, r3, lr
 		strb	r3, [r1], #1
 		mov	r3, r3, lsr #8
-		strplb	r3, [r1], #1
+		strbpl	r3, [r1], #1
 		LOADREGS(fd, sp!, {r4 - r7, pc})
 
 @ Purpose: transfer a block of data from memory to the acorn scsi card
@@ -115,7 +115,7 @@ acornscsi_out8:	adds	r2, r2, #8
 		mov	r6, r6, lsr #16
 		orr	r6, r6, r6, lsl #16
 		stmia	r0!, {r3, r4, r5, r6}
-		LOADREGS(eqfd, sp!, {r4 - r6, pc})
+		LOADREGS(fdeq, sp!, {r4 - r6, pc})
 
 		sub	r2, r2, #8
 acornscsi_out4:	adds	r2, r2, #4
@@ -126,13 +126,13 @@ acornscsi_out4:	adds	r2, r2, #4
 		mov	r4, r4, lsr #16
 		orr	r4, r4, r4, lsl #16
 		stmia	r0!, {r3, r4}
-		LOADREGS(eqfd, sp!, {r4 - r6, pc})
+		LOADREGS(fdeq, sp!, {r4 - r6, pc})
 
 		sub	r2, r2, #4
 acornscsi_out2:	adds	r2, r2, #2
 		ldr	r3, [r1], #2
 		strb	r3, [r0], #1
 		mov	r3, r3, lsr #8
-		strplb	r3, [r0], #1
+		strbpl	r3, [r0], #1
 		LOADREGS(fd, sp!, {r4 - r6, pc})
 

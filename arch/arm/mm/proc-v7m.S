@@ -149,7 +149,7 @@ __v7m_setup_cont:
 
 	@ Configure caches (if implemented)
 	teq     r8, #0
-	stmneia	sp, {r0-r6, lr}		@ v7m_invalidate_l1 touches r0-r6
+	stmiane	sp, {r0-r6, lr}		@ v7m_invalidate_l1 touches r0-r6
 	blne	v7m_invalidate_l1
 	teq     r8, #0			@ re-evalutae condition
 	ldmneia	sp, {r0-r6, lr}
