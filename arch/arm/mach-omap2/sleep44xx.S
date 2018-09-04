@@ -109,6 +109,7 @@ skip_secure_l1_clean:
 	bne	scu_gp_set
 	mrc	p15, 0, r0, c0, c0, 5		@ Read MPIDR
 	ands	r0, r0, #0x0f
+	ite	eq
 	ldreq	r0, [r8, #SCU_OFFSET0]
 	ldrne	r0, [r8, #SCU_OFFSET1]
 	mov	r1, #0x00
@@ -120,6 +121,7 @@ skip_secure_l1_clean:
 scu_gp_set:
 	mrc	p15, 0, r0, c0, c0, 5		@ Read MPIDR
 	ands	r0, r0, #0x0f
+	ite	eq
 	ldreq	r1, [r8, #SCU_OFFSET0]
 	ldrne	r1, [r8, #SCU_OFFSET1]
 	bl	omap4_get_scu_base
@@ -127,6 +129,7 @@ scu_gp_set:
 skip_scu_gp_set:
 	mrc	p15, 0, r0, c1, c1, 2		@ Read NSACR data
 	tst	r0, #(1 << 18)
+	ittt	ne
 	mrcne	p15, 0, r0, c1, c0, 1
 	bicne	r0, r0, #(1 << 6)		@ Disable SMP bit
 	mcrne	p15, 0, r0, c1, c0, 1
@@ -147,6 +150,7 @@ skip_scu_gp_set:
 	mov	r8, r0
 	mrc	p15, 0, r5, c0, c0, 5		@ Read MPIDR
 	ands	r5, r5, #0x0f
+	ite	eq
 	ldreq	r0, [r8, #L2X0_SAVE_OFFSET0]	@ Retrieve L2 state from SAR
 	ldrne	r0, [r8, #L2X0_SAVE_OFFSET1]	@ memory.
 	cmp	r0, #3
@@ -190,6 +194,7 @@ do_WFI:
 	 */
 	mrc	p15, 0, r0, c1, c0, 0
 	tst	r0, #(1 << 2)			@ Check C bit enabled?
+	itt	eq
 	orreq	r0, r0, #(1 << 2)		@ Enable the C bit
 	mcreq	p15, 0, r0, c1, c0, 0
 	isb
@@ -202,6 +207,7 @@ do_WFI:
 	 */
 	mrc	p15, 0, r0, c1, c0, 1
 	tst	r0, #(1 << 6)			@ Check SMP bit enabled?
+	itt	eq
 	orreq	r0, r0, #(1 << 6)
 	mcreq	p15, 0, r0, c1, c0, 1
 	isb
@@ -271,6 +277,7 @@ ppa_actrl_retry:
 enable_smp_bit:
 	mrc	p15, 0, r0, c1, c0, 1
 	tst	r0, #(1 << 6)			@ Check SMP bit enabled?
+	itt	eq
 	orreq	r0, r0, #(1 << 6)
 	mcreq	p15, 0, r0, c1, c0, 1
 	isb

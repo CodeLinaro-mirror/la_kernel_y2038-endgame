@@ -183,6 +183,7 @@ ENTRY(cpu_v7_do_resume)
 #endif	/* CONFIG_MMU */
 	mrc	p15, 0, r4, c1, c0, 1	@ Read Auxiliary control register
 	teq	r4, r9			@ Is it already set?
+	it	ne
 	mcrne	p15, 0, r9, c1, c0, 1	@ No, so write it
 	mcr	p15, 0, r10, c1, c0, 2	@ Co-processor access control
 	isb
@@ -208,9 +209,11 @@ ENTRY(cpu_ca9mp_do_resume)
 	ldmia	r0!, {r4 - r5}
 	mrc	p15, 0, r10, c15, c0, 1		@ Read Diagnostic register
 	teq	r4, r10				@ Already restored?
+	it	ne
 	mcrne	p15, 0, r4, c15, c0, 1		@ No, so restore it
 	mrc	p15, 0, r10, c15, c0, 0		@ Read Power register
 	teq	r5, r10				@ Already restored?
+	it	ne
 	mcrne	p15, 0, r5, c15, c0, 0		@ No, so restore it
 	b	cpu_v7_do_resume
 ENDPROC(cpu_ca9mp_do_resume)
@@ -302,6 +305,7 @@ __v7_ca17mp_setup:
 	ALT_UP(mov	r0, r10)		@ fake it for UP
 	orr	r10, r10, r0			@ Set required bits
 	teq	r10, r0				@ Were they already set?
+	it	ne
 	mcrne	p15, 0, r10, c1, c0, 1		@ No, update register
 #endif
 	b	__v7_setup_cont
@@ -346,15 +350,18 @@ __ca9_errata:
 #endif
 #ifdef CONFIG_ARM_ERRATA_742231
 	teq	r6, #0x20			@ present in r2p0
+	ittee	ne
 	teqne	r6, #0x21			@ present in r2p1
 	teqne	r6, #0x22			@ present in r2p2
 	mrceq	p15, 0, r0, c15, c0, 1		@ read diagnostic register
 	orreq	r0, r0, #1 << 12		@ set bit #12
+	itt	eq
 	orreq	r0, r0, #1 << 22		@ set bit #22
 	mcreq	p15, 0, r0, c15, c0, 1		@ write diagnostic register
 #endif
 #ifdef CONFIG_ARM_ERRATA_743622
 	teq	r3, #0x00200000			@ only present in r2p*
+	ittt	eq
 	mrceq	p15, 0, r0, c15, c0, 1		@ read diagnostic register
 	orreq	r0, r0, #1 << 6			@ set bit #6
 	mcreq	p15, 0, r0, c15, c0, 1		@ write diagnostic register
@@ -362,6 +369,7 @@ __ca9_errata:
 #if defined(CONFIG_ARM_ERRATA_751472) && defined(CONFIG_SMP)
 	ALT_SMP(cmp r6, #0x30)			@ present prior to r3p0
 	ALT_UP_B(1f)
+	ittt	lt
 	mrclt	p15, 0, r0, c15, c0, 1		@ read diagnostic register
 	orrlt	r0, r0, #1 << 11		@ set bit #11
 	mcrlt	p15, 0, r0, c15, c0, 1		@ write diagnostic register
@@ -372,6 +380,7 @@ __ca9_errata:
 __ca15_errata:
 #ifdef CONFIG_ARM_ERRATA_773022
 	cmp	r6, #0x4			@ only present up to r0p4
+	ittt	le
 	mrcle	p15, 0, r0, c1, c0, 1		@ read aux control register
 	orrle	r0, r0, #1 << 1			@ disable loop buffer
 	mcrle	p15, 0, r0, c1, c0, 1		@ write aux control register
@@ -399,12 +408,14 @@ __ca12_errata:
 __ca17_errata:
 #ifdef CONFIG_ARM_ERRATA_852421
 	cmp	r6, #0x12			@ only present up to r1p2
+	ittt	le
 	mrcle	p15, 0, r10, c15, c0, 1		@ read diagnostic register
 	orrle	r10, r10, #1 << 24		@ set bit #24
 	mcrle	p15, 0, r10, c15, c0, 1		@ write diagnostic register
 #endif
 #ifdef CONFIG_ARM_ERRATA_852423
 	cmp	r6, #0x12			@ only present up to r1p2
+	ittt	le
 	mrcle	p15, 0, r10, c15, c0, 1		@ read diagnostic register
 	orrle	r10, r10, #1 << 12		@ set bit #12
 	mcrle	p15, 0, r10, c15, c0, 1		@ write diagnostic register

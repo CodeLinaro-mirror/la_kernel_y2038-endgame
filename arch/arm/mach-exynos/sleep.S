@@ -39,6 +39,7 @@ ENTRY(exynos_cpu_resume)
 	and	r0, r0, r1
 	ldr	r1, =CPU_CORTEX_A9
 	cmp	r0, r1
+	it	eq
 	bleq	l2c310_early_resume
 #endif
 	b	cpu_resume

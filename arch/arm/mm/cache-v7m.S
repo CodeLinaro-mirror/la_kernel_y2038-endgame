@@ -370,10 +370,12 @@ v7m_dma_inv_range:
 	sub	r3, r2, #1
 	tst	r0, r3
 	bic	r0, r0, r3
+	itttt	ne
 	dccimvacne r0, r3
 	subne	r3, r2, #1	@ restore r3, corrupted by v7m's dccimvac
 	tst	r1, r3
 	bic	r1, r1, r3
+	ittt	ne
 	dccimvacne r1, r3
 1:
 	dcimvac r0, r3

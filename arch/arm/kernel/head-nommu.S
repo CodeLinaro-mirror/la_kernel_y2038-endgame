@@ -150,6 +150,7 @@ AR_CLASS(mrc	p15, 0, r3, c0, c1, 4)          @ Read ID_MMFR0
 	 *   DEVICE_nGnRnE      000     00000000
 	 *   NORMAL             001     11111111
 	 */
+	itttt	eq
 	ldreq	r3, =PMSAv8_MAIR(0x00, PMSAv8_RGN_DEVICE_nGnRnE) | \
 		     PMSAv8_MAIR(0xff, PMSAv8_RGN_NORMAL)
 AR_CLASS(mcreq	p15, 0, r3, c10, c2, 0)		@ MAIR 0
@@ -167,6 +168,7 @@ M_CLASS(streq	r3, [r12, #PMSAv8_MAIR1])
 	 */
 
 #ifdef CONFIG_ARM_MPU
+	itt	eq
 	biceq	r0, r0, #CR_BR			@ Disable the 'default mem-map'
 	orreq	r0, r0, #CR_M			@ Set SCTRL.M (MPU on)
 #endif
@@ -188,6 +190,7 @@ M_CLASS(streq	r3, [r12, #PMSAv8_MAIR1])
 	instr_sync
 #elif defined (CONFIG_CPU_V7M)
 #ifdef CONFIG_ARM_MPU
+	itttt	eq
 	ldreq	r3, [r12, MPU_CTRL]
 	biceq	r3, #MPU_CTRL_PRIVDEFENA
 	orreq	r3, #MPU_CTRL_ENABLE
@@ -283,6 +286,7 @@ ENTRY(__setup_pmsa_v7)
 AR_CLASS(mrc	p15, 0, r0, c0, c0, 4)		@ MPUIR
 M_CLASS(ldr    r0, [r12, #MPU_TYPE])
 	ands	r5, r0, #MPUIR_DREGION_SZMASK	@ 0 size d region => No MPU
+	it	eq
 	bxeq	lr
 	tst	r0, #MPUIR_nU			@ MPUIR_nU = 0 for unified
 
@@ -372,6 +376,7 @@ M_CLASS(str	r6, [r12, #PMSAv8_RLAR_A(1)])
 	ldr	r6, =KERNEL_START
 	ldr	r5, =CONFIG_XIP_PHYS_ADDR
 	cmp	r6, r5
+	it	cs
 	movcs	r6, r5
 #else
 	ldr	r6, =KERNEL_START
@@ -397,6 +402,7 @@ M_CLASS(str	r6, [r12, #PMSAv8_RLAR_A(2)])
 	ldr	r5, =KERNEL_END
 	ldr	r6, =(_exiprom)
 	cmp	r5, r6
+	it	cc
 	movcc	r5, r6
 #else
 	ldr	r5, =KERNEL_END
@@ -417,11 +423,13 @@ M_CLASS(str	r6, [r12, #PMSAv8_RLAR_A(3)])
 	ldr	r5, =(_exiprom)
 	ldr	r6, =KERNEL_END
 	cmp	r5, r6
+	it	cs
 	movcs	r5, r6
 
 	ldr	r6, =KERNEL_START
 	ldr	r0, =CONFIG_XIP_PHYS_ADDR
 	cmp	r6, r0
+	it	cc
 	movcc	r6, r0
 
 	sub	r6, r6, #1

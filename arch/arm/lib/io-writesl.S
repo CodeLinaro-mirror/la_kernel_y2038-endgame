@@ -12,6 +12,7 @@
 
 ENTRY(__raw_writesl)
 		teq	r2, #0		@ do we have to check for the zero len?
+		it	eq
 		reteq	lr
 		ands	ip, r1, #3
 		bne	3f
@@ -28,16 +29,21 @@ ENTRY(__raw_writesl)
 		bpl	1b
 		ldmfd	sp!, {r4, lr}
 2:		movs	r2, r2, lsl #31
+		itt	cs
 		ldmiacs	r1!, {r3, ip}
 		strcs	r3, [r0, #0]
+		it	ne
 		ldrne	r3, [r1, #0]
+		it	cs
 		strcs	ip, [r0, #0]
+		it	ne
 		strne	r3, [r0, #0]
 		ret	lr
 
 3:		bic	r1, r1, #3
 		ldr	r3, [r1], #4
 		cmp	ip, #2
+		it	lt
 		blt	5f
 		bgt	6f
 

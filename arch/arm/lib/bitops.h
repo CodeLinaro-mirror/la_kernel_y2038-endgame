@@ -7,6 +7,7 @@
 ENTRY(	\name		)
 UNWIND(	.fnstart	)
 	ands	ip, r1, #3
+	it	ne
 	strbne	r1, [ip]		@ assert word-aligned
 	mov	r2, #1
 	and	r3, r0, #31		@ Get bit offset
@@ -28,10 +29,11 @@ UNWIND(	.fnend		)
 ENDPROC(\name		)
 	.endm
 
-	.macro	testop, name, instr, store
+	.macro	testop, name, instr, store, itinstr=
 ENTRY(	\name		)
 UNWIND(	.fnstart	)
 	ands	ip, r1, #3
+	it	ne
 	strbne	r1, [ip]		@ assert word-aligned
 	mov	r2, #1
 	and	r3, r0, #31		@ Get bit offset
@@ -46,12 +48,14 @@ UNWIND(	.fnstart	)
 #endif
 1:	ldrex	r2, [r1]
 	ands	r0, r2, r3		@ save old value of bit
+	\itinstr
 	\instr	r2, r2, r3		@ toggle bit
 	strex	ip, r2, [r1]
 	cmp	ip, #0
 	bne	1b
 	smp_dmb
 	cmp	r0, #0
+	it	ne
 	movne	r0, #1
 2:	bx	lr
 UNWIND(	.fnend		)
@@ -85,7 +89,7 @@ ENDPROC(\name		)
  * Note: we can trivially conditionalise the store instruction
  * to avoid dirtying the data cache.
  */
-	.macro	testop, name, instr, store
+	.macro	testop, name, instr, store, itinstr=
 ENTRY(	\name		)
 UNWIND(	.fnstart	)
 	ands	ip, r1, #3

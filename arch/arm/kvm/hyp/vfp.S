@@ -40,6 +40,7 @@ ENTRY(__vfp_save_state)
 	@ we only need to save them if FPEXC_EX is set.
 	VFPFMRX r3, FPINST
 	tst	r5, #FPEXC_FP2V
+	it	ne
 	VFPFMRX r4, FPINST2, ne		@ vmrsne
 1:
 	VFPFSTMIA r0, r5		@ Save VFP registers
@@ -59,6 +60,7 @@ ENTRY(__vfp_restore_state)
 	beq	1f
 	VFPFMXR FPINST, r2
 	tst	r0, #FPEXC_FP2V
+	it	ne
 	VFPFMXR FPINST2, r3, ne
 1:
 	VFPFMXR FPEXC, r0		@ FPEXC	(last, in case !EN)

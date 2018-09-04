@@ -90,6 +90,7 @@ abort_guest_exit_end:
 	 * the N bit in PSTATE.
 	 */
 	cmp	r0, #0
+	ittt	mi
 	msrmi	SPSR_cxsf, r1
 	msrmi	ELR_hyp, r2
 	mcrmi	p15, 4, r3, c5, c2, 0	@ HSR

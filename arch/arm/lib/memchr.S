@@ -21,6 +21,7 @@ ENTRY(memchr)
 	teq	r3, r1
 	bne	1b
 	sub	r0, r0, #1
+	it	ne
 2:	movne	r0, #0
 	ret	lr
 ENDPROC(memchr)

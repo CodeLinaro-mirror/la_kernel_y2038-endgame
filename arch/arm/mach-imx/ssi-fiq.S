@@ -78,6 +78,7 @@ imx_ssi_fiq_start:
 		add r10, #8
 		lsr r11, r8, #16	/* r11: buffer size */
 		cmp r10, r11
+		ite gt
 		lslgt r8, r11, #16
 		addle r8, #8
 1:
@@ -111,6 +112,7 @@ imx_ssi_fiq_start:
 		strh r11, [r13, #2]
 
 		/* dummy read to skip slot 12 */
+		it ne
 		ldrne r11, [r12, #SSI_SRX0]
 
 		ldr r11, [r12, #SSI_SRX0]
@@ -120,11 +122,13 @@ imx_ssi_fiq_start:
 		strh r11, [r13, #6]
 
 		/* dummy read to skip slot 12 */
+		it ne
 		ldrne r11, [r12, #SSI_SRX0]
 
 		add r10, #8
 		lsr r11, r9, #16	/* r11: buffer size */
 		cmp r10, r11
+		ite gt
 		lslgt r9, r11, #16
 		addle r9, #8
 

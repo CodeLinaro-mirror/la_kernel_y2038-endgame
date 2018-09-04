@@ -44,6 +44,7 @@
 		/* Compare SUN_TOP_CTRL value against it */ \
 		cmp	rp, rv ; \
 		/* Passed test, load address */ \
+		itt	eq ; \
 		ldreq	rp, =UARTA_##family ; \
 		/* Jump to save UART address */ \
 		beq	91f
@@ -71,10 +72,12 @@
 		/* if PERIPHBASE doesn't overlap REG_PHYS_BASE use V7 map */
 		mrc	p15, 1, \rv, c15, c3, 0	@ get PERIPHBASE from CBAR
 		ands	\rv, \rv, #REG_PHYS_BASE
+		it	eq
 		ldreq	\rp, =SUN_TOP_CTRL_BASE_V7
 
 		/* Check SUN_TOP_CTRL base */
-10:		ldrne	\rp, =SUN_TOP_CTRL_BASE	@ load SUN_TOP_CTRL PA
+10:		it	ne
+		ldrne	\rp, =SUN_TOP_CTRL_BASE	@ load SUN_TOP_CTRL PA
 		ldr	\rv, [\rp, #0]		@ get register contents
 ARM_BE8(	rev	\rv, \rv )
 		and	\rv, \rv, #0xffffff00	@ strip revision bits [7:0]

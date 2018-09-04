@@ -86,6 +86,7 @@ ENTRY(mcpm_entry_point)
 	add	r0, r0, r4, lsl #3
 	ldmia	r0, {r0, r1}
 	teq	r0, #0
+	it	ne
 	strne	r1, [r0]
 
 	mov	r0, #MCPM_SYNC_CLUSTER_SIZE
@@ -150,6 +151,7 @@ first_man_setup:
 
 	cmp	r7, #0
 	mov	r0, #1		@ second (cluster) affinity level
+	it	ne
 	blxne	r7		@ Call power_up_setup if defined
 	dmb
 
@@ -174,6 +176,7 @@ mcpm_setup_leave:
 mcpm_setup_wait:
 	ldrb	r0, [r8, #MCPM_SYNC_CLUSTER_CLUSTER]
 	cmp	r0, #CLUSTER_UP
+	itt	ne
 	wfene
 	bne	mcpm_setup_wait
 	dmb
@@ -184,6 +187,7 @@ mcpm_setup_complete:
 
 	cmp	r7, #0
 	mov	r0, #0		@ first (CPU) affinity level
+	it	ne
 	blxne	r7		@ Call power_up_setup if defined
 	dmb
 
@@ -197,6 +201,7 @@ mcpm_setup_complete:
 mcpm_entry_gated:
 	ldr	r5, [r6, r4, lsl #2]		@ r5 = CPU entry vector
 	cmp	r5, #0
+	it	eq
 	wfeeq
 	beq	mcpm_entry_gated
 	dmb

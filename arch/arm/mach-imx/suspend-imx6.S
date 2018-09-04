@@ -98,6 +98,7 @@
 
 	/* restore MMDC IO */
 	cmp	r5, #0x0
+	ite	eq
 	ldreq	r11, [r0, #PM_INFO_MX6Q_IOMUXC_V_OFFSET]
 	ldrne	r11, [r0, #PM_INFO_MX6Q_IOMUXC_P_OFFSET]
 
@@ -112,6 +113,7 @@
 	bne	1b
 
 	cmp	r5, #0x0
+	ite	eq
 	ldreq	r11, [r0, #PM_INFO_MX6Q_MMDC_V_OFFSET]
 	ldrne	r11, [r0, #PM_INFO_MX6Q_MMDC_P_OFFSET]
 
@@ -216,6 +218,7 @@ poll_dvfs_set:
 	add	r8, r8, r0
 	/* LPDDR2's last 3 IOs need special setting */
 	cmp	r3, #IMX_DDR_TYPE_LPDDR2
+	it	eq
 	subeq	r7, r7, #0x3
 set_mmdc_io_lpm:
 	ldr	r9, [r8], #0x8

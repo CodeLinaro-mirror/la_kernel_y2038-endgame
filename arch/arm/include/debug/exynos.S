@@ -25,7 +25,8 @@
 		mrc	p15, 0, \tmp, c0, c0, 5
 		and	\tmp, \tmp, #0xf00
 		teq	\tmp, #0x100		@@ A15 + A7 but boot to A7
-100:		ldreq	\rp, =EXYNOS5_PA_UART
+100:		ite	eq
+		ldreq	\rp, =EXYNOS5_PA_UART
 		movne	\rp, #EXYNOS4_PA_UART	@@ EXYNOS4
 		ldr	\rv, =S3C_VA_UART
 #if CONFIG_DEBUG_S3C_UART != 0

@@ -59,6 +59,7 @@
 .macro pll_enable, rd, r_car_base, pll_base
 	ldr	\rd, [\r_car_base, #\pll_base]
 	tst	\rd, #(1 << 30)
+	itt	eq
 	orreq	\rd, \rd, #(1 << 30)
 	streq	\rd, [\r_car_base, #\pll_base]
 .endm
@@ -66,6 +67,7 @@
 .macro emc_device_mask, rd, base
 	ldr	\rd, [\base, #EMC_ADR_CFG]
 	tst	\rd, #(0x3 << 24)
+	ite	eq
 	moveq	\rd, #(0x1 << 8)		@ just 1 device
 	movne	\rd, #(0x3 << 8)		@ 2 devices
 .endm
@@ -99,6 +101,7 @@ ENDPROC(tegra20_hotplug_shutdown)
  */
 ENTRY(tegra20_cpu_shutdown)
 	cmp	r0, #0
+	it	eq
 	reteq	lr			@ must not be called for CPU 0
 	mov32	r1, TEGRA_IRAM_RESET_BASE_VIRT
 	ldr	r2, =__tegra20_cpu1_resettable_status_offset
@@ -152,6 +155,7 @@ ENTRY(tegra_pen_lock)
 	cpu_id	r0
 	add	r1, r3, #PMC_SCRATCH37
 	cmp	r0, #0
+	ittee	eq
 	addeq	r2, r3, #PMC_SCRATCH38
 	addeq	r3, r3, #PMC_SCRATCH39
 	addne	r2, r3, #PMC_SCRATCH39
@@ -164,6 +168,7 @@ ENTRY(tegra_pen_lock)
 1:	dsb
 	ldr	r12, [r3]
 	cmp	r12, #1			@ flag[!cpu] == 1?
+	ittt	eq
 	ldreq	r12, [r1]
 	cmpeq	r12, r0			@ !turn == cpu?
 	beq	1b			@ while !turn == cpu && flag[!cpu] == 1
@@ -176,6 +181,7 @@ ENTRY(tegra_pen_unlock)
 	mov32	r3, TEGRA_PMC_VIRT
 	cpu_id	r0
 	cmp	r0, #0
+	ite	eq
 	addeq	r2, r3, #PMC_SCRATCH38
 	addne	r2, r3, #PMC_SCRATCH39
 	mov	r12, #0
@@ -222,6 +228,7 @@ ENTRY(tegra20_cpu_is_resettable_soon)
 	ldr	r2, =__tegra20_cpu1_resettable_status_offset
 	ldrb	r12, [r1, r2]
 	cmp	r12, #CPU_RESETTABLE_SOON
+	ite	eq
 	moveq	r0, #1
 	movne	r0, #0
 	ret	lr

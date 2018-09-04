@@ -44,19 +44,23 @@ UNWIND( .save {r8, lr}      )
 	mov	lr, r3
 
 2:	subs	r2, r2, #64
+	itttt	ge
 	stmiage	ip!, {r1, r3, r8, lr}	@ 64 bytes at a time.
 	stmiage	ip!, {r1, r3, r8, lr}
 	stmiage	ip!, {r1, r3, r8, lr}
 	stmiage	ip!, {r1, r3, r8, lr}
 	bgt	2b
+	it	eq
 	ldmfdeq	sp!, {r8, pc}		@ Now <64 bytes to go.
 /*
  * No need to correct the count; we're only testing bits from now on
  */
 	tst	r2, #32
+	itt	ne
 	stmiane	ip!, {r1, r3, r8, lr}
 	stmiane	ip!, {r1, r3, r8, lr}
 	tst	r2, #16
+	it	ne
 	stmiane	ip!, {r1, r3, r8, lr}
 	ldmfd	sp!, {r8, lr}
 UNWIND( .fnend              )
@@ -110,24 +114,30 @@ UNWIND( .fnend                 )
 
 UNWIND( .fnstart            )
 4:	tst	r2, #8
+	it	ne
 	stmiane	ip!, {r1, r3}
 	tst	r2, #4
+	it	ne
 	strne	r1, [ip], #4
 /*
  * When we get here, we've got less than 4 bytes to set.  We
  * may have an unaligned pointer as well.
  */
 5:	tst	r2, #2
+	itt	ne
 	strbne	r1, [ip], #1
 	strbne	r1, [ip], #1
 	tst	r2, #1
+	it	ne
 	strbne	r1, [ip], #1
 	ret	lr
 
 6:	subs	r2, r2, #4		@ 1 do we have enough
 	blt	5b			@ 1 bytes to align with?
 	cmp	r3, #2			@ 1
+	it	lt
 	strblt	r1, [ip], #1		@ 1
+	it	le
 	strble	r1, [ip], #1		@ 1
 	strb	r1, [ip], #1		@ 1
 	add	r2, r2, r3		@ 1 (r2 = r2 - (4 - r3))

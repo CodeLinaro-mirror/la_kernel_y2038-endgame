@@ -41,6 +41,7 @@ sum	.req	r3
 		adcs	sum, sum, ip, put_byte_1	@ update checksum
 		strb	ip, [dst], #1
 		tst	dst, #2
+		it	eq
 		reteq	lr			@ dst is now 32bit aligned
 
 .Ldst_16bit:	load2b	r8, ip
@@ -60,6 +61,7 @@ sum	.req	r3
 
 		/* we must have at least one byte. */
 		tst	dst, #1			@ dst 16-bit aligned
+		it	eq
 		beq	.Lless8_aligned
 
 		/* Align dst */
@@ -68,6 +70,7 @@ sum	.req	r3
 		adcs	sum, sum, ip, put_byte_1	@ update checksum
 		strb	ip, [dst], #1
 		tst	len, #6
+		it	eq
 		beq	.Lless8_byteonly
 
 1:		load2b	r8, ip
@@ -78,9 +81,11 @@ sum	.req	r3
 		strb	ip, [dst], #1
 .Lless8_aligned:
 		tst	len, #6
+		it	ne
 		bne	1b
 .Lless8_byteonly:
 		tst	len, #1
+		it	eq
 		beq	.Ldone
 		load1b	r8
 		adcs	sum, sum, r8, put_byte_0	@ update checksum
@@ -95,6 +100,7 @@ FN_ENTRY
 
 		adds	sum, sum, #0		@ C = 0
 		tst	dst, #3			@ Test destination alignment
+		it	ne
 		blne	.Ldst_unaligned		@ align destination, return here
 
 		/*
@@ -104,6 +110,7 @@ FN_ENTRY
 		 */
 
 		tst	src, #3			@ Test source alignment
+		it	ne
 		bne	.Lsrc_not_aligned
 
 		/* Routine for src & dst aligned */
@@ -124,12 +131,14 @@ FN_ENTRY
 2:		ands	ip, len, #12
 		beq	4f
 		tst	ip, #8
+		it	eq
 		beq	3f
 		load2l	r4, r5
 		stmia	dst!, {r4, r5}
 		adcs	sum, sum, r4
 		adcs	sum, sum, r5
 		tst	ip, #4
+		it	eq
 		beq	4f
 
 3:		load1l	r4
@@ -141,6 +150,7 @@ FN_ENTRY
 		load1l	r4
 		tst	len, #2
 		mov	r5, r4, get_byte_0
+		it	eq
 		beq	.Lexit
 		adcs	sum, sum, r4, lspush #16
 		strb	r5, [dst], #1
@@ -148,6 +158,7 @@ FN_ENTRY
 		strb	r5, [dst], #1
 		mov	r5, r4, get_byte_2
 .Lexit:		tst	len, #1
+		ittt	ne
 		strbne	r5, [dst], #1
 		andne	r5, r5, #255
 		adcsne	sum, sum, r5, put_byte_0
@@ -161,6 +172,7 @@ FN_ENTRY
 .Ldone:		adc	r0, sum, #0
 		ldr	sum, [sp, #0]		@ dst
 		tst	sum, #1
+		it	ne
 		movne	r0, r0, ror #8
 		load_regs
 

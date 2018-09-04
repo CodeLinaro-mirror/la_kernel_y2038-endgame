@@ -42,9 +42,12 @@ ENTRY(__aeabi_llsr)
 
 	subs	r3, r2, #32
 	rsb	ip, r2, #32
+	ite	mi
 	movmi	al, al, lsr r2
 	movpl	al, ah, lsr r3
+ ARM(	it	mi			)
  ARM(	orrmi	al, al, ah, lsl ip	)
+ THUMB(	itt	mi			)
  THUMB(	lslmi	r3, ah, ip		)
  THUMB(	orrmi	al, al, r3		)
 	mov	ah, ah, lsr r2

@@ -378,6 +378,7 @@ ce_aes_xts_init:
 	ldr		r6, [sp, #28]
 	vld1.8		{q0}, [r5]		@ load iv
 	teq		r6, #1			@ start of a block?
+	it		ne
 	bxne		lr
 
 	@ Encrypt the IV in q0 with the second AES key. This should only

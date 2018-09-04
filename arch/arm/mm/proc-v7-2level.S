@@ -82,19 +82,24 @@ ENTRY(cpu_v7_set_pte_ext)
 	orr	r3, r3, #PTE_EXT_AP0 | 2
 
 	tst	r1, #1 << 4
+	it	ne
 	orrne	r3, r3, #PTE_EXT_TEX(1)
 
 	eor	r1, r1, #L_PTE_DIRTY
 	tst	r1, #L_PTE_RDONLY | L_PTE_DIRTY
+	it	ne
 	orrne	r3, r3, #PTE_EXT_APX
 
 	tst	r1, #L_PTE_USER
+	it	ne
 	orrne	r3, r3, #PTE_EXT_AP1
 
 	tst	r1, #L_PTE_XN
+	it	ne
 	orrne	r3, r3, #PTE_EXT_XN
 
 	tst	r1, #L_PTE_YOUNG
+	ittte	ne
 	tstne	r1, #L_PTE_VALID
 	eorne	r1, r1, #L_PTE_NONE
 	tstne	r1, #L_PTE_NONE

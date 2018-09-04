@@ -54,6 +54,7 @@ __ret_fast_syscall:
 	disable_irq_notrace			@ disable interrupts
 	ldr	r2, [tsk, #TI_ADDR_LIMIT]
 	cmp	r2, #TASK_SIZE
+	it	ne
 	blne	addr_limit_check_failed
 	ldr	r1, [tsk, #TI_FLAGS]		@ re-check for syscall tracing
 	tst	r1, #_TIF_SYSCALL_WORK | _TIF_WORK_MASK
@@ -91,6 +92,7 @@ __ret_fast_syscall:
 	disable_irq_notrace			@ disable interrupts
 	ldr	r2, [tsk, #TI_ADDR_LIMIT]
 	cmp	r2, #TASK_SIZE
+	it	ne
 	blne	addr_limit_check_failed
 	ldr	r1, [tsk, #TI_FLAGS]		@ re-check for syscall tracing
 	tst	r1, #_TIF_SYSCALL_WORK | _TIF_WORK_MASK
@@ -109,6 +111,7 @@ slow_work_pending:
 	bl	do_work_pending
 	cmp	r0, #0
 	beq	no_work_pending
+	it	lt
 	movlt	scno, #(__NR_restart_syscall - __NR_SYSCALL_BASE)
 	ldmia	sp, {r0 - r6}			@ have to reload r0 - r6
 	b	local_restart			@ ... and off we go
@@ -132,6 +135,7 @@ ret_slow_syscall:
 ENTRY(ret_to_user_from_irq)
 	ldr	r2, [tsk, #TI_ADDR_LIMIT]
 	cmp	r2, #TASK_SIZE
+	it	ne
 	blne	addr_limit_check_failed
 	ldr	r1, [tsk, #TI_FLAGS]
 	tst	r1, #_TIF_WORK_MASK
@@ -153,6 +157,7 @@ ENDPROC(ret_to_user)
 ENTRY(ret_from_fork)
 	bl	schedule_tail
 	cmp	r5, #0
+	ittt	ne
 	movne	r0, r4
 	badrne	lr, 1f
 	retne	r5
@@ -200,7 +205,9 @@ ENTRY(vector_swi)
 	 */
 #ifdef CONFIG_ARM_THUMB
 	tst	saved_psr, #PSR_T_BIT
+	it	ne
 	movne	r10, #0				@ no thumb OABI emulation
+ USER(	it	eq			)
  USER(	ldreq	r10, [saved_pc, #-4]	)	@ get SWI instruction
 #else
  USER(	ldr	r10, [saved_pc, #-4]	)	@ get SWI instruction
@@ -369,15 +376,19 @@ ENTRY(\sym)
 sys_syscall:
 		bic	scno, r0, #__NR_OABI_SYSCALL_BASE
 		cmp	scno, #__NR_syscall - __NR_SYSCALL_BASE
+		it	ne
 		cmpne	scno, #NR_syscalls	@ check range
 #ifdef CONFIG_CPU_SPECTRE
+		it	hs
 		movhs	scno, #0
 		csdb
 #endif
+		itttt	lo
 		stmialo	sp, {r5, r6}		@ shuffle args
 		movlo	r0, r1
 		movlo	r1, r2
 		movlo	r2, r3
+		itt	lo
 		movlo	r3, r4
 		ldrlo	pc, [tbl, scno, lsl #2]
 		b	sys_ni_syscall
@@ -397,12 +408,14 @@ ENDPROC(sys_rt_sigreturn_wrapper)
 
 sys_statfs64_wrapper:
 		teq	r1, #88
+		it	eq
 		moveq	r1, #84
 		b	sys_statfs64
 ENDPROC(sys_statfs64_wrapper)
 
 sys_fstatfs64_wrapper:
 		teq	r1, #88
+		it	eq
 		moveq	r1, #84
 		b	sys_fstatfs64
 ENDPROC(sys_fstatfs64_wrapper)

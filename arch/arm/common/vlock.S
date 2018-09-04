@@ -80,6 +80,7 @@ ENTRY(vlock_trylock)
  MANY(	ldr	r2, [r0, r3]					)
  FEW(	ldr	r2, [r0, #VLOCK_VOTING_OFFSET]			)
 	cmp	r2, #0
+	itt	ne
 	wfene
 	bne	0b
  MANY(	add	r3, r3, #4					)

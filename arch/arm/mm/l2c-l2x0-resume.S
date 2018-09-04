@@ -29,6 +29,7 @@ ENTRY(l2c310_early_resume)
 
 	@ Check that the address has been initialised
 	teq	r1, #0
+	it	eq
 	reteq	lr
 
 	@ The prefetch and power control registers are revision dependent
@@ -36,13 +37,16 @@ ENTRY(l2c310_early_resume)
 	ldr	r0, [r1, #L2X0_CACHE_ID]
 	and	r0, r0, #L2X0_CACHE_ID_RTL_MASK
 	cmp	r0, #L310_CACHE_ID_RTL_R2P0
+	it	cs
 	strcs	r7, [r1, #L310_PREFETCH_CTRL]
 	cmp	r0, #L310_CACHE_ID_RTL_R3P0
+	it	cs
 	strcs	r8, [r1, #L310_POWER_CTRL]
 
 	@ Don't setup the L2 cache if it is already enabled
 	ldr	r0, [r1, #L2X0_CTRL]
 	tst	r0, #L2X0_CTRL_EN
+	it	ne
 	retne	lr
 
 	str	r3, [r1, #L310_TAG_LATENCY_CTRL]

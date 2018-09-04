@@ -238,6 +238,7 @@ __create_page_tables:
 1:	orr	r3, r7, r5, lsl #SECTION_SHIFT	@ flags + kernel base
 	str	r3, [r4, r5, lsl #PMD_ORDER]	@ identity mapping
 	cmp	r5, r6
+	itt	lo
 	addlo	r5, r5, #1			@ next section
 	blo	1b
 
@@ -278,10 +279,12 @@ __create_page_tables:
 	 */
 	mov	r0, r2, lsr #SECTION_SHIFT
 	movs	r0, r0, lsl #SECTION_SHIFT
+	itttt	ne
 	subne	r3, r0, r8
 	addne	r3, r3, #PAGE_OFFSET
 	addne	r3, r4, r3, lsr #(SECTION_SHIFT - PMD_ORDER)
 	orrne	r6, r7, r0
+	ittt	ne
 	strne	r6, [r3], #1 << PMD_ORDER
 	addne	r6, r6, #1 << SECTION_SHIFT
 	strne	r6, [r3]
@@ -387,6 +390,7 @@ ENTRY(secondary_startup)
 	mrc	p15, 0, r9, c0, c0		@ get processor id
 	bl	__lookup_processor_type
 	movs	r10, r5				@ invalid processor?
+	it	eq
 	moveq	r0, #'p'			@ yes, error 'p'
  THUMB( it	eq )		@ force fixup-able long branch encoding
 	beq	__error_p
@@ -514,6 +518,7 @@ __fixup_smp:
 	orr	r4, r4, #0x0000b000
 	orr	r4, r4, #0x00000020	@ val 0x4100b020
 	teq	r3, r4			@ ARM 11MPCore?
+	it	eq
 	reteq	lr			@ yes, assume SMP
 
 	mrc	p15, 0, r0, c0, c0, 5	@ read MPIDR
@@ -527,6 +532,7 @@ __fixup_smp:
 	orr	r4, r4, #0x0000c000
 	orr	r4, r4, #0x00000090
 	teq	r3, r4			@ Check for ARM Cortex-A9
+	it	ne
 	retne	lr			@ Not ARM Cortex-A9,
 
 	@ If a future SoC *does* use 0x0 as the PERIPH_BASE, then the
@@ -539,6 +545,7 @@ __fixup_smp:
 ARM_BE8(rev	r0, r0)			@ byteswap if big endian
 	and	r0, r0, #0x3		@ number of CPUs
 	teq	r0, #0x0		@ is 1?
+	it	ne
 	retne	lr
 
 __fixup_smp_on_up:
@@ -567,6 +574,7 @@ smp_on_up:
 	.text
 __do_fixup_smp_on_up:
 	cmp	r4, r5
+	it	hs
 	reths	lr
 	ldmia	r4!, {r0, r6}
  ARM(	str	r6, [r0, r3]	)
@@ -616,6 +624,7 @@ __fixup_pv_table:
 	add	r7, r7, r3	@ adjust __pv_offset address
 	mov	r0, r8, lsr #PAGE_SHIFT	@ convert to PFN
 	str	r0, [r6]	@ save computed PHYS_OFFSET to __pv_phys_pfn_offset
+	it	cc
 	strcc	ip, [r7, #HIGH_OFFSET]	@ save to __pv_offset high bits
 	mov	r6, r3, lsr #24	@ constant for add/sub instructions
 	teq	r3, r6, lsl #24 @ must be 16MiB aligned
@@ -642,6 +651,7 @@ __fixup_a_pv_table:
 	mov	r6, r6, lsr #24
 	cmn	r0, #1
 #ifdef CONFIG_THUMB2_KERNEL
+	it	eq
 	moveq	r0, #0x200000	@ set bit 21, mov to mvn instruction
 	lsls	r6, #24
 	beq	2f
@@ -650,6 +660,7 @@ __fixup_a_pv_table:
 	lsl	r6, r7
 	bic	r6, #0x0080
 	lsrs	r7, #1
+	it	cs
 	orrcs	r6, #0x0080
 	orr	r6, r6, r7, lsl #12
 	orr	r6, #0x4000
@@ -659,6 +670,7 @@ __fixup_a_pv_table:
 ARM_BE8(rev16	ip, ip)
 	tst	ip, #0x4000
 	and	ip, #0x8f00
+	ite	ne
 	orrne	ip, r6	@ mask in offset bits 31-24
 	orreq	ip, r0	@ mask in offset bits 7-0
 ARM_BE8(rev16	ip, ip)
@@ -671,6 +683,7 @@ ARM_BE8(rev16	ip, ip)
 ARM_BE8(rev16	ip, ip)
 	strh	ip, [r7]
 2:	cmp	r4, r5
+	itt	cc
 	ldrcc	r7, [r4], #4	@ use branch for delay slot
 	bcc	1b
 	bx	lr

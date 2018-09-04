@@ -157,6 +157,7 @@ ENDPROC(__und_invalid)
 #else
  SPFIX(	tst	sp, #4		)
 #endif
+ SPFIX(	it	eq		)
  SPFIX(	subeq	sp, sp, #4	)
 	stmia	sp, {r1 - r12}
 
@@ -164,6 +165,7 @@ ENDPROC(__und_invalid)
 	add	r7, sp, #S_SP - 4	@ here for interlock avoidance
 	mov	r6, #-1			@  ""  ""      ""       ""
 	add	r2, sp, #(SVC_REGS_SIZE + \stack_hole - 4)
+ SPFIX(	it	eq		)
  SPFIX(	addeq	r2, r2, #4	)
 	str	r3, [sp, #-4]!		@ save the "real" r0 copied
 					@ from the exception stack
@@ -218,8 +220,10 @@ __irq_svc:
 	ldr	r8, [tsk, #TI_PREEMPT]		@ get preempt count
 	ldr	r0, [tsk, #TI_FLAGS]		@ get flags
 	teq	r8, #0				@ if preempt count != 0
+	it	ne
 	movne	r0, #0				@ force flags to 0
 	tst	r0, #_TIF_NEED_RESCHED
+	it	ne
 	blne	svc_preempt
 #endif
 
@@ -235,6 +239,7 @@ svc_preempt:
 1:	bl	preempt_schedule_irq		@ irq en/disable is done inside
 	ldr	r0, [tsk, #TI_FLAGS]		@ get new tasks TI_FLAGS
 	tst	r0, #_TIF_NEED_RESCHED
+	it	eq
 	reteq	r8				@ go again
 	b	1b
 #endif
@@ -413,6 +418,7 @@ ENDPROC(__fiq_abt)
 
 	@ Enable the alignment trap while in kernel mode
  ATRAP(	teq	r8, r7)
+ ATRAP( it	ne)
  ATRAP( mcrne	p15, 0, r8, c1, c0, 0)
 
 	@
@@ -624,6 +630,7 @@ call_fpe:
 1:
 #endif
 	tst	r0, #0x08000000			@ only CDP/CPRT/LDC/STC have bit 27
+	ite	ne
 	tstne	r0, #0x04000000			@ bit 26 set on both ARM and Thumb-2
 	reteq	lr
 	and	r8, r0, #0x00000f00		@ mask out CP number
@@ -636,6 +643,7 @@ call_fpe:
 	@ Test if we need to give access to iWMMXt coprocessors
 	ldr	r5, [r10, #TI_FLAGS]
 	rsbs	r7, r8, #(1 << 8)		@ CP 0 or 1 only
+	itt	cs
 	movscs	r7, r5, lsr #(TIF_USING_IWMMXT + 1)
 	bcs	iwmmxt_task_enable
 #endif

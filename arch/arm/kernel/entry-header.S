@@ -50,6 +50,7 @@
 	ldr	\rtmp1, \label
 	ldr	\rtmp1, [\rtmp1]
 	teq	\rtmp1, \rtmp2
+	it	ne
 	mcrne	p15, 0, \rtmp1, c1, c0, 0
 #endif
 	.endm
@@ -80,6 +81,7 @@
 	@ Bit 2 of EXC_RETURN stored in the lr register specifies which stack
 	@ was used.
 	tst	lr, #EXC_RET_STACK_MASK
+	ite	ne
 	mrsne	r12, psp
 	moveq	r12, sp
 
@@ -108,6 +110,7 @@
 	@ another 32-bit value is included in the stack.
 
 	tst	r12, V7M_xPSR_FRAMEPTRALIGN
+	it	ne
 	addne	r9, r9, #4
 
 	@ store saved r12 using str to have a register to hold the base for stm
@@ -137,6 +140,7 @@
 	@ the sp to be restored is aligned or not set bit 9 of the saved xPSR
 	@ accordingly.
 	tst	r2, #4
+	itte	ne
 	subne	r2, r2, #4
 	orrne	r5, V7M_xPSR_FRAMEPTRALIGN
 	biceq	r5, V7M_xPSR_FRAMEPTRALIGN
@@ -211,8 +215,10 @@
 	disable_irq_notrace
 #ifdef CONFIG_TRACE_IRQFLAGS
 	tst	\rpsr, #PSR_I_BIT
+	it	eq
 	bleq	trace_hardirqs_on
 	tst	\rpsr, #PSR_I_BIT
+	it	ne
 	blne	trace_hardirqs_off
 #endif
 	.endif
@@ -382,23 +388,28 @@
 #ifdef CONFIG_CPU_SPECTRE
 	mov	\tmp, \nr
 	cmp	\tmp, #NR_syscalls		@ check upper syscall limit
+	it	cs
 	movcs	\tmp, #0
 	csdb
 	badr	lr, \ret			@ return address
 	.if	\reload
 	add	r1, sp, #S_R0 + S_OFF		@ pointer to regs
+	itt	cc
 	ldmiacc	r1, {r0 - r6}			@ reload r0-r6
 	stmiacc	sp, {r4, r5}			@ update stack arguments
 	.endif
+	it	cc
 	ldrcc	pc, [\table, \tmp, lsl #2]	@ call sys_* routine
 #else
 	cmp	\nr, #NR_syscalls		@ check upper syscall limit
 	badr	lr, \ret			@ return address
 	.if	\reload
 	add	r1, sp, #S_R0 + S_OFF		@ pointer to regs
+	itt	cc
 	ldmiacc	r1, {r0 - r6}			@ reload r0-r6
 	stmiacc	sp, {r4, r5}			@ update stack arguments
 	.endif
+	it	cc
 	ldrcc	pc, [\table, \nr, lsl #2]	@ call sys_* routine
 #endif
 	.endm

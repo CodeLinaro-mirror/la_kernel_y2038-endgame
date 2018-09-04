@@ -46,6 +46,7 @@
  */
 ENTRY(tegra_resume)
 	check_cpu_part_num 0xc09, r8, r9
+	it	eq
 	bleq	v7_invalidate_l1
 
 	cpu_id	r0
@@ -88,6 +89,7 @@ ENTRY(tegra_resume)
 end_ca9_scu_l2_resume:
 	mov32	r9, 0xc0f
 	cmp	r8, r9
+	it	eq
 	bleq	tegra_init_l2_for_a15
 
 	b	cpu_resume
@@ -163,6 +165,7 @@ after_errata:
 	/* Does the OS know about this CPU? */
 	ldr	r7, [r12, #RESET_DATA(MASK_PRESENT)]
 	tst	r7, r11 			@ if !present
+	it	eq
 	bleq	__die				@ CPU not present (to OS)
 #endif
 
@@ -174,6 +177,7 @@ after_errata:
 	mov32	r5, TEGRA_IRAM_BASE + TEGRA_IRAM_RESET_HANDLER_OFFSET
 	mov	r0, #CPU_NOT_RESETTABLE
 	cmp	r10, #0
+	it	ne
 	strbne	r0, [r5, #__tegra20_cpu1_resettable_status_offset]
 1:
 #endif
@@ -186,6 +190,7 @@ after_errata:
 	bne	__die				@ only CPU0 can be here
 	ldr	lr, [r12, #RESET_DATA(STARTUP_LP1)]
 	cmp	lr, #0
+	it	eq
 	bleq	__die				@ no LP1 startup handler
  THUMB(	add	lr, lr, #1 )			@ switch to Thumb mode
 	bx	lr
@@ -197,6 +202,7 @@ __is_not_lp1:
 	beq	__is_not_lp2
 	ldr	lr, [r12, #RESET_DATA(STARTUP_LP2)]
 	cmp	lr, #0
+	it	eq
 	bleq	__die				@ no LP2 startup handler
 	bx	lr
 
@@ -210,10 +216,12 @@ __is_not_lp2:
 	cmp	r6, #TEGRA114
 	beq	__no_cpu0_chk
 	cmp	r10, #0
+	it	eq
 	bleq	__die				@ CPU0 cannot be here
 __no_cpu0_chk:
 	ldr	lr, [r12, #RESET_DATA(STARTUP_SECONDARY)]
 	cmp	lr, #0
+	it	eq
 	bleq	__die				@ no secondary startup handler
 	bx	lr
 #endif
@@ -244,8 +252,10 @@ __die:
 	mov32	r6, TEGRA_FLOW_CTRL_BASE
 
 	cmp	r10, #0
+	itt	eq
 	moveq	r1, #FLOW_CTRL_HALT_CPU0_EVENTS
 	moveq	r2, #FLOW_CTRL_CPU0_CSR
+	ittt	ne
 	movne	r1, r10, lsl #3
 	addne	r2, r1, #(FLOW_CTRL_CPU1_CSR-8)
 	addne	r1, r1, #(FLOW_CTRL_HALT_CPU1_EVENTS-8)

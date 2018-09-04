@@ -248,10 +248,12 @@ not_angel:
 		 */
 		mov	r0, pc
 		cmp	r0, r4
+		itttt	cc
 		ldrcc	r0, LC0+32
 		addcc	r0, r0, pc
 		cmpcc	r4, r0
 		orrcc	r4, r4, #1		@ remember we skipped cache_on
+		it	cs
 		blcs	cache_on
 
 restart:	adr	r0, LC0
@@ -348,8 +350,10 @@ restart:	adr	r0, LC0
 		bic	r5, r5, #7
 		/* clamp to 32KB min and 1MB max */
 		cmp	r5, #(1 << 15)
+		it	lo
 		movlo	r5, #(1 << 15)
 		cmp	r5, #(1 << 20)
+		it	hi
 		movhi	r5, #(1 << 20)
 		/* temporarily relocate the stack past the DTB work space */
 		add	sp, sp, r5
@@ -371,6 +375,7 @@ restart:	adr	r0, LC0
 		add	r0, r0, #0x100
 		mov	r1, r6
 		mov	r2, r5
+		it	eq
 		bleq	atags_to_fdt
 
 		ldmfd	sp!, {r0-r3, ip, lr}
@@ -389,6 +394,7 @@ restart:	adr	r0, LC0
 		adr	r1, wont_overwrite
 		sub	r1, r6, r1
 		subs	r1, r5, r1
+		it	hi
 		addhi	r9, r9, r1
 
 		/* Get the current DTB size */
@@ -548,7 +554,9 @@ wont_overwrite:
 1:		ldr	r1, [r11, #0]		@ relocate entries in the GOT
 		add	r1, r1, r0		@ This fixes up C references
 		cmp	r1, r2			@ if entry >= bss_start &&
+		it	hs
 		cmphs	r3, r1			@       bss_end > entry
+		it	hi
 		addhi	r1, r1, r5		@    entry += dtb size
 		str	r1, [r11], #4		@ next entry
 		cmp	r11, r12
@@ -588,6 +596,7 @@ not_relocated:	mov	r0, #0
 		 */
 		tst	r4, #1
 		bic	r4, r4, #1
+		it	ne
 		blne	cache_on
 
 /*
@@ -751,8 +760,10 @@ __setup_mmu:	sub	r3, r4, #16384		@ Page directory size
 		orr	r1, r1, #3 << 10	@ AP=11
 		add	r2, r3, #16384
 1:		cmp	r1, r9			@ if virt > start of RAM
+		it	hs
 		cmphs	r10, r1			@   && end of RAM > virt
 		bic	r1, r1, #0x1c		@ clear XN|U + C + B
+		ite	lo
 		orrlo	r1, r1, #0x10		@ Set XN|U for non-RAM
 		orrhs	r1, r1, r6		@ set RAM section settings
 		str	r1, [r0], #4		@ 1:1 mapping
@@ -815,11 +826,13 @@ __armv7_mmu_cache_on:
 #ifdef CONFIG_MMU
 		mrc	p15, 0, r11, c0, c1, 4	@ read ID_MMFR0
 		tst	r11, #0xf		@ VMSA
+		itt	ne
 		movne	r6, #CB_BITS | 0x02	@ !XN
 		blne	__setup_mmu
 		mov	r0, #0
 		mcr	p15, 0, r0, c7, c10, 4	@ drain write buffer
 		tst	r11, #0xf		@ VMSA
+		it	ne
 		mcrne	p15, 0, r0, c8, c7, 0	@ flush I,D TLBs
 #endif
 		mrc	p15, 0, r0, c1, c0, 0	@ read control reg
@@ -831,11 +844,13 @@ __armv7_mmu_cache_on:
 						@ (needed for ARM1176)
 #ifdef CONFIG_MMU
  ARM_BE8(	orr	r0, r0, #1 << 25 )	@ big-endian page tables
+		ittt	ne
 		mrcne   p15, 0, r6, c2, c0, 2   @ read ttb control reg
 		orrne	r0, r0, #1		@ MMU enabled
 		movne	r1, #0xfffffffd		@ domain 0 = client
 		bic     r6, r6, #1 << 31        @ 32-bit translation system
 		bic     r6, r6, #(7 << 0) | (1 << 4)	@ use only ttbr0
+		ittt	ne
 		mcrne	p15, 0, r3, c2, c0, 0	@ load page table pointer
 		mcrne	p15, 0, r1, c3, c0, 0	@ load domain access control
 		mcrne   p15, 0, r6, c2, c0, 2   @ load ttb control
@@ -914,6 +929,7 @@ call_cache_fn:	adr	r12, proc_types
 		eor	r1, r1, r9		@ (real ^ match)
 		tst	r1, r2			@       & mask
  ARM(		addeq	pc, r12, r3		) @ call cache function
+ THUMB(		itt	eq			)
  THUMB(		addeq	r12, r3			)
  THUMB(		moveq	pc, r12			) @ call cache function
 		add	r12, r12, #PROC_ENTRY_SIZE
@@ -1164,6 +1180,7 @@ cache_clean_flush:
 
 __armv4_mpu_cache_flush:
 		tst	r4, #1
+		it	ne
 		movne	pc, lr
 		mov	r2, #1
 		mov	r3, #0
@@ -1177,12 +1194,14 @@ __armv4_mpu_cache_flush:
 		bcs	1b			@ segments 7 to 0
 
 		teq	r2, #0
+		it	ne
 		mcrne	p15, 0, ip, c7, c5, 0	@ invalidate I cache
 		mcr	p15, 0, ip, c7, c10, 4	@ drain WB
 		mov	pc, lr
 		
 __fa526_cache_flush:
 		tst	r4, #1
+		it	ne
 		movne	pc, lr
 		mov	r1, #0
 		mcr	p15, 0, r1, c7, c14, 0	@ clean and invalidate D cache
@@ -1193,8 +1212,10 @@ __fa526_cache_flush:
 __armv6_mmu_cache_flush:
 		mov	r1, #0
 		tst	r4, #1
+		it	eq
 		mcreq	p15, 0, r1, c7, c14, 0	@ clean+invalidate D
 		mcr	p15, 0, r1, c7, c5, 0	@ invalidate I+BTB
+		it	eq
 		mcreq	p15, 0, r1, c7, c15, 0	@ clean+invalidate unified
 		mcr	p15, 0, r1, c7, c10, 4	@ drain WB
 		mov	pc, lr
@@ -1263,6 +1284,7 @@ iflush:
 
 __armv5tej_mmu_cache_flush:
 		tst	r4, #1
+		it	ne
 		movne	pc, lr
 1:		mrc	p15, 0, r15, c7, c14, 3	@ test,clean,invalidate D cache
 		bne	1b
@@ -1272,6 +1294,7 @@ __armv5tej_mmu_cache_flush:
 
 __armv4_mmu_cache_flush:
 		tst	r4, #1
+		it	ne
 		movne	pc, lr
 		mov	r2, #64*1024		@ default: 32K dcache size (*2)
 		mov	r11, #32		@ default: 32 byte line size
@@ -1283,6 +1306,7 @@ __armv4_mmu_cache_flush:
 		mov	r2, #1024
 		mov	r2, r2, lsl r1		@ base dcache size *2
 		tst	r3, #1 << 14		@ test M bit
+		it	ne
 		addne	r2, r2, r2, lsr #1	@ +1/2 size if M == 1
 		mov	r3, r3, lsr #12
 		and	r3, r3, #3
@@ -1307,6 +1331,7 @@ no_cache_id:
 __armv3_mmu_cache_flush:
 __armv3_mpu_cache_flush:
 		tst	r4, #1
+		it	ne
 		movne	pc, lr
 		mov	r1, #0
 		mcr	p15, 0, r1, c7, c0, 0	@ invalidate whole cache v3

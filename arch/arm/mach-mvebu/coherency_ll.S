@@ -97,6 +97,7 @@ ENTRY(ll_add_cpu_to_smp_group)
 	bl	ll_get_coherency_base
 	/* Bail out if the coherency is not enabled */
 	cmp	r1, #0
+	it	eq
 	reteq	r0
 	bl	ll_get_coherency_cpumask
 	mov 	lr, r0
@@ -122,6 +123,7 @@ ENTRY(ll_enable_coherency)
 	bl	ll_get_coherency_base
 	/* Bail out if the coherency is not enabled */
 	cmp	r1, #0
+	it	eq
 	reteq	r0
 	bl	ll_get_coherency_cpumask
 	mov lr, r0
@@ -149,6 +151,7 @@ ENTRY(ll_disable_coherency)
 	bl	ll_get_coherency_base
 	/* Bail out if the coherency is not enabled */
 	cmp	r1, #0
+	it	eq
 	reteq	r0
 	bl	ll_get_coherency_cpumask
 	mov 	lr, r0

@@ -85,12 +85,14 @@ ENTRY(cpu_v7_set_pte_ext)
 	tst	rl, #L_PTE_VALID
 	beq	1f
 	tst	rh, #1 << (57 - 32)		@ L_PTE_NONE
+	it	ne
 	bicne	rl, #L_PTE_VALID
 	bne	1f
 
 	eor	ip, rh, #1 << (55 - 32)	@ toggle L_PTE_DIRTY in temp reg to
 					@ test for !L_PTE_DIRTY || L_PTE_RDONLY
 	tst	ip, #1 << (55 - 32) | 1 << (58 - 32)
+	ite	ne
 	orrne	rl, #PTE_AP2
 	biceq	rl, #PTE_AP2
 
@@ -139,10 +141,12 @@ ENDPROC(cpu_v7_set_pte_ext)
 	 * otherwise booting secondary CPUs would end up using TTBR1 for the
 	 * identity mapping set up in TTBR0.
 	 */
+	it	ls
 	orrls	\tmp, \tmp, #TTBR1_SIZE				@ TTBCR.T1SZ
 	mcr	p15, 0, \tmp, c2, c0, 2				@ TTBCR
 	mov	\tmp, \ttbr1, lsr #20
 	mov	\ttbr1, \ttbr1, lsl #12
+	it	ls
 	addls	\ttbr1, \ttbr1, #TTBR1_OFFSET
 	mcrr	p15, 1, \ttbr1, \tmp, c2			@ load TTBR1
 	.endm

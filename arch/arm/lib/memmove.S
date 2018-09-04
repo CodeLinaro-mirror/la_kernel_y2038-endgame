@@ -31,6 +31,7 @@ ENTRY(memmove)
 	UNWIND(	.fnstart			)
 
 		subs	ip, r0, r1
+		ite	hi
 		cmphi	r2, ip
 		bls	memcpy
 
@@ -83,6 +84,7 @@ ENTRY(memmove)
 
 5:		ands	ip, r2, #28
 		rsb	ip, ip, #32
+		it	ne
 		addne	pc, pc, ip		@ C is always clear here
 		b	7f
 6:		W(nop)
@@ -114,19 +116,27 @@ ENTRY(memmove)
 	UNWIND(	.save	{r0, r4, lr}		) @ still in first stmfd block
 
 8:		movs	r2, r2, lsl #31
+		it	ne
 		ldrbne	r3, [r1, #-1]!
+		itt	cs
 		ldrbcs	r4, [r1, #-1]!
 		ldrbcs	ip, [r1, #-1]
+		it	ne
 		strbne	r3, [r0, #-1]!
+		itt	cs
 		strbcs	r4, [r0, #-1]!
 		strbcs	ip, [r0, #-1]
 		ldmfd	sp!, {r0, r4, pc}
 
 9:		cmp	ip, #2
+		it	gt
 		ldrbgt	r3, [r1, #-1]!
+		it	ge
 		ldrbge	r4, [r1, #-1]!
 		ldrb	lr, [r1, #-1]!
+		it	gt
 		strbgt	r3, [r0, #-1]!
+		it	ge
 		strbge	r4, [r0, #-1]!
 		subs	r2, r2, ip
 		strb	lr, [r0, #-1]!

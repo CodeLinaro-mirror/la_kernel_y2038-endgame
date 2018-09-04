@@ -55,6 +55,7 @@ __vet_atags:
 	beq	2f
 #endif
 	cmp	r5, #ATAG_CORE_SIZE		@ is first tag ATAG_CORE?
+	itt	ne
 	cmpne	r5, #ATAG_CORE_SIZE_EMPTY
 	bne	1f
 	ldr	r5, [r2, #4]
@@ -114,6 +115,7 @@ __mmap_switched:
 	str	r7, [r1]			@ Save machine type
 	str	r8, [r2]			@ Save atags pointer
 	cmp	r3, #0
+	it	ne
 	strne	r10, [r3]			@ Save control register values
 	mov	lr, #0
 	b	start_kernel

@@ -29,6 +29,7 @@
 		addruart	\tmp1, \tmp2, \rx
 		mrc		p15, 0, \rx, c1, c0
 		tst		\rx, #1
+		ite		eq
 		moveq		\rx, \tmp1
 		movne		\rx, \tmp2
 		.endm
@@ -64,6 +65,7 @@ printhex:	adr	r2, hexbuf_rel
 1:		and	r1, r0, #15
 		mov	r0, r0, lsr #4
 		cmp	r1, #10
+		ite	lt
 		addlt	r1, r1, #'0'
 		addge	r1, r1, #'a' - 10
 		strb	r1, [r3, #-1]!
@@ -86,6 +88,7 @@ hexbuf_rel:	.long	hexbuf_addr - .
 ENTRY(printascii)
 		addruart_current r3, r1, r2
 1:		teq	r0, #0
+		itte	ne
 		ldrbne	r1, [r0], #1
 		teqne	r1, #0
 		reteq	lr

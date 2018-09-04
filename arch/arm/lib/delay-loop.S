@@ -32,6 +32,7 @@ ENTRY(__loop_const_udelay)			@ 0 <= r0 <= 0xfffffaf0
 		umull	r1, r0, r2, r0		@ r0-r1 = r0 * loops_per_jiffy
 		adds	r1, r1, #0xffffffff	@ rounding up ...
 		adcs	r0, r0, r0		@ and right shift by 31
+		it	eq
 		reteq	lr
 
 		.align 3

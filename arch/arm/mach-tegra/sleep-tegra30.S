@@ -85,6 +85,7 @@
 .macro emc_device_mask, rd, base
 	ldr	\rd, [\base, #EMC_ADR_CFG]
 	tst	\rd, #0x1
+	ite	eq
 	moveq	\rd, #(0x1 << 8)		@ just 1 device
 	movne	\rd, #(0x3 << 8)		@ 2 devices
 .endm
@@ -101,6 +102,7 @@
 .macro pll_enable, rd, r_car_base, pll_base, pll_misc
 	ldr	\rd, [\r_car_base, #\pll_base]
 	tst	\rd, #(1 << 30)
+	itt	eq
 	orreq	\rd, \rd, #(1 << 30)
 	streq	\rd, [\r_car_base, #\pll_base]
 	/* Enable lock detector */
@@ -164,6 +166,7 @@ ENTRY(tegra30_cpu_shutdown)
 	bne	_no_cpu0_chk	@ It's not Tegra30
 
 	cmp	r3, #0
+	it	eq
 	reteq	lr		@ Must never be called for CPU 0
 _no_cpu0_chk:
 
@@ -181,6 +184,7 @@ _no_cpu0_chk:
 		FLOW_CTRL_CSR_INTR_FLAG | FLOW_CTRL_CSR_EVENT_FLAG | \
 		FLOW_CTRL_CSR_ENABLE
 	cmp	r10, #TEGRA30
+	ite	eq
 	moveq	r4, #(1 << 4)			@ wfe bitmap
 	movne	r4, #(1 << 8)			@ wfi bitmap
  ARM(	orr	r12, r12, r4, lsl r3	)
@@ -206,6 +210,7 @@ delay_1:
 flow_ctrl_setting_for_lp2:
 	/* flow controller set up for LP2 */
 	cmp	r10, #TEGRA30
+	iteee	eq
 	moveq   r3, #FLOW_CTRL_WAIT_FOR_INTERRUPT	@ For LP2
 	movne	r3, #FLOW_CTRL_WAITEVENT
 	orrne	r3, r3, #FLOW_CTRL_HALT_GIC_IRQ
@@ -219,6 +224,7 @@ flow_ctrl_done:
 __cpu_reset_again:
 	dsb
 	.align 5
+	ite	eq
 	wfeeq					@ CPU should be power gated here
 	wfine
 wfe_war:
@@ -398,6 +404,7 @@ _pll_m_c_x_done:
 	str	r4, [r0, #CLK_RESET_SCLK_BURST]
 
 	cmp	r10, #TEGRA30
+	ittee	eq
 	movweq	r4, #:lower16:((1 << 28) | (0x8))	@ burst policy is PLLX
 	movteq	r4, #:upper16:((1 << 28) | (0x8))
 	movwne	r4, #:lower16:((1 << 28) | (0xe))
@@ -412,12 +419,15 @@ _pll_m_c_x_done:
 	str	r1, [r2, #PMC_IO_DPD_REQ]	@ DPD_OFF
 
 	cmp	r10, #TEGRA30
+	itt	eq
 	movweq	r0, #:lower16:TEGRA_EMC_BASE	@ r0 reserved for emc base
 	movteq	r0, #:upper16:TEGRA_EMC_BASE
 	cmp	r10, #TEGRA114
+	itt	eq
 	movweq	r0, #:lower16:TEGRA_EMC0_BASE
 	movteq	r0, #:upper16:TEGRA_EMC0_BASE
 	cmp	r10, #TEGRA124
+	itt	eq
 	movweq	r0, #:lower16:TEGRA124_EMC_BASE
 	movteq	r0, #:upper16:TEGRA124_EMC_BASE
 
@@ -437,12 +447,14 @@ exit_self_refresh:
 	emc_timing_update r1, r0
 
 	cmp	r10, #TEGRA114
+	ittt	eq
 	movweq	r1, #:lower16:TEGRA_EMC1_BASE
 	movteq	r1, #:upper16:TEGRA_EMC1_BASE
 	cmpeq	r0, r1
 
 	ldr	r1, [r0, #EMC_AUTO_CAL_CONFIG]
 	orr	r1, r1, #(1 << 31)	@ set AUTO_CAL_ACTIVE
+	it	eq
 	orreq	r1, r1, #(1 << 27)	@ set slave mode for channel 1
 	str	r1, [r0, #EMC_AUTO_CAL_CONFIG]
 
@@ -459,6 +471,7 @@ emc_wait_auto_cal_onetime:
 	str	r1, [r0, #EMC_SELF_REF]	@ take DRAM out of self refresh
 	mov	r1, #1
 	cmp	r10, #TEGRA30
+	ittt	eq
 	streq	r1, [r0, #EMC_NOP]
 	streq	r1, [r0, #EMC_NOP]
 	streq	r1, [r0, #EMC_REFRESH]
@@ -528,6 +541,7 @@ zcal_done:
 	bne	__no_dual_emc_chanl
 	mov32	r1, TEGRA_EMC1_BASE
 	cmp	r0, r1
+	itt	ne
 	movne	r0, r1
 	addne	r5, r5, #0x20
 	bne	exit_self_refresh
@@ -687,6 +701,7 @@ tegra30_enter_sleep:
 	tegra_get_soc_id TEGRA_APB_MISC_BASE, r10
 	cmp	r10, #TEGRA30
 	mov	r0, #FLOW_CTRL_WAIT_FOR_INTERRUPT
+	ite	eq
 	orreq	r0, r0, #FLOW_CTRL_HALT_CPU_IRQ | FLOW_CTRL_HALT_CPU_FIQ
 	orrne   r0, r0, #FLOW_CTRL_HALT_LIC_IRQ | FLOW_CTRL_HALT_LIC_FIQ
 
@@ -719,12 +734,15 @@ tegra30_sdram_self_refresh:
 	adr	r8, tegra_sdram_pad_save
 	tegra_get_soc_id TEGRA_APB_MISC_BASE, r10
 	cmp	r10, #TEGRA30
+	itt	eq
 	adreq	r2, tegra30_sdram_pad_address
 	ldreq	r3, tegra30_sdram_pad_size
 	cmp	r10, #TEGRA114
+	itt	eq
 	adreq	r2, tegra114_sdram_pad_address
 	ldreq	r3, tegra114_sdram_pad_size
 	cmp	r10, #TEGRA124
+	itt	eq
 	adreq	r2, tegra124_sdram_pad_address
 	ldreq	r3, tegra30_sdram_pad_size
 
@@ -744,10 +762,13 @@ padsave_done:
 	dsb
 
 	cmp	r10, #TEGRA30
+	it	eq
 	ldreq	r0, =TEGRA_EMC_BASE	@ r0 reserved for emc base addr
 	cmp	r10, #TEGRA114
+	it	eq
 	ldreq	r0, =TEGRA_EMC0_BASE
 	cmp	r10, #TEGRA124
+	it	eq
 	ldreq	r0, =TEGRA124_EMC_BASE
 
 enter_self_refresh:
@@ -757,6 +778,7 @@ enter_self_refresh:
 	str	r1, [r0, #EMC_AUTO_CAL_INTERVAL]
 	ldr	r1, [r0, #EMC_CFG]
 	bic	r1, r1, #(1 << 28)
+	it	ne
 	bicne	r1, r1, #(1 << 29)
 	str	r1, [r0, #EMC_CFG]	@ disable DYN_SELF_REF
 
@@ -797,6 +819,7 @@ emcself:
 	str	r1, [r0, #EMC_XM2VTTGENPADCTRL]
 	ldr	r1, [r0, #EMC_XM2VTTGENPADCTRL2]
 	cmp	r10, #TEGRA30
+	ite	eq
 	orreq	r1, r1, #7		@ set E_NO_VTTGEN
 	orrne	r1, r1, #0x3f
 	str	r1, [r0, #EMC_XM2VTTGENPADCTRL2]
@@ -808,6 +831,7 @@ emcself:
 	bne	no_dual_emc_chanl
 	mov32	r1, TEGRA_EMC1_BASE
 	cmp	r0, r1
+	it	ne
 	movne	r0, r1
 	bne	enter_self_refresh
 no_dual_emc_chanl:

@@ -57,7 +57,9 @@ ENTRY(tegra_disable_clean_inv_dcache)
 
 	/* Flush the D-cache */
 	cmp	r0, #TEGRA_FLUSH_CACHE_ALL
+	it	ne
 	blne	v7_flush_dcache_louis
+	it	eq
 	bleq	v7_flush_dcache_all
 
 	/* Trun off coherency */
@@ -82,6 +84,7 @@ ENTRY(tegra_init_l2_for_a15)
 	mrc	p15, 0x1, r0, c9, c0, 2
 	and	r0, r0, #7
 	cmp	r0, #2
+	ittt	ne
 	bicne	r0, r0, #7
 	orrne	r0, r0, #2
 	mcrne	p15, 0x1, r0, c9, c0, 2
@@ -134,6 +137,7 @@ ENTRY(tegra_shut_off_mmu)
 #ifdef CONFIG_CACHE_L2X0
 	/* Disable L2 cache */
 	check_cpu_part_num 0xc09, r9, r10
+	itttt	eq
 	movweq	r2, #:lower16:(TEGRA_ARM_PERIF_BASE + 0x3000)
 	movteq	r2, #:upper16:(TEGRA_ARM_PERIF_BASE + 0x3000)
 	moveq	r3, #0

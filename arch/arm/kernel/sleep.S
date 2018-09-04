@@ -90,6 +90,7 @@ ENDPROC(__cpu_suspend)
 cpu_suspend_abort:
 	ldmia	sp!, {r1 - r3}		@ pop phys pgd, virt SP, phys resume fn
 	teq	r0, #0
+	it	eq
 	moveq	r0, #1			@ force non-zero value
 	mov	sp, r2
 	ldmfd	sp!, {r4 - r11, pc}

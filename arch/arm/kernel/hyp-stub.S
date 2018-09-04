@@ -60,6 +60,7 @@ ENTRY(__boot_cpu_mode)
 	ldr	\reg3, [\reg2]
 	ldr	\reg1, [\reg2, \reg3]
 	cmp	\mode, \reg1		@ matches primary CPU boot mode?
+	itt	ne
 	orrne	\reg1, \reg1, #BOOT_CPU_MODE_MISMATCH
 	strne	\reg1, [\reg2, \reg3]	@ record what happened and give up
 	.endm
@@ -103,6 +104,7 @@ ENTRY(__hyp_stub_install_secondary)
 	 * immediately.
 	 */
 	compare_cpu_mode_with_primary	r4, r5, r6, r7
+	it	ne
 	retne	lr
 
 	/*
@@ -115,6 +117,7 @@ ENTRY(__hyp_stub_install_secondary)
 	 */
 
 	cmp	r4, #HYP_MODE
+	it	ne
 	retne	lr			@ give up if the CPU is not in HYP mode
 
 /*

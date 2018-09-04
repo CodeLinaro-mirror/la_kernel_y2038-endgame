@@ -87,8 +87,10 @@ UNWIND(.fnstart)
 	@ The division loop for needed upper bit positions.
  	@ Break out early if dividend reaches 0.
 2:	cmp	xh, yl
+	itt	cs
 	orrcs	yh, yh, ip
 	subscs	xh, xh, yl
+	it	ne
 	movsne	ip, ip, lsr #1
 	mov	yl, yl, lsr #1
 	bne	2b
@@ -96,7 +98,9 @@ UNWIND(.fnstart)
 	@ See if we need to handle lower 32-bit result.
 3:	cmp	xh, #0
 	mov	yl, #0
+	it	eq
 	cmpeq	xl, r4
+	itt	lo
 	movlo	xh, xl
 	retlo	lr
 
@@ -107,8 +111,10 @@ UNWIND(.fnstart)
 4:	movs	xl, xl, lsl #1
 	adcs	xh, xh, xh
 	beq	6f
+	it	cc
 	cmpcc	xh, r4
-5:	orrcs	yl, yl, ip
+5:	itt	cs
+	orrcs	yl, yl, ip
 	subcs	xh, xh, r4
 	movs	ip, ip, lsr #1
 	bne	4b
@@ -119,6 +125,7 @@ UNWIND(.fnstart)
 	@ Otherwise, if lower part is also null then we are done.
 6:	bcs	5b
 	cmp	xl, #0
+	it	eq
 	reteq	lr
 
 	@ We still have remainer bits in the low part.  Bring them up.
@@ -188,7 +195,8 @@ UNWIND(.fnstart)
 	ret	lr
 
 	@ eq -> division by 1: obvious enough...
-9:	moveq	yl, xl
+9:	itttt	eq
+	moveq	yl, xl
 	moveq	yh, xh
 	moveq	xh, #0
 	reteq	lr

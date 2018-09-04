@@ -141,6 +141,7 @@ ARM(	tst	sp, #7		)
 ARM(	eorne	sp, sp, #\val	)
 
 THUMB(	cmp	r1, #\val	)
+THUMB(	itt	eq		)
 THUMB(	popeq	{r1, r2}	)
 
 	beq	\targ
@@ -293,6 +294,7 @@ hyp_dabt:
 	ldr	r1, =abort_guest_exit_start
 THUMB(	add	r1, r1, #1)
 	cmp	r0, r1
+THUMB(	ittt	ne	  )
 	ldrne	r1, =abort_guest_exit_end
 THUMB(	addne	r1, r1, #1)
 	cmpne	r0, r1

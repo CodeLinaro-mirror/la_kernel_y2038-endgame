@@ -103,6 +103,7 @@ ALT_UP(	ret	lr)				@ LoUU is zero, so nothing to do
 	movw	r1, #:lower16:(0x410fc090 >> 4)	@ ID of ARM Cortex A9 r0p?
 	movt	r1, #:upper16:(0x410fc090 >> 4)
 	teq	r1, r2, lsr #4			@ test for errata affected core and if so...
+	itt	eq
 	moveq	r3, #1 << 1			@   fix LoUIS value
 	beq	start_flush_levels		@   start flushing cache levels
 #endif
@@ -361,10 +362,12 @@ v7_dma_inv_range:
 	ALT_SMP(W(dsb))
 	ALT_UP(W(nop))
 #endif
+	it	ne
 	mcrne	p15, 0, r0, c7, c14, 1		@ clean & invalidate D / U line
 
 	tst	r1, r3
 	bic	r1, r1, r3
+	it	ne
 	mcrne	p15, 0, r1, c7, c14, 1		@ clean & invalidate D / U line
 1:
 	mcr	p15, 0, r0, c7, c6, 1		@ invalidate D / U line
