@@ -315,6 +315,7 @@ extern struct cpu_tlb_fns cpu_tlb;
 			    : : "r" (arg) : "cc");			\
 		else if (possible_tlb_flags & (f))			\
 			asm("tst %1, %2\n\t"				\
+			    "it	ne\n\t"					\
 			    "mcrne " insnarg				\
 			    : : "r" (arg), "r" (__tlb_flag), "Ir" (f)	\
 			    : "cc");					\
