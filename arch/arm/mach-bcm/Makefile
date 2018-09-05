@@ -65,7 +65,6 @@ obj-$(CONFIG_SMP)		+= bcm63xx_smp.o bcm63xx_pmb.o
 endif
 
 ifeq ($(CONFIG_ARCH_BRCMSTB),y)
-CFLAGS_platsmp-brcmstb.o	+= -march=armv7-a
 obj-y				+= brcmstb.o
 obj-$(CONFIG_SMP)		+= platsmp-brcmstb.o
 endif
