@@ -83,14 +83,30 @@ static inline void set_fs(mm_segment_t fs)
 #define segment_eq(a, b)	((a) == (b))
 
 /* We use 33-bit arithmetic here... */
+#if IS_ENABLED(CONFIG_THUMB2_KERNEL)
 #define __range_ok(addr, size) ({ \
 	unsigned long flag, roksum; \
 	__chk_user_ptr(addr);	\
-	__asm__("adds %1, %2, %3; sbcccs %1, %1, %0; movcc %0, #0" \
+	__asm__("adds %1, %2, %3\n\t" \
+		"itt cc\n\t" \
+		"sbcscc %1, %1, %0\n\t" \
+		"movcc %0, #0" \
 		: "=&r" (flag), "=&r" (roksum) \
 		: "r" (addr), "Ir" (size), "0" (current_thread_info()->addr_limit) \
 		: "cc"); \
 	flag; })
+#else
+#define __range_ok(addr, size) ({ \
+	unsigned long flag, roksum; \
+	__chk_user_ptr(addr);	\
+	__asm__("adds %1, %2, %3\n\t" \
+		"sbcccs %1, %1, %0\n\t" \
+		"movcc %0, #0" \
+		: "=&r" (flag), "=&r" (roksum) \
+		: "r" (addr), "Ir" (size), "0" (current_thread_info()->addr_limit) \
+		: "cc"); \
+	flag; })
+#endif
 
 /*
  * This is a type: either unsigned long, if the argument fits into
