@@ -959,6 +959,7 @@ void __naked __used __visible __kprobes_test_case_end_16(void)
 		"mov	r4, lr					\n\t"
 		"bl	kprobes_test_case_end			\n\t"
 		"cmp	r0, #0					\n\t"
+		"it	ne					\n\t"
 		"bxne	r0					\n\t"
 		"mov	r0, r4					\n\t"
 		"add	sp, sp, #"__stringify(TEST_MEMORY_SIZE)"\n\t"

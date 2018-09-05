@@ -203,7 +203,7 @@ ENTRY(sha1_block_data_order)
 	eor	r10,r10,r7,ror#2		@ F_00_19(B,C,D)
 	str	r9,[r14,#-4]!
 	add	r3,r3,r10			@ E+=F_00_19(B,C,D)
-	cmp	r14,sp
+	cmp	sp,r14
 	bne	.L_00_15		@ [((11+4)*5+2)*3]
 	sub	sp,sp,#25*4
 #if __ARM_ARCH__<7
@@ -477,7 +477,7 @@ ENTRY(sha1_block_data_order)
 	add	r3,r3,r9			@ E+=X[i]
 	add	r3,r3,r10			@ E+=F_40_59(B,C,D)
 	add	r3,r3,r11,ror#2
-	cmp	r14,sp
+	cmp	sp,r14
 	bne	.L_40_59		@ [+((12+5)*5+2)*4]
 
 	ldr	r8,.LK_60_79

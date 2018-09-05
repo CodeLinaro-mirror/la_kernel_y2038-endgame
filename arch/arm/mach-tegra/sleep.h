@@ -61,6 +61,7 @@
 /* returns the offset of the flow controller halt register for a cpu */
 .macro cpu_to_halt_reg rd, rcpu
 	cmp	\rcpu, #0
+	ittte	ne
 	subne	\rd, \rcpu, #1
 	movne	\rd, \rd, lsl #3
 	addne	\rd, \rd, #0x14
@@ -70,6 +71,7 @@
 /* returns the offset of the flow controller csr register for a cpu */
 .macro cpu_to_csr_reg rd, rcpu
 	cmp	\rcpu, #0
+	ittte	ne
 	subne	\rd, \rcpu, #1
 	movne	\rd, \rd, lsl #3
 	addne	\rd, \rd, #0x18
@@ -104,10 +106,12 @@
 	isb
 #ifdef CONFIG_HAVE_ARM_SCU
 	check_cpu_part_num 0xc09, \tmp1, \tmp2
+	itttt	eq
 	mrceq	p15, 0, \tmp1, c0, c0, 5
 	andeq	\tmp1, \tmp1, #0xF
 	moveq	\tmp1, \tmp1, lsl #2
 	moveq	\tmp2, #0xf
+	ittt	eq
 	moveq	\tmp2, \tmp2, lsl \tmp1
 	ldreq	\tmp1, =(TEGRA_ARM_PERIF_VIRT + 0xC)
 	streq	\tmp2, [\tmp1]			@ invalidate SCU tags for CPU

@@ -106,6 +106,7 @@ static int at91sam9g45_restart(struct notifier_block *this, unsigned long mode,
 		/* Power down SDRAM0 */
 		"	str	%4, [%0, #" __stringify(AT91_DDRSDRC_LPR) "]\n\t"
 		/* Disable SDRAM1 accesses */
+		"	itt	ne\n\t"
 		"	strne	%3, [%1, #" __stringify(AT91_DDRSDRC_RTR) "]\n\t"
 		/* Power down SDRAM1 */
 		"	strne	%4, [%1, #" __stringify(AT91_DDRSDRC_LPR) "]\n\t"

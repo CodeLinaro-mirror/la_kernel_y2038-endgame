@@ -62,6 +62,7 @@ ENTRY(sunxi_mc_smp_cluster_cache_enable)
 
 	/* Skip cci_enable_port_for_self if not first comer */
 	cmp	r0, #0
+	it	eq
 	bxeq	lr
 	b	cci_enable_port_for_self
 
