@@ -196,6 +196,7 @@ static void __naked exynos_pm_power_up_setup(unsigned int affinity_level)
 {
 	asm volatile ("\n"
 	"cmp	r0, #1\n"
+	"it	ne\n"
 	"bxne	lr\n"
 	"b	cci_enable_port_for_self");
 }

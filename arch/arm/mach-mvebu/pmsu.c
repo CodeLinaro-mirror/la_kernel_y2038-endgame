@@ -298,6 +298,7 @@ int armada_370_xp_pmsu_idle_enter(unsigned long deepidle)
 	asm volatile(
 	"mrc	p15, 0, r0, c1, c0, 0 \n\t"
 	"tst	r0, %0 \n\t"
+	"itt	eq\n\t"
 	"orreq	r0, r0, #(1 << 2) \n\t"
 	"mcreq	p15, 0, r0, c1, c0, 0 \n\t"
 	"isb	"

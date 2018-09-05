@@ -50,6 +50,7 @@ static inline void atomic_##op(int i, atomic_t *v)			\
 "	" #asm_op "	%0, %0, %4\n"					\
 "	strex	%1, %0, [%3]\n"						\
 "	teq	%1, #0\n"						\
+"	it	ne\n"							\
 "	bne	1b"							\
 	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)		\
 	: "r" (&v->counter), "Ir" (i)					\
@@ -69,6 +70,7 @@ static inline int atomic_##op##_return_relaxed(int i, atomic_t *v)	\
 "	" #asm_op "	%0, %0, %4\n"					\
 "	strex	%1, %0, [%3]\n"						\
 "	teq	%1, #0\n"						\
+"	it	ne\n"							\
 "	bne	1b"							\
 	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)		\
 	: "r" (&v->counter), "Ir" (i)					\
@@ -90,6 +92,7 @@ static inline int atomic_fetch_##op##_relaxed(int i, atomic_t *v)	\
 "	" #asm_op "	%1, %0, %5\n"					\
 "	strex	%2, %1, [%4]\n"						\
 "	teq	%2, #0\n"						\
+"	it	ne\n"							\
 "	bne	1b"							\
 	: "=&r" (result), "=&r" (val), "=&r" (tmp), "+Qo" (v->counter)	\
 	: "r" (&v->counter), "Ir" (i)					\
@@ -120,6 +123,7 @@ static inline int atomic_cmpxchg_relaxed(atomic_t *ptr, int old, int new)
 		"ldrex	%1, [%3]\n"
 		"mov	%0, #0\n"
 		"teq	%1, %4\n"
+		"it	eq\n"
 		"strexeq %0, %5, [%3]\n"
 		    : "=&r" (res), "=&r" (oldval), "+Qo" (ptr->counter)
 		    : "r" (&ptr->counter), "Ir" (old), "r" (new)
@@ -145,6 +149,7 @@ static inline int atomic_fetch_add_unless(atomic_t *v, int a, int u)
 "	add	%1, %0, %6\n"
 "	strex	%2, %1, [%4]\n"
 "	teq	%2, #0\n"
+"	it	ne\n"
 "	bne	1b\n"
 "2:"
 	: "=&r" (oldval), "=&r" (newval), "=&r" (tmp), "+Qo" (v->counter)
@@ -305,6 +310,7 @@ static inline void atomic64_set(atomic64_t *v, long long i)
 "1:	ldrexd	%0, %H0, [%2]\n"
 "	strexd	%0, %3, %H3, [%2]\n"
 "	teq	%0, #0\n"
+"	it	ne\n"
 "	bne	1b"
 	: "=&r" (tmp), "=Qo" (v->counter)
 	: "r" (&v->counter), "r" (i)
@@ -325,6 +331,7 @@ static inline void atomic64_##op(long long i, atomic64_t *v)		\
 "	" #op2 " %R0, %R0, %R4\n"					\
 "	strexd	%1, %0, %H0, [%3]\n"					\
 "	teq	%1, #0\n"						\
+"	it	ne\n"							\
 "	bne	1b"							\
 	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)		\
 	: "r" (&v->counter), "r" (i)					\
@@ -346,6 +353,7 @@ atomic64_##op##_return_relaxed(long long i, atomic64_t *v)		\
 "	" #op2 " %R0, %R0, %R4\n"					\
 "	strexd	%1, %0, %H0, [%3]\n"					\
 "	teq	%1, #0\n"						\
+"	it	ne\n"							\
 "	bne	1b"							\
 	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)		\
 	: "r" (&v->counter), "r" (i)					\
@@ -369,6 +377,7 @@ atomic64_fetch_##op##_relaxed(long long i, atomic64_t *v)		\
 "	" #op2 " %R1, %R0, %R5\n"					\
 "	strexd	%2, %1, %H1, [%4]\n"					\
 "	teq	%2, #0\n"						\
+"	it	ne\n"							\
 "	bne	1b"							\
 	: "=&r" (result), "=&r" (val), "=&r" (tmp), "+Qo" (v->counter)	\
 	: "r" (&v->counter), "r" (i)					\
@@ -425,7 +434,9 @@ atomic64_cmpxchg_relaxed(atomic64_t *ptr, long long old, long long new)
 		"ldrexd		%1, %H1, [%3]\n"
 		"mov		%0, #0\n"
 		"teq		%1, %4\n"
+		"it		eq\n"
 		"teqeq		%H1, %H4\n"
+		"it		eq\n"
 		"strexdeq	%0, %5, %H5, [%3]"
 		: "=&r" (res), "=&r" (oldval), "+Qo" (ptr->counter)
 		: "r" (&ptr->counter), "r" (old), "r" (new)
@@ -447,6 +458,7 @@ static inline long long atomic64_xchg_relaxed(atomic64_t *ptr, long long new)
 "1:	ldrexd	%0, %H0, [%3]\n"
 "	strexd	%1, %4, %H4, [%3]\n"
 "	teq	%1, #0\n"
+"	it	ne\n"
 "	bne	1b"
 	: "=&r" (result), "=&r" (tmp), "+Qo" (ptr->counter)
 	: "r" (&ptr->counter), "r" (new)
@@ -472,6 +484,7 @@ static inline long long atomic64_dec_if_positive(atomic64_t *v)
 "	bmi	2f\n"
 "	strexd	%1, %0, %H0, [%3]\n"
 "	teq	%1, #0\n"
+"	it	ne\n"
 "	bne	1b\n"
 "2:"
 	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)
@@ -496,12 +509,15 @@ static inline long long atomic64_fetch_add_unless(atomic64_t *v, long long a,
 	__asm__ __volatile__("@ atomic64_add_unless\n"
 "1:	ldrexd	%0, %H0, [%4]\n"
 "	teq	%0, %5\n"
+"	it	eq\n"
 "	teqeq	%H0, %H5\n"
+"	it	eq\n"
 "	beq	2f\n"
 "	adds	%Q1, %Q0, %Q6\n"
 "	adc	%R1, %R0, %R6\n"
 "	strexd	%2, %1, %H1, [%4]\n"
 "	teq	%2, #0\n"
+"	it	ne\n"
 "	bne	1b\n"
 "2:"
 	: "=&r" (oldval), "=&r" (newval), "=&r" (tmp), "+Qo" (v->counter)

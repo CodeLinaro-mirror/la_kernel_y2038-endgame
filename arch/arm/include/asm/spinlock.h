@@ -65,6 +65,7 @@ static inline void arch_spin_lock(arch_spinlock_t *lock)
 "	add	%1, %0, %4\n"
 "	strex	%2, %1, [%3]\n"
 "	teq	%2, #0\n"
+"	it	ne\n"
 "	bne	1b"
 	: "=&r" (lockval), "=&r" (newval), "=&r" (tmp)
 	: "r" (&lock->slock), "I" (1 << TICKET_SHIFT)
@@ -89,6 +90,7 @@ static inline int arch_spin_trylock(arch_spinlock_t *lock)
 		"	ldrex	%0, [%3]\n"
 		"	mov	%2, #0\n"
 		"	subs	%1, %0, %0, ror #16\n"
+		"	itt	eq\n"
 		"	addeq	%0, %0, %4\n"
 		"	strexeq	%2, %0, [%3]"
 		: "=&r" (slock), "=&r" (contended), "=&r" (res)
@@ -145,8 +147,10 @@ static inline void arch_write_lock(arch_rwlock_t *rw)
 "1:	ldrex	%0, [%1]\n"
 "	teq	%0, #0\n"
 	WFE("ne")
+"	it	eq\n"
 "	strexeq	%0, %2, [%1]\n"
 "	teq	%0, #0\n"
+"	it	ne\n"
 "	bne	1b"
 	: "=&r" (tmp)
 	: "r" (&rw->lock), "r" (0x80000000)
@@ -165,6 +169,7 @@ static inline int arch_write_trylock(arch_rwlock_t *rw)
 		"	ldrex	%0, [%2]\n"
 		"	mov	%1, #0\n"
 		"	teq	%0, #0\n"
+		"	it	eq\n"
 		"	strexeq	%1, %3, [%2]"
 		: "=&r" (contended), "=&r" (res)
 		: "r" (&rw->lock), "r" (0x80000000)
@@ -212,6 +217,7 @@ static inline void arch_read_lock(arch_rwlock_t *rw)
 	__asm__ __volatile__(
 "1:	ldrex	%0, [%2]\n"
 "	adds	%0, %0, #1\n"
+"	it pl\n"
 "	strexpl	%1, %0, [%2]\n"
 	WFE("mi")
 "	it	pl\n"
@@ -236,6 +242,7 @@ static inline void arch_read_unlock(arch_rwlock_t *rw)
 "	sub	%0, %0, #1\n"
 "	strex	%1, %0, [%2]\n"
 "	teq	%1, #0\n"
+"	it	ne\n"
 "	bne	1b"
 	: "=&r" (tmp), "=&r" (tmp2)
 	: "r" (&rw->lock)
@@ -255,6 +262,7 @@ static inline int arch_read_trylock(arch_rwlock_t *rw)
 		"	ldrex	%0, [%2]\n"
 		"	mov	%1, #0\n"
 		"	adds	%0, %0, #1\n"
+		"	it	pl\n"
 		"	strexpl	%1, %0, [%2]"
 		: "=&r" (contended), "=&r" (res)
 		: "r" (&rw->lock)
