@@ -33,6 +33,7 @@ static const char * osst_version = "0.99.4";
 
 #include <linux/module.h>
 
+#include <linux/compat.h>
 #include <linux/fs.h>
 #include <linux/kernel.h>
 #include <linux/sched/signal.h>
@@ -4941,7 +4942,7 @@ static int os_scsi_tape_close(struct inode * inode, struct file * filp)
 static long osst_ioctl(struct file * file,
 	 unsigned int cmd_in, unsigned long arg)
 {
-	int		      i, cmd_nr, cmd_type, blk, retval = 0;
+	int		      i, cmd_nr, cmd_type, cmd_size, blk, retval = 0;
 	struct st_modedef   * STm;
 	struct st_partstat  * STps;
 	struct osst_request * SRpnt = NULL;
@@ -4978,6 +4979,7 @@ static long osst_ioctl(struct file * file,
 
 	cmd_type = _IOC_TYPE(cmd_in);
 	cmd_nr   = _IOC_NR(cmd_in);
+	cmd_size = _IOC_SIZE(cmd_in);
 #if DEBUG
 	printk(OSST_DEB_MSG "%s:D: Ioctl %d,%d in %s mode\n", name,
 			    cmd_type, cmd_nr, STp->raw?"raw":"normal");
@@ -5179,7 +5181,8 @@ static long osst_ioctl(struct file * file,
 	if (cmd_type == _IOC_TYPE(MTIOCGET) && cmd_nr == _IOC_NR(MTIOCGET)) {
 		struct mtget mt_status;
 
-		if (_IOC_SIZE(cmd_in) != sizeof(struct mtget)) {
+		if (cmd_size != sizeof(struct mtget) &&
+		    cmd_size != sizeof(struct mtget32)) {
 			 retval = (-EINVAL);
 			 goto out;
 		}
@@ -5229,21 +5232,18 @@ static long osst_ioctl(struct file * file,
 		    STp->drv_buffer != 0)
 			mt_status.mt_gstat |= GMT_IM_REP_EN(0xffffffff);
 
-		i = copy_to_user(p, &mt_status, sizeof(struct mtget));
-		if (i) {
-			retval = (-EFAULT);
-			goto out;
-		}
-
-		STp->recover_erreg = 0;  /* Clear after read */
-		retval = 0;
+		retval = put_user_mtget(p, &mt_status,
+					cmd_size == sizeof(struct mtget32));
+		if (!retval)
+			STp->recover_erreg = 0;  /* Clear after read */
 		goto out;
 	} /* End of MTIOCGET */
 
 	if (cmd_type == _IOC_TYPE(MTIOCPOS) && cmd_nr == _IOC_NR(MTIOCPOS)) {
 		struct mtpos mt_pos;
 
-		if (_IOC_SIZE(cmd_in) != sizeof(struct mtpos)) {
+		if (cmd_size != sizeof(struct mtpos) &&
+		    cmd_size != sizeof(struct mtpos32)) {
 			retval = (-EINVAL);
 			goto out;
 		}
@@ -5256,9 +5256,7 @@ static long osst_ioctl(struct file * file,
 			goto out;
 		}
 		mt_pos.mt_blkno = blk;
-		i = copy_to_user(p, &mt_pos, sizeof(struct mtpos));
-		if (i)
-			retval = -EFAULT;
+		retval = put_user_mtpos(p, &mt_pos, cmd_size == sizeof(struct mtpos32));
 		goto out;
 	}
 	if (SRpnt) osst_release_request(SRpnt);
@@ -5284,6 +5282,14 @@ static long osst_compat_ioctl(struct file * file, unsigned int cmd_in, unsigned 
 	struct osst_tape *STp = file->private_data;
 	struct scsi_device *sdev = STp->device;
 	int ret = -ENOIOCTLCMD;
+
+	switch (cmd_in) {
+	case MTIOCTOP:
+	case MTIOCPOS32:
+	case MTIOCGET32:
+		return osst_ioctl(file, cmd_in, (unsigned long)compat_ptr(arg));
+	}
+
 	if (sdev->host->hostt->compat_ioctl) {
 
 		ret = sdev->host->hostt->compat_ioctl(sdev, cmd_in, (void __user *)arg);
