@@ -27,7 +27,6 @@
 #include <linux/if_pppox.h>
 #include <linux/tty.h>
 #include <linux/vt_kern.h>
-#include <linux/raw.h>
 #include <linux/blkdev.h>
 #include <linux/serial.h>
 #include <linux/ctype.h>
@@ -505,9 +504,6 @@ COMPATIBLE_IOCTL(PPPIOCGL2TPSTATS)
 /* PPPOX */
 COMPATIBLE_IOCTL(PPPOEIOCSFWD)
 COMPATIBLE_IOCTL(PPPOEIOCDFWD)
-/* Raw devices */
-COMPATIBLE_IOCTL(RAW_SETBIND)
-COMPATIBLE_IOCTL(RAW_GETBIND)
 /* Watchdog */
 COMPATIBLE_IOCTL(WDIOC_GETSUPPORT)
 COMPATIBLE_IOCTL(WDIOC_GETSTATUS)
