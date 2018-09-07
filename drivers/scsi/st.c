@@ -21,6 +21,7 @@ static const char *verstr = "20160209";
 
 #include <linux/module.h>
 
+#include <linux/compat.h>
 #include <linux/fs.h>
 #include <linux/kernel.h>
 #include <linux/sched/signal.h>
@@ -3502,7 +3503,7 @@ out:
 /* The ioctl command */
 static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 {
-	int i, cmd_nr, cmd_type, bt;
+	int i, cmd_nr, cmd_type, cmd_size, bt;
 	int retval = 0;
 	unsigned int blk;
 	struct scsi_tape *STp = file->private_data;
@@ -3536,6 +3537,7 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 
 	cmd_type = _IOC_TYPE(cmd_in);
 	cmd_nr = _IOC_NR(cmd_in);
+	cmd_size = _IOC_SIZE(cmd_in);
 
 	if (cmd_type == _IOC_TYPE(MTIOCTOP) && cmd_nr == _IOC_NR(MTIOCTOP)) {
 		struct mtop mtc;
@@ -3745,7 +3747,8 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 	if (cmd_type == _IOC_TYPE(MTIOCGET) && cmd_nr == _IOC_NR(MTIOCGET)) {
 		struct mtget mt_status;
 
-		if (_IOC_SIZE(cmd_in) != sizeof(struct mtget)) {
+		if (cmd_size != sizeof(struct mtget) &&
+		    cmd_size != sizeof(struct mtget32)) {
 			 retval = (-EINVAL);
 			 goto out;
 		}
@@ -3800,19 +3803,16 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 		if (STp->cleaning_req)
 			mt_status.mt_gstat |= GMT_CLN(0xffffffff);
 
-		i = copy_to_user(p, &mt_status, sizeof(struct mtget));
-		if (i) {
-			retval = (-EFAULT);
-			goto out;
-		}
+		retval = put_user_mtget(p, &mt_status,
+					cmd_size == sizeof(struct mtget32));
 
 		STp->recover_reg = 0;		/* Clear after read */
-		retval = 0;
 		goto out;
 	}			/* End of MTIOCGET */
 	if (cmd_type == _IOC_TYPE(MTIOCPOS) && cmd_nr == _IOC_NR(MTIOCPOS)) {
 		struct mtpos mt_pos;
-		if (_IOC_SIZE(cmd_in) != sizeof(struct mtpos)) {
+		if (cmd_size != sizeof(struct mtpos) &&
+		    cmd_size != sizeof(struct mtpos32)) {
 			 retval = (-EINVAL);
 			 goto out;
 		}
@@ -3821,9 +3821,8 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 			goto out;
 		}
 		mt_pos.mt_blkno = blk;
-		i = copy_to_user(p, &mt_pos, sizeof(struct mtpos));
-		if (i)
-			retval = (-EFAULT);
+		retval = put_user_mtpos(p, &mt_pos,
+					cmd_size == sizeof(struct mtpos32));
 		goto out;
 	}
 	mutex_unlock(&STp->lock);
@@ -3857,14 +3856,22 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 }
 
 #ifdef CONFIG_COMPAT
-static long st_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+static long st_compat_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 {
 	struct scsi_tape *STp = file->private_data;
 	struct scsi_device *sdev = STp->device;
 	int ret = -ENOIOCTLCMD;
+
+	switch (cmd_in) {
+	case MTIOCTOP:
+	case MTIOCPOS32:
+	case MTIOCGET32:
+		return st_ioctl(file, cmd_in, (unsigned long)compat_ptr(arg));
+	}
+
 	if (sdev->host->hostt->compat_ioctl) { 
 
-		ret = sdev->host->hostt->compat_ioctl(sdev, cmd, (void __user *)arg);
+		ret = sdev->host->hostt->compat_ioctl(sdev, cmd_in, (void __user *)arg);
 
 	}
 	return ret;
