@@ -2025,6 +2025,7 @@ const struct file_operations random_fops = {
 	.write = random_write,
 	.poll  = random_poll,
 	.unlocked_ioctl = random_ioctl,
+	.compat_ioctl = generic_compat_ioctl_ptrarg,
 	.fasync = random_fasync,
 	.llseek = noop_llseek,
 };
