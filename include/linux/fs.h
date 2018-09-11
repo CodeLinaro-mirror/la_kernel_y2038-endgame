@@ -1680,6 +1680,13 @@ int vfs_mkobj(struct dentry *, umode_t,
 
 extern long vfs_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
 
+#ifdef CONFIG_COMPAT
+extern long generic_compat_ioctl_ptrarg(struct file *file, unsigned int cmd,
+					unsigned long arg);
+#else
+#define generic_compat_ioctl_ptrarg NULL
+#endif
+
 /*
  * VFS file helper functions.
  */
