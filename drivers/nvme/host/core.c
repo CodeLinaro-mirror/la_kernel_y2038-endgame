@@ -2691,7 +2691,7 @@ static const struct file_operations nvme_dev_fops = {
 	.owner		= THIS_MODULE,
 	.open		= nvme_dev_open,
 	.unlocked_ioctl	= nvme_dev_ioctl,
-	.compat_ioctl	= nvme_dev_ioctl,
+	.compat_ioctl	= generic_compat_ioctl_ptrarg,
 };
 
 static ssize_t nvme_sysfs_reset(struct device *dev,

@@ -258,9 +258,7 @@ static const struct file_operations fops = {
 	.release = ec_device_release,
 	.read = ec_device_read,
 	.unlocked_ioctl = ec_device_ioctl,
-#ifdef CONFIG_COMPAT
-	.compat_ioctl = ec_device_ioctl,
-#endif
+	.compat_ioctl = generic_compat_ioctl_ptrarg,
 };
 
 static void cros_ec_class_release(struct device *dev)

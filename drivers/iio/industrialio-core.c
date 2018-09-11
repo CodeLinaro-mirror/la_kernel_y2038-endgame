@@ -1630,7 +1630,7 @@ static const struct file_operations iio_buffer_fileops = {
 	.owner = THIS_MODULE,
 	.llseek = noop_llseek,
 	.unlocked_ioctl = iio_ioctl,
-	.compat_ioctl = iio_ioctl,
+	.compat_ioctl = generic_compat_ioctl_ptrarg,
 };
 
 static int iio_check_unique_scan_index(struct iio_dev *indio_dev)

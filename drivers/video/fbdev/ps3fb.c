@@ -949,7 +949,7 @@ static struct fb_ops ps3fb_ops = {
 	.fb_mmap	= ps3fb_mmap,
 	.fb_blank	= ps3fb_blank,
 	.fb_ioctl	= ps3fb_ioctl,
-	.fb_compat_ioctl = ps3fb_ioctl
+	.fb_compat_ioctl = generic_compat_ioctl_ptrarg,
 };
 
 static const struct fb_fix_screeninfo ps3fb_fix = {
