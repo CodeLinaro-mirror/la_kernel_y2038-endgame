@@ -724,7 +724,7 @@ static const struct file_operations wdm_fops = {
 	.release =	wdm_release,
 	.poll =		wdm_poll,
 	.unlocked_ioctl = wdm_ioctl,
-	.compat_ioctl = wdm_ioctl,
+	.compat_ioctl = generic_compat_ioctl_ptrarg,
 	.llseek =	noop_llseek,
 };
 

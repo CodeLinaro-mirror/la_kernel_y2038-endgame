@@ -684,7 +684,7 @@ static const struct file_operations tee_fops = {
 	.open = tee_open,
 	.release = tee_release,
 	.unlocked_ioctl = tee_ioctl,
-	.compat_ioctl = tee_ioctl,
+	.compat_ioctl = generic_compat_ioctl_ptrarg,
 };
 
 static void tee_release_device(struct device *dev)

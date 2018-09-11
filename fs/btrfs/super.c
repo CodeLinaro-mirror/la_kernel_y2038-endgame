@@ -2307,7 +2307,7 @@ static const struct super_operations btrfs_super_ops = {
 static const struct file_operations btrfs_ctl_fops = {
 	.open = btrfs_control_open,
 	.unlocked_ioctl	 = btrfs_control_ioctl,
-	.compat_ioctl = btrfs_control_ioctl,
+	.compat_ioctl = generic_compat_ioctl_ptrarg,
 	.owner	 = THIS_MODULE,
 	.llseek = noop_llseek,
 };

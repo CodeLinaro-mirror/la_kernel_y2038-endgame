@@ -1120,7 +1120,7 @@ static const struct file_operations uverbs_fops = {
 	.release = ib_uverbs_close,
 	.llseek	 = no_llseek,
 	.unlocked_ioctl = ib_uverbs_ioctl,
-	.compat_ioctl = ib_uverbs_ioctl,
+	.compat_ioctl = generic_compat_ioctl_ptrarg,
 };
 
 static const struct file_operations uverbs_mmap_fops = {
@@ -1131,7 +1131,7 @@ static const struct file_operations uverbs_mmap_fops = {
 	.release = ib_uverbs_close,
 	.llseek	 = no_llseek,
 	.unlocked_ioctl = ib_uverbs_ioctl,
-	.compat_ioctl = ib_uverbs_ioctl,
+	.compat_ioctl = generic_compat_ioctl_ptrarg,
 };
 
 static struct ib_client uverbs_client = {

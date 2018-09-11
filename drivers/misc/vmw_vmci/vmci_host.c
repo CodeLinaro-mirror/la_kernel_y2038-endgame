@@ -969,7 +969,7 @@ static const struct file_operations vmuser_fops = {
 	.release	= vmci_host_close,
 	.poll		= vmci_host_poll,
 	.unlocked_ioctl	= vmci_host_unlocked_ioctl,
-	.compat_ioctl	= vmci_host_unlocked_ioctl,
+	.compat_ioctl	= generic_compat_ioctl_ptrarg,
 };
 
 static struct miscdevice vmci_host_miscdev = {

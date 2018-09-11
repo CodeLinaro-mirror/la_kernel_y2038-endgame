@@ -1167,7 +1167,7 @@ static const struct file_operations nvdimm_bus_fops = {
 	.owner = THIS_MODULE,
 	.open = nd_open,
 	.unlocked_ioctl = nd_ioctl,
-	.compat_ioctl = nd_ioctl,
+	.compat_ioctl = generic_compat_ioctl_ptrarg,
 	.llseek = noop_llseek,
 };
 
@@ -1175,7 +1175,7 @@ static const struct file_operations nvdimm_fops = {
 	.owner = THIS_MODULE,
 	.open = nd_open,
 	.unlocked_ioctl = nvdimm_ioctl,
-	.compat_ioctl = nvdimm_ioctl,
+	.compat_ioctl = generic_compat_ioctl_ptrarg,
 	.llseek = noop_llseek,
 };
 
