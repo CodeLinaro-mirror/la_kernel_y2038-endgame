@@ -16,6 +16,15 @@ struct elf_siginfo
 	int	si_errno;			/* errno */
 };
 
+
+#ifndef __KERNEL__
+typedef elf_greg_t greg_t;
+typedef elf_gregset_t gregset_t;
+typedef elf_fpregset_t fpregset_t;
+typedef elf_fpxregset_t fpxregset_t;
+#define NGREG ELF_NGREG
+#endif
+
 /*
  * Definitions to generate Intel SVR4-like core files.
  * These mostly have the same names as the SVR4 types with "elf_"
@@ -40,10 +49,10 @@ struct elf_prstatus
 	struct sigaltstack pr_altstack;	/* Alternate stack info */
 	struct sigaction pr_action;	/* Signal action for current sig */
 #endif
-	__kernel_pid_t	pr_pid;
-	__kernel_pid_t	pr_ppid;
-	__kernel_pid_t	pr_pgrp;
-	__kernel_pid_t	pr_sid;
+	pid_t	pr_pid;
+	pid_t	pr_ppid;
+	pid_t	pr_pgrp;
+	pid_t	pr_sid;
 	struct __kernel_old_timeval pr_utime;	/* User time */
 	struct __kernel_old_timeval pr_stime;	/* System time */
 	struct __kernel_old_timeval pr_cutime;	/* Cumulative user time */
@@ -76,10 +85,17 @@ struct elf_prpsinfo
 	unsigned long pr_flag;	/* flags */
 	__kernel_uid_t	pr_uid;
 	__kernel_gid_t	pr_gid;
-	__kernel_pid_t	pr_pid, pr_ppid, pr_pgrp, pr_sid;
+	pid_t	pr_pid, pr_ppid, pr_pgrp, pr_sid;
 	/* Lots missing */
 	char	pr_fname[16];	/* filename of executable */
 	char	pr_psargs[ELF_PRARGSZ];	/* initial part of arg list */
 };
+
+#ifndef __KERNEL__
+typedef struct elf_prstatus prstatus_t;
+typedef struct elf_prpsinfo prpsinfo_t;
+#define PRARGSZ ELF_PRARGSZ 
+#endif
+
 
 #endif /* _UAPI_LINUX_ELFCORE_H */
