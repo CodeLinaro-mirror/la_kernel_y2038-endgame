@@ -2995,6 +2995,12 @@ int sock_gettstamp(struct socket *sock, void __user *userstamp,
 
 	if (timeval)
 		ts.tv_nsec /= 1000;
+
+#ifdef CONFIG_SPARC64
+	/* sparc64 has 32-bit suseconds_t */
+	if (timeval && !time32 && !in_compat_syscall())
+		ts.tv_nsec >>= 32;
+#endif
 #ifdef CONFIG_COMPAT_32BIT_TIME
 	if (time32)
 		return put_old_timespec32(&ts, userstamp);
