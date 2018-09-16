@@ -1,0 +1,13 @@
+Changes v7->v8[wip], along with who suggested it.
+--------------------------------------------
+- Implementations that fail the selftests are now disabled, after a warning
+  is printed. This way users don't make wrong calculations, even in the face
+  of a rather grave bug.
+- [Sultan Alsawaf] When assigning to a boolean, prefer "BIT(i) & a" to "a >>
+  i) & 1".
+- [Andrew Lunn] Avoid control statements inside macros when feasible.
+- [Jiri Pirko] Prefix functions used in callbacks with wg_.
+- [Jiri Pirko] Rename struct wireguard_peer and struct wireguard_device to
+  struct wg_peer and struct wg_device.
+- [Eugene Syromiatnikov] Do not use nla type field as an index, and actually
+  don't use an index at all, because it has no meaning or relevance at all.
