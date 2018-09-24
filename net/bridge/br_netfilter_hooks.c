@@ -992,7 +992,7 @@ int br_nf_hook_thresh(unsigned int hook, struct net *net,
 {
 	const struct nf_hook_entries *e;
 	struct nf_hook_state state;
-	struct nf_hook_ops **ops;
+	const struct nf_hook_ops **ops;
 	unsigned int i;
 	int ret;
 
