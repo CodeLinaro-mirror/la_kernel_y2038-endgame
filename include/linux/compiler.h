@@ -274,7 +274,7 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
  * overflow the union.
  */
 #define __READ_ONCE_SIMPLE(x)						\
-	(typeof(x))(*(volatile typeof(&(x)))&(x))
+	({(typeof(x))(*(volatile typeof(&(x)))&(x));})
 
 #define __WRITE_ONCE_SIMPLE(x, val)					\
 	({*(volatile typeof(&(x)))&(x) = (val); })
@@ -295,8 +295,8 @@ unsigned long read_word_at_a_time(const void *addr)
 	return *(unsigned long *)addr;
 }
 
-#define WRITE_ONCE(x, val) do { __builtin_choose_expr(__ALIGNED_WORD(x), \
-	__WRITE_ONCE_SIMPLE(x, val), __WRITE_ONCE(x, val)); } while (0)
+#define WRITE_ONCE(x, val) __builtin_choose_expr(__ALIGNED_WORD(x), \
+	__WRITE_ONCE_SIMPLE(x, val), __WRITE_ONCE(x, val))
 
 #endif /* __KERNEL__ */
 
