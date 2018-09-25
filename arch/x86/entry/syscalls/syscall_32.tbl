@@ -93,7 +93,7 @@
 79	i386	settimeofday		compat_sys_settimeofday		__ia32_compat_sys_settimeofday
 80	i386	getgroups		sys_getgroups16			__ia32_sys_getgroups16
 81	i386	setgroups		sys_setgroups16			__ia32_sys_setgroups16
-82	i386	select			compat_sys_old_select		__ia32_compat_sys_old_select
+82	i386	select			sys_old_select			__ia32_compat_sys_old_select
 83	i386	symlink			sys_symlink			__ia32_sys_symlink
 84	i386	oldlstat		sys_lstat			__ia32_sys_lstat
 85	i386	readlink		sys_readlink			__ia32_sys_readlink
@@ -153,7 +153,7 @@
 139	i386	setfsgid		sys_setfsgid16			__ia32_sys_setfsgid16
 140	i386	_llseek			sys_llseek			__ia32_sys_llseek
 141	i386	getdents		sys_getdents			__ia32_compat_sys_getdents
-142	i386	_newselect		compat_sys_select		__ia32_compat_sys_select
+142	i386	_newselect		sys_select			__ia32_compat_sys_select
 143	i386	flock			sys_flock			__ia32_sys_flock
 144	i386	msync			sys_msync			__ia32_sys_msync
 145	i386	readv			sys_readv			__ia32_compat_sys_readv
@@ -319,8 +319,8 @@
 305	i386	readlinkat		sys_readlinkat			__ia32_sys_readlinkat
 306	i386	fchmodat		sys_fchmodat			__ia32_sys_fchmodat
 307	i386	faccessat		sys_faccessat			__ia32_sys_faccessat
-308	i386	pselect6		compat_sys_pselect6		__ia32_compat_sys_pselect6
-309	i386	ppoll			compat_sys_ppoll		__ia32_compat_sys_ppoll
+308	i386	pselect6		sys_pselect6_time32		__ia32_compat_sys_pselect6
+309	i386	ppoll			sys_ppoll_time32		__ia32_compat_sys_ppoll
 310	i386	unshare			sys_unshare			__ia32_sys_unshare
 311	i386	set_robust_list		sys_set_robust_list		__ia32_compat_sys_set_robust_list
 312	i386	get_robust_list		sys_get_robust_list		__ia32_compat_sys_get_robust_list
