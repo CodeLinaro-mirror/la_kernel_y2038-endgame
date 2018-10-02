@@ -159,7 +159,9 @@ static noinline void check_xa_load(struct xarray *xa)
 
 static noinline void check_xa_tag_1(struct xarray *xa, unsigned long index)
 {
+#ifdef CONFIG_XARRAY_MULTI
 	unsigned int order;
+#endif
 
 	/* NULL elements have no tags set */
 	XA_BUG_ON(xa, xa_get_mark(xa, index, XA_MARK_0));
@@ -285,7 +287,9 @@ static noinline void check_xa_shrink(struct xarray *xa)
 {
 	XA_STATE(xas, xa, 1);
 	struct xa_node *node;
+#ifdef CONFIG_XARRAY_MULTI
 	unsigned int order;
+#endif
 
 	XA_BUG_ON(xa, !xa_empty(xa));
 	XA_BUG_ON(xa, xa_store_index(xa, 0, GFP_KERNEL) != NULL);
