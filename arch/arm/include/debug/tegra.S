@@ -173,6 +173,7 @@
 
 		.macro	senduart, rd, rx
 		cmp	\rx, #0
+		it	ne
 		strbne	\rd, [\rx, #UART_TX << UART_SHIFT]
 1001:
 		.endm
