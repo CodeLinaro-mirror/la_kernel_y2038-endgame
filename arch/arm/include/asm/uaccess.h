@@ -130,6 +130,7 @@ static inline void __user *__uaccess_mask_range_ptr(const void __user *ptr,
 	asm volatile(
 	"	sub	%1, %3, #1\n"
 	"	subs	%1, %1, %0\n"
+	"	itte	hs\n"
 	"	addhs	%1, %1, #1\n"
 	"	subhss	%1, %1, %2\n"
 	"	movlo	%0, #0\n"
