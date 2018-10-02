@@ -74,6 +74,10 @@ KBUILD_CFLAGS += $(call cc-disable-warning, format)
 KBUILD_CFLAGS += $(call cc-disable-warning, sign-compare)
 KBUILD_CFLAGS += $(call cc-disable-warning, format-zero-length)
 KBUILD_CFLAGS += $(call cc-disable-warning, uninitialized)
+KBUILD_CFLAGS += $(call cc-disable-warning, unneeded-internal-declaration)
+KBUILD_CFLAGS += $(call cc-disable-warning, parentheses-equality)
+KBUILD_CFLAGS += $(call cc-disable-warning, enum-conversion)
+
 else
 # noisy gcc-7 warnings
 KBUILD_CFLAGS += $(call cc-option,-Wformat-truncation=0)
