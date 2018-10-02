@@ -844,7 +844,7 @@ free_tx:
 	return err;
 }
 
-static int tegra_bpmp_resume(struct device *dev)
+static int __maybe_unused tegra_bpmp_resume(struct device *dev)
 {
 	struct tegra_bpmp *bpmp = dev_get_drvdata(dev);
 	unsigned int i;
