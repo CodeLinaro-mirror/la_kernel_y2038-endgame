@@ -160,19 +160,22 @@ unsigned int generic_reg_wait(const struct dc_context *ctx,
 /* These macros need to be used with soc15 registers in order to retrieve
  * the actual offset.
  */
+#define __DCE_BASE_reg(reg, seg, inst_offset) (reg + DCE_BASE__INST0_SEG ## seg + inst_offset)
+#define DCE_BASE_reg(reg, seg, inst_offset) __DCE_BASE_reg(reg, seg, inst_offset)
+
 #define dm_write_reg_soc15(ctx, reg, inst_offset, value)	\
-		dm_write_reg_func(ctx, reg + DCE_BASE.instance[0].segment[reg##_BASE_IDX] + inst_offset, value, __func__)
+		dm_write_reg_func(ctx, DCE_BASE_reg(reg, reg##_BASE_IDX, inst_offset), value, __func__)
 
 #define dm_read_reg_soc15(ctx, reg, inst_offset)	\
-		dm_read_reg_func(ctx, reg + DCE_BASE.instance[0].segment[reg##_BASE_IDX] + inst_offset, __func__)
+		dm_read_reg_func(ctx, reg + DCE_BASE_reg(reg, reg##_BASE_IDX, inst_offset), __func__)
 
 #define generic_reg_update_soc15(ctx, inst_offset, reg_name, n, ...)\
-		generic_reg_update_ex(ctx, DCE_BASE.instance[0].segment[mm##reg_name##_BASE_IDX] +  mm##reg_name + inst_offset, \
-		dm_read_reg_func(ctx, mm##reg_name + DCE_BASE.instance[0].segment[mm##reg_name##_BASE_IDX] + inst_offset, __func__), \
+		generic_reg_update_ex(ctx, DCE_BASE_reg(mm##reg_name, mm ## reg_name ##_BASE_IDX, inst_offset), \
+		dm_read_reg_func(ctx, DCE_BASE_reg(mm##reg_name, mm ## reg_name ##_BASE_IDX, inst_offset), __func__), \
 		n, __VA_ARGS__)
 
 #define generic_reg_set_soc15(ctx, inst_offset, reg_name, n, ...)\
-		generic_reg_update_ex(ctx, DCE_BASE.instance[0].segment[mm##reg_name##_BASE_IDX] + mm##reg_name + inst_offset, 0, \
+		generic_reg_update_ex(ctx, DCE_BASE_reg(mm##reg_name, mm ## reg_name ##_BASE_IDX, inst_offset), 0, \
 		n, __VA_ARGS__)
 
 #define get_reg_field_value_soc15(reg_value, block, reg_num, reg_name, reg_field)\
