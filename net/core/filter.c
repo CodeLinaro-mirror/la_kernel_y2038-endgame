@@ -4817,7 +4817,7 @@ static const struct bpf_func_proto bpf_lwt_seg6_adjust_srh_proto = {
 };
 #endif /* CONFIG_IPV6_SEG6_BPF */
 
-struct sock *sk_lookup(struct net *net, struct bpf_sock_tuple *tuple,
+static struct sock *sk_lookup(struct net *net, struct bpf_sock_tuple *tuple,
 		       struct sk_buff *skb, u8 family, u8 proto)
 {
 	int dif = skb->dev->ifindex;
@@ -4902,13 +4902,13 @@ out:
 	return (unsigned long) sk;
 }
 
-BPF_CALL_5(bpf_sk_lookup_tcp, struct sk_buff *, skb,
+static BPF_CALL_5(bpf_sk_lookup_tcp, struct sk_buff *, skb,
 	   struct bpf_sock_tuple *, tuple, u32, len, u64, netns_id, u64, flags)
 {
 	return bpf_sk_lookup(skb, tuple, len, IPPROTO_TCP, netns_id, flags);
 }
 
-static const struct bpf_func_proto bpf_sk_lookup_tcp_proto = {
+static const __maybe_unused struct bpf_func_proto bpf_sk_lookup_tcp_proto = {
 	.func		= bpf_sk_lookup_tcp,
 	.gpl_only	= false,
 	.pkt_access	= true,
@@ -4920,13 +4920,13 @@ static const struct bpf_func_proto bpf_sk_lookup_tcp_proto = {
 	.arg5_type	= ARG_ANYTHING,
 };
 
-BPF_CALL_5(bpf_sk_lookup_udp, struct sk_buff *, skb,
+static BPF_CALL_5(bpf_sk_lookup_udp, struct sk_buff *, skb,
 	   struct bpf_sock_tuple *, tuple, u32, len, u64, netns_id, u64, flags)
 {
 	return bpf_sk_lookup(skb, tuple, len, IPPROTO_UDP, netns_id, flags);
 }
 
-static const struct bpf_func_proto bpf_sk_lookup_udp_proto = {
+static const __maybe_unused struct bpf_func_proto bpf_sk_lookup_udp_proto = {
 	.func		= bpf_sk_lookup_udp,
 	.gpl_only	= false,
 	.pkt_access	= true,
@@ -4938,14 +4938,14 @@ static const struct bpf_func_proto bpf_sk_lookup_udp_proto = {
 	.arg5_type	= ARG_ANYTHING,
 };
 
-BPF_CALL_1(bpf_sk_release, struct sock *, sk)
+static BPF_CALL_1(bpf_sk_release, struct sock *, sk)
 {
 	if (!sock_flag(sk, SOCK_RCU_FREE))
 		sock_gen_put(sk);
 	return 0;
 }
 
-static const struct bpf_func_proto bpf_sk_release_proto = {
+static const __maybe_unused struct bpf_func_proto bpf_sk_release_proto = {
 	.func		= bpf_sk_release,
 	.gpl_only	= false,
 	.ret_type	= RET_INTEGER,
@@ -5158,12 +5158,14 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
 	case BPF_FUNC_skb_ancestor_cgroup_id:
 		return &bpf_skb_ancestor_cgroup_id_proto;
 #endif
+#ifdef CONFIG_INET
 	case BPF_FUNC_sk_lookup_tcp:
 		return &bpf_sk_lookup_tcp_proto;
 	case BPF_FUNC_sk_lookup_udp:
 		return &bpf_sk_lookup_udp_proto;
 	case BPF_FUNC_sk_release:
 		return &bpf_sk_release_proto;
+#endif
 	default:
 		return bpf_base_func_proto(func_id);
 	}
@@ -5264,12 +5266,14 @@ sk_skb_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
 		return &bpf_sk_redirect_hash_proto;
 	case BPF_FUNC_get_local_storage:
 		return &bpf_get_local_storage_proto;
+#ifdef CONFIG_INET
 	case BPF_FUNC_sk_lookup_tcp:
 		return &bpf_sk_lookup_tcp_proto;
 	case BPF_FUNC_sk_lookup_udp:
 		return &bpf_sk_lookup_udp_proto;
 	case BPF_FUNC_sk_release:
 		return &bpf_sk_release_proto;
+#endif
 	default:
 		return bpf_base_func_proto(func_id);
 	}
