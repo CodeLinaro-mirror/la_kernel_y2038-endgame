@@ -79,20 +79,19 @@
 #define GF_T(_p)               (CONFIG_BCH_CONST_T)
 #define GF_N(_p)               ((1 << (CONFIG_BCH_CONST_M))-1)
 #define BCH_MAX_M              (CONFIG_BCH_CONST_M)
+#define BCH_MAX_T	       (CONFIG_BCH_CONST_T)
 #else
 #define GF_M(_p)               ((_p)->m)
 #define GF_T(_p)               ((_p)->t)
 #define GF_N(_p)               ((_p)->n)
-#define BCH_MAX_M              15
+#define BCH_MAX_M              15 /* 2KB */
+#define BCH_MAX_T              32 /* 32 bit correction */
 #endif
-
-#define BCH_MAX_T              (((1 << BCH_MAX_M) - 1) / BCH_MAX_M)
 
 #define BCH_ECC_WORDS(_p)      DIV_ROUND_UP(GF_M(_p)*GF_T(_p), 32)
 #define BCH_ECC_BYTES(_p)      DIV_ROUND_UP(GF_M(_p)*GF_T(_p), 8)
 
 #define BCH_ECC_MAX_WORDS      DIV_ROUND_UP(BCH_MAX_M * BCH_MAX_T, 32)
-#define BCH_ECC_MAX_BYTES      DIV_ROUND_UP(BCH_MAX_M * BCH_MAX_T, 8)
 
 #ifndef dbg
 #define dbg(_fmt, args...)     do {} while (0)
@@ -201,6 +200,9 @@ void encode_bch(struct bch_control *bch, const uint8_t *data,
 	const uint32_t * const tab2 = tab1 + 256*(l+1);
 	const uint32_t * const tab3 = tab2 + 256*(l+1);
 	const uint32_t *pdata, *p0, *p1, *p2, *p3;
+
+	if (WARN_ON(r_bytes > sizeof(r)))
+		return;
 
 	if (ecc) {
 		/* load ecc parity bytes into internal 32-bit buffer */
