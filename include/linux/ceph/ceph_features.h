@@ -11,15 +11,15 @@
 #define CEPH_FEATURE_INCARNATION_2 (1ull<<57) // CEPH_FEATURE_SERVER_JEWEL
 
 #define DEFINE_CEPH_FEATURE(bit, incarnation, name)			\
-	static const uint64_t CEPH_FEATURE_##name = (1ULL<<bit);		\
-	static const uint64_t CEPH_FEATUREMASK_##name =			\
-		(1ULL<<bit | CEPH_FEATURE_INCARNATION_##incarnation);
+	CEPH_FEATURE_##name = (1ULL<<bit),				\
+	CEPH_FEATUREMASK_##name =					\
+		(1ULL<<bit | CEPH_FEATURE_INCARNATION_##incarnation),
 
 /* this bit is ignored but still advertised by release *when* */
-#define DEFINE_CEPH_FEATURE_DEPRECATED(bit, incarnation, name, when) \
-	static const uint64_t DEPRECATED_CEPH_FEATURE_##name = (1ULL<<bit); \
-	static const uint64_t DEPRECATED_CEPH_FEATUREMASK_##name =		\
-		(1ULL<<bit | CEPH_FEATURE_INCARNATION_##incarnation);
+#define DEFINE_CEPH_FEATURE_DEPRECATED(bit, incarnation, name, when)	\
+	DEPRECATED_CEPH_FEATURE_##name = (1ULL<<bit),			\
+	DEPRECATED_CEPH_FEATUREMASK_##name =				\
+		(1ULL<<bit | CEPH_FEATURE_INCARNATION_##incarnation),
 
 /*
  * this bit is ignored by release *unused* and not advertised by
@@ -71,7 +71,7 @@
  * This ensures that no two versions who have different meanings for
  * the bit ever speak to each other.
  */
-
+enum ceph_features {
 DEFINE_CEPH_FEATURE( 0, 1, UID)
 DEFINE_CEPH_FEATURE( 1, 1, NOSRCADDR)
 DEFINE_CEPH_FEATURE_RETIRED( 2, 1, MONCLOCKCHECK, JEWEL, LUMINOUS)
@@ -170,13 +170,13 @@ DEFINE_CEPH_FEATURE(61, 1, CEPHX_V2)             // *do not share this bit*
 
 DEFINE_CEPH_FEATURE(62, 1, RESERVED)           // do not use; used as a sentinal
 DEFINE_CEPH_FEATURE_DEPRECATED(63, 1, RESERVED_BROKEN, LUMINOUS) // client-facing
-
+};
 
 /*
  * Features supported.
  */
 #define CEPH_FEATURES_SUPPORTED_DEFAULT		\
-	(CEPH_FEATURE_NOSRCADDR |		\
+	(u64)(CEPH_FEATURE_NOSRCADDR |		\
 	 CEPH_FEATURE_FLOCK |			\
 	 CEPH_FEATURE_SUBSCRIBE2 |		\
 	 CEPH_FEATURE_RECONNECT_SEQ |		\
