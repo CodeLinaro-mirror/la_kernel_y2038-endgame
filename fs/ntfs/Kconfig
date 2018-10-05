@@ -52,6 +52,9 @@ config NTFS_DEBUG
 config NTFS_RW
 	bool "NTFS write support"
 	depends on NTFS_FS
+	depends on !(PAGE_SIZE_64KB || ARM64_64K_PAGES || \
+                     IA64_PAGE_SIZE_64KB || PARISC_PAGE_SIZE_64KB || \
+                     PPC_64K_PAGES)
 	help
 	  This enables the partial, but safe, write support in the NTFS driver.
 

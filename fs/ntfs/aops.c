@@ -914,6 +914,9 @@ static int ntfs_write_mst_block(struct page *page,
 	bool sync, is_mft, page_is_dirty, rec_is_dirty;
 	unsigned char bh_size_bits;
 
+	/* Two arrays of MAX_BUF_PER_PAGE on the stack risks an overrun with 64K pages */
+	BUILD_BUG_ON(PAGE_SIZE >= 65536);
+
 	if (WARN_ON(rec_size < NTFS_BLOCK_SIZE))
 		return -EINVAL;
 
