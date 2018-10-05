@@ -3307,7 +3307,7 @@ SYSCALL_DEFINE4(rt_sigtimedwait_time32, const sigset_t __user *, uthese,
 {
 	sigset_t these;
 	struct timespec64 ts;
-	siginfo_t info;
+	kernel_siginfo_t info;
 	int ret;
 
 	if (sigsetsize != sizeof(sigset_t))
@@ -3339,7 +3339,7 @@ COMPAT_SYSCALL_DEFINE4(rt_sigtimedwait_time64, compat_sigset_t __user *, uthese,
 {
 	sigset_t s;
 	struct timespec64 t;
-	siginfo_t info;
+	kernel_siginfo_t info;
 	long ret;
 
 	if (sigsetsize != sizeof(sigset_t))
