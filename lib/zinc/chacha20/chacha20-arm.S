@@ -353,6 +353,7 @@
 	ldr		r14, [sp, #160]		// OUT
 	cmp		r9, #64
 	  mov		r0, sp
+	ite		le
 	movle		r1, r9
 	movgt		r1, #64
 	// r1 is number of bytes to XOR, in range [1, 64]
@@ -400,6 +401,7 @@
  */
 ENTRY(chacha20_arm)
 	cmp		r2, #0			// len == 0?
+	it		eq
 	reteq		lr
 
 	push		{r0-r2,r4-r11,lr}

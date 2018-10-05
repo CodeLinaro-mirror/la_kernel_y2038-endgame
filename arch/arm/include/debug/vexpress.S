@@ -36,11 +36,13 @@
 		cmp	\rp, \rv
 
 		@ Original memory map
+		ittt	eq
 		moveq	\rp, #DEBUG_LL_UART_OFFSET
 		orreq	\rv, \rp, #DEBUG_LL_VIRT_BASE
 		orreq	\rp, \rp, #DEBUG_LL_PHYS_BASE
 
 		@ RS1 memory map
+		ittt	ne
 		movne	\rp, #DEBUG_LL_UART_OFFSET_RS1
 		orrne	\rv, \rp, #DEBUG_LL_VIRT_BASE
 		orrne	\rp, \rp, #DEBUG_LL_PHYS_BASE_RS1
