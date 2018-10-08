@@ -31,7 +31,9 @@
 #include <linux/numa.h>
 #include <linux/nodemask.h>
 #include <linux/topology.h>
+#ifdef CONFIG_X86
 #include <asm/kaslr.h>
+#endif
 
 static nodemask_t nodes_found_map = NODE_MASK_NONE;
 
@@ -464,8 +466,10 @@ int __init acpi_numa_init(void)
 		cnt = acpi_table_parse_srat(ACPI_SRAT_TYPE_MEMORY_AFFINITY,
 					    acpi_parse_memory_affinity, 0);
 
+#ifdef CONFIG_X86
 		if (parsed_numa_memblks)
 			kaslr_check_padding();
+#endif
 
 	}
 
