@@ -209,8 +209,8 @@ int put_cmsg_compat(struct msghdr *kmsg, int level, int type, int len, void *dat
 {
 	struct compat_cmsghdr __user *cm = (struct compat_cmsghdr __user *) kmsg->msg_control;
 	struct compat_cmsghdr cmhdr;
-	struct compat_timeval ctv;
-	struct compat_timespec cts[3];
+	struct old_timeval32 ctv;
+	struct old_timespec32 cts[3];
 	int cmlen;
 
 	if (cm == NULL || kmsg->msg_controllen < sizeof(*cm)) {
@@ -351,7 +351,7 @@ static int do_set_attach_filter(struct socket *sock, int level, int optname,
 static int do_set_sock_timeout(struct socket *sock, int level,
 		int optname, char __user *optval, unsigned int optlen)
 {
-	struct compat_timeval __user *up = (struct compat_timeval __user *)optval;
+	struct old_timeval32 __user *up = (struct old_timeval32 __user *)optval;
 	struct timeval ktime;
 	mm_segment_t old_fs;
 	int err;
@@ -420,12 +420,12 @@ COMPAT_SYSCALL_DEFINE5(setsockopt, int, fd, int, level, int, optname,
 static int do_get_sock_timeout(struct socket *sock, int level, int optname,
 		char __user *optval, int __user *optlen)
 {
-	struct compat_timeval __user *up;
+	struct old_timeval32 __user *up;
 	struct timeval ktime;
 	mm_segment_t old_fs;
 	int len, err;
 
-	up = (struct compat_timeval __user *) optval;
+	up = (struct old_timeval32 __user *) optval;
 	if (get_user(len, optlen))
 		return -EFAULT;
 	if (len < sizeof(*up))
@@ -454,60 +454,6 @@ static int compat_sock_getsockopt(struct socket *sock, int level, int optname,
 		return do_get_sock_timeout(sock, level, optname, optval, optlen);
 	return sock_getsockopt(sock, level, optname, optval, optlen);
 }
-
-int compat_sock_get_timestamp(struct sock *sk, struct timeval __user *userstamp)
-{
-	struct compat_timeval __user *ctv;
-	int err;
-	struct timeval tv;
-
-	if (COMPAT_USE_64BIT_TIME)
-		return sock_get_timestamp(sk, userstamp);
-
-	ctv = (struct compat_timeval __user *) userstamp;
-	err = -ENOENT;
-	sock_enable_timestamp(sk, SOCK_TIMESTAMP);
-	tv = ktime_to_timeval(sk->sk_stamp);
-	if (tv.tv_sec == -1)
-		return err;
-	if (tv.tv_sec == 0) {
-		sk->sk_stamp = ktime_get_real();
-		tv = ktime_to_timeval(sk->sk_stamp);
-	}
-	err = 0;
-	if (put_user(tv.tv_sec, &ctv->tv_sec) ||
-			put_user(tv.tv_usec, &ctv->tv_usec))
-		err = -EFAULT;
-	return err;
-}
-EXPORT_SYMBOL(compat_sock_get_timestamp);
-
-int compat_sock_get_timestampns(struct sock *sk, struct timespec __user *userstamp)
-{
-	struct compat_timespec __user *ctv;
-	int err;
-	struct timespec ts;
-
-	if (COMPAT_USE_64BIT_TIME)
-		return sock_get_timestampns (sk, userstamp);
-
-	ctv = (struct compat_timespec __user *) userstamp;
-	err = -ENOENT;
-	sock_enable_timestamp(sk, SOCK_TIMESTAMP);
-	ts = ktime_to_timespec(sk->sk_stamp);
-	if (ts.tv_sec == -1)
-		return err;
-	if (ts.tv_sec == 0) {
-		sk->sk_stamp = ktime_get_real();
-		ts = ktime_to_timespec(sk->sk_stamp);
-	}
-	err = 0;
-	if (put_user(ts.tv_sec, &ctv->tv_sec) ||
-			put_user(ts.tv_nsec, &ctv->tv_nsec))
-		err = -EFAULT;
-	return err;
-}
-EXPORT_SYMBOL(compat_sock_get_timestampns);
 
 static int __compat_sys_getsockopt(int fd, int level, int optname,
 				   char __user *optval,
@@ -810,34 +756,23 @@ COMPAT_SYSCALL_DEFINE6(recvfrom, int, fd, void __user *, buf, compat_size_t, len
 	return __compat_sys_recvfrom(fd, buf, len, flags, addr, addrlen);
 }
 
-static int __compat_sys_recvmmsg(int fd, struct compat_mmsghdr __user *mmsg,
-				 unsigned int vlen, unsigned int flags,
-				 struct old_timespec32 __user *timeout)
+COMPAT_SYSCALL_DEFINE5(recvmmsg_time64, int, fd, struct compat_mmsghdr __user *, mmsg,
+		       unsigned int, vlen, unsigned int, flags,
+		       struct __kernel_timespec __user *, timeout)
 {
-	int datagrams;
-	struct timespec64 ktspec;
-
-	if (timeout == NULL)
-		return __sys_recvmmsg(fd, (struct mmsghdr __user *)mmsg, vlen,
-				      flags | MSG_CMSG_COMPAT, NULL);
-
-	if (compat_get_timespec64(&ktspec, timeout))
-		return -EFAULT;
-
-	datagrams = __sys_recvmmsg(fd, (struct mmsghdr __user *)mmsg, vlen,
-				   flags | MSG_CMSG_COMPAT, &ktspec);
-	if (datagrams > 0 && compat_put_timespec64(&ktspec, timeout))
-		datagrams = -EFAULT;
-
-	return datagrams;
+	return __sys_recvmmsg(fd, (struct mmsghdr __user *)mmsg, vlen,
+			      flags | MSG_CMSG_COMPAT, timeout, NULL);
 }
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 COMPAT_SYSCALL_DEFINE5(recvmmsg, int, fd, struct compat_mmsghdr __user *, mmsg,
 		       unsigned int, vlen, unsigned int, flags,
 		       struct old_timespec32 __user *, timeout)
 {
-	return __compat_sys_recvmmsg(fd, mmsg, vlen, flags, timeout);
+	return __sys_recvmmsg(fd, (struct mmsghdr __user *)mmsg, vlen,
+			      flags | MSG_CMSG_COMPAT, NULL, timeout);
 }
+#endif
 
 COMPAT_SYSCALL_DEFINE2(socketcall, int, call, u32 __user *, args)
 {
@@ -925,8 +860,9 @@ COMPAT_SYSCALL_DEFINE2(socketcall, int, call, u32 __user *, args)
 		ret = __compat_sys_recvmsg(a0, compat_ptr(a1), a[2]);
 		break;
 	case SYS_RECVMMSG:
-		ret = __compat_sys_recvmmsg(a0, compat_ptr(a1), a[2], a[3],
-					    compat_ptr(a[4]));
+		ret = __sys_recvmmsg(a0, compat_ptr(a1), a[2],
+				     a[3] | MSG_CMSG_COMPAT, NULL,
+				     compat_ptr(a[4]));
 		break;
 	case SYS_ACCEPT4:
 		ret = __sys_accept4(a0, compat_ptr(a1), compat_ptr(a[2]), a[3]);

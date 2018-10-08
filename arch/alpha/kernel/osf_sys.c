@@ -973,20 +973,23 @@ put_tv_to_tv32(struct timeval32 __user *o, struct timeval *i)
 }
 
 static inline long
-get_it32(struct itimerval *o, struct itimerval32 __user *i)
+get_it32(struct itimerspec64 *o, struct itimerval32 __user *i)
 {
 	struct itimerval32 itv;
 	if (copy_from_user(&itv, i, sizeof(struct itimerval32)))
 		return -EFAULT;
+	if (if (v32.it_interval.tv_usec >= USEC_PER_SEC ||
+	    v32.it_value.tv_usec >= USEC_PER_SEC)
+		return -EINVAL;
 	o->it_interval.tv_sec = itv.it_interval.tv_sec;
-	o->it_interval.tv_usec = itv.it_interval.tv_usec;
+	o->it_interval.tv_nsec = itv.it_interval.tv_usec * NSEC_PER_USEC;
 	o->it_value.tv_sec = itv.it_value.tv_sec;
-	o->it_value.tv_usec = itv.it_value.tv_usec;
+	o->it_value.tv_nsec = itv.it_value.tv_usec * NSEC_PER_USEC;
 	return 0;
 }
 
 static inline long
-put_it32(struct itimerval32 __user *o, struct itimerval *i)
+put_it32(struct itimerval32 __user *o, struct itimerspec64 *i)
 {
 	return copy_to_user(o, &(struct itimerval32){
 				.it_interval.tv_sec = o->it_interval.tv_sec,
@@ -1042,7 +1045,7 @@ asmlinkage long sys_ni_posix_timers(void);
 
 SYSCALL_DEFINE2(osf_getitimer, int, which, struct itimerval32 __user *, it)
 {
-	struct itimerval kit;
+	struct itimerspec64 kit;
 	int error;
 
 	if (!IS_ENABLED(CONFIG_POSIX_TIMERS))
@@ -1058,15 +1061,16 @@ SYSCALL_DEFINE2(osf_getitimer, int, which, struct itimerval32 __user *, it)
 SYSCALL_DEFINE3(osf_setitimer, int, which, struct itimerval32 __user *, in,
 		struct itimerval32 __user *, out)
 {
-	struct itimerval kin, kout;
+	struct itimerspec64 kin, kout;
 	int error;
 
 	if (!IS_ENABLED(CONFIG_POSIX_TIMERS))
 		return sys_ni_posix_timers();
 
 	if (in) {
-		if (get_it32(&kin, in))
-			return -EFAULT;
+		error = get_it32(&kin, in);
+		if (error)
+			return error;
 	} else
 		memset(&kin, 0, sizeof(kin));
 
@@ -1177,18 +1181,21 @@ SYSCALL_DEFINE2(osf_getrusage, int, who, struct rusage32 __user *, ru)
 SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
 		struct rusage32 __user *, ur)
 {
-	struct rusage r;
+	struct rusage32 r32;
+	struct __kernel_rusage r;
 	long err = kernel_wait4(pid, ustatus, options, &r);
 	if (err <= 0)
 		return err;
 	if (!ur)
 		return err;
-	if (put_tv_to_tv32(&ur->ru_utime, &r.ru_utime))
-		return -EFAULT;
-	if (put_tv_to_tv32(&ur->ru_stime, &r.ru_stime))
-		return -EFAULT;
-	if (copy_to_user(&ur->ru_maxrss, &r.ru_maxrss,
-	      sizeof(struct rusage32) - offsetof(struct rusage32, ru_maxrss)))
+	r32.ru_utime.tv_sec  = r.ru_utime.tv_sec;
+	r32.ru_utime.tv_usec = r.ru_utime.tv_nsec / NSEC_PER_USEC;
+	r32.ru_stime.tv_sec  = r.ru_stime.tv_sec;
+	r32.ru_stime.tv_usec = r.ru_stime.tv_nsec / NSEC_PER_USEC;
+	memcpy(&r32.ru_maxrss, &r.ru_maxrss,
+	      sizeof(struct rusage32) - offsetof(struct rusage32, ru_maxrss));
+
+	if (copy_to_user(ur, &r32, sizeof(r32)))
 		return -EFAULT;
 	return err;
 }

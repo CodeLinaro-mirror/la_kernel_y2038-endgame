@@ -74,6 +74,7 @@
  */
 
 #include <linux/syscalls.h>
+#include <linux/compat.h>
 #include <linux/errno.h>
 #include <linux/fs.h>
 #include <linux/cred.h>
@@ -317,10 +318,10 @@ struct oabi_sembuf {
 asmlinkage long sys_oabi_semtimedop(int semid,
 				    struct oabi_sembuf __user *tsops,
 				    unsigned nsops,
-				    const struct timespec __user *timeout)
+				    const struct old_timespec32 __user *timeout)
 {
 	struct sembuf *sops;
-	struct timespec local_timeout;
+	struct __kernel_timespec local_timeout;
 	long err;
 	int i;
 
@@ -342,15 +343,16 @@ asmlinkage long sys_oabi_semtimedop(int semid,
 	}
 	if (timeout) {
 		/* copy this as well before changing domain protection */
-		err |= copy_from_user(&local_timeout, timeout, sizeof(*timeout));
-		timeout = &local_timeout;
+		err |= get_user(local_timeout.tv_sec, &timeout->tv_sec);
+		err |= get_user(local_timeout.tv_nsec, &timeout->tv_nsec);
 	}
 	if (err) {
 		err = -EFAULT;
 	} else {
 		mm_segment_t fs = get_fs();
 		set_fs(KERNEL_DS);
-		err = sys_semtimedop(semid, sops, nsops, timeout);
+		err = sys_semtimedop(semid, sops, nsops,
+				     timeout ? &local_timeout : NULL);
 		set_fs(fs);
 	}
 	kfree(sops);
@@ -375,7 +377,7 @@ asmlinkage int sys_oabi_ipc(uint call, int first, int second, int third,
 		return  sys_oabi_semtimedop(first,
 					    (struct oabi_sembuf __user *)ptr,
 					    second,
-					    (const struct timespec __user *)fifth);
+					    (struct old_timespec32 __user *)fifth);
 	default:
 		return sys_ipc(call, first, second, third, ptr, fifth);
 	}

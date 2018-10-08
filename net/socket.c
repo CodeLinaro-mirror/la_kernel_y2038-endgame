@@ -1071,6 +1071,25 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 
 			err = open_related_ns(&net->ns, get_net_ns);
 			break;
+		case SIOCGSTAMP_OLD:
+		case SIOCGSTAMPNS_OLD:
+			if (!sock->ops->gettstamp) {
+				err = -ENOIOCTLCMD;
+				break;
+			}
+			err = sock->ops->gettstamp(sock, argp,
+						   cmd == SIOCGSTAMP_OLD,
+						   !IS_ENABLED(CONFIG_64BIT));
+		case SIOCGSTAMP_NEW:
+		case SIOCGSTAMPNS_NEW:
+			if (!sock->ops->gettstamp) {
+				err = -ENOIOCTLCMD;
+				break;
+			}
+			err = sock->ops->gettstamp(sock, argp,
+						   cmd == SIOCGSTAMP_NEW,
+						   false);
+			break;
 		default:
 			err = sock_do_ioctl(net, sock, cmd, arg,
 					    sizeof(struct ifreq));
@@ -2342,8 +2361,9 @@ SYSCALL_DEFINE3(recvmsg, int, fd, struct user_msghdr __user *, msg,
  *     Linux recvmmsg interface
  */
 
-int __sys_recvmmsg(int fd, struct mmsghdr __user *mmsg, unsigned int vlen,
-		   unsigned int flags, struct timespec64 *timeout)
+static int do_recvmmsg(int fd, struct mmsghdr __user *mmsg,
+			  unsigned int vlen, unsigned int flags,
+			  struct timespec64 *timeout)
 {
 	int fput_needed, err, datagrams;
 	struct socket *sock;
@@ -2452,25 +2472,32 @@ out_put:
 	return datagrams;
 }
 
-static int do_sys_recvmmsg(int fd, struct mmsghdr __user *mmsg,
-			   unsigned int vlen, unsigned int flags,
-			   struct __kernel_timespec __user *timeout)
+int __sys_recvmmsg(int fd, struct mmsghdr __user *mmsg,
+		   unsigned int vlen, unsigned int flags,
+		   struct __kernel_timespec __user *timeout,
+		   struct old_timespec32 __user *timeout32)
 {
 	int datagrams;
 	struct timespec64 timeout_sys;
 
-	if (flags & MSG_CMSG_COMPAT)
-		return -EINVAL;
-
-	if (!timeout)
-		return __sys_recvmmsg(fd, mmsg, vlen, flags, NULL);
-
-	if (get_timespec64(&timeout_sys, timeout))
+	if (timeout && get_timespec64(&timeout_sys, timeout))
 		return -EFAULT;
 
-	datagrams = __sys_recvmmsg(fd, mmsg, vlen, flags, &timeout_sys);
+	if (timeout32 && get_old_timespec32(&timeout_sys, timeout32))
+		return -EFAULT;
 
-	if (datagrams > 0 && put_timespec64(&timeout_sys, timeout))
+	if (!timeout && !timeout32)
+		do_recvmmsg(fd, mmsg, vlen, flags, NULL);
+
+	datagrams = do_recvmmsg(fd, mmsg, vlen, flags, &timeout_sys);
+
+	if (!datagrams)
+		return 0;
+
+	if (timeout && put_timespec64(&timeout_sys, timeout))
+		datagrams = -EFAULT;
+
+	if (timeout32 && put_old_timespec32(&timeout_sys, timeout32))
 		datagrams = -EFAULT;
 
 	return datagrams;
@@ -2480,8 +2507,23 @@ SYSCALL_DEFINE5(recvmmsg, int, fd, struct mmsghdr __user *, mmsg,
 		unsigned int, vlen, unsigned int, flags,
 		struct __kernel_timespec __user *, timeout)
 {
-	return do_sys_recvmmsg(fd, mmsg, vlen, flags, timeout);
+	if (flags & MSG_CMSG_COMPAT)
+		return -EINVAL;
+
+	return __sys_recvmmsg(fd, mmsg, vlen, flags, timeout, NULL);
 }
+
+#ifdef CONFIG_COMPAT_32BIT_TIME
+SYSCALL_DEFINE5(recvmmsg_time32, int, fd, struct mmsghdr __user *, mmsg,
+		unsigned int, vlen, unsigned int, flags,
+		struct old_timespec32 __user *, timeout)
+{
+	if (flags & MSG_CMSG_COMPAT)
+		return -EINVAL;
+
+	return __sys_recvmmsg(fd, mmsg, vlen, flags, NULL, timeout);
+}
+#endif
 
 #ifdef __ARCH_WANT_SYS_SOCKETCALL
 /* Argument list sizes for sys_socketcall */
@@ -2601,8 +2643,15 @@ SYSCALL_DEFINE2(socketcall, int, call, unsigned long __user *, args)
 				    a[2], true);
 		break;
 	case SYS_RECVMMSG:
-		err = do_sys_recvmmsg(a0, (struct mmsghdr __user *)a1, a[2],
-				      a[3], (struct __kernel_timespec __user *)a[4]);
+		if (IS_ENABLED(CONFIG_64BIT) || !IS_ENABLED(CONFIG_64BIT_TIME))
+			err = __sys_recvmmsg(a0, (struct mmsghdr __user *)a1,
+					     a[2], a[3],
+					     (struct __kernel_timespec __user *)a[4],
+					     NULL);
+		else
+			err = __sys_recvmmsg(a0, (struct mmsghdr __user *)a1,
+					     a[2], a[3], NULL,
+					     (struct old_timespec32 __user *)a[4]);
 		break;
 	case SYS_ACCEPT4:
 		err = __sys_accept4(a0, (struct sockaddr __user *)a1,
@@ -2743,40 +2792,6 @@ void socket_seq_show(struct seq_file *seq)
 #endif				/* CONFIG_PROC_FS */
 
 #ifdef CONFIG_COMPAT
-static int do_siocgstamp(struct net *net, struct socket *sock,
-			 unsigned int cmd, void __user *up)
-{
-	mm_segment_t old_fs = get_fs();
-	struct timeval ktv;
-	int err;
-
-	set_fs(KERNEL_DS);
-	err = sock_do_ioctl(net, sock, cmd, (unsigned long)&ktv,
-			    sizeof(struct compat_ifreq));
-	set_fs(old_fs);
-	if (!err)
-		err = compat_put_timeval(&ktv, up);
-
-	return err;
-}
-
-static int do_siocgstampns(struct net *net, struct socket *sock,
-			   unsigned int cmd, void __user *up)
-{
-	mm_segment_t old_fs = get_fs();
-	struct timespec kts;
-	int err;
-
-	set_fs(KERNEL_DS);
-	err = sock_do_ioctl(net, sock, cmd, (unsigned long)&kts,
-			    sizeof(struct compat_ifreq));
-	set_fs(old_fs);
-	if (!err)
-		err = compat_put_timespec(&kts, up);
-
-	return err;
-}
-
 static int compat_dev_ifconf(struct net *net, struct compat_ifconf __user *uifc32)
 {
 	struct compat_ifconf ifc32;
@@ -3124,10 +3139,13 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
 	case SIOCADDRT:
 	case SIOCDELRT:
 		return routing_ioctl(net, sock, cmd, argp);
-	case SIOCGSTAMP:
-		return do_siocgstamp(net, sock, cmd, argp);
-	case SIOCGSTAMPNS:
-		return do_siocgstampns(net, sock, cmd, argp);
+	case SIOCGSTAMP_OLD:
+	case SIOCGSTAMPNS_OLD:
+		if (!sock->ops->gettstamp)
+			return -ENOIOCTLCMD;
+		return sock->ops->gettstamp(sock, argp, cmd == SIOCGSTAMP,
+					    !COMPAT_USE_64BIT_TIME);
+
 	case SIOCBONDSLAVEINFOQUERY:
 	case SIOCBONDINFOQUERY:
 	case SIOCSHWTSTAMP:
@@ -3145,6 +3163,8 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
 	case SIOCADDDLCI:
 	case SIOCDELDLCI:
 	case SIOCGSKNS:
+	case SIOCGSTAMP_NEW:
+	case SIOCGSTAMPNS_NEW:
 		return sock_ioctl(file, cmd, arg);
 
 	case SIOCGIFFLAGS:

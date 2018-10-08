@@ -753,7 +753,6 @@ SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
 }
 
 #ifdef CONFIG_COMPAT_32BIT_TIME
-
 COMPAT_SYSCALL_DEFINE2(timer_gettime, timer_t, timer_id,
 		       struct old_itimerspec32 __user *, setting)
 {

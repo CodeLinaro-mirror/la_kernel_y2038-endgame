@@ -114,7 +114,7 @@ typedef __compat_uid32_t	compat_uid_t;
 typedef __compat_gid32_t	compat_gid_t;
 
 struct compat_sel_arg_struct;
-struct rusage;
+struct __kernel_rusage;
 
 struct compat_itimerval {
 	struct old_timeval32	it_interval;
@@ -122,8 +122,8 @@ struct compat_itimerval {
 };
 
 struct itimerval;
-int get_compat_itimerval(struct itimerval *, const struct compat_itimerval __user *);
-int put_compat_itimerval(struct compat_itimerval __user *, const struct itimerval *);
+int get_compat_itimerval(struct itimerspec64 *, const struct compat_itimerval __user *);
+int put_compat_itimerval(struct compat_itimerval __user *, const struct itimerspec64 *);
 
 struct compat_tms {
 	compat_clock_t		tms_utime;
@@ -168,6 +168,10 @@ int compat_put_timex(struct compat_timex __user *, const struct timex *);
 typedef struct {
 	compat_sigset_word	sig[_COMPAT_NSIG_WORDS];
 } compat_sigset_t;
+
+int set_compat_user_sigmask(const compat_sigset_t __user *usigmask,
+			    sigset_t *set, sigset_t *oldset,
+			    size_t sigsetsize);
 
 struct compat_sigaction {
 #ifndef __ARCH_HAS_IRIX_SIGACTION
@@ -321,8 +325,30 @@ struct compat_rusage {
 	compat_long_t	ru_nivcsw;
 };
 
-extern int put_compat_rusage(const struct rusage *,
+struct compat_rusage_time64 {
+	struct __kernel_rusage_timeval ru_utime;
+	struct __kernel_rusage_timeval ru_stime;
+	compat_long_t	ru_maxrss;
+	compat_long_t	ru_ixrss;
+	compat_long_t	ru_idrss;
+	compat_long_t	ru_isrss;
+	compat_long_t	ru_minflt;
+	compat_long_t	ru_majflt;
+	compat_long_t	ru_nswap;
+	compat_long_t	ru_inblock;
+	compat_long_t	ru_oublock;
+	compat_long_t	ru_msgsnd;
+	compat_long_t	ru_msgrcv;
+	compat_long_t	ru_nsignals;
+	compat_long_t	ru_nvcsw;
+	compat_long_t	ru_nivcsw;
+};
+
+extern int put_compat_rusage(const struct __kernel_rusage *,
 			     struct compat_rusage __user *);
+
+extern int put_compat_rusage_time64(const struct __kernel_rusage *,
+				    struct compat_rusage_time64 __user *);
 
 struct compat_siginfo;
 struct __compat_aio_sigset;
@@ -555,6 +581,12 @@ asmlinkage long compat_sys_io_pgetevents(compat_aio_context_t ctx_id,
 					struct io_event __user *events,
 					struct old_timespec32 __user *timeout,
 					const struct __compat_aio_sigset __user *usig);
+asmlinkage long compat_sys_io_pgetevents_time64(compat_aio_context_t ctx_id,
+					compat_long_t min_nr,
+					compat_long_t nr,
+					struct io_event __user *events,
+					struct __kernel_timespec __user *timeout,
+					const struct __compat_aio_sigset __user *usig);
 
 /* fs/cookies.c */
 asmlinkage long compat_sys_lookup_dcookie(u32, u32, char __user *, compat_size_t);
@@ -640,9 +672,19 @@ asmlinkage long compat_sys_pselect6(int n, compat_ulong_t __user *inp,
 				    compat_ulong_t __user *exp,
 				    struct old_timespec32 __user *tsp,
 				    void __user *sig);
+asmlinkage long compat_sys_pselect6_time64(int n, compat_ulong_t __user *inp,
+				    compat_ulong_t __user *outp,
+				    compat_ulong_t __user *exp,
+				    struct __kernel_timespec __user *tsp,
+				    void __user *sig);
 asmlinkage long compat_sys_ppoll(struct pollfd __user *ufds,
 				 unsigned int nfds,
 				 struct old_timespec32 __user *tsp,
+				 const compat_sigset_t __user *sigmask,
+				 compat_size_t sigsetsize);
+asmlinkage long compat_sys_ppoll_time64(struct pollfd __user *ufds,
+				 unsigned int nfds,
+				 struct __kernel_timespec __user *tsp,
 				 const compat_sigset_t __user *sigmask,
 				 compat_size_t sigsetsize);
 
@@ -870,7 +912,10 @@ asmlinkage long compat_sys_move_pages(pid_t pid, compat_ulong_t nr_pages,
 asmlinkage long compat_sys_rt_tgsigqueueinfo(compat_pid_t tgid,
 					compat_pid_t pid, int sig,
 					struct compat_siginfo __user *uinfo);
-asmlinkage long compat_sys_recvmmsg(int fd, struct compat_mmsghdr __user *mmsg,
+asmlinkage long compat_sys_recvmmsg_time64(int fd, struct compat_mmsghdr __user *mmsg,
+				    unsigned vlen, unsigned int flags,
+				    struct __kernel_timespec __user *timeout);
+asmlinkage long compat_sys_recvmmsg(int fd, struct mmsghdr __user *mmsg,
 				    unsigned vlen, unsigned int flags,
 				    struct old_timespec32 __user *timeout);
 asmlinkage long compat_sys_wait4(compat_pid_t pid,
@@ -1005,10 +1050,10 @@ static inline bool in_compat_syscall(void) { return is_compat_task(); }
  */
 static inline struct old_timeval32 ns_to_old_timeval32(s64 nsec)
 {
-	struct timeval tv;
+	struct __kernel_old_timeval tv;
 	struct old_timeval32 ctv;
 
-	tv = ns_to_timeval(nsec);
+	tv = ns_to_kernel_old_timeval(nsec);
 	ctv.tv_sec = tv.tv_sec;
 	ctv.tv_usec = tv.tv_usec;
 

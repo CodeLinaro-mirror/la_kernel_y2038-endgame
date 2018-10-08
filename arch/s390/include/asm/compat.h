@@ -9,6 +9,13 @@
 #include <linux/sched/task_stack.h>
 #include <linux/thread_info.h>
 
+/* override asm-generic compat_ptr() */
+#define compat_ptr(ptr) compat_ptr(ptr)
+static inline void __user *compat_ptr(compat_uptr_t uptr)
+{
+	return (void __user *)(unsigned long)(uptr & 0x7fffffffUL);
+}
+
 #include <asm-generic/compat.h>
 
 #define __TYPE_IS_PTR(t) (!__builtin_types_compatible_p( \
@@ -165,23 +172,6 @@ typedef u32		compat_old_sigset_t;	/* at least 32 bits */
 typedef u32		compat_sigset_word;
 
 #define COMPAT_OFF_T_MAX	0x7fffffff
-
-/*
- * A pointer passed in from user mode. This should not
- * be used for syscall parameters, just declare them
- * as pointers because the syscall entry code will have
- * appropriately converted them already.
- */
-
-static inline void __user *compat_ptr(compat_uptr_t uptr)
-{
-	return (void __user *)(unsigned long)(uptr & 0x7fffffffUL);
-}
-
-static inline compat_uptr_t ptr_to_compat(void __user *uptr)
-{
-	return (u32)(unsigned long)uptr;
-}
 
 #ifdef CONFIG_COMPAT
 

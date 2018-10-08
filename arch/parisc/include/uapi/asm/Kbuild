@@ -8,3 +8,4 @@ generic-y += param.h
 generic-y += poll.h
 generic-y += resource.h
 generic-y += siginfo.h
+generic-y += sockios.h

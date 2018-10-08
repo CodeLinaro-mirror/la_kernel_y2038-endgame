@@ -12,6 +12,7 @@ config X86_32
 	depends on !64BIT
 	# Options that are inherently 32-bit kernel only:
 	select ARCH_WANT_IPC_PARSE_VERSION
+	select 64BIT_TIME
 	select CLKSRC_I8253
 	select CLONE_BACKWARDS
 	select HAVE_AOUT

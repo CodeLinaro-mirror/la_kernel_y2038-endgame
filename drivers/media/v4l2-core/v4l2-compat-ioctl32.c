@@ -468,7 +468,7 @@ struct v4l2_buffer32 {
 	__u32			bytesused;
 	__u32			flags;
 	__u32			field;	/* enum v4l2_field */
-	struct compat_timeval	timestamp;
+	struct old_timeval32	timestamp;
 	struct v4l2_timecode	timecode;
 	__u32			sequence;
 
@@ -1024,7 +1024,7 @@ struct v4l2_event32 {
 	} u;
 	__u32				pending;
 	__u32				sequence;
-	struct compat_timespec		timestamp;
+	struct old_timespec32		timestamp;
 	__u32				id;
 	__u32				reserved[8];
 };
