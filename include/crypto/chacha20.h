@@ -10,6 +10,6 @@
 #define CHACHA20_KEY_SIZE	32
 #define CHACHA20_BLOCK_SIZE	64
 
-void chacha20_block(u32 *state, u32 *stream);
+void chacha20_block(u32 *state, u8 *stream);
 
 #endif
