@@ -13,8 +13,8 @@
 #include <crypto/internal/hash.h>
 #include <crypto/internal/skcipher.h>
 #include <crypto/scatterwalk.h>
-#include <crypto/chacha20.h>
-#include <crypto/poly1305.h>
+#include <zinc/chacha20.h>
+#include <zinc/poly1305.h>
 #include <linux/err.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -51,7 +51,7 @@ struct poly_req {
 };
 
 struct chacha_req {
-	u8 iv[CHACHA20_IV_SIZE];
+	u8 iv[CHACHA20_NONCE_SIZE];
 	struct scatterlist src[1];
 	struct skcipher_request req; /* must be last member */
 };
@@ -62,7 +62,7 @@ struct chachapoly_req_ctx {
 	/* the key we generate for Poly1305 using Chacha20 */
 	u8 key[POLY1305_KEY_SIZE];
 	/* calculated Poly1305 tag */
-	u8 tag[POLY1305_DIGEST_SIZE];
+	u8 tag[POLY1305_MAC_SIZE];
 	/* length of data to en/decrypt, without ICV */
 	unsigned int cryptlen;
 	/* Actual AD, excluding IV */
@@ -91,7 +91,7 @@ static void chacha_iv(u8 *iv, struct aead_request *req, u32 icb)
 	memcpy(iv, &leicb, sizeof(leicb));
 	memcpy(iv + sizeof(leicb), ctx->salt, ctx->saltlen);
 	memcpy(iv + sizeof(leicb) + ctx->saltlen, req->iv,
-	       CHACHA20_IV_SIZE - sizeof(leicb) - ctx->saltlen);
+	       CHACHA20_NONCE_SIZE - sizeof(leicb) - ctx->saltlen);
 }
 
 static int poly_verify_tag(struct aead_request *req)
@@ -471,7 +471,7 @@ static int chachapoly_decrypt(struct aead_request *req)
 {
 	struct chachapoly_req_ctx *rctx = aead_request_ctx(req);
 
-	rctx->cryptlen = req->cryptlen - POLY1305_DIGEST_SIZE;
+	rctx->cryptlen = req->cryptlen - POLY1305_MAC_SIZE;
 
 	/* decrypt call chain:
 	 * - poly_genkey/done()
@@ -513,7 +513,7 @@ static int chachapoly_setkey(struct crypto_aead *aead, const u8 *key,
 static int chachapoly_setauthsize(struct crypto_aead *tfm,
 				  unsigned int authsize)
 {
-	if (authsize != POLY1305_DIGEST_SIZE)
+	if (authsize != POLY1305_MAC_SIZE)
 		return -EINVAL;
 
 	return 0;
@@ -613,7 +613,7 @@ static int chachapoly_create(struct crypto_template *tmpl, struct rtattr **tb,
 	poly_hash = __crypto_hash_alg_common(poly);
 
 	err = -EINVAL;
-	if (poly_hash->digestsize != POLY1305_DIGEST_SIZE)
+	if (poly_hash->digestsize != POLY1305_MAC_SIZE)
 		goto out_put_poly;
 
 	err = -ENOMEM;
@@ -639,7 +639,7 @@ static int chachapoly_create(struct crypto_template *tmpl, struct rtattr **tb,
 
 	err = -EINVAL;
 	/* Need 16-byte IV size, including Initial Block Counter value */
-	if (crypto_skcipher_alg_ivsize(chacha) != CHACHA20_IV_SIZE)
+	if (crypto_skcipher_alg_ivsize(chacha) != CHACHA20_NONCE_SIZE)
 		goto out_drop_chacha;
 	/* Not a stream cipher? */
 	if (chacha->base.cra_blocksize != 1)
@@ -666,7 +666,7 @@ static int chachapoly_create(struct crypto_template *tmpl, struct rtattr **tb,
 				     ctx->saltlen;
 	inst->alg.ivsize = ivsize;
 	inst->alg.chunksize = crypto_skcipher_alg_chunksize(chacha);
-	inst->alg.maxauthsize = POLY1305_DIGEST_SIZE;
+	inst->alg.maxauthsize = POLY1305_MAC_SIZE;
 	inst->alg.init = chachapoly_init;
 	inst->alg.exit = chachapoly_exit;
 	inst->alg.encrypt = chachapoly_encrypt;

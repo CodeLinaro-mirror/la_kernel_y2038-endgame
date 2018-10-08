@@ -1,0 +1,5 @@
+- Style-nits from Andrew Lunn (the macros and other checkpatchy things)
+- Maybe drop 6xNEON+2xIALU, unless the A75 makes this worthwhile. [andyp]
+- Document dscp and ecn. [somebodyelse]
+- Add Documentation/ for Zinc. [eric]
+- Jiri's stuff
