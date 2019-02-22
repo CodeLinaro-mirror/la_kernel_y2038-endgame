@@ -12,6 +12,7 @@
 #define __ASM_VDSO_H
 
 #include <linux/mm_types.h>
+#include <vdso/datapage.h>
 
 #include <asm/barrier.h>
 
@@ -54,12 +55,12 @@ extern struct mips_vdso_image vdso_image_n32;
 #endif
 
 /**
- * union mips_vdso_data - Data provided by the kernel for the VDSO.
+ * struct vdso_data - Data provided by the kernel for the VDSO.
  * @xtime_sec:		Current real time (seconds part).
  * @xtime_nsec:		Current real time (nanoseconds part, shifted).
  * @wall_to_mono_sec:	Wall-to-monotonic offset (seconds part).
  * @wall_to_mono_nsec:	Wall-to-monotonic offset (nanoseconds part).
- * @seq_count:		Counter to synchronise updates (odd = updating).
+ * @tb_seq_count:		Counter to synchronise updates (odd = updating).
  * @cs_shift:		Clocksource shift value.
  * @clock_mode:		Clocksource to use for time functions.
  * @cs_mult:		Clocksource multiplier value.
@@ -76,61 +77,8 @@ extern struct mips_vdso_image vdso_image_n32;
  * for both 64- and 32-bit (for 32-bit userland on 64-bit kernel).
  */
 union mips_vdso_data {
-	struct {
-		u64 xtime_sec;
-		u64 xtime_nsec;
-		u64 wall_to_mono_sec;
-		u64 wall_to_mono_nsec;
-		u32 seq_count;
-		u32 cs_shift;
-		u8 clock_mode;
-		u32 cs_mult;
-		u64 cs_cycle_last;
-		u64 cs_mask;
-		s32 tz_minuteswest;
-		s32 tz_dsttime;
-	};
-
+	struct vdso_data data;
 	u8 page[PAGE_SIZE];
 };
-
-static inline u32 vdso_data_read_begin(const union mips_vdso_data *data)
-{
-	u32 seq;
-
-	while (true) {
-		seq = READ_ONCE(data->seq_count);
-		if (likely(!(seq & 1))) {
-			/* Paired with smp_wmb() in vdso_data_write_*(). */
-			smp_rmb();
-			return seq;
-		}
-
-		cpu_relax();
-	}
-}
-
-static inline bool vdso_data_read_retry(const union mips_vdso_data *data,
-					u32 start_seq)
-{
-	/* Paired with smp_wmb() in vdso_data_write_*(). */
-	smp_rmb();
-	return unlikely(data->seq_count != start_seq);
-}
-
-static inline void vdso_data_write_begin(union mips_vdso_data *data)
-{
-	++data->seq_count;
-
-	/* Ensure sequence update is written before other data page values. */
-	smp_wmb();
-}
-
-static inline void vdso_data_write_end(union mips_vdso_data *data)
-{
-	/* Ensure data values are written before updating sequence again. */
-	smp_wmb();
-	++data->seq_count;
-}
 
 #endif /* __ASM_VDSO_H */
