@@ -19,65 +19,97 @@
 
 int vclocks_used __read_mostly;
 
-DEFINE_VVAR(struct vsyscall_gtod_data, vsyscall_gtod_data);
+DEFINE_VVAR(struct vdso_data, vdso_data);
 
 void update_vsyscall_tz(void)
 {
-	vsyscall_gtod_data.tz_minuteswest = sys_tz.tz_minuteswest;
-	vsyscall_gtod_data.tz_dsttime = sys_tz.tz_dsttime;
+	vdso_data.tz_minuteswest = sys_tz.tz_minuteswest;
+	vdso_data.tz_dsttime = sys_tz.tz_dsttime;
 }
 
 void update_vsyscall(struct timekeeper *tk)
 {
 	int vclock_mode = tk->tkr_mono.clock->archdata.vclock_mode;
-	struct vsyscall_gtod_data *vdata = &vsyscall_gtod_data;
-	struct vgtod_ts *base;
+	struct vdso_data *vdata = &vdso_data;
+	struct vdso_timestamp *vdso_ts;
 	u64 nsec;
 
 	/* Mark the new vclock used. */
 	BUILD_BUG_ON(VCLOCK_MAX >= 32);
 	WRITE_ONCE(vclocks_used, READ_ONCE(vclocks_used) | (1 << vclock_mode));
 
-	gtod_write_begin(vdata);
+	vdso_write_begin(vdata);
 
 	/* copy vsyscall data */
-	vdata->vclock_mode	= vclock_mode;
+	vdata->clock_mode	= vclock_mode;
 	vdata->cycle_last	= tk->tkr_mono.cycle_last;
-	vdata->mask		= tk->tkr_mono.mask;
-	vdata->mult		= tk->tkr_mono.mult;
-	vdata->shift		= tk->tkr_mono.shift;
-
-	base = &vdata->basetime[CLOCK_REALTIME];
-	base->sec = tk->xtime_sec;
-	base->nsec = tk->tkr_mono.xtime_nsec;
-
-	base = &vdata->basetime[CLOCK_TAI];
-	base->sec = tk->xtime_sec + (s64)tk->tai_offset;
-	base->nsec = tk->tkr_mono.xtime_nsec;
-
-	base = &vdata->basetime[CLOCK_MONOTONIC];
-	base->sec = tk->xtime_sec + tk->wall_to_monotonic.tv_sec;
-	nsec = tk->tkr_mono.xtime_nsec;
-	nsec +=	((u64)tk->wall_to_monotonic.tv_nsec << tk->tkr_mono.shift);
+	vdata->cs[CLOCKSOURCE_MONO].mask
+				= tk->tkr_mono.mask;
+	vdata->cs[CLOCKSOURCE_MONO].mult
+				= tk->tkr_mono.mult;
+	vdata->cs[CLOCKSOURCE_MONO].shift
+				= tk->tkr_mono.shift;
+	vdata->cs[CLOCKSOURCE_RAW].mask
+				= tk->tkr_raw.mask;
+	vdata->cs[CLOCKSOURCE_RAW].mult
+				= tk->tkr_raw.mult;
+	vdata->cs[CLOCKSOURCE_RAW].shift
+				= tk->tkr_raw.shift;
+	/* CLOCK_REALTIME */
+	vdso_ts			= &vdata->basetime[CLOCK_REALTIME];
+	vdso_ts->sec		= tk->xtime_sec;
+	vdso_ts->nsec		= tk->tkr_mono.xtime_nsec;
+	/* CLOCK_MONOTONIC */
+	vdso_ts			= &vdata->basetime[CLOCK_MONOTONIC];
+	vdso_ts->sec		= tk->xtime_sec +
+					tk->wall_to_monotonic.tv_sec;
+	nsec			= tk->tkr_mono.xtime_nsec;
+	nsec			= nsec +
+				  ((u64)tk->wall_to_monotonic.tv_nsec <<
+				   tk->tkr_mono.shift);
 	while (nsec >= (((u64)NSEC_PER_SEC) << tk->tkr_mono.shift)) {
-		nsec -= ((u64)NSEC_PER_SEC) << tk->tkr_mono.shift;
-		base->sec++;
+		nsec = nsec -
+			(((u64)NSEC_PER_SEC) << tk->tkr_mono.shift);
+		vdso_ts->sec++;
 	}
-	base->nsec = nsec;
-
-	base = &vdata->basetime[CLOCK_REALTIME_COARSE];
-	base->sec = tk->xtime_sec;
-	base->nsec = tk->tkr_mono.xtime_nsec >> tk->tkr_mono.shift;
-
-	base = &vdata->basetime[CLOCK_MONOTONIC_COARSE];
-	base->sec = tk->xtime_sec + tk->wall_to_monotonic.tv_sec;
-	nsec = tk->tkr_mono.xtime_nsec >> tk->tkr_mono.shift;
-	nsec += tk->wall_to_monotonic.tv_nsec;
+	vdso_ts->nsec		= nsec;
+	/* CLOCK_MONOTONIC_RAW */
+	vdso_ts			= &vdata->basetime[CLOCK_MONOTONIC_RAW];
+	vdso_ts->sec		= tk->raw_sec;
+	vdso_ts->nsec		= tk->tkr_raw.xtime_nsec;
+	/* CLOCK_BOOTTIME */
+	vdso_ts			= &vdata->basetime[CLOCK_BOOTTIME];
+	vdso_ts->sec		= tk->xtime_sec +
+					tk->wall_to_monotonic.tv_sec;
+	nsec			= tk->tkr_mono.xtime_nsec;
+	nsec			= nsec +
+				  ((u64)(tk->wall_to_monotonic.tv_nsec +
+				   ktime_to_ns(tk->offs_boot)) <<
+				   tk->tkr_mono.shift);
+	while (nsec >= (((u64)NSEC_PER_SEC) << tk->tkr_mono.shift)) {
+		nsec = nsec -
+			(((u64)NSEC_PER_SEC) << tk->tkr_mono.shift);
+		vdso_ts->sec++;
+	}
+	vdso_ts->nsec		= nsec;
+	/* CLOCK_TAI */
+	vdso_ts			= &vdata->basetime[CLOCK_TAI];
+	vdso_ts->sec		= tk->xtime_sec + (s64)tk->tai_offset;
+	vdso_ts->nsec		= tk->tkr_mono.xtime_nsec;
+	/* CLOCK_REALTIME_COARSE */
+	vdso_ts			= &vdata->basetime[CLOCK_REALTIME_COARSE];
+	vdso_ts->sec		= tk->xtime_sec;
+	vdso_ts->nsec		= tk->tkr_mono.xtime_nsec >> tk->tkr_mono.shift;
+	/* CLOCK_MONOTONIC_COARSE */
+	vdso_ts			= &vdata->basetime[CLOCK_MONOTONIC_COARSE];
+	vdso_ts->sec		= tk->xtime_sec + tk->wall_to_monotonic.tv_sec;
+	nsec			= tk->tkr_mono.xtime_nsec >> tk->tkr_mono.shift;
+	nsec			= nsec + tk->wall_to_monotonic.tv_nsec;
 	while (nsec >= NSEC_PER_SEC) {
-		nsec -= NSEC_PER_SEC;
-		base->sec++;
+		nsec = nsec - NSEC_PER_SEC;
+		vdso_ts->sec++;
 	}
-	base->nsec = nsec;
+	vdso_ts->nsec		= nsec;
 
-	gtod_write_end(vdata);
+	vdso_write_end(vdata);
 }
