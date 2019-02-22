@@ -24,9 +24,11 @@
 #include <asm/mips-cps.h>
 #include <asm/page.h>
 #include <asm/vdso.h>
+#include <vdso/helpers.h>
 
 /* Kernel-provided data used by the VDSO. */
-static union mips_vdso_data vdso_data __page_aligned_data;
+static union mips_vdso_data mips_vdso_data __page_aligned_data;
+static struct vdso_data *vdso_data = &mips_vdso_data.data;
 
 /*
  * Mapping for the VDSO data/GIC pages. The real pages are mapped manually, as
@@ -72,29 +74,94 @@ subsys_initcall(init_vdso);
 
 void update_vsyscall(struct timekeeper *tk)
 {
-	vdso_data_write_begin(&vdso_data);
+	struct vdso_timestamp *vdso_ts;
+	u64 nsec;
 
-	vdso_data.xtime_sec = tk->xtime_sec;
-	vdso_data.xtime_nsec = tk->tkr_mono.xtime_nsec;
-	vdso_data.wall_to_mono_sec = tk->wall_to_monotonic.tv_sec;
-	vdso_data.wall_to_mono_nsec = tk->wall_to_monotonic.tv_nsec;
-	vdso_data.cs_shift = tk->tkr_mono.shift;
+	vdso_write_begin(vdso_data);
 
-	vdso_data.clock_mode = tk->tkr_mono.clock->archdata.vdso_clock_mode;
-	if (vdso_data.clock_mode != VDSO_CLOCK_NONE) {
-		vdso_data.cs_mult = tk->tkr_mono.mult;
-		vdso_data.cs_cycle_last = tk->tkr_mono.cycle_last;
-		vdso_data.cs_mask = tk->tkr_mono.mask;
+	vdso_data->clock_mode = tk->tkr_mono.clock->archdata.vdso_clock_mode;
+
+	/* CLOCK_REALTIME_COARSE */
+	vdso_ts			= &vdso_data->basetime[CLOCK_REALTIME_COARSE];
+	vdso_ts->sec		= tk->xtime_sec;
+	vdso_ts->nsec		= tk->tkr_mono.xtime_nsec >> tk->tkr_mono.shift;
+	/* CLOCK_MONOTONIC_COARSE */
+	vdso_ts			= &vdso_data->basetime[CLOCK_MONOTONIC_COARSE];
+	vdso_ts->sec		= tk->xtime_sec + tk->wall_to_monotonic.tv_sec;
+	nsec			= tk->tkr_mono.xtime_nsec >> tk->tkr_mono.shift;
+	nsec			= nsec + tk->wall_to_monotonic.tv_nsec;
+	while (nsec >= NSEC_PER_SEC) {
+		nsec = nsec - NSEC_PER_SEC;
+		vdso_ts->sec++;
+	}
+	vdso_ts->nsec		= nsec;
+
+	if (vdso_data->clock_mode != VDSO_CLOCK_NONE) {
+		vdso_data->clock_mode	= 0;
+		vdso_data->cycle_last	= tk->tkr_mono.cycle_last;
+		vdso_data->cs[CLOCKSOURCE_MONO].mask
+					= tk->tkr_mono.mask;
+		vdso_data->cs[CLOCKSOURCE_MONO].mult
+					= tk->tkr_mono.mult;
+		vdso_data->cs[CLOCKSOURCE_MONO].shift
+					= tk->tkr_mono.shift;
+		vdso_data->cs[CLOCKSOURCE_RAW].mask
+					= tk->tkr_raw.mask;
+		vdso_data->cs[CLOCKSOURCE_RAW].mult
+					= tk->tkr_raw.mult;
+		vdso_data->cs[CLOCKSOURCE_RAW].shift
+					= tk->tkr_raw.shift;
+		/* CLOCK_REALTIME */
+		vdso_ts			= &vdso_data->basetime[CLOCK_REALTIME];
+		vdso_ts->sec		= tk->xtime_sec;
+		vdso_ts->nsec		= tk->tkr_mono.xtime_nsec;
+		/* CLOCK_MONOTONIC */
+		vdso_ts			= &vdso_data->basetime[CLOCK_MONOTONIC];
+		vdso_ts->sec		= tk->xtime_sec +
+						tk->wall_to_monotonic.tv_sec;
+		nsec			= tk->tkr_mono.xtime_nsec;
+		nsec			= nsec +
+					  ((u64)tk->wall_to_monotonic.tv_nsec <<
+					   tk->tkr_mono.shift);
+		while (nsec >= (((u64)NSEC_PER_SEC) << tk->tkr_mono.shift)) {
+			nsec = nsec -
+				(((u64)NSEC_PER_SEC) << tk->tkr_mono.shift);
+			vdso_ts->sec++;
+		}
+		vdso_ts->nsec		= nsec;
+		/* CLOCK_MONOTONIC_RAW */
+		vdso_ts			= &vdso_data->basetime[CLOCK_MONOTONIC_RAW];
+		vdso_ts->sec		= tk->raw_sec;
+		vdso_ts->nsec		= tk->tkr_raw.xtime_nsec;
+		/* CLOCK_BOOTTIME */
+		vdso_ts			= &vdso_data->basetime[CLOCK_BOOTTIME];
+		vdso_ts->sec		= tk->xtime_sec +
+						tk->wall_to_monotonic.tv_sec;
+		nsec			= tk->tkr_mono.xtime_nsec;
+		nsec			= nsec +
+					  ((u64)(tk->wall_to_monotonic.tv_nsec +
+					   ktime_to_ns(tk->offs_boot)) <<
+					   tk->tkr_mono.shift);
+		while (nsec >= (((u64)NSEC_PER_SEC) << tk->tkr_mono.shift)) {
+			nsec = nsec -
+				(((u64)NSEC_PER_SEC) << tk->tkr_mono.shift);
+			vdso_ts->sec++;
+		}
+		vdso_ts->nsec		= nsec;
+		/* CLOCK_TAI */
+		vdso_ts			= &vdso_data->basetime[CLOCK_TAI];
+		vdso_ts->sec		= tk->xtime_sec + (s64)tk->tai_offset;
+		vdso_ts->nsec		= tk->tkr_mono.xtime_nsec;
 	}
 
-	vdso_data_write_end(&vdso_data);
+	vdso_write_end(vdso_data);
 }
 
 void update_vsyscall_tz(void)
 {
-	if (vdso_data.clock_mode != VDSO_CLOCK_NONE) {
-		vdso_data.tz_minuteswest = sys_tz.tz_minuteswest;
-		vdso_data.tz_dsttime = sys_tz.tz_dsttime;
+	if (vdso_data->clock_mode != VDSO_CLOCK_NONE) {
+		vdso_data->tz_minuteswest = sys_tz.tz_minuteswest;
+		vdso_data->tz_dsttime = sys_tz.tz_dsttime;
 	}
 }
 
@@ -167,7 +234,7 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
 	 */
 	if (cpu_has_dc_aliases) {
 		base = __ALIGN_MASK(base, shm_align_mask);
-		base += ((unsigned long)&vdso_data - gic_size) & shm_align_mask;
+		base += ((unsigned long)vdso_data - gic_size) & shm_align_mask;
 	}
 
 	data_addr = base + gic_size;
@@ -193,7 +260,7 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
 
 	/* Map data page. */
 	ret = remap_pfn_range(vma, data_addr,
-			      virt_to_phys(&vdso_data) >> PAGE_SHIFT,
+			      virt_to_phys(vdso_data) >> PAGE_SHIFT,
 			      PAGE_SIZE, PAGE_READONLY);
 	if (ret)
 		goto out;
