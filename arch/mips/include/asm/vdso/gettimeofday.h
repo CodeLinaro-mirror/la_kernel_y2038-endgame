@@ -25,11 +25,11 @@
 #ifdef CONFIG_MIPS_CLOCK_VSYSCALL
 
 static __always_inline notrace long gettimeofday_fallback(
-					struct __vdso_timeval *_tv,
+					struct __kernel_old_timeval *_tv,
 					struct timezone *_tz)
 {
 	register struct timezone *tz asm("a1") = _tz;
-	register struct __vdso_timeval *tv asm("a0") = _tv;
+	register struct __kernel_old_timeval *tv asm("a0") = _tv;
 	register long ret asm("v0");
 	register long nr asm("v0") = __NR_gettimeofday;
 	register long error asm("a3");
@@ -47,7 +47,7 @@ static __always_inline notrace long gettimeofday_fallback(
 #else
 
 static __always_inline notrace long gettimeofday_fallback(
-					struct __vdso_timeval *_tv,
+					struct __kernel_old_timeval *_tv,
 					struct timezone *_tz)
 {
 	return -1;
@@ -57,12 +57,16 @@ static __always_inline notrace long gettimeofday_fallback(
 
 static __always_inline notrace long clock_gettime_fallback(
 						clockid_t _clkid,
-						struct __vdso_timespec *_ts)
+						struct __kernel_timespec *_ts)
 {
-	register struct __vdso_timespec *ts asm("a1") = _ts;
+	register struct __kernel_timespec *ts asm("a1") = _ts;
 	register clockid_t clkid asm("a0") = _clkid;
 	register long ret asm("v0");
+#if _MIPS_SIM == _MIPS_SIM_ABI64
 	register long nr asm("v0") = __NR_clock_gettime;
+#else
+	register long nr asm("v0") = __NR_clock_gettime64;
+#endif
 	register long error asm("a3");
 
 	asm volatile(
@@ -77,12 +81,16 @@ static __always_inline notrace long clock_gettime_fallback(
 
 static __always_inline notrace int clock_getres_fallback(
 						clockid_t _clkid,
-						struct __vdso_timespec *_ts)
+						struct __kernel_timespec *_ts)
 {
-	register struct __vdso_timespec *ts asm("a1") = _ts;
+	register struct __kernel_timespec *ts asm("a1") = _ts;
 	register clockid_t clkid asm("a0") = _clkid;
 	register long ret asm("v0");
+#if _MIPS_SIM == _MIPS_SIM_ABI64
 	register long nr asm("v0") = __NR_clock_getres;
+#else
+	register long nr asm("v0") = __NR_clock_getres_time64;
+#endif
 	register long error asm("a3");
 
 	asm volatile(
@@ -133,7 +141,7 @@ static __always_inline u64 read_gic_count(const struct vdso_data *data)
 
 static __always_inline notrace u64 __arch_get_hw_counter(s32 clock_mode)
 {
-	const struct vdso_data *data = get_vdso_data();
+	const struct vdso_data __maybe_unused *data = get_vdso_data();
 	u64 cycle_now;
 
 	switch (clock_mode) {
