@@ -54,6 +54,7 @@ int clock_getres(clockid_t, struct __kernel_timespec *)
 #else
 /* i386 only */
 extern int __vdso_clock_gettime(clockid_t clock, struct old_timespec32 *ts);
+extern int __vdso_clock_gettime64(clockid_t clock, struct __kernel_timespec *ts);
 extern int __vdso_clock_getres(clockid_t clock, struct old_timespec32 *res);
 
 notrace int __vdso_clock_gettime(clockid_t clock, struct old_timespec32 *ts)
@@ -63,6 +64,11 @@ notrace int __vdso_clock_gettime(clockid_t clock, struct old_timespec32 *ts)
 
 int clock_gettime(clockid_t, struct old_timespec32 *)
 	__attribute__((weak, alias("__vdso_clock_gettime")));
+
+notrace int __vdso_clock_gettime64(clockid_t clock, struct __kernel_timespec *ts)
+{
+	return __cvdso_clock_gettime(clock, ts);
+}
 
 notrace int __vdso_clock_getres(clockid_t clock,
 				struct old_timespec32 *res)
