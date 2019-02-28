@@ -25,6 +25,12 @@ ccflags-y += -nostdlib -Wl,-soname=linux-vdso.so.1 \
 VDSO_LDFLAGS := -Bsymbolic
 
 CFLAGS_REMOVE_vgettimeofday.o = -pg -Os
+KBUILD_CFLAGS			+= $(DISABLE_LTO)
+KASAN_SANITIZE                  := n
+UBSAN_SANITIZE                  := n
+OBJECT_FILES_NON_STANDARD       := y
+KCOV_INSTRUMENT			:= n
+
 ifeq ($(c-gettimeofday-y),)
 CFLAGS_vgettimeofday.o = -O2 -mcmodel=tiny
 else
