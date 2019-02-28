@@ -54,7 +54,7 @@ long generic_compat_ioctl_ptrarg(struct file *file, unsigned int cmd, unsigned l
 }
 EXPORT_SYMBOL_GPL(generic_compat_ioctl_ptrarg);
 
-static int do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+static inline int do_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	int err;
 
