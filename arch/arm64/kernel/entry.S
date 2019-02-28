@@ -325,7 +325,7 @@ alternative_else_nop_endif
 	tst	x22, #PSR_MODE32_BIT		// native task?
 	b.eq	3f
 
-#ifdef CONFIG_ARM64_ERRATUM_845719
+#if defined(CONFIG_ARM64_ERRATUM_845719) && defined(CONFIG_COMPAT)
 alternative_if ARM64_WORKAROUND_845719
 #ifdef CONFIG_PID_IN_CONTEXTIDR
 	mrs	x29, contextidr_el1
