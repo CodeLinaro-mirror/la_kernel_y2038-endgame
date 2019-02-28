@@ -423,7 +423,7 @@ static irqreturn_t pm8xxx_eoc_irq(int irq, void *d)
 static struct pm8xxx_chan_info *
 pm8xxx_get_channel(struct pm8xxx_xoadc *adc, u8 chan)
 {
-	struct pm8xxx_chan_info *ch;
+	struct pm8xxx_chan_info *ch = NULL;
 	int i;
 
 	for (i = 0; i < adc->nchans; i++) {
@@ -431,8 +431,6 @@ pm8xxx_get_channel(struct pm8xxx_xoadc *adc, u8 chan)
 		if (ch->hwchan->amux_channel == chan)
 			break;
 	}
-	if (i == adc->nchans)
-		return NULL;
 
 	return ch;
 }
