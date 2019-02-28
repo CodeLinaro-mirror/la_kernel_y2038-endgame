@@ -665,8 +665,7 @@ int __init ftrace_dyn_arch_init(void)
 	return 0;
 }
 
-#if defined(CONFIG_X86_64) || defined(CONFIG_FUNCTION_GRAPH_TRACER)
-static unsigned char *ftrace_jmp_replace(unsigned long ip, unsigned long addr)
+static __maybe_unused unsigned char *ftrace_jmp_replace(unsigned long ip, unsigned long addr)
 {
 	static union ftrace_code_union calc;
 
@@ -679,7 +678,6 @@ static unsigned char *ftrace_jmp_replace(unsigned long ip, unsigned long addr)
 	 */
 	return calc.code;
 }
-#endif
 
 /* Currently only x86_64 supports dynamic trampolines */
 #ifdef CONFIG_X86_64
