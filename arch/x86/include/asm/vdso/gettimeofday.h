@@ -38,7 +38,7 @@ extern u8 hvclock_page
 
 static __always_inline notrace long clock_gettime_fallback(
 						clockid_t _clkid,
-						struct __vdso_timespec *_ts)
+						struct __kernel_timespec *_ts)
 {
 	long ret;
 	asm ("syscall" : "=a" (ret), "=m" (*_ts) :
@@ -48,7 +48,7 @@ static __always_inline notrace long clock_gettime_fallback(
 }
 
 static __always_inline notrace long gettimeofday_fallback(
-						struct __vdso_timeval *_tv,
+						struct __kernel_old_timeval *_tv,
 						struct timezone *_tz)
 {
 	long ret;
@@ -59,7 +59,7 @@ static __always_inline notrace long gettimeofday_fallback(
 
 static __always_inline notrace long clock_getres_fallback(
 						clockid_t _clkid,
-						struct __vdso_timespec *_ts)
+						struct __kernel_timespec *_ts)
 {
 	long ret;
 	asm ("syscall" : "=a" (ret), "=m" (*_ts) :
@@ -72,7 +72,7 @@ static __always_inline notrace long clock_getres_fallback(
 
 static __always_inline notrace long clock_gettime_fallback(
 						clockid_t _clkid,
-						struct __vdso_timespec *_ts)
+						struct __kernel_timespec *_ts)
 {
 	long ret;
 
@@ -82,13 +82,13 @@ static __always_inline notrace long clock_gettime_fallback(
 		"call __kernel_vsyscall \n"
 		"mov %%edx, %%ebx \n"
 		: "=a" (ret), "=m" (*_ts)
-		: "0" (__NR_clock_gettime), [clock] "g" (_clkid), "c" (_ts)
+		: "0" (__NR_clock_gettime64), [clock] "g" (_clkid), "c" (_ts)
 		: "edx");
 	return ret;
 }
 
 static __always_inline notrace long gettimeofday_fallback(
-						struct __vdso_timeval *_tv,
+						struct __kernel_old_timeval *_tv,
 						struct timezone *_tz)
 {
 	long ret;
@@ -105,7 +105,7 @@ static __always_inline notrace long gettimeofday_fallback(
 
 static __always_inline notrace long clock_getres_fallback(
 						clockid_t _clkid,
-						struct __vdso_timespec *_ts)
+						struct __kernel_timespec *_ts)
 {
 	long ret;
 
@@ -115,7 +115,7 @@ static __always_inline notrace long clock_getres_fallback(
 		"call __kernel_vsyscall \n"
 		"mov %%edx, %%ebx \n"
 		: "=a" (ret), "=m" (*_ts)
-		: "0" (__NR_clock_getres), [clock] "g" (_clkid), "c" (_ts)
+		: "0" (__NR_clock_getres_time64), [clock] "g" (_clkid), "c" (_ts)
 		: "edx");
 	return ret;
 }

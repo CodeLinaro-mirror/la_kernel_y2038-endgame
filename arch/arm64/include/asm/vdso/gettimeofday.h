@@ -13,11 +13,11 @@
 extern struct vdso_data _vdso_data;
 
 static __always_inline notrace int gettimeofday_fallback(
-					struct __vdso_timeval *_tv,
+					struct __kernel_old_timeval *_tv,
 					struct timezone *_tz)
 {
 	register struct timezone *tz asm("x1") = _tz;
-	register struct __vdso_timeval *tv asm("x0") = _tv;
+	register struct __kernel_old_timeval *tv asm("x0") = _tv;
 	register long ret asm ("x0");
 	register long nr asm("x8") = __NR_gettimeofday;
 
@@ -32,9 +32,9 @@ static __always_inline notrace int gettimeofday_fallback(
 
 static __always_inline notrace long clock_gettime_fallback(
 						clockid_t _clkid,
-						struct __vdso_timespec *_ts)
+						struct __kernel_timespec *_ts)
 {
-	register struct __vdso_timespec *ts asm("x1") = _ts;
+	register struct __kernel_timespec *ts asm("x1") = _ts;
 	register clockid_t clkid asm("x0") = _clkid;
 	register long ret asm ("x0");
 	register long nr asm("x8") = __NR_clock_gettime;
@@ -50,9 +50,9 @@ static __always_inline notrace long clock_gettime_fallback(
 
 static __always_inline notrace int clock_getres_fallback(
 						clockid_t _clkid,
-						struct __vdso_timespec *_ts)
+						struct __kernel_timespec *_ts)
 {
-	register struct __vdso_timespec *ts asm("x1") = _ts;
+	register struct __kernel_timespec *ts asm("x1") = _ts;
 	register clockid_t clkid asm("x0") = _clkid;
 	register long ret asm ("x0");
 	register long nr asm("x8") = __NR_clock_getres;
