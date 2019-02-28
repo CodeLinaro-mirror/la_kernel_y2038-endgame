@@ -1309,6 +1309,7 @@ config PCENGINES_APU2
 	depends on LEDS_CLASS
 	select GPIO_AMD_FCH
 	select KEYBOARD_GPIO_POLLED
+	select LEDS_CLASS
 	select LEDS_GPIO
 	help
 	  This driver provides support for the front button and LEDs on
