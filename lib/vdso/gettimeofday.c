@@ -28,7 +28,7 @@
 
 static notrace int do_hres(const struct vdso_data *vd,
 			   clockid_t clk,
-			   struct __vdso_timespec *ts)
+			   struct __kernel_timespec *ts)
 {
 	const struct vdso_timestamp *vdso_ts = &vd->basetime[clk];
 	u64 cycles, last, sec, ns;
@@ -63,7 +63,7 @@ static notrace int do_hres(const struct vdso_data *vd,
 
 static notrace void do_coarse(const struct vdso_data *vd,
 			      clockid_t clk,
-			      struct __vdso_timespec *ts)
+			      struct __kernel_timespec *ts)
 {
 	const struct vdso_timestamp *vdso_ts = &vd->basetime[clk];
 	u32 seq;
@@ -75,8 +75,8 @@ static notrace void do_coarse(const struct vdso_data *vd,
 	} while (unlikely(vdso_read_retry(vd, seq)));
 }
 
-static notrace int __cvdso_clock_gettime(clockid_t clock,
-					 struct __vdso_timespec *ts)
+static notrace __maybe_unused int
+__cvdso_clock_gettime(clockid_t clock, struct __kernel_timespec *ts)
 {
 	const struct vdso_data *vd = __arch_get_vdso_data();
 	u32 msk;
@@ -100,19 +100,31 @@ fallback:
 	return clock_gettime_fallback(clock, ts);
 }
 
-static notrace int __cvdso_gettimeofday(struct __vdso_timeval *tv,
-					struct timezone *tz)
+static notrace __maybe_unused int
+__cvdso_clock_gettime32(clockid_t clock, struct old_timespec32 *res)
+{
+	struct __kernel_timespec ts;
+	int ret = __cvdso_clock_gettime(clock, &ts);
+
+	res->tv_sec = ts.tv_sec;
+	res->tv_nsec = ts.tv_nsec;
+
+	return ret;
+}
+
+static notrace __maybe_unused int
+__cvdso_gettimeofday(struct __kernel_old_timeval *tv, struct timezone *tz)
 {
 	const struct vdso_data *vd = __arch_get_vdso_data();
 
 	if (likely(tv != NULL)) {
-		struct __vdso_timespec ts;
+		struct __kernel_timespec ts;
 
 		if (do_hres(vd, CLOCK_REALTIME, &ts))
 			return gettimeofday_fallback(tv, tz);
 
 		tv->tv_sec = ts.tv_sec;
-		tv->tv_usec = ts.tv_nsec / NSEC_PER_USEC;
+		tv->tv_usec = (u32)ts.tv_nsec / NSEC_PER_USEC;
 	}
 
 	if (unlikely(tz != NULL)) {
@@ -123,8 +135,7 @@ static notrace int __cvdso_gettimeofday(struct __vdso_timeval *tv,
 	return 0;
 }
 
-#ifdef VDSO_HAS_TIME
-static notrace time_t __cvdso_time(time_t *time)
+static notrace __maybe_unused time_t __cvdso_time(time_t *time)
 {
 	const struct vdso_data *vd = __arch_get_vdso_data();
 	time_t t = READ_ONCE(vd->basetime[CLOCK_REALTIME].sec);
@@ -134,10 +145,9 @@ static notrace time_t __cvdso_time(time_t *time)
 
 	return t;
 }
-#endif /* VDSO_HAS_TIME */
 
-static notrace int __cvdso_clock_getres(clockid_t clock,
-					struct __vdso_timespec *res)
+static notrace __maybe_unused
+int __cvdso_clock_getres(clockid_t clock, struct __kernel_timespec *res)
 {
 	u64 sec, ns;
 	u32 msk;
@@ -176,4 +186,16 @@ static notrace int __cvdso_clock_getres(clockid_t clock,
 
 fallback:
 	return clock_getres_fallback(clock, res);
+}
+
+static notrace __maybe_unused int
+__cvdso_clock_getres_time32(clockid_t clock, struct old_timespec32 *res)
+{
+	struct __kernel_timespec ts;
+	int ret = __cvdso_clock_getres(clock, &ts);
+
+	res->tv_sec = ts.tv_sec;
+	res->tv_nsec = ts.tv_nsec;
+
+	return ret;
 }

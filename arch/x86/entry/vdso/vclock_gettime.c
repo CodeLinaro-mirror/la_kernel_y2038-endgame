@@ -12,25 +12,14 @@
 
 #include "../../../../lib/vdso/gettimeofday.c"
 
-extern int __vdso_clock_gettime(clockid_t clock, struct __vdso_timespec *ts);
-extern int __vdso_gettimeofday(struct __vdso_timeval *tv, struct timezone *tz);
+extern int __vdso_gettimeofday(struct __kernel_old_timeval *tv, struct timezone *tz);
 extern time_t __vdso_time(time_t *t);
-extern int __vdso_clock_getres(clockid_t clock, struct __vdso_timespec *res);
-
-notrace int __vdso_clock_gettime(clockid_t clock, struct __vdso_timespec *ts)
-{
-	return __cvdso_clock_gettime(clock, ts);
-}
-
-int clock_gettime(clockid_t, struct __vdso_timespec *)
-	__attribute__((weak, alias("__vdso_clock_gettime")));
-
-notrace int __vdso_gettimeofday(struct __vdso_timeval *tv,
+notrace int __vdso_gettimeofday(struct __kernel_old_timeval *tv,
 				struct timezone *tz)
 {
 	return __cvdso_gettimeofday(tv, tz);
 }
-int gettimeofday(struct __vdso_timeval *, struct timezone *)
+int gettimeofday(struct __kernel_old_timeval *, struct timezone *)
 	__attribute__((weak, alias("__vdso_gettimeofday")));
 
 notrace time_t __vdso_time(time_t *t)
@@ -40,10 +29,46 @@ notrace time_t __vdso_time(time_t *t)
 time_t time(time_t *t)
 	__attribute__((weak, alias("__vdso_time")));
 
+
+#ifdef __x86_64__
+/* both 64-bit and x32 use these */
+extern int __vdso_clock_gettime(clockid_t clock, struct __kernel_timespec *ts);
+extern int __vdso_clock_getres(clockid_t clock, struct __kernel_timespec *res);
+
+notrace int __vdso_clock_gettime(clockid_t clock, struct __kernel_timespec *ts)
+{
+	return __cvdso_clock_gettime(clock, ts);
+}
+
+int clock_gettime(clockid_t, struct __kernel_timespec *)
+	__attribute__((weak, alias("__vdso_clock_gettime")));
+
 notrace int __vdso_clock_getres(clockid_t clock,
-				struct __vdso_timespec *res)
+				struct __kernel_timespec *res)
 {
 	return __cvdso_clock_getres(clock, res);
 }
-int clock_getres(clockid_t, struct __vdso_timespec *)
+int clock_getres(clockid_t, struct __kernel_timespec *)
 	__attribute__((weak, alias("__vdso_clock_getres")));
+
+#else
+/* i386 only */
+extern int __vdso_clock_gettime(clockid_t clock, struct old_timespec32 *ts);
+extern int __vdso_clock_getres(clockid_t clock, struct old_timespec32 *res);
+
+notrace int __vdso_clock_gettime(clockid_t clock, struct old_timespec32 *ts)
+{
+	return __cvdso_clock_gettime32(clock, ts);
+}
+
+int clock_gettime(clockid_t, struct old_timespec32 *)
+	__attribute__((weak, alias("__vdso_clock_gettime")));
+
+notrace int __vdso_clock_getres(clockid_t clock,
+				struct old_timespec32 *res)
+{
+	return __cvdso_clock_getres_time32(clock, res);
+}
+int clock_getres(clockid_t, struct old_timespec32 *)
+	__attribute__((weak, alias("__vdso_clock_getres")));
+#endif
