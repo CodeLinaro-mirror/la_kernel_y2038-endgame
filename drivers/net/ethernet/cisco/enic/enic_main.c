@@ -112,6 +112,15 @@ static struct enic_intr_mod_range mod_range[ENIC_MAX_LINK_SPEEDS] = {
 	{3,  6}, /* 10 - 40 Gbps */
 };
 
+static inline int enic_affinity_mask_empty(struct enic *enic, int i)
+{
+#ifdef CONFIG_CPUMASK_OFFSTACK
+	if (!enic->msix[i].affinity_mask)
+		return 1;
+#endif
+	return cpumask_empty(enic->msix[i].affinity_mask);
+}
+
 static void enic_init_affinity_hint(struct enic *enic)
 {
 	int numa_node = dev_to_node(&enic->pdev->dev);
@@ -119,8 +128,7 @@ static void enic_init_affinity_hint(struct enic *enic)
 
 	for (i = 0; i < enic->intr_count; i++) {
 		if (enic_is_err_intr(enic, i) || enic_is_notify_intr(enic, i) ||
-		    (enic->msix[i].affinity_mask &&
-		     !cpumask_empty(enic->msix[i].affinity_mask)))
+		    !enic_affinity_mask_empty(enic, i))
 			continue;
 		if (zalloc_cpumask_var(&enic->msix[i].affinity_mask,
 				       GFP_KERNEL))
@@ -148,8 +156,7 @@ static void enic_set_affinity_hint(struct enic *enic)
 	for (i = 0; i < enic->intr_count; i++) {
 		if (enic_is_err_intr(enic, i)		||
 		    enic_is_notify_intr(enic, i)	||
-		    !enic->msix[i].affinity_mask	||
-		    cpumask_empty(enic->msix[i].affinity_mask))
+		    enic_affinity_mask_empty(enic, i))
 			continue;
 		err = irq_set_affinity_hint(enic->msix_entry[i].vector,
 					    enic->msix[i].affinity_mask);
@@ -161,8 +168,7 @@ static void enic_set_affinity_hint(struct enic *enic)
 	for (i = 0; i < enic->wq_count; i++) {
 		int wq_intr = enic_msix_wq_intr(enic, i);
 
-		if (enic->msix[wq_intr].affinity_mask &&
-		    !cpumask_empty(enic->msix[wq_intr].affinity_mask))
+		if (!enic_affinity_mask_empty(enic, wq_intr))
 			netif_set_xps_queue(enic->netdev,
 					    enic->msix[wq_intr].affinity_mask,
 					    i);
