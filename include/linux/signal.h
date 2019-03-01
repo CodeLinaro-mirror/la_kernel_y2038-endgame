@@ -92,35 +92,33 @@ static inline int sigismember(sigset_t *set, int _sig)
 
 static inline int sigisemptyset(sigset_t *set)
 {
-	switch (_NSIG_WORDS) {
-	case 4:
-		return (set->sig[3] | set->sig[2] |
-			set->sig[1] | set->sig[0]) == 0;
-	case 2:
-		return (set->sig[1] | set->sig[0]) == 0;
-	case 1:
-		return set->sig[0] == 0;
-	default:
-		BUILD_BUG();
-		return 0;
-	}
+#if _NSIG_WORDS == 4
+	return (set->sig[3] | set->sig[2] |
+		set->sig[1] | set->sig[0]) == 0;
+#elif _NSIG_WORDS == 2
+	return (set->sig[1] | set->sig[0]) == 0;
+#elif _NSIG_WORDS == 1
+	return set->sig[0] == 0;
+#else
+	BUILD_BUG();
+#endif
 }
 
 static inline int sigequalsets(const sigset_t *set1, const sigset_t *set2)
 {
-	switch (_NSIG_WORDS) {
-	case 4:
-		return	(set1->sig[3] == set2->sig[3]) &&
-			(set1->sig[2] == set2->sig[2]) &&
-			(set1->sig[1] == set2->sig[1]) &&
-			(set1->sig[0] == set2->sig[0]);
-	case 2:
-		return	(set1->sig[1] == set2->sig[1]) &&
-			(set1->sig[0] == set2->sig[0]);
-	case 1:
-		return	set1->sig[0] == set2->sig[0];
-	}
+#if _NSIG_WORDS == 4
+	return	(set1->sig[3] == set2->sig[3]) &&
+		(set1->sig[2] == set2->sig[2]) &&
+		(set1->sig[1] == set2->sig[1]) &&
+		(set1->sig[0] == set2->sig[0]);
+#elif _NSIG_WORDS == 2
+	return	(set1->sig[1] == set2->sig[1]) &&
+		(set1->sig[0] == set2->sig[0]);
+#elif _NSIG_WORDS == 1
+	return	set1->sig[0] == set2->sig[0];
+#else
 	return 0;
+#endif
 }
 
 #define sigmask(sig)	(1UL << ((sig) - 1))
@@ -135,14 +133,14 @@ static inline void name(sigset_t *r, const sigset_t *a, const sigset_t *b) \
 									\
 	switch (_NSIG_WORDS) {						\
 	case 4:								\
-		a3 = a->sig[3]; a2 = a->sig[2];				\
-		b3 = b->sig[3]; b2 = b->sig[2];				\
-		r->sig[3] = op(a3, b3);					\
-		r->sig[2] = op(a2, b2);					\
+		a3 = a->sig[3%_NSIG_WORDS]; a2 = a->sig[2%_NSIG_WORDS];	\
+		b3 = b->sig[3%_NSIG_WORDS]; b2 = b->sig[2%_NSIG_WORDS];	\
+		r->sig[3%_NSIG_WORDS] = op(a3, b3);			\
+		r->sig[2%_NSIG_WORDS] = op(a2, b2);			\
 		fallthrough;						\
 	case 2:								\
-		a1 = a->sig[1]; b1 = b->sig[1];				\
-		r->sig[1] = op(a1, b1);					\
+		a1 = a->sig[1%_NSIG_WORDS]; b1 = b->sig[1%_NSIG_WORDS];	\
+		r->sig[1%_NSIG_WORDS] = op(a1, b1);			\
 		fallthrough;						\
 	case 1:								\
 		a0 = a->sig[0]; b0 = b->sig[0];				\
@@ -171,10 +169,10 @@ _SIG_SET_BINOP(sigandnsets, _sig_andn)
 static inline void name(sigset_t *set)					\
 {									\
 	switch (_NSIG_WORDS) {						\
-	case 4:	set->sig[3] = op(set->sig[3]);				\
-		set->sig[2] = op(set->sig[2]);				\
+	case 4:	set->sig[3%_NSIG_WORDS] = op(set->sig[3%_NSIG_WORDS]);	\
+		set->sig[2%_NSIG_WORDS] = op(set->sig[2%_NSIG_WORDS]);	\
 		fallthrough;						\
-	case 2:	set->sig[1] = op(set->sig[1]);				\
+	case 2:	set->sig[1%_NSIG_WORDS] = op(set->sig[1%_NSIG_WORDS]);	\
 		fallthrough;						\
 	case 1:	set->sig[0] = op(set->sig[0]);				\
 		    break;						\
@@ -195,7 +193,7 @@ static inline void sigemptyset(sigset_t *set)
 	default:
 		memset(set, 0, sizeof(sigset_t));
 		break;
-	case 2: set->sig[1] = 0;
+	case 2: set->sig[1%_NSIG_WORDS] = 0;
 		fallthrough;
 	case 1:	set->sig[0] = 0;
 		break;
@@ -208,7 +206,7 @@ static inline void sigfillset(sigset_t *set)
 	default:
 		memset(set, -1, sizeof(sigset_t));
 		break;
-	case 2: set->sig[1] = -1;
+	case 2: set->sig[1%_NSIG_WORDS] = -1;
 		fallthrough;
 	case 1:	set->sig[0] = -1;
 		break;
@@ -239,7 +237,7 @@ static inline void siginitset(sigset_t *set, unsigned long mask)
 	default:
 		memset(&set->sig[1], 0, sizeof(long)*(_NSIG_WORDS-1));
 		break;
-	case 2: set->sig[1] = 0;
+	case 2: set->sig[1%_NSIG_WORDS] = 0;
 		break;
 	case 1: ;
 	}
@@ -252,7 +250,7 @@ static inline void siginitsetinv(sigset_t *set, unsigned long mask)
 	default:
 		memset(&set->sig[1], -1, sizeof(long)*(_NSIG_WORDS-1));
 		break;
-	case 2: set->sig[1] = -1;
+	case 2: set->sig[1%_NSIG_WORDS] = -1;
 		break;
 	case 1: ;
 	}
