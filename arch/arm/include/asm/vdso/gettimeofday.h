@@ -69,7 +69,11 @@ static __always_inline notrace int clock_getres_fallback(
 
 static __always_inline notrace u64 __arch_get_hw_counter(int clock_mode)
 {
+#ifdef CONFIG_ARM_ARCH_TIMER
 	return arch_counter_get_cntvct();
+#else
+	return -EINVAL; /* use fallback */
+#endif
 }
 
 static __always_inline notrace const struct vdso_data *__arch_get_vdso_data(void)
