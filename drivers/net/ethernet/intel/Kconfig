@@ -270,6 +270,7 @@ config IAVF
 config I40EVF
 	tristate "Intel(R) Ethernet Adaptive Virtual Function support"
 	select IAVF
+	depends on !CC_IS_CLANG
 	depends on PCI_MSI
 	---help---
 	  This driver supports virtual functions for Intel XL710,
