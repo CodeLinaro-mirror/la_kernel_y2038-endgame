@@ -287,6 +287,7 @@ config CRYPTO_CHACHA20POLY1305
 
 config CRYPTO_AEGIS128
 	tristate "AEGIS-128 AEAD algorithm"
+	depends on !CC_IS_CLANG
 	select CRYPTO_AEAD
 	select CRYPTO_AES  # for AES S-box tables
 	help
@@ -294,6 +295,7 @@ config CRYPTO_AEGIS128
 
 config CRYPTO_AEGIS128L
 	tristate "AEGIS-128L AEAD algorithm"
+	depends on !CC_IS_CLANG
 	select CRYPTO_AEAD
 	select CRYPTO_AES  # for AES S-box tables
 	help
@@ -301,6 +303,7 @@ config CRYPTO_AEGIS128L
 
 config CRYPTO_AEGIS256
 	tristate "AEGIS-256 AEAD algorithm"
+	depends on !CC_IS_CLANG
 	select CRYPTO_AEAD
 	select CRYPTO_AES  # for AES S-box tables
 	help
