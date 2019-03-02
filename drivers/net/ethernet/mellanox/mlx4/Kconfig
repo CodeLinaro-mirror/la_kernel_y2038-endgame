@@ -5,6 +5,7 @@
 config MLX4_EN
 	tristate "Mellanox Technologies 1/10/40Gbit Ethernet support"
 	depends on PCI && NETDEVICES && ETHERNET && INET
+	depends on !CC_IS_CLANG
 	select MLX4_CORE
 	imply PTP_1588_CLOCK
 	---help---
