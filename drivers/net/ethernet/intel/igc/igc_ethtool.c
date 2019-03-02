@@ -6,12 +6,9 @@
 
 #include "igc.h"
 
-static const char igc_priv_flags_strings[][ETH_GSTRING_LEN] = {
 #define IGC_PRIV_FLAGS_LEGACY_RX	BIT(0)
-	"legacy-rx",
-};
 
-#define IGC_PRIV_FLAGS_STR_LEN ARRAY_SIZE(igc_priv_flags_strings)
+#define IGC_PRIV_FLAGS_STR_LEN		1
 
 static void igc_get_drvinfo(struct net_device *netdev,
 			    struct ethtool_drvinfo *drvinfo)
