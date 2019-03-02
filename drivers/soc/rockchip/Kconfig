@@ -16,6 +16,7 @@ config ROCKCHIP_GRF
 config ROCKCHIP_PM_DOMAINS
         bool "Rockchip generic power domain"
         depends on PM
+	depends on !CC_IS_CLANG
         select PM_GENERIC_DOMAINS
         help
           Say y here to enable power domain support.
