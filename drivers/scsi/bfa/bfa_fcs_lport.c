@@ -1904,7 +1904,7 @@ bfa_fcs_lport_fdmi_send_rhba(void *fdmi_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 	bfa_sm_send_event(fdmi, FDMISM_EVENT_RHBA_SENT);
 }
 
-static          u16
+static noinline_for_stack  u16
 bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 {
 	struct bfa_fcs_lport_s *port = fdmi->ms->port;
@@ -2617,13 +2617,29 @@ bfa_fcs_lport_fdmi_timeout(void *arg)
 	bfa_sm_send_event(fdmi, FDMISM_EVENT_TIMEOUT);
 }
 
-static void
+static u32
+bfa_fcs_fdmi_get_port_max_frm_size(struct bfa_fcs_lport_fdmi_s *fdmi)
+{
+	struct bfa_fcs_lport_s *port = fdmi->ms->port;
+	struct bfa_port_attr_s pport_attr;
+
+	/*
+	 * get pport attributes from hal
+	 */
+	bfa_fcport_get_attr(port->fcs->bfa, &pport_attr);
+
+	/*
+	 * Max PDU Size.
+	 */
+	return cpu_to_be32(pport_attr.pport_cfg.maxfrsize);
+}
+
+static noinline_for_stack void
 bfa_fcs_fdmi_get_hbaattr(struct bfa_fcs_lport_fdmi_s *fdmi,
 			 struct bfa_fcs_fdmi_hba_attr_s *hba_attr)
 {
 	struct bfa_fcs_lport_s *port = fdmi->ms->port;
 	struct bfa_fcs_driver_info_s  *driver_info = &port->fcs->driver_info;
-	struct bfa_fcs_fdmi_port_attr_s fcs_port_attr;
 
 	memset(hba_attr, 0, sizeof(struct bfa_fcs_fdmi_hba_attr_s));
 
@@ -2660,8 +2676,7 @@ bfa_fcs_fdmi_get_hbaattr(struct bfa_fcs_lport_fdmi_s *fdmi,
 	}
 
 	/* Retrieve the max frame size from the port attr */
-	bfa_fcs_fdmi_get_portattr(fdmi, &fcs_port_attr);
-	hba_attr->max_ct_pyld = fcs_port_attr.max_frm_size;
+	hba_attr->max_ct_pyld = bfa_fcs_fdmi_get_port_max_frm_size(fdmi);
 
 	strlcpy(hba_attr->node_sym_name.symname,
 		port->port_cfg.node_sym_name.symname, BFA_SYMNAME_MAXLEN);
@@ -2673,7 +2688,7 @@ bfa_fcs_fdmi_get_hbaattr(struct bfa_fcs_lport_fdmi_s *fdmi,
 
 }
 
-static void
+static noinline_for_stack void
 bfa_fcs_fdmi_get_portattr(struct bfa_fcs_lport_fdmi_s *fdmi,
 			  struct bfa_fcs_fdmi_port_attr_s *port_attr)
 {
