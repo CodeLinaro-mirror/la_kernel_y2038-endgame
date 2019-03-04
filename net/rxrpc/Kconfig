@@ -46,6 +46,7 @@ config AF_RXRPC_DEBUG
 config RXKAD
 	bool "RxRPC Kerberos security"
 	depends on AF_RXRPC
+	depends on !CC_IS_CLANG # warning: stack frame size of 1152 bytes in function 'rxkad_secure_packet'
 	select CRYPTO
 	select CRYPTO_MANAGER
 	select CRYPTO_BLKCIPHER
