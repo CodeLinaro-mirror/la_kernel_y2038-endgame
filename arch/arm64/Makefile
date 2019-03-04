@@ -53,7 +53,7 @@ ifeq ($(CONFIG_GENERIC_COMPAT_VDSO), y)
   CROSS_COMPILE_ARM32 ?= $(CONFIG_CROSS_COMPILE_COMPAT_VDSO:"%"=%)
 
   ifeq ($(CONFIG_CC_IS_CLANG), y)
-    $(warning CROSS_COMPILE_ARM32 is clang, the compat vDSO will not be built)
+    : $(warning CROSS_COMPILE_ARM32 is clang, the compat vDSO will not be built)
   else ifeq ($(CROSS_COMPILE_ARM32),)
     $(warning CROSS_COMPILE_ARM32 not defined or empty, the compat vDSO will not be built)
   else ifeq ($(shell which $(CROSS_COMPILE_ARM32)gcc 2> /dev/null),)
