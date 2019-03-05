@@ -6,7 +6,8 @@
 #include <linux/math64.h>
 #include <linux/time.h>
 #include <linux/kernel.h>
-#include <linux/hrtimer.h>
+#include <linux/ktime.h>
+#include <linux/hrtimer_defs.h>
 #include <vdso/datapage.h>
 #include <vdso/helpers.h>
 
