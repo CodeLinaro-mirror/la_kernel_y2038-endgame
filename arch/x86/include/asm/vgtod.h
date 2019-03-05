@@ -3,7 +3,7 @@
 #define _ASM_X86_VGTOD_H
 
 #include <linux/compiler.h>
-#include <linux/clocksource.h>
+#include <asm/clocksource.h>
 #include <vdso/datapage.h>
 #include <vdso/helpers.h>
 
