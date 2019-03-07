@@ -448,8 +448,7 @@ struct spi_controller {
  * double shift to avoid shifting beyond BITS_PER_LONG, see also
  * https://bugs.llvm.org/show_bug.cgi?id=38789
  */
-#define SPI_BIT_MASK(bits) ((BIT((bits) - 1) << 1) - 1)
-#define SPI_BPW_RANGE_MASK(min, max) (SPI_BIT_MASK(max) - (BIT((min) - 1) - 1))
+#define SPI_BPW_RANGE_MASK(min, max) GENMASK((min) - 1, (max) - 1)
 
 	/* limits on transfer speed */
 	u32			min_speed_hz;
