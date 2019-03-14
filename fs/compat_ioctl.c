@@ -56,13 +56,6 @@
 
 #include <linux/sort.h>
 
-#define convert_in_user(srcptr, dstptr)			\
-({							\
-	typeof(*srcptr) val;				\
-							\
-	get_user(val, srcptr) || put_user(val, dstptr);	\
-})
-
 /* helper function to avoid trivial compat_ioctl() implementations */
 long generic_compat_ioctl_ptrarg(struct file *file, unsigned int cmd, unsigned long arg)
 {
