@@ -173,7 +173,7 @@ typedef struct sg_device { /* holds the state of each scsi generic device */
 
 /* tasklet or soft irq callback */
 static void sg_rq_end_io(struct request *rq, blk_status_t status);
-static int sg_start_req(Sg_request *srp, unsigned char *cmd);
+static int sg_start_req(Sg_request *srp, unsigned char *cmd, int compat);
 static int sg_finish_rem_req(Sg_request * srp);
 static int sg_build_indirect(Sg_scatter_hold * schp, Sg_fd * sfp, int buff_size);
 static ssize_t sg_new_read(Sg_fd * sfp, char __user *buf, size_t count,
@@ -182,7 +182,8 @@ static ssize_t sg_new_write(Sg_fd *sfp, struct file *file,
 			const char __user *buf, size_t count, int blocking,
 			int read_only, int sg_io_owned, Sg_request **o_srp);
 static int sg_common_write(Sg_fd * sfp, Sg_request * srp,
-			   unsigned char *cmnd, int timeout, int blocking);
+			   unsigned char *cmnd, int timeout, int blocking,
+			   int compat);
 static int sg_read_oxfer(Sg_request * srp, char __user *outp, int num_read_xfer);
 static void sg_remove_scat(Sg_fd * sfp, Sg_scatter_hold * schp);
 static void sg_build_reserve(Sg_fd * sfp, int req_size);
@@ -447,8 +448,7 @@ sg_read(struct file *filp, char __user *buf, size_t count, loff_t * ppos)
 					retval = -ENOMEM;
 					goto free_old_hdr;
 				}
-				retval =__copy_from_user
-				    (new_hdr, buf, SZ_SG_IO_HDR);
+				retval = get_sg_io_hdr(new_hdr, buf, in_compat_syscall());
 				req_pack_id = new_hdr->pack_id;
 				kfree(new_hdr);
 				if (retval) {
@@ -589,10 +589,7 @@ sg_new_read(Sg_fd * sfp, char __user *buf, size_t count, Sg_request * srp)
 	}
 	if (hp->masked_status || hp->host_status || hp->driver_status)
 		hp->info |= SG_INFO_CHECK;
-	if (copy_to_user(buf, hp, SZ_SG_IO_HDR)) {
-		err = -EFAULT;
-		goto err_out;
-	}
+	err = put_sg_io_hdr(hp, buf, in_compat_syscall());
 err_out:
 	err2 = sg_finish_rem_req(srp);
 	sg_remove_request(sfp, srp);
@@ -706,7 +703,7 @@ sg_write(struct file *filp, const char __user *buf, size_t count, loff_t * ppos)
 				   input_size, (unsigned int) cmnd[0],
 				   current->comm);
 	}
-	k = sg_common_write(sfp, srp, cmnd, sfp->timeout, blocking);
+	k = sg_common_write(sfp, srp, cmnd, sfp->timeout, blocking, 0);
 	return (k < 0) ? k : count;
 }
 
@@ -721,6 +718,7 @@ sg_new_write(Sg_fd *sfp, struct file *file, const char __user *buf,
 	unsigned char cmnd[SG_MAX_CDB_SIZE];
 	int timeout;
 	unsigned long ul_timeout;
+	int compat = in_compat_syscall();
 
 	if (count < SZ_SG_IO_HDR)
 		return -EINVAL;
@@ -735,7 +733,7 @@ sg_new_write(Sg_fd *sfp, struct file *file, const char __user *buf,
 	}
 	srp->sg_io_owned = sg_io_owned;
 	hp = &srp->header;
-	if (__copy_from_user(hp, buf, SZ_SG_IO_HDR)) {
+	if (get_sg_io_hdr(hp, buf, compat)) {
 		sg_remove_request(sfp, srp);
 		return -EFAULT;
 	}
@@ -775,7 +773,7 @@ sg_new_write(Sg_fd *sfp, struct file *file, const char __user *buf,
 		sg_remove_request(sfp, srp);
 		return -EPERM;
 	}
-	k = sg_common_write(sfp, srp, cmnd, timeout, blocking);
+	k = sg_common_write(sfp, srp, cmnd, timeout, blocking, compat);
 	if (k < 0)
 		return k;
 	if (o_srp)
@@ -785,7 +783,7 @@ sg_new_write(Sg_fd *sfp, struct file *file, const char __user *buf,
 
 static int
 sg_common_write(Sg_fd * sfp, Sg_request * srp,
-		unsigned char *cmnd, int timeout, int blocking)
+		unsigned char *cmnd, int timeout, int blocking, int compat)
 {
 	int k, at_head;
 	Sg_device *sdp = sfp->parentdp;
@@ -806,7 +804,7 @@ sg_common_write(Sg_fd * sfp, Sg_request * srp,
 	if (hp->dxfer_len >= SZ_256M)
 		return -EINVAL;
 
-	k = sg_start_req(srp, cmnd);
+	k = sg_start_req(srp, cmnd, compat);
 	if (k) {
 		SCSI_LOG_TIMEOUT(1, sg_printk(KERN_INFO, sfp->parentdp,
 			"sg_common_write: start_req err=%d\n", k));
@@ -1695,7 +1693,7 @@ exit_sg(void)
 }
 
 static int
-sg_start_req(Sg_request *srp, unsigned char *cmd)
+sg_start_req(Sg_request *srp, unsigned char *cmd, int compat)
 {
 	int res;
 	struct request *rq;
@@ -1797,7 +1795,14 @@ sg_start_req(Sg_request *srp, unsigned char *cmd)
 		struct iovec *iov = NULL;
 		struct iov_iter i;
 
-		res = import_iovec(rw, hp->dxferp, iov_count, 0, &iov, &i);
+#ifdef CONFIG_COMPAT
+		if (compat)
+			res = compat_import_iovec(rw, hp->dxferp, iov_count,
+						  0, &iov, &i);
+		else
+#endif
+			res = import_iovec(rw, hp->dxferp, iov_count,
+					   0, &iov, &i);
 		if (res < 0)
 			return res;
 
