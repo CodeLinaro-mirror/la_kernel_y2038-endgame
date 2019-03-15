@@ -2,6 +2,7 @@
 #include <linux/spinlock.h>
 #include <linux/slab.h>
 #include <linux/blkdev.h>
+#include <linux/compat.h>
 #include <linux/hdreg.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
@@ -138,6 +139,24 @@ static int virtblk_ioctl(struct block_device *bdev, fmode_t mode,
 	return scsi_cmd_blk_ioctl(bdev, mode, cmd,
 				  (void __user *)data);
 }
+
+#ifdef CONFIG_COMPAT
+static int virtblk_compat_ioctl(struct block_device *bdev, fmode_t mode,
+				unsigned int cmd, unsigned long data)
+{
+	struct gendisk *disk = bdev->bd_disk;
+	struct virtio_blk *vblk = disk->private_data;
+
+	/*
+	 * Only allow the generic SCSI ioctls if the host can support it.
+	 */
+	if (!virtio_has_feature(vblk->vdev, VIRTIO_BLK_F_SCSI))
+		return -ENOTTY;
+
+	return scsi_cmd_blk_compat_ioctl(bdev, mode, cmd,
+					 compat_ptr(data));
+}
+#endif
 #else
 static inline int virtblk_add_req_scsi(struct virtqueue *vq,
 		struct virtblk_req *vbr, struct scatterlist *data_sg,
@@ -149,6 +168,7 @@ static inline void virtblk_scsi_request_done(struct request *req)
 {
 }
 #define virtblk_ioctl	NULL
+#define virtblk_compat_ioctl	NULL
 #endif /* CONFIG_VIRTIO_BLK_SCSI */
 
 static int virtblk_add_req(struct virtqueue *vq, struct virtblk_req *vbr,
@@ -404,6 +424,9 @@ static int virtblk_getgeo(struct block_device *bd, struct hd_geometry *geo)
 
 static const struct block_device_operations virtblk_fops = {
 	.ioctl  = virtblk_ioctl,
+#ifdef CONFIG_COMPAT
+	.compat_ioctl = virtblk_compat_ioctl,
+#endif
 	.owner  = THIS_MODULE,
 	.getgeo = virtblk_getgeo,
 };

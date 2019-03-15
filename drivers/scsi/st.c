@@ -3501,7 +3501,7 @@ out:
 
 
 /* The ioctl command */
-static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
+static long st_ioctl_common(struct file *file, unsigned int cmd_in, void __user *p)
 {
 	int i, cmd_nr, cmd_type, cmd_size, bt;
 	int retval = 0;
@@ -3509,7 +3509,6 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 	struct scsi_tape *STp = file->private_data;
 	struct st_modedef *STm;
 	struct st_partstat *STps;
-	void __user *p = (void __user *)arg;
 
 	if (mutex_lock_interruptible(&STp->lock))
 		return -ERESTARTSYS;
@@ -3823,9 +3822,23 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 		mt_pos.mt_blkno = blk;
 		retval = put_user_mtpos(p, &mt_pos,
 					cmd_size == sizeof(struct mtpos32));
-		goto out;
 	}
+ out:
 	mutex_unlock(&STp->lock);
+	return retval;
+}
+
+static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
+{
+	void __user *p = (void __user *)arg;
+	struct scsi_tape *STp = file->private_data;
+	int i, retval;
+
+	retval = st_ioctl_common(file, cmd_in, p);
+
+	if (retval != -ENOIOCTLCMD)
+		return retval;
+
 	switch (cmd_in) {
 		case SCSI_IOCTL_GET_IDLUN:
 		case SCSI_IOCTL_GET_BUS_NUMBER:
@@ -3849,32 +3862,43 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 		STp->ready = ST_NO_TAPE;
 	}
 	return retval;
-
- out:
-	mutex_unlock(&STp->lock);
-	return retval;
 }
 
 #ifdef CONFIG_COMPAT
 static long st_compat_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 {
+	void __user *p = compat_ptr(arg);
 	struct scsi_tape *STp = file->private_data;
-	struct scsi_device *sdev = STp->device;
-	int ret = -ENOIOCTLCMD;
+	int i, retval;
+
+	retval = st_ioctl_common(file, cmd_in, p);
+
+	if (retval != -ENOIOCTLCMD)
+		return retval;
 
 	switch (cmd_in) {
-	case MTIOCTOP:
-	case MTIOCPOS32:
-	case MTIOCGET32:
-		return st_ioctl(file, cmd_in, (unsigned long)compat_ptr(arg));
+		case SCSI_IOCTL_GET_IDLUN:
+		case SCSI_IOCTL_GET_BUS_NUMBER:
+			break;
+		default:
+			if ((cmd_in == SG_IO ||
+			     cmd_in == SCSI_IOCTL_SEND_COMMAND ||
+			     cmd_in == CDROM_SEND_PACKET) &&
+			    !capable(CAP_SYS_RAWIO))
+				i = -EPERM;
+			else
+				i = scsi_cmd_compat_ioctl(STp->disk->queue, STp->disk,
+							  file->f_mode, cmd_in, p);
+			if (i != -ENOTTY)
+				return i;
+			break;
 	}
-
-	if (sdev->host->hostt->compat_ioctl) { 
-
-		ret = sdev->host->hostt->compat_ioctl(sdev, cmd_in, (void __user *)arg);
-
+	retval = scsi_compat_ioctl(STp->device, cmd_in, p);
+	if (!retval && cmd_in == SCSI_IOCTL_STOP_UNIT) { /* unload */
+		STp->rew_at_close = 0;
+		STp->ready = ST_NO_TAPE;
 	}
-	return ret;
+	return retval;
 }
 #endif
 
