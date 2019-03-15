@@ -822,6 +822,70 @@ int scsi_cmd_blk_ioctl(struct block_device *bd, fmode_t mode,
 }
 EXPORT_SYMBOL(scsi_cmd_blk_ioctl);
 
+#ifdef CONFIG_COMPAT
+int scsi_cmd_compat_ioctl(struct request_queue *q, struct gendisk *bd_disk,
+			  fmode_t mode, unsigned int cmd, void __user *arg)
+{
+	int err;
+
+	if (!q)
+		return -ENXIO;
+
+	switch (cmd) {
+	/* most are compatible */
+	case SG_GET_VERSION_NUM:
+	case SCSI_IOCTL_GET_IDLUN:
+	case SCSI_IOCTL_GET_BUS_NUMBER:
+	case SG_SET_TIMEOUT:
+	case SG_GET_TIMEOUT:
+	case SG_GET_RESERVED_SIZE:
+	case SG_SET_RESERVED_SIZE:
+	case SG_EMULATED_HOST:
+	case SCSI_IOCTL_SEND_COMMAND:
+	case CDROMCLOSETRAY:
+	case CDROMEJECT:
+		err = scsi_cmd_ioctl(q, bd_disk, mode, cmd, arg);
+		break;
+	/* SG_IO handles both */
+	case SG_IO: {
+		struct sg_io_hdr hdr;
+
+		err = get_sg_io_hdr(&hdr, arg, 1);
+		if (err)
+			break;
+		err = sg_io(q, bd_disk, &hdr, mode, 1);
+		if (err == -EFAULT)
+			break;
+
+		if (put_sg_io_hdr(&hdr, arg, 1))
+			err = -EFAULT;
+		break;
+	}
+	/* handled in compat_blkdev_driver_ioctl */
+	case CDROM_SEND_PACKET:
+	default:
+		err = -ENOIOCTLCMD;
+		break;
+	}
+
+	return err;
+}
+EXPORT_SYMBOL(scsi_cmd_compat_ioctl);
+
+int scsi_cmd_blk_compat_ioctl(struct block_device *bd, fmode_t mode,
+			      unsigned int cmd, void __user *arg)
+{
+	int ret;
+
+	ret = scsi_verify_blk_ioctl(bd, cmd);
+	if (ret < 0)
+		return ret;
+
+	return scsi_cmd_compat_ioctl(bd->bd_disk->queue, bd->bd_disk, mode, cmd, arg);
+}
+EXPORT_SYMBOL(scsi_cmd_blk_compat_ioctl);
+#endif
+
 /**
  * scsi_req_init - initialize certain fields of a scsi_request structure
  * @req: Pointer to a scsi_request structure.
