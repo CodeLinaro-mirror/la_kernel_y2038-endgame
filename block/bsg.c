@@ -14,6 +14,7 @@
 #include <linux/file.h>
 #include <linux/blkdev.h>
 #include <linux/cdev.h>
+#include <linux/compat.h>
 #include <linux/jiffies.h>
 #include <linux/percpu.h>
 #include <linux/idr.h>
@@ -385,10 +386,40 @@ static long bsg_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	}
 }
 
+#ifdef CONFIG_COMPAT
+static long bsg_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
+	struct bsg_device *bd = file->private_data;
+	void __user *p = compat_ptr(arg);
+
+	switch (cmd) {
+	case SG_GET_COMMAND_Q:
+	case SG_SET_COMMAND_Q:
+	case SG_IO:
+		return bsg_ioctl(file, cmd, (unsigned long)p);
+	case SG_GET_VERSION_NUM:
+	case SCSI_IOCTL_GET_IDLUN:
+	case SCSI_IOCTL_GET_BUS_NUMBER:
+	case SG_SET_TIMEOUT:
+	case SG_GET_TIMEOUT:
+	case SG_GET_RESERVED_SIZE:
+	case SG_SET_RESERVED_SIZE:
+	case SG_EMULATED_HOST:
+	case SCSI_IOCTL_SEND_COMMAND:
+		return scsi_cmd_compat_ioctl(bd->queue, NULL, file->f_mode, cmd, p);
+	default:
+		return -ENOTTY;
+	}
+}
+#endif
+
 static const struct file_operations bsg_fops = {
 	.open		=	bsg_open,
 	.release	=	bsg_release,
 	.unlocked_ioctl	=	bsg_ioctl,
+#ifdef CONFIG_COMPAT
+	.compat_ioctl	=	bsg_compat_ioctl,
+#endif
 	.owner		=	THIS_MODULE,
 	.llseek		=	default_llseek,
 };
