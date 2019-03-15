@@ -5281,7 +5281,7 @@ static long osst_compat_ioctl(struct file * file, unsigned int cmd_in, unsigned 
 {
 	struct osst_tape *STp = file->private_data;
 	struct scsi_device *sdev = STp->device;
-	int ret = -ENOIOCTLCMD;
+	int retval = -ENOIOCTLCMD;
 
 	switch (cmd_in) {
 	case MTIOCTOP:
@@ -5290,12 +5290,15 @@ static long osst_compat_ioctl(struct file * file, unsigned int cmd_in, unsigned 
 		return osst_ioctl(file, cmd_in, (unsigned long)compat_ptr(arg));
 	}
 
-	if (sdev->host->hostt->compat_ioctl) {
-
-		ret = sdev->host->hostt->compat_ioctl(sdev, cmd_in, (void __user *)arg);
-
-	}
-	return ret;
+	mutex_lock(&osst_int_mutex);
+	retval = scsi_ioctl_block_when_processing_errors(sdev, cmd_in,
+			file->f_flags & O_NDELAY);
+	if (retval)
+		goto out;
+	retval = scsi_compat_ioctl(sdev, cmd_in, compat_ptr(arg));
+out:
+	mutex_unlock(&osst_int_mutex);
+	return retval;
 }
 #endif
 
