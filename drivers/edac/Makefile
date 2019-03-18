@@ -58,10 +58,14 @@ layerscape_edac_mod-y			:= fsl_ddr_edac.o layerscape_edac.o
 obj-$(CONFIG_EDAC_LAYERSCAPE)		+= layerscape_edac_mod.o
 
 skx_edac-y				:= skx_common.o skx_base.o
-obj-$(CONFIG_EDAC_SKX)			+= skx_edac.o
+ifdef CONFIG_EDAC_SKX
+obj-$(CONFIG_EDAC_SKX_COMMON)		+= skx_edac.o
+endif
 
 i10nm_edac-y				:= skx_common.o i10nm_base.o
-obj-$(CONFIG_EDAC_I10NM)		+= i10nm_edac.o
+ifdef CONFIG_EDAC_I10NM
+obj-$(CONFIG_EDAC_SKX_COMMON))		+= i10nm_edac.o
+endif
 
 obj-$(CONFIG_EDAC_MV64X60)		+= mv64x60_edac.o
 obj-$(CONFIG_EDAC_CELL)			+= cell_edac.o
