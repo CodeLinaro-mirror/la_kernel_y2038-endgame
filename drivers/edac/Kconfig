@@ -235,6 +235,7 @@ config EDAC_SKX
 	depends on ACPI_NFIT || !ACPI_NFIT # if ACPI_NFIT=m, EDAC_SKX can't be y
 	select DMI
 	select ACPI_ADXL
+	select EDAC_SKX_COMMON
 	help
 	  Support for error detection and correction the Intel
 	  Skylake server Integrated Memory Controllers. If your
@@ -247,11 +248,19 @@ config EDAC_I10NM
 	depends on ACPI_NFIT || !ACPI_NFIT # if ACPI_NFIT=m, EDAC_I10NM can't be y
 	select DMI
 	select ACPI_ADXL
+	select EDAC_SKX_COMMON
 	help
 	  Support for error detection and correction the Intel
 	  10nm server Integrated Memory Controllers. If your
 	  system has non-volatile DIMMs you should also manually
 	  select CONFIG_ACPI_NFIT.
+
+config EDAC_SKX_COMMON
+	tristate
+	help
+	  This is an internal helper symbol to ensure that all variants
+	  of the EDAC_SKX driver are either built-in or modular, as mixing
+	  the two causes link time problems.
 
 config EDAC_PND2
 	tristate "Intel Pondicherry2"
