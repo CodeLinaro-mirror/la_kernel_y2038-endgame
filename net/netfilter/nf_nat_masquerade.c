@@ -12,7 +12,6 @@
 
 static DEFINE_MUTEX(masq_mutex);
 static unsigned int masq_refcnt4 __read_mostly;
-static unsigned int masq_refcnt6 __read_mostly;
 
 unsigned int
 nf_nat_masquerade_ipv4(struct sk_buff *skb, unsigned int hooknum,
@@ -321,6 +320,8 @@ static int masq_inet6_event(struct notifier_block *this,
 static struct notifier_block masq_inet6_notifier = {
 	.notifier_call	= masq_inet6_event,
 };
+
+static unsigned int masq_refcnt6 __read_mostly;
 
 int nf_nat_masquerade_ipv6_register_notifier(void)
 {
