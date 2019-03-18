@@ -77,7 +77,11 @@ typedef __kernel_long_t	__kernel_ptrdiff_t;
 
 #ifndef __kernel_fsid_t
 typedef struct {
+#ifdef __KERNEL__
 	int	val[2];
+#else
+	int	__kernel_val[2];
+#endif
 } __kernel_fsid_t;
 #endif
 
