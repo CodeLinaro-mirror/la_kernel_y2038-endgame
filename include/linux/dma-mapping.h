@@ -138,11 +138,7 @@ struct dma_map_ops {
 extern const struct dma_map_ops dma_virt_ops;
 extern const struct dma_map_ops dma_dummy_ops;
 
-/*
- * Shifting '2' instead of '1' because of
- * https://bugs.llvm.org/show_bug.cgi?id=38789
- */
-#define DMA_BIT_MASK(n)	(((n) == 0) ? 0ULL : (2ULL<<((n)-1))-1)
+#define DMA_BIT_MASK(n)	(((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
 
 #define DMA_MASK_NONE	0x0ULL
 
