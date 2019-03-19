@@ -622,7 +622,6 @@ static struct platform_device orion_xor0_shared = {
 	.resource	= orion_xor0_shared_resources,
 	.dev            = {
 		.dma_mask               = &orion_xor_dmamask,
-		.coherent_dma_mask      = DMA_BIT_MASK(64),
 		.platform_data          = &orion_xor0_pdata,
 	},
 };
@@ -647,6 +646,7 @@ void __init orion_xor0_init(unsigned long mapbase_low,
 
 	dma_cap_set(DMA_MEMCPY, orion_xor0_channels_data[1].cap_mask);
 	dma_cap_set(DMA_XOR, orion_xor0_channels_data[1].cap_mask);
+	orion_xor0_shared.dev.coherent_dma_mask = DMA_BIT_MASK(64);
 
 	platform_device_register(&orion_xor0_shared);
 }
@@ -683,7 +683,6 @@ static struct platform_device orion_xor1_shared = {
 	.resource	= orion_xor1_shared_resources,
 	.dev            = {
 		.dma_mask               = &orion_xor_dmamask,
-		.coherent_dma_mask      = DMA_BIT_MASK(64),
 		.platform_data          = &orion_xor1_pdata,
 	},
 };
@@ -708,6 +707,7 @@ void __init orion_xor1_init(unsigned long mapbase_low,
 
 	dma_cap_set(DMA_MEMCPY, orion_xor1_channels_data[1].cap_mask);
 	dma_cap_set(DMA_XOR, orion_xor1_channels_data[1].cap_mask);
+	orion_xor1_shared.dev.coherent_dma_mask = DMA_BIT_MASK(64);
 
 	platform_device_register(&orion_xor1_shared);
 }
