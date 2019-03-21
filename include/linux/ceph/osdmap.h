@@ -116,10 +116,8 @@ static inline void ceph_oid_init(struct ceph_object_id *oid)
 	oid->name_len = 0;
 }
 
-#define CEPH_OID_INIT_ONSTACK(oid)					\
-    ({ ceph_oid_init(&oid); oid; })
 #define CEPH_DEFINE_OID_ONSTACK(oid)					\
-	struct ceph_object_id oid = CEPH_OID_INIT_ONSTACK(oid)
+	struct ceph_object_id oid = { .name = oid.inline_name }
 
 static inline bool ceph_oid_empty(const struct ceph_object_id *oid)
 {
