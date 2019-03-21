@@ -96,6 +96,8 @@ int ssp_common_process_data(struct iio_dev *indio_dev, void *buf,
 		memcpy(&time, &((char *)buf)[len], SSP_TIME_SIZE);
 		calculated_time =
 			timestamp + (int64_t)le32_to_cpu(time) * 1000000;
+	} else {
+		calculated_time = 0;
 	}
 
 	return iio_push_to_buffers_with_timestamp(indio_dev, spd->buffer,
