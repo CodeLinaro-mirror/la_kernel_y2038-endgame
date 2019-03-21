@@ -205,6 +205,8 @@ static irqreturn_t stmpe_adc_isr(int irq, void *dev_id)
 		/* Read value */
 		stmpe_block_read(info->stmpe, STMPE_REG_TEMP_DATA, 2,
 				(u8 *) &data);
+	} else {
+		return IRQ_NONE;
 	}
 
 	info->value = (u32) be16_to_cpu(data);
