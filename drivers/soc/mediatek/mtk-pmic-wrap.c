@@ -1355,6 +1355,7 @@ static int pwrap_init_cipher(struct pmic_wrapper *wrp)
 	pwrap_writel(wrp, 1, PWRAP_CIPHER_MODE);
 
 	/* Write Test */
+	rdata = 0;
 	if (pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_WRITE_TEST],
 			PWRAP_DEW_WRITE_TEST_VAL) ||
 	    pwrap_read(wrp, wrp->slave->dew_regs[PWRAP_DEW_WRITE_TEST],
