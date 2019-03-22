@@ -58,7 +58,7 @@ struct bug_entry {
 #endif
 
 #ifndef HAVE_ARCH_BUG_ON
-#define BUG_ON(condition) do { if (unlikely(condition)) BUG(); } while (0)
+#define BUG_ON(condition) do { if (condition) BUG(); } while (0)
 #endif
 
 #ifdef __WARN_FLAGS
@@ -129,9 +129,9 @@ void __warn(const char *file, int line, void *caller, unsigned taint,
 #ifndef WARN
 #define WARN(condition, format...) ({					\
 	int __ret_warn_on = !!(condition);				\
-	if (unlikely(__ret_warn_on))					\
+	if ((__ret_warn_on))					\
 		__WARN_printf(format);					\
-	unlikely(__ret_warn_on);					\
+	(__ret_warn_on);					\
 })
 #endif
 
