@@ -7555,7 +7555,7 @@ static bool ca0132_download_dsp_images(struct hda_codec *codec)
 	 * Use default ctefx.bin if no alt firmware is detected, or if none
 	 * exists for your particular codec.
 	 */
-	if (!spec->alt_firmware_present) {
+	if (!IS_ENABLED(CONFIG_PCI) || !spec->alt_firmware_present) {
 		codec_dbg(codec, "Default firmware selected.");
 		if (request_firmware(&fw_entry, EFX_FILE,
 					codec->card->dev) != 0)
