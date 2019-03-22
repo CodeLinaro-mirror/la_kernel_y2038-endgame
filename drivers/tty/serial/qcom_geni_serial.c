@@ -1078,6 +1078,8 @@ static int __init qcom_geni_console_setup(struct console *co, char *options)
 
 	if (options)
 		uart_parse_options(options, &baud, &parity, &bits, &flow);
+	else
+		baud = 115200;
 
 	return uart_set_options(uport, co, baud, parity, bits, flow);
 }
