@@ -27,9 +27,8 @@
 #include "regs-wan.h"
 #include "regs-lan.h"
 #include "regs-hpna.h"
-#include <mach/regs-switch.h>
-#include <mach/regs-misc.h>
-
+#include "regs-switch.h"
+#include "regs-misc.h"
 
 /* --------------------------------------------------------------------
  *  Ethernet
