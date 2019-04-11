@@ -18,7 +18,7 @@
 #include <asm/mach/map.h>
 
 #include "regs-sys.h"
-#include <mach/regs-misc.h>
+#include "regs-misc.h"
 
 
 static struct map_desc ks8695_io_desc[] __initdata = {

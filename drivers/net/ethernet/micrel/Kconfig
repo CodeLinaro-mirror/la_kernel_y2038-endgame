@@ -20,7 +20,7 @@ if NET_VENDOR_MICREL
 
 config ARM_KS8695_ETHER
 	tristate "KS8695 Ethernet support"
-	depends on ARM && ARCH_KS8695
+	depends on (ARM && ARCH_KS8695) || COMPILE_TEST
 	select MII
 	---help---
 	  If you wish to compile a kernel for the KS8695 and want to

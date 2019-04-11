@@ -24,17 +24,119 @@
 #include <linux/io.h>
 #include <linux/slab.h>
 
-#include <asm/irq.h>
-
-#include <mach/regs-switch.h>
-#include <mach/regs-misc.h>
-#include <asm/mach/irq.h>
-#include <mach/regs-irq.h>
-
 #include "ks8695net.h"
 
 #define MODULENAME	"ks8695_ether"
 #define MODULEVERSION	"1.02"
+
+#define KS8695_HMC		(0x08)		/* HPNA Miscellaneous Control [KS8695 only] */
+#define KS8695_WMC		(0x0c)		/* WAN Miscellaneous Control */
+#define KS8695_WPPM		(0x10)		/* WAN PHY Power Management */
+#define KS8695_PPS		(0x1c)		/* PHY PowerSave */
+
+
+/* WAN Miscellaneous Control Register */
+#define WMC_WANC		(1 << 30)	/* Auto-negotiation complete */
+#define WMC_WANR		(1 << 29)	/* Auto-negotiation restart */
+#define WMC_WANAP		(1 << 28)	/* Advertise Pause */
+#define WMC_WANA100F		(1 << 27)	/* Advertise 100 FDX */
+#define WMC_WANA100H		(1 << 26)	/* Advertise 100 HDX */
+#define WMC_WANA10F		(1 << 25)	/* Advertise 10 FDX */
+#define WMC_WANA10H		(1 << 24)	/* Advertise 10 HDX */
+#define WMC_WLS			(1 << 23)	/* Link status */
+#define WMC_WDS			(1 << 22)	/* Duplex status */
+#define WMC_WSS			(1 << 21)	/* Speed status */
+#define WMC_WLPP		(1 << 20)	/* Link Partner Pause */
+#define WMC_WLP100F		(1 << 19)	/* Link Partner 100 FDX */
+#define WMC_WLP100H		(1 << 18)	/* Link Partner 100 HDX */
+#define WMC_WLP10F		(1 << 17)	/* Link Partner 10 FDX */
+#define WMC_WLP10H		(1 << 16)	/* Link Partner 10 HDX */
+#define WMC_WAND		(1 << 15)	/* Auto-negotiation disable */
+#define WMC_WANF100		(1 << 14)	/* Force 100 */
+#define WMC_WANFF		(1 << 13)	/* Force FDX */
+#define WMC_WLED1S		(7 <<  4)	/* LED1 Select */
+#define		WLED1S_SPEED		(0 << 4)
+#define		WLED1S_LINK		(1 << 4)
+#define		WLED1S_DUPLEX		(2 << 4)
+#define		WLED1S_COLLISION	(3 << 4)
+#define		WLED1S_ACTIVITY		(4 << 4)
+#define		WLED1S_FDX_COLLISION	(5 << 4)
+#define		WLED1S_LINK_ACTIVITY	(6 << 4)
+#define WMC_WLED0S		(7 << 0)	/* LED0 Select */
+#define		WLED0S_SPEED		(0 << 0)
+#define		WLED0S_LINK		(1 << 0)
+#define		WLED0S_DUPLEX		(2 << 0)
+#define		WLED0S_COLLISION	(3 << 0)
+#define		WLED0S_ACTIVITY		(4 << 0)
+#define		WLED0S_FDX_COLLISION	(5 << 0)
+#define		WLED0S_LINK_ACTIVITY	(6 << 0)
+
+/*
+ * Switch registers
+ */
+#define KS8695_SEC0		(0x00)		/* Switch Engine Control 0 */
+#define KS8695_SEC1		(0x04)		/* Switch Engine Control 1 */
+#define KS8695_SEC2		(0x08)		/* Switch Engine Control 2 */
+
+#define KS8695_SEPXCZ(x,z)	(0x0c + (((x)-1)*3 + ((z)-1))*4)	/* Port Configuration Registers */
+
+#define KS8695_SEP12AN		(0x48)		/* Port 1 & 2 Auto-Negotiation */
+#define KS8695_SEP34AN		(0x4c)		/* Port 3 & 4 Auto-Negotiation */
+#define KS8695_SEIAC		(0x50)		/* Indirect Access Control */
+#define KS8695_SEIADH2		(0x54)		/* Indirect Access Data High 2 */
+#define KS8695_SEIADH1		(0x58)		/* Indirect Access Data High 1 */
+#define KS8695_SEIADL		(0x5c)		/* Indirect Access Data Low */
+#define KS8695_SEAFC		(0x60)		/* Advance Feature Control */
+#define KS8695_SEDSCPH		(0x64)		/* TOS Priority High */
+#define KS8695_SEDSCPL		(0x68)		/* TOS Priority Low */
+#define KS8695_SEMAH		(0x6c)		/* Switch Engine MAC Address High */
+#define KS8695_SEMAL		(0x70)		/* Switch Engine MAC Address Low */
+#define KS8695_LPPM12		(0x74)		/* Port 1 & 2 PHY Power Management */
+#define KS8695_LPPM34		(0x78)		/* Port 3 & 4 PHY Power Management */
+
+
+/* Switch Engine Control 0 */
+#define SEC0_LLED1S		(7 << 25)	/* LED1 Select */
+#define		LLED1S_SPEED		(0 << 25)
+#define		LLED1S_LINK		(1 << 25)
+#define		LLED1S_DUPLEX		(2 << 25)
+#define		LLED1S_COLLISION	(3 << 25)
+#define		LLED1S_ACTIVITY		(4 << 25)
+#define		LLED1S_FDX_COLLISION	(5 << 25)
+#define		LLED1S_LINK_ACTIVITY	(6 << 25)
+#define SEC0_LLED0S		(7 << 22)	/* LED0 Select */
+#define		LLED0S_SPEED		(0 << 22)
+#define		LLED0S_LINK		(1 << 22)
+#define		LLED0S_DUPLEX		(2 << 22)
+#define		LLED0S_COLLISION	(3 << 22)
+#define		LLED0S_ACTIVITY		(4 << 22)
+#define		LLED0S_FDX_COLLISION	(5 << 22)
+#define		LLED0S_LINK_ACTIVITY	(6 << 22)
+#define SEC0_ENABLE		(1 << 0)	/* Enable Switch */
+
+
+/* HPNA Miscellaneous Control Register */
+#define HMC_HSS			(1 << 1)	/* Speed */
+#define HMC_HDS			(1 << 0)	/* Duplex */
+
+/* WAN PHY Power Management Register */
+#define WPPM_WLPBK		(1 << 14)	/* Local Loopback */
+#define WPPM_WRLPKB		(1 << 13)	/* Remove Loopback */
+#define WPPM_WPI		(1 << 12)	/* PHY isolate */
+#define WPPM_WFL		(1 << 10)	/* Force link */
+#define WPPM_MDIXS		(1 << 9)	/* MDIX Status */
+#define WPPM_FEF		(1 << 8)	/* Far End Fault */
+#define WPPM_AMDIXP		(1 << 7)	/* Auto MDIX Parameter */
+#define WPPM_TXDIS		(1 << 6)	/* Disable transmitter */
+#define WPPM_DFEF		(1 << 5)	/* Disable Far End Fault */
+#define WPPM_PD			(1 << 4)	/* Power Down */
+#define WPPM_DMDX		(1 << 3)	/* Disable Auto MDI/MDIX */
+#define WPPM_FMDX		(1 << 2)	/* Force MDIX */
+#define WPPM_LPBK		(1 << 1)	/* MAX Loopback */
+
+/* PHY Power Save Register */
+#define PPS_PPSM		(1 << 0)	/* PHY Power Save Mode */
+
 
 /*
  * Transmit and device reset timeout, default 5 seconds.
