@@ -479,7 +479,7 @@ config IXP4XX_WATCHDOG
 
 config KS8695_WATCHDOG
 	tristate "KS8695 watchdog"
-	depends on ARCH_KS8695
+	depends on ARCH_KS8695 || COMPILE_TEST
 	help
 	  Watchdog timer embedded into KS8695 processor. This will reboot your
 	  system when the timeout is reached.

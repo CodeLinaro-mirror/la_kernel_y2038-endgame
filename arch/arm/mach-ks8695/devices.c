@@ -169,11 +169,22 @@ void __init ks8696_add_device_hpna(void)
 /* --------------------------------------------------------------------
  *  Watchdog
  * -------------------------------------------------------------------- */
+#define KS8695_TMR_OFFSET      (0xF0000 + 0xE400)
+#define KS8695_TMR_PA          (KS8695_IO_PA + KS8695_TMR_OFFSET)
+static struct resource ks8695_wdt_resources[] = {
+	[0] = {
+		.name	= "tmr",
+		.start	= KS8695_TMR_PA,
+		.end	= KS8695_TMR_PA + 0xf,
+		.flags	= IORESOURCE_MEM,
+	},
+};
 
 static struct platform_device ks8695_wdt_device = {
 	.name		= "ks8695_wdt",
 	.id		= -1,
-	.num_resources	= 0,
+	.resource	= ks8695_wdt_resources,
+	.num_resources	= ARRAY_SIZE(ks8695_wdt_resources),
 };
 
 static void __init ks8695_add_device_watchdog(void)
