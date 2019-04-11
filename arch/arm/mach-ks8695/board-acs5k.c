@@ -34,7 +34,7 @@
 #include <asm/mach/irq.h>
 
 #include "devices.h"
-#include <mach/gpio-ks8695.h>
+#include "gpio-ks8695.h"
 
 #include "generic.h"
 
