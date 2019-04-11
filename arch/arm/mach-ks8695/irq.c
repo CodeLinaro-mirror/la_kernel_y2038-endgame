@@ -19,7 +19,7 @@
 #include <asm/mach/irq.h>
 
 #include <mach/regs-irq.h>
-#include <mach/regs-gpio.h>
+#include "regs-gpio.h"
 
 static void ks8695_irq_mask(struct irq_data *d)
 {

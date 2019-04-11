@@ -16,8 +16,8 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 #include "devices.h"
-#include <mach/regs-gpio.h>
-#include <mach/gpio-ks8695.h>
+#include "regs-gpio.h"
+#include "gpio-ks8695.h"
 #include "generic.h"
 
 static int og_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)

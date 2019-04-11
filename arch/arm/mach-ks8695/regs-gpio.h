@@ -1,6 +1,4 @@
 /*
- * arch/arm/mach-ks8695/include/mach/regs-gpio.h
- *
  * Copyright (C) 2007 Andrew Victor
  *
  * KS8695 - GPIO control registers and bit definitions.

@@ -16,10 +16,10 @@
 #include <linux/io.h>
 
 #include <mach/hardware.h>
-#include <asm/mach/irq.h>
+#include <mach/irqs.h>
 
-#include <mach/regs-gpio.h>
-#include <mach/gpio-ks8695.h>
+#include "regs-gpio.h"
+#include "gpio-ks8695.h"
 
 /*
  * Configure a GPIO line for either GPIO function, or its internal
