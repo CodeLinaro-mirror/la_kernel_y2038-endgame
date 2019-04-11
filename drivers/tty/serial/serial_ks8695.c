@@ -15,12 +15,11 @@
 #include <linux/console.h>
 #include <linux/sysrq.h>
 #include <linux/device.h>
+#include <linux/irq.h>
+
+#include <linux/platform_data/serial-ks8695.h>
 
 #include <asm/io.h>
-#include <asm/irq.h>
-#include <asm/mach/irq.h>
-
-#include <mach/regs-uart.h>
 
 #if defined(CONFIG_SERIAL_KS8695_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
 #define SUPPORT_SYSRQ
@@ -34,6 +33,82 @@
 #define SERIAL_KS8695_DEVNAME	"ttyAM"
 
 #define SERIAL_KS8695_NR	1
+extern struct uart_port ks8695uart_ports[SERIAL_KS8695_NR];
+
+/*
+ * UART registers
+ */
+#define KS8695_URRB	(0x00)		/* Receive Buffer Register */
+#define KS8695_URTH	(0x04)		/* Transmit Holding Register */
+#define KS8695_URFC	(0x08)		/* FIFO Control Register */
+#define KS8695_URLC	(0x0C)		/* Line Control Register */
+#define KS8695_URMC	(0x10)		/* Modem Control Register */
+#define KS8695_URLS	(0x14)		/* Line Status Register */
+#define KS8695_URMS	(0x18)		/* Modem Status Register */
+#define KS8695_URBD	(0x1C)		/* Baud Rate Divisor Register */
+#define KS8695_USR	(0x20)		/* Status Register */
+
+
+/* FIFO Control Register */
+#define URFC_URFRT	(3 << 6)	/* Receive FIFO Trigger Level */
+#define		URFC_URFRT_1	(0 << 6)
+#define		URFC_URFRT_4	(1 << 6)
+#define		URFC_URFRT_8	(2 << 6)
+#define		URFC_URFRT_14	(3 << 6)
+#define URFC_URTFR	(1 << 2)	/* Transmit FIFO Reset */
+#define URFC_URRFR	(1 << 1)	/* Receive FIFO Reset */
+#define URFC_URFE	(1 << 0)	/* FIFO Enable */
+
+/* Line Control Register */
+#define URLC_URSBC	(1 << 6)	/* Set Break Condition */
+#define URLC_PARITY	(7 << 3)	/* Parity */
+#define		URPE_NONE	(0 << 3)
+#define		URPE_ODD	(1 << 3)
+#define		URPE_EVEN	(3 << 3)
+#define		URPE_MARK	(5 << 3)
+#define		URPE_SPACE	(7 << 3)
+#define URLC_URSB	(1 << 2)	/* Stop Bits */
+#define URLC_URCL	(3 << 0)	/* Character Length */
+#define		URCL_5		(0 << 0)
+#define		URCL_6		(1 << 0)
+#define		URCL_7		(2 << 0)
+#define		URCL_8		(3 << 0)
+
+/* Modem Control Register */
+#define URMC_URLB	(1 << 4)	/* Loop-back mode */
+#define URMC_UROUT2	(1 << 3)	/* OUT2 signal */
+#define URMC_UROUT1	(1 << 2)	/* OUT1 signal */
+#define URMC_URRTS	(1 << 1)	/* Request to Send */
+#define URMC_URDTR	(1 << 0)	/* Data Terminal Ready */
+
+/* Line Status Register */
+#define URLS_URRFE	(1 << 7)	/* Receive FIFO Error */
+#define URLS_URTE	(1 << 6)	/* Transmit Empty */
+#define URLS_URTHRE	(1 << 5)	/* Transmit Holding Register Empty */
+#define URLS_URBI	(1 << 4)	/* Break Interrupt */
+#define URLS_URFE	(1 << 3)	/* Framing Error */
+#define URLS_URPE	(1 << 2)	/* Parity Error */
+#define URLS_URROE	(1 << 1)	/* Receive Overrun Error */
+#define URLS_URDR	(1 << 0)	/* Receive Data Ready */
+
+/* Modem Status Register */
+#define URMS_URDCD	(1 << 7)	/* Data Carrier Detect */
+#define URMS_URRI	(1 << 6)	/* Ring Indicator */
+#define URMS_URDSR	(1 << 5)	/* Data Set Ready */
+#define URMS_URCTS	(1 << 4)	/* Clear to Send */
+#define URMS_URDDCD	(1 << 3)	/* Delta Data Carrier Detect */
+#define URMS_URTERI	(1 << 2)	/* Trailing Edge Ring Indicator */
+#define URMS_URDDST	(1 << 1)	/* Delta Data Set Ready */
+#define URMS_URDCTS	(1 << 0)	/* Delta Clear to Send */
+
+/* Status Register */
+#define USR_UTI		(1 << 0)	/* Timeout Indication */
+
+
+#define IRQ_TX			0
+#define IRQ_RX			1
+#define IRQ_LINE_STATUS		2
+#define IRQ_MODEM_STATUS	3
 
 /*
  * Access macros for the KS8695 UART
@@ -105,7 +180,7 @@ static void ks8695uart_stop_tx(struct uart_port *port)
 		 * imposed deadlock by not waiting for irq handler to end,
 		 * since this ks8695uart_stop_tx() is called from interrupt context.
 		 */
-		disable_irq_nosync(KS8695_IRQ_UART_TX);
+		disable_irq_nosync(port->irq + IRQ_TX);
 		tx_enable(port, 0);
 	}
 }
@@ -113,7 +188,7 @@ static void ks8695uart_stop_tx(struct uart_port *port)
 static void ks8695uart_start_tx(struct uart_port *port)
 {
 	if (!tx_enabled(port)) {
-		enable_irq(KS8695_IRQ_UART_TX);
+		enable_irq(port->irq + IRQ_TX);
 		tx_enable(port, 1);
 	}
 }
@@ -121,7 +196,7 @@ static void ks8695uart_start_tx(struct uart_port *port)
 static void ks8695uart_stop_rx(struct uart_port *port)
 {
 	if (rx_enabled(port)) {
-		disable_irq(KS8695_IRQ_UART_RX);
+		disable_irq(port->irq + IRQ_RX);
 		rx_enable(port, 0);
 	}
 }
@@ -129,7 +204,7 @@ static void ks8695uart_stop_rx(struct uart_port *port)
 static void ks8695uart_enable_ms(struct uart_port *port)
 {
 	if (!ms_enabled(port)) {
-		enable_irq(KS8695_IRQ_UART_MODEM_STATUS);
+		enable_irq(port->irq + IRQ_MODEM_STATUS);
 		ms_enable(port,1);
 	}
 }
@@ -137,7 +212,7 @@ static void ks8695uart_enable_ms(struct uart_port *port)
 static void ks8695uart_disable_ms(struct uart_port *port)
 {
 	if (ms_enabled(port)) {
-		disable_irq(KS8695_IRQ_UART_MODEM_STATUS);
+		disable_irq(port->irq + IRQ_MODEM_STATUS);
 		ms_enable(port,0);
 	}
 }
@@ -318,7 +393,7 @@ static int ks8695uart_startup(struct uart_port *port)
 {
 	int retval;
 
-	irq_modify_status(KS8695_IRQ_UART_TX, IRQ_NOREQUEST, IRQ_NOAUTOEN);
+	irq_modify_status(port->irq + IRQ_TX, IRQ_NOREQUEST, IRQ_NOAUTOEN);
 	tx_enable(port, 0);
 	rx_enable(port, 1);
 	ms_enable(port, 1);
@@ -326,30 +401,30 @@ static int ks8695uart_startup(struct uart_port *port)
 	/*
 	 * Allocate the IRQ
 	 */
-	retval = request_irq(KS8695_IRQ_UART_TX, ks8695uart_tx_chars, 0, "UART TX", port);
+	retval = request_irq(port->irq + IRQ_TX, ks8695uart_tx_chars, 0, "UART TX", port);
 	if (retval)
 		goto err_tx;
 
-	retval = request_irq(KS8695_IRQ_UART_RX, ks8695uart_rx_chars, 0, "UART RX", port);
+	retval = request_irq(port->irq + IRQ_RX, ks8695uart_rx_chars, 0, "UART RX", port);
 	if (retval)
 		goto err_rx;
 
-	retval = request_irq(KS8695_IRQ_UART_LINE_STATUS, ks8695uart_rx_chars, 0, "UART LineStatus", port);
+	retval = request_irq(port->irq + IRQ_LINE_STATUS, ks8695uart_rx_chars, 0, "UART LineStatus", port);
 	if (retval)
 		goto err_ls;
 
-	retval = request_irq(KS8695_IRQ_UART_MODEM_STATUS, ks8695uart_modem_status, 0, "UART ModemStatus", port);
+	retval = request_irq(port->irq + IRQ_MODEM_STATUS, ks8695uart_modem_status, 0, "UART ModemStatus", port);
 	if (retval)
 		goto err_ms;
 
 	return 0;
 
 err_ms:
-	free_irq(KS8695_IRQ_UART_LINE_STATUS, port);
+	free_irq(port->irq + IRQ_LINE_STATUS, port);
 err_ls:
-	free_irq(KS8695_IRQ_UART_RX, port);
+	free_irq(port->irq + IRQ_RX, port);
 err_rx:
-	free_irq(KS8695_IRQ_UART_TX, port);
+	free_irq(port->irq + IRQ_TX, port);
 err_tx:
 	return retval;
 }
@@ -359,10 +434,10 @@ static void ks8695uart_shutdown(struct uart_port *port)
 	/*
 	 * Free the interrupt
 	 */
-	free_irq(KS8695_IRQ_UART_RX, port);
-	free_irq(KS8695_IRQ_UART_TX, port);
-	free_irq(KS8695_IRQ_UART_MODEM_STATUS, port);
-	free_irq(KS8695_IRQ_UART_LINE_STATUS, port);
+	free_irq(port->irq + IRQ_TX, port);
+	free_irq(port->irq + IRQ_RX, port);
+	free_irq(port->irq + IRQ_MODEM_STATUS, port);
+	free_irq(port->irq + IRQ_LINE_STATUS, port);
 
 	/* disable break condition and fifos */
 	UART_PUT_LCR(port, UART_GET_LCR(port) & ~URLC_URSBC);
@@ -535,13 +610,9 @@ static struct uart_ops ks8695uart_pops = {
 	.verify_port	= ks8695uart_verify_port,
 };
 
-static struct uart_port ks8695uart_ports[SERIAL_KS8695_NR] = {
+struct uart_port ks8695uart_ports[SERIAL_KS8695_NR] = {
 	{
-		.membase	= KS8695_UART_VA,
-		.mapbase	= KS8695_UART_PA,
 		.iotype		= SERIAL_IO_MEM,
-		.irq		= KS8695_IRQ_UART_TX,
-		.uartclk	= KS8695_CLOCK_RATE * 16,
 		.fifosize	= 16,
 		.ops		= &ks8695uart_pops,
 		.flags		= UPF_BOOT_AUTOCONF,

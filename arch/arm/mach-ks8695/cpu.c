@@ -12,6 +12,7 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/io.h>
+#include <linux/platform_data/serial-ks8695.h>
 
 #include <mach/hardware.h>
 #include <asm/mach/arch.h>
@@ -19,7 +20,7 @@
 
 #include "regs-sys.h"
 #include "regs-misc.h"
-
+#include "regs-uart.h"
 
 static struct map_desc ks8695_io_desc[] __initdata = {
 	{
@@ -51,10 +52,22 @@ static void __init ks8695_clock_info(void)
 			sysclk[scdc] / 1000000, cpuclk[scdc] / 1000000);
 }
 
+static void __init ks8695_serial_setup(void)
+{
+	if (!IS_ENABLED(CONFIG_SERIAL_KS8695))
+		return;
+
+	ks8695uart_ports[0].membase = KS8695_UART_VA;
+	ks8695uart_ports[0].mapbase = KS8695_UART_PA;
+	ks8695uart_ports[0].irq     = KS8695_IRQ_UART_TX; /* actaully four IRQs */
+	ks8695uart_ports[0].uartclk = KS8695_CLOCK_RATE * 16;
+}
+
 void __init ks8695_map_io(void)
 {
 	iotable_init(ks8695_io_desc, ARRAY_SIZE(ks8695_io_desc));
 
 	ks8695_processor_info();
 	ks8695_clock_info();
+	ks8695_serial_setup();
 }
