@@ -21,7 +21,6 @@
 #include <asm/mach/irq.h>
 
 #include <mach/regs-uart.h>
-#include <mach/regs-irq.h>
 
 #if defined(CONFIG_SERIAL_KS8695_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
 #define SUPPORT_SYSRQ
@@ -51,8 +50,6 @@
 #define UART_PUT_MCR(p, c)	__raw_writel((c), (p)->membase + KS8695_URMC)
 #define UART_GET_BRDR(p)	__raw_readl((p)->membase + KS8695_URBD)
 #define UART_PUT_BRDR(p, c)	__raw_writel((c), (p)->membase + KS8695_URBD)
-
-#define KS8695_CLR_TX_INT()	__raw_writel(1 << KS8695_IRQ_UART_TX, KS8695_IRQ_VA + KS8695_INTST)
 
 #define UART_DUMMY_LSR_RX	0x100
 #define UART_PORT_SIZE		(KS8695_USR - KS8695_URRB + 4)
@@ -207,7 +204,6 @@ static irqreturn_t ks8695uart_tx_chars(int irq, void *dev_id)
 	unsigned int count;
 
 	if (port->x_char) {
-		KS8695_CLR_TX_INT();
 		UART_PUT_CHAR(port, port->x_char);
 		port->icount.tx++;
 		port->x_char = 0;
@@ -221,7 +217,6 @@ static irqreturn_t ks8695uart_tx_chars(int irq, void *dev_id)
 
 	count = 16;	/* fifo size */
 	while (!uart_circ_empty(xmit) && (count-- > 0)) {
-		KS8695_CLR_TX_INT();
 		UART_PUT_CHAR(port, xmit->buf[xmit->tail]);
 
 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
