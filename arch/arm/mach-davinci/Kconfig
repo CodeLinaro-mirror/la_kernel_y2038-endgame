@@ -11,6 +11,7 @@ menuconfig ARCH_DAVINCI
 	select HAVE_IDE
 	select PINCTRL_SINGLE
 	select REGMAP_MMIO
+	select RESET_CONTROLLER
 
 if ARCH_DAVINCI
 
