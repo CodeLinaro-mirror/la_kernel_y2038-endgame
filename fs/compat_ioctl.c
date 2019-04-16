@@ -99,33 +99,6 @@ static int sg_grt_trans(struct file *file,
 }
 #endif /* CONFIG_BLOCK */
 
-struct ppp_idle32 {
-	compat_time_t xmit_idle;
-	compat_time_t recv_idle;
-};
-#define PPPIOCGIDLE32		_IOR('t', 63, struct ppp_idle32)
-
-static int ppp_gidle(struct file *file, unsigned int cmd,
-		struct ppp_idle32 __user *idle32)
-{
-	struct ppp_idle __user *idle;
-	__kernel_time_t xmit, recv;
-	int err;
-
-	idle = compat_alloc_user_space(sizeof(*idle));
-
-	err = do_ioctl(file, PPPIOCGIDLE, (unsigned long) idle);
-
-	if (!err) {
-		if (get_user(xmit, &idle->xmit_idle) ||
-		    get_user(recv, &idle->recv_idle) ||
-		    put_user(xmit, &idle32->xmit_idle) ||
-		    put_user(recv, &idle32->recv_idle))
-			err = -EFAULT;
-	}
-	return err;
-}
-
 /*
  * simple reversible transform to make our table more evenly
  * distributed after sorting.
@@ -192,7 +165,8 @@ COMPATIBLE_IOCTL(PPPIOCGDEBUG)
 COMPATIBLE_IOCTL(PPPIOCSDEBUG)
 /* PPPIOCSPASS is translated */
 /* PPPIOCSACTIVE is translated */
-/* PPPIOCGIDLE is translated */
+COMPATIBLE_IOCTL(PPPIOCGIDLE32)
+COMPATIBLE_IOCTL(PPPIOCGIDLE64)
 COMPATIBLE_IOCTL(PPPIOCNEWUNIT)
 COMPATIBLE_IOCTL(PPPIOCATTACH)
 COMPATIBLE_IOCTL(PPPIOCDETACH)
@@ -217,8 +191,6 @@ static long do_ioctl_trans(unsigned int cmd,
 	void __user *argp = compat_ptr(arg);
 
 	switch (cmd) {
-	case PPPIOCGIDLE32:
-		return ppp_gidle(file, cmd, argp);
 #ifdef CONFIG_BLOCK
 	case SG_GET_REQUEST_TABLE:
 		return sg_grt_trans(file, cmd, argp);
