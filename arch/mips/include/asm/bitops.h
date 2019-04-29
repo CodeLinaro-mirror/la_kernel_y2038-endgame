@@ -67,7 +67,7 @@ static inline void set_bit(unsigned long nr, volatile unsigned long *addr)
 		"	.set	pop					\n"
 		: "=&r" (temp), "=" GCC_OFF_SMALL_ASM() (*m)
 		: "ir" (1UL << bit), GCC_OFF_SMALL_ASM() (*m));
-#if defined(CONFIG_CPU_MIPSR2) || defined(CONFIG_CPU_MIPSR6)
+#if (defined(CONFIG_CPU_MIPSR2) || defined(CONFIG_CPU_MIPSR6)) && !defined(CONFIG_CC_IS_CLANG)
 	} else if (kernel_uses_llsc && __builtin_constant_p(bit)) {
 		loongson_llsc_mb();
 		do {

@@ -340,7 +340,7 @@ early_initcall(mips_smp_ipi_init);
  * First C code run on the secondary CPUs after being started up by
  * the master.
  */
-asmlinkage void start_secondary(void)
+asmlinkage void __init start_secondary(void)
 {
 	unsigned int cpu;
 

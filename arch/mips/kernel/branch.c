@@ -138,15 +138,12 @@ int __mm_isBranchInstr(struct pt_regs *regs, struct mm_decoded_insn dec_insn,
 			return 1;
 #ifdef CONFIG_MIPS_FP_SUPPORT
 		case mm_bc2f_op:
-		case mm_bc1f_op: {
-			int bc_false = 0;
+		case mm_bc1f_op:
+		case mm_bc2t_op:
+		case mm_bc1t_op: {
 			unsigned int fcr31;
 			unsigned int bit;
 
-			bc_false = 1;
-			/* Fall through */
-		case mm_bc2t_op:
-		case mm_bc1t_op:
 			preempt_disable();
 			if (is_fpu_owner())
 			        fcr31 = read_32bit_cp1_register(CP1_STATUS);
@@ -154,7 +151,8 @@ int __mm_isBranchInstr(struct pt_regs *regs, struct mm_decoded_insn dec_insn,
 				fcr31 = current->thread.fpu.fcr31;
 			preempt_enable();
 
-			if (bc_false)
+			if (insn.mm_i_format.rt == mm_bc2t_op ||
+			    insn.mm_i_format.rt == mm_bc1t_op)
 				fcr31 = ~fcr31;
 
 			bit = (insn.mm_i_format.rs >> 2);
