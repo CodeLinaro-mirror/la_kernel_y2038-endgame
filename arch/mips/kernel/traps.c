@@ -2174,7 +2174,7 @@ static void configure_exception_vector(void)
 	}
 }
 
-void per_cpu_trap_init(bool is_boot_cpu)
+void __init per_cpu_trap_init(bool is_boot_cpu)
 {
 	unsigned int cpu = smp_processor_id();
 
