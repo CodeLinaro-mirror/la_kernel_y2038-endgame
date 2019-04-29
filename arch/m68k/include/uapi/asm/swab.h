@@ -10,8 +10,7 @@
 #if defined (__mcfisaaplus__) || defined (__mcfisac__)
 static inline __attribute_const__ __u32 __arch_swab32(__u32 val)
 {
-	__asm__("byterev %0" : "=d" (val) : "0" (val));
-	return val;
+	return __builtin_bswap32(val);
 }
 
 #define __arch_swab32 __arch_swab32
