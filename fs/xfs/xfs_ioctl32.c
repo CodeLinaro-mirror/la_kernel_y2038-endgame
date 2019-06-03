@@ -576,6 +576,9 @@ xfs_file_compat_ioctl(
 	case XFS_IOC_SCRUB_METADATA:
 	case XFS_IOC_BULKSTAT:
 	case XFS_IOC_INUMBERS:
+	case FITRIM:
+	case FS_IOC_GETFSLABEL:
+	case FS_IOC_SETFSLABEL:
 		return xfs_file_ioctl(filp, cmd, (unsigned long)arg);
 #if !defined(BROKEN_X86_ALIGNMENT) || defined(CONFIG_X86_X32)
 	/*
