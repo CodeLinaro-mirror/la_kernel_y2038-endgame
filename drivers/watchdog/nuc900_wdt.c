@@ -225,6 +225,7 @@ static const struct file_operations nuc900wdt_fops = {
 	.owner		= THIS_MODULE,
 	.llseek		= no_llseek,
 	.unlocked_ioctl	= nuc900_wdt_ioctl,
+	.compat_ioctl	= compat_ptr_ioctl,
 	.open		= nuc900_wdt_open,
 	.release	= nuc900_wdt_close,
 	.write		= nuc900_wdt_write,
