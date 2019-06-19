@@ -88,7 +88,7 @@ void rtw_indicate_wx_disassoc_event(struct adapter *padapter)
 	wireless_send_event(padapter->pnetdev, SIOCGIWAP, &wrqu, NULL);
 }
 
-static char *translate_scan(struct adapter *padapter,
+static noinline char *translate_scan(struct adapter *padapter,
 			    struct iw_request_info *info,
 			    struct wlan_network *pnetwork,
 			    char *start, char *stop)
