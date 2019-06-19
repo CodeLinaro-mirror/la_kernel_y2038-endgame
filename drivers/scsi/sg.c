@@ -173,7 +173,7 @@ typedef struct sg_device { /* holds the state of each scsi generic device */
 
 /* tasklet or soft irq callback */
 static void sg_rq_end_io(struct request *rq, blk_status_t status);
-static int sg_start_req(Sg_request *srp, unsigned char *cmd, int compat);
+static int sg_start_req(Sg_request *srp, unsigned char *cmd);
 static int sg_finish_rem_req(Sg_request * srp);
 static int sg_build_indirect(Sg_scatter_hold * schp, Sg_fd * sfp, int buff_size);
 static ssize_t sg_new_read(Sg_fd * sfp, char __user *buf, size_t count,
@@ -182,8 +182,7 @@ static ssize_t sg_new_write(Sg_fd *sfp, struct file *file,
 			const char __user *buf, size_t count, int blocking,
 			int read_only, int sg_io_owned, Sg_request **o_srp);
 static int sg_common_write(Sg_fd * sfp, Sg_request * srp,
-			   unsigned char *cmnd, int timeout, int blocking,
-			   int compat);
+			   unsigned char *cmnd, int timeout, int blocking);
 static int sg_read_oxfer(Sg_request * srp, char __user *outp, int num_read_xfer);
 static void sg_remove_scat(Sg_fd * sfp, Sg_scatter_hold * schp);
 static void sg_build_reserve(Sg_fd * sfp, int req_size);
@@ -448,7 +447,8 @@ sg_read(struct file *filp, char __user *buf, size_t count, loff_t * ppos)
 					retval = -ENOMEM;
 					goto free_old_hdr;
 				}
-				retval = get_sg_io_hdr(new_hdr, buf, in_compat_syscall());
+				retval =__copy_from_user
+				    (new_hdr, buf, SZ_SG_IO_HDR);
 				req_pack_id = new_hdr->pack_id;
 				kfree(new_hdr);
 				if (retval) {
@@ -589,7 +589,10 @@ sg_new_read(Sg_fd * sfp, char __user *buf, size_t count, Sg_request * srp)
 	}
 	if (hp->masked_status || hp->host_status || hp->driver_status)
 		hp->info |= SG_INFO_CHECK;
-	err = put_sg_io_hdr(hp, buf, in_compat_syscall());
+	if (copy_to_user(buf, hp, SZ_SG_IO_HDR)) {
+		err = -EFAULT;
+		goto err_out;
+	}
 err_out:
 	err2 = sg_finish_rem_req(srp);
 	sg_remove_request(sfp, srp);
@@ -703,7 +706,7 @@ sg_write(struct file *filp, const char __user *buf, size_t count, loff_t * ppos)
 				   input_size, (unsigned int) cmnd[0],
 				   current->comm);
 	}
-	k = sg_common_write(sfp, srp, cmnd, sfp->timeout, blocking, 0);
+	k = sg_common_write(sfp, srp, cmnd, sfp->timeout, blocking);
 	return (k < 0) ? k : count;
 }
 
@@ -718,7 +721,6 @@ sg_new_write(Sg_fd *sfp, struct file *file, const char __user *buf,
 	unsigned char cmnd[SG_MAX_CDB_SIZE];
 	int timeout;
 	unsigned long ul_timeout;
-	int compat = in_compat_syscall();
 
 	if (count < SZ_SG_IO_HDR)
 		return -EINVAL;
@@ -733,7 +735,7 @@ sg_new_write(Sg_fd *sfp, struct file *file, const char __user *buf,
 	}
 	srp->sg_io_owned = sg_io_owned;
 	hp = &srp->header;
-	if (get_sg_io_hdr(hp, buf, compat)) {
+	if (__copy_from_user(hp, buf, SZ_SG_IO_HDR)) {
 		sg_remove_request(sfp, srp);
 		return -EFAULT;
 	}
@@ -773,7 +775,7 @@ sg_new_write(Sg_fd *sfp, struct file *file, const char __user *buf,
 		sg_remove_request(sfp, srp);
 		return -EPERM;
 	}
-	k = sg_common_write(sfp, srp, cmnd, timeout, blocking, compat);
+	k = sg_common_write(sfp, srp, cmnd, timeout, blocking);
 	if (k < 0)
 		return k;
 	if (o_srp)
@@ -783,7 +785,7 @@ sg_new_write(Sg_fd *sfp, struct file *file, const char __user *buf,
 
 static int
 sg_common_write(Sg_fd * sfp, Sg_request * srp,
-		unsigned char *cmnd, int timeout, int blocking, int compat)
+		unsigned char *cmnd, int timeout, int blocking)
 {
 	int k, at_head;
 	Sg_device *sdp = sfp->parentdp;
@@ -804,7 +806,7 @@ sg_common_write(Sg_fd * sfp, Sg_request * srp,
 	if (hp->dxfer_len >= SZ_256M)
 		return -EINVAL;
 
-	k = sg_start_req(srp, cmnd, compat);
+	k = sg_start_req(srp, cmnd);
 	if (k) {
 		SCSI_LOG_TIMEOUT(1, sg_printk(KERN_INFO, sfp->parentdp,
 			"sg_common_write: start_req err=%d\n", k));
@@ -891,41 +893,19 @@ sg_fill_request_table(Sg_fd *sfp, sg_req_info_t *rinfo)
 	}
 }
 
-#ifdef CONFIG_COMPAT
-struct compat_sg_req_info { /* used by SG_GET_REQUEST_TABLE ioctl() */
-	char req_state;
-	char orphan;
-	char sg_io_owned;
-	char problem;
-	int pack_id;
-	compat_uptr_t usr_ptr;
-	unsigned int duration;
-	int unused;
-};
-
-static int put_compat_request_table(struct compat_sg_req_info __user *o,
-				    struct sg_req_info *rinfo)
-{
-	int i;
-	for (i = 0; i < SG_MAX_QUEUE; i++) {
-		if (copy_to_user(o + i, rinfo + i, offsetof(sg_req_info_t, usr_ptr)) ||
-		    put_user((uintptr_t)rinfo[i].usr_ptr, &o[i].usr_ptr) ||
-		    put_user(rinfo[i].duration, &o[i].duration) ||
-		    put_user(rinfo[i].unused, &o[i].unused))
-			return -EFAULT;
-	}
-	return 0;
-}
-#endif
-
 static long
-sg_ioctl_common(struct file *filp, Sg_device *sdp, Sg_fd *sfp,
-		unsigned int cmd_in, void __user *p)
+sg_ioctl(struct file *filp, unsigned int cmd_in, unsigned long arg)
 {
+	void __user *p = (void __user *)arg;
 	int __user *ip = p;
 	int result, val, read_only;
+	Sg_device *sdp;
+	Sg_fd *sfp;
 	Sg_request *srp;
 	unsigned long iflags;
+
+	if ((!(sfp = (Sg_fd *) filp->private_data)) || (!(sdp = sfp->parentdp)))
+		return -ENXIO;
 
 	SCSI_LOG_TIMEOUT(3, sg_printk(KERN_INFO, sdp,
 				   "sg_ioctl: cmd=0x%x\n", (int) cmd_in));
@@ -1093,7 +1073,9 @@ sg_ioctl_common(struct file *filp, Sg_device *sdp, Sg_fd *sfp,
 		val = (sdp->device ? 1 : 0);
 		return put_user(val, ip);
 	case SG_GET_REQUEST_TABLE:
-		{
+		if (!access_ok(p, SZ_SG_REQ_INFO * SG_MAX_QUEUE))
+			return -EFAULT;
+		else {
 			sg_req_info_t *rinfo;
 
 			rinfo = kcalloc(SG_MAX_QUEUE, SZ_SG_REQ_INFO,
@@ -1103,13 +1085,8 @@ sg_ioctl_common(struct file *filp, Sg_device *sdp, Sg_fd *sfp,
 			read_lock_irqsave(&sfp->rq_list_lock, iflags);
 			sg_fill_request_table(sfp, rinfo);
 			read_unlock_irqrestore(&sfp->rq_list_lock, iflags);
-	#ifdef CONFIG_COMPAT
-			if (in_compat_syscall())
-				result = put_compat_request_table(p, rinfo);
-			else
-	#endif
-				result = copy_to_user(p, rinfo,
-						      SZ_SG_REQ_INFO * SG_MAX_QUEUE);
+			result = __copy_to_user(p, rinfo,
+						SZ_SG_REQ_INFO * SG_MAX_QUEUE);
 			result = result ? -EFAULT : 0;
 			kfree(rinfo);
 			return result;
@@ -1160,44 +1137,29 @@ sg_ioctl_common(struct file *filp, Sg_device *sdp, Sg_fd *sfp,
 			cmd_in, filp->f_flags & O_NDELAY);
 	if (result)
 		return result;
-
-	return -ENOIOCTLCMD;
-}
-
-static long
-sg_ioctl(struct file *filp, unsigned int cmd_in, unsigned long arg)
-{
-	void __user *p = (void __user *)arg;
-	Sg_device *sdp;
-	Sg_fd *sfp;
-	int ret;
-
-	if ((!(sfp = (Sg_fd *) filp->private_data)) || (!(sdp = sfp->parentdp)))
-		return -ENXIO;
-
-	ret = sg_ioctl_common(filp, sdp, sfp, cmd_in, p);
-	if (ret != -ENOIOCTLCMD)
-		return ret;
-
 	return scsi_ioctl(sdp->device, cmd_in, p);
 }
 
 #ifdef CONFIG_COMPAT
 static long sg_compat_ioctl(struct file *filp, unsigned int cmd_in, unsigned long arg)
 {
-	void __user *p = compat_ptr(arg);
 	Sg_device *sdp;
 	Sg_fd *sfp;
-	int ret;
+	struct scsi_device *sdev;
 
 	if ((!(sfp = (Sg_fd *) filp->private_data)) || (!(sdp = sfp->parentdp)))
 		return -ENXIO;
 
-	ret = sg_ioctl_common(filp, sdp, sfp, cmd_in, p);
-	if (ret != -ENOIOCTLCMD)
-		return ret;
+	sdev = sdp->device;
+	if (sdev->host->hostt->compat_ioctl) { 
+		int ret;
 
-	return scsi_compat_ioctl(sdp->device, cmd_in, p);
+		ret = sdev->host->hostt->compat_ioctl(sdev, cmd_in, (void __user *)arg);
+
+		return ret;
+	}
+	
+	return -ENOIOCTLCMD;
 }
 #endif
 
@@ -1733,7 +1695,7 @@ exit_sg(void)
 }
 
 static int
-sg_start_req(Sg_request *srp, unsigned char *cmd, int compat)
+sg_start_req(Sg_request *srp, unsigned char *cmd)
 {
 	int res;
 	struct request *rq;
@@ -1835,14 +1797,7 @@ sg_start_req(Sg_request *srp, unsigned char *cmd, int compat)
 		struct iovec *iov = NULL;
 		struct iov_iter i;
 
-#ifdef CONFIG_COMPAT
-		if (compat)
-			res = compat_import_iovec(rw, hp->dxferp, iov_count,
-						  0, &iov, &i);
-		else
-#endif
-			res = import_iovec(rw, hp->dxferp, iov_count,
-					   0, &iov, &i);
+		res = import_iovec(rw, hp->dxferp, iov_count, 0, &iov, &i);
 		if (res < 0)
 			return res;
 

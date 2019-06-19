@@ -19,7 +19,6 @@
 
 #define IDETAPE_VERSION "1.20"
 
-#include <linux/compat.h>
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/string.h>
@@ -1369,7 +1368,7 @@ static int idetape_mtioctop(ide_drive_t *drive, short mt_op, int mt_count)
  * ide-tape ioctls are supported on both interfaces.
  */
 static long do_idetape_chrdev_ioctl(struct file *file,
-				unsigned int cmd, unsigned long arg, bool compat)
+				unsigned int cmd, unsigned long arg)
 {
 	struct ide_tape_obj *tape = file->private_data;
 	ide_drive_t *drive = tape->drive;
@@ -1408,10 +1407,14 @@ static long do_idetape_chrdev_ioctl(struct file *file,
 		if (tape->drv_write_prot)
 			mtget.mt_gstat |= GMT_WR_PROT(0xffffffff);
 
-		return put_user_mtget(argp, &mtget, compat);
+		if (copy_to_user(argp, &mtget, sizeof(struct mtget)))
+			return -EFAULT;
+		return 0;
 	case MTIOCPOS:
 		mtpos.mt_blkno = position / tape->user_bs_factor - block_offset;
-		return put_user_mtpos(argp, &mtpos, compat);
+		if (copy_to_user(argp, &mtpos, sizeof(struct mtpos)))
+			return -EFAULT;
+		return 0;
 	default:
 		if (tape->chrdev_dir == IDETAPE_DIR_READ)
 			ide_tape_discard_merge_buffer(drive, 1);
@@ -1424,23 +1427,7 @@ static long idetape_chrdev_ioctl(struct file *file,
 {
 	long ret;
 	mutex_lock(&ide_tape_mutex);
-	ret = do_idetape_chrdev_ioctl(file, cmd, arg, false);
-	mutex_unlock(&ide_tape_mutex);
-	return ret;
-}
-
-static long idetape_chrdev_compat_ioctl(struct file *file,
-				unsigned int cmd, unsigned long arg)
-{
-	long ret;
-
-	if (cmd == MTIOCPOS32)
-		cmd = MTIOCPOS;
-	else if (cmd == MTIOCGET32)
-		cmd = MTIOCGET;
-
-	mutex_lock(&ide_tape_mutex);
-	ret = do_idetape_chrdev_ioctl(file, cmd, arg, true);
+	ret = do_idetape_chrdev_ioctl(file, cmd, arg);
 	mutex_unlock(&ide_tape_mutex);
 	return ret;
 }
@@ -1899,8 +1886,6 @@ static const struct file_operations idetape_fops = {
 	.read		= idetape_chrdev_read,
 	.write		= idetape_chrdev_write,
 	.unlocked_ioctl	= idetape_chrdev_ioctl,
-	.compat_ioctl	= IS_ENABLED(CONFIG_COMPAT) ?
-			  idetape_chrdev_compat_ioctl : NULL,
 	.open		= idetape_chrdev_open,
 	.release	= idetape_chrdev_release,
 	.llseek		= noop_llseek,

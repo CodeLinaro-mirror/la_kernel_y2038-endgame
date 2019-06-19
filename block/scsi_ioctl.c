@@ -2,7 +2,6 @@
 /*
  * Copyright (C) 2001 Jens Axboe <axboe@suse.de>
  */
-#include <linux/compat.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/string.h>
@@ -277,7 +276,7 @@ static int blk_complete_sghdr_rq(struct request *rq, struct sg_io_hdr *hdr,
 }
 
 static int sg_io(struct request_queue *q, struct gendisk *bd_disk,
-		struct sg_io_hdr *hdr, fmode_t mode, bool compat)
+		struct sg_io_hdr *hdr, fmode_t mode)
 {
 	unsigned long start_time;
 	ssize_t ret = 0;
@@ -328,14 +327,7 @@ static int sg_io(struct request_queue *q, struct gendisk *bd_disk,
 		struct iov_iter i;
 		struct iovec *iov = NULL;
 
-#ifdef CONFIG_COMPAT
-		if (compat)
-			ret = compat_import_iovec(rq_data_dir(rq),
-				   hdr->dxferp, hdr->iovec_count,
-				   0, &iov, &i);
-		else
-#endif
-			ret = import_iovec(rq_data_dir(rq),
+		ret = import_iovec(rq_data_dir(rq),
 				   hdr->dxferp, hdr->iovec_count,
 				   0, &iov, &i);
 		if (ret < 0)
@@ -550,122 +542,6 @@ static inline int blk_send_start_stop(struct request_queue *q,
 	return __blk_send_generic(q, bd_disk, GPCMD_START_STOP_UNIT, data);
 }
 
-#ifdef CONFIG_COMPAT
-struct compat_sg_io_hdr {
-	compat_int_t interface_id;	/* [i] 'S' for SCSI generic (required) */
-	compat_int_t dxfer_direction;	/* [i] data transfer direction  */
-	unsigned char cmd_len;		/* [i] SCSI command length ( <= 16 bytes) */
-	unsigned char mx_sb_len;	/* [i] max length to write to sbp */
-	unsigned short iovec_count;	/* [i] 0 implies no scatter gather */
-	compat_uint_t dxfer_len;	/* [i] byte count of data transfer */
-	compat_uint_t dxferp;		/* [i], [*io] points to data transfer memory
-						or scatter gather list */
-	compat_uptr_t cmdp;		/* [i], [*i] points to command to perform */
-	compat_uptr_t sbp;		/* [i], [*o] points to sense_buffer memory */
-	compat_uint_t timeout;		/* [i] MAX_UINT->no timeout (unit: millisec) */
-	compat_uint_t flags;		/* [i] 0 -> default, see SG_FLAG... */
-	compat_int_t pack_id;		/* [i->o] unused internally (normally) */
-	compat_uptr_t usr_ptr;		/* [i->o] unused internally */
-	unsigned char status;		/* [o] scsi status */
-	unsigned char masked_status;	/* [o] shifted, masked scsi status */
-	unsigned char msg_status;	/* [o] messaging level data (optional) */
-	unsigned char sb_len_wr;	/* [o] byte count actually written to sbp */
-	unsigned short host_status;	/* [o] errors from host adapter */
-	unsigned short driver_status;	/* [o] errors from software driver */
-	compat_int_t resid;		/* [o] dxfer_len - actual_transferred */
-	compat_uint_t duration;		/* [o] time taken by cmd (unit: millisec) */
-	compat_uint_t info;		/* [o] auxiliary information */
-};
-#endif
-
-int put_sg_io_hdr(const struct sg_io_hdr *hdr, void __user *argp, bool compat)
-{
-#ifdef CONFIG_COMPAT
-	if (compat) {
-		struct compat_sg_io_hdr hdr32 =  {
-			.interface_id	 = hdr->interface_id,
-			.dxfer_direction = hdr->dxfer_direction,
-			.cmd_len	 = hdr->cmd_len,
-			.mx_sb_len	 = hdr->mx_sb_len,
-			.iovec_count	 = hdr->iovec_count,
-			.dxfer_len	 = hdr->dxfer_len,
-			.dxferp		 = (uintptr_t)hdr->dxferp,
-			.cmdp		 = (uintptr_t)hdr->cmdp,
-			.sbp		 = (uintptr_t)hdr->sbp,
-			.timeout	 = hdr->timeout,
-			.flags		 = hdr->flags,
-			.pack_id	 = hdr->pack_id,
-			.usr_ptr	 = (uintptr_t)hdr->usr_ptr,
-			.status		 = hdr->status,
-			.masked_status	 = hdr->masked_status,
-			.msg_status	 = hdr->msg_status,
-			.sb_len_wr	 = hdr->sb_len_wr,
-			.host_status	 = hdr->host_status,
-			.driver_status	 = hdr->driver_status,
-			.resid		 = hdr->resid,
-			.duration	 = hdr->duration,
-			.info		 = hdr->info,
-		};
-
-		if (copy_to_user(argp, &hdr32, sizeof(hdr)))
-			return -EFAULT;
-
-		return 0;
-	}
-#endif
-
-	if (copy_to_user(argp, &hdr, sizeof(hdr)))
-		return -EFAULT;
-
-	return 0;
-}
-EXPORT_SYMBOL(put_sg_io_hdr);
-
-int get_sg_io_hdr(struct sg_io_hdr *hdr, const void __user *argp, bool compat)
-{
-#ifdef CONFIG_COMPAT
-	struct compat_sg_io_hdr hdr32;
-
-	if (compat) {
-		if (copy_from_user(&hdr32, argp, sizeof(hdr32)))
-			return -EFAULT;
-
-		*hdr = (struct sg_io_hdr) {
-			.interface_id	 = hdr32.interface_id,
-			.dxfer_direction = hdr32.dxfer_direction,
-			.cmd_len	 = hdr32.cmd_len,
-			.mx_sb_len	 = hdr32.mx_sb_len,
-			.iovec_count	 = hdr32.iovec_count,
-			.dxfer_len	 = hdr32.dxfer_len,
-			.dxferp		 = compat_ptr(hdr32.dxferp),
-			.cmdp		 = compat_ptr(hdr32.cmdp),
-			.sbp		 = compat_ptr(hdr32.sbp),
-			.timeout	 = hdr32.timeout,
-			.flags		 = hdr32.flags,
-			.pack_id	 = hdr32.pack_id,
-			.usr_ptr	 = compat_ptr(hdr32.usr_ptr),
-			.status		 = hdr32.status,
-			.masked_status	 = hdr32.masked_status,
-			.msg_status	 = hdr32.msg_status,
-			.sb_len_wr	 = hdr32.sb_len_wr,
-			.host_status	 = hdr32.host_status,
-			.driver_status	 = hdr32.driver_status,
-			.resid		 = hdr32.resid,
-			.duration	 = hdr32.duration,
-			.info		 = hdr32.info,
-		};
-
-		return 0;
-	}
-#endif
-
-	if (copy_from_user(&hdr, argp, sizeof(hdr)))
-		return -EFAULT;
-
-	return 0;
-}
-EXPORT_SYMBOL(get_sg_io_hdr);
-
 int scsi_cmd_ioctl(struct request_queue *q, struct gendisk *bd_disk, fmode_t mode,
 		   unsigned int cmd, void __user *arg)
 {
@@ -704,16 +580,15 @@ int scsi_cmd_ioctl(struct request_queue *q, struct gendisk *bd_disk, fmode_t mod
 			break;
 		case SG_IO: {
 			struct sg_io_hdr hdr;
-			int compat = in_compat_syscall();
 
-			err = get_sg_io_hdr(&hdr, arg, compat);
-			if (err)
+			err = -EFAULT;
+			if (copy_from_user(&hdr, arg, sizeof(hdr)))
 				break;
-			err = sg_io(q, bd_disk, &hdr, mode, compat);
+			err = sg_io(q, bd_disk, &hdr, mode);
 			if (err == -EFAULT)
 				break;
 
-			if (put_sg_io_hdr(&hdr, arg, compat))
+			if (copy_to_user(arg, &hdr, sizeof(hdr)))
 				err = -EFAULT;
 			break;
 		}
@@ -757,7 +632,7 @@ int scsi_cmd_ioctl(struct request_queue *q, struct gendisk *bd_disk, fmode_t mod
 			hdr.cmdp = ((struct cdrom_generic_command __user*) arg)->cmd;
 			hdr.cmd_len = sizeof(cgc.cmd);
 
-			err = sg_io(q, bd_disk, &hdr, mode, 0);
+			err = sg_io(q, bd_disk, &hdr, mode);
 			if (err == -EFAULT)
 				break;
 
@@ -821,70 +696,6 @@ int scsi_cmd_blk_ioctl(struct block_device *bd, fmode_t mode,
 	return scsi_cmd_ioctl(bd->bd_disk->queue, bd->bd_disk, mode, cmd, arg);
 }
 EXPORT_SYMBOL(scsi_cmd_blk_ioctl);
-
-#ifdef CONFIG_COMPAT
-int scsi_cmd_compat_ioctl(struct request_queue *q, struct gendisk *bd_disk,
-			  fmode_t mode, unsigned int cmd, void __user *arg)
-{
-	int err;
-
-	if (!q)
-		return -ENXIO;
-
-	switch (cmd) {
-	/* most are compatible */
-	case SG_GET_VERSION_NUM:
-	case SCSI_IOCTL_GET_IDLUN:
-	case SCSI_IOCTL_GET_BUS_NUMBER:
-	case SG_SET_TIMEOUT:
-	case SG_GET_TIMEOUT:
-	case SG_GET_RESERVED_SIZE:
-	case SG_SET_RESERVED_SIZE:
-	case SG_EMULATED_HOST:
-	case SCSI_IOCTL_SEND_COMMAND:
-	case CDROMCLOSETRAY:
-	case CDROMEJECT:
-		err = scsi_cmd_ioctl(q, bd_disk, mode, cmd, arg);
-		break;
-	/* SG_IO handles both */
-	case SG_IO: {
-		struct sg_io_hdr hdr;
-
-		err = get_sg_io_hdr(&hdr, arg, 1);
-		if (err)
-			break;
-		err = sg_io(q, bd_disk, &hdr, mode, 1);
-		if (err == -EFAULT)
-			break;
-
-		if (put_sg_io_hdr(&hdr, arg, 1))
-			err = -EFAULT;
-		break;
-	}
-	/* handled in compat_blkdev_driver_ioctl */
-	case CDROM_SEND_PACKET:
-	default:
-		err = -ENOIOCTLCMD;
-		break;
-	}
-
-	return err;
-}
-EXPORT_SYMBOL(scsi_cmd_compat_ioctl);
-
-int scsi_cmd_blk_compat_ioctl(struct block_device *bd, fmode_t mode,
-			      unsigned int cmd, void __user *arg)
-{
-	int ret;
-
-	ret = scsi_verify_blk_ioctl(bd, cmd);
-	if (ret < 0)
-		return ret;
-
-	return scsi_cmd_compat_ioctl(bd->bd_disk->queue, bd->bd_disk, mode, cmd, arg);
-}
-EXPORT_SYMBOL(scsi_cmd_blk_compat_ioctl);
-#endif
 
 /**
  * scsi_req_init - initialize certain fields of a scsi_request structure

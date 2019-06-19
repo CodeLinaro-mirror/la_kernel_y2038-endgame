@@ -1693,40 +1693,20 @@ static void sd_rescan(struct device *dev)
 static int sd_compat_ioctl(struct block_device *bdev, fmode_t mode,
 			   unsigned int cmd, unsigned long arg)
 {
-	struct gendisk *disk = bdev->bd_disk;
-	struct scsi_disk *sdkp = scsi_disk(disk);
-	struct scsi_device *sdp = sdkp->device;
-	void __user *p = compat_ptr(arg);
+	struct scsi_device *sdev = scsi_disk(bdev->bd_disk)->device;
 	int error;
 
-	SCSI_LOG_IOCTL(1, sd_printk(KERN_INFO, sdkp, "sd_ioctl: disk=%s, "
-				    "cmd=0x%x\n", disk->disk_name, cmd));
-
-	error = scsi_verify_blk_ioctl(bdev, cmd);
-	if (error < 0)
-		return error;
-
-	error = scsi_ioctl_block_when_processing_errors(sdp, cmd,
+	error = scsi_ioctl_block_when_processing_errors(sdev, cmd,
 			(mode & FMODE_NDELAY) != 0);
 	if (error)
 		return error;
-
-	if (is_sed_ioctl(cmd))
-		return sed_ioctl(sdkp->opal_dev, cmd, p);
 	       
-	switch (cmd) {
-		case SCSI_IOCTL_GET_IDLUN:
-		case SCSI_IOCTL_GET_BUS_NUMBER:
-			error = scsi_compat_ioctl(sdp, cmd, p);
-			break;
-		default:
-			error = scsi_cmd_blk_compat_ioctl(bdev, mode, cmd, p);
-			if (error != -ENOTTY)
-				break;
-			error = scsi_compat_ioctl(sdp, cmd, p);
-			break;
-	}
-	return error;
+	/* 
+	 * Let the static ioctl translation table take care of it.
+	 */
+	if (!sdev->host->hostt->compat_ioctl)
+		return -ENOIOCTLCMD; 
+	return sdev->host->hostt->compat_ioctl(sdev, cmd, (void __user *)arg);
 }
 #endif
 
