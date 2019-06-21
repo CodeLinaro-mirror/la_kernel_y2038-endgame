@@ -306,9 +306,9 @@ static int ip_vs_ftp_out(struct ip_vs_app *app, struct ip_vs_conn *cp,
 					   &start, &end) != 1)
 			return 1;
 
-		IP_VS_DBG_BUF(7, "EPSV response (%s:%u) -> %s:%u detected\n",
-			      IP_VS_DBG_ADDR(cp->af, &from), ntohs(port),
-			      IP_VS_DBG_ADDR(cp->af, &cp->caddr), 0);
+		IP_VS_DBG(7, "EPSV response (%pISpc) -> %pISc detected\n",
+			  IP_VS_DBG_SOCKADDR(cp->af, &from, port),
+			  IP_VS_DBG_SOCKADDR(cp->af, &cp->caddr, 0));
 	} else {
 		return 1;
 	}
@@ -510,15 +510,15 @@ static int ip_vs_ftp_in(struct ip_vs_app *app, struct ip_vs_conn *cp,
 					  &to, &port, cp->af,
 					  &start, &end) == 1) {
 
-		IP_VS_DBG_BUF(7, "EPRT %s:%u detected\n",
-			      IP_VS_DBG_ADDR(cp->af, &to), ntohs(port));
+		IP_VS_DBG(7, "EPRT %pISpc detected\n",
+			  IP_VS_DBG_SOCKADDR(cp->af, &to, port));
 
 		/* Now update or create a connection entry for it */
-		IP_VS_DBG_BUF(7, "protocol %s %s:%u %s:%u\n",
-			      ip_vs_proto_name(ipvsh->protocol),
-			      IP_VS_DBG_ADDR(cp->af, &to), ntohs(port),
-			      IP_VS_DBG_ADDR(cp->af, &cp->vaddr),
-			      ntohs(cp->vport)-1);
+		IP_VS_DBG(7, "protocol %s %pISpc %pISpc\n",
+			  ip_vs_proto_name(ipvsh->protocol),
+			  IP_VS_DBG_SOCKADDR(cp->af, &to, port),
+			  IP_VS_DBG_SOCKADDR(cp->af, &cp->vaddr,
+					     htons(ntohs(cp->vport)-1)));
 	} else {
 		return 1;
 	}
