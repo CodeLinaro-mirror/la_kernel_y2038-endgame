@@ -227,6 +227,16 @@ static inline const char *ip_vs_dbg_addr(int af, char *buf, size_t buf_len,
 		       sizeof(ip_vs_dbg_buf), addr,			\
 		       &ip_vs_dbg_idx)
 
+#define IP_VS_DBG_SOCKADDR4(fam, addr, port)				\
+	(struct sockaddr*)&(struct sockaddr_in)				\
+	{ .sin_family = (fam), .sin_addr = (addr)->in, .sin_port = (port) }
+#define IP_VS_DBG_SOCKADDR6(fam, addr, port)				\
+	(struct sockaddr*)&(struct sockaddr_in6) \
+	{ .sin6_family = (fam), .sin6_addr = (addr)->in6, .sin6_port = (port) }
+#define IP_VS_DBG_SOCKADDR(fam, addr, port) (fam == AF_INET ?		\
+			IP_VS_DBG_SOCKADDR4(fam, addr, port) :		\
+			IP_VS_DBG_SOCKADDR6(fam, addr, port))
+
 #define IP_VS_DBG(level, msg, ...)					\
 	do {								\
 		if (level <= ip_vs_get_debug_level())			\
@@ -251,6 +261,7 @@ static inline const char *ip_vs_dbg_addr(int af, char *buf, size_t buf_len,
 #else	/* NO DEBUGGING at ALL */
 #define IP_VS_DBG_BUF(level, msg...)  do {} while (0)
 #define IP_VS_ERR_BUF(msg...)  do {} while (0)
+#define IP_VS_DBG_SOCKADDR(fam, addr, port) NULL
 #define IP_VS_DBG(level, msg...)  do {} while (0)
 #define IP_VS_DBG_RL(msg...)  do {} while (0)
 #define IP_VS_DBG_PKT(level, af, pp, skb, ofs, msg)	do {} while (0)
@@ -1245,31 +1256,23 @@ static inline void ip_vs_control_del(struct ip_vs_conn *cp)
 {
 	struct ip_vs_conn *ctl_cp = cp->control;
 	if (!ctl_cp) {
-		IP_VS_ERR_BUF("request control DEL for uncontrolled: "
-			      "%s:%d to %s:%d\n",
-			      IP_VS_DBG_ADDR(cp->af, &cp->caddr),
-			      ntohs(cp->cport),
-			      IP_VS_DBG_ADDR(cp->af, &cp->vaddr),
-			      ntohs(cp->vport));
+		pr_err("request control DEL for uncontrolled: "
+		       "%pISpc to %pISpcn",
+		       IP_VS_DBG_SOCKADDR(cp->af, &cp->caddr, cp->cport),
+		       IP_VS_DBG_SOCKADDR(cp->af, &cp->vaddr, cp->vport));
 
 		return;
 	}
 
-	IP_VS_DBG_BUF(7, "DELeting control for: "
-		      "cp.dst=%s:%d ctl_cp.dst=%s:%d\n",
-		      IP_VS_DBG_ADDR(cp->af, &cp->caddr),
-		      ntohs(cp->cport),
-		      IP_VS_DBG_ADDR(cp->af, &ctl_cp->caddr),
-		      ntohs(ctl_cp->cport));
+	IP_VS_DBG(7, "DELeting control for: cp.dst=%pISpc ctl_cp.dst=%pISpc\n",
+		  IP_VS_DBG_SOCKADDR(cp->af, &cp->caddr, cp->cport),
+		  IP_VS_DBG_SOCKADDR(cp->af, &ctl_cp->caddr, ctl_cp->cport));
 
 	cp->control = NULL;
 	if (atomic_read(&ctl_cp->n_control) == 0) {
-		IP_VS_ERR_BUF("BUG control DEL with n=0 : "
-			      "%s:%d to %s:%d\n",
-			      IP_VS_DBG_ADDR(cp->af, &cp->caddr),
-			      ntohs(cp->cport),
-			      IP_VS_DBG_ADDR(cp->af, &cp->vaddr),
-			      ntohs(cp->vport));
+		pr_err("BUG control DEL with n=0 : %pISpc to %pISpc\n",
+		       IP_VS_DBG_SOCKADDR(cp->af, &cp->caddr, cp->cport),
+		       IP_VS_DBG_SOCKADDR(cp->af, &cp->vaddr, cp->vport));
 
 		return;
 	}
@@ -1280,22 +1283,18 @@ static inline void
 ip_vs_control_add(struct ip_vs_conn *cp, struct ip_vs_conn *ctl_cp)
 {
 	if (cp->control) {
-		IP_VS_ERR_BUF("request control ADD for already controlled: "
-			      "%s:%d to %s:%d\n",
-			      IP_VS_DBG_ADDR(cp->af, &cp->caddr),
-			      ntohs(cp->cport),
-			      IP_VS_DBG_ADDR(cp->af, &cp->vaddr),
-			      ntohs(cp->vport));
+		pr_err("request control ADD for already controlled: "
+		       "%pISpc to %pISpc\n",
+		       IP_VS_DBG_SOCKADDR(cp->af, &cp->caddr, cp->cport),
+		       IP_VS_DBG_SOCKADDR(cp->af, &cp->vaddr, cp->vport));
 
 		ip_vs_control_del(cp);
 	}
 
-	IP_VS_DBG_BUF(7, "ADDing control for: "
-		      "cp.dst=%s:%d ctl_cp.dst=%s:%d\n",
-		      IP_VS_DBG_ADDR(cp->af, &cp->caddr),
-		      ntohs(cp->cport),
-		      IP_VS_DBG_ADDR(cp->af, &ctl_cp->caddr),
-		      ntohs(ctl_cp->cport));
+	IP_VS_DBG(7, "ADDing control for: "
+		  "cp.dst=%pISpc ctl_cp.dst=%pISpc\n",
+		  IP_VS_DBG_SOCKADDR(cp->af, &cp->caddr, cp->cport),
+		  IP_VS_DBG_SOCKADDR(cp->af, &ctl_cp->caddr, ctl_cp->cport));
 
 	cp->control = ctl_cp;
 	atomic_inc(&ctl_cp->n_control);
