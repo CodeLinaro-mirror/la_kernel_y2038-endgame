@@ -52,7 +52,6 @@
 #include <net/ip_vs.h>
 #include <linux/indirect_call_wrapper.h>
 
-
 EXPORT_SYMBOL(register_ip_vs_scheduler);
 EXPORT_SYMBOL(unregister_ip_vs_scheduler);
 EXPORT_SYMBOL(ip_vs_proto_name);
@@ -295,11 +294,11 @@ ip_vs_sched_persist(struct ip_vs_service *svc,
 #endif
 		snet.ip = src_addr->ip & svc->netmask;
 
-	IP_VS_DBG_BUF(6, "p-schedule: src %s:%u dest %s:%u "
-		      "mnet %s\n",
-		      IP_VS_DBG_ADDR(svc->af, src_addr), ntohs(src_port),
-		      IP_VS_DBG_ADDR(svc->af, dst_addr), ntohs(dst_port),
-		      IP_VS_DBG_ADDR(svc->af, &snet));
+	IP_VS_DBG(6, "p-schedule: src %pISpc dest %pISpc "
+		      "mnet %pIS\n",
+		      IP_VS_DBG_SOCKADDR(svc->af, src_addr, src_port),
+		      IP_VS_DBG_SOCKADDR(svc->af, dst_addr, dst_port),
+		      IP_VS_DBG_SOCKADDR(svc->af, &snet, 0));
 
 	/*
 	 * As far as we know, FTP is a very complicated network protocol, and
@@ -567,12 +566,12 @@ ip_vs_schedule(struct ip_vs_service *svc, struct sk_buff *skb,
 		}
 	}
 
-	IP_VS_DBG_BUF(6, "Schedule fwd:%c c:%s:%u v:%s:%u "
-		      "d:%s:%u conn->flags:%X conn->refcnt:%d\n",
+	IP_VS_DBG(6, "Schedule fwd:%c c:%pISpc v:%pISpc "
+		      "d:%pISp conn->flags:%X conn->refcnt:%d\n",
 		      ip_vs_fwd_tag(cp),
-		      IP_VS_DBG_ADDR(cp->af, &cp->caddr), ntohs(cp->cport),
-		      IP_VS_DBG_ADDR(cp->af, &cp->vaddr), ntohs(cp->vport),
-		      IP_VS_DBG_ADDR(cp->daf, &cp->daddr), ntohs(cp->dport),
+		      IP_VS_DBG_SOCKADDR(cp->af, &cp->caddr, cp->cport),
+		      IP_VS_DBG_SOCKADDR(cp->af, &cp->vaddr, cp->vport),
+		      IP_VS_DBG_SOCKADDR(cp->daf, &cp->daddr, cp->dport),
 		      cp->flags, refcount_read(&cp->refcnt));
 
 	ip_vs_conn_stats(cp, svc);
@@ -886,8 +885,8 @@ static int handle_response_icmp(int af, struct sk_buff *skb,
 	/* Ensure the checksum is correct */
 	if (!skb_csum_unnecessary(skb) && ip_vs_checksum_complete(skb, ihl)) {
 		/* Failed checksum! */
-		IP_VS_DBG_BUF(1, "Forward ICMP: failed checksum from %s!\n",
-			      IP_VS_DBG_ADDR(af, snet));
+		IP_VS_DBG(1, "Forward ICMP: failed checksum from %pISc!\n",
+			      IP_VS_DBG_SOCKADDR(af, snet, 0));
 		goto out;
 	}
 
@@ -1220,13 +1219,13 @@ struct ip_vs_conn *ip_vs_new_conn_out(struct ip_vs_service *svc,
 	ip_vs_conn_stats(cp, svc);
 
 	/* return connection (will be used to handle outgoing packet) */
-	IP_VS_DBG_BUF(6, "New connection RS-initiated:%c c:%s:%u v:%s:%u "
-		      "d:%s:%u conn->flags:%X conn->refcnt:%d\n",
-		      ip_vs_fwd_tag(cp),
-		      IP_VS_DBG_ADDR(cp->af, &cp->caddr), ntohs(cp->cport),
-		      IP_VS_DBG_ADDR(cp->af, &cp->vaddr), ntohs(cp->vport),
-		      IP_VS_DBG_ADDR(cp->af, &cp->daddr), ntohs(cp->dport),
-		      cp->flags, refcount_read(&cp->refcnt));
+	IP_VS_DBG(6, "New connection RS-initiated:%c c:%pISpc v:%pISpc "
+		  "d:%pISp conn->flags:%X conn->refcnt:%d\n",
+		  ip_vs_fwd_tag(cp),
+		  IP_VS_DBG_SOCKADDR(cp->af, &cp->caddr, cp->cport),
+		  IP_VS_DBG_SOCKADDR(cp->af, &cp->vaddr, cp->vport),
+		  IP_VS_DBG_SOCKADDR(cp->af, &cp->daddr, cp->dport),
+		  cp->flags, refcount_read(&cp->refcnt));
 	LeaveFunction(12);
 	return cp;
 }
@@ -1969,7 +1968,6 @@ out:
 }
 #endif
 
-
 /*
  *	Check if it's for virtual services, look it up,
  *	and send it on its way...
@@ -1998,10 +1996,10 @@ ip_vs_in(struct netns_ipvs *ipvs, unsigned int hooknum, struct sk_buff *skb, int
 		      hooknum != NF_INET_LOCAL_OUT) ||
 		     !skb_dst(skb))) {
 		ip_vs_fill_iph_skb(af, skb, false, &iph);
-		IP_VS_DBG_BUF(12, "packet type=%d proto=%d daddr=%s"
+		IP_VS_DBG(12, "packet type=%d proto=%d daddr=%pISc"
 			      " ignored in hook %u\n",
 			      skb->pkt_type, iph.protocol,
-			      IP_VS_DBG_ADDR(af, &iph.daddr), hooknum);
+			      IP_VS_DBG_SOCKADDR(af, &iph.daddr, 0), hooknum);
 		return NF_ACCEPT;
 	}
 	/* ipvs enabled in this netns ? */
