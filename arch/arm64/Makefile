@@ -51,7 +51,9 @@ ifeq ($(CONFIG_GENERIC_COMPAT_VDSO), y)
   CROSS_COMPILE_COMPAT ?= $(CONFIG_CROSS_COMPILE_COMPAT_VDSO:"%"=%)
 
   ifeq ($(CONFIG_CC_IS_CLANG), y)
+    ifndef CONFIG_COMPILE_TEST
     $(warning CROSS_COMPILE_COMPAT is clang, the compat vDSO will not be built)
+    endif
   else ifeq ($(CROSS_COMPILE_COMPAT),)
     $(warning CROSS_COMPILE_COMPAT not defined or empty, the compat vDSO will not be built)
   else ifeq ($(shell which $(CROSS_COMPILE_COMPAT)gcc 2> /dev/null),)
