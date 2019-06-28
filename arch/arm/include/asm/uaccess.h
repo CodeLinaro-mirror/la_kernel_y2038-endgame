@@ -316,6 +316,7 @@ static inline void set_fs(mm_segment_t fs)
 do {									\
 	unsigned long __gu_addr = (unsigned long)(ptr);			\
 	unsigned long __gu_val;						\
+	unsigned long long __gu_val8;					\
 	unsigned int __ua_flags;					\
 	__chk_user_ptr(ptr);						\
 	might_fault();							\
@@ -324,10 +325,13 @@ do {									\
 	case 1:	__get_user_asm_byte(__gu_val, __gu_addr, err);	break;	\
 	case 2:	__get_user_asm_half(__gu_val, __gu_addr, err);	break;	\
 	case 4:	__get_user_asm_word(__gu_val, __gu_addr, err);	break;	\
+	case 8:	__get_user_asm_dword(__gu_val8, __gu_addr, err);break;	\
 	default: (__gu_val) = __get_user_bad();				\
 	}								\
 	uaccess_restore(__ua_flags);					\
-	(x) = (__typeof__(*(ptr)))__gu_val;				\
+	(x) = (__typeof__(*(ptr)))					\
+		__builtin_choose_expr(sizeof(*(ptr)) == 8,		\
+				      __gu_val8, __gu_val);		\
 } while (0)
 
 #define __get_user_asm(x, addr, err, instr)			\
@@ -382,6 +386,8 @@ do {									\
 	__get_user_asm(x, addr, err, ldr)
 #endif
 
+#define __get_user_asm_dword(x, addr, err)			\
+	do { err = raw_copy_from_user(&x, (void __user *)addr, 8) ? -EFAULT : 0; } while (0)
 
 #define __put_user_switch(x, ptr, __err, __fn)				\
 	do {								\
