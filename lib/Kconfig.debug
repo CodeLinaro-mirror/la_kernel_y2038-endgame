@@ -343,10 +343,11 @@ config GDB_SCRIPTS
 endif # DEBUG_INFO
 
 config FRAME_WARN
-	int "Warn for stack frames larger than"
+	int "Warn for stack frames larger than" if !COMPILE_TEST
 	range 0 8192
 	default 2048 if GCC_PLUGIN_LATENT_ENTROPY
 	default 1536 if (!64BIT && (PARISC || XTENSA))
+	default 1400 if (!64BIT && KASAN)
 	default 1024 if (!64BIT && !PARISC)
 	default 2048 if 64BIT
 	help
