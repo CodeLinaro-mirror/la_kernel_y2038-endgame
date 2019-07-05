@@ -1101,9 +1101,11 @@ static int smu_v11_0_get_current_clk_freq(struct smu_context *smu,
 		return -EINVAL;
 
 	/* if don't has GetDpmClockFreq Message, try get current clock by SmuMetrics_t */
-	if (smu_msg_get_index(smu, SMU_MSG_GetDpmClockFreq) == 0)
+	if (smu_msg_get_index(smu, SMU_MSG_GetDpmClockFreq) == 0) {
 		ret =  smu_get_current_clk_freq_by_table(smu, clk_id, &freq);
-	else {
+		if (ret)
+			return ret;
+	} else {
 		ret = smu_send_smc_msg_with_param(smu, SMU_MSG_GetDpmClockFreq,
 						  (smu_clk_get_index(smu, clk_id) << 16));
 		if (ret)
