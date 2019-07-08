@@ -437,6 +437,10 @@ void memcg_set_shrinker_bit(struct mem_cgroup *memcg, int nid, int shrinker_id)
 }
 
 #else /* CONFIG_MEMCG_KMEM */
+int memcg_expand_shrinker_maps(int new_id)
+{
+	return -ENOMEM;
+}
 static int memcg_alloc_shrinker_maps(struct mem_cgroup *memcg)
 {
 	return 0;
