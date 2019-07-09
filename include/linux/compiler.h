@@ -277,7 +277,7 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
 static __no_kasan_or_inline
 unsigned long read_word_at_a_time(const void *addr)
 {
-	kasan_check_read(addr, 1);
+	__kasan_check_read(addr, 1);
 	return *(unsigned long *)addr;
 }
 
