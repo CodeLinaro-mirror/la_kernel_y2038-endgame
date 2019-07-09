@@ -73,7 +73,7 @@ static enum bw_calcs_version bw_calcs_version_from_asic_id(struct hw_asic_id asi
 	}
 }
 
-static void calculate_bandwidth(
+static noinline_for_stack void calculate_bandwidth(
 	const struct bw_calcs_dceip *dceip,
 	const struct bw_calcs_vbios *vbios,
 	struct bw_calcs_data *data)
