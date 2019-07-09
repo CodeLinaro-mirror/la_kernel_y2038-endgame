@@ -65,7 +65,12 @@ static inline struct bw_fixed bw_max3(struct bw_fixed v1,
 	return bw_max2(bw_max2(v1, v2), v3);
 }
 
-struct bw_fixed bw_int_to_fixed_nonconst(int64_t value);
+u64 __bw_int_to_fixed_nonconst(int64_t value);
+static inline struct bw_fixed bw_int_to_fixed_nonconst(int64_t value)
+{
+	return (struct bw_fixed){ __bw_int_to_fixed_nonconst(value) };
+}
+
 static inline struct bw_fixed bw_int_to_fixed(int64_t value)
 {
 	if (__builtin_constant_p(value)) {
@@ -82,7 +87,11 @@ static inline int32_t bw_fixed_to_int(struct bw_fixed value)
 	return BW_FIXED_GET_INTEGER_PART(value.value);
 }
 
-struct bw_fixed bw_frc_to_fixed(int64_t num, int64_t denum);
+u64 __bw_frc_to_fixed(int64_t num, int64_t denum);
+static inline struct bw_fixed bw_frc_to_fixed(int64_t num, int64_t denum)
+{
+	return (struct bw_fixed){__bw_frc_to_fixed(num, denum)};
+}
 
 static inline struct bw_fixed fixed31_32_to_bw_fixed(int64_t raw)
 {
@@ -117,7 +126,12 @@ static inline struct bw_fixed bw_sub(const struct bw_fixed arg1, const struct bw
 	return res;
 }
 
-struct bw_fixed bw_mul(const struct bw_fixed arg1, const struct bw_fixed arg2);
+u64 __bw_mul(u64 arg1, u64 arg2);
+static inline struct bw_fixed bw_mul(const struct bw_fixed arg1, const struct bw_fixed arg2)
+{
+	return (struct bw_fixed){__bw_mul(arg1.value, arg2.value)};
+}
+
 static inline struct bw_fixed bw_div(const struct bw_fixed arg1, const struct bw_fixed arg2)
 {
 	return bw_frc_to_fixed(arg1.value, arg2.value);
@@ -130,8 +144,16 @@ static inline struct bw_fixed bw_mod(const struct bw_fixed arg1, const struct bw
 	return res;
 }
 
-struct bw_fixed bw_floor2(const struct bw_fixed arg, const struct bw_fixed significance);
-struct bw_fixed bw_ceil2(const struct bw_fixed arg, const struct bw_fixed significance);
+u64 __bw_floor2(u64 arg, u64 significance);
+u64 __bw_ceil2(u64 arg, u64 significance);
+static inline struct bw_fixed bw_floor2(const struct bw_fixed arg, const struct bw_fixed significance)
+{
+	return (struct bw_fixed){__bw_floor2(arg.value, significance.value)};
+}
+static inline struct bw_fixed bw_ceil2(const struct bw_fixed arg, const struct bw_fixed significance)
+{
+	return (struct bw_fixed){__bw_ceil2(arg.value, significance.value)};
+}
 
 static inline bool bw_equ(const struct bw_fixed arg1, const struct bw_fixed arg2)
 {
