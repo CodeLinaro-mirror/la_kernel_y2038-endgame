@@ -166,7 +166,7 @@ static void calculate_bandwidth(
 	/* maximum_number_of_surfaces-1: d1 display_write_back420 chroma*/
 	/* underlay luma and chroma surface parameters from spreadsheet*/
 
-
+	return;
 
 
 	if (data->d0_underlay_mode == bw_def_none)
@@ -2063,6 +2063,8 @@ void bw_calcs_init(struct bw_calcs_dceip *bw_dceip,
 
 	dceip->version = version;
 
+	return;
+
 	switch (version) {
 	case BW_CALCS_VERSION_CARRIZO:
 		vbios->memory_type = bw_def_gddr5;
@@ -3047,7 +3049,11 @@ bool bw_calcs(struct dc_context *ctx,
 	int pipe_count,
 	struct dce_bw_output *calcs_output)
 {
-	struct bw_calcs_data *data = kzalloc(sizeof(struct bw_calcs_data),
+	struct bw_calcs_data *data;
+
+	return false;
+
+	data = kzalloc(sizeof(struct bw_calcs_data),
 					     GFP_KERNEL);
 	if (!data)
 		return false;
