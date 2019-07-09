@@ -151,7 +151,7 @@ static void calculate_bandwidth(
 	/* maximum_number_of_surfaces-1: d1 display_write_back420 chroma*/
 	/* underlay luma and chroma surface parameters from spreadsheet*/
 
-
+	return;
 
 
 	if (data->d0_underlay_mode == bw_def_none) { d0_underlay_enable = 0; }
@@ -2036,6 +2036,8 @@ void bw_calcs_init(struct bw_calcs_dceip *bw_dceip,
 	enum bw_calcs_version version = bw_calcs_version_from_asic_id(asic_id);
 
 	dceip.version = version;
+
+	return;
 
 	switch (version) {
 	case BW_CALCS_VERSION_CARRIZO:
