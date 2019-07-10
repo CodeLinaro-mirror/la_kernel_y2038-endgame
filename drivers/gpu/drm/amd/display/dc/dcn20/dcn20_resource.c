@@ -2965,7 +2965,7 @@ void dcn20_pp_smu_destroy(struct pp_smu_funcs **pp_smu)
 	}
 }
 
-static void cap_soc_clocks(
+static void noinline_for_stack cap_soc_clocks(
 		struct _vcs_dpi_soc_bounding_box_st *bb,
 		struct pp_smu_nv_clock_table max_clocks)
 {
@@ -3032,7 +3032,7 @@ static void cap_soc_clocks(
 	}
 }
 
-static void update_bounding_box(struct dc *dc, struct _vcs_dpi_soc_bounding_box_st *bb,
+static void noinline_for_stack update_bounding_box(struct dc *dc, struct _vcs_dpi_soc_bounding_box_st *bb,
 		struct pp_smu_nv_clock_table *max_clocks, unsigned int *uclk_states, unsigned int num_states)
 {
 	struct _vcs_dpi_voltage_scaling_st calculated_states[MAX_CLOCK_LIMIT_STATES] = {0};
@@ -3141,8 +3141,8 @@ static enum dml_project get_dml_project_version(uint32_t hw_internal_rev)
 #define fixed16_to_double(x) (((double) x) / ((double) (1 << 16)))
 #define fixed16_to_double_to_cpu(x) fixed16_to_double(le32_to_cpu(x))
 
-static bool init_soc_bounding_box(struct dc *dc,
-				  struct dcn20_resource_pool *pool)
+static bool noinline_for_stack
+init_soc_bounding_box(struct dc *dc, struct dcn20_resource_pool *pool)
 {
 	const struct gpu_info_soc_bounding_box_v1_0 *bb = dc->soc_bounding_box;
 	struct _vcs_dpi_soc_bounding_box_st *loaded_bb =
