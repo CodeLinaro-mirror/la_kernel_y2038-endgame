@@ -1296,6 +1296,7 @@ config MFD_SI476X_CORE
 	tristate "Silicon Laboratories 4761/64/68 AM/FM radio."
 	depends on I2C
 	depends on UNUSED
+	depends on !CC_IS_CLANG
 	select MFD_CORE
 	select REGMAP_I2C
 	help
