@@ -3666,8 +3666,8 @@ static enum dml_project get_dml_project_version(uint32_t hw_internal_rev)
 #define fixed16_to_double(x) (((double) x) / ((double) (1 << 16)))
 #define fixed16_to_double_to_cpu(x) fixed16_to_double(le32_to_cpu(x))
 
-static bool init_soc_bounding_box(struct dc *dc,
-				  struct dcn20_resource_pool *pool)
+static bool noinline_for_stack
+init_soc_bounding_box(struct dc *dc, struct dcn20_resource_pool *pool)
 {
 	struct _vcs_dpi_soc_bounding_box_st *loaded_bb =
 			get_asic_rev_soc_bb(dc->ctx->asic_id.hw_internal_rev);
