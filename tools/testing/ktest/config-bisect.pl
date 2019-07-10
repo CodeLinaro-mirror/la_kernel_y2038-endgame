@@ -64,6 +64,7 @@ my $pwd = `pwd`;
 chomp $pwd;
 my $tree = $pwd;
 my $build;
+my $arch;
 
 my $output_config;
 my $reset_bisect;
@@ -646,6 +647,14 @@ while ($#ARGV >= 0) {
 	$build = $val;
     }
 
+    elsif ($opt eq "-a") {
+	$val = shift @ARGV;
+	if (!defined($val)) {
+	    die "-a requires value\n";
+	}
+	$arch = $val;
+    }
+
     elsif ($opt eq "-l") {
 	$val = shift @ARGV;
 	if (!defined($val)) {
@@ -702,7 +711,7 @@ my $bad = "$bad_start.tmp";
 $make = "make";
 
 if ($build ne $tree) {
-    $make = "make O=$build"
+    $make = "make O=$build ARCH=$arch"
 }
 
 $output_config = "$build/.config";
