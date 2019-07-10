@@ -280,6 +280,7 @@ config MCORE2
 
 config MATOM
 	bool "Intel Atom"
+	depends on !CC_IS_CLANG
 	help
 
 	  Select this for the Intel Atom platform. Intel Atom CPUs have an
