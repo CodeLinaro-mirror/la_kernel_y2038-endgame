@@ -55,6 +55,7 @@ static inline void nf_inet_addr_mask(const union nf_inet_addr *a1,
 	result->all[3] = a1->all[3] & mask->all[3];
 #endif
 }
+#endif
 
 int netfilter_init(void);
 
@@ -118,6 +119,7 @@ struct nf_hook_entries {
 	 */
 };
 
+#ifdef CONFIG_NETFILTER
 static inline struct nf_hook_ops **nf_hook_entries_get_hook_ops(const struct nf_hook_entries *e)
 {
 	unsigned int n = e->num_hook_entries;

@@ -1219,6 +1219,7 @@ void nft_trace_notify(struct nft_traceinfo *info);
  * it is set inactive in the next generation. After committing the ruleset,
  * the objects are removed.
  */
+#if IS_ENABLED(CONFIG_NF_TABLES)
 static inline unsigned int nft_gencursor_next(const struct net *net)
 {
 	return net->nft.gencursor + 1 == 1 ? 1 : 0;
@@ -1279,6 +1280,7 @@ static inline void nft_set_elem_change_active(const struct net *net,
 {
 	ext->genmask ^= nft_genmask_next(net);
 }
+#endif
 
 /*
  * We use a free bit in the genmask field to indicate the element
