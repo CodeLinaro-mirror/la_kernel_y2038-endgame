@@ -70,8 +70,17 @@ extern void __init_waitqueue_head(struct wait_queue_head *wq_head, const char *n
 #ifdef CONFIG_LOCKDEP
 # define __WAIT_QUEUE_HEAD_INIT_ONSTACK(name) \
 	({ init_waitqueue_head(&name); name; })
-# define DECLARE_WAIT_QUEUE_HEAD_ONSTACK(name) \
+# if defined(__clang__) && __clang_major__ <= 9
+/* work around https://bugs.llvm.org/show_bug.cgi?id=42604 */
+#  define DECLARE_WAIT_QUEUE_HEAD_ONSTACK(name)					\
+	_Pragma("clang diagnostic push")					\
+	_Pragma("clang diagnostic ignored \"-Wuninitialized\"")			\
+	struct wait_queue_head name = __WAIT_QUEUE_HEAD_INIT_ONSTACK(name)	\
+	_Pragma("clang diagnostic pop")
+# else
+#  define DECLARE_WAIT_QUEUE_HEAD_ONSTACK(name) \
 	struct wait_queue_head name = __WAIT_QUEUE_HEAD_INIT_ONSTACK(name)
+# endif
 #else
 # define DECLARE_WAIT_QUEUE_HEAD_ONSTACK(name) DECLARE_WAIT_QUEUE_HEAD(name)
 #endif
