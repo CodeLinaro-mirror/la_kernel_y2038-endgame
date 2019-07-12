@@ -453,8 +453,6 @@ static void dcn_bw_calc_rq_dlg_ttu(
 	int total_flip_bytes = 0;
 	int i;
 
-	return;
-
 	memset(dlg_regs, 0, sizeof(*dlg_regs));
 	memset(ttu_regs, 0, sizeof(*ttu_regs));
 	memset(rq_regs, 0, sizeof(*rq_regs));
