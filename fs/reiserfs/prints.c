@@ -387,7 +387,6 @@ void __reiserfs_panic(struct super_block *sb, const char *id,
 	else
 		printk(KERN_WARNING "REISERFS panic: %s%s%s: %s\n",
 		      id ? id : "", id ? " " : "", function, error_buf);
-	BUG();
 }
 
 void __reiserfs_error(struct super_block *sb, const char *id,
@@ -397,8 +396,10 @@ void __reiserfs_error(struct super_block *sb, const char *id,
 
 	BUG_ON(sb == NULL);
 
-	if (reiserfs_error_panic(sb))
+	if (reiserfs_error_panic(sb)) {
 		__reiserfs_panic(sb, id, function, error_buf);
+		BUG();
+	}
 
 	if (id && id[0])
 		printk(KERN_CRIT "REISERFS error (device %s): %s %s: %s\n",
