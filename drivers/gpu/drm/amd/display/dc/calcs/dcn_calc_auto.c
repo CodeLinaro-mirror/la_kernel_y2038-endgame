@@ -125,6 +125,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 	int k;
 	/*mode support, voltage state and soc configuration*/
 
+	return;
 	/*scale ratio support check*/
 
 	v->scale_ratio_support = dcn_bw_yes;
