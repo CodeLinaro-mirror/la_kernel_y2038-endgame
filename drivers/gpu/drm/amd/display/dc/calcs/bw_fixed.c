@@ -46,15 +46,17 @@ static uint64_t abs_i64(int64_t arg)
 		return (uint64_t)(-arg);
 }
 
-u64 __bw_int_to_fixed_nonconst(int64_t value)
+struct bw_fixed bw_int_to_fixed_nonconst(int64_t value)
 {
+	struct bw_fixed res;
 	ASSERT(value < BW_FIXED_MAX_I32 && value > BW_FIXED_MIN_I32);
-	return value << BW_FIXED_BITS_PER_FRACTIONAL_PART;
+	res.value = value << BW_FIXED_BITS_PER_FRACTIONAL_PART;
+	return res;
 }
 
-u64 __bw_frc_to_fixed(int64_t numerator, int64_t denominator)
+struct bw_fixed bw_frc_to_fixed(int64_t numerator, int64_t denominator)
 {
-	u64 res;
+	struct bw_fixed res;
 	bool arg1_negative = numerator < 0;
 	bool arg2_negative = denominator < 0;
 	uint64_t arg1_value;
@@ -99,47 +101,53 @@ u64 __bw_frc_to_fixed(int64_t numerator, int64_t denominator)
 		res_value += summand;
 	}
 
-	res = (int64_t)(res_value);
+	res.value = (int64_t)(res_value);
 
 	if (arg1_negative ^ arg2_negative)
-		res = -res;
+		res.value = -res.value;
 	return res;
 }
 
-u64 __bw_floor2(u64 arg, u64 significance)
+struct bw_fixed bw_floor2(
+	const struct bw_fixed arg,
+	const struct bw_fixed significance)
 {
-	u64 result, multiplicand;
+	struct bw_fixed result;
+	int64_t multiplicand;
 
-	multiplicand = div64_s64(arg, abs_i64(significance));
-	result = abs_i64(significance) * multiplicand;
-	ASSERT(abs_i64(result) <= abs_i64(arg));
+	multiplicand = div64_s64(arg.value, abs_i64(significance.value));
+	result.value = abs_i64(significance.value) * multiplicand;
+	ASSERT(abs_i64(result.value) <= abs_i64(arg.value));
 	return result;
 }
 
-u64 __bw_ceil2(u64 arg, u64 significance)
+struct bw_fixed bw_ceil2(
+	const struct bw_fixed arg,
+	const struct bw_fixed significance)
 {
-	u64 result, multiplicand;
+	struct bw_fixed result;
+	int64_t multiplicand;
 
-	multiplicand = div64_s64(arg, abs_i64(significance));
-	result = abs_i64(significance) * multiplicand;
-	if (abs_i64(result) < abs_i64(arg)) {
-		if (arg < 0)
-			result -= abs_i64(significance);
+	multiplicand = div64_s64(arg.value, abs_i64(significance.value));
+	result.value = abs_i64(significance.value) * multiplicand;
+	if (abs_i64(result.value) < abs_i64(arg.value)) {
+		if (arg.value < 0)
+			result.value -= abs_i64(significance.value);
 		else
-			result += abs_i64(significance);
+			result.value += abs_i64(significance.value);
 	}
 	return result;
 }
 
-u64 __bw_mul(u64 arg1, u64 arg2)
+struct bw_fixed bw_mul(const struct bw_fixed arg1, const struct bw_fixed arg2)
 {
-	u64 res;
+	struct bw_fixed res;
 
-	bool arg1_negative = arg1 < 0;
-	bool arg2_negative = arg2 < 0;
+	bool arg1_negative = arg1.value < 0;
+	bool arg2_negative = arg2.value < 0;
 
-	uint64_t arg1_value = abs_i64(arg1);
-	uint64_t arg2_value = abs_i64(arg2);
+	uint64_t arg1_value = abs_i64(arg1.value);
+	uint64_t arg2_value = abs_i64(arg2.value);
 
 	uint64_t arg1_int = BW_FIXED_GET_INTEGER_PART(arg1_value);
 	uint64_t arg2_int = BW_FIXED_GET_INTEGER_PART(arg2_value);
@@ -149,34 +157,35 @@ u64 __bw_mul(u64 arg1, u64 arg2)
 
 	uint64_t tmp;
 
-	res = arg1_int * arg2_int;
+	res.value = arg1_int * arg2_int;
 
-	ASSERT(res <= BW_FIXED_MAX_I32);
+	ASSERT(res.value <= BW_FIXED_MAX_I32);
 
-	res <<= BW_FIXED_BITS_PER_FRACTIONAL_PART;
+	res.value <<= BW_FIXED_BITS_PER_FRACTIONAL_PART;
 
 	tmp = arg1_int * arg2_fra;
 
-	ASSERT(tmp <= (uint64_t)(MAX_I64 - res));
+	ASSERT(tmp <= (uint64_t)(MAX_I64 - res.value));
 
-	res += tmp;
+	res.value += tmp;
 
 	tmp = arg2_int * arg1_fra;
 
-	ASSERT(tmp <= (uint64_t)(MAX_I64 - res));
+	ASSERT(tmp <= (uint64_t)(MAX_I64 - res.value));
 
-	res += tmp;
+	res.value += tmp;
 
 	tmp = arg1_fra * arg2_fra;
 
 	tmp = (tmp >> BW_FIXED_BITS_PER_FRACTIONAL_PART) +
 		(tmp >= (uint64_t)(bw_frc_to_fixed(1, 2).value));
 
-	ASSERT(tmp <= (uint64_t)(MAX_I64 - res));
+	ASSERT(tmp <= (uint64_t)(MAX_I64 - res.value));
 
-	res += tmp;
+	res.value += tmp;
 
 	if (arg1_negative ^ arg2_negative)
-		res = -res;
+		res.value = -res.value;
 	return res;
 }
+
