@@ -1324,8 +1324,8 @@ config PCENGINES_APU2
 	tristate "PC Engines APUv2/3 front button and LEDs driver"
 	depends on INPUT && INPUT_KEYBOARD && GPIOLIB
 	depends on LEDS_CLASS
-	select GPIO_AMD_FCH
-	select KEYBOARD_GPIO_POLLED
+	select GPIO_AMD_FCH if GPIOLIB
+	select KEYBOARD_GPIO_POLLED if GPIOLIB
 	select LEDS_GPIO
 	help
 	  This driver provides support for the front button and LEDs on
