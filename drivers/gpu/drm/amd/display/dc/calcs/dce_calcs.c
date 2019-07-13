@@ -3010,6 +3010,10 @@ static bool all_displays_in_sync(const struct pipe_ctx pipe[],
  *		In this case 'calcs_output' contains data for HW programming
  *	false - Display(s) configuration not supported (not enough bandwidth).
  */
+static inline u64 bw_fixed_to_int_mul1000(struct bw_fixed value)
+{
+	return value.value * 1000;
+}
 
 bool bw_calcs(struct dc_context *ctx,
 	const struct bw_calcs_dceip *dceip,
@@ -3062,143 +3066,69 @@ bool bw_calcs(struct dc_context *ctx,
 				data->cpup_state_change_enable;
 		calcs_output->stutter_mode_enable =
 				data->stutter_mode_enable;
-		calcs_output->dispclk_khz =
-			bw_fixed_to_int(bw_mul(data->dispclk,
-					bw_int_to_fixed(1000)));
-		calcs_output->blackout_recovery_time_us =
-			bw_fixed_to_int(data->blackout_recovery_time);
-		calcs_output->sclk_khz =
-			bw_fixed_to_int(bw_mul(data->required_sclk,
-					bw_int_to_fixed(1000)));
-		calcs_output->sclk_deep_sleep_khz =
-			bw_fixed_to_int(bw_mul(data->sclk_deep_sleep,
-					bw_int_to_fixed(1000)));
+		calcs_output->dispclk_khz = bw_fixed_to_int_mul1000(data->dispclk);
+		calcs_output->blackout_recovery_time_us = bw_fixed_to_int(data->blackout_recovery_time);
+		calcs_output->sclk_khz = bw_fixed_to_int_mul1000(data->required_sclk);
+		calcs_output->sclk_deep_sleep_khz = bw_fixed_to_int_mul1000(data->sclk_deep_sleep);
 		if (yclk_lvl == 0)
-			calcs_output->yclk_khz = bw_fixed_to_int(
-				bw_mul(low_yclk, bw_int_to_fixed(1000)));
+			calcs_output->yclk_khz = bw_fixed_to_int_mul1000(low_yclk);
 		else if (yclk_lvl == 1)
-			calcs_output->yclk_khz = bw_fixed_to_int(
-				bw_mul(mid_yclk, bw_int_to_fixed(1000)));
+			calcs_output->yclk_khz = bw_fixed_to_int_mul1000(mid_yclk);
 		else
-			calcs_output->yclk_khz = bw_fixed_to_int(
-				bw_mul(high_yclk, bw_int_to_fixed(1000)));
+			calcs_output->yclk_khz = bw_fixed_to_int_mul1000(high_yclk);
 
 		/* units: nanosecond, 16bit storage. */
 
-		calcs_output->nbp_state_change_wm_ns[0].a_mark =
-			bw_fixed_to_int(bw_mul(data->
-				nbp_state_change_watermark[4], bw_int_to_fixed(1000)));
-		calcs_output->nbp_state_change_wm_ns[1].a_mark =
-			bw_fixed_to_int(bw_mul(data->
-				nbp_state_change_watermark[5], bw_int_to_fixed(1000)));
-		calcs_output->nbp_state_change_wm_ns[2].a_mark =
-			bw_fixed_to_int(bw_mul(data->
-				nbp_state_change_watermark[6], bw_int_to_fixed(1000)));
+		calcs_output->nbp_state_change_wm_ns[0].a_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[4]);
+		calcs_output->nbp_state_change_wm_ns[1].a_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[5]);
+		calcs_output->nbp_state_change_wm_ns[2].a_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[6]);
 
 		if (ctx->dc->caps.max_slave_planes) {
-			calcs_output->nbp_state_change_wm_ns[3].a_mark =
-				bw_fixed_to_int(bw_mul(data->
-					nbp_state_change_watermark[0], bw_int_to_fixed(1000)));
-			calcs_output->nbp_state_change_wm_ns[4].a_mark =
-				bw_fixed_to_int(bw_mul(data->
-							nbp_state_change_watermark[1], bw_int_to_fixed(1000)));
+			calcs_output->nbp_state_change_wm_ns[3].a_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[0]);
+			calcs_output->nbp_state_change_wm_ns[4].a_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[1]);
 		} else {
-			calcs_output->nbp_state_change_wm_ns[3].a_mark =
-				bw_fixed_to_int(bw_mul(data->
-					nbp_state_change_watermark[7], bw_int_to_fixed(1000)));
-			calcs_output->nbp_state_change_wm_ns[4].a_mark =
-				bw_fixed_to_int(bw_mul(data->
-					nbp_state_change_watermark[8], bw_int_to_fixed(1000)));
+			calcs_output->nbp_state_change_wm_ns[3].a_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[7]);
+			calcs_output->nbp_state_change_wm_ns[4].a_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[8]);
 		}
-		calcs_output->nbp_state_change_wm_ns[5].a_mark =
-			bw_fixed_to_int(bw_mul(data->
-				nbp_state_change_watermark[9], bw_int_to_fixed(1000)));
+		calcs_output->nbp_state_change_wm_ns[5].a_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[9]);
 
 
 
-		calcs_output->stutter_exit_wm_ns[0].a_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_exit_watermark[4], bw_int_to_fixed(1000)));
-		calcs_output->stutter_exit_wm_ns[1].a_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_exit_watermark[5], bw_int_to_fixed(1000)));
-		calcs_output->stutter_exit_wm_ns[2].a_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_exit_watermark[6], bw_int_to_fixed(1000)));
+		calcs_output->stutter_exit_wm_ns[0].a_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[4]);
+		calcs_output->stutter_exit_wm_ns[1].a_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[5]);
+		calcs_output->stutter_exit_wm_ns[2].a_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[6]);
 		if (ctx->dc->caps.max_slave_planes) {
-			calcs_output->stutter_exit_wm_ns[3].a_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_exit_watermark[0], bw_int_to_fixed(1000)));
-			calcs_output->stutter_exit_wm_ns[4].a_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_exit_watermark[1], bw_int_to_fixed(1000)));
+			calcs_output->stutter_exit_wm_ns[3].a_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[0]);
+			calcs_output->stutter_exit_wm_ns[4].a_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[1]);
 		} else {
-			calcs_output->stutter_exit_wm_ns[3].a_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_exit_watermark[7], bw_int_to_fixed(1000)));
-			calcs_output->stutter_exit_wm_ns[4].a_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_exit_watermark[8], bw_int_to_fixed(1000)));
+			calcs_output->stutter_exit_wm_ns[3].a_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[7]);
+			calcs_output->stutter_exit_wm_ns[4].a_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[8]);
 		}
-		calcs_output->stutter_exit_wm_ns[5].a_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_exit_watermark[9], bw_int_to_fixed(1000)));
+		calcs_output->stutter_exit_wm_ns[5].a_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[9]);
 
-		calcs_output->stutter_entry_wm_ns[0].a_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_entry_watermark[4], bw_int_to_fixed(1000)));
-		calcs_output->stutter_entry_wm_ns[1].a_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_entry_watermark[5], bw_int_to_fixed(1000)));
-		calcs_output->stutter_entry_wm_ns[2].a_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_entry_watermark[6], bw_int_to_fixed(1000)));
+		calcs_output->stutter_entry_wm_ns[0].a_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[4]);
+		calcs_output->stutter_entry_wm_ns[1].a_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[5]);
+		calcs_output->stutter_entry_wm_ns[2].a_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[6]);
 		if (ctx->dc->caps.max_slave_planes) {
-			calcs_output->stutter_entry_wm_ns[3].a_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_entry_watermark[0], bw_int_to_fixed(1000)));
-			calcs_output->stutter_entry_wm_ns[4].a_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_entry_watermark[1], bw_int_to_fixed(1000)));
+			calcs_output->stutter_entry_wm_ns[3].a_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[0]);
+			calcs_output->stutter_entry_wm_ns[4].a_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[1]);
 		} else {
-			calcs_output->stutter_entry_wm_ns[3].a_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_entry_watermark[7], bw_int_to_fixed(1000)));
-			calcs_output->stutter_entry_wm_ns[4].a_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_entry_watermark[8], bw_int_to_fixed(1000)));
+			calcs_output->stutter_entry_wm_ns[3].a_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[7]);
+			calcs_output->stutter_entry_wm_ns[4].a_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[8]);
 		}
-		calcs_output->stutter_entry_wm_ns[5].a_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_entry_watermark[9], bw_int_to_fixed(1000)));
+		calcs_output->stutter_entry_wm_ns[5].a_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[9]);
 
-		calcs_output->urgent_wm_ns[0].a_mark =
-			bw_fixed_to_int(bw_mul(data->
-				urgent_watermark[4], bw_int_to_fixed(1000)));
-		calcs_output->urgent_wm_ns[1].a_mark =
-			bw_fixed_to_int(bw_mul(data->
-				urgent_watermark[5], bw_int_to_fixed(1000)));
-		calcs_output->urgent_wm_ns[2].a_mark =
-			bw_fixed_to_int(bw_mul(data->
-				urgent_watermark[6], bw_int_to_fixed(1000)));
+		calcs_output->urgent_wm_ns[0].a_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[4]);
+		calcs_output->urgent_wm_ns[1].a_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[5]);
+		calcs_output->urgent_wm_ns[2].a_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[6]);
 		if (ctx->dc->caps.max_slave_planes) {
-			calcs_output->urgent_wm_ns[3].a_mark =
-				bw_fixed_to_int(bw_mul(data->
-					urgent_watermark[0], bw_int_to_fixed(1000)));
-			calcs_output->urgent_wm_ns[4].a_mark =
-				bw_fixed_to_int(bw_mul(data->
-					urgent_watermark[1], bw_int_to_fixed(1000)));
+			calcs_output->urgent_wm_ns[3].a_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[0]);
+			calcs_output->urgent_wm_ns[4].a_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[1]);
 		} else {
-			calcs_output->urgent_wm_ns[3].a_mark =
-				bw_fixed_to_int(bw_mul(data->
-					urgent_watermark[7], bw_int_to_fixed(1000)));
-			calcs_output->urgent_wm_ns[4].a_mark =
-				bw_fixed_to_int(bw_mul(data->
-					urgent_watermark[8], bw_int_to_fixed(1000)));
+			calcs_output->urgent_wm_ns[3].a_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[7]);
+			calcs_output->urgent_wm_ns[4].a_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[8]);
 		}
-		calcs_output->urgent_wm_ns[5].a_mark =
-			bw_fixed_to_int(bw_mul(data->
-				urgent_watermark[9], bw_int_to_fixed(1000)));
+		calcs_output->urgent_wm_ns[5].a_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[9]);
 
 		if (dceip->version != BW_CALCS_VERSION_CARRIZO) {
 			((struct bw_calcs_vbios *)vbios)->low_sclk = mid3_sclk;
@@ -3206,120 +3136,56 @@ bool bw_calcs(struct dc_context *ctx,
 			((struct bw_calcs_vbios *)vbios)->mid2_sclk = mid3_sclk;
 			calculate_bandwidth(dceip, vbios, data);
 
-			calcs_output->nbp_state_change_wm_ns[0].b_mark =
-				bw_fixed_to_int(bw_mul(data->
-					nbp_state_change_watermark[4],bw_int_to_fixed(1000)));
-			calcs_output->nbp_state_change_wm_ns[1].b_mark =
-				bw_fixed_to_int(bw_mul(data->
-					nbp_state_change_watermark[5], bw_int_to_fixed(1000)));
-			calcs_output->nbp_state_change_wm_ns[2].b_mark =
-				bw_fixed_to_int(bw_mul(data->
-					nbp_state_change_watermark[6], bw_int_to_fixed(1000)));
+			calcs_output->nbp_state_change_wm_ns[0].b_mark = bw_fixed_to_int(bw_mul(data->nbp_state_change_watermark[4],bw_int_to_fixed(1000)));
+			calcs_output->nbp_state_change_wm_ns[1].b_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[5]);
+			calcs_output->nbp_state_change_wm_ns[2].b_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[6]);
 
 			if (ctx->dc->caps.max_slave_planes) {
-				calcs_output->nbp_state_change_wm_ns[3].b_mark =
-					bw_fixed_to_int(bw_mul(data->
-						nbp_state_change_watermark[0], bw_int_to_fixed(1000)));
-				calcs_output->nbp_state_change_wm_ns[4].b_mark =
-					bw_fixed_to_int(bw_mul(data->
-						nbp_state_change_watermark[1], bw_int_to_fixed(1000)));
+				calcs_output->nbp_state_change_wm_ns[3].b_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[0]);
+				calcs_output->nbp_state_change_wm_ns[4].b_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[1]);
 			} else {
-				calcs_output->nbp_state_change_wm_ns[3].b_mark =
-					bw_fixed_to_int(bw_mul(data->
-						nbp_state_change_watermark[7], bw_int_to_fixed(1000)));
-				calcs_output->nbp_state_change_wm_ns[4].b_mark =
-					bw_fixed_to_int(bw_mul(data->
-						nbp_state_change_watermark[8], bw_int_to_fixed(1000)));
+				calcs_output->nbp_state_change_wm_ns[3].b_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[7]);
+				calcs_output->nbp_state_change_wm_ns[4].b_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[8]);
 			}
-			calcs_output->nbp_state_change_wm_ns[5].b_mark =
-				bw_fixed_to_int(bw_mul(data->
-					nbp_state_change_watermark[9], bw_int_to_fixed(1000)));
+			calcs_output->nbp_state_change_wm_ns[5].b_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[9]);
 
 
 
-			calcs_output->stutter_exit_wm_ns[0].b_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_exit_watermark[4], bw_int_to_fixed(1000)));
-			calcs_output->stutter_exit_wm_ns[1].b_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_exit_watermark[5], bw_int_to_fixed(1000)));
-			calcs_output->stutter_exit_wm_ns[2].b_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_exit_watermark[6], bw_int_to_fixed(1000)));
+			calcs_output->stutter_exit_wm_ns[0].b_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[4]);
+			calcs_output->stutter_exit_wm_ns[1].b_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[5]);
+			calcs_output->stutter_exit_wm_ns[2].b_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[6]);
 			if (ctx->dc->caps.max_slave_planes) {
-				calcs_output->stutter_exit_wm_ns[3].b_mark =
-					bw_fixed_to_int(bw_mul(data->
-						stutter_exit_watermark[0], bw_int_to_fixed(1000)));
-				calcs_output->stutter_exit_wm_ns[4].b_mark =
-					bw_fixed_to_int(bw_mul(data->
-						stutter_exit_watermark[1], bw_int_to_fixed(1000)));
+				calcs_output->stutter_exit_wm_ns[3].b_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[0]);
+				calcs_output->stutter_exit_wm_ns[4].b_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[1]);
 			} else {
-				calcs_output->stutter_exit_wm_ns[3].b_mark =
-					bw_fixed_to_int(bw_mul(data->
-						stutter_exit_watermark[7], bw_int_to_fixed(1000)));
-				calcs_output->stutter_exit_wm_ns[4].b_mark =
-					bw_fixed_to_int(bw_mul(data->
-						stutter_exit_watermark[8], bw_int_to_fixed(1000)));
+				calcs_output->stutter_exit_wm_ns[3].b_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[7]);
+				calcs_output->stutter_exit_wm_ns[4].b_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[8]);
 			}
-			calcs_output->stutter_exit_wm_ns[5].b_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_exit_watermark[9], bw_int_to_fixed(1000)));
+			calcs_output->stutter_exit_wm_ns[5].b_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[9]);
 
-		calcs_output->stutter_entry_wm_ns[0].b_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_entry_watermark[4], bw_int_to_fixed(1000)));
-		calcs_output->stutter_entry_wm_ns[1].b_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_entry_watermark[5], bw_int_to_fixed(1000)));
-		calcs_output->stutter_entry_wm_ns[2].b_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_entry_watermark[6], bw_int_to_fixed(1000)));
+		calcs_output->stutter_entry_wm_ns[0].b_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[4]);
+		calcs_output->stutter_entry_wm_ns[1].b_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[5]);
+		calcs_output->stutter_entry_wm_ns[2].b_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[6]);
 		if (ctx->dc->caps.max_slave_planes) {
-			calcs_output->stutter_entry_wm_ns[3].b_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_entry_watermark[0], bw_int_to_fixed(1000)));
-			calcs_output->stutter_entry_wm_ns[4].b_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_entry_watermark[1], bw_int_to_fixed(1000)));
+			calcs_output->stutter_entry_wm_ns[3].b_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[0]);
+			calcs_output->stutter_entry_wm_ns[4].b_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[1]);
 		} else {
-			calcs_output->stutter_entry_wm_ns[3].b_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_entry_watermark[7], bw_int_to_fixed(1000)));
-			calcs_output->stutter_entry_wm_ns[4].b_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_entry_watermark[8], bw_int_to_fixed(1000)));
+			calcs_output->stutter_entry_wm_ns[3].b_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[7]);
+			calcs_output->stutter_entry_wm_ns[4].b_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[8]);
 		}
-		calcs_output->stutter_entry_wm_ns[5].b_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_entry_watermark[9], bw_int_to_fixed(1000)));
+		calcs_output->stutter_entry_wm_ns[5].b_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[9]);
 
-			calcs_output->urgent_wm_ns[0].b_mark =
-				bw_fixed_to_int(bw_mul(data->
-					urgent_watermark[4], bw_int_to_fixed(1000)));
-			calcs_output->urgent_wm_ns[1].b_mark =
-				bw_fixed_to_int(bw_mul(data->
-					urgent_watermark[5], bw_int_to_fixed(1000)));
-			calcs_output->urgent_wm_ns[2].b_mark =
-				bw_fixed_to_int(bw_mul(data->
-					urgent_watermark[6], bw_int_to_fixed(1000)));
+			calcs_output->urgent_wm_ns[0].b_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[4]);
+			calcs_output->urgent_wm_ns[1].b_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[5]);
+			calcs_output->urgent_wm_ns[2].b_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[6]);
 			if (ctx->dc->caps.max_slave_planes) {
-				calcs_output->urgent_wm_ns[3].b_mark =
-					bw_fixed_to_int(bw_mul(data->
-						urgent_watermark[0], bw_int_to_fixed(1000)));
-				calcs_output->urgent_wm_ns[4].b_mark =
-					bw_fixed_to_int(bw_mul(data->
-						urgent_watermark[1], bw_int_to_fixed(1000)));
+				calcs_output->urgent_wm_ns[3].b_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[0]);
+				calcs_output->urgent_wm_ns[4].b_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[1]);
 			} else {
-				calcs_output->urgent_wm_ns[3].b_mark =
-					bw_fixed_to_int(bw_mul(data->
-						urgent_watermark[7], bw_int_to_fixed(1000)));
-				calcs_output->urgent_wm_ns[4].b_mark =
-					bw_fixed_to_int(bw_mul(data->
-						urgent_watermark[8], bw_int_to_fixed(1000)));
+				calcs_output->urgent_wm_ns[3].b_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[7]);
+				calcs_output->urgent_wm_ns[4].b_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[8]);
 			}
-			calcs_output->urgent_wm_ns[5].b_mark =
-				bw_fixed_to_int(bw_mul(data->
-					urgent_watermark[9], bw_int_to_fixed(1000)));
+			calcs_output->urgent_wm_ns[5].b_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[9]);
 
 			((struct bw_calcs_vbios *)vbios)->low_sclk = low_sclk;
 			((struct bw_calcs_vbios *)vbios)->mid1_sclk = mid1_sclk;
@@ -3327,120 +3193,55 @@ bool bw_calcs(struct dc_context *ctx,
 			((struct bw_calcs_vbios *)vbios)->low_yclk = mid_yclk;
 			calculate_bandwidth(dceip, vbios, data);
 
-			calcs_output->nbp_state_change_wm_ns[0].c_mark =
-				bw_fixed_to_int(bw_mul(data->
-					nbp_state_change_watermark[4], bw_int_to_fixed(1000)));
-			calcs_output->nbp_state_change_wm_ns[1].c_mark =
-				bw_fixed_to_int(bw_mul(data->
-					nbp_state_change_watermark[5], bw_int_to_fixed(1000)));
-			calcs_output->nbp_state_change_wm_ns[2].c_mark =
-				bw_fixed_to_int(bw_mul(data->
-					nbp_state_change_watermark[6], bw_int_to_fixed(1000)));
+			calcs_output->nbp_state_change_wm_ns[0].c_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[4]);
+			calcs_output->nbp_state_change_wm_ns[1].c_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[5]);
+			calcs_output->nbp_state_change_wm_ns[2].c_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[6]);
 			if (ctx->dc->caps.max_slave_planes) {
-				calcs_output->nbp_state_change_wm_ns[3].c_mark =
-					bw_fixed_to_int(bw_mul(data->
-						nbp_state_change_watermark[0], bw_int_to_fixed(1000)));
-				calcs_output->nbp_state_change_wm_ns[4].c_mark =
-					bw_fixed_to_int(bw_mul(data->
-						nbp_state_change_watermark[1], bw_int_to_fixed(1000)));
+				calcs_output->nbp_state_change_wm_ns[3].c_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[0]);
+				calcs_output->nbp_state_change_wm_ns[4].c_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[1]);
 			} else {
-				calcs_output->nbp_state_change_wm_ns[3].c_mark =
-					bw_fixed_to_int(bw_mul(data->
-						nbp_state_change_watermark[7], bw_int_to_fixed(1000)));
-				calcs_output->nbp_state_change_wm_ns[4].c_mark =
-					bw_fixed_to_int(bw_mul(data->
-						nbp_state_change_watermark[8], bw_int_to_fixed(1000)));
+				calcs_output->nbp_state_change_wm_ns[3].c_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[7]);
+				calcs_output->nbp_state_change_wm_ns[4].c_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[8]);
 			}
-			calcs_output->nbp_state_change_wm_ns[5].c_mark =
-				bw_fixed_to_int(bw_mul(data->
-					nbp_state_change_watermark[9], bw_int_to_fixed(1000)));
+			calcs_output->nbp_state_change_wm_ns[5].c_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[9]);
 
 
-			calcs_output->stutter_exit_wm_ns[0].c_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_exit_watermark[4], bw_int_to_fixed(1000)));
-			calcs_output->stutter_exit_wm_ns[1].c_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_exit_watermark[5], bw_int_to_fixed(1000)));
-			calcs_output->stutter_exit_wm_ns[2].c_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_exit_watermark[6], bw_int_to_fixed(1000)));
+			calcs_output->stutter_exit_wm_ns[0].c_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[4]);
+			calcs_output->stutter_exit_wm_ns[1].c_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[5]);
+			calcs_output->stutter_exit_wm_ns[2].c_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[6]);
 			if (ctx->dc->caps.max_slave_planes) {
-				calcs_output->stutter_exit_wm_ns[3].c_mark =
-					bw_fixed_to_int(bw_mul(data->
-						stutter_exit_watermark[0], bw_int_to_fixed(1000)));
-				calcs_output->stutter_exit_wm_ns[4].c_mark =
-					bw_fixed_to_int(bw_mul(data->
-						stutter_exit_watermark[1], bw_int_to_fixed(1000)));
+				calcs_output->stutter_exit_wm_ns[3].c_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[0]);
+				calcs_output->stutter_exit_wm_ns[4].c_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[1]);
 			} else {
-				calcs_output->stutter_exit_wm_ns[3].c_mark =
-					bw_fixed_to_int(bw_mul(data->
-						stutter_exit_watermark[7], bw_int_to_fixed(1000)));
-				calcs_output->stutter_exit_wm_ns[4].c_mark =
-					bw_fixed_to_int(bw_mul(data->
-						stutter_exit_watermark[8], bw_int_to_fixed(1000)));
+				calcs_output->stutter_exit_wm_ns[3].c_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[7]);
+				calcs_output->stutter_exit_wm_ns[4].c_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[8]);
 			}
-			calcs_output->stutter_exit_wm_ns[5].c_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_exit_watermark[9], bw_int_to_fixed(1000)));
+			calcs_output->stutter_exit_wm_ns[5].c_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[9]);
 
-		calcs_output->stutter_entry_wm_ns[0].c_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_entry_watermark[4], bw_int_to_fixed(1000)));
-		calcs_output->stutter_entry_wm_ns[1].c_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_entry_watermark[5], bw_int_to_fixed(1000)));
-		calcs_output->stutter_entry_wm_ns[2].c_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_entry_watermark[6], bw_int_to_fixed(1000)));
+		calcs_output->stutter_entry_wm_ns[0].c_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[4]);
+		calcs_output->stutter_entry_wm_ns[1].c_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[5]);
+		calcs_output->stutter_entry_wm_ns[2].c_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[6]);
 		if (ctx->dc->caps.max_slave_planes) {
-			calcs_output->stutter_entry_wm_ns[3].c_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_entry_watermark[0], bw_int_to_fixed(1000)));
-			calcs_output->stutter_entry_wm_ns[4].c_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_entry_watermark[1], bw_int_to_fixed(1000)));
+			calcs_output->stutter_entry_wm_ns[3].c_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[0]);
+			calcs_output->stutter_entry_wm_ns[4].c_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[1]);
 		} else {
-			calcs_output->stutter_entry_wm_ns[3].c_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_entry_watermark[7], bw_int_to_fixed(1000)));
-			calcs_output->stutter_entry_wm_ns[4].c_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_entry_watermark[8], bw_int_to_fixed(1000)));
+			calcs_output->stutter_entry_wm_ns[3].c_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[7]);
+			calcs_output->stutter_entry_wm_ns[4].c_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[8]);
 		}
-		calcs_output->stutter_entry_wm_ns[5].c_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_entry_watermark[9], bw_int_to_fixed(1000)));
+		calcs_output->stutter_entry_wm_ns[5].c_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[9]);
 
-			calcs_output->urgent_wm_ns[0].c_mark =
-				bw_fixed_to_int(bw_mul(data->
-					urgent_watermark[4], bw_int_to_fixed(1000)));
-			calcs_output->urgent_wm_ns[1].c_mark =
-				bw_fixed_to_int(bw_mul(data->
-					urgent_watermark[5], bw_int_to_fixed(1000)));
-			calcs_output->urgent_wm_ns[2].c_mark =
-				bw_fixed_to_int(bw_mul(data->
-					urgent_watermark[6], bw_int_to_fixed(1000)));
+			calcs_output->urgent_wm_ns[0].c_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[4]);
+			calcs_output->urgent_wm_ns[1].c_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[5]);
+			calcs_output->urgent_wm_ns[2].c_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[6]);
 			if (ctx->dc->caps.max_slave_planes) {
-				calcs_output->urgent_wm_ns[3].c_mark =
-					bw_fixed_to_int(bw_mul(data->
-						urgent_watermark[0], bw_int_to_fixed(1000)));
-				calcs_output->urgent_wm_ns[4].c_mark =
-					bw_fixed_to_int(bw_mul(data->
-						urgent_watermark[1], bw_int_to_fixed(1000)));
+				calcs_output->urgent_wm_ns[3].c_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[0]);
+				calcs_output->urgent_wm_ns[4].c_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[1]);
 			} else {
-				calcs_output->urgent_wm_ns[3].c_mark =
-					bw_fixed_to_int(bw_mul(data->
-						urgent_watermark[7], bw_int_to_fixed(1000)));
-				calcs_output->urgent_wm_ns[4].c_mark =
-					bw_fixed_to_int(bw_mul(data->
-						urgent_watermark[8], bw_int_to_fixed(1000)));
+				calcs_output->urgent_wm_ns[3].c_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[7]);
+				calcs_output->urgent_wm_ns[4].c_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[8]);
 			}
-			calcs_output->urgent_wm_ns[5].c_mark =
-				bw_fixed_to_int(bw_mul(data->
-					urgent_watermark[9], bw_int_to_fixed(1000)));
+			calcs_output->urgent_wm_ns[5].c_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[9]);
 		}
-
 		if (dceip->version == BW_CALCS_VERSION_CARRIZO) {
 			((struct bw_calcs_vbios *)vbios)->low_yclk = high_yclk;
 			((struct bw_calcs_vbios *)vbios)->mid_yclk = high_yclk;
@@ -3460,117 +3261,53 @@ bool bw_calcs(struct dc_context *ctx,
 
 		calculate_bandwidth(dceip, vbios, data);
 
-		calcs_output->nbp_state_change_wm_ns[0].d_mark =
-			bw_fixed_to_int(bw_mul(data->
-				nbp_state_change_watermark[4], bw_int_to_fixed(1000)));
-		calcs_output->nbp_state_change_wm_ns[1].d_mark =
-			bw_fixed_to_int(bw_mul(data->
-				nbp_state_change_watermark[5], bw_int_to_fixed(1000)));
-		calcs_output->nbp_state_change_wm_ns[2].d_mark =
-			bw_fixed_to_int(bw_mul(data->
-				nbp_state_change_watermark[6], bw_int_to_fixed(1000)));
+		calcs_output->nbp_state_change_wm_ns[0].d_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[4]);
+		calcs_output->nbp_state_change_wm_ns[1].d_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[5]);
+		calcs_output->nbp_state_change_wm_ns[2].d_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[6]);
 		if (ctx->dc->caps.max_slave_planes) {
-			calcs_output->nbp_state_change_wm_ns[3].d_mark =
-				bw_fixed_to_int(bw_mul(data->
-					nbp_state_change_watermark[0], bw_int_to_fixed(1000)));
-			calcs_output->nbp_state_change_wm_ns[4].d_mark =
-				bw_fixed_to_int(bw_mul(data->
-					nbp_state_change_watermark[1], bw_int_to_fixed(1000)));
+			calcs_output->nbp_state_change_wm_ns[3].d_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[0]);
+			calcs_output->nbp_state_change_wm_ns[4].d_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[1]);
 		} else {
-			calcs_output->nbp_state_change_wm_ns[3].d_mark =
-				bw_fixed_to_int(bw_mul(data->
-					nbp_state_change_watermark[7], bw_int_to_fixed(1000)));
-			calcs_output->nbp_state_change_wm_ns[4].d_mark =
-				bw_fixed_to_int(bw_mul(data->
-					nbp_state_change_watermark[8], bw_int_to_fixed(1000)));
+			calcs_output->nbp_state_change_wm_ns[3].d_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[7]);
+			calcs_output->nbp_state_change_wm_ns[4].d_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[8]);
 		}
-		calcs_output->nbp_state_change_wm_ns[5].d_mark =
-			bw_fixed_to_int(bw_mul(data->
-				nbp_state_change_watermark[9], bw_int_to_fixed(1000)));
+		calcs_output->nbp_state_change_wm_ns[5].d_mark = bw_fixed_to_int_mul1000(data->nbp_state_change_watermark[9]);
 
-		calcs_output->stutter_exit_wm_ns[0].d_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_exit_watermark[4], bw_int_to_fixed(1000)));
-		calcs_output->stutter_exit_wm_ns[1].d_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_exit_watermark[5], bw_int_to_fixed(1000)));
-		calcs_output->stutter_exit_wm_ns[2].d_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_exit_watermark[6], bw_int_to_fixed(1000)));
+		calcs_output->stutter_exit_wm_ns[0].d_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[4]);
+		calcs_output->stutter_exit_wm_ns[1].d_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[5]);
+		calcs_output->stutter_exit_wm_ns[2].d_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[6]);
 		if (ctx->dc->caps.max_slave_planes) {
-			calcs_output->stutter_exit_wm_ns[3].d_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_exit_watermark[0], bw_int_to_fixed(1000)));
-			calcs_output->stutter_exit_wm_ns[4].d_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_exit_watermark[1], bw_int_to_fixed(1000)));
+			calcs_output->stutter_exit_wm_ns[3].d_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[0]);
+			calcs_output->stutter_exit_wm_ns[4].d_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[1]);
 		} else {
-			calcs_output->stutter_exit_wm_ns[3].d_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_exit_watermark[7], bw_int_to_fixed(1000)));
-			calcs_output->stutter_exit_wm_ns[4].d_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_exit_watermark[8], bw_int_to_fixed(1000)));
+			calcs_output->stutter_exit_wm_ns[3].d_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[7]);
+			calcs_output->stutter_exit_wm_ns[4].d_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[8]);
 		}
-		calcs_output->stutter_exit_wm_ns[5].d_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_exit_watermark[9], bw_int_to_fixed(1000)));
+		calcs_output->stutter_exit_wm_ns[5].d_mark = bw_fixed_to_int_mul1000(data->stutter_exit_watermark[9]);
 
-		calcs_output->stutter_entry_wm_ns[0].d_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_entry_watermark[4], bw_int_to_fixed(1000)));
-		calcs_output->stutter_entry_wm_ns[1].d_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_entry_watermark[5], bw_int_to_fixed(1000)));
-		calcs_output->stutter_entry_wm_ns[2].d_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_entry_watermark[6], bw_int_to_fixed(1000)));
+		calcs_output->stutter_entry_wm_ns[0].d_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[4]);
+		calcs_output->stutter_entry_wm_ns[1].d_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[5]);
+		calcs_output->stutter_entry_wm_ns[2].d_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[6]);
 		if (ctx->dc->caps.max_slave_planes) {
-			calcs_output->stutter_entry_wm_ns[3].d_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_entry_watermark[0], bw_int_to_fixed(1000)));
-			calcs_output->stutter_entry_wm_ns[4].d_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_entry_watermark[1], bw_int_to_fixed(1000)));
+			calcs_output->stutter_entry_wm_ns[3].d_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[0]);
+			calcs_output->stutter_entry_wm_ns[4].d_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[1]);
 		} else {
-			calcs_output->stutter_entry_wm_ns[3].d_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_entry_watermark[7], bw_int_to_fixed(1000)));
-			calcs_output->stutter_entry_wm_ns[4].d_mark =
-				bw_fixed_to_int(bw_mul(data->
-					stutter_entry_watermark[8], bw_int_to_fixed(1000)));
+			calcs_output->stutter_entry_wm_ns[3].d_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[7]);
+			calcs_output->stutter_entry_wm_ns[4].d_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[8]);
 		}
-		calcs_output->stutter_entry_wm_ns[5].d_mark =
-			bw_fixed_to_int(bw_mul(data->
-				stutter_entry_watermark[9], bw_int_to_fixed(1000)));
+		calcs_output->stutter_entry_wm_ns[5].d_mark = bw_fixed_to_int_mul1000(data->stutter_entry_watermark[9]);
 
-		calcs_output->urgent_wm_ns[0].d_mark =
-			bw_fixed_to_int(bw_mul(data->
-				urgent_watermark[4], bw_int_to_fixed(1000)));
-		calcs_output->urgent_wm_ns[1].d_mark =
-			bw_fixed_to_int(bw_mul(data->
-				urgent_watermark[5], bw_int_to_fixed(1000)));
-		calcs_output->urgent_wm_ns[2].d_mark =
-			bw_fixed_to_int(bw_mul(data->
-				urgent_watermark[6], bw_int_to_fixed(1000)));
+		calcs_output->urgent_wm_ns[0].d_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[4]);
+		calcs_output->urgent_wm_ns[1].d_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[5]);
+		calcs_output->urgent_wm_ns[2].d_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[6]);
 		if (ctx->dc->caps.max_slave_planes) {
-			calcs_output->urgent_wm_ns[3].d_mark =
-				bw_fixed_to_int(bw_mul(data->
-					urgent_watermark[0], bw_int_to_fixed(1000)));
-			calcs_output->urgent_wm_ns[4].d_mark =
-				bw_fixed_to_int(bw_mul(data->
-					urgent_watermark[1], bw_int_to_fixed(1000)));
+			calcs_output->urgent_wm_ns[3].d_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[0]);
+			calcs_output->urgent_wm_ns[4].d_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[1]);
 		} else {
-			calcs_output->urgent_wm_ns[3].d_mark =
-				bw_fixed_to_int(bw_mul(data->
-					urgent_watermark[7], bw_int_to_fixed(1000)));
-			calcs_output->urgent_wm_ns[4].d_mark =
-				bw_fixed_to_int(bw_mul(data->
-					urgent_watermark[8], bw_int_to_fixed(1000)));
+			calcs_output->urgent_wm_ns[3].d_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[7]);
+			calcs_output->urgent_wm_ns[4].d_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[8]);
 		}
-		calcs_output->urgent_wm_ns[5].d_mark =
-			bw_fixed_to_int(bw_mul(data->
-				urgent_watermark[9], bw_int_to_fixed(1000)));
+		calcs_output->urgent_wm_ns[5].d_mark = bw_fixed_to_int_mul1000(data->urgent_watermark[9]);
 
 		((struct bw_calcs_vbios *)vbios)->low_yclk = low_yclk;
 		((struct bw_calcs_vbios *)vbios)->mid_yclk = mid_yclk;
