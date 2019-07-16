@@ -638,12 +638,12 @@ config INTEL_SOC_PMIC_MRFLD
 
 config MFD_INTEL_LPSS
 	tristate
-	select COMMON_CLK
 	select MFD_CORE
 
 config MFD_INTEL_LPSS_ACPI
 	tristate "Intel Low Power Subsystem support in ACPI mode"
 	select MFD_INTEL_LPSS
+	depends on COMMON_CLK
 	depends on X86 && ACPI
 	help
 	  This driver supports Intel Low Power Subsystem (LPSS) devices such as
@@ -653,6 +653,7 @@ config MFD_INTEL_LPSS_ACPI
 config MFD_INTEL_LPSS_PCI
 	tristate "Intel Low Power Subsystem support in PCI mode"
 	select MFD_INTEL_LPSS
+	depends on COMMON_CLK
 	depends on X86 && PCI
 	help
 	  This driver supports Intel Low Power Subsystem (LPSS) devices such as
