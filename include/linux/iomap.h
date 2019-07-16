@@ -70,11 +70,13 @@ struct iomap {
 	const struct iomap_page_ops *page_ops;
 };
 
+#ifdef CONFIG_BLOCK
 static inline sector_t
 iomap_sector(struct iomap *iomap, loff_t pos)
 {
 	return (iomap->addr + pos - iomap->offset) >> SECTOR_SHIFT;
 }
+#endif
 
 /*
  * When a filesystem sets page_ops in an iomap mapping it returns, page_prepare
