@@ -652,12 +652,12 @@ struct bfa_fcs_fdmi_hba_attr_s {
  * Port Attribute Block
  */
 struct bfa_fcs_fdmi_port_attr_s {
-	u8         supp_fc4_types[BFA_FCS_FDMI_FC4_TYPE_LEN];
+//	u8         supp_fc4_types[BFA_FCS_FDMI_FC4_TYPE_LEN];
 	__be32        supp_speed;	/* supported speed */
 	__be32        curr_speed;	/* current Speed */
 	__be32        max_frm_size;	/* max frame size */
-	u8         os_device_name[256];	/* OS device Name */
-	u8         host_name[256];	/* host name */
+//	u8         os_device_name[256];	/* OS device Name */
+//	u8         host_name[256];	/* host name */
 	wwn_t       port_name;
 	wwn_t       node_name;
 	struct      bfa_lport_symname_s port_sym_name;
