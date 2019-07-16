@@ -87,6 +87,13 @@ config KEYBOARD_APPLESPI
 	  To compile this driver as a module, choose M here: the
 	  module will be called applespi.
 
+config KEYBOARD_APPLESPI_BUS
+	tristate
+	default KEYBOARD_APPLESPI
+	imply SPI_PXA2XX
+	imply SPI_PXA2XX_PCI
+	imply MFD_INTEL_LPSS_PCI
+
 config KEYBOARD_ATARI
 	tristate "Atari keyboard"
 	depends on ATARI
