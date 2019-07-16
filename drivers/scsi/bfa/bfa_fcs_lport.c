@@ -1416,8 +1416,6 @@ static u16 bfa_fcs_lport_fdmi_build_rpa_pyld(struct bfa_fcs_lport_fdmi_s *fdmi,
 						 u8 *pyld);
 static u16 bfa_fcs_lport_fdmi_build_portattr_block(struct bfa_fcs_lport_fdmi_s *
 						       fdmi, u8 *pyld);
-static void	bfa_fcs_fdmi_get_hbaattr(struct bfa_fcs_lport_fdmi_s *fdmi,
-				 struct bfa_fcs_fdmi_hba_attr_s *hba_attr);
 static void	bfa_fcs_fdmi_get_portattr(struct bfa_fcs_lport_fdmi_s *fdmi,
 				  struct bfa_fcs_fdmi_port_attr_s *port_attr);
 u32	bfa_fcs_fdmi_convert_speed(enum bfa_port_speed pport_speed);
@@ -1896,22 +1894,33 @@ bfa_fcs_lport_fdmi_send_rhba(void *fdmi_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 	bfa_sm_send_event(fdmi, FDMISM_EVENT_RHBA_SENT);
 }
 
-static          u16
+static u32
+bfa_fcs_fdmi_get_port_max_frm_size(struct bfa_fcs_lport_fdmi_s *fdmi)
+{
+	struct bfa_fcs_lport_s *port = fdmi->ms->port;
+	struct bfa_port_attr_s pport_attr;
+
+	/*
+	 * get pport attributes from hal
+	 */
+	bfa_fcport_get_attr(port->fcs->bfa, &pport_attr);
+
+	/*
+	 * Max PDU Size.
+	 */
+	return cpu_to_be32(pport_attr.pport_cfg.maxfrsize);
+}
+
+static noinline_for_stack  u16
 bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 {
 	struct bfa_fcs_lport_s *port = fdmi->ms->port;
-	struct bfa_fcs_fdmi_hba_attr_s hba_attr;
-	struct bfa_fcs_fdmi_hba_attr_s *fcs_hba_attr = &hba_attr;
+	struct bfa_fcs_driver_info_s  *driver_info = &port->fcs->driver_info;
 	struct fdmi_rhba_s *rhba = (struct fdmi_rhba_s *) pyld;
 	struct fdmi_attr_s *attr;
 	u8        *curr_ptr;
 	u16        len, count;
 	u16	templen;
-
-	/*
-	 * get hba attributes
-	 */
-	bfa_fcs_fdmi_get_hbaattr(fdmi, fcs_hba_attr);
 
 	rhba->hba_id = bfa_fcs_lport_get_pwwn(port);
 	rhba->port_list.num_ports = cpu_to_be32(1);
@@ -1945,8 +1954,9 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 	 */
 	attr = (struct fdmi_attr_s *) curr_ptr;
 	attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_MANUFACTURER);
-	templen = (u16) strlen(fcs_hba_attr->manufacturer);
-	memcpy(attr->value, fcs_hba_attr->manufacturer, templen);
+	bfa_ioc_get_adapter_manufacturer(&port->fcs->bfa->ioc,
+					 attr->value);
+	templen = (u16) strlen(attr->value);
 	templen = fc_roundup(templen, sizeof(u32));
 	curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 	len += templen;
@@ -1959,8 +1969,9 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 	 */
 	attr = (struct fdmi_attr_s *) curr_ptr;
 	attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_SERIALNUM);
-	templen = (u16) strlen(fcs_hba_attr->serial_num);
-	memcpy(attr->value, fcs_hba_attr->serial_num, templen);
+	bfa_ioc_get_adapter_serial_num(&port->fcs->bfa->ioc,
+					attr->value);
+	templen = (u16) strlen(attr->value);
 	templen = fc_roundup(templen, sizeof(u32));
 	curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 	len += templen;
@@ -1973,8 +1984,9 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 	 */
 	attr = (struct fdmi_attr_s *) curr_ptr;
 	attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_MODEL);
-	templen = (u16) strlen(fcs_hba_attr->model);
-	memcpy(attr->value, fcs_hba_attr->model, templen);
+	bfa_ioc_get_adapter_model(&port->fcs->bfa->ioc,
+					attr->value);
+	templen = (u16) strlen(attr->value);
 	templen = fc_roundup(templen, sizeof(u32));
 	curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 	len += templen;
@@ -1987,8 +1999,9 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 	 */
 	attr = (struct fdmi_attr_s *) curr_ptr;
 	attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_MODEL_DESC);
-	templen = (u16) strlen(fcs_hba_attr->model_desc);
-	memcpy(attr->value, fcs_hba_attr->model_desc, templen);
+	bfa_ioc_get_adapter_model(&port->fcs->bfa->ioc,
+					attr->value);
+	templen = (u16) strlen(attr->value);
 	templen = fc_roundup(templen, sizeof(u32));
 	curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 	len += templen;
@@ -1999,12 +2012,13 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 	/*
 	 * H/W Version
 	 */
-	if (fcs_hba_attr->hw_version[0] != '\0') {
-		attr = (struct fdmi_attr_s *) curr_ptr;
-		attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_HW_VERSION);
-		templen = (u16) strlen(fcs_hba_attr->hw_version);
-		memcpy(attr->value, fcs_hba_attr->hw_version, templen);
-		templen = fc_roundup(templen, sizeof(u32));
+	attr = (struct fdmi_attr_s *) curr_ptr;
+	attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_HW_VERSION);
+	bfa_ioc_get_pci_chip_rev(&port->fcs->bfa->ioc,
+					attr->value);
+	templen = (u16) strlen(attr->value);
+	templen = fc_roundup(templen, sizeof(u32));
+	if (attr->value[0] != '\0') {
 		curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 		len += templen;
 		count++;
@@ -2017,8 +2031,8 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 	 */
 	attr = (struct fdmi_attr_s *) curr_ptr;
 	attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_DRIVER_VERSION);
-	templen = (u16) strlen(fcs_hba_attr->driver_version);
-	memcpy(attr->value, fcs_hba_attr->driver_version, templen);
+	strlcpy(attr->value, (char *)driver_info->version, BFA_VERSION_LEN);
+	templen = (u16) strlen(attr->value);
 	templen = fc_roundup(templen, sizeof(u32));
 	curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 	len += templen;
@@ -2029,12 +2043,12 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 	/*
 	 * Option Rom Version
 	 */
-	if (fcs_hba_attr->option_rom_ver[0] != '\0') {
-		attr = (struct fdmi_attr_s *) curr_ptr;
-		attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_ROM_VERSION);
-		templen = (u16) strlen(fcs_hba_attr->option_rom_ver);
-		memcpy(attr->value, fcs_hba_attr->option_rom_ver, templen);
-		templen = fc_roundup(templen, sizeof(u32));
+	attr = (struct fdmi_attr_s *) curr_ptr;
+	attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_ROM_VERSION);
+	bfa_ioc_get_adapter_optrom_ver(&port->fcs->bfa->ioc, attr->value);
+	templen = (u16) strlen(attr->value);
+	templen = fc_roundup(templen, sizeof(u32));
+	if (attr->value[0] != '\0') {
 		curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 		len += templen;
 		count++;
@@ -2044,8 +2058,9 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 
 	attr = (struct fdmi_attr_s *) curr_ptr;
 	attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_FW_VERSION);
-	templen = (u16) strlen(fcs_hba_attr->fw_version);
-	memcpy(attr->value, fcs_hba_attr->fw_version, templen);
+	bfa_ioc_get_adapter_fw_ver(&port->fcs->bfa->ioc,
+				   attr->value);
+	templen = (u16) strlen(attr->value);
 	templen = fc_roundup(templen, sizeof(u32));
 	curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 	len += templen;
@@ -2056,12 +2071,13 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 	/*
 	 * OS Name
 	 */
-	if (fcs_hba_attr->os_name[0] != '\0') {
-		attr = (struct fdmi_attr_s *) curr_ptr;
-		attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_OS_NAME);
-		templen = (u16) strlen(fcs_hba_attr->os_name);
-		memcpy(attr->value, fcs_hba_attr->os_name, templen);
-		templen = fc_roundup(templen, sizeof(u32));
+	attr = (struct fdmi_attr_s *) curr_ptr;
+	attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_OS_NAME);
+	strlcpy(attr->value, driver_info->host_os_name,
+		sizeof(driver_info->host_os_name));
+	templen = (u16) strlen(attr->value);
+	templen = fc_roundup(templen, sizeof(u32));
+	if (attr->value[0] != '\0') {
 		curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 		len += templen;
 		count++;
@@ -2074,8 +2090,8 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 	 */
 	attr = (struct fdmi_attr_s *) curr_ptr;
 	attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_MAX_CT);
-	templen = sizeof(fcs_hba_attr->max_ct_pyld);
-	memcpy(attr->value, &fcs_hba_attr->max_ct_pyld, templen);
+	*(__be32 *)attr->value = bfa_fcs_fdmi_get_port_max_frm_size(fdmi);
+	templen = sizeof(__be32);
 	templen = fc_roundup(templen, sizeof(u32));
 	curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 	len += templen;
@@ -2088,8 +2104,9 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 	if (fdmi->retry_cnt == 0) {
 		attr = (struct fdmi_attr_s *) curr_ptr;
 		attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_NODE_SYM_NAME);
-		templen = sizeof(fcs_hba_attr->node_sym_name);
-		memcpy(attr->value, &fcs_hba_attr->node_sym_name, templen);
+		memcpy(attr->value,
+		       port->port_cfg.node_sym_name.symname, BFA_SYMNAME_MAXLEN);
+		templen = sizeof(BFA_SYMNAME_MAXLEN);
 		templen = fc_roundup(templen, sizeof(u32));
 		curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 		len += templen;
@@ -2099,8 +2116,9 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 
 		attr = (struct fdmi_attr_s *) curr_ptr;
 		attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_VENDOR_ID);
-		templen = sizeof(fcs_hba_attr->vendor_info);
-		memcpy(attr->value, &fcs_hba_attr->vendor_info, templen);
+		templen = BFA_FCS_FDMI_VENDOR_INFO_LEN;
+		memset(attr->value, 0, templen);
+		memcpy(attr->value, "QLogic", sizeof("QLogic"));
 		templen = fc_roundup(templen, sizeof(u32));
 		curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 		len += templen;
@@ -2110,8 +2128,8 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 
 		attr = (struct fdmi_attr_s *) curr_ptr;
 		attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_NUM_PORTS);
-		templen = sizeof(fcs_hba_attr->num_ports);
-		memcpy(attr->value, &fcs_hba_attr->num_ports, templen);
+		*(__be32 *)attr->value = cpu_to_be32(bfa_ioc_get_nports(&port->fcs->bfa->ioc));
+		templen = sizeof(__be32);
 		templen = fc_roundup(templen, sizeof(u32));
 		curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 		len += templen;
@@ -2121,8 +2139,8 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 
 		attr = (struct fdmi_attr_s *) curr_ptr;
 		attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_FABRIC_NAME);
-		templen = sizeof(fcs_hba_attr->fabric_name);
-		memcpy(attr->value, &fcs_hba_attr->fabric_name, templen);
+		templen = sizeof(port->fabric->lps->pr_nwwn);
+		memcpy(attr->value, (void *)&port->fabric->lps->pr_nwwn, templen);
 		templen = fc_roundup(templen, sizeof(u32));
 		curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 		len += templen;
@@ -2132,8 +2150,9 @@ bfa_fcs_lport_fdmi_build_rhba_pyld(struct bfa_fcs_lport_fdmi_s *fdmi, u8 *pyld)
 
 		attr = (struct fdmi_attr_s *) curr_ptr;
 		attr->type = cpu_to_be16(FDMI_HBA_ATTRIB_BIOS_VER);
-		templen = sizeof(fcs_hba_attr->bios_ver);
-		memcpy(attr->value, &fcs_hba_attr->bios_ver, templen);
+		bfa_ioc_get_adapter_optrom_ver(&port->fcs->bfa->ioc,
+						attr->value);
+		templen = BFA_VERSION_LEN;
 		templen = fc_roundup(attr->len, sizeof(u32));
 		curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 		len += templen;
@@ -2232,12 +2251,14 @@ bfa_fcs_lport_fdmi_send_rprt(void *fdmi_cbarg, struct bfa_fcxp_s *fcxp_alloced)
 /*
  * This routine builds Port Attribute Block that used in RPA, RPRT commands.
  */
-static          u16
+static u16
 bfa_fcs_lport_fdmi_build_portattr_block(struct bfa_fcs_lport_fdmi_s *fdmi,
 				       u8 *pyld)
 {
 	struct bfa_fcs_fdmi_port_attr_s fcs_port_attr;
+	struct bfa_fcs_lport_s *port = fdmi->ms->port;
 	struct fdmi_port_attr_s *port_attrib = (struct fdmi_port_attr_s *) pyld;
+	struct bfa_fcs_driver_info_s  *driver_info = &port->fcs->driver_info;
 	struct fdmi_attr_s *attr;
 	u8        *curr_ptr;
 	u16        len;
@@ -2261,8 +2282,8 @@ bfa_fcs_lport_fdmi_build_portattr_block(struct bfa_fcs_lport_fdmi_s *fdmi,
 	 */
 	attr = (struct fdmi_attr_s *) curr_ptr;
 	attr->type = cpu_to_be16(FDMI_PORT_ATTRIB_FC4_TYPES);
-	templen = sizeof(fcs_port_attr.supp_fc4_types);
-	memcpy(attr->value, fcs_port_attr.supp_fc4_types, templen);
+	fc_get_fc4type_bitmask(FC_TYPE_FCP, attr->value);
+	templen = BFA_FCS_FDMI_FC4_TYPE_LEN;
 	curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 	len += templen;
 	++count;
@@ -2313,11 +2334,11 @@ bfa_fcs_lport_fdmi_build_portattr_block(struct bfa_fcs_lport_fdmi_s *fdmi,
 	/*
 	 * OS Device Name
 	 */
-	if (fcs_port_attr.os_device_name[0] != '\0') {
+	if (driver_info->os_device_name[0] != '\0') {
 		attr = (struct fdmi_attr_s *) curr_ptr;
 		attr->type = cpu_to_be16(FDMI_PORT_ATTRIB_DEV_NAME);
-		templen = (u16) strlen(fcs_port_attr.os_device_name);
-		memcpy(attr->value, fcs_port_attr.os_device_name, templen);
+		templen = strlcpy(attr->value, driver_info->os_device_name,
+				  sizeof(driver_info->os_device_name));
 		templen = fc_roundup(templen, sizeof(u32));
 		curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 		len += templen;
@@ -2328,11 +2349,11 @@ bfa_fcs_lport_fdmi_build_portattr_block(struct bfa_fcs_lport_fdmi_s *fdmi,
 	/*
 	 * Host Name
 	 */
-	if (fcs_port_attr.host_name[0] != '\0') {
+	if (driver_info->host_machine_name[0] != '\0') {
 		attr = (struct fdmi_attr_s *) curr_ptr;
 		attr->type = cpu_to_be16(FDMI_PORT_ATTRIB_HOST_NAME);
-		templen = (u16) strlen(fcs_port_attr.host_name);
-		memcpy(attr->value, fcs_port_attr.host_name, templen);
+		templen = strlcpy(attr->value, driver_info->host_machine_name,
+				sizeof(driver_info->host_machine_name));
 		templen = fc_roundup(templen, sizeof(u32));
 		curr_ptr += sizeof(attr->type) + sizeof(templen) + templen;
 		len += templen;
@@ -2364,13 +2385,11 @@ bfa_fcs_lport_fdmi_build_portattr_block(struct bfa_fcs_lport_fdmi_s *fdmi,
 		attr->len = cpu_to_be16(templen + sizeof(attr->type) +
 				 sizeof(templen));
 
-		if (fcs_port_attr.port_sym_name.symname[0] != '\0') {
-			attr = (struct fdmi_attr_s *) curr_ptr;
-			attr->type =
-				cpu_to_be16(FDMI_PORT_ATTRIB_PORT_SYM_NAME);
-			templen = sizeof(fcs_port_attr.port_sym_name);
-			memcpy(attr->value,
-				&fcs_port_attr.port_sym_name, templen);
+		attr = (struct fdmi_attr_s *) curr_ptr;
+		attr->type = cpu_to_be16(FDMI_PORT_ATTRIB_PORT_SYM_NAME);
+		templen = strlcpy(attr->value,
+			bfa_fcs_lport_get_psym_name(port).symname, BFA_SYMNAME_MAXLEN);
+		if (attr->value[0] != '\0') {
 			templen = fc_roundup(templen, sizeof(u32));
 			curr_ptr += sizeof(attr->type) +
 					sizeof(templen) + templen;
@@ -2609,68 +2628,12 @@ bfa_fcs_lport_fdmi_timeout(void *arg)
 	bfa_sm_send_event(fdmi, FDMISM_EVENT_TIMEOUT);
 }
 
-static void
-bfa_fcs_fdmi_get_hbaattr(struct bfa_fcs_lport_fdmi_s *fdmi,
-			 struct bfa_fcs_fdmi_hba_attr_s *hba_attr)
-{
-	struct bfa_fcs_lport_s *port = fdmi->ms->port;
-	struct bfa_fcs_driver_info_s  *driver_info = &port->fcs->driver_info;
-	struct bfa_fcs_fdmi_port_attr_s fcs_port_attr;
-
-	memset(hba_attr, 0, sizeof(struct bfa_fcs_fdmi_hba_attr_s));
-
-	bfa_ioc_get_adapter_manufacturer(&port->fcs->bfa->ioc,
-					hba_attr->manufacturer);
-	bfa_ioc_get_adapter_serial_num(&port->fcs->bfa->ioc,
-					hba_attr->serial_num);
-	bfa_ioc_get_adapter_model(&port->fcs->bfa->ioc,
-					hba_attr->model);
-	bfa_ioc_get_adapter_model(&port->fcs->bfa->ioc,
-					hba_attr->model_desc);
-	bfa_ioc_get_pci_chip_rev(&port->fcs->bfa->ioc,
-					hba_attr->hw_version);
-	bfa_ioc_get_adapter_optrom_ver(&port->fcs->bfa->ioc,
-					hba_attr->option_rom_ver);
-	bfa_ioc_get_adapter_fw_ver(&port->fcs->bfa->ioc,
-					hba_attr->fw_version);
-
-	strlcpy(hba_attr->driver_version, (char *)driver_info->version,
-		sizeof(hba_attr->driver_version));
-
-	strlcpy(hba_attr->os_name, driver_info->host_os_name,
-		sizeof(hba_attr->os_name));
-
-	/*
-	 * If there is a patch level, append it
-	 * to the os name along with a separator
-	 */
-	if (driver_info->host_os_patch[0] != '\0') {
-		strlcat(hba_attr->os_name, BFA_FCS_PORT_SYMBNAME_SEPARATOR,
-			sizeof(hba_attr->os_name));
-		strlcat(hba_attr->os_name, driver_info->host_os_patch,
-				sizeof(hba_attr->os_name));
-	}
-
-	/* Retrieve the max frame size from the port attr */
-	bfa_fcs_fdmi_get_portattr(fdmi, &fcs_port_attr);
-	hba_attr->max_ct_pyld = fcs_port_attr.max_frm_size;
-
-	strlcpy(hba_attr->node_sym_name.symname,
-		port->port_cfg.node_sym_name.symname, BFA_SYMNAME_MAXLEN);
-	strcpy(hba_attr->vendor_info, "QLogic");
-	hba_attr->num_ports =
-		cpu_to_be32(bfa_ioc_get_nports(&port->fcs->bfa->ioc));
-	hba_attr->fabric_name = port->fabric->lps->pr_nwwn;
-	strlcpy(hba_attr->bios_ver, hba_attr->option_rom_ver, BFA_VERSION_LEN);
-
-}
-
-static void
+static noinline void
 bfa_fcs_fdmi_get_portattr(struct bfa_fcs_lport_fdmi_s *fdmi,
 			  struct bfa_fcs_fdmi_port_attr_s *port_attr)
 {
 	struct bfa_fcs_lport_s *port = fdmi->ms->port;
-	struct bfa_fcs_driver_info_s  *driver_info = &port->fcs->driver_info;
+//	struct bfa_fcs_driver_info_s  *driver_info = &port->fcs->driver_info;
 	struct bfa_port_attr_s pport_attr;
 	struct bfa_lport_attr_s lport_attr;
 
@@ -2684,7 +2647,7 @@ bfa_fcs_fdmi_get_portattr(struct bfa_fcs_lport_fdmi_s *fdmi,
 	/*
 	 * get FC4 type Bitmask
 	 */
-	fc_get_fc4type_bitmask(FC_TYPE_FCP, port_attr->supp_fc4_types);
+//	fc_get_fc4type_bitmask(FC_TYPE_FCP, port_attr->supp_fc4_types);
 
 	/*
 	 * Supported Speeds
@@ -2728,14 +2691,14 @@ bfa_fcs_fdmi_get_portattr(struct bfa_fcs_lport_fdmi_s *fdmi,
 	/*
 	 * OS device Name
 	 */
-	strlcpy(port_attr->os_device_name, driver_info->os_device_name,
-		sizeof(port_attr->os_device_name));
+//	strlcpy(port_attr->os_device_name, driver_info->os_device_name,
+//		sizeof(port_attr->os_device_name));
 
 	/*
 	 * Host name
 	 */
-	strlcpy(port_attr->host_name, driver_info->host_machine_name,
-		sizeof(port_attr->host_name));
+//	strlcpy(port_attr->host_name, driver_info->host_machine_name,
+//		sizeof(port_attr->host_name));
 
 	port_attr->node_name = bfa_fcs_lport_get_nwwn(port);
 	port_attr->port_name = bfa_fcs_lport_get_pwwn(port);
