@@ -245,7 +245,7 @@ static bool fl_range_port_src_cmp(struct cls_fl_filter *filter,
 	return true;
 }
 
-static struct cls_fl_filter *__fl_lookup(struct fl_flow_mask *mask,
+static noinline_for_stack struct cls_fl_filter *__fl_lookup(struct fl_flow_mask *mask,
 					 struct fl_flow_key *mkey)
 {
 	return rhashtable_lookup_fast(&mask->ht, fl_key_get_start(mkey, mask),
