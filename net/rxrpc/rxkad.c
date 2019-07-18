@@ -139,7 +139,7 @@ static int rxkad_prime_packet_security(struct rxrpc_connection *conn)
 /*
  * partially encrypt a packet (level 1 security)
  */
-static int rxkad_secure_packet_auth(const struct rxrpc_call *call,
+static noinline_for_stack int rxkad_secure_packet_auth(const struct rxrpc_call *call,
 				    struct sk_buff *skb,
 				    u32 data_size,
 				    void *sechdr,
@@ -176,7 +176,7 @@ static int rxkad_secure_packet_auth(const struct rxrpc_call *call,
 /*
  * wholly encrypt a packet (level 2 security)
  */
-static int rxkad_secure_packet_encrypt(const struct rxrpc_call *call,
+static noinline_for_stack int rxkad_secure_packet_encrypt(const struct rxrpc_call *call,
 				       struct sk_buff *skb,
 				       u32 data_size,
 				       void *sechdr,
@@ -311,7 +311,7 @@ static int rxkad_secure_packet(struct rxrpc_call *call,
 /*
  * decrypt partial encryption on a packet (level 1 security)
  */
-static int rxkad_verify_packet_1(struct rxrpc_call *call, struct sk_buff *skb,
+static noinline_for_stack int rxkad_verify_packet_1(struct rxrpc_call *call, struct sk_buff *skb,
 				 unsigned int offset, unsigned int len,
 				 rxrpc_seq_t seq,
 				 struct skcipher_request *req)
@@ -397,7 +397,7 @@ nomem:
 /*
  * wholly decrypt a packet (level 2 security)
  */
-static int rxkad_verify_packet_2(struct rxrpc_call *call, struct sk_buff *skb,
+static noinline_for_stack int rxkad_verify_packet_2(struct rxrpc_call *call, struct sk_buff *skb,
 				 unsigned int offset, unsigned int len,
 				 rxrpc_seq_t seq,
 				 struct skcipher_request *req)
