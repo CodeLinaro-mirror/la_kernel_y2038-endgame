@@ -23,7 +23,7 @@
 #define __FD_SETSIZE	1024
 
 typedef struct {
-	unsigned long __kernel_fds_bits[__FD_SETSIZE / (8 * sizeof(long))];
+	unsigned long fds_bits[__FD_SETSIZE / (8 * sizeof(long))];
 } __kernel_fd_set;
 
 /* Type of a signal handler.  */
