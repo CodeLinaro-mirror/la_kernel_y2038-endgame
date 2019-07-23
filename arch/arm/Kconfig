@@ -392,7 +392,6 @@ config ARCH_FOOTBRIDGE
 config ARCH_IOP13XX
 	bool "IOP13xx-based"
 	select CPU_XSC3
-	select NEED_MACH_MEMORY_H
 	select NEED_RET_TO_USER
 	select FORCE_PCI
 	select PLAT_IOP

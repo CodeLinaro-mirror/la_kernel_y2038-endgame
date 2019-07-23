@@ -11,6 +11,7 @@
 #include <linux/io.h>
 #include <asm/irq.h>
 #include <linux/sizes.h>
+#include <mach/iop13xx.h>
 #include <mach/irqs.h>
 
 /* assumes CONTROLLER_ONLY# is never asserted in the ESSR register */
