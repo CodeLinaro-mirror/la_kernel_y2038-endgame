@@ -20,7 +20,7 @@
 #include <linux/platform_data/dma-s3c24xx.h>
 #include <linux/dmaengine.h>
 
-#include <mach/hardware.h>
+#include <mach/map.h>
 #include <mach/regs-clock.h>
 #include <asm/irq.h>
 #include <asm/cacheflush.h>
@@ -30,6 +30,7 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
+#include <mach/hardware.h>
 #include <mach/regs-gpio.h>
 #include <mach/dma.h>
 
@@ -667,5 +668,8 @@ struct platform_device s3c2410_device_dclk = {
 	.id		= 0,
 	.num_resources	= ARRAY_SIZE(s3c2410_dclk_resource),
 	.resource	= s3c2410_dclk_resource,
+	.dev		= {
+		.platform_data = s3c2410_modify_misccr,
+	},
 };
 #endif

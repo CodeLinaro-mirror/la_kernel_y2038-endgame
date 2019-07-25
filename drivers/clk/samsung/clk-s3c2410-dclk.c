@@ -52,6 +52,7 @@ struct s3c24xx_clkout {
 	struct clk_hw		hw;
 	u32			mask;
 	u8			shift;
+	unsigned int (*modify_misccr)(unsigned int clr, unsigned int chg);
 };
 
 #define to_s3c24xx_clkout(_hw) container_of(_hw, struct s3c24xx_clkout, hw)
@@ -76,7 +77,7 @@ static int s3c24xx_clkout_set_parent(struct clk_hw *hw, u8 index)
 {
 	struct s3c24xx_clkout *clkout = to_s3c24xx_clkout(hw);
 
-	s3c2410_modify_misccr((clkout->mask << clkout->shift),
+	clkout->modify_misccr((clkout->mask << clkout->shift),
 			      (index << clkout->shift));
 
 	return 0;
@@ -110,6 +111,7 @@ static struct clk_hw *s3c24xx_register_clkout(struct device *dev,
 	clkout->shift = shift;
 	clkout->mask = mask;
 	clkout->hw.init = &init;
+	clkout->modify_misccr = dev->platform_data;
 
 	ret = clk_hw_register(dev, &clkout->hw);
 	if (ret)

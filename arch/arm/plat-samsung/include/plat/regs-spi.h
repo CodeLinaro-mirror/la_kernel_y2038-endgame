@@ -8,6 +8,8 @@
 #ifndef __ASM_ARCH_REGS_SPI_H
 #define __ASM_ARCH_REGS_SPI_H
 
+#include <mach/map.h>
+
 #define S3C2410_SPI1		(0x20)
 #define S3C2412_SPI1		(0x100)
 
