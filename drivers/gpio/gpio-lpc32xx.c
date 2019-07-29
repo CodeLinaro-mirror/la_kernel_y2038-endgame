@@ -16,8 +16,7 @@
 #include <linux/platform_device.h>
 #include <linux/module.h>
 
-#include <mach/hardware.h>
-#include <mach/platform.h>
+#define _GPREG(x)				(x)
 
 #define LPC32XX_GPIO_P3_INP_STATE		_GPREG(0x000)
 #define LPC32XX_GPIO_P3_OUTP_SET		_GPREG(0x004)
@@ -72,12 +71,12 @@
 #define LPC32XX_GPO_P3_GRP	(LPC32XX_GPI_P3_GRP + LPC32XX_GPI_P3_MAX)
 
 struct gpio_regs {
-	void __iomem *inp_state;
-	void __iomem *outp_state;
-	void __iomem *outp_set;
-	void __iomem *outp_clr;
-	void __iomem *dir_set;
-	void __iomem *dir_clr;
+	unsigned long inp_state;
+	unsigned long outp_state;
+	unsigned long outp_set;
+	unsigned long outp_clr;
+	unsigned long dir_set;
+	unsigned long dir_clr;
 };
 
 /*
@@ -167,14 +166,26 @@ struct lpc32xx_gpio_chip {
 	struct gpio_regs	*gpio_grp;
 };
 
+void __iomem *gpio_reg_base;
+
+static inline u32 gpreg_read(unsigned long offset)
+{
+	return __raw_readl(gpio_reg_base + offset);
+}
+
+static inline void gpreg_write(u32 val, unsigned long offset)
+{
+	__raw_writel(val, gpio_reg_base + offset);
+}
+
 static void __set_gpio_dir_p012(struct lpc32xx_gpio_chip *group,
 	unsigned pin, int input)
 {
 	if (input)
-		__raw_writel(GPIO012_PIN_TO_BIT(pin),
+		gpreg_write(GPIO012_PIN_TO_BIT(pin),
 			group->gpio_grp->dir_clr);
 	else
-		__raw_writel(GPIO012_PIN_TO_BIT(pin),
+		gpreg_write(GPIO012_PIN_TO_BIT(pin),
 			group->gpio_grp->dir_set);
 }
 
@@ -184,19 +195,19 @@ static void __set_gpio_dir_p3(struct lpc32xx_gpio_chip *group,
 	u32 u = GPIO3_PIN_TO_BIT(pin);
 
 	if (input)
-		__raw_writel(u, group->gpio_grp->dir_clr);
+		gpreg_write(u, group->gpio_grp->dir_clr);
 	else
-		__raw_writel(u, group->gpio_grp->dir_set);
+		gpreg_write(u, group->gpio_grp->dir_set);
 }
 
 static void __set_gpio_level_p012(struct lpc32xx_gpio_chip *group,
 	unsigned pin, int high)
 {
 	if (high)
-		__raw_writel(GPIO012_PIN_TO_BIT(pin),
+		gpreg_write(GPIO012_PIN_TO_BIT(pin),
 			group->gpio_grp->outp_set);
 	else
-		__raw_writel(GPIO012_PIN_TO_BIT(pin),
+		gpreg_write(GPIO012_PIN_TO_BIT(pin),
 			group->gpio_grp->outp_clr);
 }
 
@@ -206,31 +217,31 @@ static void __set_gpio_level_p3(struct lpc32xx_gpio_chip *group,
 	u32 u = GPIO3_PIN_TO_BIT(pin);
 
 	if (high)
-		__raw_writel(u, group->gpio_grp->outp_set);
+		gpreg_write(u, group->gpio_grp->outp_set);
 	else
-		__raw_writel(u, group->gpio_grp->outp_clr);
+		gpreg_write(u, group->gpio_grp->outp_clr);
 }
 
 static void __set_gpo_level_p3(struct lpc32xx_gpio_chip *group,
 	unsigned pin, int high)
 {
 	if (high)
-		__raw_writel(GPO3_PIN_TO_BIT(pin), group->gpio_grp->outp_set);
+		gpreg_write(GPO3_PIN_TO_BIT(pin), group->gpio_grp->outp_set);
 	else
-		__raw_writel(GPO3_PIN_TO_BIT(pin), group->gpio_grp->outp_clr);
+		gpreg_write(GPO3_PIN_TO_BIT(pin), group->gpio_grp->outp_clr);
 }
 
 static int __get_gpio_state_p012(struct lpc32xx_gpio_chip *group,
 	unsigned pin)
 {
-	return GPIO012_PIN_IN_SEL(__raw_readl(group->gpio_grp->inp_state),
+	return GPIO012_PIN_IN_SEL(gpreg_read(group->gpio_grp->inp_state),
 		pin);
 }
 
 static int __get_gpio_state_p3(struct lpc32xx_gpio_chip *group,
 	unsigned pin)
 {
-	int state = __raw_readl(group->gpio_grp->inp_state);
+	int state = gpreg_read(group->gpio_grp->inp_state);
 
 	/*
 	 * P3 GPIO pin input mapping is not contiguous, GPIOP3-0..4 is mapped
@@ -242,13 +253,13 @@ static int __get_gpio_state_p3(struct lpc32xx_gpio_chip *group,
 static int __get_gpi_state_p3(struct lpc32xx_gpio_chip *group,
 	unsigned pin)
 {
-	return GPI3_PIN_IN_SEL(__raw_readl(group->gpio_grp->inp_state), pin);
+	return GPI3_PIN_IN_SEL(gpreg_read(group->gpio_grp->inp_state), pin);
 }
 
 static int __get_gpo_state_p3(struct lpc32xx_gpio_chip *group,
 	unsigned pin)
 {
-	return GPO3_PIN_IN_SEL(__raw_readl(group->gpio_grp->outp_state), pin);
+	return GPO3_PIN_IN_SEL(gpreg_read(group->gpio_grp->outp_state), pin);
 }
 
 /*
@@ -498,6 +509,10 @@ static int lpc32xx_gpio_probe(struct platform_device *pdev)
 {
 	int i;
 
+	gpio_reg_base = devm_platform_ioremap_resource(pdev, 0);
+	if (gpio_reg_base)
+		return -ENXIO;
+
 	for (i = 0; i < ARRAY_SIZE(lpc32xx_gpiochip); i++) {
 		if (pdev->dev.of_node) {
 			lpc32xx_gpiochip[i].chip.of_xlate = lpc32xx_of_xlate;
@@ -527,3 +542,7 @@ static struct platform_driver lpc32xx_gpio_driver = {
 };
 
 module_platform_driver(lpc32xx_gpio_driver);
+
+MODULE_AUTHOR("Kevin Wells <kevin.wells@nxp.com>");
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("GPIO driver for LPC32xx SoC");
