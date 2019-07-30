@@ -26,7 +26,7 @@
 #include <asm/mach/irq.h>
 
 #include "devices.h"
-#include "gpio-ks8695.h"
+#include <mach/gpio-ks8695.h>
 
 #include "generic.h"
 

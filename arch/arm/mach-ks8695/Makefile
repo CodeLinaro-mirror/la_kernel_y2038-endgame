@@ -4,7 +4,7 @@
 # Makefile for KS8695 architecture support
 #
 
-obj-y				:= cpu.o irq.o time.o devices.o gpio.o
+obj-y				:= cpu.o irq.o time.o devices.o
 
 # PCI support is optional
 obj-$(CONFIG_PCI)		+= pci.o
