@@ -29,7 +29,6 @@
 #include "regs-hpna.h"
 #include "regs-switch.h"
 #include "regs-misc.h"
-#include "regs-uart.h"
 
 /* --------------------------------------------------------------------
  *  Ethernet
@@ -191,6 +190,7 @@ static void __init ks8695_add_device_watchdog(void)
 {
 	platform_device_register(&ks8695_wdt_device);
 }
+
 
 /* -------------------------------------------------------------------- */
 
