@@ -394,6 +394,25 @@ ks8695_tx_irq(int irq, void *dev_id)
 }
 
 /**
+ *	ks8695_get_rx_enable_bit - Get rx interrupt enable/status bit
+ *	@ksp: Private data for the KS8695 Ethernet
+ *
+ *    For KS8695 document:
+ *    Interrupt Enable Register (offset 0xE204)
+ *        Bit29 : WAN MAC Receive Interrupt Enable
+ *        Bit16 : LAN MAC Receive Interrupt Enable
+ *    Interrupt Status Register (Offset 0xF208)
+ *        Bit29: WAN MAC Receive Status
+ *        Bit16: LAN MAC Receive Status
+ *    So, this Rx interrupt enable/status bit number is equal
+ *    as Rx IRQ number.
+ */
+static inline u32 ks8695_get_rx_enable_bit(struct ks8695_priv *ksp)
+{
+	return ksp->rx_irq;
+}
+
+/**
  *	ks8695_rx_irq - Receive IRQ handler
  *	@irq: The IRQ which went off (ignored)
  *	@dev_id: The net_device for the interrupt
@@ -410,7 +429,11 @@ ks8695_rx_irq(int irq, void *dev_id)
 	spin_lock(&ksp->rx_lock);
 
 	if (napi_schedule_prep(&ksp->napi)) {
-		disable_irq(ksp->rx_irq);
+		unsigned long status = readl(KS8695_IRQ_VA + KS8695_INTEN);
+		unsigned long mask_bit = 1 << ks8695_get_rx_enable_bit(ksp);
+		/*disable rx interrupt*/
+		status &= ~mask_bit;
+		writel(status , KS8695_IRQ_VA + KS8695_INTEN);
 		__napi_schedule(&ksp->napi);
 	}
 
@@ -529,6 +552,8 @@ rx_finished:
 static int ks8695_poll(struct napi_struct *napi, int budget)
 {
 	struct ks8695_priv *ksp = container_of(napi, struct ks8695_priv, napi);
+	unsigned long isr = readl(KS8695_IRQ_VA + KS8695_INTEN);
+	unsigned long mask_bit = 1 << ks8695_get_rx_enable_bit(ksp);
 	int work_done;
 
 	work_done = ks8695_rx(ksp, budget);
@@ -537,7 +562,8 @@ static int ks8695_poll(struct napi_struct *napi, int budget)
 		unsigned long flags;
 
 		spin_lock_irqsave(&ksp->rx_lock, flags);
-		enable_irq(ksp->rx_irq);
+		/* enable rx interrupt */
+		writel(isr | mask_bit, KS8695_IRQ_VA + KS8695_INTEN);
 		spin_unlock_irqrestore(&ksp->rx_lock, flags);
 	}
 	return work_done;
