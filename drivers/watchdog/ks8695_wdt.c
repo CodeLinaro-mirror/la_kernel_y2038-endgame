@@ -20,8 +20,10 @@
 #include <linux/watchdog.h>
 #include <linux/io.h>
 #include <linux/uaccess.h>
+#include <mach/hardware.h>
 
-#define KS8695_CLOCK_RATE  25000000
+#define KS8695_TMR_OFFSET	(0xF0000 + 0xE400)
+#define KS8695_TMR_VA		(KS8695_IO_VA + KS8695_TMR_OFFSET)
 
 /*
  * Timer registers
@@ -52,7 +54,6 @@ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
 
 static unsigned long ks8695wdt_busy;
 static DEFINE_SPINLOCK(ks8695_lock);
-static void __iomem *tmr_reg;
 
 /* ......................................................................... */
 
@@ -65,8 +66,8 @@ static inline void ks8695_wdt_stop(void)
 
 	spin_lock(&ks8695_lock);
 	/* disable timer0 */
-	tmcon = __raw_readl(tmr_reg + KS8695_TMCON);
-	__raw_writel(tmcon & ~TMCON_T0EN, tmr_reg + KS8695_TMCON);
+	tmcon = __raw_readl(KS8695_TMR_VA + KS8695_TMCON);
+	__raw_writel(tmcon & ~TMCON_T0EN, KS8695_TMR_VA + KS8695_TMCON);
 	spin_unlock(&ks8695_lock);
 }
 
@@ -80,15 +81,15 @@ static inline void ks8695_wdt_start(void)
 
 	spin_lock(&ks8695_lock);
 	/* disable timer0 */
-	tmcon = __raw_readl(tmr_reg + KS8695_TMCON);
-	__raw_writel(tmcon & ~TMCON_T0EN, tmr_reg + KS8695_TMCON);
+	tmcon = __raw_readl(KS8695_TMR_VA + KS8695_TMCON);
+	__raw_writel(tmcon & ~TMCON_T0EN, KS8695_TMR_VA + KS8695_TMCON);
 
 	/* program timer0 */
-	__raw_writel(tval | T0TC_WATCHDOG, tmr_reg + KS8695_T0TC);
+	__raw_writel(tval | T0TC_WATCHDOG, KS8695_TMR_VA + KS8695_T0TC);
 
 	/* re-enable timer0 */
-	tmcon = __raw_readl(tmr_reg + KS8695_TMCON);
-	__raw_writel(tmcon | TMCON_T0EN, tmr_reg + KS8695_TMCON);
+	tmcon = __raw_readl(KS8695_TMR_VA + KS8695_TMCON);
+	__raw_writel(tmcon | TMCON_T0EN, KS8695_TMR_VA + KS8695_TMCON);
 	spin_unlock(&ks8695_lock);
 }
 
@@ -101,9 +102,9 @@ static inline void ks8695_wdt_reload(void)
 
 	spin_lock(&ks8695_lock);
 	/* disable, then re-enable timer0 */
-	tmcon = __raw_readl(tmr_reg + KS8695_TMCON);
-	__raw_writel(tmcon & ~TMCON_T0EN, tmr_reg + KS8695_TMCON);
-	__raw_writel(tmcon | TMCON_T0EN, tmr_reg + KS8695_TMCON);
+	tmcon = __raw_readl(KS8695_TMR_VA + KS8695_TMCON);
+	__raw_writel(tmcon & ~TMCON_T0EN, KS8695_TMR_VA + KS8695_TMCON);
+	__raw_writel(tmcon | TMCON_T0EN, KS8695_TMR_VA + KS8695_TMCON);
 	spin_unlock(&ks8695_lock);
 }
 
@@ -235,10 +236,6 @@ static struct miscdevice ks8695wdt_miscdev = {
 static int ks8695wdt_probe(struct platform_device *pdev)
 {
 	int res;
-
-	tmr_reg = devm_platform_ioremap_resource(pdev, 0);
-	if (!tmr_reg)
-		return -ENXIO;
 
 	if (ks8695wdt_miscdev.parent)
 		return -EBUSY;
