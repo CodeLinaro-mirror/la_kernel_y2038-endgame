@@ -375,6 +375,7 @@ config ARCH_IOP32X
 	select GPIO_IOP
 	select GPIOLIB
 	select NEED_RET_TO_USER
+	select GENERIC_IRQ_MULTI_HANDLER
 	select FORCE_PCI
 	select PLAT_IOP
 	help

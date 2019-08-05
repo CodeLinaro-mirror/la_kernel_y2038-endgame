@@ -17,7 +17,16 @@
 	.equ	NR_syscalls, __NR_syscalls
 
 #ifdef CONFIG_NEED_RET_TO_USER
-#include <mach/entry-macro.S>
+	/* On IOP32x, disable cp6 access */
+	.macro arch_ret_to_user, tmp1, tmp2
+	ldr	\tmp1, =iop32x_cp6_enabled
+	ldr	\tmp1, [\tmp1]
+	cmp	\tmp1, 0
+	mrcne 	p15, 0, \tmp1, c15, c1, 0
+	andsne	\tmp2, \tmp1, #(1 << 6)
+	bicne	\tmp1, \tmp1, #(1 << 6)
+	mcrne	p15, 0, \tmp1, c15, c1, 0
+	.endm
 #else
 	.macro  arch_ret_to_user, tmp1, tmp2
 	.endm
