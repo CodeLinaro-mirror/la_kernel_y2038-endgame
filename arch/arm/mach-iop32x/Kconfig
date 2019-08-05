@@ -1,4 +1,16 @@
 # SPDX-License-Identifier: GPL-2.0
+menuconfig ARCH_IOP32X
+	bool "IOP32x-based"
+	depends on ARCH_MULTI_V5
+	select CPU_XSCALE
+	select GPIOLIB
+	select GPIO_IOP
+	select NEED_RET_TO_USER
+	select FORCE_PCI
+	help
+	  Support for Intel's 80219 and IOP32X (XScale) family of
+	  processors.
+
 if ARCH_IOP32X
 
 menu "IOP32x Implementation Options"
