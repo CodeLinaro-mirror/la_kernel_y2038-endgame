@@ -41,7 +41,7 @@
 
 #include <mach/hardware.h>
 #include "camera.h"
-#include <mach/usb.h>
+#include "usb.h"
 
 #include "ams-delta-fiq.h"
 #include "board-ams-delta.h"
