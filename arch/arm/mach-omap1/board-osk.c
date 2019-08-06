@@ -41,18 +41,17 @@
 #include <linux/mfd/tps65010.h>
 #include <linux/platform_data/gpio-omap.h>
 #include <linux/platform_data/omap1_bl.h>
+#include <linux/soc/ti/omap1-io.h>
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
-#include "flash.h"
-#include <mach/mux.h>
 #include <mach/tc.h>
-
-#include <mach/hardware.h>
+#include "flash.h"
+#include "mux.h"
+#include "hardware.h"
 #include "usb.h"
-
 #include "common.h"
 
 /* At OMAP5912 OSK the Ethernet is directly connected to CS1 */

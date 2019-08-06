@@ -14,16 +14,16 @@
 #include <linux/spi/spi.h>
 
 #include <linux/platform_data/omap-wd-timer.h>
+#include <linux/soc/ti/omap1-io.h>
 
 #include <asm/mach/map.h>
 
 #include <mach/tc.h>
-#include <mach/mux.h>
+#include "mux.h"
 
-#include <mach/omap7xx.h>
+#include "omap7xx.h"
 #include "camera.h"
-#include <mach/hardware.h>
-
+#include "hardware.h"
 #include "common.h"
 #include "clock.h"
 #include "mmc.h"

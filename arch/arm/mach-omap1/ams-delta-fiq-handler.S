@@ -15,11 +15,12 @@
 #include <linux/platform_data/gpio-omap.h>
 
 #include <asm/assembler.h>
+#include <linux/soc/ti/omap1-io.h>
 
+#include "hardware.h"
 #include "ams-delta-fiq.h"
 #include "board-ams-delta.h"
 #include "iomap.h"
-#include "soc.h"
 
 /*
  * OMAP1510 GPIO related symbol copied from arch/arm/mach-omap1/gpio15xx.c.
