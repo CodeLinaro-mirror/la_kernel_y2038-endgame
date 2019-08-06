@@ -278,6 +278,23 @@ static void __init osk_init_cf(void)
 	irq_set_irq_type(gpio_to_irq(62), IRQ_TYPE_EDGE_FALLING);
 }
 
+/*
+ * Board specific gang-switched transceiver power on/off.
+ * NOTE:  OSK supplies power from DC, not battery.
+ */
+static int osk_omap_ohci_transceiver_power(int on)
+{
+	if (!IS_BUILTIN(CONFIG_TPS65010))
+		return -ENXIO;
+
+	if (on)
+		tps65010_set_gpio_out_value(GPIO1, LOW);
+	else
+		tps65010_set_gpio_out_value(GPIO1, HIGH);
+
+	return 0;
+}
+
 static struct omap_usb_config osk_usb_config __initdata = {
 	/* has usb host connector (A) ... for development it can also
 	 * be used, with a NONSTANDARD gender-bending cable/dongle, as
@@ -292,6 +309,8 @@ static struct omap_usb_config osk_usb_config __initdata = {
 	.rwc		= 1,
 #endif
 	.pins[0]	= 2,
+
+	.transceiver_power = osk_omap_ohci_transceiver_power,
 };
 
 #ifdef	CONFIG_OMAP_OSK_MISTRAL
