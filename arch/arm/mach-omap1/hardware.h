@@ -1,6 +1,4 @@
 /*
- * arch/arm/mach-omap1/include/mach/hardware.h
- *
  * Hardware definitions for TI OMAP processors and boards
  *
  * NOTE: Please put device driver specific defines into a separate header
