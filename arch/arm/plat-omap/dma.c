@@ -35,9 +35,9 @@
 #include <linux/omap-dma.h>
 
 #ifdef CONFIG_ARCH_OMAP1
-#include <mach/hardware.h>
 #include <linux/soc/ti/omap1-io.h>
 #include <linux/soc/ti/omap1-soc.h>
+#include <mach/tc.h>
 #endif
 
 /*

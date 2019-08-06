@@ -52,8 +52,7 @@
 
 #include <plat/counter-32k.h>
 
-#include <mach/hardware.h>
-
+#include "hardware.h"
 #include "common.h"
 
 /*

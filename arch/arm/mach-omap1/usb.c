@@ -11,13 +11,13 @@
 #include <linux/platform_device.h>
 #include <linux/io.h>
 #include <linux/delay.h>
+#include <linux/soc/ti/omap1-io.h>
 
 #include <asm/irq.h>
 
-#include <mach/mux.h>
-
+#include "hardware.h"
+#include "mux.h"
 #include "usb.h"
-
 #include "common.h"
 
 /* These routines should handle the standard chip-specific modes
