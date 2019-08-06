@@ -34,7 +34,6 @@
 
 #include <linux/omap-dma.h>
 
-#include <mach/hardware.h>
 #include <linux/soc/ti/omap1-io.h>
 #include <linux/soc/ti/omap1-soc.h>
 
