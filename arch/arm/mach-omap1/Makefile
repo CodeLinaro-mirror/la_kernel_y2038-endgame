@@ -3,6 +3,10 @@
 # Makefile for the linux kernel.
 #
 
+ccflags-$(CONFIG_ARCH_MULTIPLATFORM) += -I$(srctree)/arch/arm/mach-omap1/include
+asflags-$(CONFIG_ARCH_MULTIPLATFORM) += -I$(srctree)/arch/arm/mach-omap1/include
+ccflags-$(CONFIG_ARCH_MULTIPLATFORM) += -I$(srctree)/arch/arm/plat-omap/include
+
 # Common support
 obj-y := io.o id.o sram-init.o sram.o time.o irq.o mux.o flash.o \
 	 serial.o devices.o dma.o omap-dma.o fb.o
