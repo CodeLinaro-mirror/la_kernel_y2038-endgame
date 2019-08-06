@@ -658,7 +658,7 @@ config KEYBOARD_IPAQ_MICRO
 
 config KEYBOARD_OMAP
 	tristate "TI OMAP keypad support"
-	depends on ARCH_OMAP1
+	depends on ARCH_OMAP1 || COMPILE_TEST
 	select INPUT_MATRIXKMAP
 	help
 	  Say Y here if you want to use the OMAP keypad.
