@@ -24,7 +24,6 @@
 #include "omap7xx.h"
 #include "hardware.h"
 #include "common.h"
-#include "clock.h"
 #include "mmc.h"
 #include "sram.h"
 
