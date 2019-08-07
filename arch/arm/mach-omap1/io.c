@@ -18,7 +18,6 @@
 #include "mux.h"
 #include "iomap.h"
 #include "common.h"
-#include "clock.h"
 
 /*
  * The machine specific code may provide the extra mapping besides the

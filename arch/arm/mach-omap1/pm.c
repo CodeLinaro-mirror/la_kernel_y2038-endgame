@@ -61,7 +61,6 @@
 #include "mux.h"
 #include "irqs.h"
 #include "iomap.h"
-#include "clock.h"
 #include "pm.h"
 #include "soc.h"
 #include "sram.h"
