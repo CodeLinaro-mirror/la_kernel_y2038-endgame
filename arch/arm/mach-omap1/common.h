@@ -77,6 +77,8 @@ void omap1_init_irq(void);
 void __exception_irq_entry omap1_handle_irq(struct pt_regs *regs);
 void omap1_init_late(void);
 void omap1_restart(enum reboot_mode, const char *);
+int omap1_clk_init(void);
+void omap1_clk_late_init(void);
 
 extern void __init omap_check_revision(void);
 
