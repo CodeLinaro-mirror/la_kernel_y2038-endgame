@@ -32,7 +32,6 @@
 #include "hardware.h"
 #include "usb.h"
 #include "common.h"
-#include "clock.h"
 #include "mmc.h"
 
 #define ADS7846_PENDOWN_GPIO	15
