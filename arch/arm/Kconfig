@@ -521,6 +521,7 @@ config ARCH_OMAP1
 	select ARCH_OMAP
 	select CLKDEV_LOOKUP
 	select CLKSRC_MMIO
+	select COMMON_CLK
 	select FORCE_PCI if PCCARD
 	select GENERIC_CLOCKEVENTS
 	select GENERIC_IRQ_CHIP
