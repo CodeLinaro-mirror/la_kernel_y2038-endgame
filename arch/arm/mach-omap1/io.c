@@ -125,9 +125,6 @@ void __init omap1_init_early(void)
 	omap_writew(0x0, MPU_PUBLIC_TIPB_CNTL);
 	omap_writew(0x0, MPU_PRIVATE_TIPB_CNTL);
 
-	/* Must init clocks early to assure that timer interrupt works
-	 */
-	omap1_clk_init();
 	omap1_mux_init();
 }
 
