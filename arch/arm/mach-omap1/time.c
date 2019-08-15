@@ -228,6 +228,8 @@ static inline void omap_mpu_timer_init(void)
  */
 void __init omap1_timer_init(void)
 {
+	omap1_clk_init();
+
 	if (omap_32k_timer_init() != 0)
 		omap_mpu_timer_init();
 }
