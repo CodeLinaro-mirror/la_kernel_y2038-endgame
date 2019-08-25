@@ -23,6 +23,8 @@
 #include <asm/mach/flash.h>
 
 #include "irqs.h"
+#include "ixp4xx-regs.h"
+#include "platform.h"
 
 static struct flash_platform_data vulcan_flash_data = {
 	.map_name	= "cfi_probe",

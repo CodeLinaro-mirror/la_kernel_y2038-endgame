@@ -9,8 +9,7 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
-#include <mach/hardware.h>
-#include <mach/ixp4xx-regs.h>
+#include "ixp4xx-regs.h"
 
 static struct map_desc ixp4xx_of_io_desc[] __initdata = {
 	/*

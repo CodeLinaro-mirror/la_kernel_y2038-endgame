@@ -14,12 +14,13 @@
 #include <linux/pci.h>
 #include <linux/init.h>
 #include <linux/irq.h>
+
 #include <asm/mach-types.h>
-#include <mach/hardware.h>
 #include <asm/irq.h>
 #include <asm/mach/pci.h>
 
 #include "irqs.h"
+#include "platform.h"
 
 #define SLOT0_DEVID	14
 #define SLOT1_DEVID	15
