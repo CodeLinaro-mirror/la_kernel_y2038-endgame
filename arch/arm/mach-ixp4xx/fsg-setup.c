@@ -126,9 +126,13 @@ static struct platform_device fsg_uart = {
 	.resource		= fsg_uart_resources,
 };
 
+static struct resource fsg_leds_resource[1] = {};
+
 static struct platform_device fsg_leds = {
 	.name		= "fsg-led",
 	.id		= -1,
+	.resource	= fsg_leds_resource,
+	.num_resources	= ARRAY_SIZE(fsg_leds_resource),
 };
 
 /* Built-in 10/100 Ethernet MAC interfaces */
@@ -234,6 +238,8 @@ static void __init fsg_init(void)
 	 */
 	(void)platform_device_register(&fsg_uart);
 
+	fsg_leds_resource[0] = (struct resource)
+			DEFINE_RES_MEM(IXP4XX_EXP_BUS_BASE(2), SZ_512);
 	platform_add_devices(fsg_devices, ARRAY_SIZE(fsg_devices));
 
 	if (request_irq(gpio_to_irq(FSG_RB_GPIO), &fsg_reset_handler,
