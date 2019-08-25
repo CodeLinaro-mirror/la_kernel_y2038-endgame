@@ -20,6 +20,8 @@
 #include <asm/system_info.h>
 
 #include "irqs.h"
+#include "platform.h"
+#include "ixp4xx-regs.h"
 
 #define SLOT_ETHA		0x0B	/* IDSEL = AD21 */
 #define SLOT_ETHB		0x0C	/* IDSEL = AD20 */

@@ -18,6 +18,7 @@
 #include <asm/mach-types.h>
 
 #include "irqs.h"
+#include "platform.h"
 
 #define MAX_DEV		3
 #define IRQ_LINES	3
