@@ -277,21 +277,6 @@
 #define PCI_INTEN_PDB   	0x00000080
 
 /*
- * Shift value for byte enable on NP cmd/byte enable register
- */
-#define IXP4XX_PCI_NP_CBE_BESL		4
-
-/*
- * PCI commands supported by NP access unit
- */
-#define NP_CMD_IOREAD			0x2
-#define NP_CMD_IOWRITE			0x3
-#define NP_CMD_CONFIGREAD		0xa
-#define NP_CMD_CONFIGWRITE		0xb
-#define NP_CMD_MEMREAD			0x6
-#define	NP_CMD_MEMWRITE			0x7
-
-/*
  * Constants for CRP access into local config space
  */
 #define CRP_AD_CBE_BESL         20

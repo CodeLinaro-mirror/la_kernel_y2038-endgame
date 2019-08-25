@@ -33,6 +33,8 @@
 #include <asm/mach/time.h>
 
 #include "irqs.h"
+#include "ixp4xx-regs.h"
+#include "platform.h"
 
 #define NSLU2_SDA_PIN		7
 #define NSLU2_SCL_PIN		6

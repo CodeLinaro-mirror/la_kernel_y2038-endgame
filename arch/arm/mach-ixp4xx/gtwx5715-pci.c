@@ -13,10 +13,10 @@
 #include <linux/delay.h>
 #include <linux/irq.h>
 #include <asm/mach-types.h>
-#include <mach/hardware.h>
 #include <asm/mach/pci.h>
 
 #include "irqs.h"
+#include "platform.h"
 
 #define SLOT0_DEVID	0
 #define SLOT1_DEVID	1
