@@ -1,16 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
- * arch/arm/mach-ixp4xx/include/mach/platform.h
- *
  * Constants and functions that are useful to IXP4xx platform-specific code
  * and device drivers.
  *
  * Copyright (C) 2004 MontaVista Software, Inc.
  */
-
-#ifndef __ASM_ARCH_HARDWARE_H__
-#error "Do not include this directly, instead #include <mach/hardware.h>"
-#endif
+#ifndef __IXP4XX_PLATFORM_H
+#define __IXP4XX_PLATFORM_H
 
 #ifndef __ASSEMBLY__
 
@@ -18,6 +14,8 @@
 #include <linux/platform_data/eth_ixp4xx.h>
 
 #include <asm/types.h>
+
+#include "ixp4xx-regs.h"
 
 #ifndef	__ARMEB__
 #define	REG_OFFSET	0
@@ -104,3 +102,4 @@ extern struct resource ixp4xx_res_ethc;
 
 #endif // __ASSEMBLY__
 
+#endif
