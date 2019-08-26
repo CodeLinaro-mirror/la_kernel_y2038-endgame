@@ -286,6 +286,18 @@ void __init ixp4xx_sys_init(void)
 {
 	ixp4xx_exp_bus_size = SZ_16M;
 
+	if (cpu_is_ixp43x()) {
+		/* IXP43x lacks NPE-B and uses NPE-C for MII PHY access */
+		if (ixp4xx_read_feature_bits() & IXP4XX_FEATURE_NPEC_ETH)
+			platform_device_register_simple("ixp4xx_phy", -1,
+							&ixp4xx_res_ethc, 1);
+	} else {
+		/* All MII PHY accesses use NPE-B Ethernet registers */
+		if (ixp4xx_read_feature_bits() & IXP4XX_FEATURE_NPEB_ETH0)
+			platform_device_register_simple("ixp4xx_phy", -1,
+							&ixp4xx_res_ethb, 1);
+	}
+
 	platform_add_devices(ixp4xx_devices, ARRAY_SIZE(ixp4xx_devices));
 
 	if (IS_ENABLED(CONFIG_CRYPTO_DEV_IXP4XX))

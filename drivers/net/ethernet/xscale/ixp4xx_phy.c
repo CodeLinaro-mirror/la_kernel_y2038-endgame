@@ -105,32 +105,23 @@ static int ixp4xx_mdio_write(struct mii_bus *bus, int phy_id, int location,
 	return ret;
 }
 
-static int ixp4xx_mdio_register(void)
+static int ixp4xx_mdio_probe(struct platform_device *pdev)
 {
-	int err;
+	struct resource *res;
+
 	/*
-	 * FIXME: we bail out on device tree boot but this really needs
-	 * to be fixed in a nicer way: this registers the MDIO bus before
-	 * even matching the driver infrastructure, we should only probe
-	 * detected hardware.
+	 * caution: don't call request_resource because of the conflict
+	 * with the ixp4xx_eth driver
 	 */
-	if (of_have_populated_dt())
-		return -ENODEV;
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	if (!res)
+		return -ENXIO;
+	mdio_regs = devm_ioremap(&pdev->dev, res->start, resource_size(res));
+	if (!mdio_regs)
+		return -ENXIO;
 
-	if (!(mdio_bus = mdiobus_alloc()))
+	if (!(mdio_bus = devm_mdiobus_alloc(&pdev->dev)))
 		return -ENOMEM;
-
-	if (cpu_is_ixp43x()) {
-		/* IXP43x lacks NPE-B and uses NPE-C for MII PHY access */
-		if (!(ixp4xx_read_feature_bits() & IXP4XX_FEATURE_NPEC_ETH))
-			return -ENODEV;
-		mdio_regs = (struct eth_regs __iomem *)IXP4XX_EthC_BASE_VIRT;
-	} else {
-		/* All MII PHY accesses use NPE-B Ethernet registers */
-		if (!(ixp4xx_read_feature_bits() & IXP4XX_FEATURE_NPEB_ETH0))
-			return -ENODEV;
-		mdio_regs = (struct eth_regs __iomem *)IXP4XX_EthB_BASE_VIRT;
-	}
 
 	__raw_writel(DEFAULT_CORE_CNTRL, &mdio_regs->core_control);
 	spin_lock_init(&mdio_lock);
@@ -139,18 +130,22 @@ static int ixp4xx_mdio_register(void)
 	mdio_bus->write = &ixp4xx_mdio_write;
 	snprintf(mdio_bus->id, MII_BUS_ID_SIZE, IXP4XX_MDIO_BUS_ID);
 
-	if ((err = mdiobus_register(mdio_bus)))
-		mdiobus_free(mdio_bus);
-	return err;
+	return mdiobus_register(mdio_bus);
 }
-module_init(ixp4xx_mdio_register);
 
-static void ixp4xx_mdio_remove(void)
+static int ixp4xx_mdio_remove(struct platform_device *pdev)
 {
 	mdiobus_unregister(mdio_bus);
-	mdiobus_free(mdio_bus);
+
+	return 0;
 }
-module_exit(ixp4xx_mdio_remove);
+
+static struct platform_driver ixp4xx_phy_drv = {
+	.driver.name	= "ixp4xx_phy",
+	.probe		= ixp4xx_mdio_probe,
+	.remove		= ixp4xx_mdio_remove,
+};
+module_platform_driver(ixp4xx_phy_drv);
 
 MODULE_AUTHOR("Krzysztof Halasa");
 MODULE_DESCRIPTION("Intel IXP4xx Ethernet PHY driver");
