@@ -26,37 +26,25 @@
 #include <linux/init.h>
 #include <linux/bitops.h>
 #include <linux/uaccess.h>
-#include <mach/hardware.h>
+#include <linux/soc/ixp4xx/cpu.h>
+#include <linux/platform_data/timer-ixp4xx.h>
 
 static bool nowayout = WATCHDOG_NOWAYOUT;
 static int heartbeat = 60;	/* (secs) Default is 1 minute */
 static unsigned long wdt_status;
 static unsigned long boot_status;
-static DEFINE_SPINLOCK(wdt_lock);
-
-#define WDT_TICK_RATE (IXP4XX_PERIPHERAL_BUS_CLOCK * 1000000UL)
 
 #define	WDT_IN_USE		0
 #define	WDT_OK_TO_CLOSE		1
 
 static void wdt_enable(void)
 {
-	spin_lock(&wdt_lock);
-	*IXP4XX_OSWK = IXP4XX_WDT_KEY;
-	*IXP4XX_OSWE = 0;
-	*IXP4XX_OSWT = WDT_TICK_RATE * heartbeat;
-	*IXP4XX_OSWE = IXP4XX_WDT_COUNT_ENABLE | IXP4XX_WDT_RESET_ENABLE;
-	*IXP4XX_OSWK = 0;
-	spin_unlock(&wdt_lock);
+	ixp4xx_wdt_set(heartbeat);
 }
 
 static void wdt_disable(void)
 {
-	spin_lock(&wdt_lock);
-	*IXP4XX_OSWK = IXP4XX_WDT_KEY;
-	*IXP4XX_OSWE = 0;
-	*IXP4XX_OSWK = 0;
-	spin_unlock(&wdt_lock);
+	ixp4xx_wdt_set(0);
 }
 
 static int ixp4xx_wdt_open(struct inode *inode, struct file *file)
@@ -177,21 +165,17 @@ static int __init ixp4xx_wdt_init(void)
 {
 	int ret;
 
-	/*
-	 * FIXME: we bail out on device tree boot but this really needs
-	 * to be fixed in a nicer way: this registers the MDIO bus before
-	 * even matching the driver infrastructure, we should only probe
-	 * detected hardware.
-	 */
-	if (of_have_populated_dt())
-		return -ENODEV;
+	ret = ixp4xx_boot_status();
+	if (ret < 0)
+		return ret;
+
+	boot_status = ret ?  WDIOF_CARDRESET : 0;
+
 	if (!(read_cpuid_id() & 0xf) && !cpu_is_ixp46x()) {
 		pr_err("Rev. A0 IXP42x CPU detected - watchdog disabled\n");
 
 		return -ENODEV;
 	}
-	boot_status = (*IXP4XX_OSST & IXP4XX_OSST_TIMER_WARM_RESET) ?
-			WDIOF_CARDRESET : 0;
 	ret = misc_register(&ixp4xx_wdt_miscdev);
 	if (ret == 0)
 		pr_info("timer heartbeat %d sec\n", heartbeat);
