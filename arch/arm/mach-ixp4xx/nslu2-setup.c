@@ -132,6 +132,11 @@ static struct resource nslu2_beeper_resources[] = {
 		.start	= IRQ_IXP4XX_TIMER2,
 		.flags	= IORESOURCE_IRQ,
 	},
+	{
+		.start	= IXP4XX_TIMER_BASE_PHYS,
+		.start	= IXP4XX_TIMER_BASE_PHYS + 0x0fff,
+		.flags	= IORESOURCE_MEM,
+	}
 };
 
 static struct platform_device nslu2_beeper = {
@@ -277,6 +282,7 @@ static void __init nslu2_init(void)
 	 */
 	(void)platform_device_register(&nslu2_uart);
 
+	nslu2_beeper.dev.platform_data = (void *)ixp4xx_timer_freq;
 	platform_add_devices(nslu2_devices, ARRAY_SIZE(nslu2_devices));
 
 	pm_power_off = nslu2_power_off;
