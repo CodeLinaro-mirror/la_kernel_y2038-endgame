@@ -1395,23 +1395,10 @@ static int eth_init_one(struct platform_device *pdev)
 	port->netdev = dev;
 	port->id = pdev->id;
 
-	switch (port->id) {
-	case IXP4XX_ETH_NPEA:
-		port->regs = (struct eth_regs __iomem *)IXP4XX_EthA_BASE_VIRT;
-		regs_phys  = IXP4XX_EthA_BASE_PHYS;
-		break;
-	case IXP4XX_ETH_NPEB:
-		port->regs = (struct eth_regs __iomem *)IXP4XX_EthB_BASE_VIRT;
-		regs_phys  = IXP4XX_EthB_BASE_PHYS;
-		break;
-	case IXP4XX_ETH_NPEC:
-		port->regs = (struct eth_regs __iomem *)IXP4XX_EthC_BASE_VIRT;
-		regs_phys  = IXP4XX_EthC_BASE_PHYS;
-		break;
-	default:
-		err = -ENODEV;
-		goto err_free;
-	}
+	port->regs = devm_platform_ioremap_resource(pdev, 0);
+	err = PTR_ERR_OR_ZERO(port->regs);
+	if (err)
+		return err;
 
 	dev->netdev_ops = &ixp4xx_netdev_ops;
 	dev->ethtool_ops = &ixp4xx_ethtool_ops;
@@ -1422,12 +1409,6 @@ static int eth_init_one(struct platform_device *pdev)
 	if (!(port->npe = npe_request(NPE_ID(port->id)))) {
 		err = -EIO;
 		goto err_free;
-	}
-
-	port->mem_res = request_mem_region(regs_phys, REGS_SIZE, dev->name);
-	if (!port->mem_res) {
-		err = -EBUSY;
-		goto err_npe_rel;
 	}
 
 	port->plat = plat;

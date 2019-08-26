@@ -98,5 +98,9 @@ struct pci_sys_data;
 extern int ixp4xx_setup(int nr, struct pci_sys_data *sys);
 extern struct pci_ops ixp4xx_ops;
 
+extern struct resource ixp4xx_res_etha;
+extern struct resource ixp4xx_res_ethb;
+extern struct resource ixp4xx_res_ethc;
+
 #endif // __ASSEMBLY__
 

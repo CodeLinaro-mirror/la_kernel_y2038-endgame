@@ -178,6 +178,8 @@ static struct platform_device nas100d_eth[] = {
 		.name			= "ixp4xx_eth",
 		.id			= IXP4XX_ETH_NPEB,
 		.dev.platform_data	= nas100d_plat_eth,
+		.resource		= &ixp4xx_res_ethb,
+		.num_resources		= 1,
 	}
 };
 

@@ -152,12 +152,16 @@ static struct platform_device fsg_eth[] = {
 	{
 		.name			= "ixp4xx_eth",
 		.id			= IXP4XX_ETH_NPEB,
+		.resource		= &ixp4xx_res_ethb,
+		.num_resources		= 1,
 		.dev = {
 			.platform_data	= fsg_plat_eth,
 		},
 	}, {
 		.name			= "ixp4xx_eth",
 		.id			= IXP4XX_ETH_NPEC,
+		.resource		= &ixp4xx_res_ethc,
+		.num_resources		= 1,
 		.dev = {
 			.platform_data	= fsg_plat_eth + 1,
 		},
