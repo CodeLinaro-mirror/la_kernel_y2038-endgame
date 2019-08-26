@@ -187,10 +187,14 @@ static struct platform_device ixdp425_eth[] = {
 		.name			= "ixp4xx_eth",
 		.id			= IXP4XX_ETH_NPEB,
 		.dev.platform_data	= ixdp425_plat_eth,
+		.resource		= &ixp4xx_res_ethb,
+		.num_resources		= 1,
 	}, {
 		.name			= "ixp4xx_eth",
 		.id			= IXP4XX_ETH_NPEC,
 		.dev.platform_data	= ixdp425_plat_eth + 1,
+		.resource		= &ixp4xx_res_ethc,
+		.num_resources		= 1,
 	},
 };
 

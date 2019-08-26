@@ -144,6 +144,8 @@ static struct platform_device vulcan_eth[] = {
 		.dev = {
 			.platform_data	= &vulcan_plat_eth[0],
 		},
+		.resource		= &ixp4xx_res_ethb,
+		.num_resources		= 1,
 	},
 	[1] = {
 		.name			= "ixp4xx_eth",
@@ -151,6 +153,8 @@ static struct platform_device vulcan_eth[] = {
 		.dev = {
 			.platform_data	= &vulcan_plat_eth[1],
 		},
+		.resource		= &ixp4xx_res_ethc,
+		.num_resources		= 1,
 	},
 };
 

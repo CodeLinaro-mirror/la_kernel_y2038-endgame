@@ -261,6 +261,10 @@ static struct platform_device_info ixp_dev_info __initdata = {
 	.dma_mask	= DMA_BIT_MASK(32),
 };
 
+struct resource ixp4xx_res_etha = DEFINE_RES_MEM(IXP4XX_EthA_BASE_PHYS, SZ_4K);
+struct resource ixp4xx_res_ethb = DEFINE_RES_MEM(IXP4XX_EthB_BASE_PHYS, SZ_4K);
+struct resource ixp4xx_res_ethc = DEFINE_RES_MEM(IXP4XX_EthC_BASE_PHYS, SZ_4K);
+
 static int __init ixp_crypto_register(void)
 {
 	struct platform_device *pdev;
