@@ -172,7 +172,7 @@ static int __init ixp4xx_wdt_init(void)
 
 	boot_status = ret ?  WDIOF_CARDRESET : 0;
 
-	if (!(read_cpuid_id() & 0xf) && !cpu_is_ixp46x()) {
+	if (cpu_is_ixp42x_rev_a0()) {
 		pr_err("Rev. A0 IXP42x CPU detected - watchdog disabled\n");
 
 		return -ENODEV;
