@@ -59,7 +59,7 @@ static void ixp4xx_spkr_control(unsigned int pin, unsigned int count)
 
 static int ixp4xx_spkr_event(struct input_dev *dev, unsigned int type, unsigned int code, int value)
 {
-	unsigned int pin = (unsigned int) input_get_drvdata(dev);
+	unsigned int pin = (uintptr_t)input_get_drvdata(dev);
 	unsigned int count = 0;
 
 	if (type != EV_SND)
@@ -107,7 +107,7 @@ static int ixp4xx_spkr_probe(struct platform_device *dev)
 	if (!input_dev)
 		return -ENOMEM;
 
-	input_set_drvdata(input_dev, (void *) dev->id);
+	input_set_drvdata(input_dev, (void *)(uintptr_t)dev->id);
 
 	input_dev->name = "ixp4xx beeper";
 	input_dev->phys = "ixp4xx/gpio";
@@ -147,7 +147,7 @@ static int ixp4xx_spkr_probe(struct platform_device *dev)
 
 	err = request_irq(irq, &ixp4xx_spkr_interrupt,
 			  IRQF_NO_SUSPEND, "ixp4xx-beeper",
-			  (void *) dev->id);
+			  (void *)(uintptr_t)dev->id);
 	if (err)
 		goto err_free_gpio;
 	ixp4xx_timer2_irq = irq;
@@ -161,7 +161,7 @@ static int ixp4xx_spkr_probe(struct platform_device *dev)
 	return 0;
 
  err_free_irq:
-	free_irq(irq, (void *)dev->id);
+	free_irq(irq, (void *)(uintptr_t)dev->id);
  err_free_gpio:
 	gpio_free(dev->id);
  err_free_device:
@@ -173,7 +173,7 @@ static int ixp4xx_spkr_probe(struct platform_device *dev)
 static int ixp4xx_spkr_remove(struct platform_device *dev)
 {
 	struct input_dev *input_dev = platform_get_drvdata(dev);
-	unsigned int pin = (unsigned int) input_get_drvdata(input_dev);
+	unsigned int pin = (uintptr_t)input_get_drvdata(input_dev);
 
 	input_unregister_device(input_dev);
 
@@ -181,7 +181,7 @@ static int ixp4xx_spkr_remove(struct platform_device *dev)
 	disable_irq(ixp4xx_timer2_irq);
 	ixp4xx_spkr_control(pin, 0);
 
-	free_irq(ixp4xx_timer2_irq, (void *)dev->id);
+	free_irq(ixp4xx_timer2_irq, (void *)(uintptr_t)dev->id);
 	gpio_free(dev->id);
 
 	return 0;
@@ -190,7 +190,7 @@ static int ixp4xx_spkr_remove(struct platform_device *dev)
 static void ixp4xx_spkr_shutdown(struct platform_device *dev)
 {
 	struct input_dev *input_dev = platform_get_drvdata(dev);
-	unsigned int pin = (unsigned int) input_get_drvdata(input_dev);
+	unsigned int pin = (uintptr_t)input_get_drvdata(input_dev);
 
 	/* turn off the speaker */
 	disable_irq(ixp4xx_timer2_irq);
