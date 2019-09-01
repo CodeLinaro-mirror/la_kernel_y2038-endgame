@@ -21,26 +21,25 @@
 #define _MAP_UNALIGNED	0x0800
 
 /* These are linux-specific */
-#define MAP_GROWSDOWN	0x01000		/* stack-like segment */
-#define MAP_DENYWRITE	0x02000		/* ETXTBSY */
-#define MAP_EXECUTABLE	0x04000		/* mark it as an executable */
-#define MAP_LOCKED	0x08000		/* lock the mapping */
-#define MAP_NORESERVE	0x10000		/* don't check for reservations */
-#define MAP_POPULATE	0x20000		/* populate (prefault) pagetables */
-#define MAP_NONBLOCK	0x40000		/* do not block on IO */
-#define MAP_STACK	0x80000		/* give out an address that is best suited for process/thread stacks */
-#define MAP_HUGETLB	0x100000	/* create a huge page mapping */
-#define MAP_FIXED_NOREPLACE	0x200000/* MAP_FIXED which doesn't unmap underlying mapping */
+#define MAP_GROWSDOWN		0x01000		/* stack-like segment */
+#define MAP_DENYWRITE		0x02000		/* ETXTBSY */
+#define MAP_EXECUTABLE		0x04000		/* mark it as an executable */
+#define MAP_LOCKED		0x08000		/* lock the mapping */
+#define MAP_NORESERVE		0x10000		/* don't check for reservations */
+#define MAP_POPULATE		0x20000		/* populate (prefault) pagetables */
+#define MAP_NONBLOCK		0x40000		/* do not block on IO */
+#define MAP_STACK		0x80000		/* give out an address that is best suited for process/thread stacks */
+#define MAP_HUGETLB		0x100000	/* create a huge page mapping */
+#define MAP_FIXED_NOREPLACE	0x200000	/* MAP_FIXED which doesn't unmap underlying mapping */
+
+/*
+ * Flags for mlock
+ */
+#define MLOCK_ONFAULT	0x01		/* Lock pages in range after they are faulted in, do not prefault */
 
 #define MS_ASYNC	1		/* sync memory asynchronously */
 #define MS_SYNC		2		/* synchronous memory sync */
 #define MS_INVALIDATE	4		/* invalidate the caches */
-
-#define MCL_CURRENT	 8192		/* lock all currently mapped pages */
-#define MCL_FUTURE	16384		/* lock all additions to address space */
-#define MCL_ONFAULT	32768		/* lock all pages that are faulted in */
-
-#define MLOCK_ONFAULT	0x01		/* Lock pages in range after they are faulted in, do not prefault */
 
 #define MADV_NORMAL	0		/* no further special treatment */
 #define MADV_RANDOM	1		/* expect random page references */
@@ -49,7 +48,7 @@
 #define	MADV_SPACEAVAIL	5		/* ensure resources are available */
 #define MADV_DONTNEED	6		/* don't need these pages */
 
-/* common/generic parameters */
+/* common parameters: try to keep these consistent across architectures */
 #define MADV_FREE	8		/* free pages only if memory pressure */
 #define MADV_REMOVE	9		/* remove these pages & resources */
 #define MADV_DONTFORK	10		/* don't inherit across fork */
@@ -78,5 +77,8 @@
 #define PKEY_DISABLE_WRITE	0x2
 #define PKEY_ACCESS_MASK	(PKEY_DISABLE_ACCESS |\
 				 PKEY_DISABLE_WRITE)
+#define MCL_CURRENT	 8192		/* lock all currently mapped pages */
+#define MCL_FUTURE	16384		/* lock all additions to address space */
+#define MCL_ONFAULT	32768		/* lock all pages that are faulted in */
 
 #endif /* __ALPHA_MMAN_H__ */
