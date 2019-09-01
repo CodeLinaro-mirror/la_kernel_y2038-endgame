@@ -17,12 +17,13 @@
 #include <linux/slab.h>
 #include <linux/gpio.h>
 #include <linux/module.h>
+#include <linux/soc/pxa/cpu.h>
 
 #include <asm/io.h>
 #include <asm/irq.h>
 #include <asm/mach-types.h>
 
-#include <mach/pxa2xx-regs.h>
+#include <mach/addr-map.h>
 
 #define GPIO_NAND_CS	(11)
 #define GPIO_NAND_RB	(89)

@@ -14,6 +14,7 @@
 
 #include <linux/dm9000.h>
 #include <linux/leds.h>
+#include <linux/soc/pxa/cpu.h>
 
 #include <asm/mach/arch.h>
 #include <asm/mach-types.h>
@@ -32,6 +33,7 @@
 #undef GPIO88_GPIO
 #undef GPIO89_GPIO
 #include <mach/audio.h>
+#include <mach/addr-map.h>
 #include <linux/platform_data/video-pxafb.h>
 #include <mach/smemc.h>
 
