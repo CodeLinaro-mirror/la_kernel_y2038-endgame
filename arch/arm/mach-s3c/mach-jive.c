@@ -32,8 +32,7 @@
 #include <linux/platform_data/i2c-s3c2410.h>
 
 #include <mach/regs-gpio.h>
-#include <mach/regs-lcd.h>
-#include <mach/fb.h>
+#include <linux/platform_data/fb-s3c2410.h>
 #include <mach/gpio-samsung.h>
 
 #include <asm/mach-types.h>
@@ -321,6 +320,7 @@ static struct s3c2410fb_mach_info jive_lcd_config = {
 	 * data. */
 
 	.gpcup		= (0xf << 1) | (0x3f << 10),
+	.gpcup_reg =	S3C2410_GPCUP,
 
 	.gpccon		= (S3C2410_GPC1_VCLK   | S3C2410_GPC2_VLINE |
 			   S3C2410_GPC3_VFRAME | S3C2410_GPC4_VM |
@@ -334,7 +334,11 @@ static struct s3c2410fb_mach_info jive_lcd_config = {
 			   S3C2410_GPCCON_MASK(12) | S3C2410_GPCCON_MASK(13) |
 			   S3C2410_GPCCON_MASK(14) | S3C2410_GPCCON_MASK(15)),
 
+	.gpccon_reg =	S3C2410_GPCCON,
+
 	.gpdup		= (0x3f << 2) | (0x3f << 10),
+
+	.gpdup_reg =	S3C2410_GPDUP,
 
 	.gpdcon		= (S3C2410_GPD2_VD10  | S3C2410_GPD3_VD11 |
 			   S3C2410_GPD4_VD12  | S3C2410_GPD5_VD13 |
@@ -349,6 +353,8 @@ static struct s3c2410fb_mach_info jive_lcd_config = {
 			   S3C2410_GPDCON_MASK(10) | S3C2410_GPDCON_MASK(11)|
 			   S3C2410_GPDCON_MASK(12) | S3C2410_GPDCON_MASK(13)|
 			   S3C2410_GPDCON_MASK(14) | S3C2410_GPDCON_MASK(15)),
+
+	.gpdcon_reg =	S3C2410_GPDCON,
 };
 
 /* ILI9320 support. */
