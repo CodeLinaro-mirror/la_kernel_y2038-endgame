@@ -10,7 +10,7 @@
 #include <linux/platform_device.h>
 #include <mach/map.h>
 #include <plat/cpu.h>
-#include <plat/usb-phy.h>
+#include "usb-phy.h"
 
 #include "regs-sys.h"
 #include "regs-usb-hsotg-phy.h"

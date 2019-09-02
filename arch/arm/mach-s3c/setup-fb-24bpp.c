@@ -12,7 +12,7 @@
 #include <linux/fb.h>
 #include <linux/gpio.h>
 
-#include <plat/fb.h>
+#include "fb.h"
 #include <plat/gpio-cfg.h>
 #include <mach/gpio-samsung.h>
 

@@ -16,7 +16,7 @@
 #include <mach/regs-gpio.h>
 
 #include <linux/platform_data/asoc-s3c24xx_simtec.h>
-#include <plat/devs.h>
+#include "devs.h"
 
 #include "bast.h"
 #include "simtec.h"

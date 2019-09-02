@@ -18,9 +18,9 @@
 #include <mach/irqs.h>
 
 #include <plat/cpu.h>
-#include <plat/devs.h>
+#include "devs.h"
 #include <plat/pm.h>
-#include <plat/wakeup-mask.h>
+#include "wakeup-mask.h"
 
 #include <mach/regs-gpio.h>
 #include <mach/regs-clock.h>

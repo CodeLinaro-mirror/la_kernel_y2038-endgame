@@ -44,10 +44,10 @@
 #include <linux/platform_data/i2c-s3c2410.h>
 
 #include <plat/cpu.h>
-#include <plat/devs.h>
+#include "devs.h"
 #include <linux/platform_data/mmc-s3cmci.h>
 #include <linux/platform_data/usb-s3c2410_udc.h>
-#include <plat/samsung-time.h>
+#include "samsung-time.h"
 
 #include "s3c24xx.h"
 

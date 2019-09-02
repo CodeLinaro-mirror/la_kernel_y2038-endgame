@@ -27,7 +27,7 @@
 
 #include <plat/cpu.h>
 #include <plat/pm.h>
-#include <mach/pm-core.h>
+#include "pm-core.h"
 
 /* for external use */
 

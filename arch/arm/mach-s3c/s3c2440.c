@@ -27,13 +27,13 @@
 #include <mach/gpio-samsung.h>
 #include <asm/irq.h>
 
-#include <plat/devs.h>
+#include "devs.h"
 #include <plat/cpu.h>
 #include <plat/pm.h>
 
-#include <plat/gpio-core.h>
+#include "gpio-core.h"
 #include <plat/gpio-cfg.h>
-#include <plat/gpio-cfg-helpers.h>
+#include "gpio-cfg-helpers.h"
 
 #include "s3c24xx.h"
 

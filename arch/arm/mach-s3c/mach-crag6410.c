@@ -50,18 +50,18 @@
 #include <mach/gpio-samsung.h>
 #include <mach/irqs.h>
 
-#include <plat/fb.h>
-#include <plat/sdhci.h>
+#include "fb.h"
+#include "sdhci.h"
 #include <plat/gpio-cfg.h>
 #include <linux/platform_data/spi-s3c64xx.h>
 
-#include <plat/keypad.h>
-#include <plat/devs.h>
+#include "keypad.h"
+#include "devs.h"
 #include <plat/cpu.h>
 #include <plat/adc.h>
 #include <linux/platform_data/i2c-s3c2410.h>
 #include <plat/pm.h>
-#include <plat/samsung-time.h>
+#include "samsung-time.h"
 
 #include "s3c64xx.h"
 #include "crag6410.h"

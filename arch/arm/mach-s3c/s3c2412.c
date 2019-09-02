@@ -35,7 +35,7 @@
 
 #include <plat/cpu.h>
 #include <plat/cpu-freq.h>
-#include <plat/devs.h>
+#include "devs.h"
 #include <plat/pm.h>
 #include <plat/regs-spi.h>
 

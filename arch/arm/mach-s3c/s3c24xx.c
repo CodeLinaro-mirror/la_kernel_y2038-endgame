@@ -35,9 +35,9 @@
 #include <mach/dma.h>
 
 #include <plat/cpu.h>
-#include <plat/devs.h>
+#include "devs.h"
 #include <plat/cpu-freq.h>
-#include <plat/pwm-core.h>
+#include "pwm-core.h"
 
 #include "s3c24xx.h"
 

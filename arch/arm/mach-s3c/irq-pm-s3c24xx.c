@@ -20,7 +20,7 @@
 
 #include <mach/regs-irq.h>
 #include <mach/regs-gpio.h>
-#include <mach/pm-core.h>
+#include "pm-core.h"
 
 #include <asm/irq.h>
 

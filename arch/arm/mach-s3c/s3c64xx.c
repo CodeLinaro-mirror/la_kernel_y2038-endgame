@@ -41,10 +41,10 @@
 #include <mach/gpio-samsung.h>
 
 #include <plat/cpu.h>
-#include <plat/devs.h>
+#include "devs.h"
 #include <plat/pm.h>
 #include <plat/gpio-cfg.h>
-#include <plat/pwm-core.h>
+#include "pwm-core.h"
 #include <plat/regs-irqtype.h>
 
 #include "s3c64xx.h"

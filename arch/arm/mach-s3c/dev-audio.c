@@ -14,7 +14,7 @@
 #include <mach/map.h>
 #include <mach/dma.h>
 
-#include <plat/devs.h>
+#include "devs.h"
 #include <linux/platform_data/asoc-s3c.h>
 #include <plat/gpio-cfg.h>
 #include <mach/gpio-samsung.h>

@@ -34,10 +34,10 @@
 #include <mach/regs-clock.h>
 
 #include <plat/cpu.h>
-#include <plat/devs.h>
-#include <plat/sdhci.h>
-#include <plat/adc-core.h>
-#include <plat/iic-core.h>
+#include "devs.h"
+#include "sdhci.h"
+#include "adc-core.h"
+#include "iic-core.h"
 
 #include "ata-core.h"
 #include "s3c64xx.h"

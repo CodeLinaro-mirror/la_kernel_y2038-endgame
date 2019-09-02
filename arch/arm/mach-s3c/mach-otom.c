@@ -26,8 +26,8 @@
 #include <mach/regs-gpio.h>
 
 #include <plat/cpu.h>
-#include <plat/devs.h>
-#include <plat/samsung-time.h>
+#include "devs.h"
+#include "samsung-time.h"
 
 #include "s3c24xx.h"
 #include "otom.h"

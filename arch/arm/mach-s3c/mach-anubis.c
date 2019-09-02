@@ -41,10 +41,10 @@
 
 #include <net/ax88796.h>
 
-#include <plat/devs.h>
+#include "devs.h"
 #include <plat/cpu.h>
 #include <linux/platform_data/asoc-s3c24xx_simtec.h>
-#include <plat/samsung-time.h>
+#include "samsung-time.h"
 
 #include "anubis.h"
 #include "s3c24xx.h"

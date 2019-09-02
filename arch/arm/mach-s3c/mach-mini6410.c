@@ -29,17 +29,17 @@
 
 #include <plat/adc.h>
 #include <plat/cpu.h>
-#include <plat/devs.h>
-#include <plat/fb.h>
+#include "devs.h"
+#include "fb.h"
 #include <linux/platform_data/mtd-nand-s3c2410.h>
 #include <linux/platform_data/mmc-sdhci-s3c.h>
-#include <plat/sdhci.h>
+#include "sdhci.h"
 #include <linux/platform_data/touchscreen-s3c2410.h>
 #include <mach/irqs.h>
 
 #include <video/platform_lcd.h>
 #include <video/samsung_fimd.h>
-#include <plat/samsung-time.h>
+#include "samsung-time.h"
 
 #include "s3c64xx.h"
 #include "regs-modem.h"

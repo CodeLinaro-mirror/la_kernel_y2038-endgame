@@ -38,15 +38,15 @@
 #include <linux/platform_data/i2c-s3c2410.h>
 
 #include <plat/gpio-cfg.h>
-#include <plat/devs.h>
+#include "devs.h"
 #include <plat/cpu.h>
 #include <linux/platform_data/mtd-nand-s3c2410.h>
-#include <plat/sdhci.h>
+#include "sdhci.h"
 #include <linux/platform_data/usb-s3c2410_udc.h>
 #include <linux/platform_data/s3c-hsudc.h>
-#include <plat/samsung-time.h>
+#include "samsung-time.h"
 
-#include <plat/fb.h>
+#include "fb.h"
 
 #include "s3c24xx.h"
 #include "common-smdk.h"

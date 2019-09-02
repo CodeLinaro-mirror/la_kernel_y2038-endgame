@@ -39,8 +39,8 @@
 #include <mach/gpio-samsung.h>
 
 #include <plat/cpu.h>
-#include <plat/devs.h>
-#include <plat/samsung-time.h>
+#include "devs.h"
+#include "samsung-time.h"
 
 #include "bast.h"
 #include "s3c24xx.h"

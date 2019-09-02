@@ -41,10 +41,10 @@
 #include <mach/gpio-samsung.h>
 
 #include <plat/gpio-cfg.h>
-#include <plat/devs.h>
+#include "devs.h"
 #include <plat/cpu.h>
 #include <plat/pm.h>
-#include <plat/samsung-time.h>
+#include "samsung-time.h"
 
 #include "s3c24xx.h"
 #include "common-smdk.h"

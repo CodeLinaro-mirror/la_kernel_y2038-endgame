@@ -56,15 +56,15 @@
 #include <mach/gpio-samsung.h>
 #include <linux/platform_data/ata-samsung_cf.h>
 #include <linux/platform_data/i2c-s3c2410.h>
-#include <plat/fb.h>
+#include "fb.h"
 #include <plat/gpio-cfg.h>
 
-#include <plat/devs.h>
+#include "devs.h"
 #include <plat/cpu.h>
 #include <plat/adc.h>
 #include <linux/platform_data/touchscreen-s3c2410.h>
-#include <plat/keypad.h>
-#include <plat/samsung-time.h>
+#include "keypad.h"
+#include "samsung-time.h"
 
 #include "backlight.h"
 #include "s3c64xx.h"

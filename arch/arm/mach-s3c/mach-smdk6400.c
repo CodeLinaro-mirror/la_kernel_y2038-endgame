@@ -26,11 +26,11 @@
 #include <mach/hardware.h>
 #include <mach/map.h>
 
-#include <plat/devs.h>
+#include "devs.h"
 #include <plat/cpu.h>
 #include <linux/platform_data/i2c-s3c2410.h>
 #include <mach/gpio-samsung.h>
-#include <plat/samsung-time.h>
+#include "samsung-time.h"
 
 #include "s3c64xx.h"
 

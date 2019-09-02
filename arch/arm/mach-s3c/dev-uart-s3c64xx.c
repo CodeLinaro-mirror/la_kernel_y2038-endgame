@@ -19,7 +19,7 @@
 #include <mach/map.h>
 #include <mach/irqs.h>
 
-#include <plat/devs.h>
+#include "devs.h"
 
 /* Serial port registrations */
 

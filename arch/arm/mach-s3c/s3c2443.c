@@ -29,14 +29,14 @@
 #include <asm/system_misc.h>
 
 #include <mach/regs-s3c2443-clock.h>
-#include <mach/rtc-core.h>
+#include "rtc-core.h"
 
-#include <plat/gpio-core.h>
+#include "gpio-core.h"
 #include <plat/gpio-cfg.h>
-#include <plat/gpio-cfg-helpers.h>
-#include <plat/devs.h>
+#include "gpio-cfg-helpers.h"
+#include "devs.h"
 #include <plat/cpu.h>
-#include <plat/adc-core.h>
+#include "adc-core.h"
 
 #include "fb-core.h"
 #include "nand-core.h"

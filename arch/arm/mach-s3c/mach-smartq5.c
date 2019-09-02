@@ -20,10 +20,10 @@
 #include <mach/gpio-samsung.h>
 
 #include <plat/cpu.h>
-#include <plat/devs.h>
-#include <plat/fb.h>
+#include "devs.h"
+#include "fb.h"
 #include <plat/gpio-cfg.h>
-#include <plat/samsung-time.h>
+#include "samsung-time.h"
 
 #include "s3c64xx.h"
 #include "mach-smartq.h"
