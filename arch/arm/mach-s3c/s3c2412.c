@@ -37,7 +37,6 @@
 #include <plat/cpu-freq.h>
 #include "devs.h"
 #include <plat/pm.h>
-#include <plat/regs-spi.h>
 
 #include "s3c24xx.h"
 #include "nand-core.h"

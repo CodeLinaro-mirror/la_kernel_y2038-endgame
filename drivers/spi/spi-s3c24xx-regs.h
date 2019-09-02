@@ -8,11 +8,6 @@
 #ifndef __ASM_ARCH_REGS_SPI_H
 #define __ASM_ARCH_REGS_SPI_H
 
-#include <mach/map.h>
-
-#define S3C2410_SPI1		(0x20)
-#define S3C2412_SPI1		(0x100)
-
 #define S3C2410_SPCON		(0x00)
 
 #define S3C2410_SPCON_SMOD_DMA	(2 << 5)	/* DMA mode */
