@@ -40,10 +40,9 @@
 #include <asm/mach/irq.h>
 #include <asm/mach-types.h>
 
-#include <mach/fb.h>
 #include <mach/hardware.h>
+#include <linux/platform_data/fb-s3c2410.h>
 #include <mach/regs-gpio.h>
-#include <mach/regs-lcd.h>
 #include <mach/gpio-samsung.h>
 
 #include <plat/cpu.h>
