@@ -31,10 +31,10 @@
 #include <linux/platform_data/mtd-nand-s3c2410.h>
 #include <linux/platform_data/i2c-s3c2410.h>
 
-#include <mach/hardware.h>
-#include <mach/regs-gpio.h>
+#include "hardware.h"
+#include "regs-gpio.h"
 #include <linux/platform_data/fb-s3c2410.h>
-#include <mach/gpio-samsung.h>
+#include "gpio-samsung.h"
 
 #include <asm/mach-types.h>
 
@@ -43,12 +43,12 @@
 #include <linux/mtd/nand_ecc.h>
 #include <linux/mtd/partitions.h>
 
-#include <plat/gpio-cfg.h>
-#include <plat/devs.h>
-#include <plat/cpu.h>
-#include <plat/pm.h>
+#include "gpio-cfg.h"
+#include "devs.h"
+#include "cpu.h"
+#include "pm.h"
 #include <linux/platform_data/usb-s3c2410_udc.h>
-#include <plat/samsung-time.h>
+#include "samsung-time.h"
 
 #include "s3c24xx.h"
 #include "s3c2412-power.h"

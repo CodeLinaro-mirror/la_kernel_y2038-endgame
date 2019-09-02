@@ -19,14 +19,13 @@
 #include <asm/cacheflush.h>
 #include <asm/irq.h>
 
-#include <mach/hardware.h>
 #include <mach/irqs.h>
 
-#include <mach/regs-gpio.h>
+#include "regs-gpio.h"
 
-#include <plat/cpu.h>
-#include <plat/pm.h>
-#include <plat/wakeup-mask.h>
+#include "cpu.h"
+#include "pm.h"
+#include "wakeup-mask.h"
 
 #include "regs-dsc.h"
 #include "s3c2412-power.h"

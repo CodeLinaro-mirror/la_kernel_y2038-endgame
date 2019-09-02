@@ -35,15 +35,14 @@
 #include <asm/irq.h>
 #include <asm/mach-types.h>
 
-#include <mach/hardware.h>
-#include <mach/regs-gpio.h>
-#include <mach/gpio-samsung.h>
-#include <plat/gpio-cfg.h>
+#include "regs-gpio.h"
+#include "gpio-samsung.h"
+#include "gpio-cfg.h"
 
-#include <plat/cpu.h>
-#include <plat/devs.h>
-#include <plat/pm.h>
-#include <plat/samsung-time.h>
+#include "cpu.h"
+#include "devs.h"
+#include "pm.h"
+#include "samsung-time.h"
 
 #include "s3c24xx.h"
 #include "h1940.h"
