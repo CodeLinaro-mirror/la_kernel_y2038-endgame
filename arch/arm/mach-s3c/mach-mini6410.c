@@ -35,7 +35,7 @@
 #include <linux/platform_data/mmc-sdhci-s3c.h>
 #include "sdhci.h"
 #include <linux/platform_data/touchscreen-s3c2410.h>
-#include "irqs-s3c64xx.h"
+#include <mach/irqs.h>
 
 #include <video/platform_lcd.h>
 #include <video/samsung_fimd.h>

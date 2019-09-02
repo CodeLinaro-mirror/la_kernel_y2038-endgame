@@ -10,7 +10,7 @@
 #include <linux/gpio.h>
 #include <linux/export.h>
 
-#include "irqs-s3c64xx.h"
+#include <mach/irqs.h>
 #include <mach/map.h>
 
 #include "devs.h"
