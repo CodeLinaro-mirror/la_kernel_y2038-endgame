@@ -6,8 +6,6 @@
 #ifndef __ASM_ARCH_REGS_UDC_H
 #define __ASM_ARCH_REGS_UDC_H
 
-#include <mach/map.h>
-
 #define S3C2410_USBDREG(x) (x)
 
 #define S3C2410_UDC_FUNC_ADDR_REG	S3C2410_USBDREG(0x0140)
