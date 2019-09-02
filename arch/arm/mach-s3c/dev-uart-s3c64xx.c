@@ -16,7 +16,7 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/irq.h>
 #include <mach/map.h>
-#include <mach/irqs.h>
+#include "irqs-s3c64xx.h"
 
 #include "devs.h"
 

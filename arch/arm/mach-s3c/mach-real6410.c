@@ -27,7 +27,7 @@
 #include <mach/map.h>
 #include <mach/regs-gpio.h>
 #include <mach/gpio-samsung.h>
-#include <mach/irqs.h>
+#include "irqs-s3c64xx.h"
 
 #include <plat/adc.h>
 #include <plat/cpu.h>

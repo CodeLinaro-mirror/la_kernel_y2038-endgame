@@ -22,7 +22,7 @@
 #include <asm/mach/map.h>
 #include <asm/mach/irq.h>
 
-#include <mach/irqs.h>
+#include "irqs-s3c64xx.h"
 #include <mach/map.h>
 
 #include "devs.h"

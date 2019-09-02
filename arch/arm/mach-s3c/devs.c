@@ -37,7 +37,7 @@
 #include <asm/mach/map.h>
 #include <asm/mach/irq.h>
 
-#include <mach/irqs.h>
+#include "irqs.h"
 #include <mach/map.h>
 #include <mach/regs-s3c2443-clock.h>
 

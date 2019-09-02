@@ -28,7 +28,7 @@
 #include <linux/platform_data/spi-s3c64xx.h>
 
 #include <plat/cpu.h>
-#include <mach/irqs.h>
+#include "irqs-s3c64xx.h"
 
 #include "crag6410.h"
 
