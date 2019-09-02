@@ -8,9 +8,9 @@
 #include <linux/err.h>
 #include <linux/io.h>
 #include <linux/platform_device.h>
-#include <mach/map.h>
-#include <plat/cpu.h>
-#include <plat/usb-phy.h>
+#include "map.h"
+#include "cpu.h"
+#include "usb-phy.h"
 
 #include "regs-sys.h"
 #include "regs-usb-hsotg-phy.h"

@@ -36,15 +36,14 @@
 #include <linux/mtd/nand_ecc.h>
 #include <linux/mtd/partitions.h>
 
-#include <plat/cpu.h>
+#include "cpu.h"
 #include <linux/soc/samsung/s3c-cpu-freq.h>
-#include <plat/devs.h>
-#include <plat/gpio-cfg.h>
-#include <plat/samsung-time.h>
+#include "devs.h"
+#include "gpio-cfg.h"
+#include "samsung-time.h"
 
-#include <mach/hardware.h>
-#include <mach/regs-gpio.h>
-#include <mach/gpio-samsung.h>
+#include "regs-gpio.h"
+#include "gpio-samsung.h"
 
 #include "s3c24xx.h"
 #include "osiris.h"

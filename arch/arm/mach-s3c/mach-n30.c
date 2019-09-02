@@ -27,15 +27,15 @@
 #include <linux/io.h>
 #include <linux/mmc/host.h>
 
-#include <mach/hardware.h>
+#include "hardware.h"
 #include <asm/irq.h>
 #include <asm/mach-types.h>
 
 #include <linux/platform_data/fb-s3c2410.h>
 #include <linux/platform_data/leds-s3c24xx.h>
-#include <mach/regs-gpio.h>
-#include <mach/gpio-samsung.h>
-#include <plat/gpio-cfg.h>
+#include "regs-gpio.h"
+#include "gpio-samsung.h"
+#include "gpio-cfg.h"
 
 #include <asm/mach/arch.h>
 #include <asm/mach/irq.h>
@@ -43,11 +43,11 @@
 
 #include <linux/platform_data/i2c-s3c2410.h>
 
-#include <plat/cpu.h>
-#include <plat/devs.h>
+#include "cpu.h"
+#include "devs.h"
 #include <linux/platform_data/mmc-s3cmci.h>
 #include <linux/platform_data/usb-s3c2410_udc.h>
-#include <plat/samsung-time.h>
+#include "samsung-time.h"
 
 #include "s3c24xx.h"
 

@@ -34,14 +34,13 @@
 #include <linux/platform_data/i2c-s3c2410.h>
 #include <linux/platform_data/asoc-s3c24xx_simtec.h>
 
-#include <mach/hardware.h>
-#include <mach/regs-gpio.h>
-#include <mach/gpio-samsung.h>
-#include <plat/gpio-cfg.h>
+#include "regs-gpio.h"
+#include "gpio-samsung.h"
+#include "gpio-cfg.h"
 
-#include <plat/cpu.h>
-#include <plat/devs.h>
-#include <plat/samsung-time.h>
+#include "cpu.h"
+#include "devs.h"
+#include "samsung-time.h"
 
 #include "bast.h"
 #include "s3c24xx.h"
