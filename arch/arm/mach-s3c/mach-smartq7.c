@@ -15,15 +15,15 @@
 
 #include <video/samsung_fimd.h>
 #include <mach/irqs.h>
-#include <mach/map.h>
-#include <mach/regs-gpio.h>
-#include <mach/gpio-samsung.h>
+#include "map.h"
+#include "regs-gpio.h"
+#include "gpio-samsung.h"
 
-#include <plat/cpu.h>
-#include <plat/devs.h>
-#include <plat/fb.h>
-#include <plat/gpio-cfg.h>
-#include <plat/samsung-time.h>
+#include "cpu.h"
+#include "devs.h"
+#include "fb.h"
+#include "gpio-cfg.h"
+#include "samsung-time.h"
 
 #include "s3c64xx.h"
 #include "mach-smartq.h"

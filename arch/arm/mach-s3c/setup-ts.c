@@ -10,9 +10,8 @@
 
 struct platform_device; /* don't need the contents */
 
-#include <plat/gpio-cfg.h>
-#include <mach/hardware.h>
-#include <mach/gpio-samsung.h>
+#include "gpio-cfg.h"
+#include "gpio-samsung.h"
 
 /**
  * s3c24xx_ts_cfg_gpio - configure gpio for s3c2410 systems

@@ -19,22 +19,21 @@
 #include <linux/serial_s3c.h>
 #include <linux/platform_device.h>
 #include <linux/io.h>
-#include <mach/gpio-samsung.h>
-#include <plat/gpio-cfg.h>
+#include "gpio-samsung.h"
+#include "gpio-cfg.h"
 
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 #include <asm/mach/irq.h>
 
-#include <mach/hardware.h>
 #include <asm/irq.h>
 #include <asm/mach-types.h>
 
 #include <linux/platform_data/i2c-s3c2410.h>
 
-#include <plat/devs.h>
-#include <plat/cpu.h>
-#include <plat/samsung-time.h>
+#include "devs.h"
+#include "cpu.h"
+#include "samsung-time.h"
 
 #include "s3c24xx.h"
 #include "common-smdk.h"

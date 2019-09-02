@@ -13,8 +13,8 @@
 
 #include <asm/cpuidle.h>
 
-#include <plat/cpu.h>
-#include <mach/map.h>
+#include "cpu.h"
+#include "map.h"
 
 #include "regs-sys.h"
 #include "regs-syscon-power.h"
