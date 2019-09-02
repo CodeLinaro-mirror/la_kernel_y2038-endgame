@@ -12,7 +12,6 @@
 
 #include <mach/irqs.h>
 #include <mach/map.h>
-#include <mach/dma.h>
 
 #include "devs.h"
 #include <linux/platform_data/asoc-s3c.h>

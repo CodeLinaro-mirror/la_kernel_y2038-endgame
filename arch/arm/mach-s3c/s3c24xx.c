@@ -32,7 +32,7 @@
 
 #include <mach/hardware.h>
 #include <mach/regs-gpio.h>
-#include <mach/dma.h>
+#include "dma-s3c24xx.h"
 
 #include <plat/cpu.h>
 #include "devs.h"
