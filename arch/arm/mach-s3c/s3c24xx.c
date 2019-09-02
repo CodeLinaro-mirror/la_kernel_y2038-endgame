@@ -30,7 +30,6 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
-#include <mach/hardware.h>
 #include <mach/regs-gpio.h>
 #include "dma-s3c24xx.h"
 

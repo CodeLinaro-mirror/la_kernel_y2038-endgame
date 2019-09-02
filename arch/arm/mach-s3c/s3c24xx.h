@@ -123,4 +123,6 @@ void __init s3c2443_common_clk_init(struct device_node *np, unsigned long xti_f,
 				    void __iomem *reg_base);
 #endif
 
+extern unsigned int s3c2410_modify_misccr(unsigned int clr, unsigned int chg);
+
 #endif /* __ARCH_ARM_MACH_S3C24XX_COMMON_H */

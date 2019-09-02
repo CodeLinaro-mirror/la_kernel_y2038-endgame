@@ -23,7 +23,6 @@
 #include <asm/mach/map.h>
 #include <asm/mach/irq.h>
 
-#include <mach/hardware.h>
 #include <asm/hardware/iomd.h>
 #include <asm/setup.h>
 #include <asm/irq.h>

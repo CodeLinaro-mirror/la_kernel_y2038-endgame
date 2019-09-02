@@ -1306,6 +1306,8 @@ samsung_gpio_pull_t s3c_gpio_getpull(unsigned int pin)
 EXPORT_SYMBOL(s3c_gpio_getpull);
 
 #ifdef CONFIG_PLAT_S3C24XX
+#include "s3c24xx.h"
+
 unsigned int s3c2410_modify_misccr(unsigned int clear, unsigned int change)
 {
 	unsigned long flags;

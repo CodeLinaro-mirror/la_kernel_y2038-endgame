@@ -10,7 +10,7 @@
 
 #include <plat/gpio-cfg.h>
 
-#include <mach/hardware.h>
+#include "s3c24xx.h"
 #include <mach/regs-gpio.h>
 
 #ifdef CONFIG_S3C64XX_DEV_SPI0

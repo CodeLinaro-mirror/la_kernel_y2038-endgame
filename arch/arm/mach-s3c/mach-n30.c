@@ -27,7 +27,6 @@
 #include <linux/io.h>
 #include <linux/mmc/host.h>
 
-#include <mach/hardware.h>
 #include <asm/irq.h>
 #include <asm/mach-types.h>
 
