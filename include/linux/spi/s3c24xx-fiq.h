@@ -12,6 +12,11 @@
 #ifdef __ASSEMBLY__
 #define __REG_NR(x)     r##x
 #else
+
+extern struct spi_fiq_code s3c24xx_spi_fiq_txrx;
+extern struct spi_fiq_code s3c24xx_spi_fiq_tx;
+extern struct spi_fiq_code s3c24xx_spi_fiq_rx;
+
 #define __REG_NR(x)     (x)
 #endif
 
