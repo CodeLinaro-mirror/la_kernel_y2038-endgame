@@ -43,7 +43,7 @@
 
 #include <plat/cpu.h>
 #include "devs.h"
-#include <plat/adc.h>
+#include <linux/soc/samsung/s3c-adc.h>
 #include <linux/platform_data/ata-samsung_cf.h>
 #include "fb.h"
 #include <linux/platform_data/fb-s3c2410.h>
