@@ -634,8 +634,6 @@ source "arch/arm/mach-hisi/Kconfig"
 
 source "arch/arm/mach-imx/Kconfig"
 
-source "arch/arm/mach-integrator/Kconfig"
-
 source "arch/arm/mach-iop32x/Kconfig"
 
 source "arch/arm/mach-ixp4xx/Kconfig"
@@ -687,8 +685,6 @@ source "arch/arm/mach-qcom/Kconfig"
 
 source "arch/arm/mach-rda/Kconfig"
 
-source "arch/arm/mach-realview/Kconfig"
-
 source "arch/arm/mach-rockchip/Kconfig"
 
 source "arch/arm/mach-s3c24xx/Kconfig"
@@ -722,9 +718,6 @@ source "arch/arm/mach-uniphier/Kconfig"
 source "arch/arm/mach-ux500/Kconfig"
 
 source "arch/arm/mach-versatile/Kconfig"
-
-source "arch/arm/mach-vexpress/Kconfig"
-source "arch/arm/plat-versatile/Kconfig"
 
 source "arch/arm/mach-vt8500/Kconfig"
 
