@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- *  linux/arch/arm/mach-integrator/core.c
- *
  *  Copyright (C) 2000-2003 Deep Blue Solutions Ltd
  */
 #include <linux/types.h>

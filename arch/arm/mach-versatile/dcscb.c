@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * arch/arm/mach-vexpress/dcscb.c - Dual Cluster System Configuration Block
+ * dcscb.c - Dual Cluster System Configuration Block
  *
  * Created by:	Nicolas Pitre, May 2012
  * Copyright:	(C) 2012-2013  Linaro Limited

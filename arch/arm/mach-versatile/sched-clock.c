@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *  linux/arch/arm/plat-versatile/sched-clock.c
- *
  *  Copyright (C) 1999 - 2003 ARM Limited
  *  Copyright (C) 2000 Deep Blue Solutions Ltd
  */
@@ -9,7 +7,7 @@
 #include <linux/io.h>
 #include <linux/sched_clock.h>
 
-#include <plat/sched_clock.h>
+#include "sched_clock.h"
 
 static void __iomem *ctr;
 
