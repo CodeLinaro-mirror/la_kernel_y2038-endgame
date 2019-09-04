@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- *  linux/arch/arm/mach-vexpress/platsmp.c
- *
  *  Copyright (C) 2002 ARM Ltd.
  *  All Rights Reserved
  */
@@ -16,8 +14,7 @@
 #include <asm/smp_scu.h>
 #include <asm/mach/map.h>
 
-#include <plat/platsmp.h>
-
+#include "platsmp.h"
 #include "core.h"
 
 bool __init vexpress_smp_init_ops(void)
