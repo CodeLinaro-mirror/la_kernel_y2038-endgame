@@ -642,7 +642,7 @@ EXPORT_SYMBOL(LZ4_loadDictHC);
 
 /* compression */
 
-static void LZ4HC_setExternalDict(
+void LZ4HC_setExternalDict(
 	LZ4HC_CCtx_internal *ctxPtr,
 	const BYTE *newBlock)
 {

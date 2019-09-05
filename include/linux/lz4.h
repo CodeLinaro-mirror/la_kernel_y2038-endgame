@@ -645,4 +645,7 @@ int LZ4_decompress_safe_usingDict(const char *source, char *dest,
 int LZ4_decompress_fast_usingDict(const char *source, char *dest,
 	int originalSize, const char *dictStart, int dictSize);
 
+void LZ4HC_setExternalDict(LZ4HC_CCtx_internal *ctxPtr,
+			   const __u8 *newBlock);
+
 #endif
