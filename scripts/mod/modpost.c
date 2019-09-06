@@ -2655,7 +2655,7 @@ int main(int argc, char **argv)
 		struct symbol *s = symbolhash[n];
 
 		while (s) {
-			if (s->is_static)
+			if (s->is_static && s->export != export_unknown)
 				warn("\"%s\" [%s] is a static %s\n",
 				     s->name, s->module->name,
 				     export_str(s->export));
