@@ -560,16 +560,16 @@ void mlx5_tracer_print_trace(struct tracer_string_format *str_frmt,
 			     struct mlx5_core_dev *dev,
 			     u64 trace_timestamp)
 {
-	char	tmp[512];
-
-	snprintf(tmp, sizeof(tmp), str_frmt->string,
-		 str_frmt->params[0],
-		 str_frmt->params[1],
-		 str_frmt->params[2],
-		 str_frmt->params[3],
-		 str_frmt->params[4],
-		 str_frmt->params[5],
-		 str_frmt->params[6]);
+	char *tmp = kasprintf(GFP_KERNEL, str_frmt->string,
+			      str_frmt->params[0],
+			      str_frmt->params[1],
+			      str_frmt->params[2],
+			      str_frmt->params[3],
+			      str_frmt->params[4],
+			      str_frmt->params[5],
+			      str_frmt->params[6]);
+	if (!tmp)
+		return;
 
 	trace_mlx5_fw(dev->tracer, trace_timestamp, str_frmt->lost,
 		      str_frmt->event_id, tmp);
@@ -579,6 +579,7 @@ void mlx5_tracer_print_trace(struct tracer_string_format *str_frmt,
 
 	/* remove it from hash */
 	mlx5_tracer_clean_message(str_frmt);
+	kfree(tmp);
 }
 
 static int mlx5_tracer_handle_string_trace(struct mlx5_fw_tracer *tracer,
