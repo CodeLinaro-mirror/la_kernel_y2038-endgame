@@ -11,7 +11,7 @@
 #ifndef _TRIPEPS4_H_
 #define _TRIPEPS4_H_
 
-#include <mach/addr-map.h>
+#include "addr-map.h"
 #include "irqs.h" /* PXA_GPIO_TO_IRQ */
 
 /* physical memory regions */
