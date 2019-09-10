@@ -11,10 +11,9 @@
 #define _UAPI_ASM_SIGNAL_H
 
 #include <linux/types.h>
-#include <asm/bitsperlong.h>
 
 #define _NSIG		128
-#define _NSIG_BPW	__BITS_PER_LONG
+#define _NSIG_BPW	(sizeof(unsigned long) * 8)
 #define _NSIG_WORDS	(_NSIG / _NSIG_BPW)
 
 typedef struct {
