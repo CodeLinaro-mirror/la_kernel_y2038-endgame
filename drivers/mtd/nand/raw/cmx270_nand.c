@@ -18,15 +18,14 @@
 #include <linux/gpio.h>
 #include <linux/module.h>
 #include <linux/soc/pxa/cpu.h>
+#include <linux/platform_device.h>
 
 #include <asm/io.h>
 #include <asm/irq.h>
 #include <asm/mach-types.h>
 
-#include <mach/addr-map.h>
-
-#define GPIO_NAND_CS	(11)
-#define GPIO_NAND_RB	(89)
+static int gpio_nand_cs;
+static int gpio_nand_rb;
 
 /* MTD structure for CM-X270 board */
 static struct mtd_info *cmx270_nand_mtd;
@@ -70,14 +69,14 @@ static void cmx270_read_buf(struct nand_chip *this, u_char *buf, int len)
 
 static inline void nand_cs_on(void)
 {
-	gpio_set_value(GPIO_NAND_CS, 0);
+	gpio_set_value(gpio_nand_cs, 0);
 }
 
 static void nand_cs_off(void)
 {
 	dsb();
 
-	gpio_set_value(GPIO_NAND_CS, 1);
+	gpio_set_value(gpio_nand_cs, 1);
 }
 
 /*
@@ -120,35 +119,44 @@ static int cmx270_device_ready(struct nand_chip *this)
 {
 	dsb();
 
-	return (gpio_get_value(GPIO_NAND_RB));
+	return (gpio_get_value(gpio_nand_rb));
 }
 
 /*
  * Main initialization routine
  */
-static int __init cmx270_init(void)
+static int cmx270_probe(struct platform_device *pdev)
 {
+	const int *gpios = pdev->dev.platform_data;
 	struct nand_chip *this;
 	int ret;
 
 	if (!(machine_is_armcore() && cpu_is_pxa27x()))
 		return -ENODEV;
 
-	ret = gpio_request(GPIO_NAND_CS, "NAND CS");
+	if (!gpios) {
+		dev_warn(&pdev->dev, "missing platform data");
+		return -ENODEV;
+	}
+
+	gpio_nand_cs = gpios[0];
+	gpio_nand_rb = gpios[1];
+
+	ret = gpio_request(gpio_nand_cs, "NAND CS");
 	if (ret) {
 		pr_warn("CM-X270: failed to request NAND CS gpio\n");
 		return ret;
 	}
 
-	gpio_direction_output(GPIO_NAND_CS, 1);
+	gpio_direction_output(gpio_nand_cs, 1);
 
-	ret = gpio_request(GPIO_NAND_RB, "NAND R/B");
+	ret = gpio_request(gpio_nand_rb, "NAND R/B");
 	if (ret) {
 		pr_warn("CM-X270: failed to request NAND R/B gpio\n");
 		goto err_gpio_request;
 	}
 
-	gpio_direction_input(GPIO_NAND_RB);
+	gpio_direction_input(gpio_nand_rb);
 
 	/* Allocate memory for MTD device structure and private data */
 	this = kzalloc(sizeof(struct nand_chip), GFP_KERNEL);
@@ -157,7 +165,7 @@ static int __init cmx270_init(void)
 		goto err_kzalloc;
 	}
 
-	cmx270_nand_io = ioremap(PXA_CS1_PHYS, 12);
+	cmx270_nand_io = devm_platform_ioremap_resource(pdev, 0);
 	if (!cmx270_nand_io) {
 		pr_debug("Unable to ioremap NAND device\n");
 		ret = -EINVAL;
@@ -202,35 +210,39 @@ static int __init cmx270_init(void)
 	return 0;
 
 err_scan:
-	iounmap(cmx270_nand_io);
 err_ioremap:
 	kfree(this);
 err_kzalloc:
-	gpio_free(GPIO_NAND_RB);
+	gpio_free(gpio_nand_rb);
 err_gpio_request:
-	gpio_free(GPIO_NAND_CS);
+	gpio_free(gpio_nand_cs);
 
 	return ret;
 
 }
-module_init(cmx270_init);
 
 /*
  * Clean up routine
  */
-static void __exit cmx270_cleanup(void)
+static int cmx270_remove(struct platform_device *pdev)
 {
 	/* Release resources, unregister device */
 	nand_release(mtd_to_nand(cmx270_nand_mtd));
 
-	gpio_free(GPIO_NAND_RB);
-	gpio_free(GPIO_NAND_CS);
-
-	iounmap(cmx270_nand_io);
+	gpio_free(gpio_nand_rb);
+	gpio_free(gpio_nand_cs);
 
 	kfree(mtd_to_nand(cmx270_nand_mtd));
+
+	return 0;
 }
-module_exit(cmx270_cleanup);
+
+static struct platform_driver cmx270_nand_driver = {
+	.driver.name = "cmx270-nand",
+	.probe = cmx270_probe,
+	.remove = cmx270_remove,
+};
+module_platform_driver(cmx270_nand_driver);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Mike Rapoport <mike@compulab.co.il>");

@@ -40,6 +40,10 @@
 #define GPIO19_WLAN_STRAP	(19)
 #define GPIO102_WLAN_RST	(102)
 
+/* NAND GPIOS */
+#define GPIO_NAND_CS		(11)
+#define GPIO_NAND_RB		(89)
+
 static unsigned long cmx270_pin_config[] = {
 	/* AC'97 */
 	GPIO28_AC97_BITCLK,
@@ -403,6 +407,18 @@ static void __init cmx270_init_spi(void)
 static inline void cmx270_init_spi(void) {}
 #endif
 
+static struct resource cmx270_nand_resources[] __initdata = {
+	DEFINE_RES_MEM(PXA_CS1_PHYS, 12),
+};
+
+static void __init cmx270_init_nand(void)
+{
+	int gpios[] = { GPIO_NAND_CS, GPIO_NAND_RB };
+	platform_device_register_resndata(NULL, "cmx270-nand", -1,
+					  cmx270_nand_resources, 1,
+					  gpios, sizeof(gpios));
+}
+
 void __init cmx270_init(void)
 {
 	pxa2xx_mfp_config(ARRAY_AND_SIZE(cmx270_pin_config));
@@ -416,4 +432,5 @@ void __init cmx270_init(void)
 	cmx270_init_ohci();
 	cmx270_init_2700G();
 	cmx270_init_spi();
+	cmx270_init_nand();
 }
