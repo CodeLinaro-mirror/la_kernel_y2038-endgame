@@ -33,7 +33,7 @@
 #undef GPIO88_GPIO
 #undef GPIO89_GPIO
 #include <linux/platform_data/asoc-pxa.h>
-#include <mach/addr-map.h>
+#include "addr-map.h"
 #include <linux/platform_data/video-pxafb.h>
 #include <mach/smemc.h>
 
