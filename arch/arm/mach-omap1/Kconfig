@@ -3,7 +3,6 @@ menuconfig ARCH_OMAP1
 	bool "TI OMAP1"
 	depends on ARCH_MULTI_V4T || ARCH_MULTI_V5
 	select ARCH_HAS_HOLES_MEMORYMODEL
-	select ARCH_OMAP
 	select CLKSRC_MMIO
 	select FORCE_PCI if PCCARD
 	select GPIOLIB
@@ -21,6 +20,7 @@ comment "OMAP Core Type"
 config ARCH_OMAP730
 	depends on ARCH_MULTI_V5
 	bool "OMAP730 Based System"
+	select ARCH_OMAP
 	select ARCH_OMAP_OTG
 	select CPU_ARM926T
 	select OMAP_MPU_TIMER
@@ -28,6 +28,7 @@ config ARCH_OMAP730
 config ARCH_OMAP850
 	depends on ARCH_MULTI_V5
 	bool "OMAP850 Based System"
+	select ARCH_OMAP
 	select ARCH_OMAP_OTG
 	select CPU_ARM926T
 
@@ -35,12 +36,14 @@ config ARCH_OMAP15XX
 	depends on ARCH_MULTI_V4T
 	default y
 	bool "OMAP15xx Based System"
+	select ARCH_OMAP
 	select CPU_ARM925T
 	select OMAP_MPU_TIMER
 
 config ARCH_OMAP16XX
 	depends on ARCH_MULTI_V5
 	bool "OMAP16xx Based System"
+	select ARCH_OMAP
 	select ARCH_OMAP_OTG
 	select CPU_ARM926T
 	select OMAP_DM_TIMER
