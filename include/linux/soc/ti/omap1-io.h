@@ -5,7 +5,7 @@
 #ifndef __ASSEMBLER__
 #include <linux/types.h>
 
-#if defined(CONFIG_ARCH_OMAP) && defined(CONFIG_ARCH_OMAP1)
+#ifdef CONFIG_ARCH_OMAP1_ANY
 /*
  * NOTE: Please use ioremap + __raw_read/write where possible instead of these
  */
