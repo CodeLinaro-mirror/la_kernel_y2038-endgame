@@ -285,7 +285,7 @@ struct omap_system_dma_plat_info {
 	int slavecnt;
 };
 
-#ifdef CONFIG_ARCH_OMAP1
+#ifdef CONFIG_ARCH_OMAP1_ANY
 extern void omap_set_dma_priority(int lch, int dst_port, int priority);
 #else
 static inline void omap_set_dma_priority(int lch, int dst_port, int priority)
