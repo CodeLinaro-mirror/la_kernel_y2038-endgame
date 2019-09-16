@@ -672,8 +672,7 @@ static void __init omap_1510_usb_init(struct omap_usb_config *config)
 	}
 #endif
 
-#if	IS_ENABLED(CONFIG_USB_OHCI_HCD)
-	if (config->register_host) {
+	if (IS_ENABLED(CONFIG_USB_OHCI_HCD) && config->register_host) {
 		int status;
 
 		ohci_device.dev.platform_data = config;
@@ -682,10 +681,9 @@ static void __init omap_1510_usb_init(struct omap_usb_config *config)
 		if (status)
 			pr_debug("can't register OHCI device, %d\n", status);
 		/* hcd explicitly gates 48MHz */
-	}
 
-	config->lb_reset = omap_1510_local_bus_reset;
-#endif
+		config->lb_reset = omap_1510_local_bus_reset;
+	}
 }
 
 #else
