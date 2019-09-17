@@ -207,8 +207,6 @@ static inline void udc_device_init(struct omap_usb_config *pdata)
 
 #endif
 
-#if	IS_ENABLED(CONFIG_USB_OHCI_HCD)
-
 /* The dmamask must be set for OHCI to work */
 static u64 ohci_dmamask = ~(u32)0;
 
@@ -237,19 +235,14 @@ static struct platform_device ohci_device = {
 
 static inline void ohci_device_init(struct omap_usb_config *pdata)
 {
+	if (!IS_ENABLED(CONFIG_USB_OHCI_HCD))
+		return;
+
 	if (cpu_is_omap7xx())
 		ohci_resources[1].start = INT_7XX_USB_HHC_1;
 	pdata->ohci_device = &ohci_device;
 	pdata->ocpi_enable = &ocpi_enable;
 }
-
-#else
-
-static inline void ohci_device_init(struct omap_usb_config *pdata)
-{
-}
-
-#endif
 
 #if	defined(CONFIG_USB_OTG) && defined(CONFIG_ARCH_OMAP_OTG)
 
