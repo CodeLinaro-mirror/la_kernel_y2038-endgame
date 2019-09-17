@@ -915,7 +915,7 @@ static void vmbus_shutdown(struct device *child_device)
 /*
  * vmbus_suspend - Suspend a vmbus device
  */
-static int vmbus_suspend(struct device *child_device)
+static int __maybe_unused vmbus_suspend(struct device *child_device)
 {
 	struct hv_driver *drv;
 	struct hv_device *dev = device_to_hv_device(child_device);
@@ -934,7 +934,7 @@ static int vmbus_suspend(struct device *child_device)
 /*
  * vmbus_resume - Resume a vmbus device
  */
-static int vmbus_resume(struct device *child_device)
+static int __maybe_unused vmbus_resume(struct device *child_device)
 {
 	struct hv_driver *drv;
 	struct hv_device *dev = device_to_hv_device(child_device);
@@ -2125,7 +2125,7 @@ acpi_walk_err:
 	return ret_val;
 }
 
-static int vmbus_bus_suspend(struct device *dev)
+static int __maybe_unused vmbus_bus_suspend(struct device *dev)
 {
 	struct vmbus_channel *channel, *sc;
 	unsigned long flags;
@@ -2205,7 +2205,7 @@ static int vmbus_bus_suspend(struct device *dev)
 	return 0;
 }
 
-static int vmbus_bus_resume(struct device *dev)
+static int __maybe_unused vmbus_bus_resume(struct device *dev)
 {
 	struct vmbus_channel_msginfo *msginfo;
 	size_t msgsize;
