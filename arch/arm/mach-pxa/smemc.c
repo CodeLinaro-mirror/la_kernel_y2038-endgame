@@ -69,4 +69,13 @@ static int __init smemc_init(void)
 	return 0;
 }
 subsys_initcall(smemc_init);
+
 #endif
+
+static const unsigned int df_clkdiv[4] = { 1, 2, 4, 1 };
+unsigned int pxa3xx_smemc_get_memclkdiv(void)
+{
+	unsigned long memclkcfg = __raw_readl(MEMCLKCFG);
+
+	return	df_clkdiv[(memclkcfg >> 16) & 0x3];
+}
