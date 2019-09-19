@@ -542,7 +542,6 @@ struct iwl_mvm_tt_mgmt {
 	bool throttle;
 };
 
-#ifdef CONFIG_THERMAL
 /**
  *struct iwl_mvm_thermal_device - thermal zone related data
  * @temp_trips: temperature thresholds for report
@@ -555,6 +554,7 @@ struct iwl_mvm_thermal_device {
 	struct thermal_zone_device *tzone;
 };
 
+#ifdef CONFIG_THERMAL
 /*
  * struct iwl_mvm_cooling_device
  * @cur_state: current state
@@ -1034,8 +1034,8 @@ struct iwl_mvm {
 
 	/* Thermal Throttling and CTkill */
 	struct iwl_mvm_tt_mgmt thermal_throttle;
-#ifdef CONFIG_THERMAL
 	struct iwl_mvm_thermal_device tz_device;
+#ifdef CONFIG_THERMAL
 	struct iwl_mvm_cooling_device cooling_dev;
 #endif
 

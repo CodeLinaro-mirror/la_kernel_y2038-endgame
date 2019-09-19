@@ -549,7 +549,6 @@ int iwl_mvm_ctdp_command(struct iwl_mvm *mvm, u32 op, u32 state)
 	return 0;
 }
 
-#ifdef CONFIG_THERMAL
 static int compare_temps(const void *a, const void *b)
 {
 	return ((s16)le16_to_cpu(*(__le16 *)a) -
