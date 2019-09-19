@@ -25,7 +25,8 @@
 #include <linux/export.h>
 
 #include <asm/mach/pci.h>
-#include <asm/hardware/it8152.h>
+
+#include "pci-it8152.h"
 
 #define MAX_SLOTS		21
 
