@@ -23,6 +23,7 @@
 #include <linux/irq.h>
 #include <linux/io.h>
 #include <linux/export.h>
+#include <linux/soc/pxa/cpu.h>
 
 #include <asm/mach/pci.h>
 
@@ -274,10 +275,21 @@ static int it8152_pci_platform_notify_remove(struct device *dev)
 
 int dma_set_coherent_mask(struct device *dev, u64 mask)
 {
-	if (mask >= PHYS_OFFSET + SZ_64M - 1)
-		return 0;
+	/* We've always done it like this, but it looks wrong */
+	if (cpu_is_pxa2xx()) {
+		if (mask >= PHYS_OFFSET + SZ_64M - 1)
+			return 0;
 
-	return -EIO;
+		return -EIO;
+	}
+
+	/* generic implementation from kernel/dma/mapping.c */
+	mask = (dma_addr_t)mask;
+	if (!dma_supported(dev, mask))
+		return -EIO;
+
+	dev->coherent_dma_mask = mask;
+	return 0;
 }
 
 int __init it8152_pci_setup(int nr, struct pci_sys_data *sys)
@@ -330,6 +342,10 @@ err0:
 void pcibios_set_master(struct pci_dev *dev)
 {
 	u8 lat;
+
+	/* running on something else */
+	if (!cpu_is_pxa2xx())
+		return;
 
 	/* no need to update on-chip OHCI controller */
 	if ((dev->vendor == PCI_VENDOR_ID_ITE) &&
