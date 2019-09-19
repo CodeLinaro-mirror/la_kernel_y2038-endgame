@@ -2,6 +2,9 @@
 #
 # Makefile for the linux kernel.
 #
+ccflags-$(CONFIG_ARCH_MULTIPLATFORM) += -I$(srctree)/arch/arm/mach-pxa/include
+asflags-$(CONFIG_ARCH_MULTIPLATFORM) += -I$(srctree)/arch/arm/mach-pxa/include
+ccflags-$(CONFIG_ARCH_MULTIPLATFORM) += -I$(srctree)/arch/arm/plat-pxa/include
 
 # Common support (must be linked before board specific support)
 obj-y				+= devices.o generic.o irq.o reset.o
