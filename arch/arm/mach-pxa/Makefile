@@ -44,6 +44,7 @@ obj-$(CONFIG_CSB726_CSB701)	+= csb701.o
 obj-$(CONFIG_MACH_ARMCORE)      += cm-x2xx.o cm-x255.o cm-x270.o
 ifeq ($(CONFIG_PCI),y)
 obj-$(CONFIG_MACH_ARMCORE)	+= cm-x2xx-pci.o
+obj-$(CONFIG_PCI_HOST_ITE8152)  += pci-it8152.o
 endif
 obj-$(CONFIG_MACH_ARMCORE)	+= cm_x2xx-pcmcia.o cm_x255-pcmcia.o cm_x270-pcmcia.o
 obj-$(CONFIG_MACH_EM_X270)	+= em-x270.o

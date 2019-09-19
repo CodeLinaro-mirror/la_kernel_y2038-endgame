@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
- * linux/include/arm/hardware/it8152.h
- *
  * Copyright Compulab Ltd., 2006,2007
  * Mike Rapoport <mike@compulab.co.il>
  *
