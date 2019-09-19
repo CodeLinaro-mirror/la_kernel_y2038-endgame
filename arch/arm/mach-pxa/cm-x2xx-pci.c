@@ -21,7 +21,7 @@
 #include <asm/mach/pci.h>
 #include <asm/mach-types.h>
 
-#include <asm/hardware/it8152.h>
+#include "pci-it8152.h"
 
 void __iomem *it8152_base_address;
 static int cmx2xx_it8152_irq_gpio;

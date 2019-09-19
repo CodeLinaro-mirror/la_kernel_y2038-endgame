@@ -37,10 +37,9 @@
 #include <linux/platform_data/video-pxafb.h>
 #include <mach/smemc.h>
 
-#include <asm/hardware/it8152.h>
-
 #include "generic.h"
 #include "cm-x2xx-pci.h"
+#include "pci-it8152.h"
 
 extern void cmx255_init(void);
 extern void cmx270_init(void);
