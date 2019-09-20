@@ -232,7 +232,6 @@ machine-$(CONFIG_PLAT_SPEAR)		+= spear
 # Platform directory name.  This list is sorted alphanumerically
 # by CONFIG_* macro name.
 plat-$(CONFIG_ARCH_OMAP)	+= omap
-plat-$(CONFIG_PLAT_PXA)		+= pxa
 
 ifeq ($(CONFIG_ARCH_EBSA110),y)
 # This is what happens if you forget the IOCS16 line.
