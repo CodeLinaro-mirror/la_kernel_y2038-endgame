@@ -163,53 +163,6 @@ static inline void set_gdma_dev(int req, int dev)
 #define omap_writel(val, reg)	do {} while (0)
 #endif
 
-#ifdef CONFIG_ARCH_OMAP1
-void omap_set_dma_priority(int lch, int dst_port, int priority)
-{
-	unsigned long reg;
-	u32 l;
-
-	if (dma_omap1()) {
-		switch (dst_port) {
-		case OMAP_DMA_PORT_OCP_T1:	/* FFFECC00 */
-			reg = OMAP_TC_OCPT1_PRIOR;
-			break;
-		case OMAP_DMA_PORT_OCP_T2:	/* FFFECCD0 */
-			reg = OMAP_TC_OCPT2_PRIOR;
-			break;
-		case OMAP_DMA_PORT_EMIFF:	/* FFFECC08 */
-			reg = OMAP_TC_EMIFF_PRIOR;
-			break;
-		case OMAP_DMA_PORT_EMIFS:	/* FFFECC04 */
-			reg = OMAP_TC_EMIFS_PRIOR;
-			break;
-		default:
-			BUG();
-			return;
-		}
-		l = omap_readl(reg);
-		l &= ~(0xf << 8);
-		l |= (priority & 0xf) << 8;
-		omap_writel(l, reg);
-	}
-}
-#endif
-
-#ifdef CONFIG_ARCH_OMAP2PLUS
-void omap_set_dma_priority(int lch, int dst_port, int priority)
-{
-	u32 ccr;
-
-	ccr = p->dma_read(CCR, lch);
-	if (priority)
-		ccr |= (1 << 6);
-	else
-		ccr &= ~(1 << 6);
-	p->dma_write(ccr, CCR, lch);
-}
-#endif
-EXPORT_SYMBOL(omap_set_dma_priority);
-
 void omap_set_dma_transfer_params(int lch, int data_type, int elem_count,
 				  int frame_count, int sync_mode,
 				  int dma_trigger, int src_or_dst_synch)
