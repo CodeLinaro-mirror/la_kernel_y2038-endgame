@@ -1,6 +1,0 @@
-# SPDX-License-Identifier: GPL-2.0
-obj-y				+= dove-common.o
-obj-$(CONFIG_DOVE_LEGACY)	+= dove-irq.o dove-mpp.o
-obj-$(CONFIG_PCI)		+= dove-pcie.o
-obj-$(CONFIG_MACH_DOVE_DB)	+= dove-db-setup.o
-obj-$(CONFIG_MACH_CM_A510)	+= cm-a510.o
