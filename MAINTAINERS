@@ -1889,10 +1889,7 @@ M:	Gregory Clement <gregory.clement@bootlin.com>
 L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
 S:	Maintained
 F:	Documentation/devicetree/bindings/soc/dove/
-F:	arch/arm/mach-dove/
-F:	arch/arm/mach-mv78xx0/
-F:	arch/arm/mach-orion5x/
-F:	arch/arm/plat-orion/
+F:	arch/arm/mach-orion/
 F:	arch/arm/boot/dts/dove*
 F:	arch/arm/boot/dts/orion5x*
 T:	git git://git.infradead.org/linux-mvebu.git
@@ -2050,7 +2047,7 @@ M:	Alexander Clouter <alex@digriz.org.uk>
 L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
 W:	http://www.digriz.org.uk/ts78xx/kernel
 S:	Maintained
-F:	arch/arm/mach-orion5x/ts78xx-*
+F:	arch/arm/mach-orion/ts78xx-*
 
 ARM/OXNAS platform support
 M:	Neil Armstrong <narmstrong@baylibre.com>
