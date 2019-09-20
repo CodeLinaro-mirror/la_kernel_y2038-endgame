@@ -2030,10 +2030,7 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/gclement/mvebu.git
 F:	Documentation/devicetree/bindings/soc/dove/
 F:	arch/arm/boot/dts/dove*
 F:	arch/arm/boot/dts/orion5x*
-F:	arch/arm/mach-dove/
-F:	arch/arm/mach-mv78xx0/
-F:	arch/arm/mach-orion5x/
-F:	arch/arm/plat-orion/
+F:	arch/arm/mach-orion/
 F:	drivers/soc/dove/
 
 ARM/Marvell Kirkwood and Armada 370, 375, 38x, 39x, XP, 3700, 7K/8K, CN9130 SOC support
@@ -2224,7 +2221,7 @@ M:	Alexander Clouter <alex@digriz.org.uk>
 L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
 S:	Maintained
 W:	http://www.digriz.org.uk/ts78xx/kernel
-F:	arch/arm/mach-orion5x/ts78xx-*
+F:	arch/arm/mach-orion/ts78xx-*
 
 ARM/OXNAS platform support
 M:	Neil Armstrong <narmstrong@baylibre.com>

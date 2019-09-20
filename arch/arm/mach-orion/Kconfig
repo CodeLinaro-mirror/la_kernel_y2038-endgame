@@ -1,0 +1,14 @@
+config PLAT_ORION
+	bool
+	select CLKSRC_MMIO
+	select COMMON_CLK
+	select GENERIC_IRQ_CHIP
+	select IRQ_DOMAIN
+
+config PLAT_ORION_LEGACY
+	bool
+	select PLAT_ORION
+
+source "arch/arm/mach-orion/Kconfig.dove"
+source "arch/arm/mach-orion/Kconfig.mv78xx0"
+source "arch/arm/mach-orion/Kconfig.orion5x"
