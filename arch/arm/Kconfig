@@ -676,7 +676,6 @@ source "arch/arm/mach-picoxcell/Kconfig"
 source "arch/arm/mach-prima2/Kconfig"
 
 source "arch/arm/mach-pxa/Kconfig"
-source "arch/arm/plat-pxa/Kconfig"
 
 source "arch/arm/mach-qcom/Kconfig"
 
@@ -775,9 +774,6 @@ config PLAT_ORION
 config PLAT_ORION_LEGACY
 	bool
 	select PLAT_ORION
-
-config PLAT_PXA
-	bool
 
 config PLAT_VERSATILE
 	bool
