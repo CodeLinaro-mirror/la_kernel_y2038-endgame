@@ -7,4 +7,4 @@ ccflags-$(CONFIG_ARCH_MULTIPLATFORM) := -I$(srctree)/arch/arm/plat-omap/include
 ccflags-$(CONFIG_ARCH_OMAP1)	     += -I$(srctree)/arch/arm/mach-omap1/include
 
 # Common support
-obj-y := sram.o dma.o
+obj-y := sram.o
