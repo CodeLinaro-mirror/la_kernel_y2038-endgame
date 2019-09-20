@@ -659,7 +659,6 @@ source "arch/arm/mach-picoxcell/Kconfig"
 source "arch/arm/mach-prima2/Kconfig"
 
 source "arch/arm/mach-pxa/Kconfig"
-source "arch/arm/plat-pxa/Kconfig"
 
 source "arch/arm/mach-qcom/Kconfig"
 
