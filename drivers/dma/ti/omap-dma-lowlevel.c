@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * linux/arch/arm/plat-omap/dma.c
- *
  * Copyright (C) 2003 - 2008 Nokia Corporation
  * Author: Juha Yrjölä <juha.yrjola@nokia.com>
  * DMA channel linking for 1610 by Samuel Ortiz <samuel.ortiz@nokia.com>
@@ -1335,11 +1333,13 @@ static void __exit omap_system_dma_exit(void)
 {
 	platform_driver_unregister(&omap_system_dma_driver);
 }
+module_exit(omap_system_dma_exit)
 
 MODULE_DESCRIPTION("OMAP SYSTEM DMA DRIVER");
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Texas Instruments Inc");
 
+#ifndef MODULE
 /*
  * Reserve the omap SDMA channels using cmdline bootarg
  * "omap_dma_reserve_ch=". The valid range is 1 to 32
@@ -1352,5 +1352,4 @@ static int __init omap_dma_cmdline_reserve_ch(char *str)
 }
 
 __setup("omap_dma_reserve_ch=", omap_dma_cmdline_reserve_ch);
-
-
+#endif
