@@ -35,7 +35,7 @@
 
 #include <plat/cpu.h>
 #include "devs.h"
-#include <plat/cpu-freq.h>
+#include <linux/soc/samsung/s3c-cpu-freq.h>
 #include "pwm-core.h"
 
 #include "s3c24xx.h"

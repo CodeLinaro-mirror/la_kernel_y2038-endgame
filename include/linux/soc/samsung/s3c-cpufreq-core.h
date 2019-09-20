@@ -7,7 +7,7 @@
  * S3C CPU frequency scaling support - core support
  */
 
-#include <plat/cpu-freq.h>
+#include <linux/soc/samsung/s3c-cpu-freq.h>
 
 struct seq_file;
 

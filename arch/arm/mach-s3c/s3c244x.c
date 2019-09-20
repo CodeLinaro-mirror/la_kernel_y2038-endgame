@@ -28,7 +28,7 @@
 #include <mach/map.h>
 #include <asm/irq.h>
 
-#include <plat/cpu-freq.h>
+#include <linux/soc/samsung/s3c-cpu-freq.h>
 
 #include <mach/regs-clock.h>
 #include <mach/regs-gpio.h>
