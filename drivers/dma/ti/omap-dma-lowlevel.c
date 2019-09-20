@@ -978,21 +978,6 @@ int omap_get_dma_active_status(int lch)
 }
 EXPORT_SYMBOL(omap_get_dma_active_status);
 
-int omap_dma_running(void)
-{
-	int lch;
-
-	if (dma_omap1())
-		if (omap_lcd_dma_running())
-			return 1;
-
-	for (lch = 0; lch < dma_chan_count; lch++)
-		if (p->dma_read(CCR, lch) & OMAP_DMA_CCR_EN)
-			return 1;
-
-	return 0;
-}
-
 /*
  * lch_queue DMA will start right after lch_head one is finished.
  * For this DMA link to start, you still need to start (see omap_start_dma)
