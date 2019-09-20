@@ -285,6 +285,14 @@ struct omap_system_dma_plat_info {
 	int slavecnt;
 };
 
+#ifdef CONFIG_ARCH_OMAP1
+extern void omap_set_dma_priority(int lch, int dst_port, int priority);
+#else
+static inline void omap_set_dma_priority(int lch, int dst_port, int priority)
+{
+}
+#endif
+
 #ifdef CONFIG_ARCH_OMAP2PLUS
 #define dma_omap2plus()	1
 #else
@@ -299,7 +307,6 @@ struct omap_system_dma_plat_info {
 #if defined(CONFIG_ARCH_OMAP)
 extern struct omap_system_dma_plat_info *omap_get_plat_info(void);
 
-extern void omap_set_dma_priority(int lch, int dst_port, int priority);
 extern int omap_request_dma(int dev_id, const char *dev_name,
 			void (*callback)(int lch, u16 ch_status, void *data),
 			void *data, int *dma_ch);
@@ -356,10 +363,6 @@ static inline int omap_lcd_dma_running(void)
 #endif
 
 #else /* CONFIG_ARCH_OMAP */
-static inline void omap_set_dma_priority(int lch, int dst_port, int priority)
-{
-}
-
 static inline struct omap_system_dma_plat_info *omap_get_plat_info(void)
 {
 	return NULL;
