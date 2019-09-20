@@ -619,8 +619,6 @@ source "arch/arm/mach-davinci/Kconfig"
 
 source "arch/arm/mach-digicolor/Kconfig"
 
-source "arch/arm/mach-dove/Kconfig"
-
 source "arch/arm/mach-ep93xx/Kconfig"
 
 source "arch/arm/mach-exynos/Kconfig"
@@ -654,8 +652,6 @@ source "arch/arm/mach-mmp/Kconfig"
 
 source "arch/arm/mach-moxart/Kconfig"
 
-source "arch/arm/mach-mv78xx0/Kconfig"
-
 source "arch/arm/mach-mvebu/Kconfig"
 
 source "arch/arm/mach-mxs/Kconfig"
@@ -672,7 +668,7 @@ source "arch/arm/mach-omap1/Kconfig"
 
 source "arch/arm/mach-omap2/Kconfig"
 
-source "arch/arm/mach-orion5x/Kconfig"
+source "arch/arm/mach-orion/Kconfig"
 
 source "arch/arm/mach-oxnas/Kconfig"
 
@@ -766,17 +762,6 @@ config ARCH_ACORN
 config PLAT_IOP
 	bool
 	select GENERIC_CLOCKEVENTS
-
-config PLAT_ORION
-	bool
-	select CLKSRC_MMIO
-	select COMMON_CLK
-	select GENERIC_IRQ_CHIP
-	select IRQ_DOMAIN
-
-config PLAT_ORION_LEGACY
-	bool
-	select PLAT_ORION
 
 config PLAT_PXA
 	bool
