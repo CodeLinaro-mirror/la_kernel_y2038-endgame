@@ -263,6 +263,17 @@ void omap_dma_global_context_restore(void)
 		omap2_clear_dma(ch);
 }
 
+int omap_dma_running(void)
+{
+	int lch;
+
+	for (lch = 0; lch < dma_plat_info.dma_attr->lch_count; lch++)
+		if (dma_read(CCR, lch) & OMAP_DMA_CCR_EN)
+			return 1;
+
+	return 0;
+}
+
 /* One time initializations */
 static int __init omap2_system_dma_init_dev(struct omap_hwmod *oh, void *unused)
 {
