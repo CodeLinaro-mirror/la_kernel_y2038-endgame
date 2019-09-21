@@ -303,6 +303,11 @@ config CRYPTO_GCM
 	  Support for Galois/Counter Mode (GCM) and Galois Message
 	  Authentication Code (GMAC). Required for IPSec.
 
+config CRYPTO_LIB_CHACHA20POLY1305
+	tristate "ChaCha20Poly1305 AEAD support (8-byte nonce library version)"
+	select CRYPTO_LIB_CHACHA
+	select CRYPTO_LIB_POLY1305
+
 config CRYPTO_CHACHA20POLY1305
 	tristate "ChaCha20-Poly1305 AEAD support"
 	select CRYPTO_CHACHA20
