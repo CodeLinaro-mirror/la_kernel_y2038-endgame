@@ -682,9 +682,22 @@ config CRYPTO_GHASH
 	  GHASH is the hash function used in GCM (Galois/Counter Mode).
 	  It is not a general-purpose cryptographic hash function.
 
+config CRYPTO_ARCH_HAVE_LIB_POLY1305
+	tristate
+
+config CRYPTO_LIB_POLY1305_RSIZE
+	int
+	default 1
+
+config CRYPTO_LIB_POLY1305
+	tristate
+	default CRYPTO_ARCH_HAVE_LIB_POLY1305
+	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
+
 config CRYPTO_POLY1305
 	tristate "Poly1305 authenticator algorithm"
 	select CRYPTO_HASH
+	select CRYPTO_LIB_POLY1305
 	help
 	  Poly1305 authenticator algorithm, RFC7539.
 
