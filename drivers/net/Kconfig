@@ -77,9 +77,9 @@ config WIREGUARD
 	depends on IPV6 || !IPV6
 	select NET_UDP_TUNNEL
 	select DST_CACHE
-	select ZINC_CHACHA20POLY1305
-	select ZINC_BLAKE2S
-	select ZINC_CURVE25519
+	select CRYPTO_LIB_CHACHA20POLY1305
+	select CRYPTO_LIB_BLAKE2S
+	select CRYPTO_LIB_CURVE25519
 	help
 	  WireGuard is a secure, fast, and easy to use replacement for IPSec
 	  that uses modern cryptography and clever networking tricks. It's
