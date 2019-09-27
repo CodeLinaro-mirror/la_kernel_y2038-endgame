@@ -5,9 +5,11 @@
  * Copyright (C) 2015 Martin Willi
  */
 
+#include <linux/bug.h>
 #include <linux/kernel.h>
 #include <linux/export.h>
 #include <linux/bitops.h>
+#include <linux/string.h>
 #include <linux/cryptohash.h>
 #include <asm/unaligned.h>
 #include <crypto/chacha.h>
@@ -72,7 +74,7 @@ static void chacha_permute(u32 *x, int nrounds)
  * The caller has already converted the endianness of the input.  This function
  * also handles incrementing the block counter in the input matrix.
  */
-void chacha_block(u32 *state, u8 *stream, int nrounds)
+void chacha_block_generic(u32 *state, u8 *stream, int nrounds)
 {
 	u32 x[16];
 	int i;
@@ -86,7 +88,7 @@ void chacha_block(u32 *state, u8 *stream, int nrounds)
 
 	state[12]++;
 }
-EXPORT_SYMBOL(chacha_block);
+EXPORT_SYMBOL(chacha_block_generic);
 
 /**
  * hchacha_block - abbreviated ChaCha core, for XChaCha
@@ -99,7 +101,7 @@ EXPORT_SYMBOL(chacha_block);
  * skips the final addition of the initial state, and outputs only certain words
  * of the state.  It should not be used for streaming directly.
  */
-void hchacha_block(const u32 *in, u32 *out, int nrounds)
+void hchacha_block_generic(const u32 *in, u32 *out, int nrounds)
 {
 	u32 x[16];
 
@@ -110,4 +112,4 @@ void hchacha_block(const u32 *in, u32 *out, int nrounds)
 	memcpy(&out[0], &x[0], 16);
 	memcpy(&out[4], &x[12], 16);
 }
-EXPORT_SYMBOL(hchacha_block);
+EXPORT_SYMBOL(hchacha_block_generic);
