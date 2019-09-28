@@ -25,6 +25,12 @@
 #define CHACHA_BLOCK_SIZE	64
 #define CHACHAPOLY_IV_SIZE	12
 
+#ifdef CONFIG_X86_64
+#define CHACHA_STATE_WORDS	((CHACHA_BLOCK_SIZE + 12) / sizeof(u32))
+#else
+#define CHACHA_STATE_WORDS	(CHACHA_BLOCK_SIZE / sizeof(u32))
+#endif
+
 /* 192-bit nonce, then 64-bit stream position */
 #define XCHACHA_IV_SIZE		32
 
@@ -57,6 +63,10 @@ static inline void chacha_init_generic(u32 *state, const u32 *key, const u8 *iv)
 
 static inline void chacha_init(u32 *state, const u32 *key, const u8 *iv)
 {
+	if (IS_ENABLED(CONFIG_X86_64) &&
+	    IS_ENABLED(CONFIG_CRYPTO_ARCH_HAVE_LIB_CHACHA))
+		state = PTR_ALIGN(state, 16);
+
 	chacha_init_generic(state, key, iv);
 }
 
