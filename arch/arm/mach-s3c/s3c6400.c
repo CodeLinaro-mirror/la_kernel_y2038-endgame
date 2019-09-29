@@ -28,7 +28,6 @@
 
 #include <asm/irq.h>
 
-#include <linux/soc/samsung/s3c-cpu-freq.h>
 #include <mach/regs-clock.h>
 
 #include <plat/cpu.h>

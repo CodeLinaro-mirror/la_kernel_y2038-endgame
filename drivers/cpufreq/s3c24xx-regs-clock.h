@@ -22,6 +22,7 @@
 #define S3C2410_CLKSLOW	    S3C2410_CLKREG(0x10)
 #define S3C2410_CLKDIVN	    S3C2410_CLKREG(0x14)
 
+#if 0
 #define S3C2410_CLKCON_IDLE	     (1<<2)
 #define S3C2410_CLKCON_POWER	     (1<<3)
 #define S3C2410_CLKCON_NAND	     (1<<4)
@@ -39,6 +40,7 @@
 #define S3C2410_CLKCON_IIC	     (1<<16)
 #define S3C2410_CLKCON_IIS	     (1<<17)
 #define S3C2410_CLKCON_SPI	     (1<<18)
+#endif
 
 #define S3C2410_CLKDIVN_PDIVN	     (1<<0)
 #define S3C2410_CLKDIVN_HDIVN	     (1<<1)
