@@ -13,8 +13,7 @@ static int curve25519_set_secret(struct crypto_kpp *tfm, const void *buf,
 
 	if (!len)
 		curve25519_generate_secret(secret);
-	else if (len == CURVE25519_KEY_SIZE &&
-		 crypto_memneq(buf, curve25519_null_point, CURVE25519_KEY_SIZE))
+	else if (len == CURVE25519_KEY_SIZE)
 		memcpy(secret, buf, CURVE25519_KEY_SIZE);
 	else
 		return -EINVAL;
