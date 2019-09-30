@@ -126,7 +126,7 @@ static amdgpu_dc_double get_refcyc_per_delivery(struct display_mode_lib *mode_li
 		unsigned int delivery_width,
 		unsigned int req_per_swath_ub)
 {
-	amdgpu_dc_double refcyc_per_delivery = 0.0;
+	amdgpu_dc_double refcyc_per_delivery = amdgpu_dc_double_constant(0.0);
 
 	if (vratio <= 1.0) {
 		if (odm_combine)
@@ -1097,14 +1097,14 @@ static void dml20v2_rq_dlg_get_dlg_params(struct display_mode_lib *mode_lib,
 	dst_y_per_vm_flip = get_dst_y_per_vm_flip(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);
 	dst_y_per_row_flip = get_dst_y_per_row_flip(mode_lib, e2e_pipe_param, num_pipes, pipe_idx);
 
-	min_dst_y_per_vm_vblank = 8.0;
-	min_dst_y_per_row_vblank = 16.0;
+	min_dst_y_per_vm_vblank = amdgpu_dc_double_constant(8.0);
+	min_dst_y_per_row_vblank = amdgpu_dc_double_constant(16.0);
 
 	// magic!
 	if (htotal <= 75) {
 		min_vblank = 300;
-		min_dst_y_per_vm_vblank = 100.0;
-		min_dst_y_per_row_vblank = 100.0;
+		min_dst_y_per_vm_vblank = amdgpu_dc_double_constant(100.0);
+		min_dst_y_per_row_vblank = amdgpu_dc_double_constant(100.0);
 	}
 
 	dml_print("DML_DLG: %s: dst_y_per_vm_vblank    = %3.2f\n", __func__, dst_y_per_vm_vblank);
@@ -1150,15 +1150,15 @@ static void dml20v2_rq_dlg_get_dlg_params(struct display_mode_lib *mode_lib,
 	min_hratio_fact_c = 1.0;
 
 	if (htaps_l <= 1)
-		min_hratio_fact_l = 2.0;
+		min_hratio_fact_l = amdgpu_dc_double_constant(2.0);
 	else if (htaps_l <= 6) {
 		if ((hratio_l * 2.0) > 4.0)
-			min_hratio_fact_l = 4.0;
+			min_hratio_fact_l = amdgpu_dc_double_constant(4.0);
 		else
 			min_hratio_fact_l = hratio_l * 2.0;
 	} else {
 		if (hratio_l > 4.0)
-			min_hratio_fact_l = 4.0;
+			min_hratio_fact_l = amdgpu_dc_double_constant(4.0);
 		else
 			min_hratio_fact_l = hratio_l;
 	}
@@ -1166,30 +1166,30 @@ static void dml20v2_rq_dlg_get_dlg_params(struct display_mode_lib *mode_lib,
 	hscale_pixel_rate_l = min_hratio_fact_l * dppclk_freq_in_mhz;
 
 	if (htaps_c <= 1)
-		min_hratio_fact_c = 2.0;
+		min_hratio_fact_c = amdgpu_dc_double_constant(2.0);
 	else if (htaps_c <= 6) {
 		if ((hratio_c * 2.0) > 4.0)
-			min_hratio_fact_c = 4.0;
+			min_hratio_fact_c = amdgpu_dc_double_constant(4.0);
 		else
 			min_hratio_fact_c = hratio_c * 2.0;
 	} else {
 		if (hratio_c > 4.0)
-			min_hratio_fact_c = 4.0;
+			min_hratio_fact_c = amdgpu_dc_double_constant(4.0);
 		else
 			min_hratio_fact_c = hratio_c;
 	}
 
 	hscale_pixel_rate_c = min_hratio_fact_c * dppclk_freq_in_mhz;
 
-	refcyc_per_line_delivery_pre_l = 0.;
-	refcyc_per_line_delivery_pre_c = 0.;
-	refcyc_per_line_delivery_l = 0.;
-	refcyc_per_line_delivery_c = 0.;
+	refcyc_per_line_delivery_pre_l = amdgpu_dc_double_constant(0.);
+	refcyc_per_line_delivery_pre_c = amdgpu_dc_double_constant(0.);
+	refcyc_per_line_delivery_l = amdgpu_dc_double_constant(0.);
+	refcyc_per_line_delivery_c = amdgpu_dc_double_constant(0.);
 
-	refcyc_per_req_delivery_pre_l = 0.;
-	refcyc_per_req_delivery_pre_c = 0.;
-	refcyc_per_req_delivery_l = 0.;
-	refcyc_per_req_delivery_c = 0.;
+	refcyc_per_req_delivery_pre_l = amdgpu_dc_double_constant(0.);
+	refcyc_per_req_delivery_pre_c = amdgpu_dc_double_constant(0.);
+	refcyc_per_req_delivery_l = amdgpu_dc_double_constant(0.);
+	refcyc_per_req_delivery_c = amdgpu_dc_double_constant(0.);
 
 	full_recout_width = 0;
 	// In ODM
@@ -1362,8 +1362,8 @@ static void dml20v2_rq_dlg_get_dlg_params(struct display_mode_lib *mode_lib,
 			pipe_idx);
 
 	// TTU - Cursor
-	refcyc_per_req_delivery_pre_cur0 = 0.0;
-	refcyc_per_req_delivery_cur0 = 0.0;
+	refcyc_per_req_delivery_pre_cur0 = amdgpu_dc_double_constant(0.0);
+	refcyc_per_req_delivery_cur0 = amdgpu_dc_double_constant(0.0);
 	if (src->num_cursors > 0) {
 		calculate_ttu_cursor(mode_lib,
 				&refcyc_per_req_delivery_pre_cur0,
@@ -1378,8 +1378,8 @@ static void dml20v2_rq_dlg_get_dlg_params(struct display_mode_lib *mode_lib,
 				(enum cursor_bpp)(src->cur0_bpp));
 	}
 
-	refcyc_per_req_delivery_pre_cur1 = 0.0;
-	refcyc_per_req_delivery_cur1 = 0.0;
+	refcyc_per_req_delivery_pre_cur1 = amdgpu_dc_double_constant(0.0);
+	refcyc_per_req_delivery_cur1 = amdgpu_dc_double_constant(0.0);
 	if (src->num_cursors > 1) {
 		calculate_ttu_cursor(mode_lib,
 				&refcyc_per_req_delivery_pre_cur1,
@@ -1627,14 +1627,14 @@ static void calculate_ttu_cursor(struct display_mode_lib *mode_lib,
 	unsigned int cur_src_width = cur_width;
 	unsigned int cur_req_size = 0;
 	unsigned int cur_req_width = 0;
-	amdgpu_dc_double cur_width_ub = 0.0;
-	amdgpu_dc_double cur_req_per_width = 0.0;
-	amdgpu_dc_double hactive_cur = 0.0;
+	amdgpu_dc_double cur_width_ub = amdgpu_dc_double_constant(0.0);
+	amdgpu_dc_double cur_req_per_width = amdgpu_dc_double_constant(0.0);
+	amdgpu_dc_double hactive_cur = amdgpu_dc_double_constant(0.0);
 
 	ASSERT(cur_src_width <= 256);
 
-	*refcyc_per_req_delivery_pre_cur = 0.0;
-	*refcyc_per_req_delivery_cur = 0.0;
+	*refcyc_per_req_delivery_pre_cur = amdgpu_dc_double_constant(0.0);
+	*refcyc_per_req_delivery_cur = amdgpu_dc_double_constant(0.0);
 	if (cur_src_width > 0) {
 		unsigned int cur_bit_per_pixel = 0;
 

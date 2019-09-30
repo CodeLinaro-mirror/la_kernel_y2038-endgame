@@ -380,25 +380,25 @@ struct clk_bw_params rn_bw_params = {
 			{
 				.wm_inst = WM_A,
 				.wm_type = WM_TYPE_PSTATE_CHG,
-				.pstate_latency_us = 23.84,
+				.pstate_latency_us = amdgpu_dc_double_constant(23.84),
 				.valid = true,
 			},
 			{
 				.wm_inst = WM_B,
 				.wm_type = WM_TYPE_PSTATE_CHG,
-				.pstate_latency_us = 23.84,
+				.pstate_latency_us = amdgpu_dc_double_constant(23.84),
 				.valid = true,
 			},
 			{
 				.wm_inst = WM_C,
 				.wm_type = WM_TYPE_PSTATE_CHG,
-				.pstate_latency_us = 23.84,
+				.pstate_latency_us = amdgpu_dc_double_constant(23.84),
 				.valid = true,
 			},
 			{
 				.wm_inst = WM_D,
 				.wm_type = WM_TYPE_PSTATE_CHG,
-				.pstate_latency_us = 23.84,
+				.pstate_latency_us = amdgpu_dc_double_constant(23.84),
 				.valid = true,
 			},
 		},
@@ -499,7 +499,7 @@ void clk_mgr_helper_populate_bw_params(struct clk_bw_params *bw_params, struct d
 		/*
 		 * WM set D will be re-purposed for memory retraining
 		 */
-		bw_params->wm_table.entries[WM_D].pstate_latency_us = LPDDR_MEM_RETRAIN_LATENCY;
+		bw_params->wm_table.entries[WM_D].pstate_latency_us = amdgpu_dc_double_constant(LPDDR_MEM_RETRAIN_LATENCY);
 		bw_params->wm_table.entries[WM_D].wm_inst = WM_D;
 		bw_params->wm_table.entries[WM_D].wm_type = WM_TYPE_RETRAINING;
 		bw_params->wm_table.entries[WM_D].valid = true;

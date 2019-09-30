@@ -77,7 +77,7 @@ static inline amdgpu_dc_double dml_floor(amdgpu_dc_double a, amdgpu_dc_double gr
 
 static inline int dml_log2(amdgpu_dc_double x)
 {
-	return dml_round((amdgpu_dc_double)dcn_bw_log(x, 2));
+	return dml_round((amdgpu_dc_double)dcn_bw_log(x, amdgpu_dc_float_constant(2)));
 }
 
 static inline amdgpu_dc_double dml_pow(amdgpu_dc_double a, int exp)
@@ -92,7 +92,7 @@ static inline amdgpu_dc_double dml_fmod(amdgpu_dc_double f, int val)
 
 static inline amdgpu_dc_double dml_ceil_2(amdgpu_dc_double f)
 {
-	return (amdgpu_dc_double) dcn_bw_ceil2(f, 2);
+	return (amdgpu_dc_double) dcn_bw_ceil2(f, amdgpu_dc_float_constant(2));
 }
 
 static inline amdgpu_dc_double dml_ceil_ex(amdgpu_dc_double x, amdgpu_dc_double granularity)

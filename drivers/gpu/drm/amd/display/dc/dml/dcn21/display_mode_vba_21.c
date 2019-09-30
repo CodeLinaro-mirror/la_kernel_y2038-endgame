@@ -707,9 +707,9 @@ static bool CalculatePrefetchSchedule(
 	amdgpu_dc_double Tr0_oto_lines;
 	amdgpu_dc_double Tsw_oto_lines;
 	amdgpu_dc_double dst_y_prefetch_oto;
-	amdgpu_dc_double TimeForFetchingMetaPTE = 0;
-	amdgpu_dc_double TimeForFetchingRowInVBlank = 0;
-	amdgpu_dc_double LinesToRequestPrefetchPixelData = 0;
+	amdgpu_dc_double TimeForFetchingMetaPTE = amdgpu_dc_double_constant(0);
+	amdgpu_dc_double TimeForFetchingRowInVBlank = amdgpu_dc_double_constant(0);
+	amdgpu_dc_double LinesToRequestPrefetchPixelData = amdgpu_dc_double_constant(0);
 	amdgpu_dc_double HostVMInefficiencyFactor;
 	unsigned int HostVMDynamicLevels;
 

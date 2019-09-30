@@ -62,12 +62,12 @@
 #endif
 const struct dcn_soc_bounding_box dcn10_soc_defaults = {
 		/* latencies */
-		.sr_exit_time = 17, /*us*/
-		.sr_enter_plus_exit_time = 19, /*us*/
-		.urgent_latency = 4, /*us*/
-		.dram_clock_change_latency = 17, /*us*/
-		.write_back_latency = 12, /*us*/
-		.percent_of_ideal_drambw_received_after_urg_latency = 80, /*%*/
+		.sr_exit_time = amdgpu_dc_float_constant(17), /*us*/
+		.sr_enter_plus_exit_time = amdgpu_dc_float_constant(1), /*us*/
+		.urgent_latency = amdgpu_dc_float_constant(1), /*us*/
+		.dram_clock_change_latency = amdgpu_dc_float_constant(1), /*us*/
+		.write_back_latency = amdgpu_dc_float_constant(1), /*us*/
+		.percent_of_ideal_drambw_received_after_urg_latency = amdgpu_dc_float_constant(1), /*%*/
 
 		/* below default clocks derived from STA target base on
 		 * slow-slow corner + 10% margin with voltages aligned to FCLK.
@@ -75,88 +75,88 @@ const struct dcn_soc_bounding_box dcn10_soc_defaults = {
 		 * Use these value if fused value doesn't make sense as earlier
 		 * part don't have correct value fused */
 		/* default DCF CLK DPM on RV*/
-		.dcfclkv_max0p9 = 655,	/* MHz, = 3600/5.5 */
-		.dcfclkv_nom0p8 = 626,	/* MHz, = 3600/5.75 */
-		.dcfclkv_mid0p72 = 600,	/* MHz, = 3600/6, bypass */
-		.dcfclkv_min0p65 = 300,	/* MHz, = 3600/12, bypass */
+		.dcfclkv_max0p9 = amdgpu_dc_float_constant(1),	/* MHz, = 3600/5.5 */
+		.dcfclkv_nom0p8 = amdgpu_dc_float_constant(1),	/* MHz, = 3600/5.75 */
+		.dcfclkv_mid0p72 = amdgpu_dc_float_constant(1),	/* MHz, = 3600/6, bypass */
+		.dcfclkv_min0p65 = amdgpu_dc_float_constant(1),	/* MHz, = 3600/12, bypass */
 
 		/* default DISP CLK voltage state on RV */
-		.max_dispclk_vmax0p9 = 1108,	/* MHz, = 3600/3.25 */
-		.max_dispclk_vnom0p8 = 1029,	/* MHz, = 3600/3.5 */
-		.max_dispclk_vmid0p72 = 960,	/* MHz, = 3600/3.75 */
-		.max_dispclk_vmin0p65 = 626,	/* MHz, = 3600/5.75 */
+		.max_dispclk_vmax0p9 = amdgpu_dc_float_constant(1),	/* MHz, = 3600/3.25 */
+		.max_dispclk_vnom0p8 = amdgpu_dc_float_constant(1),	/* MHz, = 3600/3.5 */
+		.max_dispclk_vmid0p72 = amdgpu_dc_float_constant(1),	/* MHz, = 3600/3.75 */
+		.max_dispclk_vmin0p65 = amdgpu_dc_float_constant(1),	/* MHz, = 3600/5.75 */
 
 		/* default DPP CLK voltage state on RV */
-		.max_dppclk_vmax0p9 = 720,	/* MHz, = 3600/5 */
-		.max_dppclk_vnom0p8 = 686,	/* MHz, = 3600/5.25 */
-		.max_dppclk_vmid0p72 = 626,	/* MHz, = 3600/5.75 */
-		.max_dppclk_vmin0p65 = 400,	/* MHz, = 3600/9 */
+		.max_dppclk_vmax0p9 = amdgpu_dc_float_constant(1),	/* MHz, = 3600/5 */
+		.max_dppclk_vnom0p8 = amdgpu_dc_float_constant(1),	/* MHz, = 3600/5.25 */
+		.max_dppclk_vmid0p72 = amdgpu_dc_float_constant(1),	/* MHz, = 3600/5.75 */
+		.max_dppclk_vmin0p65 = amdgpu_dc_float_constant(1),	/* MHz, = 3600/9 */
 
 		/* default PHY CLK voltage state on RV */
-		.phyclkv_max0p9 = 900, /*MHz*/
-		.phyclkv_nom0p8 = 847, /*MHz*/
-		.phyclkv_mid0p72 = 800, /*MHz*/
-		.phyclkv_min0p65 = 600, /*MHz*/
+		.phyclkv_max0p9 = amdgpu_dc_float_constant(1), /*MHz*/
+		.phyclkv_nom0p8 = amdgpu_dc_float_constant(1), /*MHz*/
+		.phyclkv_mid0p72 = amdgpu_dc_float_constant(1), /*MHz*/
+		.phyclkv_min0p65 = amdgpu_dc_float_constant(1), /*MHz*/
 
 		/* BW depend on FCLK, MCLK, # of channels */
 		/* dual channel BW */
-		.fabric_and_dram_bandwidth_vmax0p9 = 38.4f, /*GB/s*/
-		.fabric_and_dram_bandwidth_vnom0p8 = 34.133f, /*GB/s*/
-		.fabric_and_dram_bandwidth_vmid0p72 = 29.866f, /*GB/s*/
-		.fabric_and_dram_bandwidth_vmin0p65 = 12.8f, /*GB/s*/
+		.fabric_and_dram_bandwidth_vmax0p9 = amdgpu_dc_float_constant(38.4f), /*GB/s*/
+		.fabric_and_dram_bandwidth_vnom0p8 = amdgpu_dc_float_constant(34.133f), /*GB/s*/
+		.fabric_and_dram_bandwidth_vmid0p72 = amdgpu_dc_float_constant(29.866f), /*GB/s*/
+		.fabric_and_dram_bandwidth_vmin0p65 = amdgpu_dc_float_constant(12.8f), /*GB/s*/
 		/* single channel BW
-		.fabric_and_dram_bandwidth_vmax0p9 = 19.2f,
-		.fabric_and_dram_bandwidth_vnom0p8 = 17.066f,
-		.fabric_and_dram_bandwidth_vmid0p72 = 14.933f,
-		.fabric_and_dram_bandwidth_vmin0p65 = 12.8f,
+		.fabric_and_dram_bandwidth_vmax0p9  = amdgpu_dc_float_constant(19.2f),
+		.fabric_and_dram_bandwidth_vnom0p8  = amdgpu_dc_float_constant(17.066f),
+		.fabric_and_dram_bandwidth_vmid0p72 = amdgpu_dc_float_constant(14.933f),
+		.fabric_and_dram_bandwidth_vmin0p65 = amdgpu_dc_float_constant(12.8f),
 		*/
 
-		.number_of_channels = 2,
+		.number_of_channels = 1,
 
-		.socclk = 208, /*MHz*/
-		.downspreading = 0.5f, /*%*/
-		.round_trip_ping_latency_cycles = 128, /*DCFCLK Cycles*/
-		.urgent_out_of_order_return_per_channel = 256, /*bytes*/
-		.vmm_page_size = 4096, /*bytes*/
-		.return_bus_width = 64, /*bytes*/
-		.max_request_size = 256, /*bytes*/
+		.socclk = amdgpu_dc_float_constant(1), /*MHz*/
+		.downspreading = amdgpu_dc_float_constant(0.5f), /*%*/
+		.round_trip_ping_latency_cycles = 1, /*DCFCLK Cycles*/
+		.urgent_out_of_order_return_per_channel = 1, /*bytes*/
+		.vmm_page_size = 1, /*bytes*/
+		.return_bus_width = 1, /*bytes*/
+		.max_request_size = 1, /*bytes*/
 
 		/* Depends on user class (client vs embedded, workstation, etc) */
-		.percent_disp_bw_limit = 0.3f /*%*/
+		.percent_disp_bw_limit = amdgpu_dc_float_constant(0.3f), /*%*/
 };
 
 const struct dcn_ip_params dcn10_ip_defaults = {
-		.rob_buffer_size_in_kbyte = 64,
-		.det_buffer_size_in_kbyte = 164,
-		.dpp_output_buffer_pixels = 2560,
-		.opp_output_buffer_lines = 1,
-		.pixel_chunk_size_in_kbyte = 8,
+		.rob_buffer_size_in_kbyte = amdgpu_dc_float_constant(1),
+		.det_buffer_size_in_kbyte = amdgpu_dc_float_constant(1),
+		.dpp_output_buffer_pixels = amdgpu_dc_float_constant(1),
+		.opp_output_buffer_lines = amdgpu_dc_float_constant(1),
+		.pixel_chunk_size_in_kbyte = amdgpu_dc_float_constant(1),
 		.pte_enable = dcn_bw_yes,
-		.pte_chunk_size = 2, /*kbytes*/
-		.meta_chunk_size = 2, /*kbytes*/
-		.writeback_chunk_size = 2, /*kbytes*/
+		.pte_chunk_size = 1, /*kbytes*/
+		.meta_chunk_size = 1, /*kbytes*/
+		.writeback_chunk_size = 1, /*kbytes*/
 		.odm_capability = dcn_bw_no,
 		.dsc_capability = dcn_bw_no,
-		.line_buffer_size = 589824, /*bit*/
-		.max_line_buffer_lines = 12,
+		.line_buffer_size = 1, /*bit*/
+		.max_line_buffer_lines = 1,
 		.is_line_buffer_bpp_fixed = dcn_bw_no,
 		.line_buffer_fixed_bpp = dcn_bw_na,
-		.writeback_luma_buffer_size = 12, /*kbytes*/
-		.writeback_chroma_buffer_size = 8, /*kbytes*/
-		.max_num_dpp = 4,
-		.max_num_writeback = 2,
-		.max_dchub_topscl_throughput = 4, /*pixels/dppclk*/
-		.max_pscl_tolb_throughput = 2, /*pixels/dppclk*/
-		.max_lb_tovscl_throughput = 4, /*pixels/dppclk*/
-		.max_vscl_tohscl_throughput = 4, /*pixels/dppclk*/
-		.max_hscl_ratio = 4,
-		.max_vscl_ratio = 4,
-		.max_hscl_taps = 8,
-		.max_vscl_taps = 8,
-		.pte_buffer_size_in_requests = 42,
-		.dispclk_ramping_margin = 1, /*%*/
-		.under_scan_factor = 1.11f,
-		.max_inter_dcn_tile_repeaters = 8,
+		.writeback_luma_buffer_size = 1, /*kbytes*/
+		.writeback_chroma_buffer_size = 1, /*kbytes*/
+		.max_num_dpp = 1,
+		.max_num_writeback = 1,
+		.max_dchub_topscl_throughput = 1, /*pixels/dppclk*/
+		.max_pscl_tolb_throughput = 1, /*pixels/dppclk*/
+		.max_lb_tovscl_throughput = 1, /*pixels/dppclk*/
+		.max_vscl_tohscl_throughput = 1, /*pixels/dppclk*/
+		.max_hscl_ratio = amdgpu_dc_float_constant(1),
+		.max_vscl_ratio = amdgpu_dc_float_constant(1),
+		.max_hscl_taps = 1,
+		.max_vscl_taps = 1,
+		.pte_buffer_size_in_requests = 1,
+		.dispclk_ramping_margin = amdgpu_dc_float_constant(1), /*%*/
+		.under_scan_factor = amdgpu_dc_float_constant(1.11f),
+		.max_inter_dcn_tile_repeaters = 1,
 		.can_vstartup_lines_exceed_vsync_plus_back_porch_lines_minus_one = dcn_bw_no,
 		.bug_forcing_luma_and_chroma_request_to_same_size_fixed = dcn_bw_no,
 		.dcfclk_cstate_latency = 10 /*TODO clone of something else? sr_enter_plus_exit_time?*/
@@ -389,7 +389,7 @@ static void pipe_ctx_to_e2e_pipe_params (
 	input->scale_ratio_depth.vscl_ratio    = pipe->plane_res.scl_data.ratios.vert.value/4294967296.0;
 	input->scale_ratio_depth.vinit =  pipe->plane_res.scl_data.inits.v.value/4294967296.0;
 	if (input->scale_ratio_depth.vinit < 1.0)
-			input->scale_ratio_depth.vinit = 1;
+			input->scale_ratio_depth.vinit = amdgpu_dc_double_constant(1);
 	input->scale_taps.vtaps = pipe->plane_res.scl_data.taps.v_taps;
 	input->scale_taps.vtaps_c = pipe->plane_res.scl_data.taps.v_taps_c;
 	input->scale_taps.htaps_c              = pipe->plane_res.scl_data.taps.h_taps_c;
@@ -397,7 +397,7 @@ static void pipe_ctx_to_e2e_pipe_params (
 	input->scale_ratio_depth.vscl_ratio_c  = pipe->plane_res.scl_data.ratios.vert_c.value/4294967296.0;
 	input->scale_ratio_depth.vinit_c       = pipe->plane_res.scl_data.inits.v_c.value/4294967296.0;
 	if (input->scale_ratio_depth.vinit_c < 1.0)
-			input->scale_ratio_depth.vinit_c = 1;
+			input->scale_ratio_depth.vinit_c = amdgpu_dc_double_constant(1);
 	switch (pipe->plane_res.scl_data.lb_params.depth) {
 	case LB_PIXEL_DEPTH_30BPP:
 		input->scale_ratio_depth.lb_depth = 30; break;
@@ -451,8 +451,8 @@ static void dcn_bw_calc_rq_dlg_ttu(
 	struct _vcs_dpi_display_rq_params_st rq_param = {0};
 	struct _vcs_dpi_display_dlg_sys_params_st dlg_sys_param = {0};
 	struct _vcs_dpi_display_e2e_pipe_params_st input = { { { 0 } } };
-	amdgpu_dc_float total_active_bw = 0;
-	amdgpu_dc_float total_prefetch_bw = 0;
+	amdgpu_dc_float total_active_bw = amdgpu_dc_float_constant(0);
+	amdgpu_dc_float total_prefetch_bw = amdgpu_dc_float_constant(0);
 	int total_flip_bytes = 0;
 	int i;
 
@@ -467,7 +467,7 @@ static void dcn_bw_calc_rq_dlg_ttu(
 	}
 	dlg_sys_param.total_flip_bw = v->return_bw - dcn_bw_max2(total_active_bw, total_prefetch_bw);
 	if (dlg_sys_param.total_flip_bw < 0.0)
-		dlg_sys_param.total_flip_bw = 0;
+		dlg_sys_param.total_flip_bw = amdgpu_dc_double_constant(0);
 
 	dlg_sys_param.t_mclk_wm_us = v->dram_clock_change_watermark;
 	dlg_sys_param.t_sr_wm_us = v->stutter_enter_plus_exit_watermark;
@@ -1062,20 +1062,20 @@ bool dcn_validate_bandwidth(
 	}
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		if (v->source_pixel_format[k] == dcn_bw_rgb_sub_64) {
-			v->byte_per_pixel_dety[k] = 8.0;
-			v->byte_per_pixel_detc[k] = 0.0;
+			v->byte_per_pixel_dety[k] = amdgpu_dc_float_constant(8.0);
+			v->byte_per_pixel_detc[k] = amdgpu_dc_float_constant(0.0);
 		} else if (v->source_pixel_format[k] == dcn_bw_rgb_sub_32) {
-			v->byte_per_pixel_dety[k] = 4.0;
-			v->byte_per_pixel_detc[k] = 0.0;
+			v->byte_per_pixel_dety[k] = amdgpu_dc_float_constant(4.0);
+			v->byte_per_pixel_detc[k] = amdgpu_dc_float_constant(0.0);
 		} else if (v->source_pixel_format[k] == dcn_bw_rgb_sub_16) {
-			v->byte_per_pixel_dety[k] = 2.0;
-			v->byte_per_pixel_detc[k] = 0.0;
+			v->byte_per_pixel_dety[k] = amdgpu_dc_float_constant(2.0);
+			v->byte_per_pixel_detc[k] = amdgpu_dc_float_constant(0.0);
 		} else if (v->source_pixel_format[k] == dcn_bw_yuv420_sub_8) {
-			v->byte_per_pixel_dety[k] = 1.0;
-			v->byte_per_pixel_detc[k] = 2.0;
+			v->byte_per_pixel_dety[k] = amdgpu_dc_float_constant(1.0);
+			v->byte_per_pixel_detc[k] = amdgpu_dc_float_constant(2.0);
 		} else {
-			v->byte_per_pixel_dety[k] = 4.0f / 3.0f;
-			v->byte_per_pixel_detc[k] = 8.0f / 3.0f;
+			v->byte_per_pixel_dety[k] = amdgpu_dc_float_constant(4.0f / 3.0f);
+			v->byte_per_pixel_detc[k] = amdgpu_dc_float_constant(8.0f / 3.0f);
 		}
 	}
 
