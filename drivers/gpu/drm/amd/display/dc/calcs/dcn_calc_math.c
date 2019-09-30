@@ -70,7 +70,7 @@ amdgpu_dc_float dcn_bw_max2(const amdgpu_dc_float arg1, const amdgpu_dc_float ar
 amdgpu_dc_float dcn_bw_floor2(const amdgpu_dc_float arg, const amdgpu_dc_float significance)
 {
 	if (significance == 0)
-		return 0;
+		return amdgpu_dc_float_constant(0);
 	return ((int) (arg / significance)) * significance;
 }
 amdgpu_dc_float dcn_bw_floor(const amdgpu_dc_float arg)
@@ -89,7 +89,7 @@ amdgpu_dc_float dcn_bw_ceil2(const amdgpu_dc_float arg, const amdgpu_dc_float si
 {
 	amdgpu_dc_float flr = dcn_bw_floor2(arg, significance);
 	if (significance == 0)
-		return 0;
+		return amdgpu_dc_float_constant(0);
 	return flr + 0.00001 >= arg ? arg : flr + significance;
 }
 
@@ -108,7 +108,7 @@ amdgpu_dc_float dcn_bw_pow(amdgpu_dc_float a, amdgpu_dc_float exp)
 	amdgpu_dc_float temp;
 	/*ASSERT(exp == (int)exp);*/
 	if ((int)exp == 0)
-		return 1;
+		return amdgpu_dc_float_constant(1);
 	temp = dcn_bw_pow(a, (int)(exp / 2));
 	if (((int)exp % 2) == 0) {
 		return temp * temp;

@@ -90,14 +90,14 @@ const struct _vcs_dpi_ip_params_st dcn1_0_ip = {
 	.max_pscl_lb_bw_pix_per_clk = 2,
 	.max_lb_vscl_bw_pix_per_clk = 4,
 	.max_vscl_hscl_bw_pix_per_clk = 4,
-	.max_hscl_ratio = 4,
-	.max_vscl_ratio = 4,
+	.max_hscl_ratio = amdgpu_dc_double_constant(4),
+	.max_vscl_ratio = amdgpu_dc_double_constant(4),
 	.hscl_mults = 4,
 	.vscl_mults = 4,
 	.max_hscl_taps = 8,
 	.max_vscl_taps = 8,
-	.dispclk_ramp_margin_percent = 1,
-	.underscan_factor = 1.10,
+	.dispclk_ramp_margin_percent = amdgpu_dc_double_constant(1),
+	.underscan_factor = amdgpu_dc_double_constant(1.10),
 	.min_vblank_lines = 14,
 	.dppclk_delay_subtotal = 90,
 	.dispclk_delay_subtotal = 42,
@@ -108,24 +108,24 @@ const struct _vcs_dpi_ip_params_st dcn1_0_ip = {
 };
 
 const struct _vcs_dpi_soc_bounding_box_st dcn1_0_soc = {
-	.sr_exit_time_us = 9.0,
-	.sr_enter_plus_exit_time_us = 11.0,
-	.urgent_latency_us = 4.0,
-	.writeback_latency_us = 12.0,
-	.ideal_dram_bw_after_urgent_percent = 80.0,
+	.sr_exit_time_us = amdgpu_dc_double_constant(9.0),
+	.sr_enter_plus_exit_time_us = amdgpu_dc_double_constant(11.0),
+	.urgent_latency_us = amdgpu_dc_double_constant(4.0),
+	.writeback_latency_us = amdgpu_dc_double_constant(12.0),
+	.ideal_dram_bw_after_urgent_percent = amdgpu_dc_double_constant(80.0),
 	.max_request_size_bytes = 256,
-	.downspread_percent = 0.5,
-	.dram_page_open_time_ns = 50.0,
-	.dram_rw_turnaround_time_ns = 17.5,
-	.dram_return_buffer_per_channel_bytes = 8192,
+	.downspread_percent = amdgpu_dc_double_constant(0.5),
+	.dram_page_open_time_ns = amdgpu_dc_double_constant(50.0),
+	.dram_rw_turnaround_time_ns = amdgpu_dc_double_constant(17.5),
+	.dram_return_buffer_per_channel_bytes = amdgpu_dc_double_constant(8192),
 	.round_trip_ping_latency_dcfclk_cycles = 128,
 	.urgent_out_of_order_return_per_channel_bytes = 256,
 	.channel_interleave_bytes = 256,
 	.num_banks = 8,
 	.num_chans = 2,
 	.vmm_page_size_bytes = 4096,
-	.dram_clock_change_latency_us = 17.0,
-	.writeback_dram_clock_change_latency_us = 23.0,
+	.dram_clock_change_latency_us = amdgpu_dc_double_constant(17.0),
+	.writeback_dram_clock_change_latency_us = amdgpu_dc_double_constant(23.0),
 	.return_bus_width_bytes = 64,
 };
 
@@ -1389,13 +1389,13 @@ static bool construct(
 
 		dml->ip.max_num_dpp = 3;
 		/* TODO how to handle 23.84? */
-		dcn_soc->dram_clock_change_latency = 23;
+		dcn_soc->dram_clock_change_latency = amdgpu_dc_float_constant(23);
 		dcn_ip->max_num_dpp = 3;
 	}
 	if (ASICREV_IS_RV1_F0(dc->ctx->asic_id.hw_internal_rev)) {
-		dc->dcn_soc->urgent_latency = 3;
+		dc->dcn_soc->urgent_latency = amdgpu_dc_float_constant(3);
 		dc->debug.disable_dmcu = true;
-		dc->dcn_soc->fabric_and_dram_bandwidth_vmax0p9 = 41.60f;
+		dc->dcn_soc->fabric_and_dram_bandwidth_vmax0p9 = amdgpu_dc_float_constant(41.60f);
 	}
 
 
@@ -1405,12 +1405,12 @@ static bool construct(
 		dc->dcn_soc->number_of_channels = 2;
 
 	if (dc->dcn_soc->number_of_channels == 1) {
-		dc->dcn_soc->fabric_and_dram_bandwidth_vmax0p9 = 19.2f;
-		dc->dcn_soc->fabric_and_dram_bandwidth_vnom0p8 = 17.066f;
-		dc->dcn_soc->fabric_and_dram_bandwidth_vmid0p72 = 14.933f;
-		dc->dcn_soc->fabric_and_dram_bandwidth_vmin0p65 = 12.8f;
+		dc->dcn_soc->fabric_and_dram_bandwidth_vmax0p9 = amdgpu_dc_float_constant(19.2f);
+		dc->dcn_soc->fabric_and_dram_bandwidth_vnom0p8 = amdgpu_dc_float_constant(17.066f);
+		dc->dcn_soc->fabric_and_dram_bandwidth_vmid0p72 = amdgpu_dc_float_constant(14.933f);
+		dc->dcn_soc->fabric_and_dram_bandwidth_vmin0p65 = amdgpu_dc_float_constant(12.8f);
 		if (ASICREV_IS_RV1_F0(dc->ctx->asic_id.hw_internal_rev)) {
-			dc->dcn_soc->fabric_and_dram_bandwidth_vmax0p9 = 20.80f;
+			dc->dcn_soc->fabric_and_dram_bandwidth_vmax0p9 = amdgpu_dc_float_constant(20.80f);
 		}
 	}
 

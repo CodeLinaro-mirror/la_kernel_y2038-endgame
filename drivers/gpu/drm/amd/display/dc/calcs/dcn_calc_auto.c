@@ -75,10 +75,10 @@ void scaler_settings_calculation(struct dcn_bw_internal_vars *v)
 			v->acceptable_quality_hta_ps =dcn_bw_min2(v->max_hscl_taps, 2.0 *dcn_bw_ceil2(v->h_ratio[k], 1.0));
 		}
 		else if (v->h_ratio[k] < 1.0) {
-			v->acceptable_quality_hta_ps = 4.0;
+			v->acceptable_quality_hta_ps = amdgpu_dc_float_constant(4.0);
 		}
 		else {
-			v->acceptable_quality_hta_ps = 1.0;
+			v->acceptable_quality_hta_ps = amdgpu_dc_float_constant(1.0);
 		}
 		if (v->ta_pscalculation == dcn_bw_override) {
 			v->htaps[k] = v->override_hta_ps[k];
@@ -90,10 +90,10 @@ void scaler_settings_calculation(struct dcn_bw_internal_vars *v)
 			v->acceptable_quality_vta_ps =dcn_bw_min2(v->max_vscl_taps, 2.0 *dcn_bw_ceil2(v->v_ratio[k], 1.0));
 		}
 		else if (v->v_ratio[k] < 1.0) {
-			v->acceptable_quality_vta_ps = 4.0;
+			v->acceptable_quality_vta_ps = amdgpu_dc_float_constant(4.0);
 		}
 		else {
-			v->acceptable_quality_vta_ps = 1.0;
+			v->acceptable_quality_vta_ps = amdgpu_dc_float_constant(1.0);
 		}
 		if (v->ta_pscalculation == dcn_bw_override) {
 			v->vtaps[k] = v->override_vta_ps[k];
@@ -102,8 +102,8 @@ void scaler_settings_calculation(struct dcn_bw_internal_vars *v)
 			v->vtaps[k] = v->acceptable_quality_vta_ps;
 		}
 		if (v->source_pixel_format[k] == dcn_bw_rgb_sub_64 || v->source_pixel_format[k] == dcn_bw_rgb_sub_32 || v->source_pixel_format[k] == dcn_bw_rgb_sub_16) {
-			v->vta_pschroma[k] = 0.0;
-			v->hta_pschroma[k] = 0.0;
+			v->vta_pschroma[k] = amdgpu_dc_float_constant(0.0);
+			v->hta_pschroma[k] = amdgpu_dc_float_constant(0.0);
 		}
 		else {
 			if (v->ta_pscalculation == dcn_bw_override) {
@@ -151,27 +151,27 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 			v->swath_width_ysingle_dpp[k] = v->viewport_height[k];
 		}
 		if (v->source_pixel_format[k] == dcn_bw_rgb_sub_64) {
-			v->byte_per_pixel_in_dety[k] = 8.0;
-			v->byte_per_pixel_in_detc[k] = 0.0;
+			v->byte_per_pixel_in_dety[k] = amdgpu_dc_float_constant(8.0);
+			v->byte_per_pixel_in_detc[k] = amdgpu_dc_float_constant(0.0);
 		}
 		else if (v->source_pixel_format[k] == dcn_bw_rgb_sub_32) {
-			v->byte_per_pixel_in_dety[k] = 4.0;
-			v->byte_per_pixel_in_detc[k] = 0.0;
+			v->byte_per_pixel_in_dety[k] = amdgpu_dc_float_constant( 4.0);
+			v->byte_per_pixel_in_detc[k] = amdgpu_dc_float_constant(0.0);
 		}
 		else if (v->source_pixel_format[k] == dcn_bw_rgb_sub_16) {
-			v->byte_per_pixel_in_dety[k] = 2.0;
-			v->byte_per_pixel_in_detc[k] = 0.0;
+			v->byte_per_pixel_in_dety[k] = amdgpu_dc_float_constant(2.0);
+			v->byte_per_pixel_in_detc[k] = amdgpu_dc_float_constant(0.0);
 		}
 		else if (v->source_pixel_format[k] == dcn_bw_yuv420_sub_8) {
-			v->byte_per_pixel_in_dety[k] = 1.0;
-			v->byte_per_pixel_in_detc[k] = 2.0;
+			v->byte_per_pixel_in_dety[k] = amdgpu_dc_float_constant(1.0);
+			v->byte_per_pixel_in_detc[k] = amdgpu_dc_float_constant(2.0);
 		}
 		else {
 			v->byte_per_pixel_in_dety[k] = 4.0f / 3.0f;
 			v->byte_per_pixel_in_detc[k] = 8.0f / 3.0f;
 		}
 	}
-	v->total_read_bandwidth_consumed_gbyte_per_second = 0.0;
+	v->total_read_bandwidth_consumed_gbyte_per_second = amdgpu_dc_float_constant(0.0);
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		v->read_bandwidth[k] = v->swath_width_ysingle_dpp[k] * (dcn_bw_ceil2(v->byte_per_pixel_in_dety[k], 1.0) * v->v_ratio[k] +dcn_bw_ceil2(v->byte_per_pixel_in_detc[k], 2.0) / 2.0 * v->v_ratio[k] / 2) / (v->htotal[k] / v->pixel_clock[k]);
 		if (v->dcc_enable[k] == dcn_bw_yes) {
@@ -188,7 +188,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 		}
 		v->total_read_bandwidth_consumed_gbyte_per_second = v->total_read_bandwidth_consumed_gbyte_per_second + v->read_bandwidth[k] / 1000.0;
 	}
-	v->total_write_bandwidth_consumed_gbyte_per_second = 0.0;
+	v->total_write_bandwidth_consumed_gbyte_per_second = amdgpu_dc_float_constant(0.0);
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		if (v->output[k] == dcn_bw_writeback && v->output_format[k] == dcn_bw_444) {
 			v->write_bandwidth[k] = v->scaler_rec_out_width[k] / (v->htotal[k] / v->pixel_clock[k]) * 4.0;
@@ -292,7 +292,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 			v->required_phyclk[k] = v->required_output_bw / 4.0;
 		}
 		else {
-			v->required_phyclk[k] = 0.0;
+			v->required_phyclk[k] = amdgpu_dc_float_constant(0.0);
 		}
 	}
 	for (i = 0; i <= number_of_states_plus_one; i++) {
@@ -305,7 +305,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 	}
 	/*total available writeback support check*/
 
-	v->total_number_of_active_writeback = 0.0;
+	v->total_number_of_active_writeback = amdgpu_dc_float_constant(0.0);
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		if (v->output[k] == dcn_bw_writeback) {
 			v->total_number_of_active_writeback = v->total_number_of_active_writeback + 1.0;
@@ -343,30 +343,30 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 	for (k = 0; k <= v->number_of_active_planes - 1; k++) {
 		if ((v->source_pixel_format[k] == dcn_bw_rgb_sub_64 || v->source_pixel_format[k] == dcn_bw_rgb_sub_32 || v->source_pixel_format[k] == dcn_bw_rgb_sub_16)) {
 			if (v->source_surface_mode[k] == dcn_bw_sw_linear) {
-				v->read256_block_height_y[k] = 1.0;
+				v->read256_block_height_y[k] = amdgpu_dc_float_constant(1.0);
 			}
 			else if (v->source_pixel_format[k] == dcn_bw_rgb_sub_64) {
-				v->read256_block_height_y[k] = 4.0;
+				v->read256_block_height_y[k] = amdgpu_dc_float_constant(4.0);
 			}
 			else {
-				v->read256_block_height_y[k] = 8.0;
+				v->read256_block_height_y[k] = amdgpu_dc_float_constant(8.0);
 			}
 			v->read256_block_width_y[k] = 256.0 /dcn_bw_ceil2(v->byte_per_pixel_in_dety[k], 1.0) / v->read256_block_height_y[k];
-			v->read256_block_height_c[k] = 0.0;
-			v->read256_block_width_c[k] = 0.0;
+			v->read256_block_height_c[k] = amdgpu_dc_float_constant(0.0);
+			v->read256_block_width_c[k] = amdgpu_dc_float_constant(0.0);
 		}
 		else {
 			if (v->source_surface_mode[k] == dcn_bw_sw_linear) {
-				v->read256_block_height_y[k] = 1.0;
-				v->read256_block_height_c[k] = 1.0;
+				v->read256_block_height_y[k] = amdgpu_dc_float_constant(1.0);
+				v->read256_block_height_c[k] = amdgpu_dc_float_constant(1.0);
 			}
 			else if (v->source_pixel_format[k] == dcn_bw_yuv420_sub_8) {
-				v->read256_block_height_y[k] = 16.0;
-				v->read256_block_height_c[k] = 8.0;
+				v->read256_block_height_y[k] = amdgpu_dc_float_constant(16.0);
+				v->read256_block_height_c[k] = amdgpu_dc_float_constant(8.0);
 			}
 			else {
-				v->read256_block_height_y[k] = 8.0;
-				v->read256_block_height_c[k] = 8.0;
+				v->read256_block_height_y[k] = amdgpu_dc_float_constant(8.0);
+				v->read256_block_height_c[k] = amdgpu_dc_float_constant(8.0);
 			}
 			v->read256_block_width_y[k] = 256.0 /dcn_bw_ceil2(v->byte_per_pixel_in_dety[k], 1.0) / v->read256_block_height_y[k];
 			v->read256_block_width_c[k] = 256.0 /dcn_bw_ceil2(v->byte_per_pixel_in_detc[k], 2.0) / v->read256_block_height_c[k];

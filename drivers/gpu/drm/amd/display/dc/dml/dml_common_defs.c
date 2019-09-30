@@ -30,9 +30,9 @@
 
 amdgpu_dc_double dml_round(amdgpu_dc_double a)
 {
-	amdgpu_dc_double round_pt = 0.5;
-	amdgpu_dc_double ceil = dml_ceil(a, 1);
-	amdgpu_dc_double floor = dml_floor(a, 1);
+	amdgpu_dc_double round_pt = amdgpu_dc_double_constant(0.5);
+	amdgpu_dc_double ceil = dml_ceil(a, amdgpu_dc_double_constant(1));
+	amdgpu_dc_double floor = dml_floor(a, amdgpu_dc_double_constant(1));
 
 	if (a - floor >= round_pt)
 		return ceil;
