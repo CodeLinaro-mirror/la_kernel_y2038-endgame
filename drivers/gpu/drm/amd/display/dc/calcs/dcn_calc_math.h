@@ -26,18 +26,20 @@
 #ifndef _DCN_CALC_MATH_H_
 #define _DCN_CALC_MATH_H_
 
-float dcn_bw_mod(const float arg1, const float arg2);
-float dcn_bw_min2(const float arg1, const float arg2);
+#include <inc/amdgpu_dc_float.h>
+
+amdgpu_dc_float dcn_bw_mod(const amdgpu_dc_float arg1, const amdgpu_dc_float arg2);
+amdgpu_dc_float dcn_bw_min2(const amdgpu_dc_float arg1, const amdgpu_dc_float arg2);
 unsigned int dcn_bw_max(const unsigned int arg1, const unsigned int arg2);
-float dcn_bw_max2(const float arg1, const float arg2);
-float dcn_bw_floor2(const float arg, const float significance);
-float dcn_bw_floor(const float arg);
-float dcn_bw_ceil2(const float arg, const float significance);
-float dcn_bw_ceil(const float arg);
-float dcn_bw_max3(float v1, float v2, float v3);
-float dcn_bw_max5(float v1, float v2, float v3, float v4, float v5);
-float dcn_bw_pow(float a, float exp);
-float dcn_bw_log(float a, float b);
-double dcn_bw_fabs(double a);
+amdgpu_dc_float dcn_bw_max2(const amdgpu_dc_float arg1, const amdgpu_dc_float arg2);
+amdgpu_dc_float dcn_bw_floor2(const amdgpu_dc_float arg, const amdgpu_dc_float significance);
+amdgpu_dc_float dcn_bw_floor(const amdgpu_dc_float arg);
+amdgpu_dc_float dcn_bw_ceil2(const amdgpu_dc_float arg, const amdgpu_dc_float significance);
+amdgpu_dc_float dcn_bw_ceil(const amdgpu_dc_float arg);
+amdgpu_dc_float dcn_bw_max3(amdgpu_dc_float v1, amdgpu_dc_float v2, amdgpu_dc_float v3);
+amdgpu_dc_float dcn_bw_max5(amdgpu_dc_float v1, amdgpu_dc_float v2, amdgpu_dc_float v3, amdgpu_dc_float v4, amdgpu_dc_float v5);
+amdgpu_dc_float dcn_bw_pow(amdgpu_dc_float a, amdgpu_dc_float exp);
+amdgpu_dc_float dcn_bw_log(amdgpu_dc_float a, amdgpu_dc_float b);
+amdgpu_dc_double dcn_bw_fabs(amdgpu_dc_double a);
 
 #endif /* _DCN_CALC_MATH_H_ */

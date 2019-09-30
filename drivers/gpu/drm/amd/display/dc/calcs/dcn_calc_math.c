@@ -36,7 +36,7 @@
  * remain as-is as it provides us with a guarantee from HW that it is correct.
  */
 
-float dcn_bw_mod(const float arg1, const float arg2)
+amdgpu_dc_float dcn_bw_mod(const amdgpu_dc_float arg1, const amdgpu_dc_float arg2)
 {
 	if (isNaN(arg1))
 		return arg2;
@@ -45,7 +45,7 @@ float dcn_bw_mod(const float arg1, const float arg2)
 	return arg1 - arg1 * ((int) (arg1 / arg2));
 }
 
-float dcn_bw_min2(const float arg1, const float arg2)
+amdgpu_dc_float dcn_bw_min2(const amdgpu_dc_float arg1, const amdgpu_dc_float arg2)
 {
 	if (isNaN(arg1))
 		return arg2;
@@ -58,7 +58,7 @@ unsigned int dcn_bw_max(const unsigned int arg1, const unsigned int arg2)
 {
 	return arg1 > arg2 ? arg1 : arg2;
 }
-float dcn_bw_max2(const float arg1, const float arg2)
+amdgpu_dc_float dcn_bw_max2(const amdgpu_dc_float arg1, const amdgpu_dc_float arg2)
 {
 	if (isNaN(arg1))
 		return arg2;
@@ -67,45 +67,45 @@ float dcn_bw_max2(const float arg1, const float arg2)
 	return arg1 > arg2 ? arg1 : arg2;
 }
 
-float dcn_bw_floor2(const float arg, const float significance)
+amdgpu_dc_float dcn_bw_floor2(const amdgpu_dc_float arg, const amdgpu_dc_float significance)
 {
 	if (significance == 0)
 		return 0;
 	return ((int) (arg / significance)) * significance;
 }
-float dcn_bw_floor(const float arg)
+amdgpu_dc_float dcn_bw_floor(const amdgpu_dc_float arg)
 {
 	return ((int) (arg));
 }
 
-float dcn_bw_ceil(const float arg)
+amdgpu_dc_float dcn_bw_ceil(const amdgpu_dc_float arg)
 {
-	float flr = dcn_bw_floor2(arg, 1);
+	amdgpu_dc_float flr = dcn_bw_floor2(arg, 1);
 
 	return flr + 0.00001 >= arg ? arg : flr + 1;
 }
 
-float dcn_bw_ceil2(const float arg, const float significance)
+amdgpu_dc_float dcn_bw_ceil2(const amdgpu_dc_float arg, const amdgpu_dc_float significance)
 {
-	float flr = dcn_bw_floor2(arg, significance);
+	amdgpu_dc_float flr = dcn_bw_floor2(arg, significance);
 	if (significance == 0)
 		return 0;
 	return flr + 0.00001 >= arg ? arg : flr + significance;
 }
 
-float dcn_bw_max3(float v1, float v2, float v3)
+amdgpu_dc_float dcn_bw_max3(amdgpu_dc_float v1, amdgpu_dc_float v2, amdgpu_dc_float v3)
 {
 	return v3 > dcn_bw_max2(v1, v2) ? v3 : dcn_bw_max2(v1, v2);
 }
 
-float dcn_bw_max5(float v1, float v2, float v3, float v4, float v5)
+amdgpu_dc_float dcn_bw_max5(amdgpu_dc_float v1, amdgpu_dc_float v2, amdgpu_dc_float v3, amdgpu_dc_float v4, amdgpu_dc_float v5)
 {
 	return dcn_bw_max3(v1, v2, v3) > dcn_bw_max2(v4, v5) ? dcn_bw_max3(v1, v2, v3) : dcn_bw_max2(v4, v5);
 }
 
-float dcn_bw_pow(float a, float exp)
+amdgpu_dc_float dcn_bw_pow(amdgpu_dc_float a, amdgpu_dc_float exp)
 {
-	float temp;
+	amdgpu_dc_float temp;
 	/*ASSERT(exp == (int)exp);*/
 	if ((int)exp == 0)
 		return 1;
@@ -120,7 +120,7 @@ float dcn_bw_pow(float a, float exp)
 	}
 }
 
-double dcn_bw_fabs(double a)
+amdgpu_dc_double dcn_bw_fabs(amdgpu_dc_double a)
 {
 	if (a > 0)
 		return (a);
@@ -129,7 +129,7 @@ double dcn_bw_fabs(double a)
 }
 
 
-float dcn_bw_log(float a, float b)
+amdgpu_dc_float dcn_bw_log(amdgpu_dc_float a, amdgpu_dc_float b)
 {
 	int * const exp_ptr = (int *)(&a);
 	int x = *exp_ptr;

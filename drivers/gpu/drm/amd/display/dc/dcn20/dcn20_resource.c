@@ -1988,10 +1988,10 @@ int dcn20_populate_dml_pipes_from_context(
 			}
 
 			pipes[pipe_cnt].pipe.scale_ratio_depth.lb_depth = dm_lb_16;
-			pipes[pipe_cnt].pipe.scale_ratio_depth.hscl_ratio = (double) scl->ratios.horz.value / (1ULL<<32);
-			pipes[pipe_cnt].pipe.scale_ratio_depth.hscl_ratio_c = (double) scl->ratios.horz_c.value / (1ULL<<32);
-			pipes[pipe_cnt].pipe.scale_ratio_depth.vscl_ratio = (double) scl->ratios.vert.value / (1ULL<<32);
-			pipes[pipe_cnt].pipe.scale_ratio_depth.vscl_ratio_c = (double) scl->ratios.vert_c.value / (1ULL<<32);
+			pipes[pipe_cnt].pipe.scale_ratio_depth.hscl_ratio = (amdgpu_dc_double) scl->ratios.horz.value / (1ULL<<32);
+			pipes[pipe_cnt].pipe.scale_ratio_depth.hscl_ratio_c = (amdgpu_dc_double) scl->ratios.horz_c.value / (1ULL<<32);
+			pipes[pipe_cnt].pipe.scale_ratio_depth.vscl_ratio = (amdgpu_dc_double) scl->ratios.vert.value / (1ULL<<32);
+			pipes[pipe_cnt].pipe.scale_ratio_depth.vscl_ratio_c = (amdgpu_dc_double) scl->ratios.vert_c.value / (1ULL<<32);
 			pipes[pipe_cnt].pipe.scale_ratio_depth.scl_enable =
 					scl->ratios.vert.value != dc_fixpt_one.value
 					|| scl->ratios.horz.value != dc_fixpt_one.value
@@ -2770,7 +2770,7 @@ bool dcn20_validate_bandwidth(struct dc *dc, struct dc_state *context,
 	bool voltage_supported = false;
 	bool full_pstate_supported = false;
 	bool dummy_pstate_supported = false;
-	double p_state_latency_us = context->bw_ctx.dml.soc.dram_clock_change_latency_us;
+	amdgpu_dc_double p_state_latency_us = context->bw_ctx.dml.soc.dram_clock_change_latency_us;
 
 	if (fast_validate)
 		return dcn20_validate_bandwidth_internal(dc, context, true);
@@ -3138,7 +3138,7 @@ static enum dml_project get_dml_project_version(uint32_t hw_internal_rev)
 	return DML_PROJECT_NAVI10v2;
 }
 
-#define fixed16_to_double(x) (((double) x) / ((double) (1 << 16)))
+#define fixed16_to_double(x) (((amdgpu_dc_double) x) / ((amdgpu_dc_double) (1 << 16)))
 #define fixed16_to_double_to_cpu(x) fixed16_to_double(le32_to_cpu(x))
 
 static bool init_soc_bounding_box(struct dc *dc,

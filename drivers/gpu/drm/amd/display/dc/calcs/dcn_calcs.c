@@ -451,8 +451,8 @@ static void dcn_bw_calc_rq_dlg_ttu(
 	struct _vcs_dpi_display_rq_params_st rq_param = {0};
 	struct _vcs_dpi_display_dlg_sys_params_st dlg_sys_param = {0};
 	struct _vcs_dpi_display_e2e_pipe_params_st input = { { { 0 } } };
-	float total_active_bw = 0;
-	float total_prefetch_bw = 0;
+	amdgpu_dc_float total_active_bw = 0;
+	amdgpu_dc_float total_prefetch_bw = 0;
 	int total_flip_bytes = 0;
 	int i;
 
@@ -679,7 +679,7 @@ static void hack_disable_optional_pipe_split(struct dcn_bw_internal_vars *v)
 static void hack_force_pipe_split(struct dcn_bw_internal_vars *v,
 		unsigned int pixel_rate_100hz)
 {
-	float pixel_rate_mhz = pixel_rate_100hz / 10000;
+	amdgpu_dc_float pixel_rate_mhz = pixel_rate_100hz / 10000;
 
 	/*
 	 * force enabling pipe split by lower dpp clock for DPM0 to just
@@ -732,7 +732,7 @@ bool dcn_validate_bandwidth(
 	int i, input_idx, k;
 	int vesa_sync_start, asic_blank_end, asic_blank_start;
 	bool bw_limit_pass;
-	float bw_limit;
+	amdgpu_dc_float bw_limit;
 
 	PERFORMANCE_TRACE_START();
 
@@ -1092,7 +1092,7 @@ bool dcn_validate_bandwidth(
 	BW_VAL_TRACE_END_VOLTAGE_LEVEL();
 
 	if (v->voltage_level != number_of_states_plus_one && !fast_validate) {
-		float bw_consumed = v->total_bandwidth_consumed_gbyte_per_second;
+		amdgpu_dc_float bw_consumed = v->total_bandwidth_consumed_gbyte_per_second;
 
 		if (bw_consumed < v->fabric_and_dram_bandwidth_vmin0p65)
 			bw_consumed = v->fabric_and_dram_bandwidth_vmin0p65;

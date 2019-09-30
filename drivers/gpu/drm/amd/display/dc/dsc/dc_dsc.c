@@ -26,6 +26,7 @@
 #include "dc.h"
 #include "core_types.h"
 #include "dsc.h"
+#include "amdgpu_dc_float.h"
 #include <drm/drm_dp_helper.h>
 
 struct dc_dsc_policy {
@@ -266,8 +267,8 @@ static inline uint32_t dsc_div_by_10_round_up(uint32_t value)
 static inline uint32_t calc_dsc_bpp_x16(uint32_t stream_bandwidth_kbps, uint32_t pix_clk_100hz, uint32_t bpp_increment_div)
 {
 	uint32_t dsc_target_bpp_x16;
-	float f_dsc_target_bpp;
-	float f_stream_bandwidth_100bps = stream_bandwidth_kbps * 10.0f;
+	amdgpu_dc_float f_dsc_target_bpp;
+	amdgpu_dc_float f_stream_bandwidth_100bps = stream_bandwidth_kbps * 10.0f;
 	uint32_t precision = bpp_increment_div; // bpp_increment_div is actually precision
 
 	f_dsc_target_bpp = f_stream_bandwidth_100bps / pix_clk_100hz;
