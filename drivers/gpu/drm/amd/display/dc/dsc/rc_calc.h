@@ -28,6 +28,7 @@
 #ifndef __RC_CALC_H__
 #define __RC_CALC_H__
 
+#include "amdgpu_dc_float.h"
 
 #define QP_SET_SIZE 15
 
@@ -72,13 +73,13 @@ enum max_min {
 };
 
 struct qp_entry {
-	float         bpp;
+	amdgpu_dc_float         bpp;
 	const qp_set  qps;
 };
 
 typedef struct qp_entry qp_table[];
 
-void calc_rc_params(struct rc_params *rc, enum colour_mode cm, enum bits_per_comp bpc, float bpp, int slice_width, int slice_height, int minor_version);
+void calc_rc_params(struct rc_params *rc, enum colour_mode cm, enum bits_per_comp bpc, amdgpu_dc_float bpp, int slice_width, int slice_height, int minor_version);
 
 #endif
 

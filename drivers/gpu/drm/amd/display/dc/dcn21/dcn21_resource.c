@@ -951,7 +951,7 @@ static void calculate_wm_set_for_vlevel(
 		display_e2e_pipe_params_st *pipes,
 		int pipe_cnt)
 {
-	double dram_clock_change_latency_cached = dml->soc.dram_clock_change_latency_us;
+	amdgpu_dc_double dram_clock_change_latency_cached = dml->soc.dram_clock_change_latency_us;
 
 	ASSERT(vlevel < dml->soc.num_states);
 	/* only pipe 0 is read for voltage and dcf/soc clocks */

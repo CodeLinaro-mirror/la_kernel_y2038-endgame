@@ -43,10 +43,10 @@
 typedef unsigned int uint;
 
 typedef struct {
-	double DPPCLK;
-	double DISPCLK;
-	double PixelClock;
-	double DCFCLKDeepSleep;
+	amdgpu_dc_double DPPCLK;
+	amdgpu_dc_double DISPCLK;
+	amdgpu_dc_double PixelClock;
+	amdgpu_dc_double DCFCLKDeepSleep;
 	unsigned int DPPPerPlane;
 	bool ScalerEnabled;
 	enum scan_direction_class SourceScan;
@@ -74,7 +74,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 		struct display_mode_lib *mode_lib);
 static unsigned int dscceComputeDelay(
 		unsigned int bpc,
-		double bpp,
+		amdgpu_dc_double bpp,
 		unsigned int sliceWidth,
 		unsigned int numSlices,
 		enum output_format_class pixelFormat);
@@ -82,16 +82,16 @@ static unsigned int dscComputeDelay(enum output_format_class pixelFormat);
 // Super monster function with some 45 argument
 static bool CalculatePrefetchSchedule(
 		struct display_mode_lib *mode_lib,
-		double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData,
-		double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyVMDataOnly,
+		amdgpu_dc_double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData,
+		amdgpu_dc_double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyVMDataOnly,
 		Pipe *myPipe,
 		unsigned int DSCDelay,
-		double DPPCLKDelaySubtotal,
-		double DPPCLKDelaySCL,
-		double DPPCLKDelaySCLLBOnly,
-		double DPPCLKDelayCNVCFormater,
-		double DPPCLKDelayCNVCCursor,
-		double DISPCLKDelaySubtotal,
+		amdgpu_dc_double DPPCLKDelaySubtotal,
+		amdgpu_dc_double DPPCLKDelaySCL,
+		amdgpu_dc_double DPPCLKDelaySCLLBOnly,
+		amdgpu_dc_double DPPCLKDelayCNVCFormater,
+		amdgpu_dc_double DPPCLKDelayCNVCCursor,
+		amdgpu_dc_double DISPCLKDelaySubtotal,
 		unsigned int ScalerRecoutWidth,
 		enum output_format_class OutputFormat,
 		unsigned int MaxInterDCNTileRepeaters,
@@ -104,53 +104,53 @@ static bool CalculatePrefetchSchedule(
 		int DynamicMetadataLinesBeforeActiveRequired,
 		unsigned int DynamicMetadataTransmittedBytes,
 		bool DCCEnable,
-		double UrgentLatency,
-		double UrgentExtraLatency,
-		double TCalc,
+		amdgpu_dc_double UrgentLatency,
+		amdgpu_dc_double UrgentExtraLatency,
+		amdgpu_dc_double TCalc,
 		unsigned int PDEAndMetaPTEBytesFrame,
 		unsigned int MetaRowByte,
 		unsigned int PixelPTEBytesPerRow,
-		double PrefetchSourceLinesY,
+		amdgpu_dc_double PrefetchSourceLinesY,
 		unsigned int SwathWidthY,
-		double BytePerPixelDETY,
-		double VInitPreFillY,
+		amdgpu_dc_double BytePerPixelDETY,
+		amdgpu_dc_double VInitPreFillY,
 		unsigned int MaxNumSwathY,
-		double PrefetchSourceLinesC,
-		double BytePerPixelDETC,
-		double VInitPreFillC,
+		amdgpu_dc_double PrefetchSourceLinesC,
+		amdgpu_dc_double BytePerPixelDETC,
+		amdgpu_dc_double VInitPreFillC,
 		unsigned int MaxNumSwathC,
 		unsigned int SwathHeightY,
 		unsigned int SwathHeightC,
-		double TWait,
+		amdgpu_dc_double TWait,
 		bool XFCEnabled,
-		double XFCRemoteSurfaceFlipDelay,
+		amdgpu_dc_double XFCRemoteSurfaceFlipDelay,
 		bool ProgressiveToInterlaceUnitInOPP,
-		double *DSTXAfterScaler,
-		double *DSTYAfterScaler,
-		double *DestinationLinesForPrefetch,
-		double *PrefetchBandwidth,
-		double *DestinationLinesToRequestVMInVBlank,
-		double *DestinationLinesToRequestRowInVBlank,
-		double *VRatioPrefetchY,
-		double *VRatioPrefetchC,
-		double *RequiredPrefetchPixDataBWLuma,
-		double *RequiredPrefetchPixDataBWChroma,
+		amdgpu_dc_double *DSTXAfterScaler,
+		amdgpu_dc_double *DSTYAfterScaler,
+		amdgpu_dc_double *DestinationLinesForPrefetch,
+		amdgpu_dc_double *PrefetchBandwidth,
+		amdgpu_dc_double *DestinationLinesToRequestVMInVBlank,
+		amdgpu_dc_double *DestinationLinesToRequestRowInVBlank,
+		amdgpu_dc_double *VRatioPrefetchY,
+		amdgpu_dc_double *VRatioPrefetchC,
+		amdgpu_dc_double *RequiredPrefetchPixDataBWLuma,
+		amdgpu_dc_double *RequiredPrefetchPixDataBWChroma,
 		unsigned int *VStartupRequiredWhenNotEnoughTimeForDynamicMetadata,
-		double *Tno_bw,
-		double *prefetch_vmrow_bw,
+		amdgpu_dc_double *Tno_bw,
+		amdgpu_dc_double *prefetch_vmrow_bw,
 		unsigned int *swath_width_luma_ub,
 		unsigned int *swath_width_chroma_ub,
 		unsigned int *VUpdateOffsetPix,
-		double *VUpdateWidthPix,
-		double *VReadyOffsetPix);
-static double RoundToDFSGranularityUp(double Clock, double VCOSpeed);
-static double RoundToDFSGranularityDown(double Clock, double VCOSpeed);
-static double CalculateDCCConfiguration(
+		amdgpu_dc_double *VUpdateWidthPix,
+		amdgpu_dc_double *VReadyOffsetPix);
+static amdgpu_dc_double RoundToDFSGranularityUp(amdgpu_dc_double Clock, amdgpu_dc_double VCOSpeed);
+static amdgpu_dc_double RoundToDFSGranularityDown(amdgpu_dc_double Clock, amdgpu_dc_double VCOSpeed);
+static amdgpu_dc_double CalculateDCCConfiguration(
 		bool                 DCCEnabled,
 		bool                 DCCProgrammingAssumesScanDirectionUnknown,
 		unsigned int         ViewportWidth,
 		unsigned int         ViewportHeight,
-		double               DETBufferSize,
+		amdgpu_dc_double               DETBufferSize,
 		unsigned int         RequestHeight256Byte,
 		unsigned int         SwathHeight,
 		enum dm_swizzle_mode TilingFormat,
@@ -159,15 +159,15 @@ static double CalculateDCCConfiguration(
 		unsigned int        *MaxUncompressedBlock,
 		unsigned int        *MaxCompressedBlock,
 		unsigned int        *Independent64ByteBlock);
-static double CalculatePrefetchSourceLines(
+static amdgpu_dc_double CalculatePrefetchSourceLines(
 		struct display_mode_lib *mode_lib,
-		double VRatio,
-		double vtaps,
+		amdgpu_dc_double VRatio,
+		amdgpu_dc_double vtaps,
 		bool Interlace,
 		bool ProgressiveToInterlaceUnitInOPP,
 		unsigned int SwathHeight,
 		unsigned int ViewportYStart,
-		double *VInitPreFill,
+		amdgpu_dc_double *VInitPreFill,
 		unsigned int *MaxNumSwath);
 static unsigned int CalculateVMAndRowBytes(
 		struct display_mode_lib *mode_lib,
@@ -207,35 +207,35 @@ static unsigned int CalculateVMAndRowBytes(
 		unsigned int *DPDE0BytesFrame,
 		unsigned int *MetaPTEBytesFrame);
 
-static double CalculateTWait(
+static amdgpu_dc_double CalculateTWait(
 		unsigned int PrefetchMode,
-		double DRAMClockChangeLatency,
-		double UrgentLatency,
-		double SREnterPlusExitTime);
-static double CalculateRemoteSurfaceFlipDelay(
+		amdgpu_dc_double DRAMClockChangeLatency,
+		amdgpu_dc_double UrgentLatency,
+		amdgpu_dc_double SREnterPlusExitTime);
+static amdgpu_dc_double CalculateRemoteSurfaceFlipDelay(
 		struct display_mode_lib *mode_lib,
-		double VRatio,
-		double SwathWidth,
-		double Bpp,
-		double LineTime,
-		double XFCTSlvVupdateOffset,
-		double XFCTSlvVupdateWidth,
-		double XFCTSlvVreadyOffset,
-		double XFCXBUFLatencyTolerance,
-		double XFCFillBWOverhead,
-		double XFCSlvChunkSize,
-		double XFCBusTransportTime,
-		double TCalc,
-		double TWait,
-		double *SrcActiveDrainRate,
-		double *TInitXFill,
-		double *TslvChk);
+		amdgpu_dc_double VRatio,
+		amdgpu_dc_double SwathWidth,
+		amdgpu_dc_double Bpp,
+		amdgpu_dc_double LineTime,
+		amdgpu_dc_double XFCTSlvVupdateOffset,
+		amdgpu_dc_double XFCTSlvVupdateWidth,
+		amdgpu_dc_double XFCTSlvVreadyOffset,
+		amdgpu_dc_double XFCXBUFLatencyTolerance,
+		amdgpu_dc_double XFCFillBWOverhead,
+		amdgpu_dc_double XFCSlvChunkSize,
+		amdgpu_dc_double XFCBusTransportTime,
+		amdgpu_dc_double TCalc,
+		amdgpu_dc_double TWait,
+		amdgpu_dc_double *SrcActiveDrainRate,
+		amdgpu_dc_double *TInitXFill,
+		amdgpu_dc_double *TslvChk);
 static void CalculateActiveRowBandwidth(
 		bool GPUVMEnable,
 		enum source_format_class SourcePixelFormat,
-		double VRatio,
+		amdgpu_dc_double VRatio,
 		bool DCCEnable,
-		double LineTime,
+		amdgpu_dc_double LineTime,
 		unsigned int MetaRowByteLuma,
 		unsigned int MetaRowByteChroma,
 		unsigned int meta_row_height_luma,
@@ -244,41 +244,41 @@ static void CalculateActiveRowBandwidth(
 		unsigned int PixelPTEBytesPerRowChroma,
 		unsigned int dpte_row_height_luma,
 		unsigned int dpte_row_height_chroma,
-		double *meta_row_bw,
-		double *dpte_row_bw);
+		amdgpu_dc_double *meta_row_bw,
+		amdgpu_dc_double *dpte_row_bw);
 static void CalculateFlipSchedule(
 		struct display_mode_lib *mode_lib,
-		double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData,
-		double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyVMDataOnly,
-		double UrgentExtraLatency,
-		double UrgentLatency,
+		amdgpu_dc_double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData,
+		amdgpu_dc_double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyVMDataOnly,
+		amdgpu_dc_double UrgentExtraLatency,
+		amdgpu_dc_double UrgentLatency,
 		unsigned int GPUVMMaxPageTableLevels,
 		bool HostVMEnable,
 		unsigned int HostVMMaxPageTableLevels,
 		unsigned int HostVMCachedPageTableLevels,
 		bool GPUVMEnable,
-		double PDEAndMetaPTEBytesPerFrame,
-		double MetaRowBytes,
-		double DPTEBytesPerRow,
-		double BandwidthAvailableForImmediateFlip,
+		amdgpu_dc_double PDEAndMetaPTEBytesPerFrame,
+		amdgpu_dc_double MetaRowBytes,
+		amdgpu_dc_double DPTEBytesPerRow,
+		amdgpu_dc_double BandwidthAvailableForImmediateFlip,
 		unsigned int TotImmediateFlipBytes,
 		enum source_format_class SourcePixelFormat,
-		double LineTime,
-		double VRatio,
-		double Tno_bw,
+		amdgpu_dc_double LineTime,
+		amdgpu_dc_double VRatio,
+		amdgpu_dc_double Tno_bw,
 		bool DCCEnable,
 		unsigned int dpte_row_height,
 		unsigned int meta_row_height,
 		unsigned int dpte_row_height_chroma,
 		unsigned int meta_row_height_chroma,
-		double *DestinationLinesToRequestVMInImmediateFlip,
-		double *DestinationLinesToRequestRowInImmediateFlip,
-		double *final_flip_bw,
+		amdgpu_dc_double *DestinationLinesToRequestVMInImmediateFlip,
+		amdgpu_dc_double *DestinationLinesToRequestRowInImmediateFlip,
+		amdgpu_dc_double *final_flip_bw,
 		bool *ImmediateFlipSupportedForPipe);
-static double CalculateWriteBackDelay(
+static amdgpu_dc_double CalculateWriteBackDelay(
 		enum source_format_class WritebackPixelFormat,
-		double WritebackHRatio,
-		double WritebackVRatio,
+		amdgpu_dc_double WritebackHRatio,
+		amdgpu_dc_double WritebackVRatio,
 		unsigned int WritebackLumaHTaps,
 		unsigned int WritebackLumaVTaps,
 		unsigned int WritebackChromaHTaps,
@@ -291,127 +291,127 @@ static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 		unsigned int MaxLineBufferLines,
 		unsigned int LineBufferSize,
 		unsigned int DPPOutputBufferPixels,
-		double DETBufferSizeInKByte,
+		amdgpu_dc_double DETBufferSizeInKByte,
 		unsigned int WritebackInterfaceLumaBufferSize,
 		unsigned int WritebackInterfaceChromaBufferSize,
-		double DCFCLK,
-		double UrgentOutOfOrderReturn,
-		double ReturnBW,
+		amdgpu_dc_double DCFCLK,
+		amdgpu_dc_double UrgentOutOfOrderReturn,
+		amdgpu_dc_double ReturnBW,
 		bool GPUVMEnable,
 		long dpte_group_bytes[],
 		unsigned int MetaChunkSize,
-		double UrgentLatency,
-		double ExtraLatency,
-		double WritebackLatency,
-		double WritebackChunkSize,
-		double SOCCLK,
-		double DRAMClockChangeLatency,
-		double SRExitTime,
-		double SREnterPlusExitTime,
-		double DCFCLKDeepSleep,
+		amdgpu_dc_double UrgentLatency,
+		amdgpu_dc_double ExtraLatency,
+		amdgpu_dc_double WritebackLatency,
+		amdgpu_dc_double WritebackChunkSize,
+		amdgpu_dc_double SOCCLK,
+		amdgpu_dc_double DRAMClockChangeLatency,
+		amdgpu_dc_double SRExitTime,
+		amdgpu_dc_double SREnterPlusExitTime,
+		amdgpu_dc_double DCFCLKDeepSleep,
 		int DPPPerPlane[],
 		bool DCCEnable[],
-		double DPPCLK[],
+		amdgpu_dc_double DPPCLK[],
 		unsigned int SwathWidthSingleDPPY[],
 		unsigned int SwathHeightY[],
-		double ReadBandwidthPlaneLuma[],
+		amdgpu_dc_double ReadBandwidthPlaneLuma[],
 		unsigned int SwathHeightC[],
-		double ReadBandwidthPlaneChroma[],
+		amdgpu_dc_double ReadBandwidthPlaneChroma[],
 		unsigned int LBBitPerPixel[],
 		unsigned int SwathWidthY[],
-		double HRatio[],
+		amdgpu_dc_double HRatio[],
 		unsigned int vtaps[],
 		unsigned int VTAPsChroma[],
-		double VRatio[],
+		amdgpu_dc_double VRatio[],
 		unsigned int HTotal[],
-		double PixelClock[],
+		amdgpu_dc_double PixelClock[],
 		unsigned int BlendingAndTiming[],
-		double BytePerPixelDETY[],
-		double BytePerPixelDETC[],
+		amdgpu_dc_double BytePerPixelDETY[],
+		amdgpu_dc_double BytePerPixelDETC[],
 		bool WritebackEnable[],
 		enum source_format_class WritebackPixelFormat[],
-		double WritebackDestinationWidth[],
-		double WritebackDestinationHeight[],
-		double WritebackSourceHeight[],
+		amdgpu_dc_double WritebackDestinationWidth[],
+		amdgpu_dc_double WritebackDestinationHeight[],
+		amdgpu_dc_double WritebackSourceHeight[],
 		enum clock_change_support *DRAMClockChangeSupport,
-		double *UrgentWatermark,
-		double *WritebackUrgentWatermark,
-		double *DRAMClockChangeWatermark,
-		double *WritebackDRAMClockChangeWatermark,
-		double *StutterExitWatermark,
-		double *StutterEnterPlusExitWatermark,
-		double *MinActiveDRAMClockChangeLatencySupported);
+		amdgpu_dc_double *UrgentWatermark,
+		amdgpu_dc_double *WritebackUrgentWatermark,
+		amdgpu_dc_double *DRAMClockChangeWatermark,
+		amdgpu_dc_double *WritebackDRAMClockChangeWatermark,
+		amdgpu_dc_double *StutterExitWatermark,
+		amdgpu_dc_double *StutterEnterPlusExitWatermark,
+		amdgpu_dc_double *MinActiveDRAMClockChangeLatencySupported);
 static void CalculateDCFCLKDeepSleep(
 		struct display_mode_lib *mode_lib,
 		unsigned int NumberOfActivePlanes,
-		double BytePerPixelDETY[],
-		double BytePerPixelDETC[],
-		double VRatio[],
+		amdgpu_dc_double BytePerPixelDETY[],
+		amdgpu_dc_double BytePerPixelDETC[],
+		amdgpu_dc_double VRatio[],
 		unsigned int SwathWidthY[],
 		int DPPPerPlane[],
-		double HRatio[],
-		double PixelClock[],
-		double PSCL_THROUGHPUT[],
-		double PSCL_THROUGHPUT_CHROMA[],
-		double DPPCLK[],
-		double *DCFCLKDeepSleep);
+		amdgpu_dc_double HRatio[],
+		amdgpu_dc_double PixelClock[],
+		amdgpu_dc_double PSCL_THROUGHPUT[],
+		amdgpu_dc_double PSCL_THROUGHPUT_CHROMA[],
+		amdgpu_dc_double DPPCLK[],
+		amdgpu_dc_double *DCFCLKDeepSleep);
 static void CalculateDETBufferSize(
-		double DETBufferSizeInKByte,
+		amdgpu_dc_double DETBufferSizeInKByte,
 		unsigned int SwathHeightY,
 		unsigned int SwathHeightC,
-		double *DETBufferSizeY,
-		double *DETBufferSizeC);
+		amdgpu_dc_double *DETBufferSizeY,
+		amdgpu_dc_double *DETBufferSizeC);
 static void CalculateUrgentBurstFactor(
 		unsigned int DETBufferSizeInKByte,
 		unsigned int SwathHeightY,
 		unsigned int SwathHeightC,
 		unsigned int SwathWidthY,
-		double LineTime,
-		double UrgentLatency,
-		double CursorBufferSize,
+		amdgpu_dc_double LineTime,
+		amdgpu_dc_double UrgentLatency,
+		amdgpu_dc_double CursorBufferSize,
 		unsigned int CursorWidth,
 		unsigned int CursorBPP,
-		double VRatio,
-		double VRatioPreY,
-		double VRatioPreC,
-		double BytePerPixelInDETY,
-		double BytePerPixelInDETC,
-		double *UrgentBurstFactorCursor,
-		double *UrgentBurstFactorCursorPre,
-		double *UrgentBurstFactorLuma,
-		double *UrgentBurstFactorLumaPre,
-		double *UrgentBurstFactorChroma,
-		double *UrgentBurstFactorChromaPre,
+		amdgpu_dc_double VRatio,
+		amdgpu_dc_double VRatioPreY,
+		amdgpu_dc_double VRatioPreC,
+		amdgpu_dc_double BytePerPixelInDETY,
+		amdgpu_dc_double BytePerPixelInDETC,
+		amdgpu_dc_double *UrgentBurstFactorCursor,
+		amdgpu_dc_double *UrgentBurstFactorCursorPre,
+		amdgpu_dc_double *UrgentBurstFactorLuma,
+		amdgpu_dc_double *UrgentBurstFactorLumaPre,
+		amdgpu_dc_double *UrgentBurstFactorChroma,
+		amdgpu_dc_double *UrgentBurstFactorChromaPre,
 		unsigned int *NotEnoughUrgentLatencyHiding,
 		unsigned int *NotEnoughUrgentLatencyHidingPre);
 
 static void CalculatePixelDeliveryTimes(
 		unsigned int           NumberOfActivePlanes,
-		double                 VRatio[],
-		double                 VRatioPrefetchY[],
-		double                 VRatioPrefetchC[],
+		amdgpu_dc_double                 VRatio[],
+		amdgpu_dc_double                 VRatioPrefetchY[],
+		amdgpu_dc_double                 VRatioPrefetchC[],
 		unsigned int           swath_width_luma_ub[],
 		unsigned int           swath_width_chroma_ub[],
 		int                    DPPPerPlane[],
-		double                 HRatio[],
-		double                 PixelClock[],
-		double                 PSCL_THROUGHPUT[],
-		double                 PSCL_THROUGHPUT_CHROMA[],
-		double                 DPPCLK[],
-		double                 BytePerPixelDETC[],
+		amdgpu_dc_double                 HRatio[],
+		amdgpu_dc_double                 PixelClock[],
+		amdgpu_dc_double                 PSCL_THROUGHPUT[],
+		amdgpu_dc_double                 PSCL_THROUGHPUT_CHROMA[],
+		amdgpu_dc_double                 DPPCLK[],
+		amdgpu_dc_double                 BytePerPixelDETC[],
 		enum scan_direction_class SourceScan[],
 		unsigned int           BlockWidth256BytesY[],
 		unsigned int           BlockHeight256BytesY[],
 		unsigned int           BlockWidth256BytesC[],
 		unsigned int           BlockHeight256BytesC[],
-		double                 DisplayPipeLineDeliveryTimeLuma[],
-		double                 DisplayPipeLineDeliveryTimeChroma[],
-		double                 DisplayPipeLineDeliveryTimeLumaPrefetch[],
-		double                 DisplayPipeLineDeliveryTimeChromaPrefetch[],
-		double                 DisplayPipeRequestDeliveryTimeLuma[],
-		double                 DisplayPipeRequestDeliveryTimeChroma[],
-		double                 DisplayPipeRequestDeliveryTimeLumaPrefetch[],
-		double                 DisplayPipeRequestDeliveryTimeChromaPrefetch[]);
+		amdgpu_dc_double                 DisplayPipeLineDeliveryTimeLuma[],
+		amdgpu_dc_double                 DisplayPipeLineDeliveryTimeChroma[],
+		amdgpu_dc_double                 DisplayPipeLineDeliveryTimeLumaPrefetch[],
+		amdgpu_dc_double                 DisplayPipeLineDeliveryTimeChromaPrefetch[],
+		amdgpu_dc_double                 DisplayPipeRequestDeliveryTimeLuma[],
+		amdgpu_dc_double                 DisplayPipeRequestDeliveryTimeChroma[],
+		amdgpu_dc_double                 DisplayPipeRequestDeliveryTimeLumaPrefetch[],
+		amdgpu_dc_double                 DisplayPipeRequestDeliveryTimeChromaPrefetch[]);
 
 static void CalculateMetaAndPTETimes(
 		unsigned int           NumberOfActivePlanes,
@@ -420,17 +420,17 @@ static void CalculateMetaAndPTETimes(
 		unsigned int           MinMetaChunkSizeBytes,
 		unsigned int           GPUVMMaxPageTableLevels,
 		unsigned int           HTotal[],
-		double                 VRatio[],
-		double                 VRatioPrefetchY[],
-		double                 VRatioPrefetchC[],
-		double                 DestinationLinesToRequestRowInVBlank[],
-		double                 DestinationLinesToRequestRowInImmediateFlip[],
-		double                 DestinationLinesToRequestVMInVBlank[],
-		double                 DestinationLinesToRequestVMInImmediateFlip[],
+		amdgpu_dc_double                 VRatio[],
+		amdgpu_dc_double                 VRatioPrefetchY[],
+		amdgpu_dc_double                 VRatioPrefetchC[],
+		amdgpu_dc_double                 DestinationLinesToRequestRowInVBlank[],
+		amdgpu_dc_double                 DestinationLinesToRequestRowInImmediateFlip[],
+		amdgpu_dc_double                 DestinationLinesToRequestVMInVBlank[],
+		amdgpu_dc_double                 DestinationLinesToRequestVMInImmediateFlip[],
 		bool                   DCCEnable[],
-		double                 PixelClock[],
-		double                 BytePerPixelDETY[],
-		double                 BytePerPixelDETC[],
+		amdgpu_dc_double                 PixelClock[],
+		amdgpu_dc_double                 BytePerPixelDETY[],
+		amdgpu_dc_double                 BytePerPixelDETC[],
 		enum scan_direction_class SourceScan[],
 		unsigned int           dpte_row_height[],
 		unsigned int           dpte_row_height_chroma[],
@@ -452,37 +452,37 @@ static void CalculateMetaAndPTETimes(
 		unsigned int           dpde0_bytes_per_frame_ub_c[],
 		unsigned int           meta_pte_bytes_per_frame_ub_l[],
 		unsigned int           meta_pte_bytes_per_frame_ub_c[],
-		double                 DST_Y_PER_PTE_ROW_NOM_L[],
-		double                 DST_Y_PER_PTE_ROW_NOM_C[],
-		double                 DST_Y_PER_META_ROW_NOM_L[],
-		double                 TimePerMetaChunkNominal[],
-		double                 TimePerMetaChunkVBlank[],
-		double                 TimePerMetaChunkFlip[],
-		double                 time_per_pte_group_nom_luma[],
-		double                 time_per_pte_group_vblank_luma[],
-		double                 time_per_pte_group_flip_luma[],
-		double                 time_per_pte_group_nom_chroma[],
-		double                 time_per_pte_group_vblank_chroma[],
-		double                 time_per_pte_group_flip_chroma[],
-		double                 TimePerVMGroupVBlank[],
-		double                 TimePerVMGroupFlip[],
-		double                 TimePerVMRequestVBlank[],
-		double                 TimePerVMRequestFlip[]);
+		amdgpu_dc_double                 DST_Y_PER_PTE_ROW_NOM_L[],
+		amdgpu_dc_double                 DST_Y_PER_PTE_ROW_NOM_C[],
+		amdgpu_dc_double                 DST_Y_PER_META_ROW_NOM_L[],
+		amdgpu_dc_double                 TimePerMetaChunkNominal[],
+		amdgpu_dc_double                 TimePerMetaChunkVBlank[],
+		amdgpu_dc_double                 TimePerMetaChunkFlip[],
+		amdgpu_dc_double                 time_per_pte_group_nom_luma[],
+		amdgpu_dc_double                 time_per_pte_group_vblank_luma[],
+		amdgpu_dc_double                 time_per_pte_group_flip_luma[],
+		amdgpu_dc_double                 time_per_pte_group_nom_chroma[],
+		amdgpu_dc_double                 time_per_pte_group_vblank_chroma[],
+		amdgpu_dc_double                 time_per_pte_group_flip_chroma[],
+		amdgpu_dc_double                 TimePerVMGroupVBlank[],
+		amdgpu_dc_double                 TimePerVMGroupFlip[],
+		amdgpu_dc_double                 TimePerVMRequestVBlank[],
+		amdgpu_dc_double                 TimePerVMRequestFlip[]);
 
-static double CalculateExtraLatency(
-		double UrgentRoundTripAndOutOfOrderLatency,
+static amdgpu_dc_double CalculateExtraLatency(
+		amdgpu_dc_double UrgentRoundTripAndOutOfOrderLatency,
 		int TotalNumberOfActiveDPP,
 		int PixelChunkSizeInKByte,
 		int TotalNumberOfDCCActiveDPP,
 		int MetaChunkSize,
-		double ReturnBW,
+		amdgpu_dc_double ReturnBW,
 		bool GPUVMEnable,
 		bool HostVMEnable,
 		int NumberOfActivePlanes,
 		int NumberOfDPP[],
 		long dpte_group_bytes[],
-		double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData,
-		double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyVMDataOnly,
+		amdgpu_dc_double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData,
+		amdgpu_dc_double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyVMDataOnly,
 		int HostVMMaxPageTableLevels,
 		int HostVMCachedPageTableLevels);
 
@@ -496,7 +496,7 @@ void dml21_recalculate(struct display_mode_lib *mode_lib)
 
 static unsigned int dscceComputeDelay(
 		unsigned int bpc,
-		double bpp,
+		amdgpu_dc_double bpp,
 		unsigned int sliceWidth,
 		unsigned int numSlices,
 		enum output_format_class pixelFormat)
@@ -635,16 +635,16 @@ static unsigned int dscComputeDelay(enum output_format_class pixelFormat)
 
 static bool CalculatePrefetchSchedule(
 		struct display_mode_lib *mode_lib,
-		double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData,
-		double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyVMDataOnly,
+		amdgpu_dc_double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData,
+		amdgpu_dc_double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyVMDataOnly,
 		Pipe *myPipe,
 		unsigned int DSCDelay,
-		double DPPCLKDelaySubtotal,
-		double DPPCLKDelaySCL,
-		double DPPCLKDelaySCLLBOnly,
-		double DPPCLKDelayCNVCFormater,
-		double DPPCLKDelayCNVCCursor,
-		double DISPCLKDelaySubtotal,
+		amdgpu_dc_double DPPCLKDelaySubtotal,
+		amdgpu_dc_double DPPCLKDelaySCL,
+		amdgpu_dc_double DPPCLKDelaySCLLBOnly,
+		amdgpu_dc_double DPPCLKDelayCNVCFormater,
+		amdgpu_dc_double DPPCLKDelayCNVCCursor,
+		amdgpu_dc_double DISPCLKDelaySubtotal,
 		unsigned int ScalerRecoutWidth,
 		enum output_format_class OutputFormat,
 		unsigned int MaxInterDCNTileRepeaters,
@@ -657,63 +657,63 @@ static bool CalculatePrefetchSchedule(
 		int DynamicMetadataLinesBeforeActiveRequired,
 		unsigned int DynamicMetadataTransmittedBytes,
 		bool DCCEnable,
-		double UrgentLatency,
-		double UrgentExtraLatency,
-		double TCalc,
+		amdgpu_dc_double UrgentLatency,
+		amdgpu_dc_double UrgentExtraLatency,
+		amdgpu_dc_double TCalc,
 		unsigned int PDEAndMetaPTEBytesFrame,
 		unsigned int MetaRowByte,
 		unsigned int PixelPTEBytesPerRow,
-		double PrefetchSourceLinesY,
+		amdgpu_dc_double PrefetchSourceLinesY,
 		unsigned int SwathWidthY,
-		double BytePerPixelDETY,
-		double VInitPreFillY,
+		amdgpu_dc_double BytePerPixelDETY,
+		amdgpu_dc_double VInitPreFillY,
 		unsigned int MaxNumSwathY,
-		double PrefetchSourceLinesC,
-		double BytePerPixelDETC,
-		double VInitPreFillC,
+		amdgpu_dc_double PrefetchSourceLinesC,
+		amdgpu_dc_double BytePerPixelDETC,
+		amdgpu_dc_double VInitPreFillC,
 		unsigned int MaxNumSwathC,
 		unsigned int SwathHeightY,
 		unsigned int SwathHeightC,
-		double TWait,
+		amdgpu_dc_double TWait,
 		bool XFCEnabled,
-		double XFCRemoteSurfaceFlipDelay,
+		amdgpu_dc_double XFCRemoteSurfaceFlipDelay,
 		bool ProgressiveToInterlaceUnitInOPP,
-		double *DSTXAfterScaler,
-		double *DSTYAfterScaler,
-		double *DestinationLinesForPrefetch,
-		double *PrefetchBandwidth,
-		double *DestinationLinesToRequestVMInVBlank,
-		double *DestinationLinesToRequestRowInVBlank,
-		double *VRatioPrefetchY,
-		double *VRatioPrefetchC,
-		double *RequiredPrefetchPixDataBWLuma,
-		double *RequiredPrefetchPixDataBWChroma,
+		amdgpu_dc_double *DSTXAfterScaler,
+		amdgpu_dc_double *DSTYAfterScaler,
+		amdgpu_dc_double *DestinationLinesForPrefetch,
+		amdgpu_dc_double *PrefetchBandwidth,
+		amdgpu_dc_double *DestinationLinesToRequestVMInVBlank,
+		amdgpu_dc_double *DestinationLinesToRequestRowInVBlank,
+		amdgpu_dc_double *VRatioPrefetchY,
+		amdgpu_dc_double *VRatioPrefetchC,
+		amdgpu_dc_double *RequiredPrefetchPixDataBWLuma,
+		amdgpu_dc_double *RequiredPrefetchPixDataBWChroma,
 		unsigned int *VStartupRequiredWhenNotEnoughTimeForDynamicMetadata,
-		double *Tno_bw,
-		double *prefetch_vmrow_bw,
+		amdgpu_dc_double *Tno_bw,
+		amdgpu_dc_double *prefetch_vmrow_bw,
 		unsigned int *swath_width_luma_ub,
 		unsigned int *swath_width_chroma_ub,
 		unsigned int *VUpdateOffsetPix,
-		double *VUpdateWidthPix,
-		double *VReadyOffsetPix)
+		amdgpu_dc_double *VUpdateWidthPix,
+		amdgpu_dc_double *VReadyOffsetPix)
 {
 	bool MyError = false;
 	unsigned int DPPCycles, DISPCLKCycles;
-	double DSTTotalPixelsAfterScaler, TotalRepeaterDelayTime;
-	double Tdm, LineTime, Tsetup;
-	double dst_y_prefetch_equ;
-	double Tsw_oto;
-	double prefetch_bw_oto;
-	double Tvm_oto;
-	double Tr0_oto;
-	double Tvm_oto_lines;
-	double Tr0_oto_lines;
-	double Tsw_oto_lines;
-	double dst_y_prefetch_oto;
-	double TimeForFetchingMetaPTE = 0;
-	double TimeForFetchingRowInVBlank = 0;
-	double LinesToRequestPrefetchPixelData = 0;
-	double HostVMInefficiencyFactor;
+	amdgpu_dc_double DSTTotalPixelsAfterScaler, TotalRepeaterDelayTime;
+	amdgpu_dc_double Tdm, LineTime, Tsetup;
+	amdgpu_dc_double dst_y_prefetch_equ;
+	amdgpu_dc_double Tsw_oto;
+	amdgpu_dc_double prefetch_bw_oto;
+	amdgpu_dc_double Tvm_oto;
+	amdgpu_dc_double Tr0_oto;
+	amdgpu_dc_double Tvm_oto_lines;
+	amdgpu_dc_double Tr0_oto_lines;
+	amdgpu_dc_double Tsw_oto_lines;
+	amdgpu_dc_double dst_y_prefetch_oto;
+	amdgpu_dc_double TimeForFetchingMetaPTE = 0;
+	amdgpu_dc_double TimeForFetchingRowInVBlank = 0;
+	amdgpu_dc_double LinesToRequestPrefetchPixelData = 0;
+	amdgpu_dc_double HostVMInefficiencyFactor;
 	unsigned int HostVMDynamicLevels;
 
 	if (GPUVMEnable == true && myHostVM->Enable == true) {
@@ -750,9 +750,9 @@ static bool CalculatePrefetchSchedule(
 	else
 		*DSTYAfterScaler = 0;
 
-	DSTTotalPixelsAfterScaler = ((double) (*DSTYAfterScaler * myPipe->HTotal)) + *DSTXAfterScaler;
+	DSTTotalPixelsAfterScaler = ((amdgpu_dc_double) (*DSTYAfterScaler * myPipe->HTotal)) + *DSTXAfterScaler;
 	*DSTYAfterScaler = dml_floor(DSTTotalPixelsAfterScaler / myPipe->HTotal, 1);
-	*DSTXAfterScaler = DSTTotalPixelsAfterScaler - ((double) (*DSTYAfterScaler * myPipe->HTotal));
+	*DSTXAfterScaler = DSTTotalPixelsAfterScaler - ((amdgpu_dc_double) (*DSTYAfterScaler * myPipe->HTotal));
 
 	*VUpdateOffsetPix = dml_ceil(myPipe->HTotal / 4.0, 1);
 	TotalRepeaterDelayTime = MaxInterDCNTileRepeaters * (2.0 / myPipe->DPPCLK + 3.0 / myPipe->DISPCLK);
@@ -764,12 +764,12 @@ static bool CalculatePrefetchSchedule(
 			TotalRepeaterDelayTime + 20.0 / myPipe->DCFCLKDeepSleep + 10.0 / myPipe->DPPCLK)
 			* myPipe->PixelClock;
 
-	Tsetup = (double) (*VUpdateOffsetPix + *VUpdateWidthPix + *VReadyOffsetPix) / myPipe->PixelClock;
+	Tsetup = (amdgpu_dc_double) (*VUpdateOffsetPix + *VUpdateWidthPix + *VReadyOffsetPix) / myPipe->PixelClock;
 
-	LineTime = (double) myPipe->HTotal / myPipe->PixelClock;
+	LineTime = (amdgpu_dc_double) myPipe->HTotal / myPipe->PixelClock;
 
 	if (DynamicMetadataEnable) {
-		double Tdmbf, Tdmec, Tdmsks;
+		amdgpu_dc_double Tdmbf, Tdmec, Tdmsks;
 
 		Tdm = dml_max(0.0, UrgentExtraLatency - TCalc);
 		Tdmbf = DynamicMetadataTransmittedBytes / 4.0 / myPipe->DISPCLK;
@@ -861,13 +861,13 @@ static bool CalculatePrefetchSchedule(
 	*VRatioPrefetchC = 0;
 	*RequiredPrefetchPixDataBWLuma = 0;
 	if (*DestinationLinesForPrefetch > 1) {
-		double PrefetchBandwidth1 = (PDEAndMetaPTEBytesFrame * HostVMInefficiencyFactor + 2 * MetaRowByte
+		amdgpu_dc_double PrefetchBandwidth1 = (PDEAndMetaPTEBytesFrame * HostVMInefficiencyFactor + 2 * MetaRowByte
 				+ 2 * PixelPTEBytesPerRow * HostVMInefficiencyFactor
 				+ PrefetchSourceLinesY * *swath_width_luma_ub * dml_ceil(BytePerPixelDETY, 1)
 				+ PrefetchSourceLinesC * *swath_width_chroma_ub * dml_ceil(BytePerPixelDETC, 2))
 				/ (*DestinationLinesForPrefetch * LineTime - *Tno_bw);
 
-		double PrefetchBandwidth2 = (PDEAndMetaPTEBytesFrame *
+		amdgpu_dc_double PrefetchBandwidth2 = (PDEAndMetaPTEBytesFrame *
 				HostVMInefficiencyFactor + PrefetchSourceLinesY *
 				*swath_width_luma_ub * dml_ceil(BytePerPixelDETY, 1) +
 				PrefetchSourceLinesC * *swath_width_chroma_ub *
@@ -875,7 +875,7 @@ static bool CalculatePrefetchSchedule(
 				(*DestinationLinesForPrefetch * LineTime - *Tno_bw - 2 *
 				UrgentLatency * (1 + HostVMDynamicLevels));
 
-		double PrefetchBandwidth3 = (2 * MetaRowByte + 2 * PixelPTEBytesPerRow
+		amdgpu_dc_double PrefetchBandwidth3 = (2 * MetaRowByte + 2 * PixelPTEBytesPerRow
 				* HostVMInefficiencyFactor + PrefetchSourceLinesY *
 				*swath_width_luma_ub * dml_ceil(BytePerPixelDETY, 1) +
 				PrefetchSourceLinesC * *swath_width_chroma_ub *
@@ -884,7 +884,7 @@ static bool CalculatePrefetchSchedule(
 				UrgentExtraLatency - UrgentLatency * (GPUVMPageTableLevels
 				* (HostVMDynamicLevels + 1) - 1));
 
-		double PrefetchBandwidth4 = (PrefetchSourceLinesY * *swath_width_luma_ub *
+		amdgpu_dc_double PrefetchBandwidth4 = (PrefetchSourceLinesY * *swath_width_luma_ub *
 				dml_ceil(BytePerPixelDETY, 1) + PrefetchSourceLinesC *
 				*swath_width_chroma_ub * dml_ceil(BytePerPixelDETC, 2)) /
 				(*DestinationLinesForPrefetch * LineTime -
@@ -906,7 +906,7 @@ static bool CalculatePrefetchSchedule(
 		}
 
 		if (GPUVMEnable) {
-			TimeForFetchingMetaPTE = dml_max(*Tno_bw + (double) PDEAndMetaPTEBytesFrame * HostVMInefficiencyFactor / *PrefetchBandwidth,
+			TimeForFetchingMetaPTE = dml_max(*Tno_bw + (amdgpu_dc_double) PDEAndMetaPTEBytesFrame * HostVMInefficiencyFactor / *PrefetchBandwidth,
 					dml_max(UrgentExtraLatency + UrgentLatency * (GPUVMPageTableLevels * (HostVMDynamicLevels + 1) - 1), LineTime / 4));
 		} else {
 // 5/30/2018 - This was an optimization requested from Sy but now NumberOfCursors is no longer a factor
@@ -950,16 +950,16 @@ static bool CalculatePrefetchSchedule(
 
 		if (LinesToRequestPrefetchPixelData > 0) {
 
-			*VRatioPrefetchY = (double) PrefetchSourceLinesY
+			*VRatioPrefetchY = (amdgpu_dc_double) PrefetchSourceLinesY
 					/ LinesToRequestPrefetchPixelData;
 			*VRatioPrefetchY = dml_max(*VRatioPrefetchY, 1.0);
 			if ((SwathHeightY > 4) && (VInitPreFillY > 3)) {
 				if (LinesToRequestPrefetchPixelData > (VInitPreFillY - 3.0) / 2.0) {
 					*VRatioPrefetchY =
 							dml_max(
-									(double) PrefetchSourceLinesY
+									(amdgpu_dc_double) PrefetchSourceLinesY
 											/ LinesToRequestPrefetchPixelData,
-									(double) MaxNumSwathY
+									(amdgpu_dc_double) MaxNumSwathY
 											* SwathHeightY
 											/ (LinesToRequestPrefetchPixelData
 													- (VInitPreFillY
@@ -972,7 +972,7 @@ static bool CalculatePrefetchSchedule(
 				}
 			}
 
-			*VRatioPrefetchC = (double) PrefetchSourceLinesC
+			*VRatioPrefetchC = (amdgpu_dc_double) PrefetchSourceLinesC
 					/ LinesToRequestPrefetchPixelData;
 			*VRatioPrefetchC = dml_max(*VRatioPrefetchC, 1.0);
 
@@ -981,7 +981,7 @@ static bool CalculatePrefetchSchedule(
 					*VRatioPrefetchC =
 							dml_max(
 									*VRatioPrefetchC,
-									(double) MaxNumSwathC
+									(amdgpu_dc_double) MaxNumSwathC
 											* SwathHeightC
 											/ (LinesToRequestPrefetchPixelData
 													- (VInitPreFillC
@@ -995,11 +995,11 @@ static bool CalculatePrefetchSchedule(
 			}
 
 			*RequiredPrefetchPixDataBWLuma = myPipe->DPPPerPlane
-					* (double) PrefetchSourceLinesY / LinesToRequestPrefetchPixelData
+					* (amdgpu_dc_double) PrefetchSourceLinesY / LinesToRequestPrefetchPixelData
 					* dml_ceil(BytePerPixelDETY, 1)
 					* *swath_width_luma_ub / LineTime;
 			*RequiredPrefetchPixDataBWChroma = myPipe->DPPPerPlane
-					* (double) PrefetchSourceLinesC / LinesToRequestPrefetchPixelData
+					* (amdgpu_dc_double) PrefetchSourceLinesC / LinesToRequestPrefetchPixelData
 					* dml_ceil(BytePerPixelDETC, 2)
 					* *swath_width_chroma_ub / LineTime;
 		} else {
@@ -1012,8 +1012,8 @@ static bool CalculatePrefetchSchedule(
 
 		dml_print("DML: Tvm: %fus\n", TimeForFetchingMetaPTE);
 		dml_print("DML: Tr0: %fus\n", TimeForFetchingRowInVBlank);
-		dml_print("DML: Tsw: %fus\n", (double)(*DestinationLinesForPrefetch) * LineTime - TimeForFetchingMetaPTE - TimeForFetchingRowInVBlank);
-		dml_print("DML: Tpre: %fus\n", (double)(*DestinationLinesForPrefetch) * LineTime);
+		dml_print("DML: Tsw: %fus\n", (amdgpu_dc_double)(*DestinationLinesForPrefetch) * LineTime - TimeForFetchingMetaPTE - TimeForFetchingRowInVBlank);
+		dml_print("DML: Tpre: %fus\n", (amdgpu_dc_double)(*DestinationLinesForPrefetch) * LineTime);
 		dml_print("DML: row_bytes = dpte_row_bytes (per_pipe) = PixelPTEBytesPerRow = : %d\n", PixelPTEBytesPerRow);
 
 	} else {
@@ -1021,8 +1021,8 @@ static bool CalculatePrefetchSchedule(
 	}
 
 	{
-		double prefetch_vm_bw;
-		double prefetch_row_bw;
+		amdgpu_dc_double prefetch_vm_bw;
+		amdgpu_dc_double prefetch_row_bw;
 
 		if (PDEAndMetaPTEBytesFrame == 0) {
 			prefetch_vm_bw = 0;
@@ -1061,22 +1061,22 @@ static bool CalculatePrefetchSchedule(
 	return MyError;
 }
 
-static double RoundToDFSGranularityUp(double Clock, double VCOSpeed)
+static amdgpu_dc_double RoundToDFSGranularityUp(amdgpu_dc_double Clock, amdgpu_dc_double VCOSpeed)
 {
 	return VCOSpeed * 4 / dml_floor(VCOSpeed * 4 / Clock, 1);
 }
 
-static double RoundToDFSGranularityDown(double Clock, double VCOSpeed)
+static amdgpu_dc_double RoundToDFSGranularityDown(amdgpu_dc_double Clock, amdgpu_dc_double VCOSpeed)
 {
 	return VCOSpeed * 4 / dml_ceil(VCOSpeed * 4 / Clock, 1);
 }
 
-static double CalculateDCCConfiguration(
+static amdgpu_dc_double CalculateDCCConfiguration(
 		bool DCCEnabled,
 		bool DCCProgrammingAssumesScanDirectionUnknown,
 		unsigned int ViewportWidth,
 		unsigned int ViewportHeight,
-		double DETBufferSize,
+		amdgpu_dc_double DETBufferSize,
 		unsigned int RequestHeight256Byte,
 		unsigned int SwathHeight,
 		enum dm_swizzle_mode TilingFormat,
@@ -1086,7 +1086,7 @@ static double CalculateDCCConfiguration(
 		unsigned int *MaxCompressedBlock,
 		unsigned int *Independent64ByteBlock)
 {
-	double MaximumDCCCompressionSurface = 0.0;
+	amdgpu_dc_double MaximumDCCCompressionSurface = 0.0;
 	enum {
 		REQ_256Bytes,
 		REQ_128BytesNonContiguous,
@@ -1205,15 +1205,15 @@ static double CalculateDCCConfiguration(
 	return MaximumDCCCompressionSurface;
 }
 
-static double CalculatePrefetchSourceLines(
+static amdgpu_dc_double CalculatePrefetchSourceLines(
 		struct display_mode_lib *mode_lib,
-		double VRatio,
-		double vtaps,
+		amdgpu_dc_double VRatio,
+		amdgpu_dc_double vtaps,
 		bool Interlace,
 		bool ProgressiveToInterlaceUnitInOPP,
 		unsigned int SwathHeight,
 		unsigned int ViewportYStart,
-		double *VInitPreFill,
+		amdgpu_dc_double *VInitPreFill,
 		unsigned int *MaxNumSwath)
 {
 	unsigned int MaxPartialSwath;
@@ -1303,12 +1303,12 @@ static unsigned int CalculateVMAndRowBytes(
 		*MetaRequestWidth = 8 * BlockWidth256Bytes;
 		if (ScanDirection == dm_horz) {
 			*meta_row_height = *MetaRequestHeight;
-			*meta_row_width = dml_ceil((double) SwathWidth - 1, *MetaRequestWidth)
+			*meta_row_width = dml_ceil((amdgpu_dc_double) SwathWidth - 1, *MetaRequestWidth)
 					+ *MetaRequestWidth;
 			*MetaRowByte = *meta_row_width * *MetaRequestHeight * BytePerPixel / 256.0;
 		} else {
 			*meta_row_height = *MetaRequestWidth;
-			*meta_row_width = dml_ceil((double) SwathWidth - 1, *MetaRequestHeight)
+			*meta_row_width = dml_ceil((amdgpu_dc_double) SwathWidth - 1, *MetaRequestHeight)
 					+ *MetaRequestHeight;
 			*MetaRowByte = *meta_row_width * *MetaRequestWidth * BytePerPixel / 256.0;
 		}
@@ -1320,14 +1320,14 @@ static unsigned int CalculateVMAndRowBytes(
 		} else {
 			DCCMetaSurfaceBytes = DCCMetaPitch
 					* (dml_ceil(
-							(double) ViewportHeight - 1,
+							(amdgpu_dc_double) ViewportHeight - 1,
 							64 * BlockHeight256Bytes)
 							+ 64 * BlockHeight256Bytes) * BytePerPixel
 					/ 256;
 		}
 		if (GPUVMEnable == true) {
 			*MetaPTEBytesFrame = (dml_ceil(
-					(double) (DCCMetaSurfaceBytes - VMMPageSize)
+					(amdgpu_dc_double) (DCCMetaSurfaceBytes - VMMPageSize)
 							/ (8 * VMMPageSize),
 					1) + 1) * 64;
 			MPDEBytesFrame = 128 * ((mode_lib->vba.GPUVMMaxPageTableLevels + 1) * (mode_lib->vba.HostVMMaxPageTableLevels + 1) - 2);
@@ -1364,7 +1364,7 @@ static unsigned int CalculateVMAndRowBytes(
 		if (ScanDirection == dm_horz) {
 			*DPDE0BytesFrame = 64 * (dml_ceil(((Pitch * (dml_ceil(ViewportHeight - 1, MacroTileHeight) + MacroTileHeight) * BytePerPixel) - MacroTileSizeBytes) / (8 * 2097152), 1) + 1);
 		} else {
-			*DPDE0BytesFrame = 64 * (dml_ceil(((Pitch * (dml_ceil((double) SwathWidth - 1, MacroTileHeight) + MacroTileHeight) * BytePerPixel) - MacroTileSizeBytes) / (8 * 2097152), 1) + 1);
+			*DPDE0BytesFrame = 64 * (dml_ceil(((Pitch * (dml_ceil((amdgpu_dc_double) SwathWidth - 1, MacroTileHeight) + MacroTileHeight) * BytePerPixel) - MacroTileSizeBytes) / (8 * 2097152), 1) + 1);
 		}
 		ExtraDPDEBytesFrame = 128 * ((mode_lib->vba.GPUVMMaxPageTableLevels + 1) * (mode_lib->vba.HostVMMaxPageTableLevels + 1) - 3);
 	} else {
@@ -1380,7 +1380,7 @@ static unsigned int CalculateVMAndRowBytes(
 	}
 
 	if (GPUVMEnable == true) {
-		double FractionOfPTEReturnDrop;
+		amdgpu_dc_double FractionOfPTEReturnDrop;
 
 		if (SurfaceTiling == dm_sw_linear) {
 			PixelPTEReqHeightPTEs = 1;
@@ -1415,17 +1415,17 @@ static unsigned int CalculateVMAndRowBytes(
 			*dpte_row_height = dml_min(128,
 					1 << (unsigned int) dml_floor(
 						dml_log2(
-							(double) PTEBufferSizeInRequests * *PixelPTEReqWidth / Pitch),
+							(amdgpu_dc_double) PTEBufferSizeInRequests * *PixelPTEReqWidth / Pitch),
 						1));
-			*dpte_row_width_ub = (dml_ceil((double) (Pitch * *dpte_row_height - 1) / *PixelPTEReqWidth, 1) + 1) * *PixelPTEReqWidth;
+			*dpte_row_width_ub = (dml_ceil((amdgpu_dc_double) (Pitch * *dpte_row_height - 1) / *PixelPTEReqWidth, 1) + 1) * *PixelPTEReqWidth;
 			*PixelPTEBytesPerRow = *dpte_row_width_ub / *PixelPTEReqWidth * *PTERequestSize;
 		} else if (ScanDirection == dm_horz) {
 			*dpte_row_height = *PixelPTEReqHeight;
-			*dpte_row_width_ub = (dml_ceil((double) (SwathWidth - 1) / *PixelPTEReqWidth, 1) + 1) * *PixelPTEReqWidth;
+			*dpte_row_width_ub = (dml_ceil((amdgpu_dc_double) (SwathWidth - 1) / *PixelPTEReqWidth, 1) + 1) * *PixelPTEReqWidth;
 			*PixelPTEBytesPerRow = *dpte_row_width_ub / *PixelPTEReqWidth * *PTERequestSize;
 		} else {
 			*dpte_row_height = dml_min(*PixelPTEReqWidth, *MacroTileWidth);
-			*dpte_row_width_ub = (dml_ceil((double) (SwathWidth - 1) / *PixelPTEReqHeight, 1) + 1) * *PixelPTEReqHeight;
+			*dpte_row_width_ub = (dml_ceil((amdgpu_dc_double) (SwathWidth - 1) / *PixelPTEReqHeight, 1) + 1) * *PixelPTEReqHeight;
 			*PixelPTEBytesPerRow = *dpte_row_width_ub / *PixelPTEReqHeight * *PTERequestSize;
 		}
 		if (*PixelPTEBytesPerRow * (1 - FractionOfPTEReturnDrop)
@@ -1695,7 +1695,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 
 		if (MainPlaneDoesODMCombine == true)
 			locals->SwathWidthY[k] = dml_min(
-					(double) locals->SwathWidthSingleDPPY[k],
+					(amdgpu_dc_double) locals->SwathWidthSingleDPPY[k],
 					dml_round(
 							mode_lib->vba.HActive[k] / 2.0
 									* mode_lib->vba.HRatio[k]));
@@ -1791,7 +1791,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 	// DSC Delay
 	// TODO
 	for (k = 0; k < mode_lib->vba.NumberOfActivePlanes; ++k) {
-		double bpp = mode_lib->vba.OutputBpp[k];
+		amdgpu_dc_double bpp = mode_lib->vba.OutputBpp[k];
 		unsigned int slices = mode_lib->vba.NumberOfDSCSlices[k];
 
 		if (mode_lib->vba.DSCEnabled[k] && bpp != 0) {
@@ -1801,7 +1801,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 								mode_lib->vba.DSCInputBitPerComponent[k],
 								bpp,
 								dml_ceil(
-										(double) mode_lib->vba.HActive[k]
+										(amdgpu_dc_double) mode_lib->vba.HActive[k]
 												/ mode_lib->vba.NumberOfDSCSlices[k],
 										1),
 								slices,
@@ -1815,7 +1815,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 										mode_lib->vba.DSCInputBitPerComponent[k],
 										bpp,
 										dml_ceil(
-												(double) mode_lib->vba.HActive[k]
+												(amdgpu_dc_double) mode_lib->vba.HActive[k]
 														/ mode_lib->vba.NumberOfDSCSlices[k],
 												1),
 										slices / 2.0,
@@ -2093,11 +2093,11 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 	mode_lib->vba.UrgentLatency = dml_max3(mode_lib->vba.UrgentLatencyPixelDataOnly, mode_lib->vba.UrgentLatencyPixelMixedWithVMData, mode_lib->vba.UrgentLatencyVMDataOnly);
 
 	do {
-		double MaxTotalRDBandwidth = 0;
-		double MaxTotalRDBandwidthNoUrgentBurst = 0;
+		amdgpu_dc_double MaxTotalRDBandwidth = 0;
+		amdgpu_dc_double MaxTotalRDBandwidthNoUrgentBurst = 0;
 		bool DestinationLineTimesForPrefetchLessThan2 = false;
 		bool VRatioPrefetchMoreThan4 = false;
-		double TWait = CalculateTWait(
+		amdgpu_dc_double TWait = CalculateTWait(
 				mode_lib->vba.PrefetchMode[mode_lib->vba.VoltageLevel][mode_lib->vba.maxMpcComb],
 				mode_lib->vba.DRAMClockChangeLatency,
 				mode_lib->vba.UrgentLatency,
@@ -2604,7 +2604,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 	//XFC Parameters:
 	for (k = 0; k < mode_lib->vba.NumberOfActivePlanes; ++k) {
 		if (mode_lib->vba.XFCEnabled[k] == true) {
-			double TWait;
+			amdgpu_dc_double TWait;
 
 			locals->XFCSlaveVUpdateOffset[k] = mode_lib->vba.XFCTSlvVupdateOffset;
 			locals->XFCSlaveVupdateWidth[k] = mode_lib->vba.XFCTSlvVupdateWidth;
@@ -2714,7 +2714,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 		if (locals->FullDETBufferingTimeY[k] < mode_lib->vba.StutterPeriod) {
 			mode_lib->vba.StutterPeriod = locals->FullDETBufferingTimeY[k];
 			mode_lib->vba.FrameTimeForMinFullDETBufferingTime =
-				(double) mode_lib->vba.VTotal[k] * mode_lib->vba.HTotal[k]
+				(amdgpu_dc_double) mode_lib->vba.VTotal[k] * mode_lib->vba.HTotal[k]
 				/ mode_lib->vba.PixelClock[k];
 			locals->BytePerPixelYCriticalPlane = dml_ceil(locals->BytePerPixelDETY[k], 1);
 			locals->SwathWidthYCriticalPlane = locals->SwathWidthY[k];
@@ -2786,7 +2786,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 	mode_lib->vba.SmallestVBlank = 999999;
 	for (k = 0; k < mode_lib->vba.NumberOfActivePlanes; ++k) {
 		if (mode_lib->vba.SynchronizedVBlank || mode_lib->vba.NumberOfActivePlanes == 1) {
-			mode_lib->vba.VBlankTime = (double) (mode_lib->vba.VTotal[k]
+			mode_lib->vba.VBlankTime = (amdgpu_dc_double) (mode_lib->vba.VTotal[k]
 					- mode_lib->vba.VActive[k]) * mode_lib->vba.HTotal[k]
 					/ mode_lib->vba.PixelClock[k];
 		} else {
@@ -2807,21 +2807,21 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
 {
 	// Display Pipe Configuration
-	double BytePerPixDETY;
-	double BytePerPixDETC;
-	double Read256BytesBlockHeightY;
-	double Read256BytesBlockHeightC;
-	double Read256BytesBlockWidthY;
-	double Read256BytesBlockWidthC;
-	double MaximumSwathHeightY;
-	double MaximumSwathHeightC;
-	double MinimumSwathHeightY;
-	double MinimumSwathHeightC;
-	double SwathWidth;
-	double SwathWidthGranularityY;
-	double SwathWidthGranularityC;
-	double RoundedUpMaxSwathSizeBytesY;
-	double RoundedUpMaxSwathSizeBytesC;
+	amdgpu_dc_double BytePerPixDETY;
+	amdgpu_dc_double BytePerPixDETC;
+	amdgpu_dc_double Read256BytesBlockHeightY;
+	amdgpu_dc_double Read256BytesBlockHeightC;
+	amdgpu_dc_double Read256BytesBlockWidthY;
+	amdgpu_dc_double Read256BytesBlockWidthC;
+	amdgpu_dc_double MaximumSwathHeightY;
+	amdgpu_dc_double MaximumSwathHeightC;
+	amdgpu_dc_double MinimumSwathHeightY;
+	amdgpu_dc_double MinimumSwathHeightC;
+	amdgpu_dc_double SwathWidth;
+	amdgpu_dc_double SwathWidthGranularityY;
+	amdgpu_dc_double SwathWidthGranularityC;
+	amdgpu_dc_double RoundedUpMaxSwathSizeBytesY;
+	amdgpu_dc_double RoundedUpMaxSwathSizeBytesC;
 	unsigned int j, k;
 
 	for (k = 0; k < mode_lib->vba.NumberOfActivePlanes; ++k) {
@@ -2963,7 +2963,7 @@ static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
 
 		SwathWidthGranularityY = 256 / dml_ceil(BytePerPixDETY, 1) / MaximumSwathHeightY;
 		RoundedUpMaxSwathSizeBytesY = (dml_ceil(
-				(double) (SwathWidth - 1),
+				(amdgpu_dc_double) (SwathWidth - 1),
 				SwathWidthGranularityY) + SwathWidthGranularityY) * BytePerPixDETY
 				* MaximumSwathHeightY;
 		if (mode_lib->vba.SourcePixelFormat[k] == dm_420_10) {
@@ -2974,7 +2974,7 @@ static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
 			SwathWidthGranularityC = 256.0 / dml_ceil(BytePerPixDETC, 2)
 					/ MaximumSwathHeightC;
 			RoundedUpMaxSwathSizeBytesC = (dml_ceil(
-					(double) (SwathWidth / 2.0 - 1),
+					(amdgpu_dc_double) (SwathWidth / 2.0 - 1),
 					SwathWidthGranularityC) + SwathWidthGranularityC)
 					* BytePerPixDETC * MaximumSwathHeightC;
 			if (mode_lib->vba.SourcePixelFormat[k] == dm_420_10) {
@@ -3003,11 +3003,11 @@ static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
 	}
 }
 
-static double CalculateTWait(
+static amdgpu_dc_double CalculateTWait(
 		unsigned int PrefetchMode,
-		double DRAMClockChangeLatency,
-		double UrgentLatency,
-		double SREnterPlusExitTime)
+		amdgpu_dc_double DRAMClockChangeLatency,
+		amdgpu_dc_double UrgentLatency,
+		amdgpu_dc_double SREnterPlusExitTime)
 {
 	if (PrefetchMode == 0) {
 		return dml_max(
@@ -3020,26 +3020,26 @@ static double CalculateTWait(
 	}
 }
 
-static double CalculateRemoteSurfaceFlipDelay(
+static amdgpu_dc_double CalculateRemoteSurfaceFlipDelay(
 		struct display_mode_lib *mode_lib,
-		double VRatio,
-		double SwathWidth,
-		double Bpp,
-		double LineTime,
-		double XFCTSlvVupdateOffset,
-		double XFCTSlvVupdateWidth,
-		double XFCTSlvVreadyOffset,
-		double XFCXBUFLatencyTolerance,
-		double XFCFillBWOverhead,
-		double XFCSlvChunkSize,
-		double XFCBusTransportTime,
-		double TCalc,
-		double TWait,
-		double *SrcActiveDrainRate,
-		double *TInitXFill,
-		double *TslvChk)
+		amdgpu_dc_double VRatio,
+		amdgpu_dc_double SwathWidth,
+		amdgpu_dc_double Bpp,
+		amdgpu_dc_double LineTime,
+		amdgpu_dc_double XFCTSlvVupdateOffset,
+		amdgpu_dc_double XFCTSlvVupdateWidth,
+		amdgpu_dc_double XFCTSlvVreadyOffset,
+		amdgpu_dc_double XFCXBUFLatencyTolerance,
+		amdgpu_dc_double XFCFillBWOverhead,
+		amdgpu_dc_double XFCSlvChunkSize,
+		amdgpu_dc_double XFCBusTransportTime,
+		amdgpu_dc_double TCalc,
+		amdgpu_dc_double TWait,
+		amdgpu_dc_double *SrcActiveDrainRate,
+		amdgpu_dc_double *TInitXFill,
+		amdgpu_dc_double *TslvChk)
 {
-	double TSlvSetup, AvgfillRate, result;
+	amdgpu_dc_double TSlvSetup, AvgfillRate, result;
 
 	*SrcActiveDrainRate = VRatio * SwathWidth * Bpp / LineTime;
 	TSlvSetup = XFCTSlvVupdateOffset + XFCTSlvVupdateWidth + XFCTSlvVreadyOffset;
@@ -3058,17 +3058,17 @@ static double CalculateRemoteSurfaceFlipDelay(
 	return result;
 }
 
-static double CalculateWriteBackDelay(
+static amdgpu_dc_double CalculateWriteBackDelay(
 		enum source_format_class WritebackPixelFormat,
-		double WritebackHRatio,
-		double WritebackVRatio,
+		amdgpu_dc_double WritebackHRatio,
+		amdgpu_dc_double WritebackVRatio,
 		unsigned int WritebackLumaHTaps,
 		unsigned int WritebackLumaVTaps,
 		unsigned int WritebackChromaHTaps,
 		unsigned int WritebackChromaVTaps,
 		unsigned int WritebackDestinationWidth)
 {
-	double CalculateWriteBackDelay =
+	amdgpu_dc_double CalculateWriteBackDelay =
 			dml_max(
 					dml_ceil(WritebackLumaHTaps / 4.0, 1) / WritebackHRatio,
 					WritebackLumaVTaps * dml_ceil(1.0 / WritebackVRatio, 1)
@@ -3121,9 +3121,9 @@ static double CalculateWriteBackDelay(
 static void CalculateActiveRowBandwidth(
 		bool GPUVMEnable,
 		enum source_format_class SourcePixelFormat,
-		double VRatio,
+		amdgpu_dc_double VRatio,
 		bool DCCEnable,
-		double LineTime,
+		amdgpu_dc_double LineTime,
 		unsigned int MetaRowByteLuma,
 		unsigned int MetaRowByteChroma,
 		unsigned int meta_row_height_luma,
@@ -3132,8 +3132,8 @@ static void CalculateActiveRowBandwidth(
 		unsigned int PixelPTEBytesPerRowChroma,
 		unsigned int dpte_row_height_luma,
 		unsigned int dpte_row_height_chroma,
-		double *meta_row_bw,
-		double *dpte_row_bw)
+		amdgpu_dc_double *meta_row_bw,
+		amdgpu_dc_double *dpte_row_bw)
 {
 	if (DCCEnable != true) {
 		*meta_row_bw = 0;
@@ -3158,40 +3158,40 @@ static void CalculateActiveRowBandwidth(
 
 static void CalculateFlipSchedule(
 		struct display_mode_lib *mode_lib,
-		double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData,
-		double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyVMDataOnly,
-		double UrgentExtraLatency,
-		double UrgentLatency,
+		amdgpu_dc_double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData,
+		amdgpu_dc_double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyVMDataOnly,
+		amdgpu_dc_double UrgentExtraLatency,
+		amdgpu_dc_double UrgentLatency,
 		unsigned int GPUVMMaxPageTableLevels,
 		bool HostVMEnable,
 		unsigned int HostVMMaxPageTableLevels,
 		unsigned int HostVMCachedPageTableLevels,
 		bool GPUVMEnable,
-		double PDEAndMetaPTEBytesPerFrame,
-		double MetaRowBytes,
-		double DPTEBytesPerRow,
-		double BandwidthAvailableForImmediateFlip,
+		amdgpu_dc_double PDEAndMetaPTEBytesPerFrame,
+		amdgpu_dc_double MetaRowBytes,
+		amdgpu_dc_double DPTEBytesPerRow,
+		amdgpu_dc_double BandwidthAvailableForImmediateFlip,
 		unsigned int TotImmediateFlipBytes,
 		enum source_format_class SourcePixelFormat,
-		double LineTime,
-		double VRatio,
-		double Tno_bw,
+		amdgpu_dc_double LineTime,
+		amdgpu_dc_double VRatio,
+		amdgpu_dc_double Tno_bw,
 		bool DCCEnable,
 		unsigned int dpte_row_height,
 		unsigned int meta_row_height,
 		unsigned int dpte_row_height_chroma,
 		unsigned int meta_row_height_chroma,
-		double *DestinationLinesToRequestVMInImmediateFlip,
-		double *DestinationLinesToRequestRowInImmediateFlip,
-		double *final_flip_bw,
+		amdgpu_dc_double *DestinationLinesToRequestVMInImmediateFlip,
+		amdgpu_dc_double *DestinationLinesToRequestRowInImmediateFlip,
+		amdgpu_dc_double *final_flip_bw,
 		bool *ImmediateFlipSupportedForPipe)
 {
-	double min_row_time = 0.0;
+	amdgpu_dc_double min_row_time = 0.0;
 	unsigned int HostVMDynamicLevels;
-	double TimeForFetchingMetaPTEImmediateFlip;
-	double TimeForFetchingRowInVBlankImmediateFlip;
-	double ImmediateFlipBW;
-	double HostVMInefficiencyFactor;
+	amdgpu_dc_double TimeForFetchingMetaPTEImmediateFlip;
+	amdgpu_dc_double TimeForFetchingRowInVBlankImmediateFlip;
+	amdgpu_dc_double ImmediateFlipBW;
+	amdgpu_dc_double HostVMInefficiencyFactor;
 
 	if (GPUVMEnable == true && HostVMEnable == true) {
 		HostVMInefficiencyFactor =
@@ -3262,8 +3262,8 @@ static void CalculateFlipSchedule(
 }
 
 static unsigned int TruncToValidBPP(
-		double DecimalBPP,
-		double DesiredBPP,
+		amdgpu_dc_double DecimalBPP,
+		amdgpu_dc_double DesiredBPP,
 		bool DSCEnabled,
 		enum output_encoder_class Output,
 		enum output_format_class Format,
@@ -4001,7 +4001,7 @@ void dml21_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 			if (j == 1) {
 				while (locals->TotalNumberOfActiveDPP[i][j] < mode_lib->vba.MaxNumDPP
 						&& locals->TotalNumberOfActiveDPP[i][j] < 2 * mode_lib->vba.NumberOfActivePlanes) {
-					double BWOfNonSplitPlaneOfMaximumBandwidth;
+					amdgpu_dc_double BWOfNonSplitPlaneOfMaximumBandwidth;
 					unsigned int NumberOfNonSplitPlaneOfMaximumBandwidth;
 
 					BWOfNonSplitPlaneOfMaximumBandwidth = 0;
@@ -5015,7 +5015,7 @@ void dml21_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 
 		/*Vertical Active BW support*/
 		{
-			double MaxTotalVActiveRDBandwidth = 0.0;
+			amdgpu_dc_double MaxTotalVActiveRDBandwidth = 0.0;
 			for (k = 0; k < mode_lib->vba.NumberOfActivePlanes; ++k) {
 				MaxTotalVActiveRDBandwidth = MaxTotalVActiveRDBandwidth + locals->ReadBandwidth[k];
 		}
@@ -5215,76 +5215,76 @@ static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 		unsigned int MaxLineBufferLines,
 		unsigned int LineBufferSize,
 		unsigned int DPPOutputBufferPixels,
-		double DETBufferSizeInKByte,
+		amdgpu_dc_double DETBufferSizeInKByte,
 		unsigned int WritebackInterfaceLumaBufferSize,
 		unsigned int WritebackInterfaceChromaBufferSize,
-		double DCFCLK,
-		double UrgentOutOfOrderReturn,
-		double ReturnBW,
+		amdgpu_dc_double DCFCLK,
+		amdgpu_dc_double UrgentOutOfOrderReturn,
+		amdgpu_dc_double ReturnBW,
 		bool GPUVMEnable,
 		long dpte_group_bytes[],
 		unsigned int MetaChunkSize,
-		double UrgentLatency,
-		double ExtraLatency,
-		double WritebackLatency,
-		double WritebackChunkSize,
-		double SOCCLK,
-		double DRAMClockChangeLatency,
-		double SRExitTime,
-		double SREnterPlusExitTime,
-		double DCFCLKDeepSleep,
+		amdgpu_dc_double UrgentLatency,
+		amdgpu_dc_double ExtraLatency,
+		amdgpu_dc_double WritebackLatency,
+		amdgpu_dc_double WritebackChunkSize,
+		amdgpu_dc_double SOCCLK,
+		amdgpu_dc_double DRAMClockChangeLatency,
+		amdgpu_dc_double SRExitTime,
+		amdgpu_dc_double SREnterPlusExitTime,
+		amdgpu_dc_double DCFCLKDeepSleep,
 		int DPPPerPlane[],
 		bool DCCEnable[],
-		double DPPCLK[],
+		amdgpu_dc_double DPPCLK[],
 		unsigned int SwathWidthSingleDPPY[],
 		unsigned int SwathHeightY[],
-		double ReadBandwidthPlaneLuma[],
+		amdgpu_dc_double ReadBandwidthPlaneLuma[],
 		unsigned int SwathHeightC[],
-		double ReadBandwidthPlaneChroma[],
+		amdgpu_dc_double ReadBandwidthPlaneChroma[],
 		unsigned int LBBitPerPixel[],
 		unsigned int SwathWidthY[],
-		double HRatio[],
+		amdgpu_dc_double HRatio[],
 		unsigned int vtaps[],
 		unsigned int VTAPsChroma[],
-		double VRatio[],
+		amdgpu_dc_double VRatio[],
 		unsigned int HTotal[],
-		double PixelClock[],
+		amdgpu_dc_double PixelClock[],
 		unsigned int BlendingAndTiming[],
-		double BytePerPixelDETY[],
-		double BytePerPixelDETC[],
+		amdgpu_dc_double BytePerPixelDETY[],
+		amdgpu_dc_double BytePerPixelDETC[],
 		bool WritebackEnable[],
 		enum source_format_class WritebackPixelFormat[],
-		double WritebackDestinationWidth[],
-		double WritebackDestinationHeight[],
-		double WritebackSourceHeight[],
+		amdgpu_dc_double WritebackDestinationWidth[],
+		amdgpu_dc_double WritebackDestinationHeight[],
+		amdgpu_dc_double WritebackSourceHeight[],
 		enum clock_change_support *DRAMClockChangeSupport,
-		double *UrgentWatermark,
-		double *WritebackUrgentWatermark,
-		double *DRAMClockChangeWatermark,
-		double *WritebackDRAMClockChangeWatermark,
-		double *StutterExitWatermark,
-		double *StutterEnterPlusExitWatermark,
-		double *MinActiveDRAMClockChangeLatencySupported)
+		amdgpu_dc_double *UrgentWatermark,
+		amdgpu_dc_double *WritebackUrgentWatermark,
+		amdgpu_dc_double *DRAMClockChangeWatermark,
+		amdgpu_dc_double *WritebackDRAMClockChangeWatermark,
+		amdgpu_dc_double *StutterExitWatermark,
+		amdgpu_dc_double *StutterEnterPlusExitWatermark,
+		amdgpu_dc_double *MinActiveDRAMClockChangeLatencySupported)
 {
-	double EffectiveLBLatencyHidingY;
-	double EffectiveLBLatencyHidingC;
-	double DPPOutputBufferLinesY;
-	double DPPOutputBufferLinesC;
-	double DETBufferSizeY;
-	double DETBufferSizeC;
-	double LinesInDETY[DC__NUM_DPP__MAX];
-	double LinesInDETC;
+	amdgpu_dc_double EffectiveLBLatencyHidingY;
+	amdgpu_dc_double EffectiveLBLatencyHidingC;
+	amdgpu_dc_double DPPOutputBufferLinesY;
+	amdgpu_dc_double DPPOutputBufferLinesC;
+	amdgpu_dc_double DETBufferSizeY;
+	amdgpu_dc_double DETBufferSizeC;
+	amdgpu_dc_double LinesInDETY[DC__NUM_DPP__MAX];
+	amdgpu_dc_double LinesInDETC;
 	unsigned int LinesInDETYRoundedDownToSwath[DC__NUM_DPP__MAX];
 	unsigned int LinesInDETCRoundedDownToSwath;
-	double FullDETBufferingTimeY[DC__NUM_DPP__MAX];
-	double FullDETBufferingTimeC;
-	double ActiveDRAMClockChangeLatencyMarginY;
-	double ActiveDRAMClockChangeLatencyMarginC;
-	double WritebackDRAMClockChangeLatencyMargin;
-	double PlaneWithMinActiveDRAMClockChangeMargin;
-	double SecondMinActiveDRAMClockChangeMarginOneDisplayInVBLank;
-	double FullDETBufferingTimeYStutterCriticalPlane = 0;
-	double TimeToFinishSwathTransferStutterCriticalPlane = 0;
+	amdgpu_dc_double FullDETBufferingTimeY[DC__NUM_DPP__MAX];
+	amdgpu_dc_double FullDETBufferingTimeC;
+	amdgpu_dc_double ActiveDRAMClockChangeLatencyMarginY;
+	amdgpu_dc_double ActiveDRAMClockChangeLatencyMarginC;
+	amdgpu_dc_double WritebackDRAMClockChangeLatencyMargin;
+	amdgpu_dc_double PlaneWithMinActiveDRAMClockChangeMargin;
+	amdgpu_dc_double SecondMinActiveDRAMClockChangeMarginOneDisplayInVBLank;
+	amdgpu_dc_double FullDETBufferingTimeYStutterCriticalPlane = 0;
+	amdgpu_dc_double TimeToFinishSwathTransferStutterCriticalPlane = 0;
 	uint k, j;
 
 	mode_lib->vba.TotalActiveDPP = 0;
@@ -5329,11 +5329,11 @@ static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 
 	for (k = 0; k < NumberOfActivePlanes; ++k) {
 
-		mode_lib->vba.LBLatencyHidingSourceLinesY = dml_min((double) MaxLineBufferLines,
+		mode_lib->vba.LBLatencyHidingSourceLinesY = dml_min((amdgpu_dc_double) MaxLineBufferLines,
 			dml_floor(LineBufferSize / LBBitPerPixel[k] / (SwathWidthY[k] / dml_max(HRatio[k], 1.0)), 1))
 				- (vtaps[k] - 1);
 
-		mode_lib->vba.LBLatencyHidingSourceLinesC = dml_min((double) MaxLineBufferLines,
+		mode_lib->vba.LBLatencyHidingSourceLinesC = dml_min((amdgpu_dc_double) MaxLineBufferLines,
 			dml_floor(LineBufferSize / LBBitPerPixel[k] / (SwathWidthY[k] / 2 / dml_max(HRatio[k] / 2, 1.0)), 1))
 				- (VTAPsChroma[k] - 1);
 
@@ -5344,7 +5344,7 @@ static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 				/ (VRatio[k] / 2) * (HTotal[k] / PixelClock[k]);
 
 		if (SwathWidthY[k] > 2 * DPPOutputBufferPixels) {
-			DPPOutputBufferLinesY = (double) DPPOutputBufferPixels / SwathWidthY[k];
+			DPPOutputBufferLinesY = (amdgpu_dc_double) DPPOutputBufferPixels / SwathWidthY[k];
 		} else if (SwathWidthY[k] > DPPOutputBufferPixels) {
 			DPPOutputBufferLinesY = 0.5;
 		} else {
@@ -5352,7 +5352,7 @@ static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 		}
 
 		if (SwathWidthY[k] / 2.0 > 2 * DPPOutputBufferPixels) {
-			DPPOutputBufferLinesC = (double) DPPOutputBufferPixels
+			DPPOutputBufferLinesC = (amdgpu_dc_double) DPPOutputBufferPixels
 					/ (SwathWidthY[k] / 2.0);
 		} else if (SwathWidthY[k] / 2.0 > DPPOutputBufferPixels) {
 			DPPOutputBufferLinesC = 0.5;
@@ -5495,22 +5495,22 @@ static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 static void CalculateDCFCLKDeepSleep(
 		struct display_mode_lib *mode_lib,
 		unsigned int NumberOfActivePlanes,
-		double BytePerPixelDETY[],
-		double BytePerPixelDETC[],
-		double VRatio[],
+		amdgpu_dc_double BytePerPixelDETY[],
+		amdgpu_dc_double BytePerPixelDETC[],
+		amdgpu_dc_double VRatio[],
 		unsigned int SwathWidthY[],
 		int DPPPerPlane[],
-		double HRatio[],
-		double PixelClock[],
-		double PSCL_THROUGHPUT[],
-		double PSCL_THROUGHPUT_CHROMA[],
-		double DPPCLK[],
-		double *DCFCLKDeepSleep)
+		amdgpu_dc_double HRatio[],
+		amdgpu_dc_double PixelClock[],
+		amdgpu_dc_double PSCL_THROUGHPUT[],
+		amdgpu_dc_double PSCL_THROUGHPUT_CHROMA[],
+		amdgpu_dc_double DPPCLK[],
+		amdgpu_dc_double *DCFCLKDeepSleep)
 {
 	uint k;
-	double DisplayPipeLineDeliveryTimeLuma;
-	double DisplayPipeLineDeliveryTimeChroma;
-	//double   DCFCLKDeepSleepPerPlane[DC__NUM_DPP__MAX];
+	amdgpu_dc_double DisplayPipeLineDeliveryTimeLuma;
+	amdgpu_dc_double DisplayPipeLineDeliveryTimeChroma;
+	//amdgpu_dc_double   DCFCLKDeepSleepPerPlane[DC__NUM_DPP__MAX];
 
 	for (k = 0; k < NumberOfActivePlanes; ++k) {
 		if (VRatio[k] <= 1) {
@@ -5559,11 +5559,11 @@ static void CalculateDCFCLKDeepSleep(
 }
 
 static void CalculateDETBufferSize(
-		double DETBufferSizeInKByte,
+		amdgpu_dc_double DETBufferSizeInKByte,
 		unsigned int SwathHeightY,
 		unsigned int SwathHeightC,
-		double *DETBufferSizeY,
-		double *DETBufferSizeC)
+		amdgpu_dc_double *DETBufferSizeY,
+		amdgpu_dc_double *DETBufferSizeC)
 {
 	if (SwathHeightC == 0) {
 		*DETBufferSizeY = DETBufferSizeInKByte * 1024;
@@ -5582,36 +5582,36 @@ static void CalculateUrgentBurstFactor(
 		unsigned int SwathHeightY,
 		unsigned int SwathHeightC,
 		unsigned int SwathWidthY,
-		double LineTime,
-		double UrgentLatency,
-		double CursorBufferSize,
+		amdgpu_dc_double LineTime,
+		amdgpu_dc_double UrgentLatency,
+		amdgpu_dc_double CursorBufferSize,
 		unsigned int CursorWidth,
 		unsigned int CursorBPP,
-		double VRatio,
-		double VRatioPreY,
-		double VRatioPreC,
-		double BytePerPixelInDETY,
-		double BytePerPixelInDETC,
-		double *UrgentBurstFactorCursor,
-		double *UrgentBurstFactorCursorPre,
-		double *UrgentBurstFactorLuma,
-		double *UrgentBurstFactorLumaPre,
-		double *UrgentBurstFactorChroma,
-		double *UrgentBurstFactorChromaPre,
+		amdgpu_dc_double VRatio,
+		amdgpu_dc_double VRatioPreY,
+		amdgpu_dc_double VRatioPreC,
+		amdgpu_dc_double BytePerPixelInDETY,
+		amdgpu_dc_double BytePerPixelInDETC,
+		amdgpu_dc_double *UrgentBurstFactorCursor,
+		amdgpu_dc_double *UrgentBurstFactorCursorPre,
+		amdgpu_dc_double *UrgentBurstFactorLuma,
+		amdgpu_dc_double *UrgentBurstFactorLumaPre,
+		amdgpu_dc_double *UrgentBurstFactorChroma,
+		amdgpu_dc_double *UrgentBurstFactorChromaPre,
 		unsigned int *NotEnoughUrgentLatencyHiding,
 		unsigned int *NotEnoughUrgentLatencyHidingPre)
 {
-	double LinesInDETLuma;
-	double LinesInDETChroma;
+	amdgpu_dc_double LinesInDETLuma;
+	amdgpu_dc_double LinesInDETChroma;
 	unsigned int LinesInCursorBuffer;
-	double CursorBufferSizeInTime;
-	double CursorBufferSizeInTimePre;
-	double DETBufferSizeInTimeLuma;
-	double DETBufferSizeInTimeLumaPre;
-	double DETBufferSizeInTimeChroma;
-	double DETBufferSizeInTimeChromaPre;
-	double DETBufferSizeY;
-	double DETBufferSizeC;
+	amdgpu_dc_double CursorBufferSizeInTime;
+	amdgpu_dc_double CursorBufferSizeInTimePre;
+	amdgpu_dc_double DETBufferSizeInTimeLuma;
+	amdgpu_dc_double DETBufferSizeInTimeLumaPre;
+	amdgpu_dc_double DETBufferSizeInTimeChroma;
+	amdgpu_dc_double DETBufferSizeInTimeChromaPre;
+	amdgpu_dc_double DETBufferSizeY;
+	amdgpu_dc_double DETBufferSizeC;
 
 	*NotEnoughUrgentLatencyHiding = 0;
 	*NotEnoughUrgentLatencyHidingPre = 0;
@@ -5700,33 +5700,33 @@ static void CalculateUrgentBurstFactor(
 
 static void CalculatePixelDeliveryTimes(
 		unsigned int NumberOfActivePlanes,
-		double VRatio[],
-		double VRatioPrefetchY[],
-		double VRatioPrefetchC[],
+		amdgpu_dc_double VRatio[],
+		amdgpu_dc_double VRatioPrefetchY[],
+		amdgpu_dc_double VRatioPrefetchC[],
 		unsigned int swath_width_luma_ub[],
 		unsigned int swath_width_chroma_ub[],
 		int DPPPerPlane[],
-		double HRatio[],
-		double PixelClock[],
-		double PSCL_THROUGHPUT[],
-		double PSCL_THROUGHPUT_CHROMA[],
-		double DPPCLK[],
-		double BytePerPixelDETC[],
+		amdgpu_dc_double HRatio[],
+		amdgpu_dc_double PixelClock[],
+		amdgpu_dc_double PSCL_THROUGHPUT[],
+		amdgpu_dc_double PSCL_THROUGHPUT_CHROMA[],
+		amdgpu_dc_double DPPCLK[],
+		amdgpu_dc_double BytePerPixelDETC[],
 		enum scan_direction_class SourceScan[],
 		unsigned int BlockWidth256BytesY[],
 		unsigned int BlockHeight256BytesY[],
 		unsigned int BlockWidth256BytesC[],
 		unsigned int BlockHeight256BytesC[],
-		double DisplayPipeLineDeliveryTimeLuma[],
-		double DisplayPipeLineDeliveryTimeChroma[],
-		double DisplayPipeLineDeliveryTimeLumaPrefetch[],
-		double DisplayPipeLineDeliveryTimeChromaPrefetch[],
-		double DisplayPipeRequestDeliveryTimeLuma[],
-		double DisplayPipeRequestDeliveryTimeChroma[],
-		double DisplayPipeRequestDeliveryTimeLumaPrefetch[],
-		double DisplayPipeRequestDeliveryTimeChromaPrefetch[])
+		amdgpu_dc_double DisplayPipeLineDeliveryTimeLuma[],
+		amdgpu_dc_double DisplayPipeLineDeliveryTimeChroma[],
+		amdgpu_dc_double DisplayPipeLineDeliveryTimeLumaPrefetch[],
+		amdgpu_dc_double DisplayPipeLineDeliveryTimeChromaPrefetch[],
+		amdgpu_dc_double DisplayPipeRequestDeliveryTimeLuma[],
+		amdgpu_dc_double DisplayPipeRequestDeliveryTimeChroma[],
+		amdgpu_dc_double DisplayPipeRequestDeliveryTimeLumaPrefetch[],
+		amdgpu_dc_double DisplayPipeRequestDeliveryTimeChromaPrefetch[])
 {
-	double req_per_swath_ub;
+	amdgpu_dc_double req_per_swath_ub;
 	uint k;
 
 	for (k = 0; k < NumberOfActivePlanes; ++k) {
@@ -5808,17 +5808,17 @@ static void CalculateMetaAndPTETimes(
 		unsigned int MinMetaChunkSizeBytes,
 		unsigned int GPUVMMaxPageTableLevels,
 		unsigned int HTotal[],
-		double VRatio[],
-		double VRatioPrefetchY[],
-		double VRatioPrefetchC[],
-		double DestinationLinesToRequestRowInVBlank[],
-		double DestinationLinesToRequestRowInImmediateFlip[],
-		double DestinationLinesToRequestVMInVBlank[],
-		double DestinationLinesToRequestVMInImmediateFlip[],
+		amdgpu_dc_double VRatio[],
+		amdgpu_dc_double VRatioPrefetchY[],
+		amdgpu_dc_double VRatioPrefetchC[],
+		amdgpu_dc_double DestinationLinesToRequestRowInVBlank[],
+		amdgpu_dc_double DestinationLinesToRequestRowInImmediateFlip[],
+		amdgpu_dc_double DestinationLinesToRequestVMInVBlank[],
+		amdgpu_dc_double DestinationLinesToRequestVMInImmediateFlip[],
 		bool DCCEnable[],
-		double PixelClock[],
-		double BytePerPixelDETY[],
-		double BytePerPixelDETC[],
+		amdgpu_dc_double PixelClock[],
+		amdgpu_dc_double BytePerPixelDETY[],
+		amdgpu_dc_double BytePerPixelDETC[],
 		enum scan_direction_class SourceScan[],
 		unsigned int dpte_row_height[],
 		unsigned int dpte_row_height_chroma[],
@@ -5840,22 +5840,22 @@ static void CalculateMetaAndPTETimes(
 		unsigned int dpde0_bytes_per_frame_ub_c[],
 		unsigned int meta_pte_bytes_per_frame_ub_l[],
 		unsigned int meta_pte_bytes_per_frame_ub_c[],
-		double DST_Y_PER_PTE_ROW_NOM_L[],
-		double DST_Y_PER_PTE_ROW_NOM_C[],
-		double DST_Y_PER_META_ROW_NOM_L[],
-		double TimePerMetaChunkNominal[],
-		double TimePerMetaChunkVBlank[],
-		double TimePerMetaChunkFlip[],
-		double time_per_pte_group_nom_luma[],
-		double time_per_pte_group_vblank_luma[],
-		double time_per_pte_group_flip_luma[],
-		double time_per_pte_group_nom_chroma[],
-		double time_per_pte_group_vblank_chroma[],
-		double time_per_pte_group_flip_chroma[],
-		double TimePerVMGroupVBlank[],
-		double TimePerVMGroupFlip[],
-		double TimePerVMRequestVBlank[],
-		double TimePerVMRequestFlip[])
+		amdgpu_dc_double DST_Y_PER_PTE_ROW_NOM_L[],
+		amdgpu_dc_double DST_Y_PER_PTE_ROW_NOM_C[],
+		amdgpu_dc_double DST_Y_PER_META_ROW_NOM_L[],
+		amdgpu_dc_double TimePerMetaChunkNominal[],
+		amdgpu_dc_double TimePerMetaChunkVBlank[],
+		amdgpu_dc_double TimePerMetaChunkFlip[],
+		amdgpu_dc_double time_per_pte_group_nom_luma[],
+		amdgpu_dc_double time_per_pte_group_vblank_luma[],
+		amdgpu_dc_double time_per_pte_group_flip_luma[],
+		amdgpu_dc_double time_per_pte_group_nom_chroma[],
+		amdgpu_dc_double time_per_pte_group_vblank_chroma[],
+		amdgpu_dc_double time_per_pte_group_flip_chroma[],
+		amdgpu_dc_double TimePerVMGroupVBlank[],
+		amdgpu_dc_double TimePerVMGroupFlip[],
+		amdgpu_dc_double TimePerVMRequestVBlank[],
+		amdgpu_dc_double TimePerVMRequestFlip[])
 {
 	unsigned int meta_chunk_width;
 	unsigned int min_meta_chunk_width;
@@ -5986,33 +5986,33 @@ static void CalculateMetaAndPTETimes(
 			if (DCCEnable[k] == false) {
 				if (BytePerPixelDETC[k] > 0) {
 					num_group_per_lower_vm_stage =
-						dml_ceil((double) (dpde0_bytes_per_frame_ub_l[k]) / (double) (vm_group_bytes[k]), 1)
-						+ dml_ceil((double) (dpde0_bytes_per_frame_ub_c[k]) / (double) (vm_group_bytes[k]), 1);
+						dml_ceil((amdgpu_dc_double) (dpde0_bytes_per_frame_ub_l[k]) / (amdgpu_dc_double) (vm_group_bytes[k]), 1)
+						+ dml_ceil((amdgpu_dc_double) (dpde0_bytes_per_frame_ub_c[k]) / (amdgpu_dc_double) (vm_group_bytes[k]), 1);
 				} else {
 					num_group_per_lower_vm_stage =
-							dml_ceil((double) (dpde0_bytes_per_frame_ub_l[k]) / (double) (vm_group_bytes[k]), 1);
+							dml_ceil((amdgpu_dc_double) (dpde0_bytes_per_frame_ub_l[k]) / (amdgpu_dc_double) (vm_group_bytes[k]), 1);
 				}
 			} else {
 				if (GPUVMMaxPageTableLevels == 1) {
 					if (BytePerPixelDETC[k] > 0) {
 						num_group_per_lower_vm_stage =
-							dml_ceil((double) (meta_pte_bytes_per_frame_ub_l[k]) / (double) (vm_group_bytes[k]), 1)
-							+ dml_ceil((double) (meta_pte_bytes_per_frame_ub_c[k]) / (double) (vm_group_bytes[k]), 1);
+							dml_ceil((amdgpu_dc_double) (meta_pte_bytes_per_frame_ub_l[k]) / (amdgpu_dc_double) (vm_group_bytes[k]), 1)
+							+ dml_ceil((amdgpu_dc_double) (meta_pte_bytes_per_frame_ub_c[k]) / (amdgpu_dc_double) (vm_group_bytes[k]), 1);
 					} else {
 						num_group_per_lower_vm_stage =
-							dml_ceil((double) (meta_pte_bytes_per_frame_ub_l[k]) / (double) (vm_group_bytes[k]), 1);
+							dml_ceil((amdgpu_dc_double) (meta_pte_bytes_per_frame_ub_l[k]) / (amdgpu_dc_double) (vm_group_bytes[k]), 1);
 					}
 				} else {
 					if (BytePerPixelDETC[k] > 0) {
 						num_group_per_lower_vm_stage =
-							dml_ceil((double) (dpde0_bytes_per_frame_ub_l[k]) / (double) (vm_group_bytes[k]), 1)
-							+ dml_ceil((double) (dpde0_bytes_per_frame_ub_c[k]) / (double) (vm_group_bytes[k]), 1)
-							+ dml_ceil((double) (meta_pte_bytes_per_frame_ub_l[k]) / (double) (vm_group_bytes[k]), 1)
-							+ dml_ceil((double) (meta_pte_bytes_per_frame_ub_c[k]) / (double) (vm_group_bytes[k]), 1);
+							dml_ceil((amdgpu_dc_double) (dpde0_bytes_per_frame_ub_l[k]) / (amdgpu_dc_double) (vm_group_bytes[k]), 1)
+							+ dml_ceil((amdgpu_dc_double) (dpde0_bytes_per_frame_ub_c[k]) / (amdgpu_dc_double) (vm_group_bytes[k]), 1)
+							+ dml_ceil((amdgpu_dc_double) (meta_pte_bytes_per_frame_ub_l[k]) / (amdgpu_dc_double) (vm_group_bytes[k]), 1)
+							+ dml_ceil((amdgpu_dc_double) (meta_pte_bytes_per_frame_ub_c[k]) / (amdgpu_dc_double) (vm_group_bytes[k]), 1);
 					} else {
 						num_group_per_lower_vm_stage =
-							dml_ceil((double) (dpde0_bytes_per_frame_ub_l[k]) / (double) (vm_group_bytes[k]), 1)
-							+ dml_ceil((double) (meta_pte_bytes_per_frame_ub_l[k]) / (double) (vm_group_bytes[k]), 1);
+							dml_ceil((amdgpu_dc_double) (dpde0_bytes_per_frame_ub_l[k]) / (amdgpu_dc_double) (vm_group_bytes[k]), 1)
+							+ dml_ceil((amdgpu_dc_double) (meta_pte_bytes_per_frame_ub_l[k]) / (amdgpu_dc_double) (vm_group_bytes[k]), 1);
 					}
 				}
 			}
@@ -6071,25 +6071,25 @@ static void CalculateMetaAndPTETimes(
 	}
 }
 
-static double CalculateExtraLatency(
-		double UrgentRoundTripAndOutOfOrderLatency,
+static amdgpu_dc_double CalculateExtraLatency(
+		amdgpu_dc_double UrgentRoundTripAndOutOfOrderLatency,
 		int TotalNumberOfActiveDPP,
 		int PixelChunkSizeInKByte,
 		int TotalNumberOfDCCActiveDPP,
 		int MetaChunkSize,
-		double ReturnBW,
+		amdgpu_dc_double ReturnBW,
 		bool GPUVMEnable,
 		bool HostVMEnable,
 		int NumberOfActivePlanes,
 		int NumberOfDPP[],
 		long dpte_group_bytes[],
-		double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData,
-		double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyVMDataOnly,
+		amdgpu_dc_double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelMixedWithVMData,
+		amdgpu_dc_double PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyVMDataOnly,
 		int HostVMMaxPageTableLevels,
 		int HostVMCachedPageTableLevels)
 {
-	double CalculateExtraLatency;
-	double HostVMInefficiencyFactor;
+	amdgpu_dc_double CalculateExtraLatency;
+	amdgpu_dc_double HostVMInefficiencyFactor;
 	int HostVMDynamicLevels;
 
 	if (GPUVMEnable && HostVMEnable) {

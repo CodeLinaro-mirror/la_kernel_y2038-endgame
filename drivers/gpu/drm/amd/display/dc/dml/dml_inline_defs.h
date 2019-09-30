@@ -30,84 +30,84 @@
 #include "../calcs/dcn_calc_math.h"
 #include "dml_logger.h"
 
-static inline double dml_min(double a, double b)
+static inline amdgpu_dc_double dml_min(amdgpu_dc_double a, amdgpu_dc_double b)
 {
-	return (double) dcn_bw_min2(a, b);
+	return (amdgpu_dc_double) dcn_bw_min2(a, b);
 }
 
-static inline double dml_min3(double a, double b, double c)
+static inline amdgpu_dc_double dml_min3(amdgpu_dc_double a, amdgpu_dc_double b, amdgpu_dc_double c)
 {
 	return dml_min(dml_min(a, b), c);
 }
 
-static inline double dml_min4(double a, double b, double c, double d)
+static inline amdgpu_dc_double dml_min4(amdgpu_dc_double a, amdgpu_dc_double b, amdgpu_dc_double c, amdgpu_dc_double d)
 {
 	return dml_min(dml_min(a, b), dml_min(c, d));
 }
 
-static inline double dml_max(double a, double b)
+static inline amdgpu_dc_double dml_max(amdgpu_dc_double a, amdgpu_dc_double b)
 {
-	return (double) dcn_bw_max2(a, b);
+	return (amdgpu_dc_double) dcn_bw_max2(a, b);
 }
 
-static inline double dml_max3(double a, double b, double c)
+static inline amdgpu_dc_double dml_max3(amdgpu_dc_double a, amdgpu_dc_double b, amdgpu_dc_double c)
 {
 	return dml_max(dml_max(a, b), c);
 }
 
-static inline double dml_max4(double a, double b, double c, double d)
+static inline amdgpu_dc_double dml_max4(amdgpu_dc_double a, amdgpu_dc_double b, amdgpu_dc_double c, amdgpu_dc_double d)
 {
 	return dml_max(dml_max(a, b), dml_max(c, d));
 }
 
-static inline double dml_max5(double a, double b, double c, double d, double e)
+static inline amdgpu_dc_double dml_max5(amdgpu_dc_double a, amdgpu_dc_double b, amdgpu_dc_double c, amdgpu_dc_double d, amdgpu_dc_double e)
 {
 	return dml_max(dml_max4(a, b, c, d), e);
 }
 
-static inline double dml_ceil(double a, double granularity)
+static inline amdgpu_dc_double dml_ceil(amdgpu_dc_double a, amdgpu_dc_double granularity)
 {
-	return (double) dcn_bw_ceil2(a, granularity);
+	return (amdgpu_dc_double) dcn_bw_ceil2(a, granularity);
 }
 
-static inline double dml_floor(double a, double granularity)
+static inline amdgpu_dc_double dml_floor(amdgpu_dc_double a, amdgpu_dc_double granularity)
 {
-	return (double) dcn_bw_floor2(a, granularity);
+	return (amdgpu_dc_double) dcn_bw_floor2(a, granularity);
 }
 
-static inline int dml_log2(double x)
+static inline int dml_log2(amdgpu_dc_double x)
 {
-	return dml_round((double)dcn_bw_log(x, 2));
+	return dml_round((amdgpu_dc_double)dcn_bw_log(x, 2));
 }
 
-static inline double dml_pow(double a, int exp)
+static inline amdgpu_dc_double dml_pow(amdgpu_dc_double a, int exp)
 {
-	return (double) dcn_bw_pow(a, exp);
+	return (amdgpu_dc_double) dcn_bw_pow(a, exp);
 }
 
-static inline double dml_fmod(double f, int val)
+static inline amdgpu_dc_double dml_fmod(amdgpu_dc_double f, int val)
 {
-	return (double) dcn_bw_mod(f, val);
+	return (amdgpu_dc_double) dcn_bw_mod(f, val);
 }
 
-static inline double dml_ceil_2(double f)
+static inline amdgpu_dc_double dml_ceil_2(amdgpu_dc_double f)
 {
-	return (double) dcn_bw_ceil2(f, 2);
+	return (amdgpu_dc_double) dcn_bw_ceil2(f, 2);
 }
 
-static inline double dml_ceil_ex(double x, double granularity)
+static inline amdgpu_dc_double dml_ceil_ex(amdgpu_dc_double x, amdgpu_dc_double granularity)
 {
-	return (double) dcn_bw_ceil2(x, granularity);
+	return (amdgpu_dc_double) dcn_bw_ceil2(x, granularity);
 }
 
-static inline double dml_floor_ex(double x, double granularity)
+static inline amdgpu_dc_double dml_floor_ex(amdgpu_dc_double x, amdgpu_dc_double granularity)
 {
-	return (double) dcn_bw_floor2(x, granularity);
+	return (amdgpu_dc_double) dcn_bw_floor2(x, granularity);
 }
 
-static inline double dml_log(double x, double base)
+static inline amdgpu_dc_double dml_log(amdgpu_dc_double x, amdgpu_dc_double base)
 {
-	return (double) dcn_bw_log(x, base);
+	return (amdgpu_dc_double) dcn_bw_log(x, base);
 }
 
 static inline unsigned int dml_round_to_multiple(unsigned int num,
@@ -129,7 +129,7 @@ static inline unsigned int dml_round_to_multiple(unsigned int num,
 	else
 		return (num - remainder);
 }
-static inline double dml_abs(double a)
+static inline amdgpu_dc_double dml_abs(amdgpu_dc_double a)
 {
 	if (a > 0)
 		return a;

@@ -28,11 +28,11 @@
 
 #include "dml_inline_defs.h"
 
-double dml_round(double a)
+amdgpu_dc_double dml_round(amdgpu_dc_double a)
 {
-	double round_pt = 0.5;
-	double ceil = dml_ceil(a, 1);
-	double floor = dml_floor(a, 1);
+	amdgpu_dc_double round_pt = 0.5;
+	amdgpu_dc_double ceil = dml_ceil(a, 1);
+	amdgpu_dc_double floor = dml_floor(a, 1);
 
 	if (a - floor >= round_pt)
 		return ceil;

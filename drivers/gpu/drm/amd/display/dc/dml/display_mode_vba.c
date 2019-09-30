@@ -78,7 +78,7 @@ unsigned int dml_get_voltage_level(
 	return mode_lib->vba.VoltageLevel;
 }
 
-#define dml_get_attr_func(attr, var)  double get_##attr(struct display_mode_lib *mode_lib, const display_e2e_pipe_params_st *pipes, unsigned int num_pipes) \
+#define dml_get_attr_func(attr, var)  amdgpu_dc_double get_##attr(struct display_mode_lib *mode_lib, const display_e2e_pipe_params_st *pipes, unsigned int num_pipes) \
 { \
 	recalculate_params(mode_lib, pipes, num_pipes); \
 	return var; \
@@ -108,7 +108,7 @@ dml_get_attr_func(tcalc, mode_lib->vba.TCalc);
 dml_get_attr_func(fraction_of_urgent_bandwidth, mode_lib->vba.FractionOfUrgentBandwidth);
 dml_get_attr_func(fraction_of_urgent_bandwidth_imm_flip, mode_lib->vba.FractionOfUrgentBandwidthImmediateFlip);
 
-#define dml_get_pipe_attr_func(attr, var)  double get_##attr(struct display_mode_lib *mode_lib, const display_e2e_pipe_params_st *pipes, unsigned int num_pipes, unsigned int which_pipe) \
+#define dml_get_pipe_attr_func(attr, var)  amdgpu_dc_double get_##attr(struct display_mode_lib *mode_lib, const display_e2e_pipe_params_st *pipes, unsigned int num_pipes, unsigned int which_pipe) \
 {\
 	unsigned int which_plane; \
 	recalculate_params(mode_lib, pipes, num_pipes); \
@@ -154,7 +154,7 @@ unsigned int get_vstartup_calculated(
 	return mode_lib->vba.VStartup[which_plane];
 }
 
-double get_total_immediate_flip_bytes(
+amdgpu_dc_double get_total_immediate_flip_bytes(
 		struct display_mode_lib *mode_lib,
 		const display_e2e_pipe_params_st *pipes,
 		unsigned int num_pipes)
@@ -163,26 +163,26 @@ double get_total_immediate_flip_bytes(
 	return mode_lib->vba.TotImmediateFlipBytes;
 }
 
-double get_total_immediate_flip_bw(
+amdgpu_dc_double get_total_immediate_flip_bw(
 		struct display_mode_lib *mode_lib,
 		const display_e2e_pipe_params_st *pipes,
 		unsigned int num_pipes)
 {
 	unsigned int k;
-	double immediate_flip_bw = 0.0;
+	amdgpu_dc_double immediate_flip_bw = 0.0;
 	recalculate_params(mode_lib, pipes, num_pipes);
 	for (k = 0; k < mode_lib->vba.NumberOfActivePlanes; ++k)
 		immediate_flip_bw += mode_lib->vba.ImmediateFlipBW[k];
 	return immediate_flip_bw;
 }
 
-double get_total_prefetch_bw(
+amdgpu_dc_double get_total_prefetch_bw(
 		struct display_mode_lib *mode_lib,
 		const display_e2e_pipe_params_st *pipes,
 		unsigned int num_pipes)
 {
 	unsigned int k;
-	double total_prefetch_bw = 0.0;
+	amdgpu_dc_double total_prefetch_bw = 0.0;
 
 	recalculate_params(mode_lib, pipes, num_pipes);
 	for (k = 0; k < mode_lib->vba.NumberOfActivePlanes; ++k)
@@ -823,25 +823,25 @@ void ModeSupportAndSystemConfiguration(struct display_mode_lib *mode_lib)
 	ASSERT(total_pipes <= DC__NUM_DPP__MAX);
 }
 
-double CalculateWriteBackDISPCLK(
+amdgpu_dc_double CalculateWriteBackDISPCLK(
 		enum source_format_class WritebackPixelFormat,
-		double PixelClock,
-		double WritebackHRatio,
-		double WritebackVRatio,
+		amdgpu_dc_double PixelClock,
+		amdgpu_dc_double WritebackHRatio,
+		amdgpu_dc_double WritebackVRatio,
 		unsigned int WritebackLumaHTaps,
 		unsigned int WritebackLumaVTaps,
 		unsigned int WritebackChromaHTaps,
 		unsigned int WritebackChromaVTaps,
-		double WritebackDestinationWidth,
+		amdgpu_dc_double WritebackDestinationWidth,
 		unsigned int HTotal,
 		unsigned int WritebackChromaLineBufferWidth)
 {
-	double CalculateWriteBackDISPCLK = 1.01 * PixelClock * dml_max(
+	amdgpu_dc_double CalculateWriteBackDISPCLK = 1.01 * PixelClock * dml_max(
 		dml_ceil(WritebackLumaHTaps / 4.0, 1) / WritebackHRatio,
 		dml_max((WritebackLumaVTaps * dml_ceil(1.0 / WritebackVRatio, 1) * dml_ceil(WritebackDestinationWidth / 4.0, 1)
-			+ dml_ceil(WritebackDestinationWidth / 4.0, 1)) / (double) HTotal + dml_ceil(1.0 / WritebackVRatio, 1)
-			* (dml_ceil(WritebackLumaVTaps / 4.0, 1) + 4.0) / (double) HTotal,
-			dml_ceil(1.0 / WritebackVRatio, 1) * WritebackDestinationWidth / (double) HTotal));
+			+ dml_ceil(WritebackDestinationWidth / 4.0, 1)) / (amdgpu_dc_double) HTotal + dml_ceil(1.0 / WritebackVRatio, 1)
+			* (dml_ceil(WritebackLumaVTaps / 4.0, 1) + 4.0) / (amdgpu_dc_double) HTotal,
+			dml_ceil(1.0 / WritebackVRatio, 1) * WritebackDestinationWidth / (amdgpu_dc_double) HTotal));
 	if (WritebackPixelFormat != dm_444_32) {
 		CalculateWriteBackDISPCLK = dml_max(CalculateWriteBackDISPCLK, 1.01 * PixelClock * dml_max(
 			dml_ceil(WritebackChromaHTaps / 2.0, 1) / (2 * WritebackHRatio),

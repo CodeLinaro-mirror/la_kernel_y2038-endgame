@@ -94,24 +94,24 @@ static void get_blk256_size(
 	}
 }
 
-static double get_refcyc_per_delivery(
+static amdgpu_dc_double get_refcyc_per_delivery(
 		struct display_mode_lib *mode_lib,
-		double refclk_freq_in_mhz,
-		double pclk_freq_in_mhz,
+		amdgpu_dc_double refclk_freq_in_mhz,
+		amdgpu_dc_double pclk_freq_in_mhz,
 		unsigned int recout_width,
-		double vratio,
-		double hscale_pixel_rate,
+		amdgpu_dc_double vratio,
+		amdgpu_dc_double hscale_pixel_rate,
 		unsigned int delivery_width,
 		unsigned int req_per_swath_ub)
 {
-	double refcyc_per_delivery = 0.0;
+	amdgpu_dc_double refcyc_per_delivery = 0.0;
 
 	if (vratio <= 1.0) {
-		refcyc_per_delivery = (double) refclk_freq_in_mhz * (double) recout_width
-				/ pclk_freq_in_mhz / (double) req_per_swath_ub;
+		refcyc_per_delivery = (amdgpu_dc_double) refclk_freq_in_mhz * (amdgpu_dc_double) recout_width
+				/ pclk_freq_in_mhz / (amdgpu_dc_double) req_per_swath_ub;
 	} else {
-		refcyc_per_delivery = (double) refclk_freq_in_mhz * (double) delivery_width
-				/ (double) hscale_pixel_rate / (double) req_per_swath_ub;
+		refcyc_per_delivery = (amdgpu_dc_double) refclk_freq_in_mhz * (amdgpu_dc_double) delivery_width
+				/ (amdgpu_dc_double) hscale_pixel_rate / (amdgpu_dc_double) req_per_swath_ub;
 	}
 
 	DTRACE("DLG: %s: refclk_freq_in_mhz = %3.2f", __func__, refclk_freq_in_mhz);
@@ -125,21 +125,21 @@ static double get_refcyc_per_delivery(
 
 }
 
-static double get_vratio_pre(
+static amdgpu_dc_double get_vratio_pre(
 		struct display_mode_lib *mode_lib,
 		unsigned int max_num_sw,
 		unsigned int max_partial_sw,
 		unsigned int swath_height,
-		double vinit,
-		double l_sw)
+		amdgpu_dc_double vinit,
+		amdgpu_dc_double l_sw)
 {
-	double prefill = dml_floor(vinit, 1);
-	double vratio_pre = 1.0;
+	amdgpu_dc_double prefill = dml_floor(vinit, 1);
+	amdgpu_dc_double vratio_pre = 1.0;
 
 	vratio_pre = (max_num_sw * swath_height + max_partial_sw) / l_sw;
 
 	if (swath_height > 4) {
-		double tmp0 = (max_num_sw * swath_height) / (l_sw - (prefill - 3.0) / 2.0);
+		amdgpu_dc_double tmp0 = (max_num_sw * swath_height) / (l_sw - (prefill - 3.0) / 2.0);
 
 		if (tmp0 > vratio_pre)
 			vratio_pre = tmp0;
@@ -172,9 +172,9 @@ static void get_swath_need(
 		unsigned int *max_num_sw,
 		unsigned int *max_partial_sw,
 		unsigned int swath_height,
-		double vinit)
+		amdgpu_dc_double vinit)
 {
-	double prefill = dml_floor(vinit, 1);
+	amdgpu_dc_double prefill = dml_floor(vinit, 1);
 	unsigned int max_partial_sw_int;
 
 	DTRACE("DLG: %s: swath_height      = %0d", __func__, swath_height);
@@ -182,7 +182,7 @@ static void get_swath_need(
 
 	ASSERT(prefill > 0.0 && prefill <= 8.0);
 
-	*max_num_sw = (unsigned int) (dml_ceil((prefill - 1.0) / (double) swath_height, 1) + 1.0); /* prefill has to be >= 1 */
+	*max_num_sw = (unsigned int) (dml_ceil((prefill - 1.0) / (amdgpu_dc_double) swath_height, 1) + 1.0); /* prefill has to be >= 1 */
 	max_partial_sw_int =
 			(prefill == 1) ?
 					(swath_height - 1) :
@@ -256,8 +256,8 @@ void dml1_extract_rq_regs(
 	rq_regs->crq_expansion_mode = 1;
 
 	if (rq_param.yuv420) {
-		if ((double) rq_param.misc.rq_l.stored_swath_bytes
-				/ (double) rq_param.misc.rq_c.stored_swath_bytes <= 1.5) {
+		if ((amdgpu_dc_double) rq_param.misc.rq_l.stored_swath_bytes
+				/ (amdgpu_dc_double) rq_param.misc.rq_c.stored_swath_bytes <= 1.5) {
 			detile_buf_plane1_addr = (detile_buf_size_in_bytes / 2.0 / 64.0); /* half to chroma */
 		} else {
 			detile_buf_plane1_addr = dml_round_to_multiple(
@@ -411,10 +411,10 @@ static void dml1_rq_dlg_get_row_heights(
 		get_blk256_size(&blk256_width, &blk256_height, bytes_per_element);
 	}
 
-	log2_blk256_height = dml_log2((double) blk256_height);
+	log2_blk256_height = dml_log2((amdgpu_dc_double) blk256_height);
 	blk_bytes = surf_linear ?
 			256 : get_blk_size_bytes((enum source_macro_tile_size) macro_tile_size);
-	log2_blk_bytes = dml_log2((double) blk_bytes);
+	log2_blk_bytes = dml_log2((amdgpu_dc_double) blk_bytes);
 	log2_blk_height = 0;
 	log2_blk_width = 0;
 
@@ -426,7 +426,7 @@ static void dml1_rq_dlg_get_row_heights(
 	 */
 	if (tiling != dm_sw_linear)
 		log2_blk_height = log2_blk256_height
-				+ dml_ceil((double) (log2_blk_bytes - 8) / 2.0, 1);
+				+ dml_ceil((amdgpu_dc_double) (log2_blk_bytes - 8) / 2.0, 1);
 	else
 		log2_blk_height = 0; /* blk height of 1 */
 
@@ -649,12 +649,12 @@ static void get_surf_rq_param(
 	DTRACE("DLG: %s: blk256_width       = %d", __func__, blk256_width);
 	DTRACE("DLG: %s: blk256_height      = %d", __func__, blk256_height);
 
-	log2_blk256_width = dml_log2((double) blk256_width);
-	log2_blk256_height = dml_log2((double) blk256_height);
+	log2_blk256_width = dml_log2((amdgpu_dc_double) blk256_width);
+	log2_blk256_height = dml_log2((amdgpu_dc_double) blk256_height);
 	blk_bytes =
 			surf_linear ? 256 : get_blk_size_bytes(
 							(enum source_macro_tile_size) pipe_src_param.macro_tile_size);
-	log2_blk_bytes = dml_log2((double) blk_bytes);
+	log2_blk_bytes = dml_log2((amdgpu_dc_double) blk_bytes);
 	log2_blk_height = 0;
 	log2_blk_width = 0;
 
@@ -666,7 +666,7 @@ static void get_surf_rq_param(
 	 */
 	if (pipe_src_param.sw_mode != dm_sw_linear)
 		log2_blk_height = log2_blk256_height
-				+ dml_ceil((double) (log2_blk_bytes - 8) / 2.0, 1);
+				+ dml_ceil((amdgpu_dc_double) (log2_blk_bytes - 8) / 2.0, 1);
 	else
 		log2_blk_height = 0; /* blk height of 1 */
 
@@ -903,7 +903,7 @@ static void get_surf_rq_param(
 	 * the upper bound for the dpte groups per row is as follows.
 	 */
 	rq_dlg_param->dpte_groups_per_row_ub = dml_ceil(
-			(double) dpte_row_width_ub / dpte_group_width,
+			(amdgpu_dc_double) dpte_row_width_ub / dpte_group_width,
 			1);
 
 	dml1_rq_dlg_get_row_heights(
@@ -996,17 +996,17 @@ void dml1_rq_dlg_get_dlg_params(
 	bool interlaced = e2e_pipe_param.pipe.dest.interlaced;
 	unsigned int min_vblank = mode_lib->ip.min_vblank_lines;
 
-	double pclk_freq_in_mhz = e2e_pipe_param.pipe.dest.pixel_rate_mhz;
-	double refclk_freq_in_mhz = e2e_pipe_param.clks_cfg.refclk_mhz;
-	double dppclk_freq_in_mhz = e2e_pipe_param.clks_cfg.dppclk_mhz;
-	double dispclk_freq_in_mhz = e2e_pipe_param.clks_cfg.dispclk_mhz;
+	amdgpu_dc_double pclk_freq_in_mhz = e2e_pipe_param.pipe.dest.pixel_rate_mhz;
+	amdgpu_dc_double refclk_freq_in_mhz = e2e_pipe_param.clks_cfg.refclk_mhz;
+	amdgpu_dc_double dppclk_freq_in_mhz = e2e_pipe_param.clks_cfg.dppclk_mhz;
+	amdgpu_dc_double dispclk_freq_in_mhz = e2e_pipe_param.clks_cfg.dispclk_mhz;
 
-	double ref_freq_to_pix_freq;
-	double prefetch_xy_calc_in_dcfclk;
-	double min_dcfclk_mhz;
-	double t_calc_us;
-	double min_ttu_vblank;
-	double min_dst_y_ttu_vblank;
+	amdgpu_dc_double ref_freq_to_pix_freq;
+	amdgpu_dc_double prefetch_xy_calc_in_dcfclk;
+	amdgpu_dc_double min_dcfclk_mhz;
+	amdgpu_dc_double t_calc_us;
+	amdgpu_dc_double min_ttu_vblank;
+	amdgpu_dc_double min_dst_y_ttu_vblank;
 	unsigned int dlg_vblank_start;
 	bool dcc_en;
 	bool dual_plane;
@@ -1020,15 +1020,15 @@ void dml1_rq_dlg_get_dlg_params(
 	unsigned int vp_width_c;
 	unsigned int htaps_l;
 	unsigned int htaps_c;
-	double hratios_l;
-	double hratios_c;
-	double vratio_l;
-	double vratio_c;
-	double line_time_in_us;
-	double vinit_l;
-	double vinit_c;
-	double vinit_bot_l;
-	double vinit_bot_c;
+	amdgpu_dc_double hratios_l;
+	amdgpu_dc_double hratios_c;
+	amdgpu_dc_double vratio_l;
+	amdgpu_dc_double vratio_c;
+	amdgpu_dc_double line_time_in_us;
+	amdgpu_dc_double vinit_l;
+	amdgpu_dc_double vinit_c;
+	amdgpu_dc_double vinit_bot_l;
+	amdgpu_dc_double vinit_bot_c;
 	unsigned int swath_height_l;
 	unsigned int swath_width_ub_l;
 	unsigned int dpte_bytes_per_row_ub_l;
@@ -1049,37 +1049,37 @@ void dml1_rq_dlg_get_dlg_params(
 	unsigned int vstartup_start;
 	unsigned int dst_x_after_scaler;
 	unsigned int dst_y_after_scaler;
-	double line_wait;
-	double line_o;
-	double line_setup;
-	double line_calc;
-	double dst_y_prefetch;
-	double t_pre_us;
+	amdgpu_dc_double line_wait;
+	amdgpu_dc_double line_o;
+	amdgpu_dc_double line_setup;
+	amdgpu_dc_double line_calc;
+	amdgpu_dc_double dst_y_prefetch;
+	amdgpu_dc_double t_pre_us;
 	unsigned int vm_bytes;
 	unsigned int meta_row_bytes;
 	unsigned int max_num_sw_l;
 	unsigned int max_num_sw_c;
 	unsigned int max_partial_sw_l;
 	unsigned int max_partial_sw_c;
-	double max_vinit_l;
-	double max_vinit_c;
+	amdgpu_dc_double max_vinit_l;
+	amdgpu_dc_double max_vinit_c;
 	unsigned int lsw_l;
 	unsigned int lsw_c;
 	unsigned int sw_bytes_ub_l;
 	unsigned int sw_bytes_ub_c;
 	unsigned int sw_bytes;
 	unsigned int dpte_row_bytes;
-	double prefetch_bw;
-	double flip_bw;
-	double t_vm_us;
-	double t_r0_us;
-	double dst_y_per_vm_vblank;
-	double dst_y_per_row_vblank;
-	double min_dst_y_per_vm_vblank;
-	double min_dst_y_per_row_vblank;
-	double lsw;
-	double vratio_pre_l;
-	double vratio_pre_c;
+	amdgpu_dc_double prefetch_bw;
+	amdgpu_dc_double flip_bw;
+	amdgpu_dc_double t_vm_us;
+	amdgpu_dc_double t_r0_us;
+	amdgpu_dc_double dst_y_per_vm_vblank;
+	amdgpu_dc_double dst_y_per_row_vblank;
+	amdgpu_dc_double min_dst_y_per_vm_vblank;
+	amdgpu_dc_double min_dst_y_per_row_vblank;
+	amdgpu_dc_double lsw;
+	amdgpu_dc_double vratio_pre_l;
+	amdgpu_dc_double vratio_pre_c;
 	unsigned int req_per_swath_ub_l;
 	unsigned int req_per_swath_ub_c;
 	unsigned int meta_row_height_l;
@@ -1089,29 +1089,29 @@ void dml1_rq_dlg_get_dlg_params(
 	unsigned int scaler_rec_in_width_c;
 	unsigned int dpte_row_height_l;
 	unsigned int dpte_row_height_c;
-	double hscale_pixel_rate_l;
-	double hscale_pixel_rate_c;
-	double min_hratio_fact_l;
-	double min_hratio_fact_c;
-	double refcyc_per_line_delivery_pre_l;
-	double refcyc_per_line_delivery_pre_c;
-	double refcyc_per_line_delivery_l;
-	double refcyc_per_line_delivery_c;
-	double refcyc_per_req_delivery_pre_l;
-	double refcyc_per_req_delivery_pre_c;
-	double refcyc_per_req_delivery_l;
-	double refcyc_per_req_delivery_c;
-	double refcyc_per_req_delivery_pre_cur0;
-	double refcyc_per_req_delivery_cur0;
+	amdgpu_dc_double hscale_pixel_rate_l;
+	amdgpu_dc_double hscale_pixel_rate_c;
+	amdgpu_dc_double min_hratio_fact_l;
+	amdgpu_dc_double min_hratio_fact_c;
+	amdgpu_dc_double refcyc_per_line_delivery_pre_l;
+	amdgpu_dc_double refcyc_per_line_delivery_pre_c;
+	amdgpu_dc_double refcyc_per_line_delivery_l;
+	amdgpu_dc_double refcyc_per_line_delivery_c;
+	amdgpu_dc_double refcyc_per_req_delivery_pre_l;
+	amdgpu_dc_double refcyc_per_req_delivery_pre_c;
+	amdgpu_dc_double refcyc_per_req_delivery_l;
+	amdgpu_dc_double refcyc_per_req_delivery_c;
+	amdgpu_dc_double refcyc_per_req_delivery_pre_cur0;
+	amdgpu_dc_double refcyc_per_req_delivery_cur0;
 	unsigned int full_recout_width;
-	double hratios_cur0;
+	amdgpu_dc_double hratios_cur0;
 	unsigned int cur0_src_width;
 	enum cursor_bpp cur0_bpp;
 	unsigned int cur0_req_size;
 	unsigned int cur0_req_width;
-	double cur0_width_ub;
-	double cur0_req_per_width;
-	double hactive_cur0;
+	amdgpu_dc_double cur0_width_ub;
+	amdgpu_dc_double cur0_req_per_width;
+	amdgpu_dc_double hactive_cur0;
 
 	memset(disp_dlg_regs, 0, sizeof(*disp_dlg_regs));
 	memset(disp_ttu_regs, 0, sizeof(*disp_ttu_regs));
@@ -1134,10 +1134,10 @@ void dml1_rq_dlg_get_dlg_params(
 	ASSERT(ref_freq_to_pix_freq < 4.0);
 	disp_dlg_regs->ref_freq_to_pix_freq =
 			(unsigned int) (ref_freq_to_pix_freq * dml_pow(2, 19));
-	disp_dlg_regs->refcyc_per_htotal = (unsigned int) (ref_freq_to_pix_freq * (double) htotal
+	disp_dlg_regs->refcyc_per_htotal = (unsigned int) (ref_freq_to_pix_freq * (amdgpu_dc_double) htotal
 			* dml_pow(2, 8));
-	disp_dlg_regs->refcyc_h_blank_end = (unsigned int) ((double) hblank_end
-			* (double) ref_freq_to_pix_freq);
+	disp_dlg_regs->refcyc_h_blank_end = (unsigned int) ((amdgpu_dc_double) hblank_end
+			* (amdgpu_dc_double) ref_freq_to_pix_freq);
 	ASSERT(disp_dlg_regs->refcyc_h_blank_end < (unsigned int) dml_pow(2, 13));
 	disp_dlg_regs->dlg_vblank_end = interlaced ? (vblank_end / 2) : vblank_end; /* 15 bits */
 
@@ -1151,10 +1151,10 @@ void dml1_rq_dlg_get_dlg_params(
 		min_ttu_vblank = dml_max(dlg_sys_param.t_mclk_wm_us, min_ttu_vblank);
 	min_ttu_vblank = min_ttu_vblank + t_calc_us;
 
-	min_dst_y_ttu_vblank = min_ttu_vblank * pclk_freq_in_mhz / (double) htotal;
+	min_dst_y_ttu_vblank = min_ttu_vblank * pclk_freq_in_mhz / (amdgpu_dc_double) htotal;
 	dlg_vblank_start = interlaced ? (vblank_start / 2) : vblank_start;
 
-	disp_dlg_regs->min_dst_y_next_start = (unsigned int) (((double) dlg_vblank_start
+	disp_dlg_regs->min_dst_y_next_start = (unsigned int) (((amdgpu_dc_double) dlg_vblank_start
 			+ min_dst_y_ttu_vblank) * dml_pow(2, 2));
 	ASSERT(disp_dlg_regs->min_dst_y_next_start < (unsigned int) dml_pow(2, 18));
 
@@ -1292,18 +1292,18 @@ void dml1_rq_dlg_get_dlg_params(
 				line_wait);
 	line_wait = line_wait / line_time_in_us;
 
-	line_o = (double) dst_y_after_scaler + dst_x_after_scaler / (double) htotal;
-	line_setup = (double) (vupdate_offset + vupdate_width + vready_offset) / (double) htotal;
+	line_o = (amdgpu_dc_double) dst_y_after_scaler + dst_x_after_scaler / (amdgpu_dc_double) htotal;
+	line_setup = (amdgpu_dc_double) (vupdate_offset + vupdate_width + vready_offset) / (amdgpu_dc_double) htotal;
 	line_calc = t_calc_us / line_time_in_us;
 
 	DTRACE(
 			"DLG: %s: soc.sr_enter_plus_exit_time_us     = %3.2f",
 			__func__,
-			(double) mode_lib->soc.sr_enter_plus_exit_time_us);
+			(amdgpu_dc_double) mode_lib->soc.sr_enter_plus_exit_time_us);
 	DTRACE(
 			"DLG: %s: soc.dram_clock_change_latency_us   = %3.2f",
 			__func__,
-			(double) mode_lib->soc.dram_clock_change_latency_us);
+			(amdgpu_dc_double) mode_lib->soc.dram_clock_change_latency_us);
 	DTRACE(
 			"DLG: %s: soc.urgent_latency_us              = %3.2f",
 			__func__,
@@ -1316,8 +1316,8 @@ void dml1_rq_dlg_get_dlg_params(
 	DTRACE(
 			"DLG: %s: t_srx_delay_us     = %3.2f",
 			__func__,
-			(double) dlg_sys_param.t_srx_delay_us);
-	DTRACE("DLG: %s: line_time_in_us    = %3.2f", __func__, (double) line_time_in_us);
+			(amdgpu_dc_double) dlg_sys_param.t_srx_delay_us);
+	DTRACE("DLG: %s: line_time_in_us    = %3.2f", __func__, (amdgpu_dc_double) line_time_in_us);
 	DTRACE("DLG: %s: vupdate_offset     = %d", __func__, vupdate_offset);
 	DTRACE("DLG: %s: vupdate_width      = %d", __func__, vupdate_width);
 	DTRACE("DLG: %s: vready_offset      = %d", __func__, vready_offset);
@@ -1327,7 +1327,7 @@ void dml1_rq_dlg_get_dlg_params(
 	DTRACE("DLG: %s: line_setup         = %3.2f", __func__, line_setup);
 	DTRACE("DLG: %s: line_calc          = %3.2f", __func__, line_calc);
 
-	dst_y_prefetch = ((double) min_vblank - 1.0)
+	dst_y_prefetch = ((amdgpu_dc_double) min_vblank - 1.0)
 			- (line_setup + line_calc + line_wait + line_o);
 	DTRACE("DLG: %s: dst_y_prefetch (before rnd) = %3.2f", __func__, dst_y_prefetch);
 	ASSERT(dst_y_prefetch >= 2.0);
@@ -1391,12 +1391,12 @@ void dml1_rq_dlg_get_dlg_params(
 
 	prefetch_bw = (vm_bytes + 2 * dpte_row_bytes + 2 * meta_row_bytes + sw_bytes) / t_pre_us;
 	flip_bw = ((vm_bytes + dpte_row_bytes + meta_row_bytes) * dlg_sys_param.total_flip_bw)
-			/ (double) dlg_sys_param.total_flip_bytes;
+			/ (amdgpu_dc_double) dlg_sys_param.total_flip_bytes;
 	t_vm_us = line_time_in_us / 4.0;
 	if (vm_en && dcc_en) {
 		t_vm_us = dml_max(
 				dlg_sys_param.t_extra_us,
-				dml_max((double) vm_bytes / prefetch_bw, t_vm_us));
+				dml_max((amdgpu_dc_double) vm_bytes / prefetch_bw, t_vm_us));
 
 		if (iflip_en && !dual_plane) {
 			t_vm_us = dml_max(mode_lib->soc.urgent_latency_us, t_vm_us);
@@ -1409,9 +1409,9 @@ void dml1_rq_dlg_get_dlg_params(
 
 	if (vm_en || dcc_en) {
 		t_r0_us = dml_max(
-				(double) (dpte_row_bytes + meta_row_bytes) / prefetch_bw,
+				(amdgpu_dc_double) (dpte_row_bytes + meta_row_bytes) / prefetch_bw,
 				dlg_sys_param.t_extra_us);
-		t_r0_us = dml_max((double) (line_time_in_us - t_vm_us), t_r0_us);
+		t_r0_us = dml_max((amdgpu_dc_double) (line_time_in_us - t_vm_us), t_r0_us);
 
 		if (iflip_en && !dual_plane) {
 			t_r0_us = dml_max(mode_lib->soc.urgent_latency_us * 2.0, t_r0_us);
@@ -1514,18 +1514,18 @@ void dml1_rq_dlg_get_dlg_params(
 		disp_dlg_regs->vratio_prefetch_c = (unsigned int) (vratio_pre_c * dml_pow(2, 19));
 
 	disp_dlg_regs->refcyc_per_pte_group_vblank_l =
-			(unsigned int) (dst_y_per_row_vblank * (double) htotal
-					* ref_freq_to_pix_freq / (double) dpte_groups_per_row_ub_l);
+			(unsigned int) (dst_y_per_row_vblank * (amdgpu_dc_double) htotal
+					* ref_freq_to_pix_freq / (amdgpu_dc_double) dpte_groups_per_row_ub_l);
 	ASSERT(disp_dlg_regs->refcyc_per_pte_group_vblank_l < (unsigned int) dml_pow(2, 13));
 
 	disp_dlg_regs->refcyc_per_pte_group_vblank_c =
-			(unsigned int) (dst_y_per_row_vblank * (double) htotal
-					* ref_freq_to_pix_freq / (double) dpte_groups_per_row_ub_c);
+			(unsigned int) (dst_y_per_row_vblank * (amdgpu_dc_double) htotal
+					* ref_freq_to_pix_freq / (amdgpu_dc_double) dpte_groups_per_row_ub_c);
 	ASSERT(disp_dlg_regs->refcyc_per_pte_group_vblank_c < (unsigned int) dml_pow(2, 13));
 
 	disp_dlg_regs->refcyc_per_meta_chunk_vblank_l =
-			(unsigned int) (dst_y_per_row_vblank * (double) htotal
-					* ref_freq_to_pix_freq / (double) meta_chunks_per_row_ub_l);
+			(unsigned int) (dst_y_per_row_vblank * (amdgpu_dc_double) htotal
+					* ref_freq_to_pix_freq / (amdgpu_dc_double) meta_chunks_per_row_ub_l);
 	ASSERT(disp_dlg_regs->refcyc_per_meta_chunk_vblank_l < (unsigned int) dml_pow(2, 13));
 
 	disp_dlg_regs->refcyc_per_meta_chunk_vblank_c =
@@ -1542,35 +1542,35 @@ void dml1_rq_dlg_get_dlg_params(
 	dpte_row_height_l = rq_dlg_param.rq_l.dpte_row_height;
 	dpte_row_height_c = rq_dlg_param.rq_c.dpte_row_height;
 
-	disp_dlg_regs->dst_y_per_pte_row_nom_l = (unsigned int) ((double) dpte_row_height_l
-			/ (double) vratio_l * dml_pow(2, 2));
+	disp_dlg_regs->dst_y_per_pte_row_nom_l = (unsigned int) ((amdgpu_dc_double) dpte_row_height_l
+			/ (amdgpu_dc_double) vratio_l * dml_pow(2, 2));
 	ASSERT(disp_dlg_regs->dst_y_per_pte_row_nom_l < (unsigned int) dml_pow(2, 17));
 
-	disp_dlg_regs->dst_y_per_pte_row_nom_c = (unsigned int) ((double) dpte_row_height_c
-			/ (double) vratio_c * dml_pow(2, 2));
+	disp_dlg_regs->dst_y_per_pte_row_nom_c = (unsigned int) ((amdgpu_dc_double) dpte_row_height_c
+			/ (amdgpu_dc_double) vratio_c * dml_pow(2, 2));
 	ASSERT(disp_dlg_regs->dst_y_per_pte_row_nom_c < (unsigned int) dml_pow(2, 17));
 
-	disp_dlg_regs->dst_y_per_meta_row_nom_l = (unsigned int) ((double) meta_row_height_l
-			/ (double) vratio_l * dml_pow(2, 2));
+	disp_dlg_regs->dst_y_per_meta_row_nom_l = (unsigned int) ((amdgpu_dc_double) meta_row_height_l
+			/ (amdgpu_dc_double) vratio_l * dml_pow(2, 2));
 	ASSERT(disp_dlg_regs->dst_y_per_meta_row_nom_l < (unsigned int) dml_pow(2, 17));
 
 	disp_dlg_regs->dst_y_per_meta_row_nom_c = disp_dlg_regs->dst_y_per_meta_row_nom_l; /* dcc for 4:2:0 is not supported in dcn1.0.  assigned to be the same as _l for now */
 
-	disp_dlg_regs->refcyc_per_pte_group_nom_l = (unsigned int) ((double) dpte_row_height_l
-			/ (double) vratio_l * (double) htotal * ref_freq_to_pix_freq
-			/ (double) dpte_groups_per_row_ub_l);
+	disp_dlg_regs->refcyc_per_pte_group_nom_l = (unsigned int) ((amdgpu_dc_double) dpte_row_height_l
+			/ (amdgpu_dc_double) vratio_l * (amdgpu_dc_double) htotal * ref_freq_to_pix_freq
+			/ (amdgpu_dc_double) dpte_groups_per_row_ub_l);
 	if (disp_dlg_regs->refcyc_per_pte_group_nom_l >= (unsigned int) dml_pow(2, 23))
 		disp_dlg_regs->refcyc_per_pte_group_nom_l = dml_pow(2, 23) - 1;
 
-	disp_dlg_regs->refcyc_per_pte_group_nom_c = (unsigned int) ((double) dpte_row_height_c
-			/ (double) vratio_c * (double) htotal * ref_freq_to_pix_freq
-			/ (double) dpte_groups_per_row_ub_c);
+	disp_dlg_regs->refcyc_per_pte_group_nom_c = (unsigned int) ((amdgpu_dc_double) dpte_row_height_c
+			/ (amdgpu_dc_double) vratio_c * (amdgpu_dc_double) htotal * ref_freq_to_pix_freq
+			/ (amdgpu_dc_double) dpte_groups_per_row_ub_c);
 	if (disp_dlg_regs->refcyc_per_pte_group_nom_c >= (unsigned int) dml_pow(2, 23))
 		disp_dlg_regs->refcyc_per_pte_group_nom_c = dml_pow(2, 23) - 1;
 
-	disp_dlg_regs->refcyc_per_meta_chunk_nom_l = (unsigned int) ((double) meta_row_height_l
-			/ (double) vratio_l * (double) htotal * ref_freq_to_pix_freq
-			/ (double) meta_chunks_per_row_ub_l);
+	disp_dlg_regs->refcyc_per_meta_chunk_nom_l = (unsigned int) ((amdgpu_dc_double) meta_row_height_l
+			/ (amdgpu_dc_double) vratio_l * (amdgpu_dc_double) htotal * ref_freq_to_pix_freq
+			/ (amdgpu_dc_double) meta_chunks_per_row_ub_l);
 	if (disp_dlg_regs->refcyc_per_meta_chunk_nom_l >= (unsigned int) dml_pow(2, 23))
 		disp_dlg_regs->refcyc_per_meta_chunk_nom_l = dml_pow(2, 23) - 1;
 
@@ -1833,19 +1833,19 @@ void dml1_rq_dlg_get_dlg_params(
 				cur0_req_size = 256;
 		}
 
-		cur0_req_width = (double) cur0_req_size / ((double) cur0_bit_per_pixel / 8.0);
-		cur0_width_ub = dml_ceil((double) cur0_src_width / (double) cur0_req_width, 1)
-				* (double) cur0_req_width;
-		cur0_req_per_width = cur0_width_ub / (double) cur0_req_width;
-		hactive_cur0 = (double) cur0_src_width / hratios_cur0; /* FIXME: oswin to think about what to do for cursor */
+		cur0_req_width = (amdgpu_dc_double) cur0_req_size / ((amdgpu_dc_double) cur0_bit_per_pixel / 8.0);
+		cur0_width_ub = dml_ceil((amdgpu_dc_double) cur0_src_width / (amdgpu_dc_double) cur0_req_width, 1)
+				* (amdgpu_dc_double) cur0_req_width;
+		cur0_req_per_width = cur0_width_ub / (amdgpu_dc_double) cur0_req_width;
+		hactive_cur0 = (amdgpu_dc_double) cur0_src_width / hratios_cur0; /* FIXME: oswin to think about what to do for cursor */
 
 		if (vratio_pre_l <= 1.0) {
 			refcyc_per_req_delivery_pre_cur0 = hactive_cur0 * ref_freq_to_pix_freq
-					/ (double) cur0_req_per_width;
+					/ (amdgpu_dc_double) cur0_req_per_width;
 		} else {
-			refcyc_per_req_delivery_pre_cur0 = (double) refclk_freq_in_mhz
-					* (double) cur0_src_width / hscale_pixel_rate_l
-					/ (double) cur0_req_per_width;
+			refcyc_per_req_delivery_pre_cur0 = (amdgpu_dc_double) refclk_freq_in_mhz
+					* (amdgpu_dc_double) cur0_src_width / hscale_pixel_rate_l
+					/ (amdgpu_dc_double) cur0_req_per_width;
 		}
 
 		disp_ttu_regs->refcyc_per_req_delivery_pre_cur0 =
@@ -1854,11 +1854,11 @@ void dml1_rq_dlg_get_dlg_params(
 
 		if (vratio_l <= 1.0) {
 			refcyc_per_req_delivery_cur0 = hactive_cur0 * ref_freq_to_pix_freq
-					/ (double) cur0_req_per_width;
+					/ (amdgpu_dc_double) cur0_req_per_width;
 		} else {
-			refcyc_per_req_delivery_cur0 = (double) refclk_freq_in_mhz
-					* (double) cur0_src_width / hscale_pixel_rate_l
-					/ (double) cur0_req_per_width;
+			refcyc_per_req_delivery_cur0 = (amdgpu_dc_double) refclk_freq_in_mhz
+					* (amdgpu_dc_double) cur0_src_width / hscale_pixel_rate_l
+					/ (amdgpu_dc_double) cur0_req_per_width;
 		}
 
 		DTRACE("DLG: %s: cur0_req_width                     = %d", __func__, cur0_req_width);
@@ -1894,7 +1894,7 @@ void dml1_rq_dlg_get_dlg_params(
 	/* TTU - Misc */
 	disp_ttu_regs->qos_level_low_wm = 0;
 	ASSERT(disp_ttu_regs->qos_level_low_wm < dml_pow(2, 14));
-	disp_ttu_regs->qos_level_high_wm = (unsigned int) (4.0 * (double) htotal
+	disp_ttu_regs->qos_level_high_wm = (unsigned int) (4.0 * (amdgpu_dc_double) htotal
 			* ref_freq_to_pix_freq);
 	ASSERT(disp_ttu_regs->qos_level_high_wm < dml_pow(2, 14));
 

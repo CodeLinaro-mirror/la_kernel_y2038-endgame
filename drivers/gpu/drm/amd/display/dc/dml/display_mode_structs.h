@@ -25,6 +25,8 @@
 #ifndef __DISPLAY_MODE_STRUCTS_H__
 #define __DISPLAY_MODE_STRUCTS_H__
 
+#include "amdgpu_dc_float.h"
+
 #define MAX_CLOCK_LIMIT_STATES 8
 
 typedef struct _vcs_dpi_voltage_scaling_st voltage_scaling_st;
@@ -54,41 +56,41 @@ typedef struct _vcs_dpi_display_arb_params_st display_arb_params_st;
 
 struct _vcs_dpi_voltage_scaling_st {
 	int state;
-	double dscclk_mhz;
-	double dcfclk_mhz;
-	double socclk_mhz;
-	double phyclk_d18_mhz;
-	double dram_speed_mts;
-	double fabricclk_mhz;
-	double dispclk_mhz;
-	double phyclk_mhz;
-	double dppclk_mhz;
+	amdgpu_dc_double dscclk_mhz;
+	amdgpu_dc_double dcfclk_mhz;
+	amdgpu_dc_double socclk_mhz;
+	amdgpu_dc_double phyclk_d18_mhz;
+	amdgpu_dc_double dram_speed_mts;
+	amdgpu_dc_double fabricclk_mhz;
+	amdgpu_dc_double dispclk_mhz;
+	amdgpu_dc_double phyclk_mhz;
+	amdgpu_dc_double dppclk_mhz;
 };
 
 struct _vcs_dpi_soc_bounding_box_st {
-	double sr_exit_time_us;
-	double sr_enter_plus_exit_time_us;
-	double urgent_latency_us;
-	double urgent_latency_pixel_data_only_us;
-	double urgent_latency_pixel_mixed_with_vm_data_us;
-	double urgent_latency_vm_data_only_us;
-	double writeback_latency_us;
-	double ideal_dram_bw_after_urgent_percent;
-	double pct_ideal_dram_sdp_bw_after_urgent_pixel_only; // PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelDataOnly
-	double pct_ideal_dram_sdp_bw_after_urgent_pixel_and_vm;
-	double pct_ideal_dram_sdp_bw_after_urgent_vm_only;
-	double max_avg_sdp_bw_use_normal_percent;
-	double max_avg_dram_bw_use_normal_percent;
+	amdgpu_dc_double sr_exit_time_us;
+	amdgpu_dc_double sr_enter_plus_exit_time_us;
+	amdgpu_dc_double urgent_latency_us;
+	amdgpu_dc_double urgent_latency_pixel_data_only_us;
+	amdgpu_dc_double urgent_latency_pixel_mixed_with_vm_data_us;
+	amdgpu_dc_double urgent_latency_vm_data_only_us;
+	amdgpu_dc_double writeback_latency_us;
+	amdgpu_dc_double ideal_dram_bw_after_urgent_percent;
+	amdgpu_dc_double pct_ideal_dram_sdp_bw_after_urgent_pixel_only; // PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelDataOnly
+	amdgpu_dc_double pct_ideal_dram_sdp_bw_after_urgent_pixel_and_vm;
+	amdgpu_dc_double pct_ideal_dram_sdp_bw_after_urgent_vm_only;
+	amdgpu_dc_double max_avg_sdp_bw_use_normal_percent;
+	amdgpu_dc_double max_avg_dram_bw_use_normal_percent;
 	unsigned int max_request_size_bytes;
-	double downspread_percent;
-	double dram_page_open_time_ns;
-	double dram_rw_turnaround_time_ns;
-	double dram_return_buffer_per_channel_bytes;
-	double dram_channel_width_bytes;
-	double fabric_datapath_to_dcn_data_return_bytes;
-	double dcn_downspread_percent;
-	double dispclk_dppclk_vco_speed_mhz;
-	double dfs_vco_period_ps;
+	amdgpu_dc_double downspread_percent;
+	amdgpu_dc_double dram_page_open_time_ns;
+	amdgpu_dc_double dram_rw_turnaround_time_ns;
+	amdgpu_dc_double dram_return_buffer_per_channel_bytes;
+	amdgpu_dc_double dram_channel_width_bytes;
+	amdgpu_dc_double fabric_datapath_to_dcn_data_return_bytes;
+	amdgpu_dc_double dcn_downspread_percent;
+	amdgpu_dc_double dispclk_dppclk_vco_speed_mhz;
+	amdgpu_dc_double dfs_vco_period_ps;
 	unsigned int urgent_out_of_order_return_per_channel_pixel_only_bytes;
 	unsigned int urgent_out_of_order_return_per_channel_pixel_and_vm_bytes;
 	unsigned int urgent_out_of_order_return_per_channel_vm_only_bytes;
@@ -99,19 +101,19 @@ struct _vcs_dpi_soc_bounding_box_st {
 	unsigned int num_chans;
 	unsigned int vmm_page_size_bytes;
 	unsigned int hostvm_min_page_size_bytes;
-	double dram_clock_change_latency_us;
-	double dummy_pstate_latency_us;
-	double writeback_dram_clock_change_latency_us;
+	amdgpu_dc_double dram_clock_change_latency_us;
+	amdgpu_dc_double dummy_pstate_latency_us;
+	amdgpu_dc_double writeback_dram_clock_change_latency_us;
 	unsigned int return_bus_width_bytes;
 	unsigned int voltage_override;
-	double xfc_bus_transport_time_us;
-	double xfc_xbuf_latency_tolerance_us;
+	amdgpu_dc_double xfc_bus_transport_time_us;
+	amdgpu_dc_double xfc_xbuf_latency_tolerance_us;
 	int use_urgent_burst_bw;
 	unsigned int num_states;
 	struct _vcs_dpi_voltage_scaling_st clock_limits[MAX_CLOCK_LIMIT_STATES];
 	bool do_urgent_latency_adjustment;
-	double urgent_latency_adjustment_fabric_clock_component_us;
-	double urgent_latency_adjustment_fabric_clock_reference_mhz;
+	amdgpu_dc_double urgent_latency_adjustment_fabric_clock_component_us;
+	amdgpu_dc_double urgent_latency_adjustment_fabric_clock_reference_mhz;
 };
 
 struct _vcs_dpi_ip_params_st {
@@ -147,10 +149,10 @@ struct _vcs_dpi_ip_params_st {
 
 #ifdef CONFIG_DRM_AMD_DC_DCN2_0
 	unsigned int writeback_10bpc420_supported;
-	double writeback_max_hscl_ratio;
-	double writeback_max_vscl_ratio;
-	double writeback_min_hscl_ratio;
-	double writeback_min_vscl_ratio;
+	amdgpu_dc_double writeback_max_hscl_ratio;
+	amdgpu_dc_double writeback_max_vscl_ratio;
+	amdgpu_dc_double writeback_min_hscl_ratio;
+	amdgpu_dc_double writeback_min_vscl_ratio;
 	unsigned int writeback_max_hscl_taps;
 	unsigned int writeback_max_vscl_taps;
 	unsigned int writeback_line_buffer_luma_buffer_size;
@@ -167,8 +169,8 @@ struct _vcs_dpi_ip_params_st {
 	unsigned int max_pscl_lb_bw_pix_per_clk;
 	unsigned int max_lb_vscl_bw_pix_per_clk;
 	unsigned int max_vscl_hscl_bw_pix_per_clk;
-	double max_hscl_ratio;
-	double max_vscl_ratio;
+	amdgpu_dc_double max_hscl_ratio;
+	amdgpu_dc_double max_vscl_ratio;
 	unsigned int hscl_mults;
 	unsigned int vscl_mults;
 	unsigned int max_hscl_taps;
@@ -182,9 +184,9 @@ struct _vcs_dpi_ip_params_st {
 	unsigned int max_num_hdmi_frl_outputs;
 
 	unsigned int xfc_fill_constant_bytes;
-	double dispclk_ramp_margin_percent;
-	double xfc_fill_bw_overhead_percent;
-	double underscan_factor;
+	amdgpu_dc_double dispclk_ramp_margin_percent;
+	amdgpu_dc_double xfc_fill_bw_overhead_percent;
+	amdgpu_dc_double underscan_factor;
 	unsigned int min_vblank_lines;
 	unsigned int dppclk_delay_subtotal;
 	unsigned int dispclk_delay_subtotal;
@@ -204,9 +206,9 @@ struct _vcs_dpi_ip_params_st {
 };
 
 struct _vcs_dpi_display_xfc_params_st {
-	double xfc_tslv_vready_offset_us;
-	double xfc_tslv_vupdate_width_us;
-	double xfc_tslv_vupdate_offset_us;
+	amdgpu_dc_double xfc_tslv_vready_offset_us;
+	amdgpu_dc_double xfc_tslv_vupdate_width_us;
+	amdgpu_dc_double xfc_tslv_vupdate_offset_us;
 	int xfc_slv_chunk_size_bytes;
 };
 
@@ -263,8 +265,8 @@ struct writeback_st {
 	int wb_vtaps_luma;
 	int wb_htaps_chroma;
 	int wb_vtaps_chroma;
-	double wb_hratio;
-	double wb_vratio;
+	amdgpu_dc_double wb_hratio;
+	amdgpu_dc_double wb_vratio;
 };
 
 struct _vcs_dpi_display_output_params_st {
@@ -281,14 +283,14 @@ struct _vcs_dpi_display_output_params_st {
 };
 
 struct _vcs_dpi_scaler_ratio_depth_st {
-	double hscl_ratio;
-	double vscl_ratio;
-	double hscl_ratio_c;
-	double vscl_ratio_c;
-	double vinit;
-	double vinit_c;
-	double vinit_bot;
-	double vinit_bot_c;
+	amdgpu_dc_double hscl_ratio;
+	amdgpu_dc_double vscl_ratio;
+	amdgpu_dc_double hscl_ratio_c;
+	amdgpu_dc_double vscl_ratio_c;
+	amdgpu_dc_double vinit;
+	amdgpu_dc_double vinit_c;
+	amdgpu_dc_double vinit_bot;
+	amdgpu_dc_double vinit_bot_c;
 	int lb_depth;
 	int scl_enable;
 };
@@ -318,7 +320,7 @@ struct _vcs_dpi_display_pipe_dest_params_st {
 	unsigned int vupdate_width;
 	unsigned int vready_offset;
 	unsigned char interlaced;
-	double pixel_rate_mhz;
+	amdgpu_dc_double pixel_rate_mhz;
 	unsigned char synchronized_vblank_all_planes;
 	unsigned char otg_inst;
 	unsigned char odm_combine;
@@ -336,11 +338,11 @@ struct _vcs_dpi_display_pipe_params_st {
 
 struct _vcs_dpi_display_clocks_and_cfg_st {
 	int voltage;
-	double dppclk_mhz;
-	double refclk_mhz;
-	double dispclk_mhz;
-	double dcfclk_mhz;
-	double socclk_mhz;
+	amdgpu_dc_double dppclk_mhz;
+	amdgpu_dc_double refclk_mhz;
+	amdgpu_dc_double dispclk_mhz;
+	amdgpu_dc_double dcfclk_mhz;
+	amdgpu_dc_double socclk_mhz;
 };
 
 struct _vcs_dpi_display_e2e_pipe_params_st {
@@ -502,14 +504,14 @@ struct _vcs_dpi_display_rq_regs_st {
 };
 
 struct _vcs_dpi_display_dlg_sys_params_st {
-	double t_mclk_wm_us;
-	double t_urg_wm_us;
-	double t_sr_wm_us;
-	double t_extra_us;
-	double mem_trip_us;
-	double t_srx_delay_us;
-	double deepsleep_dcfclk_mhz;
-	double total_flip_bw;
+	amdgpu_dc_double t_mclk_wm_us;
+	amdgpu_dc_double t_urg_wm_us;
+	amdgpu_dc_double t_sr_wm_us;
+	amdgpu_dc_double t_extra_us;
+	amdgpu_dc_double mem_trip_us;
+	amdgpu_dc_double t_srx_delay_us;
+	amdgpu_dc_double deepsleep_dcfclk_mhz;
+	amdgpu_dc_double total_flip_bw;
 	unsigned int total_flip_bytes;
 };
 

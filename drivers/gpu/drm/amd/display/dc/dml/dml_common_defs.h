@@ -32,6 +32,6 @@
 #include "display_mode_enums.h"
 
 
-double dml_round(double a);
+amdgpu_dc_double dml_round(amdgpu_dc_double a);
 
 #endif /* __DC_COMMON_DEFS_H__ */

@@ -41,7 +41,7 @@
 	break
 
 
-void get_qp_set(qp_set qps, enum colour_mode cm, enum bits_per_comp bpc, enum max_min max_min, float bpp)
+void get_qp_set(qp_set qps, enum colour_mode cm, enum bits_per_comp bpc, enum max_min max_min, amdgpu_dc_float bpp)
 {
 	int mode = MODE_SELECT(444, 422, 420);
 	int sel = table_hash(mode, bpc, max_min);
@@ -86,7 +86,7 @@ void get_qp_set(qp_set qps, enum colour_mode cm, enum bits_per_comp bpc, enum ma
 	memcpy(qps, table[index].qps, sizeof(qp_set));
 }
 
-double dsc_roundf(double num)
+amdgpu_dc_double dsc_roundf(amdgpu_dc_double num)
 {
 	if (num < 0.0)
 		num = num - 0.5;
@@ -96,9 +96,9 @@ double dsc_roundf(double num)
 	return (int)(num);
 }
 
-double dsc_ceil(double num)
+amdgpu_dc_double dsc_ceil(amdgpu_dc_double num)
 {
-	double retval = (int)num;
+	amdgpu_dc_double retval = (int)num;
 
 	if (retval != num && num > 0)
 		retval = num + 1;
@@ -106,7 +106,7 @@ double dsc_ceil(double num)
 	return (int)retval;
 }
 
-void get_ofs_set(qp_set ofs, enum colour_mode mode, float bpp)
+void get_ofs_set(qp_set ofs, enum colour_mode mode, amdgpu_dc_float bpp)
 {
 	int   *p = ofs;
 
@@ -173,10 +173,10 @@ int median3(int a, int b, int c)
 	return b;
 }
 
-void calc_rc_params(struct rc_params *rc, enum colour_mode cm, enum bits_per_comp bpc, float bpp, int slice_width, int slice_height, int minor_version)
+void calc_rc_params(struct rc_params *rc, enum colour_mode cm, enum bits_per_comp bpc, amdgpu_dc_float bpp, int slice_width, int slice_height, int minor_version)
 {
-	float bpp_group;
-	float initial_xmit_delay_factor;
+	amdgpu_dc_float bpp_group;
+	amdgpu_dc_float initial_xmit_delay_factor;
 	int source_bpp;
 	int padding_pixels;
 	int i;

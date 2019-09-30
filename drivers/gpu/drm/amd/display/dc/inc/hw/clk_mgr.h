@@ -68,7 +68,7 @@ struct clk_limit_table {
 struct wm_range_table_entry {
 	unsigned int wm_inst;
 	unsigned int wm_type;
-	double pstate_latency_us;
+	amdgpu_dc_double pstate_latency_us;
 	bool valid;
 };
 
