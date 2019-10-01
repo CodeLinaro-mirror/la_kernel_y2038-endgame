@@ -17,12 +17,19 @@ typedef union {
 #define amdgpu_dc_float_constant(x) ((amdgpu_dc_float){ .f = (x) })
 #define amdgpu_dc_double_constant(x) ((amdgpu_dc_double){ .d = (x) })
 
+static inline _Bool amdgpu_dc_float_is_NaN(amdgpu_dc_float x)
+{
+	return (x.f != x.f);
+}
+
 #else
 typedef float amdgpu_dc_float;
 typedef double amdgpu_dc_double;
 
 #define amdgpu_dc_float_constant(x) ((amdgpu_dc_float)(x))
 #define amdgpu_dc_double_constant(x) ((amdgpu_dc_double)(x))
+
+#define amdgpu_dc_float_is_NaN(x) ((x) != (x))
 
 #endif
 
