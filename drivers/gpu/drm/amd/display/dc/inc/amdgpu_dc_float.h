@@ -3,7 +3,7 @@
 #ifndef __AMDGPU_DC_FLOAT_H__
 #define __AMDGPU_DC_FLOAT_H__
 
-#if 0
+#if 1
 typedef union {
 	float f;
 	unsigned int x;
