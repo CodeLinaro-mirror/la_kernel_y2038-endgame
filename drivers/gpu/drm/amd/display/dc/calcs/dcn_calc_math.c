@@ -25,7 +25,7 @@
 
 #include "dcn_calc_math.h"
 
-#define isNaN(number) ((number) != (number))
+#define isNaN(number) amdgpu_dc_float_is_NaN(number)
 
 /*
  * NOTE:
