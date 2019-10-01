@@ -155,7 +155,7 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 			v->byte_per_pixel_in_detc[k] = amdgpu_dc_float_constant(0.0);
 		}
 		else if (v->source_pixel_format[k] == dcn_bw_rgb_sub_32) {
-			v->byte_per_pixel_in_dety[k] = amdgpu_dc_float_constant( 4.0);
+			v->byte_per_pixel_in_dety[k] = amdgpu_dc_float_constant(4.0);
 			v->byte_per_pixel_in_detc[k] = amdgpu_dc_float_constant(0.0);
 		}
 		else if (v->source_pixel_format[k] == dcn_bw_rgb_sub_16) {

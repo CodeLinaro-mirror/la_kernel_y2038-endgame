@@ -451,8 +451,8 @@ static void dcn_bw_calc_rq_dlg_ttu(
 	struct _vcs_dpi_display_rq_params_st rq_param = {0};
 	struct _vcs_dpi_display_dlg_sys_params_st dlg_sys_param = {0};
 	struct _vcs_dpi_display_e2e_pipe_params_st input = { { { 0 } } };
-	amdgpu_dc_float total_active_bw = 0;
-	amdgpu_dc_float total_prefetch_bw = 0;
+	amdgpu_dc_float total_active_bw = amdgpu_dc_float_constant(0);
+	amdgpu_dc_float total_prefetch_bw = amdgpu_dc_float_constant(0);
 	int total_flip_bytes = 0;
 	int i;
 
