@@ -46,7 +46,9 @@ $code.=<<___;
 # define poly1305_init   poly1305_init_arm
 # define poly1305_blocks poly1305_blocks_arm
 # define poly1305_emit   poly1305_emit_arm
+#if     __ARM_MAX_ARCH__>=7
 .globl	poly1305_blocks_neon
+#endif
 #endif
 
 #if defined(__thumb2__)
