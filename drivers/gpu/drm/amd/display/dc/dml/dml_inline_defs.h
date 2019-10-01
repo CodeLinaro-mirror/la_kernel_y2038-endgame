@@ -32,7 +32,7 @@
 
 static inline amdgpu_dc_double dml_min(amdgpu_dc_double a, amdgpu_dc_double b)
 {
-	return (amdgpu_dc_double) dcn_bw_min2(a, b);
+	return amdgpu_dc_float_to_double(dcn_bw_min2(amdgpu_dc_double_to_float(a), amdgpu_dc_double_to_float(b)));
 }
 
 static inline amdgpu_dc_double dml_min3(amdgpu_dc_double a, amdgpu_dc_double b, amdgpu_dc_double c)
@@ -47,7 +47,7 @@ static inline amdgpu_dc_double dml_min4(amdgpu_dc_double a, amdgpu_dc_double b, 
 
 static inline amdgpu_dc_double dml_max(amdgpu_dc_double a, amdgpu_dc_double b)
 {
-	return (amdgpu_dc_double) dcn_bw_max2(a, b);
+	return amdgpu_dc_float_to_double(dcn_bw_max2(amdgpu_dc_double_to_float(a), amdgpu_dc_double_to_float(b)));
 }
 
 static inline amdgpu_dc_double dml_max3(amdgpu_dc_double a, amdgpu_dc_double b, amdgpu_dc_double c)
@@ -67,47 +67,47 @@ static inline amdgpu_dc_double dml_max5(amdgpu_dc_double a, amdgpu_dc_double b, 
 
 static inline amdgpu_dc_double dml_ceil(amdgpu_dc_double a, amdgpu_dc_double granularity)
 {
-	return (amdgpu_dc_double) dcn_bw_ceil2(a, granularity);
+	return amdgpu_dc_float_to_double(dcn_bw_ceil2(amdgpu_dc_double_to_float(a), amdgpu_dc_double_to_float(granularity)));
 }
 
 static inline amdgpu_dc_double dml_floor(amdgpu_dc_double a, amdgpu_dc_double granularity)
 {
-	return (amdgpu_dc_double) dcn_bw_floor2(a, granularity);
+	return amdgpu_dc_float_to_double(dcn_bw_floor2(amdgpu_dc_double_to_float(a), amdgpu_dc_double_to_float(granularity)));
 }
 
 static inline int dml_log2(amdgpu_dc_double x)
 {
-	return dml_round((amdgpu_dc_double)dcn_bw_log(x, amdgpu_dc_float_constant(2)));
+	return amdgpu_dc_double_to_int(dml_round(amdgpu_dc_float_to_double(dcn_bw_log(amdgpu_dc_double_to_float(x), amdgpu_dc_float_constant(2)))));
 }
 
 static inline amdgpu_dc_double dml_pow(amdgpu_dc_double a, int exp)
 {
-	return (amdgpu_dc_double) dcn_bw_pow(a, exp);
+	return amdgpu_dc_float_to_double(dcn_bw_pow(amdgpu_dc_double_to_float(a), amdgpu_dc_int_to_float(exp)));
 }
 
 static inline amdgpu_dc_double dml_fmod(amdgpu_dc_double f, int val)
 {
-	return (amdgpu_dc_double) dcn_bw_mod(f, val);
+	return amdgpu_dc_float_to_double(dcn_bw_mod(amdgpu_dc_double_to_float(f), amdgpu_dc_int_to_float(val)));
 }
 
 static inline amdgpu_dc_double dml_ceil_2(amdgpu_dc_double f)
 {
-	return (amdgpu_dc_double) dcn_bw_ceil2(f, amdgpu_dc_float_constant(2));
+	return amdgpu_dc_float_to_double(dcn_bw_ceil2(amdgpu_dc_double_to_float(f), amdgpu_dc_float_constant(2)));
 }
 
 static inline amdgpu_dc_double dml_ceil_ex(amdgpu_dc_double x, amdgpu_dc_double granularity)
 {
-	return (amdgpu_dc_double) dcn_bw_ceil2(x, granularity);
+	return amdgpu_dc_float_to_double(dcn_bw_ceil2(amdgpu_dc_double_to_float(x), amdgpu_dc_double_to_float(granularity)));
 }
 
 static inline amdgpu_dc_double dml_floor_ex(amdgpu_dc_double x, amdgpu_dc_double granularity)
 {
-	return (amdgpu_dc_double) dcn_bw_floor2(x, granularity);
+	return amdgpu_dc_float_to_double(dcn_bw_floor2(amdgpu_dc_double_to_float(x), amdgpu_dc_double_to_float(granularity)));
 }
 
 static inline amdgpu_dc_double dml_log(amdgpu_dc_double x, amdgpu_dc_double base)
 {
-	return (amdgpu_dc_double) dcn_bw_log(x, base);
+	return amdgpu_dc_float_to_double(dcn_bw_log(amdgpu_dc_double_to_float(x), amdgpu_dc_double_to_float(base)));
 }
 
 static inline unsigned int dml_round_to_multiple(unsigned int num,
@@ -128,13 +128,6 @@ static inline unsigned int dml_round_to_multiple(unsigned int num,
 		return (num + multiple - remainder);
 	else
 		return (num - remainder);
-}
-static inline amdgpu_dc_double dml_abs(amdgpu_dc_double a)
-{
-	if (a > 0)
-		return a;
-	else
-		return (a*(-1));
 }
 
 #endif

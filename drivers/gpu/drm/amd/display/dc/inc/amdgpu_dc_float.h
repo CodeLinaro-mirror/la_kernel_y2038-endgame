@@ -22,6 +22,36 @@ static inline _Bool amdgpu_dc_float_is_NaN(amdgpu_dc_float x)
 	return (x.f != x.f);
 }
 
+static inline amdgpu_dc_float amdgpu_dc_double_to_float(amdgpu_dc_double d)
+{
+	return ((amdgpu_dc_float){ .f = (float)(d.d) });
+}
+
+static inline amdgpu_dc_double amdgpu_dc_float_to_double(amdgpu_dc_float f)
+{
+	return ((amdgpu_dc_double){ .d = (float)(f.f) });
+}
+
+static inline amdgpu_dc_float amdgpu_dc_int_to_float(int i)
+{
+	return ((amdgpu_dc_float){ .f = (float)(i) });
+}
+
+static inline amdgpu_dc_double amdgpu_dc_int_to_double(int i)
+{
+	return ((amdgpu_dc_double){ .d = (double)(i) });
+}
+
+static inline int amdgpu_dc_double_to_int(amdgpu_dc_double d)
+{
+	return (int)(d.d);
+}
+
+static inline int amdgpu_dc_float_to_int(amdgpu_dc_float f)
+{
+	return (int)(f.f);
+}
+
 #else
 typedef float amdgpu_dc_float;
 typedef double amdgpu_dc_double;
@@ -30,6 +60,13 @@ typedef double amdgpu_dc_double;
 #define amdgpu_dc_double_constant(x) ((amdgpu_dc_double)(x))
 
 #define amdgpu_dc_float_is_NaN(x) ((x) != (x))
+
+#define amdgpu_dc_double_to_float(x)	((amdgpu_dc_float)(x))
+#define amdgpu_dc_float_to_double(x)	((amdgpu_dc_double)(x))
+#define amdgpu_dc_int_to_float(x)	((amdgpu_dc_float)(x))
+#define amdgpu_dc_int_to_double(x)	((amdgpu_dc_double)(x))
+#define amdgpu_dc_double_to_int(x)	((int)(x))
+#define amdgpu_dc_float_to_int(x)	((int)(x))
 
 #endif
 
