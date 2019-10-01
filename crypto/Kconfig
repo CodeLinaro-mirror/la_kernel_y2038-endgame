@@ -305,11 +305,13 @@ config CRYPTO_GCM
 
 config CRYPTO_LIB_CHACHA20POLY1305
 	tristate "ChaCha20Poly1305 AEAD support (8-byte nonce library version)"
+	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
 	select CRYPTO_LIB_CHACHA
 	select CRYPTO_LIB_POLY1305
 
 config CRYPTO_CHACHA20POLY1305
 	tristate "ChaCha20-Poly1305 AEAD support"
+	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
 	select CRYPTO_CHACHA20
 	select CRYPTO_POLY1305
 	select CRYPTO_AEAD
@@ -466,12 +468,14 @@ config CRYPTO_KEYWRAP
 
 config CRYPTO_NHPOLY1305
 	tristate
+	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
 	select CRYPTO_HASH
 	select CRYPTO_POLY1305
 
 config CRYPTO_NHPOLY1305_SSE2
 	tristate "NHPoly1305 hash function (x86_64 SSE2 implementation)"
 	depends on X86 && 64BIT
+	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
 	select CRYPTO_NHPOLY1305
 	help
 	  SSE2 optimized implementation of the hash function used by the
@@ -480,6 +484,7 @@ config CRYPTO_NHPOLY1305_SSE2
 config CRYPTO_NHPOLY1305_AVX2
 	tristate "NHPoly1305 hash function (x86_64 AVX2 implementation)"
 	depends on X86 && 64BIT
+	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
 	select CRYPTO_NHPOLY1305
 	help
 	  AVX2 optimized implementation of the hash function used by the
@@ -487,6 +492,7 @@ config CRYPTO_NHPOLY1305_AVX2
 
 config CRYPTO_ADIANTUM
 	tristate "Adiantum support"
+	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
 	select CRYPTO_CHACHA20
 	select CRYPTO_POLY1305
 	select CRYPTO_NHPOLY1305
@@ -720,6 +726,7 @@ config CRYPTO_LIB_POLY1305
 
 config CRYPTO_POLY1305
 	tristate "Poly1305 authenticator algorithm"
+	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
 	select CRYPTO_HASH
 	select CRYPTO_LIB_POLY1305
 	help
@@ -1464,6 +1471,7 @@ config CRYPTO_LIB_CHACHA
 
 config CRYPTO_CHACHA20
 	tristate "ChaCha stream cipher algorithms"
+	depends on CRYPTO_ARCH_HAVE_LIB_CHACHA || !CRYPTO_ARCH_HAVE_LIB_CHACHA
 	select CRYPTO_LIB_CHACHA
 	select CRYPTO_BLKCIPHER
 	help
