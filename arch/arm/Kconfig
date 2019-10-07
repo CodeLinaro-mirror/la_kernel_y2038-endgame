@@ -435,26 +435,6 @@ config ARCH_SA1100
 	help
 	  Support for StrongARM 11x0 based boards.
 
-config ARCH_S3C24XX
-	bool "Samsung S3C24XX SoCs"
-	select ATAGS
-	select CLKSRC_SAMSUNG_PWM
-	select GPIO_SAMSUNG
-	select GPIOLIB
-	select GENERIC_IRQ_MULTI_HANDLER
-	select HAVE_S3C2410_I2C if I2C
-	select HAVE_S3C_RTC if RTC_CLASS
-	select NEED_MACH_IO_H
-	select S3C2410_WATCHDOG
-	select SAMSUNG_ATAGS
-	select USE_OF
-	select WATCHDOG
-	help
-	  Samsung S3C2410, S3C2412, S3C2413, S3C2416, S3C2440, S3C2442, S3C2443
-	  and S3C2450 SoCs based systems, such as the Simtec Electronics BAST
-	  (<http://www.simtec.co.uk/products/EB110ITX/>), the IPAQ 1940 or the
-	  Samsung SMDK2410 development board (and derivatives).
-
 endchoice
 
 menu "Multiple platform selection"
@@ -520,6 +500,26 @@ config ARCH_VIRT
 	select ARM_PSCI
 	select HAVE_ARM_ARCH_TIMER
 	select ARCH_SUPPORTS_BIG_ENDIAN
+
+config ARCH_S3C24XX
+	bool "Samsung S3C24XX SoCs"
+	depends on ARCH_MULTI_V4_V5
+	select ATAGS
+	select CLKSRC_SAMSUNG_PWM
+	select GPIO_SAMSUNG
+	select GPIOLIB
+	select HAVE_S3C2410_I2C if I2C
+	select HAVE_S3C2410_WATCHDOG if WATCHDOG
+	select HAVE_S3C_RTC if RTC_CLASS
+	#select NEED_MACH_IO_H
+	select S3C2410_WATCHDOG
+	select SAMSUNG_ATAGS
+	select WATCHDOG
+	help
+	  Samsung S3C2410, S3C2412, S3C2413, S3C2416, S3C2440, S3C2442, S3C2443
+	  and S3C2450 SoCs based systems, such as the Simtec Electronics BAST
+	  (<http://www.simtec.co.uk/products/EB110ITX/>), the IPAQ 1940 or the
+	  Samsung SMDK2410 development board (and derivatives).
 
 #
 # This is sorted alphabetically by mach-* pathname.  However, plat-*
