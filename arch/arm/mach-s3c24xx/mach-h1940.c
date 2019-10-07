@@ -462,6 +462,7 @@ static void h1940_set_mmc_power(unsigned char power_mode, unsigned short vdd)
 static struct s3c24xx_mci_pdata h1940_mmc_cfg __initdata = {
 	.set_power     = h1940_set_mmc_power,
 	.ocr_avail     = MMC_VDD_32_33,
+	.set_power = s3c24xx_mci_def_set_power,
 };
 
 static struct gpiod_lookup_table h1940_mmc_gpio_table = {
@@ -471,6 +472,13 @@ static struct gpiod_lookup_table h1940_mmc_gpio_table = {
 		GPIO_LOOKUP("GPF", 5, "cd", GPIO_ACTIVE_LOW),
 		/* Write protect S3C2410_GPH(8) */
 		GPIO_LOOKUP("GPH", 8, "wp", GPIO_ACTIVE_LOW),
+		/* bus pins */
+		GPIO_LOOKUP_IDX("GPIOE",  5, "bus", 0, GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP_IDX("GPIOE",  6, "bus", 1, GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP_IDX("GPIOE",  7, "bus", 2, GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP_IDX("GPIOE",  8, "bus", 3, GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP_IDX("GPIOE",  9, "bus", 4, GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP_IDX("GPIOE", 10, "bus", 5, GPIO_ACTIVE_HIGH),
 		{ },
 	},
 };
