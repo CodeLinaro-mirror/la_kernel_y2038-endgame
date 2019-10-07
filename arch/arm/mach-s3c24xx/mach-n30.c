@@ -571,6 +571,11 @@ static void __init n30_init(void)
 			      S3C2410_MISCCR_USBSUSPND0 |
 			      S3C2410_MISCCR_USBSUSPND1, 0x0);
 
+	/* LEDs: no point in having a pull-up if we are always driving */
+	s3c_gpio_setpull(S3C2410_GPG(6), S3C_GPIO_PULL_NONE);
+	s3c_gpio_setpull(S3C2410_GPD(8), S3C_GPIO_PULL_NONE);
+	s3c_gpio_setpull(S3C2410_GPD(9), S3C_GPIO_PULL_NONE);
+
 	/* Configure the I2S pins (GPE0...GPE4) in correct mode */
 	s3c_gpio_cfgall_range(S3C2410_GPE(0), 5, S3C_GPIO_SFN(2),
 			      S3C_GPIO_PULL_NONE);
