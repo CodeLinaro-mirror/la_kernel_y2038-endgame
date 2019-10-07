@@ -16,9 +16,6 @@
 #include <linux/module.h>
 #include <linux/platform_data/leds-s3c24xx.h>
 
-#include <mach/regs-gpio.h>
-#include <plat/gpio-cfg.h>
-
 /* our context */
 
 struct s3c24xx_gpio_led {
@@ -72,10 +69,6 @@ static int s3c24xx_led_probe(struct platform_device *dev)
 	ret = devm_gpio_request(&dev->dev, pdata->gpio, "S3C24XX_LED");
 	if (ret < 0)
 		return ret;
-
-	/* no point in having a pull-up if we are always driving */
-
-	s3c_gpio_setpull(pdata->gpio, S3C_GPIO_PULL_NONE);
 
 	if (pdata->flags & S3C24XX_LEDF_TRISTATE)
 		gpio_direction_input(pdata->gpio);
