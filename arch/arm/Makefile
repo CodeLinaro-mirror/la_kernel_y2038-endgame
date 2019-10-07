@@ -220,9 +220,6 @@ machine-$(CONFIG_ARCH_ZYNQ)		+= zynq
 machine-$(CONFIG_PLAT_VERSATILE)	+= versatile
 machine-$(CONFIG_PLAT_SPEAR)		+= spear
 
-# Platform directory name.  This list is sorted alphanumerically
-# by CONFIG_* macro name.
-
 # The byte offset of the kernel image in RAM from the start of RAM.
 TEXT_OFFSET := $(textofs-y)
 
@@ -237,7 +234,6 @@ MACHINE  :=
 endif
 
 machdirs := $(patsubst %,arch/arm/mach-%/,$(machine-y))
-platdirs := $(patsubst %,arch/arm/plat-%/,$(sort $(plat-y)))
 
 ifneq ($(CONFIG_ARCH_MULTIPLATFORM),y)
 ifneq ($(CONFIG_ARM_SINGLE_ARMV7M),y)
@@ -252,7 +248,6 @@ core-y				+= $(machdirs) $(platdirs)
 
 # For cleaning
 core-				+= $(patsubst %,arch/arm/mach-%/, $(machine-))
-core-				+= $(patsubst %,arch/arm/plat-%/, $(plat-))
 
 libs-y				:= arch/arm/lib/ $(libs-y)
 
