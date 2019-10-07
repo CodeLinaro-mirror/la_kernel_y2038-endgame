@@ -3,6 +3,7 @@
 # Copyright 2009 Simtec Electronics
 
 ccflags-$(CONFIG_ARCH_MULTIPLATFORM) += -I$(srctree)/$(src)/include
+asflags-$(CONFIG_ARCH_MULTIPLATFORM) += -I$(srctree)/$(src)/include
 
 ifdef CONFIG_ARCH_S3C24XX
 include $(src)/Makefile.s3c24xx
