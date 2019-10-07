@@ -39,4 +39,14 @@
  */
 #define S3C_ADDR_CPU(x)	S3C_ADDR(0x00500000 + (x))
 
+/*
+ * ISA style IO, for each machine to sort out mappings for,
+ * if it implements it. We reserve two 16M regions for ISA,
+ * so the PC/104 can use separate addresses for 8-bit and
+ * 16-bit port I/O.
+ */
+#define PCIO_BASE		S3C_ADDR(0x02000000)
+#define S3C24XX_VA_ISA_WORD	(PCIO_BASE)
+#define S3C24XX_VA_ISA_BYTE	(PCIO_BASE + 0x01000000)
+
 #endif /* __ASM_PLAT_MAP_H */
