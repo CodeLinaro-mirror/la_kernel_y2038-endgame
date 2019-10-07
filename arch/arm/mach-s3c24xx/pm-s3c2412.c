@@ -20,6 +20,8 @@
 #include <asm/irq.h>
 
 #include <mach/hardware.h>
+#include <mach/irqs.h>
+
 #include <mach/regs-gpio.h>
 
 #include <plat/cpu.h>

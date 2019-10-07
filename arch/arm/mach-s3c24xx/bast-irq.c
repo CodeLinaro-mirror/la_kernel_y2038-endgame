@@ -17,6 +17,7 @@
 
 #include <mach/hardware.h>
 #include <mach/regs-irq.h>
+#include <mach/irqs.h>
 
 #include "bast.h"
 
