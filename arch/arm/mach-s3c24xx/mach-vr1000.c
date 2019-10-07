@@ -37,6 +37,7 @@
 #include <mach/hardware.h>
 #include <mach/regs-gpio.h>
 #include <mach/gpio-samsung.h>
+#include <plat/gpio-cfg.h>
 
 #include <plat/cpu.h>
 #include <plat/devs.h>
@@ -321,6 +322,12 @@ static void __init vr1000_init(void)
 
 	i2c_register_board_info(0, vr1000_i2c_devs,
 				ARRAY_SIZE(vr1000_i2c_devs));
+
+
+	/* LEDs: no point in having a pull-up if we are always driving */
+	s3c_gpio_setpull(S3C2410_GPB(0), S3C_GPIO_PULL_NONE);
+	s3c_gpio_setpull(S3C2410_GPB(1), S3C_GPIO_PULL_NONE);
+	s3c_gpio_setpull(S3C2410_GPB(2), S3C_GPIO_PULL_NONE);
 
 	nor_simtec_init();
 	simtec_audio_add(NULL, true, NULL);

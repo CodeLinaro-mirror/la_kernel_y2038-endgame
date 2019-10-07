@@ -189,11 +189,13 @@ static const struct gpio smdk_led_gpios[] = {
 void __init smdk_machine_init(void)
 {
 	/* Configure the LEDs (even if we have no LED support)*/
+	int i, ret;
 
-	int ret = gpio_request_array(smdk_led_gpios,
-				     ARRAY_SIZE(smdk_led_gpios));
+	ret = gpio_request_array(smdk_led_gpios, ARRAY_SIZE(smdk_led_gpios));
 	if (!WARN_ON(ret < 0))
 		gpio_free_array(smdk_led_gpios, ARRAY_SIZE(smdk_led_gpios));
+	for (i = 0; i < ARRAY_SIZE(smdk_led_gpios); i++)
+		s3c_gpio_setpull(smdk_led_gpios[i].gpio, S3C_GPIO_PULL_NONE);
 
 	if (machine_is_smdk2443())
 		smdk_nand_info.twrph0 = 50;

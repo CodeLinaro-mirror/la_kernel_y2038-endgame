@@ -690,6 +690,12 @@ static void __init mini2440_init(void)
 	s3c_gpio_cfgall_range(S3C2410_GPE(0), 5, S3C_GPIO_SFN(2),
 			      S3C_GPIO_PULL_NONE);
 
+	/* LEDs: no point in having a pull-up if we are always driving */
+	s3c_gpio_setpull(S3C2410_GPB(5), S3C_GPIO_PULL_NONE);
+	s3c_gpio_setpull(S3C2410_GPB(6), S3C_GPIO_PULL_NONE);
+	s3c_gpio_setpull(S3C2410_GPB(7), S3C_GPIO_PULL_NONE);
+	s3c_gpio_setpull(S3C2410_GPB(8), S3C_GPIO_PULL_NONE);
+
 	if (features.lcd_index != -1) {
 		int li;
 
