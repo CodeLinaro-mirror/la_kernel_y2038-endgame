@@ -36,7 +36,6 @@
 
 #include <mach/map.h>
 #include <mach/irqs.h>
-#include <mach/hardware.h>
 #include <mach/regs-gpio.h>
 #include <mach/gpio-samsung.h>
 
