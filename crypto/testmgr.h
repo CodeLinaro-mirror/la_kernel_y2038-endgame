@@ -166,6 +166,8 @@ struct kpp_testvec {
 	unsigned short expected_a_public_size;
 	unsigned short expected_ss_size;
 	bool genkey;
+	int gen_pubkey_error;
+	int comp_ss_error;
 };
 
 static const char zeroed_string[48];

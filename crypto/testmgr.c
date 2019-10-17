@@ -3499,8 +3499,11 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
 	/* Compute party A's public key */
 	err = crypto_wait_req(crypto_kpp_generate_public_key(req), &wait);
 	if (err) {
-		pr_err("alg: %s: Party A: generate public key test failed. err %d\n",
-		       alg, err);
+		if (err != vec->gen_pubkey_error)
+			pr_err("alg: %s: Party A: generate public key test failed. err %d (expected %d)\n",
+			       alg, err, vec->gen_pubkey_error);
+		else
+			err = 0;
 		goto free_output;
 	}
 
@@ -3537,8 +3540,11 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
 				 crypto_req_done, &wait);
 	err = crypto_wait_req(crypto_kpp_compute_shared_secret(req), &wait);
 	if (err) {
-		pr_err("alg: %s: Party A: compute shared secret test failed. err %d\n",
-		       alg, err);
+		if (err != vec->comp_ss_error)
+			pr_err("alg: %s: Party A: compute shared secret test failed. err %d (expected %d)\n",
+			       alg, err, vec->comp_ss_error);
+		else
+			err = 0;
 		goto free_all;
 	}
 
