@@ -15,6 +15,12 @@ notrace int __vdso_clock_gettime(clockid_t clock,
 	return __cvdso_clock_gettime32(clock, ts);
 }
 
+notrace int __vdso_clock_gettime64(clockid_t clock,
+				 struct __kernel_timespec *ts)
+{
+	return __cvdso_clock_gettime(clock, ts);
+}
+
 notrace int __vdso_gettimeofday(struct __kernel_old_timeval *tv,
 				struct timezone *tz)
 {
