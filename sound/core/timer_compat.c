@@ -8,8 +8,6 @@
 
 #include <linux/compat.h>
 
-#include "compat.h"
-
 /*
  * ILP32/LP64 has different size for 'long' type. Additionally, the size
  * of storage alignment differs depending on architectures. Here, '__packed'
@@ -72,7 +70,7 @@ static int snd_timer_user_info_compat(struct file *file,
 }
 
 struct snd_timer_status32 {
-	struct compat_snd_monotonic_timestamp tstamp;
+	struct compat_timespec tstamp;
 	u32 resolution;
 	u32 lost;
 	u32 overrun;
