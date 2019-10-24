@@ -1,22 +1,21 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
- * arch/arm/mach-ixp4xx/include/mach/platform.h
- *
  * Constants and functions that are useful to IXP4xx platform-specific code
  * and device drivers.
  *
  * Copyright (C) 2004 MontaVista Software, Inc.
  */
-
-#ifndef __ASM_ARCH_HARDWARE_H__
-#error "Do not include this directly, instead #include <mach/hardware.h>"
-#endif
+#ifndef __IXP4XX_PLATFORM_H
+#define __IXP4XX_PLATFORM_H
 
 #ifndef __ASSEMBLY__
 
 #include <linux/reboot.h>
+#include <linux/platform_data/eth_ixp4xx.h>
 
 #include <asm/types.h>
+
+#include "ixp4xx-regs.h"
 
 #ifndef	__ARMEB__
 #define	REG_OFFSET	0
@@ -79,41 +78,6 @@ extern unsigned long ixp4xx_exp_bus_size;
 #define IXP4XX_UART_XTAL        	14745600
 
 /*
- * This structure provide a means for the board setup code
- * to give information to th pata_ixp4xx driver. It is
- * passed as platform_data.
- */
-struct ixp4xx_pata_data {
-	volatile u32	*cs0_cfg;
-	volatile u32	*cs1_cfg;
-	unsigned long	cs0_bits;
-	unsigned long	cs1_bits;
-	void __iomem	*cs0;
-	void __iomem	*cs1;
-};
-
-#define IXP4XX_ETH_NPEA		0x00
-#define IXP4XX_ETH_NPEB		0x10
-#define IXP4XX_ETH_NPEC		0x20
-
-/* Information about built-in Ethernet MAC interfaces */
-struct eth_plat_info {
-	u8 phy;		/* MII PHY ID, 0 - 31 */
-	u8 rxq;		/* configurable, currently 0 - 31 only */
-	u8 txreadyq;
-	u8 hwaddr[6];
-};
-
-/* Information about built-in HSS (synchronous serial) interfaces */
-struct hss_plat_info {
-	int (*set_clock)(int port, unsigned int clock_type);
-	int (*open)(int port, void *pdev,
-		    void (*set_carrier_cb)(void *pdev, int carrier));
-	void (*close)(int port, void *pdev);
-	u8 txreadyq;
-};
-
-/*
  * Frequency of clock used for primary clocksource
  */
 extern unsigned long ixp4xx_timer_freq;
@@ -132,5 +96,10 @@ struct pci_sys_data;
 extern int ixp4xx_setup(int nr, struct pci_sys_data *sys);
 extern struct pci_ops ixp4xx_ops;
 
+extern struct resource ixp4xx_res_etha;
+extern struct resource ixp4xx_res_ethb;
+extern struct resource ixp4xx_res_ethc;
+
 #endif // __ASSEMBLY__
 
+#endif

@@ -23,16 +23,20 @@
 #include <linux/mtd/platnand.h>
 #include <linux/delay.h>
 #include <linux/gpio.h>
+#include <linux/soc/ixp4xx/cpu.h>
+
 #include <asm/types.h>
 #include <asm/setup.h>
 #include <asm/memory.h>
-#include <mach/hardware.h>
+
 #include <asm/mach-types.h>
 #include <asm/irq.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/flash.h>
 
 #include "irqs.h"
+#include "ixp4xx-regs.h"
+#include "platform.h"
 
 #define IXDP425_SDA_PIN		7
 #define IXDP425_SCL_PIN		6
@@ -204,10 +208,14 @@ static struct platform_device ixdp425_eth[] = {
 		.name			= "ixp4xx_eth",
 		.id			= IXP4XX_ETH_NPEB,
 		.dev.platform_data	= ixdp425_plat_eth,
+		.resource		= &ixp4xx_res_ethb,
+		.num_resources		= 1,
 	}, {
 		.name			= "ixp4xx_eth",
 		.id			= IXP4XX_ETH_NPEC,
 		.dev.platform_data	= ixdp425_plat_eth + 1,
+		.resource		= &ixp4xx_res_ethc,
+		.num_resources		= 1,
 	}
 };
 

@@ -35,6 +35,8 @@
 #include <asm/mach/flash.h>
 
 #include "irqs.h"
+#include "ixp4xx-regs.h"
+#include "platform.h"
 
 #define NAS100D_SDA_PIN		5
 #define NAS100D_SCL_PIN		6
@@ -178,6 +180,8 @@ static struct platform_device nas100d_eth[] = {
 		.name			= "ixp4xx_eth",
 		.id			= IXP4XX_ETH_NPEB,
 		.dev.platform_data	= nas100d_plat_eth,
+		.resource		= &ixp4xx_res_ethb,
+		.num_resources		= 1,
 	}
 };
 

@@ -12,11 +12,23 @@
 
 #include <linux/bitops.h>
 
-#include <mach/hardware.h>
-
 extern int (*ixp4xx_pci_read)(u32 addr, u32 cmd, u32* data);
 extern int ixp4xx_pci_write(u32 addr, u32 cmd, u32 data);
 
+/*
+ * Shift value for byte enable on NP cmd/byte enable register
+ */
+#define IXP4XX_PCI_NP_CBE_BESL		4
+
+/*
+ * PCI commands supported by NP access unit
+ */
+#define NP_CMD_IOREAD			0x2
+#define NP_CMD_IOWRITE			0x3
+#define NP_CMD_CONFIGREAD		0xa
+#define NP_CMD_CONFIGWRITE		0xb
+#define NP_CMD_MEMREAD			0x6
+#define	NP_CMD_MEMWRITE			0x7
 
 /*
  * IXP4xx provides two methods of accessing PCI memory space:

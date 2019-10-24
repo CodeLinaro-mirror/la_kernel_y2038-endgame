@@ -30,6 +30,8 @@
 #include <asm/mach/flash.h>
 
 #include "irqs.h"
+#include "ixp4xx-regs.h"
+#include "platform.h"
 
 #define FSG_SDA_PIN		12
 #define FSG_SCL_PIN		13
@@ -126,9 +128,13 @@ static struct platform_device fsg_uart = {
 	.resource		= fsg_uart_resources,
 };
 
+static struct resource fsg_leds_resource[1] = {};
+
 static struct platform_device fsg_leds = {
 	.name		= "fsg-led",
 	.id		= -1,
+	.resource	= fsg_leds_resource,
+	.num_resources	= ARRAY_SIZE(fsg_leds_resource),
 };
 
 /* Built-in 10/100 Ethernet MAC interfaces */
@@ -148,12 +154,16 @@ static struct platform_device fsg_eth[] = {
 	{
 		.name			= "ixp4xx_eth",
 		.id			= IXP4XX_ETH_NPEB,
+		.resource		= &ixp4xx_res_ethb,
+		.num_resources		= 1,
 		.dev = {
 			.platform_data	= fsg_plat_eth,
 		},
 	}, {
 		.name			= "ixp4xx_eth",
 		.id			= IXP4XX_ETH_NPEC,
+		.resource		= &ixp4xx_res_ethc,
+		.num_resources		= 1,
 		.dev = {
 			.platform_data	= fsg_plat_eth + 1,
 		},
@@ -214,6 +224,8 @@ static void __init fsg_init(void)
 	 */
 	(void)platform_device_register(&fsg_uart);
 
+	fsg_leds_resource[0] = (struct resource)
+			DEFINE_RES_MEM(IXP4XX_EXP_BUS_BASE(2), SZ_512);
 	platform_add_devices(fsg_devices, ARRAY_SIZE(fsg_devices));
 
 	if (request_irq(gpio_to_irq(FSG_RB_GPIO), &fsg_reset_handler,

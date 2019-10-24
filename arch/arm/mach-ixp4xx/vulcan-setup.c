@@ -23,6 +23,8 @@
 #include <asm/mach/flash.h>
 
 #include "irqs.h"
+#include "ixp4xx-regs.h"
+#include "platform.h"
 
 static struct flash_platform_data vulcan_flash_data = {
 	.map_name	= "cfi_probe",
@@ -144,6 +146,8 @@ static struct platform_device vulcan_eth[] = {
 		.dev = {
 			.platform_data	= &vulcan_plat_eth[0],
 		},
+		.resource		= &ixp4xx_res_ethb,
+		.num_resources		= 1,
 	},
 	[1] = {
 		.name			= "ixp4xx_eth",
@@ -151,6 +155,8 @@ static struct platform_device vulcan_eth[] = {
 		.dev = {
 			.platform_data	= &vulcan_plat_eth[1],
 		},
+		.resource		= &ixp4xx_res_ethc,
+		.num_resources		= 1,
 	},
 };
 

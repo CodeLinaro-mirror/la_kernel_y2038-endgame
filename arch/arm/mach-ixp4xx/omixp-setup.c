@@ -9,6 +9,7 @@
  *      Copyright (C) 2003-2004 MontaVista Software, Inc.
  */
 
+#include <linux/io.h>
 #include <linux/kernel.h>
 #include <linux/serial.h>
 #include <linux/serial_8250.h>
@@ -22,8 +23,8 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/flash.h>
 
-#include <mach/hardware.h>
-
+#include "ixp4xx-regs.h"
+#include "platform.h"
 #include "irqs.h"
 
 static struct resource omixp_flash_resources[] = {
@@ -187,10 +188,14 @@ static struct platform_device ixdp425_eth[] = {
 		.name			= "ixp4xx_eth",
 		.id			= IXP4XX_ETH_NPEB,
 		.dev.platform_data	= ixdp425_plat_eth,
+		.resource		= &ixp4xx_res_ethb,
+		.num_resources		= 1,
 	}, {
 		.name			= "ixp4xx_eth",
 		.id			= IXP4XX_ETH_NPEC,
 		.dev.platform_data	= ixdp425_plat_eth + 1,
+		.resource		= &ixp4xx_res_ethc,
+		.num_resources		= 1,
 	},
 };
 

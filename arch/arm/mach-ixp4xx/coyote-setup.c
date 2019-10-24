@@ -11,6 +11,7 @@
 
 #include <linux/kernel.h>
 #include <linux/init.h>
+#include <linux/io.h>
 #include <linux/device.h>
 #include <linux/serial.h>
 #include <linux/tty.h>
@@ -19,13 +20,15 @@
 #include <asm/types.h>
 #include <asm/setup.h>
 #include <asm/memory.h>
-#include <mach/hardware.h>
+
 #include <asm/irq.h>
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/flash.h>
 
 #include "irqs.h"
+#include "ixp4xx-regs.h"
+#include "platform.h"
 
 #define COYOTE_IDE_BASE_PHYS	IXP4XX_EXP_BUS_BASE(3)
 #define COYOTE_IDE_BASE_VIRT	0xFFFE1000

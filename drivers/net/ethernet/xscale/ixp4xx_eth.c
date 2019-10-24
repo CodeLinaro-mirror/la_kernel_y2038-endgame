@@ -29,19 +29,22 @@
 #include <linux/net_tstamp.h>
 #include <linux/of.h>
 #include <linux/phy.h>
+#include <linux/platform_data/eth_ixp4xx.h>
 #include <linux/platform_device.h>
 #include <linux/ptp_classify.h>
 #include <linux/slab.h>
 #include <linux/module.h>
-#include <mach/ixp46x_ts.h>
 #include <linux/soc/ixp4xx/npe.h>
 #include <linux/soc/ixp4xx/qmgr.h>
+#include <linux/soc/ixp4xx/cpu.h>
+
+#include "ixp4xx_eth.h"
+#include "ixp46x_ts.h"
 
 #define DEBUG_DESC		0
 #define DEBUG_RX		0
 #define DEBUG_TX		0
 #define DEBUG_PKT_BYTES		0
-#define DEBUG_MDIO		0
 #define DEBUG_CLOSE		0
 
 #define DRV_NAME		"ixp4xx_eth"
@@ -58,8 +61,6 @@
 #define RX_BUFF_SIZE		ALIGN((NET_IP_ALIGN) + MAX_MRU, 4)
 
 #define NAPI_WEIGHT		16
-#define MDIO_INTERVAL		(3 * HZ)
-#define MAX_MDIO_RETRIES	100 /* microseconds, typically 30 cycles */
 #define MAX_CLOSE_WAIT		1000 /* microseconds, typically 2-3 cycles */
 
 #define NPE_ID(port_id)		((port_id) >> 4)
@@ -92,20 +93,6 @@
 #define RX_CNTRL0_RX_RUNT_EN	0x40
 #define RX_CNTRL0_BCAST_DIS	0x80
 #define RX_CNTRL1_DEFER_EN	0x01
-
-/* Core Control Register */
-#define CORE_RESET		0x01
-#define CORE_RX_FIFO_FLUSH	0x02
-#define CORE_TX_FIFO_FLUSH	0x04
-#define CORE_SEND_JAM		0x08
-#define CORE_MDC_EN		0x10 /* MDIO using NPE-B ETH-0 only */
-
-#define DEFAULT_TX_CNTRL0	(TX_CNTRL0_TX_EN | TX_CNTRL0_RETRY |	\
-				 TX_CNTRL0_PAD_EN | TX_CNTRL0_APPEND_FCS | \
-				 TX_CNTRL0_2DEFER)
-#define DEFAULT_RX_CNTRL0	RX_CNTRL0_RX_EN
-#define DEFAULT_CORE_CNTRL	CORE_MDC_EN
-
 
 /* NPE message codes */
 #define NPE_GETSTATUS			0x00
@@ -143,35 +130,18 @@ typedef void buffer_t;
 #define free_buffer_irq kfree
 #endif
 
-struct eth_regs {
-	u32 tx_control[2], __res1[2];		/* 000 */
-	u32 rx_control[2], __res2[2];		/* 010 */
-	u32 random_seed, __res3[3];		/* 020 */
-	u32 partial_empty_threshold, __res4;	/* 030 */
-	u32 partial_full_threshold, __res5;	/* 038 */
-	u32 tx_start_bytes, __res6[3];		/* 040 */
-	u32 tx_deferral, rx_deferral, __res7[2];/* 050 */
-	u32 tx_2part_deferral[2], __res8[2];	/* 060 */
-	u32 slot_time, __res9[3];		/* 070 */
-	u32 mdio_command[4];			/* 080 */
-	u32 mdio_status[4];			/* 090 */
-	u32 mcast_mask[6], __res10[2];		/* 0A0 */
-	u32 mcast_addr[6], __res11[2];		/* 0C0 */
-	u32 int_clock_threshold, __res12[3];	/* 0E0 */
-	u32 hw_addr[6], __res13[61];		/* 0F0 */
-	u32 core_control;			/* 1FC */
-};
-
 struct port {
 	struct resource *mem_res;
 	struct eth_regs __iomem *regs;
+	struct ixp46x_ts_regs __iomem *timesync_regs;
+	int phc_index;
 	struct npe *npe;
 	struct net_device *netdev;
 	struct napi_struct napi;
 	struct eth_plat_info *plat;
 	buffer_t *rx_buff_tab[RX_DESCS], *tx_buff_tab[TX_DESCS];
 	struct desc *desc_tab;	/* coherent */
-	u32 desc_tab_phys;
+	dma_addr_t desc_tab_phys;
 	int id;			/* logical port ID */
 	int speed, duplex;
 	u8 firmware[4];
@@ -245,9 +215,6 @@ static inline void memcpy_swab32(u32 *dest, u32 *src, int cnt)
 }
 #endif
 
-static spinlock_t mdio_lock;
-static struct eth_regs __iomem *mdio_regs; /* mdio command and status only */
-static struct mii_bus *mdio_bus;
 static int ports_open;
 static struct port *npe_port_tab[MAX_NPES];
 static struct dma_pool *dma_pool;
@@ -290,7 +257,7 @@ static void ixp_rx_timestamp(struct port *port, struct sk_buff *skb)
 
 	ch = PORT2CHANNEL(port);
 
-	regs = (struct ixp46x_ts_regs __iomem *) IXP4XX_TIMESYNC_BASE_VIRT;
+	regs = port->timesync_regs;
 
 	val = __raw_readl(&regs->channel[ch].ch_event);
 
@@ -335,7 +302,7 @@ static void ixp_tx_timestamp(struct port *port, struct sk_buff *skb)
 
 	ch = PORT2CHANNEL(port);
 
-	regs = (struct ixp46x_ts_regs __iomem *) IXP4XX_TIMESYNC_BASE_VIRT;
+	regs = port->timesync_regs;
 
 	/*
 	 * This really stinks, but we have to poll for the Tx time stamp.
@@ -370,6 +337,7 @@ static int hwtstamp_set(struct net_device *netdev, struct ifreq *ifr)
 	struct hwtstamp_config cfg;
 	struct ixp46x_ts_regs *regs;
 	struct port *port = netdev_priv(netdev);
+	int ret;
 	int ch;
 
 	if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
@@ -378,8 +346,12 @@ static int hwtstamp_set(struct net_device *netdev, struct ifreq *ifr)
 	if (cfg.flags) /* reserved for future extensions */
 		return -EINVAL;
 
+	ret = ixp46x_ptp_find(&port->timesync_regs, &port->phc_index);
+	if (ret)
+		return ret;
+
 	ch = PORT2CHANNEL(port);
-	regs = (struct ixp46x_ts_regs __iomem *) IXP4XX_TIMESYNC_BASE_VIRT;
+	regs = port->timesync_regs;
 
 	if (cfg.tx_type != HWTSTAMP_TX_OFF && cfg.tx_type != HWTSTAMP_TX_ON)
 		return -ERANGE;
@@ -434,126 +406,6 @@ static int hwtstamp_get(struct net_device *netdev, struct ifreq *ifr)
 
 	return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ? -EFAULT : 0;
 }
-
-static int ixp4xx_mdio_cmd(struct mii_bus *bus, int phy_id, int location,
-			   int write, u16 cmd)
-{
-	int cycles = 0;
-
-	if (__raw_readl(&mdio_regs->mdio_command[3]) & 0x80) {
-		printk(KERN_ERR "%s: MII not ready to transmit\n", bus->name);
-		return -1;
-	}
-
-	if (write) {
-		__raw_writel(cmd & 0xFF, &mdio_regs->mdio_command[0]);
-		__raw_writel(cmd >> 8, &mdio_regs->mdio_command[1]);
-	}
-	__raw_writel(((phy_id << 5) | location) & 0xFF,
-		     &mdio_regs->mdio_command[2]);
-	__raw_writel((phy_id >> 3) | (write << 2) | 0x80 /* GO */,
-		     &mdio_regs->mdio_command[3]);
-
-	while ((cycles < MAX_MDIO_RETRIES) &&
-	       (__raw_readl(&mdio_regs->mdio_command[3]) & 0x80)) {
-		udelay(1);
-		cycles++;
-	}
-
-	if (cycles == MAX_MDIO_RETRIES) {
-		printk(KERN_ERR "%s #%i: MII write failed\n", bus->name,
-		       phy_id);
-		return -1;
-	}
-
-#if DEBUG_MDIO
-	printk(KERN_DEBUG "%s #%i: mdio_%s() took %i cycles\n", bus->name,
-	       phy_id, write ? "write" : "read", cycles);
-#endif
-
-	if (write)
-		return 0;
-
-	if (__raw_readl(&mdio_regs->mdio_status[3]) & 0x80) {
-#if DEBUG_MDIO
-		printk(KERN_DEBUG "%s #%i: MII read failed\n", bus->name,
-		       phy_id);
-#endif
-		return 0xFFFF; /* don't return error */
-	}
-
-	return (__raw_readl(&mdio_regs->mdio_status[0]) & 0xFF) |
-		((__raw_readl(&mdio_regs->mdio_status[1]) & 0xFF) << 8);
-}
-
-static int ixp4xx_mdio_read(struct mii_bus *bus, int phy_id, int location)
-{
-	unsigned long flags;
-	int ret;
-
-	spin_lock_irqsave(&mdio_lock, flags);
-	ret = ixp4xx_mdio_cmd(bus, phy_id, location, 0, 0);
-	spin_unlock_irqrestore(&mdio_lock, flags);
-#if DEBUG_MDIO
-	printk(KERN_DEBUG "%s #%i: MII read [%i] -> 0x%X\n", bus->name,
-	       phy_id, location, ret);
-#endif
-	return ret;
-}
-
-static int ixp4xx_mdio_write(struct mii_bus *bus, int phy_id, int location,
-			     u16 val)
-{
-	unsigned long flags;
-	int ret;
-
-	spin_lock_irqsave(&mdio_lock, flags);
-	ret = ixp4xx_mdio_cmd(bus, phy_id, location, 1, val);
-	spin_unlock_irqrestore(&mdio_lock, flags);
-#if DEBUG_MDIO
-	printk(KERN_DEBUG "%s #%i: MII write [%i] <- 0x%X, err = %i\n",
-	       bus->name, phy_id, location, val, ret);
-#endif
-	return ret;
-}
-
-static int ixp4xx_mdio_register(void)
-{
-	int err;
-
-	if (!(mdio_bus = mdiobus_alloc()))
-		return -ENOMEM;
-
-	if (cpu_is_ixp43x()) {
-		/* IXP43x lacks NPE-B and uses NPE-C for MII PHY access */
-		if (!(ixp4xx_read_feature_bits() & IXP4XX_FEATURE_NPEC_ETH))
-			return -ENODEV;
-		mdio_regs = (struct eth_regs __iomem *)IXP4XX_EthC_BASE_VIRT;
-	} else {
-		/* All MII PHY accesses use NPE-B Ethernet registers */
-		if (!(ixp4xx_read_feature_bits() & IXP4XX_FEATURE_NPEB_ETH0))
-			return -ENODEV;
-		mdio_regs = (struct eth_regs __iomem *)IXP4XX_EthB_BASE_VIRT;
-	}
-
-	__raw_writel(DEFAULT_CORE_CNTRL, &mdio_regs->core_control);
-	spin_lock_init(&mdio_lock);
-	mdio_bus->name = "IXP4xx MII Bus";
-	mdio_bus->read = &ixp4xx_mdio_read;
-	mdio_bus->write = &ixp4xx_mdio_write;
-	snprintf(mdio_bus->id, MII_BUS_ID_SIZE, "ixp4xx-eth-0");
-
-	if ((err = mdiobus_register(mdio_bus)))
-		mdiobus_free(mdio_bus);
-	return err;
-}
-
-static void ixp4xx_mdio_remove(void)
-{
-	mdiobus_unregister(mdio_bus);
-	mdiobus_free(mdio_bus);
-}
-
 
 static void ixp4xx_adjust_link(struct net_device *dev)
 {
@@ -866,7 +718,7 @@ static int eth_xmit(struct sk_buff *skb, struct net_device *dev)
 		dev->stats.tx_dropped++;
 		return NETDEV_TX_OK;
 	}
-	memcpy_swab32(mem, (u32 *)((int)skb->data & ~3), bytes / 4);
+	memcpy_swab32(mem, (u32 *)((uintptr_t)skb->data & ~3), bytes / 4);
 #endif
 
 	phys = dma_map_single(&dev->dev, mem, bytes, DMA_TO_DEVICE);
@@ -998,25 +850,27 @@ static void ixp4xx_get_drvinfo(struct net_device *dev,
 	strlcpy(info->bus_info, "internal", sizeof(info->bus_info));
 }
 
-int ixp46x_phc_index = -1;
-EXPORT_SYMBOL_GPL(ixp46x_phc_index);
-
 static int ixp4xx_get_ts_info(struct net_device *dev,
 			      struct ethtool_ts_info *info)
 {
-	if (!cpu_is_ixp46x()) {
+	struct port *port = netdev_priv(dev);
+
+	if (port->phc_index < 0)
+		ixp46x_ptp_find(&port->timesync_regs, &port->phc_index);
+
+	info->phc_index = port->phc_index;
+
+	if (info->phc_index < 0) {
 		info->so_timestamping =
 			SOF_TIMESTAMPING_TX_SOFTWARE |
 			SOF_TIMESTAMPING_RX_SOFTWARE |
 			SOF_TIMESTAMPING_SOFTWARE;
-		info->phc_index = -1;
 		return 0;
 	}
 	info->so_timestamping =
 		SOF_TIMESTAMPING_TX_HARDWARE |
 		SOF_TIMESTAMPING_RX_HARDWARE |
 		SOF_TIMESTAMPING_RAW_HARDWARE;
-	info->phc_index = ixp46x_phc_index;
 	info->tx_types =
 		(1 << HWTSTAMP_TX_OFF) |
 		(1 << HWTSTAMP_TX_ON);
@@ -1380,9 +1234,17 @@ static int eth_init_one(struct platform_device *pdev)
 	struct net_device *dev;
 	struct eth_plat_info *plat = dev_get_platdata(&pdev->dev);
 	struct phy_device *phydev = NULL;
-	u32 regs_phys;
+	struct device *mdio_bus;
 	char phy_id[MII_BUS_ID_SIZE + 3];
 	int err;
+
+	/* ensure the mdio bus was probed first */
+	snprintf(phy_id, MII_BUS_ID_SIZE + 3, PHY_ID_FMT,
+		 IXP4XX_MDIO_BUS_ID, plat->phy);
+	mdio_bus = bus_find_device_by_name(&mdio_bus_type, NULL, phy_id);
+	if (!mdio_bus)
+		return -EPROBE_DEFER;
+	put_device(mdio_bus);
 
 	if (!(dev = alloc_etherdev(sizeof(struct port))))
 		return -ENOMEM;
@@ -1391,24 +1253,11 @@ static int eth_init_one(struct platform_device *pdev)
 	port = netdev_priv(dev);
 	port->netdev = dev;
 	port->id = pdev->id;
-
-	switch (port->id) {
-	case IXP4XX_ETH_NPEA:
-		port->regs = (struct eth_regs __iomem *)IXP4XX_EthA_BASE_VIRT;
-		regs_phys  = IXP4XX_EthA_BASE_PHYS;
-		break;
-	case IXP4XX_ETH_NPEB:
-		port->regs = (struct eth_regs __iomem *)IXP4XX_EthB_BASE_VIRT;
-		regs_phys  = IXP4XX_EthB_BASE_PHYS;
-		break;
-	case IXP4XX_ETH_NPEC:
-		port->regs = (struct eth_regs __iomem *)IXP4XX_EthC_BASE_VIRT;
-		regs_phys  = IXP4XX_EthC_BASE_PHYS;
-		break;
-	default:
-		err = -ENODEV;
-		goto err_free;
-	}
+	port->phc_index = -1;
+	port->regs = devm_platform_ioremap_resource(pdev, 0);
+	err = PTR_ERR_OR_ZERO(port->regs);
+	if (err)
+		return err;
 
 	dev->netdev_ops = &ixp4xx_netdev_ops;
 	dev->ethtool_ops = &ixp4xx_ethtool_ops;
@@ -1419,12 +1268,6 @@ static int eth_init_one(struct platform_device *pdev)
 	if (!(port->npe = npe_request(NPE_ID(port->id)))) {
 		err = -EIO;
 		goto err_free;
-	}
-
-	port->mem_res = request_mem_region(regs_phys, REGS_SIZE, dev->name);
-	if (!port->mem_res) {
-		err = -EBUSY;
-		goto err_npe_rel;
 	}
 
 	port->plat = plat;
@@ -1439,8 +1282,6 @@ static int eth_init_one(struct platform_device *pdev)
 	__raw_writel(DEFAULT_CORE_CNTRL, &port->regs->core_control);
 	udelay(50);
 
-	snprintf(phy_id, MII_BUS_ID_SIZE + 3, PHY_ID_FMT,
-		mdio_bus->id, plat->phy);
 	phydev = phy_connect(dev, phy_id, &ixp4xx_adjust_link,
 			     PHY_INTERFACE_MODE_MII);
 	if (IS_ERR(phydev)) {
@@ -1463,7 +1304,6 @@ err_phy_dis:
 err_free_mem:
 	npe_port_tab[NPE_ID(port->id)] = NULL;
 	release_resource(port->mem_res);
-err_npe_rel:
 	npe_release(port->npe);
 err_free:
 	free_netdev(dev);
@@ -1490,33 +1330,9 @@ static struct platform_driver ixp4xx_eth_driver = {
 	.probe		= eth_init_one,
 	.remove		= eth_remove_one,
 };
-
-static int __init eth_init_module(void)
-{
-	int err;
-
-	/*
-	 * FIXME: we bail out on device tree boot but this really needs
-	 * to be fixed in a nicer way: this registers the MDIO bus before
-	 * even matching the driver infrastructure, we should only probe
-	 * detected hardware.
-	 */
-	if (of_have_populated_dt())
-		return -ENODEV;
-	if ((err = ixp4xx_mdio_register()))
-		return err;
-	return platform_driver_register(&ixp4xx_eth_driver);
-}
-
-static void __exit eth_cleanup_module(void)
-{
-	platform_driver_unregister(&ixp4xx_eth_driver);
-	ixp4xx_mdio_remove();
-}
+module_platform_driver(ixp4xx_eth_driver);
 
 MODULE_AUTHOR("Krzysztof Halasa");
 MODULE_DESCRIPTION("Intel IXP4xx Ethernet driver");
 MODULE_LICENSE("GPL v2");
 MODULE_ALIAS("platform:ixp4xx_eth");
-module_init(eth_init_module);
-module_exit(eth_cleanup_module);
