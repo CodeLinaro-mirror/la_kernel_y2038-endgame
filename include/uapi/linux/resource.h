@@ -22,47 +22,8 @@
 #define	RUSAGE_THREAD	1		/* only the calling thread */
 
 struct	rusage {
-#if (__BITS_PER_LONG != 32 || !defined(__USE_TIME_BITS64)) && !defined(__KERNEL__)
-	struct timeval	ru_utime;	/* user time used */
-	struct timeval	ru_stime;	/* system time used */
-#else
-	/*
-	 * For 32-bit user space with 64-bit time_t, the binary layout
-	 * in these fields is incompatible with 'struct timeval', so the
-	 * C library has to translate this into the POSIX compatible layout.
-	 */
-	struct __kernel_old_timeval ru_utime;
-	struct __kernel_old_timeval ru_stime;
-#endif
-	__kernel_long_t	ru_maxrss;	/* maximum resident set size */
-	__kernel_long_t	ru_ixrss;	/* integral shared memory size */
-	__kernel_long_t	ru_idrss;	/* integral unshared data size */
-	__kernel_long_t	ru_isrss;	/* integral unshared stack size */
-	__kernel_long_t	ru_minflt;	/* page reclaims */
-	__kernel_long_t	ru_majflt;	/* page faults */
-	__kernel_long_t	ru_nswap;	/* swaps */
-	__kernel_long_t	ru_inblock;	/* block input operations */
-	__kernel_long_t	ru_oublock;	/* block output operations */
-	__kernel_long_t	ru_msgsnd;	/* messages sent */
-	__kernel_long_t	ru_msgrcv;	/* messages received */
-	__kernel_long_t	ru_nsignals;	/* signals received */
-	__kernel_long_t	ru_nvcsw;	/* voluntary context switches */
-	__kernel_long_t	ru_nivcsw;	/* involuntary " */
-};
-
-/*
- * __kernel_rusage is the binary that we expect 32-bit C libraries
- * to provide for their 'struct rusage' after migrating to a 64-bit
- * time_t.
- */
-struct __kernel_rusage_timeval {
-	__s64 tv_sec;
-	__s64 tv_usec;
-};
-
-struct	__kernel_rusage {
-	struct __kernel_timespec ru_utime; /* user time used */
-	struct __kernel_timespec ru_stime; /* system time used */
+	struct timeval ru_utime;	/* user time used */
+	struct timeval ru_stime;	/* system time used */
 	__kernel_long_t	ru_maxrss;	/* maximum resident set size */
 	__kernel_long_t	ru_ixrss;	/* integral shared memory size */
 	__kernel_long_t	ru_idrss;	/* integral unshared data size */
