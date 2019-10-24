@@ -3499,8 +3499,11 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
 	/* Compute party A's public key */
 	err = crypto_wait_req(crypto_kpp_generate_public_key(req), &wait);
 	if (err) {
-		pr_err("alg: %s: Party A: generate public key test failed. err %d\n",
-		       alg, err);
+		if (err != vec->gen_pubkey_error)
+			pr_err("alg: %s: Party A: generate public key test failed. err %d (expected %d)\n",
+			       alg, err, vec->gen_pubkey_error);
+		else
+			err = 0;
 		goto free_output;
 	}
 
@@ -3537,8 +3540,11 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
 				 crypto_req_done, &wait);
 	err = crypto_wait_req(crypto_kpp_compute_shared_secret(req), &wait);
 	if (err) {
-		pr_err("alg: %s: Party A: compute shared secret test failed. err %d\n",
-		       alg, err);
+		if (err != vec->comp_ss_error)
+			pr_err("alg: %s: Party A: compute shared secret test failed. err %d (expected %d)\n",
+			       alg, err, vec->comp_ss_error);
+		else
+			err = 0;
 		goto free_all;
 	}
 
@@ -4023,6 +4029,30 @@ static const struct alg_test_desc alg_test_descs[] = {
 		.test = alg_test_null,
 		.fips_allowed = 1,
 	}, {
+		.alg = "blake2s-128",
+		.test = alg_test_hash,
+		.suite = {
+			.hash = __VECS(blakes2s_128_tv_template)
+		}
+	}, {
+		.alg = "blake2s-160",
+		.test = alg_test_hash,
+		.suite = {
+			.hash = __VECS(blakes2s_160_tv_template)
+		}
+	}, {
+		.alg = "blake2s-224",
+		.test = alg_test_hash,
+		.suite = {
+			.hash = __VECS(blakes2s_224_tv_template)
+		}
+	}, {
+		.alg = "blake2s-256",
+		.test = alg_test_hash,
+		.suite = {
+			.hash = __VECS(blakes2s_256_tv_template)
+		}
+	}, {
 		.alg = "cbc(aes)",
 		.test = alg_test_skcipher,
 		.fips_allowed = 1,
@@ -4125,6 +4155,12 @@ static const struct alg_test_desc alg_test_descs[] = {
 		.suite = {
 			.cipher = __VECS(aes_cfb_tv_template)
 		},
+	}, {
+		.alg = "cfb(sm4)",
+		.test = alg_test_skcipher,
+		.suite = {
+			.cipher = __VECS(sm4_cfb_tv_template)
+		}
 	}, {
 		.alg = "chacha20",
 		.test = alg_test_skcipher,
@@ -4259,6 +4295,12 @@ static const struct alg_test_desc alg_test_descs[] = {
 		.alg = "cts(cbc(paes))",
 		.test = alg_test_null,
 		.fips_allowed = 1,
+	}, {
+		.alg = "curve25519",
+		.test = alg_test_kpp,
+		.suite = {
+			.kpp = __VECS(curve25519_tv_template)
+		}
 	}, {
 		.alg = "deflate",
 		.test = alg_test_comp,
@@ -4655,6 +4697,12 @@ static const struct alg_test_desc alg_test_descs[] = {
 			.hash = __VECS(hmac_sha512_tv_template)
 		}
 	}, {
+		.alg = "hmac(sm3)",
+		.test = alg_test_hash,
+		.suite = {
+			.hash = __VECS(hmac_sm3_tv_template)
+		}
+	}, {
 		.alg = "hmac(streebog256)",
 		.test = alg_test_hash,
 		.suite = {
@@ -4791,6 +4839,12 @@ static const struct alg_test_desc alg_test_descs[] = {
 		.test = alg_test_null,
 		.fips_allowed = 1,
 	}, {
+		.alg = "ofb(sm4)",
+		.test = alg_test_skcipher,
+		.suite = {
+			.cipher = __VECS(sm4_ofb_tv_template)
+		}
+	}, {
 		.alg = "pcbc(fcrypt)",
 		.test = alg_test_skcipher,
 		.suite = {
@@ -4827,6 +4881,12 @@ static const struct alg_test_desc alg_test_descs[] = {
 		.fips_allowed = 1,
 		.suite = {
 			.cipher = __VECS(aes_ctr_rfc3686_tv_template)
+		}
+	}, {
+		.alg = "rfc3686(ctr(sm4))",
+		.test = alg_test_skcipher,
+		.suite = {
+			.cipher = __VECS(sm4_ctr_rfc3686_tv_template)
 		}
 	}, {
 		.alg = "rfc4106(gcm(aes))",
