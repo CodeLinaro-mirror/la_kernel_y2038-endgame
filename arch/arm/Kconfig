@@ -365,6 +365,8 @@ config ARCH_EP93XX
 	select CPU_ARM920T
 	select GENERIC_CLOCKEVENTS
 	select GPIOLIB
+	select IRQ_DOMAIN
+	select SPARSE_IRQ
 	help
 	  This enables support for the Cirrus EP93xx series of CPUs.
 
@@ -412,22 +414,6 @@ config ARCH_IXP4XX
 	select USB_EHCI_BIG_ENDIAN_MMIO
 	help
 	  Support for Intel's IXP4XX (XScale) family of processors.
-
-config ARCH_DOVE
-	bool "Marvell Dove"
-	select CPU_PJ4
-	select GENERIC_CLOCKEVENTS
-	select GENERIC_IRQ_MULTI_HANDLER
-	select GPIOLIB
-	select HAVE_PCI
-	select MVEBU_MBUS
-	select PINCTRL
-	select PINCTRL_DOVE
-	select PLAT_ORION_LEGACY
-	select SPARSE_IRQ
-	select PM_GENERIC_DOMAINS if PM
-	help
-	  Support for the Marvell Dove SoC 88AP510
 
 config ARCH_PXA
 	bool "PXA2xx/PXA3xx-based"
@@ -513,25 +499,6 @@ config ARCH_S3C24XX
 	  and S3C2450 SoCs based systems, such as the Simtec Electronics BAST
 	  (<http://www.simtec.co.uk/products/EB110ITX/>), the IPAQ 1940 or the
 	  Samsung SMDK2410 development board (and derivatives).
-
-config ARCH_OMAP1
-	bool "TI OMAP1"
-	depends on MMU
-	select ARCH_HAS_HOLES_MEMORYMODEL
-	select ARCH_OMAP
-	select CLKDEV_LOOKUP
-	select CLKSRC_MMIO
-	select GENERIC_CLOCKEVENTS
-	select GENERIC_IRQ_CHIP
-	select GENERIC_IRQ_MULTI_HANDLER
-	select GPIOLIB
-	select HAVE_IDE
-	select IRQ_DOMAIN
-	select NEED_MACH_IO_H if PCCARD
-	select NEED_MACH_MEMORY_H
-	select SPARSE_IRQ
-	help
-	  Support for older TI OMAP1 (omap7xx, omap15xx or omap16xx)
 
 endchoice
 
@@ -630,12 +597,9 @@ source "arch/arm/mach-davinci/Kconfig"
 
 source "arch/arm/mach-digicolor/Kconfig"
 
-source "arch/arm/mach-dove/Kconfig"
-
 source "arch/arm/mach-ep93xx/Kconfig"
 
 source "arch/arm/mach-exynos/Kconfig"
-source "arch/arm/plat-samsung/Kconfig"
 
 source "arch/arm/mach-footbridge/Kconfig"
 
@@ -646,8 +610,6 @@ source "arch/arm/mach-highbank/Kconfig"
 source "arch/arm/mach-hisi/Kconfig"
 
 source "arch/arm/mach-imx/Kconfig"
-
-source "arch/arm/mach-integrator/Kconfig"
 
 source "arch/arm/mach-iop32x/Kconfig"
 
@@ -667,8 +629,6 @@ source "arch/arm/mach-mmp/Kconfig"
 
 source "arch/arm/mach-moxart/Kconfig"
 
-source "arch/arm/mach-mv78xx0/Kconfig"
-
 source "arch/arm/mach-mvebu/Kconfig"
 
 source "arch/arm/mach-mxs/Kconfig"
@@ -679,13 +639,11 @@ source "arch/arm/mach-npcm/Kconfig"
 
 source "arch/arm/mach-nspire/Kconfig"
 
-source "arch/arm/plat-omap/Kconfig"
-
 source "arch/arm/mach-omap1/Kconfig"
 
 source "arch/arm/mach-omap2/Kconfig"
 
-source "arch/arm/mach-orion5x/Kconfig"
+source "arch/arm/mach-orion/Kconfig"
 
 source "arch/arm/mach-oxnas/Kconfig"
 
@@ -694,19 +652,14 @@ source "arch/arm/mach-picoxcell/Kconfig"
 source "arch/arm/mach-prima2/Kconfig"
 
 source "arch/arm/mach-pxa/Kconfig"
-source "arch/arm/plat-pxa/Kconfig"
 
 source "arch/arm/mach-qcom/Kconfig"
 
 source "arch/arm/mach-rda/Kconfig"
 
-source "arch/arm/mach-realview/Kconfig"
-
 source "arch/arm/mach-rockchip/Kconfig"
 
-source "arch/arm/mach-s3c24xx/Kconfig"
-
-source "arch/arm/mach-s3c64xx/Kconfig"
+source "arch/arm/mach-s3c/Kconfig"
 
 source "arch/arm/mach-s5pv210/Kconfig"
 
@@ -735,9 +688,6 @@ source "arch/arm/mach-uniphier/Kconfig"
 source "arch/arm/mach-ux500/Kconfig"
 
 source "arch/arm/mach-versatile/Kconfig"
-
-source "arch/arm/mach-vexpress/Kconfig"
-source "arch/arm/plat-versatile/Kconfig"
 
 source "arch/arm/mach-vt8500/Kconfig"
 
@@ -784,20 +734,6 @@ config ARCH_ACORN
 config PLAT_IOP
 	bool
 	select GENERIC_CLOCKEVENTS
-
-config PLAT_ORION
-	bool
-	select CLKSRC_MMIO
-	select COMMON_CLK
-	select GENERIC_IRQ_CHIP
-	select IRQ_DOMAIN
-
-config PLAT_ORION_LEGACY
-	bool
-	select PLAT_ORION
-
-config PLAT_PXA
-	bool
 
 config PLAT_VERSATILE
 	bool
@@ -1145,12 +1081,6 @@ config PCI_NANOENGINE
 	depends on SA1100_NANOENGINE
 	help
 	  Enable PCI on the BSE nanoEngine board.
-
-config PCI_HOST_ITE8152
-	bool
-	depends on PCI && MACH_ARMCORE
-	default y
-	select DMABOUNCE
 
 config ARM_ERRATA_814220
 	bool "ARM errata: Cache maintenance by set/way operations can execute out of order"

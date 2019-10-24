@@ -14,18 +14,17 @@
 #include <linux/spi/spi.h>
 
 #include <linux/platform_data/omap-wd-timer.h>
+#include <linux/soc/ti/omap1-io.h>
 
 #include <asm/mach/map.h>
 
 #include <mach/tc.h>
-#include <mach/mux.h>
+#include "mux.h"
 
-#include <mach/omap7xx.h>
+#include "omap7xx.h"
 #include "camera.h"
-#include <mach/hardware.h>
-
+#include "hardware.h"
 #include "common.h"
-#include "clock.h"
 #include "mmc.h"
 #include "sram.h"
 
@@ -399,7 +398,7 @@ static int __init omap1_init_devices(void)
 	if (!cpu_class_is_omap1())
 		return -ENODEV;
 
-	omap_sram_init();
+	omap1_sram_init();
 	omap1_clk_late_init();
 
 	/* please keep these calls, and their implementations above,

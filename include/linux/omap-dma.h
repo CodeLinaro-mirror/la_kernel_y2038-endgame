@@ -285,6 +285,14 @@ struct omap_system_dma_plat_info {
 	int slavecnt;
 };
 
+#ifdef CONFIG_ARCH_OMAP1_ANY
+extern void omap_set_dma_priority(int lch, int dst_port, int priority);
+#else
+static inline void omap_set_dma_priority(int lch, int dst_port, int priority)
+{
+}
+#endif
+
 #ifdef CONFIG_ARCH_OMAP2PLUS
 #define dma_omap2plus()	1
 #else
@@ -299,7 +307,6 @@ struct omap_system_dma_plat_info {
 #if defined(CONFIG_ARCH_OMAP)
 extern struct omap_system_dma_plat_info *omap_get_plat_info(void);
 
-extern void omap_set_dma_priority(int lch, int dst_port, int priority);
 extern int omap_request_dma(int dev_id, const char *dev_name,
 			void (*callback)(int lch, u16 ch_status, void *data),
 			void *data, int *dma_ch);
@@ -346,8 +353,8 @@ extern void omap_dma_set_global_params(int arb_rate, int max_fifo_depth,
 void omap_dma_global_context_save(void);
 void omap_dma_global_context_restore(void);
 
-#if defined(CONFIG_ARCH_OMAP1) && IS_ENABLED(CONFIG_FB_OMAP)
-#include <mach/lcd_dma.h>
+#if IS_ENABLED(CONFIG_FB_OMAP)
+extern int omap_lcd_dma_running(void);
 #else
 static inline int omap_lcd_dma_running(void)
 {
@@ -356,7 +363,6 @@ static inline int omap_lcd_dma_running(void)
 #endif
 
 #else /* CONFIG_ARCH_OMAP */
-
 static inline struct omap_system_dma_plat_info *omap_get_plat_info(void)
 {
 	return NULL;

@@ -3,10 +3,16 @@
 # Makefile for the linux kernel.
 #
 
+ccflags-$(CONFIG_ARCH_MULTIPLATFORM) += -I$(srctree)/arch/arm/mach-omap1/include
+asflags-$(CONFIG_ARCH_MULTIPLATFORM) += -I$(srctree)/arch/arm/mach-omap1/include
+ccflags-$(CONFIG_ARCH_MULTIPLATFORM) += -I$(srctree)/arch/arm/plat-omap/include
+
+ifdef CONFIG_ARCH_OMAP1_ANY
+
 # Common support
 obj-y := io.o id.o sram-init.o sram.o time.o irq.o mux.o flash.o \
 	 serial.o devices.o dma.o fb.o
-obj-y += clock.o clock_data.o opp_data.o reset.o pm_bus.o timer.o
+obj-y += clock.o reset.o pm_bus.o timer.o
 
 ifneq ($(CONFIG_SND_SOC_OMAP_MCBSP),)
 obj-y += mcbsp.o
@@ -58,6 +64,4 @@ obj-$(CONFIG_ARCH_OMAP850)		+= gpio7xx.o
 obj-$(CONFIG_ARCH_OMAP15XX)		+= gpio15xx.o
 obj-$(CONFIG_ARCH_OMAP16XX)		+= gpio16xx.o
 
-ifneq ($(CONFIG_FB_OMAP),)
-obj-y += lcd_dma.o
 endif

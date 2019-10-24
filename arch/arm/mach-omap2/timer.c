@@ -47,7 +47,6 @@
 
 #include "omap_hwmod.h"
 #include "omap_device.h"
-#include <plat/counter-32k.h>
 #include <clocksource/timer-ti-dm.h>
 
 #include "soc.h"
