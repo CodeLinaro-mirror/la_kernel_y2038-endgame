@@ -3314,7 +3314,7 @@ static int exfat_fill_inode(struct inode *inode, struct file_id_t *fid)
 	inode->i_uid = sbi->options.fs_uid;
 	inode->i_gid = sbi->options.fs_gid;
 	INC_IVERSION(inode);
-	inode->i_generation = get_seconds();
+	inode->i_generation = prandom_u32();
 
 	if (info.Attr & ATTR_SUBDIR) { /* directory */
 		inode->i_generation &= ~1;
