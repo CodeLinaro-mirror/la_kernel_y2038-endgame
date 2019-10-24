@@ -26,7 +26,7 @@
 #include <linux/sched.h>
 #include <linux/fs_struct.h>
 #include <linux/namei.h>
-
+#include <linux/random.h>
 #include <linux/string.h>
 #include <linux/nls.h>
 #include <linux/mutex.h>
