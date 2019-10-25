@@ -297,39 +297,36 @@ DEFINE_EVENT(hrtimer_class, hrtimer_cancel,
 /**
  * itimer_state - called when itimer is started or canceled
  * @which:	name of the interval timer
- * @value:	the itimers value, itimer is canceled if value->it_value is
- *		zero, otherwise it is started
+ * @interval:	the itimers value
+ * @interval:	the itimers interval
  * @expires:	the itimers expiry time
  */
 TRACE_EVENT(itimer_state,
 
-	TP_PROTO(int which, const struct itimerval *const value,
-		 unsigned long long expires),
+	TP_PROTO(int which, ktime_t value, ktime_t interval, unsigned long long expires),
 
-	TP_ARGS(which, value, expires),
+	TP_ARGS(which, value, interval, expires),
 
 	TP_STRUCT__entry(
 		__field(	int,			which		)
 		__field(	unsigned long long,	expires		)
-		__field(	long,			value_sec	)
-		__field(	long,			value_usec	)
-		__field(	long,			interval_sec	)
-		__field(	long,			interval_usec	)
+		__field(	time64_t,		value_sec	)
+		__field(	u32,			value_nsec	)
+		__field(	time64_t,		interval_sec	)
+		__field(	u32,			interval_nsec	)
 	),
 
 	TP_fast_assign(
 		__entry->which		= which;
 		__entry->expires	= expires;
-		__entry->value_sec	= value->it_value.tv_sec;
-		__entry->value_usec	= value->it_value.tv_usec;
-		__entry->interval_sec	= value->it_interval.tv_sec;
-		__entry->interval_usec	= value->it_interval.tv_usec;
+		__entry->value_sec	= div_u64_rem(value, NSEC_PER_SEC, &__entry->value_nsec);
+		__entry->interval_sec	= div_u64_rem(interval, NSEC_PER_SEC, &__entry->interval_nsec);
 	),
 
-	TP_printk("which=%d expires=%llu it_value=%ld.%ld it_interval=%ld.%ld",
+	TP_printk("which=%d expires=%llu it_value=%lld.%09d it_interval=%lld.%09d",
 		  __entry->which, __entry->expires,
-		  __entry->value_sec, __entry->value_usec,
-		  __entry->interval_sec, __entry->interval_usec)
+		  __entry->value_sec, __entry->value_nsec,
+		  __entry->interval_sec, __entry->interval_nsec)
 );
 
 /**
