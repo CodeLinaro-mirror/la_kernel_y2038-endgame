@@ -1866,7 +1866,7 @@ static void tcp_recv_timestamp(struct msghdr *msg, const struct sock *sk,
 				if (new_tstamp) {
 					struct __kernel_timespec kts = {
 						.tv_sec = tss->ts[0].tv_sec,
-						.tv_nsec = tss->ts[0].tv_nsec
+						.tv_nsec = tss->ts[0].tv_nsec,
 					};
 					put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMPNS_NEW,
 						 sizeof(kts), &kts);
@@ -1881,16 +1881,16 @@ static void tcp_recv_timestamp(struct msghdr *msg, const struct sock *sk,
 			} else {
 				if (new_tstamp) {
 					struct __kernel_sock_timeval stv = {
-						.tv_sec = tss->ts[0].tv_sec;
-						.tv_usec = tss->ts[0].tv_nsec / 1000;
-					}
+						.tv_sec = tss->ts[0].tv_sec,
+						.tv_usec = tss->ts[0].tv_nsec / 1000,
+					};
 					put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMP_NEW,
 						 sizeof(stv), &stv);
 				} else {
 					struct __kernel_old_timeval tv = {
-						.tv_sec = tss->ts[0].tv_sec;
-						.tv_usec = tss->ts[0].tv_nsec / 1000;
-					}
+						.tv_sec = tss->ts[0].tv_sec,
+						.tv_usec = tss->ts[0].tv_nsec / 1000,
+					};
 					put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMP_OLD,
 						 sizeof(tv), &tv);
 				}
