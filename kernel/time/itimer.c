@@ -249,6 +249,17 @@ again:
 	return 0;
 }
 
+#ifdef CONFIG_SECURITY_SELINUX
+void clear_itimer(void)
+{
+	struct itimerval v = {};
+	int i;
+
+	for (i = 0; i < 3; i++)
+		do_setitimer(i, &v, NULL);
+}
+#endif
+
 #ifdef __ARCH_WANT_SYS_ALARM
 
 /**
