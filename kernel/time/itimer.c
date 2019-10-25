@@ -73,7 +73,7 @@ static void get_cpu_itimer(struct task_struct *tsk, unsigned int clock_id,
 	value->it_interval = ns_to_timeval(interval);
 }
 
-int do_getitimer(int which, struct itimerval *value)
+static int do_getitimer(int which, struct itimerval *value)
 {
 	struct task_struct *tsk = current;
 
@@ -111,7 +111,7 @@ SYSCALL_DEFINE2(getitimer, int, which, struct itimerval __user *, value)
 	return error;
 }
 
-#ifdef CONFIG_COMPAT
+#if defined(CONFIG_COMPAT) || defined(CONFIG_ALPHA)
 struct old_itimerval32 {
 	struct old_timeval32	it_interval;
 	struct old_timeval32	it_value;
@@ -197,7 +197,7 @@ static void set_cpu_itimer(struct task_struct *tsk, unsigned int clock_id,
 #define timeval_valid(t) \
 	(((t)->tv_sec >= 0) && (((unsigned long) (t)->tv_usec) < USEC_PER_SEC))
 
-int do_setitimer(int which, struct itimerval *value, struct itimerval *ovalue)
+static int do_setitimer(int which, struct itimerval *value, struct itimerval *ovalue)
 {
 	struct task_struct *tsk = current;
 	struct hrtimer *timer;
@@ -335,7 +335,7 @@ SYSCALL_DEFINE3(setitimer, int, which, struct itimerval __user *, value,
 	return 0;
 }
 
-#ifdef CONFIG_COMPAT
+#if defined(CONFIG_COMPAT) || defined(CONFIG_ALPHA)
 static int get_compat_itimerval(struct itimerval *o, const struct old_itimerval32 __user *i)
 {
 	struct old_itimerval32 v32;

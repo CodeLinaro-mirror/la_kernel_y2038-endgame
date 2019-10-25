@@ -35,10 +35,6 @@ extern time64_t mktime64(const unsigned int year, const unsigned int mon,
 extern u32 (*arch_gettimeoffset)(void);
 #endif
 
-struct itimerval;
-extern int do_setitimer(int which, struct itimerval *value,
-			struct itimerval *ovalue);
-extern int do_getitimer(int which, struct itimerval *value);
 #ifdef CONFIG_POSIX_TIMERS
 extern void clear_itimer(void);
 #else
