@@ -112,46 +112,6 @@ static inline int timespec_equal(const struct timespec *a,
 	return (a->tv_sec == b->tv_sec) && (a->tv_nsec == b->tv_nsec);
 }
 
-/*
- * lhs < rhs:  return <0
- * lhs == rhs: return 0
- * lhs > rhs:  return >0
- */
-static inline int timespec_compare(const struct timespec *lhs, const struct timespec *rhs)
-{
-	if (lhs->tv_sec < rhs->tv_sec)
-		return -1;
-	if (lhs->tv_sec > rhs->tv_sec)
-		return 1;
-	return lhs->tv_nsec - rhs->tv_nsec;
-}
-
-/*
- * Returns true if the timespec is norm, false if denorm:
- */
-static inline bool timespec_valid(const struct timespec *ts)
-{
-	/* Dates before 1970 are bogus */
-	if (ts->tv_sec < 0)
-		return false;
-	/* Can't have more nanoseconds then a second */
-	if ((unsigned long)ts->tv_nsec >= NSEC_PER_SEC)
-		return false;
-	return true;
-}
-
-/**
- * timespec_to_ns - Convert timespec to nanoseconds
- * @ts:		pointer to the timespec variable to be converted
- *
- * Returns the scalar nanosecond representation of the timespec
- * parameter.
- */
-static inline s64 timespec_to_ns(const struct timespec *ts)
-{
-	return ((s64) ts->tv_sec * NSEC_PER_SEC) + ts->tv_nsec;
-}
-
 /**
  * ns_to_timespec - Convert nanoseconds to timespec
  * @nsec:	the nanoseconds value to be converted
@@ -159,41 +119,6 @@ static inline s64 timespec_to_ns(const struct timespec *ts)
  * Returns the timespec representation of the nsec parameter.
  */
 extern struct timespec ns_to_timespec(const s64 nsec);
-
-/**
- * timespec_add_ns - Adds nanoseconds to a timespec
- * @a:		pointer to timespec to be incremented
- * @ns:		unsigned nanoseconds value to be added
- *
- * This must always be inlined because its used from the x86-64 vdso,
- * which cannot call other kernel functions.
- */
-static __always_inline void timespec_add_ns(struct timespec *a, u64 ns)
-{
-	a->tv_sec += __iter_div_u64_rem(a->tv_nsec + ns, NSEC_PER_SEC, &ns);
-	a->tv_nsec = ns;
-}
-
-static inline unsigned long mktime(const unsigned int year,
-			const unsigned int mon, const unsigned int day,
-			const unsigned int hour, const unsigned int min,
-			const unsigned int sec)
-{
-	return mktime64(year, mon, day, hour, min, sec);
-}
-
-static inline bool timeval_valid(const struct timeval *tv)
-{
-	/* Dates before 1970 are bogus */
-	if (tv->tv_sec < 0)
-		return false;
-
-	/* Can't have more microseconds then a second */
-	if (tv->tv_usec < 0 || tv->tv_usec >= USEC_PER_SEC)
-		return false;
-
-	return true;
-}
 
 /**
  * timeval_to_ns - Convert timeval to nanoseconds
@@ -221,14 +146,6 @@ extern struct __kernel_old_timeval ns_to_kernel_old_timeval(s64 nsec);
  * Old names for the 32-bit time_t interfaces, these will be removed
  * when everything uses the new names.
  */
-#define compat_time_t		old_time32_t
-#define compat_timeval		old_timeval32
 #define compat_timespec		old_timespec32
-#define compat_itimerspec	old_itimerspec32
-#define ns_to_compat_timeval	ns_to_old_timeval32
-#define get_compat_itimerspec64	get_old_itimerspec32
-#define put_compat_itimerspec64	put_old_itimerspec32
-#define compat_get_timespec64	get_old_timespec32
-#define compat_put_timespec64	put_old_timespec32
 
 #endif
