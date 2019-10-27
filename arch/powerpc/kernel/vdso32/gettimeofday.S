@@ -13,7 +13,7 @@
 #include <asm/unistd.h>
 
 /* Offset for the low 32-bit part of a field of long type */
-#ifdef CONFIG_PPC64
+#if defined(CONFIG_PPC64) && defined(CONFIG_CPU_BIG_ENDIAN)
 #define LOPART	4
 #define TSPEC_TV_SEC	TSPC64_TV_SEC+LOPART
 #else
