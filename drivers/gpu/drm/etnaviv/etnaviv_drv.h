@@ -113,8 +113,10 @@ static inline unsigned long etnaviv_timeout_to_jiffies(ktime_t timeout)
 	if (remain < 0)
 		return 0;
 
+#ifndef CONFIG_64BIT
 	if (remain > ((s64)MAX_JIFFY_OFFSET * NSEC_PER_SEC / HZ))
 		return MAX_JIFFY_OFFSET;
+#endif
 
 	return nsecs_to_jiffies(remain);
 }
