@@ -164,7 +164,7 @@ struct tpacket_hdr_variant1 {
 
 struct tpacket3_hdr {
 	__u32		tp_next_offset;
-	__u32		tp_sec; /* caution: overflow in y2106 */
+	__u32		tp_sec;
 	__u32		tp_nsec;
 	__u32		tp_snaplen;
 	__u32		tp_len;
