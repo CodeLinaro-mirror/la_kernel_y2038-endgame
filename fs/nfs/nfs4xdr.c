@@ -4065,12 +4065,12 @@ static int decode_attr_space_used(struct xdr_stream *xdr, uint32_t *bitmap, uint
 }
 
 static __be32 *
-xdr_decode_nfstime4(__be32 *p, struct timespec *t)
+xdr_decode_nfstime4(__be32 *p, struct timespec64 *t)
 {
 	__u64 sec;
 
 	p = xdr_decode_hyper(p, &sec);
-	t-> tv_sec = (time_t)sec;
+	t-> tv_sec = sec;
 	t->tv_nsec = be32_to_cpup(p++);
 	return p;
 }
