@@ -73,45 +73,6 @@ struct __kernel_timex;
 int get_old_timex32(struct __kernel_timex *, const struct old_timex32 __user *);
 int put_old_timex32(struct old_timex32 __user *, const struct __kernel_timex *);
 
-#if __BITS_PER_LONG == 64
-
-/* timespec64 is defined as timespec here */
-static inline struct timespec timespec64_to_timespec(const struct timespec64 ts64)
-{
-	return *(const struct timespec *)&ts64;
-}
-
-static inline struct timespec64 timespec_to_timespec64(const struct timespec ts)
-{
-	return *(const struct timespec64 *)&ts;
-}
-
-#else
-static inline struct timespec timespec64_to_timespec(const struct timespec64 ts64)
-{
-	struct timespec ret;
-
-	ret.tv_sec = (time_t)ts64.tv_sec;
-	ret.tv_nsec = ts64.tv_nsec;
-	return ret;
-}
-
-static inline struct timespec64 timespec_to_timespec64(const struct timespec ts)
-{
-	struct timespec64 ret;
-
-	ret.tv_sec = ts.tv_sec;
-	ret.tv_nsec = ts.tv_nsec;
-	return ret;
-}
-#endif
-
-static inline int timespec_equal(const struct timespec *a,
-				 const struct timespec *b)
-{
-	return (a->tv_sec == b->tv_sec) && (a->tv_nsec == b->tv_nsec);
-}
-
 /**
  * ns_to_timespec - Convert nanoseconds to timespec
  * @nsec:	the nanoseconds value to be converted
