@@ -1072,7 +1072,6 @@ static void encode_attrs(struct xdr_stream *xdr, const struct iattr *iap,
 				const struct nfs_server *server,
 				const uint32_t attrmask[])
 {
-	struct timespec ts;
 	char owner_name[IDMAP_NAMESZ];
 	char owner_group[IDMAP_NAMESZ];
 	int owner_namelen = 0;
