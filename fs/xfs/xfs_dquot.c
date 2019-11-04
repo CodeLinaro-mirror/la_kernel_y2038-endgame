@@ -141,7 +141,7 @@ xfs_qm_adjust_dqtimers(
 		      be64_to_cpu(d->d_blk_hardlimit)))) {
 			timer = ktime_get_real_seconds() +
 				mp->m_quotainfo->qi_btimelimit;
-			d->d_btimer = cpu_to_be32((lower_32_bits(timer));
+			d->d_btimer = cpu_to_be32(lower_32_bits(timer));
 			d->d_btimer_high = (u8)upper_32_bits(timer);
 		} else {
 			d->d_bwarns = 0;
