@@ -92,6 +92,18 @@ int v4l2_event_dequeue(struct v4l2_fh *fh, struct v4l2_event *event,
 		       int nonblocking);
 
 /**
+ * v4l2_event_dequeue_time32 - Dequeue events from video device.
+ *
+ * @fh: pointer to struct v4l2_fh
+ * @event: pointer to struct v4l2_event
+ * @nonblocking: if not zero, waits for an event to arrive
+ *
+ * Like v4l2_event_dequeue, but uses the 32-bit timestamp format
+ */
+int v4l2_event_dequeue_time32(struct v4l2_fh *fh, struct v4l2_event *event,
+			      int nonblocking);
+
+/**
  * v4l2_event_queue - Queue events to video device.
  *
  * @vdev: pointer to &struct video_device

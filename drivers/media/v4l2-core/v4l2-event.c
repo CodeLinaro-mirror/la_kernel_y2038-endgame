@@ -27,6 +27,7 @@ static unsigned sev_pos(const struct v4l2_subscribed_event *sev, unsigned idx)
 static int __v4l2_event_dequeue(struct v4l2_fh *fh, struct v4l2_event *event)
 {
 	struct v4l2_kevent *kev;
+	struct timespec64 ts;
 	unsigned long flags;
 
 	spin_lock_irqsave(&fh->vdev->fh_lock, flags);
@@ -44,7 +45,9 @@ static int __v4l2_event_dequeue(struct v4l2_fh *fh, struct v4l2_event *event)
 
 	kev->event.pending = fh->navailable;
 	*event = kev->event;
-	event->timestamp = ns_to_timespec(kev->ts);
+	ts = ns_to_timespec64(kev->ts);
+	event->timestamp.ts.tv_sec = ts.tv_sec;
+	event->timestamp.ts.tv_nsec = ts.tv_nsec;
 	kev->sev->first = sev_pos(kev->sev, 1);
 	kev->sev->in_use--;
 
@@ -80,6 +83,23 @@ int v4l2_event_dequeue(struct v4l2_fh *fh, struct v4l2_event *event,
 	return ret;
 }
 EXPORT_SYMBOL_GPL(v4l2_event_dequeue);
+
+int v4l2_event_dequeue_time32(struct v4l2_fh *fh, struct v4l2_event_time32 *ev32,
+			      int nonblocking)
+{
+	struct v4l2_event ev;
+	int ret;
+
+	ret = v4l2_event_dequeue(fh, &ev, nonblocking);
+
+	memcpy(ev32, ev, offsetof(struct v4l2_event, timestamp);
+	ev32->timestamp.tv_sec = ev.timestamp.tv_sec;
+	ev32->timestamp.tv_nsec = ev.timestamp.tv_nsec;
+	memcpy(&ev32->id, &ev.id, sizeof(ev) - offsetof(struct v4l2_event, id));
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(v4l2_event_dequeue_time32);
 
 /* Caller must hold fh->vdev->fh_lock! */
 static struct v4l2_subscribed_event *v4l2_event_subscribed(

@@ -821,7 +821,7 @@ static void v4l_print_event(const void *arg, bool write_only)
 	const struct v4l2_event *p = arg;
 	const struct v4l2_event_ctrl *c;
 
-	pr_cont("type=0x%x, pending=%u, sequence=%u, id=%u, timestamp=%lu.%9.9lu\n",
+	pr_cont("type=0x%x, pending=%u, sequence=%u, id=%u, timestamp=%llu.%9.9llu\n",
 			p->type, p->pending, p->sequence, p->id,
 			p->timestamp.tv_sec, p->timestamp.tv_nsec);
 	switch (p->type) {
