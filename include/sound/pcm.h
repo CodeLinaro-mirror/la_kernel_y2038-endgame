@@ -1425,7 +1425,7 @@ static inline u64 pcm_format_to_bits(snd_pcm_format_t pcm_format)
 
 struct snd_pcm_status64 {
 	snd_pcm_state_t state;		/* stream state */
-	u8 rsvd[sizeof(time_t) - sizeof(snd_pcm_state_t)];
+	u8 rsvd[sizeof(__kernel_old_time_t) - sizeof(snd_pcm_state_t)];
 	s64 trigger_tstamp_sec;		/* time when stream was started/stopped/paused */
 	s64 trigger_tstamp_nsec;
 	s64 tstamp_sec;			/* reference timestamp */
