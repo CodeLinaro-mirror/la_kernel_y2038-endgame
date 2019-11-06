@@ -56,7 +56,22 @@
 #ifndef __LINUX_VIDEODEV2_H
 #define __LINUX_VIDEODEV2_H
 
-#include <linux/time.h>     /* need struct timeval */
+#include <linux/time.h>
 #include <uapi/linux/videodev2.h>
+
+static inline u64 v4l2_buffer_get_timestamp(const struct v4l2_buffer *buf)
+{
+	return buf->timestamp.tv_sec * NSEC_PER_SEC +
+	       (u32)buf->timestamp.tv_usec * NSEC_PER_USEC;
+}
+
+static inline void v4l2_buffer_set_timestamp(struct v4l2_buffer *buf,
+					     u64 timestamp)
+{
+	struct timespec64 ts = ns_to_timespec64(timestamp);
+
+	buf->timestamp.tv_sec  = ts.tv_sec;
+	buf->timestamp.tv_usec = ts.tv_nsec / NSEC_PER_USEC;
+}
 
 #endif /* __LINUX_VIDEODEV2_H */
