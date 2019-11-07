@@ -2852,9 +2852,9 @@ struct snd_pcm_mmap_status32 {
 	s32 state;
 	s32 pad1;
 	u32 hw_ptr;
-	struct compat_timespec tstamp;
+	struct old_timespec32 tstamp;
 	s32 suspended_state;
-	struct compat_timespec audio_tstamp;
+	struct old_timespec32 audio_tstamp;
 } __attribute__((packed));
 
 struct snd_pcm_mmap_control32 {
