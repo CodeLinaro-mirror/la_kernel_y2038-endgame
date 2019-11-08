@@ -2674,6 +2674,7 @@ int acornscsi_abort(struct scsi_cmnd *SCpnt)
 //#endif
 		clear_bit(SCpnt->device->id * 8 +
 			  (u8)(SCpnt->device->lun & 0x7), host->busyluns);
+		/* Fallthrough */
 
 	/*
 	 * We found the command, and cleared it out.  Either
