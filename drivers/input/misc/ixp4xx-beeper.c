@@ -85,7 +85,7 @@ static int ixp4xx_spkr_event(struct input_dev *dev, unsigned int type, unsigned 
 
 static irqreturn_t ixp4xx_spkr_interrupt(int irq, void *dev_id)
 {
-	unsigned int pin = (unsigned int) dev_id;
+	unsigned int pin = (uintptr_t)dev_id;
 
 	/* clear interrupt */
 	__raw_writel(IXP4XX_OSST_TIMER_2_PEND, ixp4xx_spkr_regs + IXP4XX_OSST_OFFSET);
