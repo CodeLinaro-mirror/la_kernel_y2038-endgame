@@ -1121,7 +1121,7 @@ config ARM_PATCH_IDIV
 	  code to do integer division.
 
 config AEABI
-	bool "Use the ARM EABI to compile the kernel" if CPU_SA110 || CPU_SA1100
+	bool "Use the ARM EABI to compile the kernel" if (CPU_SA110 || CPU_SA1100) && BROKEN
 	default y
 	help
 	  The Arm EABI is the default ABI on all modern Linux
