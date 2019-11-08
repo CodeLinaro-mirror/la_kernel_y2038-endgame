@@ -228,6 +228,9 @@ static void __pass_event(struct evdev_client *client,
 						event->input_event_sec;
 		client->buffer[client->tail].input_event_usec =
 						event->input_event_usec;
+#ifdef CONFIG_SPARC64
+		client->buffer[client->tail].__pad = 0;
+#endif
 		client->buffer[client->tail].type = EV_SYN;
 		client->buffer[client->tail].code = SYN_DROPPED;
 		client->buffer[client->tail].value = 0;
