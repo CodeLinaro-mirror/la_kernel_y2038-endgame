@@ -2549,7 +2549,7 @@ struct filename {
 	struct audit_names	*aname;
 	const char		iname[];
 };
-static_assert(offsetof(struct filename, iname) % sizeof(long) == 0);
+//static_assert(offsetof(struct filename, iname) % sizeof(long) == 0);
 
 extern long vfs_truncate(const struct path *, loff_t);
 extern int do_truncate(struct dentry *, loff_t start, unsigned int time_attrs,
