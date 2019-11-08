@@ -853,7 +853,7 @@ static int hss_hdlc_xmit(struct sk_buff *skb, struct net_device *dev)
 	bytes = len;
 	mem = skb->data;
 #else
-	offset = (int)skb->data & 3; /* keep 32-bit alignment */
+	offset = (uintptr_t)skb->data & 3; /* keep 32-bit alignment */
 	bytes = ALIGN(offset + len, 4);
 	mem = kmalloc(bytes, GFP_ATOMIC);
 	if (!mem) {
