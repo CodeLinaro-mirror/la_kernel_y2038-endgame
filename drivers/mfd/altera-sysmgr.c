@@ -26,7 +26,8 @@
  */
 struct altr_sysmgr {
 	struct regmap   *regmap;
-	resource_size_t *base;
+	void __iomem	*virt_base;
+	phys_addr_t	phys_base;
 };
 
 static struct platform_driver altr_sysmgr_driver;
@@ -41,13 +42,13 @@ static struct platform_driver altr_sysmgr_driver;
  *	   INTEL_SIP_SMC_REG_ERROR on error
  *	   INTEL_SIP_SMC_RETURN_UNKNOWN_FUNCTION if not supported
  */
-static int s10_protected_reg_write(void *base,
+static int s10_protected_reg_write(void *ctx,
 				   unsigned int reg, unsigned int val)
 {
 	struct arm_smccc_res result;
-	unsigned long sysmgr_base = (unsigned long)base;
+	struct altr_sysmgr *sysmgr = ctx;
 
-	arm_smccc_smc(INTEL_SIP_SMC_REG_WRITE, sysmgr_base + reg,
+	arm_smccc_smc(INTEL_SIP_SMC_REG_WRITE, sysmgr->phys_base + reg,
 		      val, 0, 0, 0, 0, 0, &result);
 
 	return (int)result.a0;
@@ -63,13 +64,13 @@ static int s10_protected_reg_write(void *base,
  *	   INTEL_SIP_SMC_REG_ERROR on error
  *	   INTEL_SIP_SMC_RETURN_UNKNOWN_FUNCTION if not supported
  */
-static int s10_protected_reg_read(void *base,
+static int s10_protected_reg_read(void *ctx,
 				  unsigned int reg, unsigned int *val)
 {
 	struct arm_smccc_res result;
-	unsigned long sysmgr_base = (unsigned long)base;
+	struct altr_sysmgr *sysmgr = ctx;
 
-	arm_smccc_smc(INTEL_SIP_SMC_REG_READ, sysmgr_base + reg,
+	arm_smccc_smc(INTEL_SIP_SMC_REG_READ, sysmgr->phys_base + reg,
 		      0, 0, 0, 0, 0, 0, &result);
 
 	*val = (unsigned int)result.a1;
@@ -140,20 +141,20 @@ static int sysmgr_probe(struct platform_device *pdev)
 				     sysmgr_config.reg_stride;
 	if (of_device_is_compatible(np, "altr,sys-mgr-s10")) {
 		/* Need physical address for SMCC call */
-		sysmgr->base = (resource_size_t *)res->start;
+		sysmgr->phys_base = res->start;
 		sysmgr_config.reg_read = s10_protected_reg_read;
 		sysmgr_config.reg_write = s10_protected_reg_write;
 
-		regmap = devm_regmap_init(dev, NULL, sysmgr->base,
+		regmap = devm_regmap_init(dev, NULL, sysmgr,
 					  &sysmgr_config);
 	} else {
-		sysmgr->base = devm_ioremap(dev, res->start,
+		sysmgr->virt_base = devm_ioremap(dev, res->start,
 					    resource_size(res));
-		if (!sysmgr->base)
+		if (!sysmgr->virt_base)
 			return -ENOMEM;
 
 		sysmgr_config.max_register = res->end - res->start - 3;
-		regmap = devm_regmap_init_mmio(dev, sysmgr->base,
+		regmap = devm_regmap_init_mmio(dev, sysmgr->virt_base,
 					       &sysmgr_config);
 	}
 
