@@ -2617,7 +2617,7 @@ struct filename {
 	struct audit_names	*aname;
 	const char		iname[];
 };
-static_assert(offsetof(struct filename, iname) % sizeof(long) == 0);
+//static_assert(offsetof(struct filename, iname) % sizeof(long) == 0);
 
 static inline struct user_namespace *file_mnt_user_ns(struct file *file)
 {
