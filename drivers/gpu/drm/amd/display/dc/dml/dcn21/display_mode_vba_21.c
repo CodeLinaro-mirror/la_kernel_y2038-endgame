@@ -1434,6 +1434,7 @@ static unsigned int CalculateVMAndRowBytes(
 		}
 	} else {
 		*PixelPTEBytesPerRow = 0;
+		PixelPTEReqHeightPTEs = 0;
 		*PTEBufferSizeNotExceeded = true;
 	}
 	dml_print("DML: vm_bytes = meta_pte_bytes_per_frame (per_pipe) = MetaPTEBytesFrame = : %d\n", *MetaPTEBytesFrame);
