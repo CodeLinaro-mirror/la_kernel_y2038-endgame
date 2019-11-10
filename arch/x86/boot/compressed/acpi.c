@@ -313,7 +313,7 @@ static unsigned long get_acpi_srat_table(void)
 	 * stash this in boot params because the kernel itself may have
 	 * different ideas about whether to trust a command-line parameter.
 	 */
-	rsdp = (struct acpi_table_rsdp *)get_cmdline_acpi_rsdp();
+	rsdp = (struct acpi_table_rsdp *)(long)get_cmdline_acpi_rsdp();
 
 	if (!rsdp)
 		rsdp = (struct acpi_table_rsdp *)(long)
