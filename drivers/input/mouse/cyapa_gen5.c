@@ -2301,16 +2301,18 @@ static ssize_t cyapa_gen5_show_baseline(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
 	struct cyapa *cyapa = dev_get_drvdata(dev);
-	int gidac_mutual_max, gidac_mutual_min, gidac_mutual_ave;
-	int lidac_mutual_max, lidac_mutual_min, lidac_mutual_ave;
-	int gidac_self_rx, gidac_self_tx;
-	int lidac_self_max, lidac_self_min, lidac_self_ave;
-	int raw_cap_mutual_max, raw_cap_mutual_min, raw_cap_mutual_ave;
-	int raw_cap_self_max, raw_cap_self_min, raw_cap_self_ave;
-	int mutual_diffdata_max, mutual_diffdata_min, mutual_diffdata_ave;
-	int self_diffdata_max, self_diffdata_min, self_diffdata_ave;
-	int mutual_baseline_max, mutual_baseline_min, mutual_baseline_ave;
-	int self_baseline_max, self_baseline_min, self_baseline_ave;
+	struct {
+		int gidac_mutual_max, gidac_mutual_min, gidac_mutual_ave;
+		int lidac_mutual_max, lidac_mutual_min, lidac_mutual_ave;
+		int gidac_self_rx, gidac_self_tx;
+		int lidac_self_max, lidac_self_min, lidac_self_ave;
+		int raw_cap_mutual_max, raw_cap_mutual_min, raw_cap_mutual_ave;
+		int raw_cap_self_max, raw_cap_self_min, raw_cap_self_ave;
+		int mutual_diffdata_max, mutual_diffdata_min, mutual_diffdata_ave;
+		int self_diffdata_max, self_diffdata_min, self_diffdata_ave;
+		int mutual_baseline_max, mutual_baseline_min, mutual_baseline_ave;
+		int self_baseline_max, self_baseline_min, self_baseline_ave;
+	} s;
 	int error, resume_error;
 	int size;
 
@@ -2323,19 +2325,19 @@ static ssize_t cyapa_gen5_show_baseline(struct device *dev,
 		return error;
 
 	/* 2.  Read global and local mutual IDAC data. */
-	gidac_self_rx = gidac_self_tx = 0;
+	s.gidac_self_rx = s.gidac_self_tx = 0;
 	error = cyapa_gen5_read_mutual_idac_data(cyapa,
-				&gidac_mutual_max, &gidac_mutual_min,
-				&gidac_mutual_ave, &lidac_mutual_max,
-				&lidac_mutual_min, &lidac_mutual_ave);
+				&s.gidac_mutual_max, &s.gidac_mutual_min,
+				&s.gidac_mutual_ave, &s.lidac_mutual_max,
+				&s.lidac_mutual_min, &s.lidac_mutual_ave);
 	if (error)
 		goto resume_scanning;
 
 	/* 3.  Read global and local self IDAC data. */
 	error = cyapa_gen5_read_self_idac_data(cyapa,
-				&gidac_self_rx, &gidac_self_tx,
-				&lidac_self_max, &lidac_self_min,
-				&lidac_self_ave);
+				&s.gidac_self_rx, &s.gidac_self_tx,
+				&s.lidac_self_max, &s.lidac_self_min,
+				&s.lidac_self_ave);
 	if (error)
 		goto resume_scanning;
 
@@ -2349,8 +2351,8 @@ static ssize_t cyapa_gen5_show_baseline(struct device *dev,
 				GEN5_CMD_RETRIEVE_PANEL_SCAN,
 				GEN5_PANEL_SCAN_MUTUAL_RAW_DATA,
 				cyapa->electrodes_x * cyapa->electrodes_y,
-				&raw_cap_mutual_max, &raw_cap_mutual_min,
-				&raw_cap_mutual_ave,
+				&s.raw_cap_mutual_max, &s.raw_cap_mutual_min,
+				&s.raw_cap_mutual_ave,
 				NULL);
 	if (error)
 		goto resume_scanning;
@@ -2360,8 +2362,8 @@ static ssize_t cyapa_gen5_show_baseline(struct device *dev,
 				GEN5_CMD_RETRIEVE_PANEL_SCAN,
 				GEN5_PANEL_SCAN_SELF_RAW_DATA,
 				cyapa->electrodes_x + cyapa->electrodes_y,
-				&raw_cap_self_max, &raw_cap_self_min,
-				&raw_cap_self_ave,
+				&s.raw_cap_self_max, &s.raw_cap_self_min,
+				&s.raw_cap_self_ave,
 				NULL);
 	if (error)
 		goto resume_scanning;
@@ -2371,8 +2373,8 @@ static ssize_t cyapa_gen5_show_baseline(struct device *dev,
 				GEN5_CMD_RETRIEVE_PANEL_SCAN,
 				GEN5_PANEL_SCAN_MUTUAL_DIFFCOUNT,
 				cyapa->electrodes_x * cyapa->electrodes_y,
-				&mutual_diffdata_max, &mutual_diffdata_min,
-				&mutual_diffdata_ave,
+				&s.mutual_diffdata_max, &s.mutual_diffdata_min,
+				&s.mutual_diffdata_ave,
 				NULL);
 	if (error)
 		goto resume_scanning;
@@ -2382,8 +2384,8 @@ static ssize_t cyapa_gen5_show_baseline(struct device *dev,
 				GEN5_CMD_RETRIEVE_PANEL_SCAN,
 				GEN5_PANEL_SCAN_SELF_DIFFCOUNT,
 				cyapa->electrodes_x + cyapa->electrodes_y,
-				&self_diffdata_max, &self_diffdata_min,
-				&self_diffdata_ave,
+				&s.self_diffdata_max, &s.self_diffdata_min,
+				&s.self_diffdata_ave,
 				NULL);
 	if (error)
 		goto resume_scanning;
@@ -2393,8 +2395,8 @@ static ssize_t cyapa_gen5_show_baseline(struct device *dev,
 				GEN5_CMD_RETRIEVE_PANEL_SCAN,
 				GEN5_PANEL_SCAN_MUTUAL_BASELINE,
 				cyapa->electrodes_x * cyapa->electrodes_y,
-				&mutual_baseline_max, &mutual_baseline_min,
-				&mutual_baseline_ave,
+				&s.mutual_baseline_max, &s.mutual_baseline_min,
+				&s.mutual_baseline_ave,
 				NULL);
 	if (error)
 		goto resume_scanning;
@@ -2404,8 +2406,8 @@ static ssize_t cyapa_gen5_show_baseline(struct device *dev,
 				GEN5_CMD_RETRIEVE_PANEL_SCAN,
 				GEN5_PANEL_SCAN_SELF_BASELINE,
 				cyapa->electrodes_x + cyapa->electrodes_y,
-				&self_baseline_max, &self_baseline_min,
-				&self_baseline_ave,
+				&s.self_baseline_max, &s.self_baseline_min,
+				&s.self_baseline_ave,
 				NULL);
 	if (error)
 		goto resume_scanning;
@@ -2418,18 +2420,18 @@ resume_scanning:
 
 	/* 12. Output data strings */
 	size = scnprintf(buf, PAGE_SIZE, "%d %d %d %d %d %d %d %d %d %d %d ",
-		gidac_mutual_min, gidac_mutual_max, gidac_mutual_ave,
-		lidac_mutual_min, lidac_mutual_max, lidac_mutual_ave,
-		gidac_self_rx, gidac_self_tx,
-		lidac_self_min, lidac_self_max, lidac_self_ave);
+		s.gidac_mutual_min, s.gidac_mutual_max, s.gidac_mutual_ave,
+		s.lidac_mutual_min, s.lidac_mutual_max, s.lidac_mutual_ave,
+		s.gidac_self_rx, s.gidac_self_tx,
+		s.lidac_self_min, s.lidac_self_max, s.lidac_self_ave);
 	size += scnprintf(buf + size, PAGE_SIZE - size,
 		"%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
-		raw_cap_mutual_min, raw_cap_mutual_max, raw_cap_mutual_ave,
-		raw_cap_self_min, raw_cap_self_max, raw_cap_self_ave,
-		mutual_diffdata_min, mutual_diffdata_max, mutual_diffdata_ave,
-		self_diffdata_min, self_diffdata_max, self_diffdata_ave,
-		mutual_baseline_min, mutual_baseline_max, mutual_baseline_ave,
-		self_baseline_min, self_baseline_max, self_baseline_ave);
+		s.raw_cap_mutual_min, s.raw_cap_mutual_max, s.raw_cap_mutual_ave,
+		s.raw_cap_self_min, s.raw_cap_self_max, s.raw_cap_self_ave,
+		s.mutual_diffdata_min, s.mutual_diffdata_max, s.mutual_diffdata_ave,
+		s.self_diffdata_min, s.self_diffdata_max, s.self_diffdata_ave,
+		s.mutual_baseline_min, s.mutual_baseline_max, s.mutual_baseline_ave,
+		s.self_baseline_min, s.self_baseline_max, s.self_baseline_ave);
 	return size;
 }
 
