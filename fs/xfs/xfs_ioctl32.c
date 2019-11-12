@@ -98,101 +98,6 @@ xfs_fsinumbers_fmt_compat(
 	return xfs_ibulk_advance(breq, sizeof(struct compat_xfs_inogrp));
 }
 
-/* struct xfs_bstat has differing alignment on intel */
-STATIC int
-xfs_ioctl32_bstime_copyin(
-	xfs_bstime_t		*bstime,
-	compat_xfs_bstime_t	__user *bstime32)
-{
-	if (get_user(bstime->tv_sec,	&bstime32->tv_sec)	||
-	    get_user(bstime->tv_nsec,	&bstime32->tv_nsec))
-		return -EFAULT;
-	return 0;
-}
-
-STATIC int
-xfs_ioctl32_bstat_copyin(
-	struct xfs_bstat		*bstat,
-	struct compat_xfs_bstat	__user	*bstat32)
-{
-	if (get_user(bstat->bs_ino,	&bstat32->bs_ino)	||
-	    get_user(bstat->bs_mode,	&bstat32->bs_mode)	||
-	    get_user(bstat->bs_nlink,	&bstat32->bs_nlink)	||
-	    get_user(bstat->bs_uid,	&bstat32->bs_uid)	||
-	    get_user(bstat->bs_gid,	&bstat32->bs_gid)	||
-	    get_user(bstat->bs_rdev,	&bstat32->bs_rdev)	||
-	    get_user(bstat->bs_blksize,	&bstat32->bs_blksize)	||
-	    get_user(bstat->bs_size,	&bstat32->bs_size)	||
-	    xfs_ioctl32_bstime_copyin(&bstat->bs_atime, &bstat32->bs_atime) ||
-	    xfs_ioctl32_bstime_copyin(&bstat->bs_mtime, &bstat32->bs_mtime) ||
-	    xfs_ioctl32_bstime_copyin(&bstat->bs_ctime, &bstat32->bs_ctime) ||
-	    get_user(bstat->bs_blocks,	&bstat32->bs_size)	||
-	    get_user(bstat->bs_xflags,	&bstat32->bs_size)	||
-	    get_user(bstat->bs_extsize,	&bstat32->bs_extsize)	||
-	    get_user(bstat->bs_extents,	&bstat32->bs_extents)	||
-	    get_user(bstat->bs_gen,	&bstat32->bs_gen)	||
-	    get_user(bstat->bs_projid_lo, &bstat32->bs_projid_lo) ||
-	    get_user(bstat->bs_projid_hi, &bstat32->bs_projid_hi) ||
-	    get_user(bstat->bs_forkoff,	&bstat32->bs_forkoff)	||
-	    get_user(bstat->bs_dmevmask, &bstat32->bs_dmevmask)	||
-	    get_user(bstat->bs_dmstate,	&bstat32->bs_dmstate)	||
-	    get_user(bstat->bs_aextents, &bstat32->bs_aextents))
-		return -EFAULT;
-	return 0;
-}
-
-/* XFS_IOC_FSBULKSTAT and friends */
-
-STATIC int
-xfs_bstime_store_compat(
-	compat_xfs_bstime_t	__user *p32,
-	const xfs_bstime_t	*p)
-{
-	if (put_user(p->tv_sec, &p32->tv_sec) ||
-	    put_user(p->tv_nsec, &p32->tv_nsec))
-		return -EFAULT;
-	return 0;
-}
-
-/* Return 0 on success or positive error (to xfs_bulkstat()) */
-STATIC int
-xfs_fsbulkstat_one_fmt_compat(
-	struct xfs_ibulk		*breq,
-	const struct xfs_bulkstat	*bstat)
-{
-	struct compat_xfs_bstat	__user	*p32 = breq->ubuffer;
-	struct xfs_bstat		bs1;
-	struct xfs_bstat		*buffer = &bs1;
-
-	xfs_bulkstat_to_bstat(breq->mp, &bs1, bstat);
-
-	if (put_user(buffer->bs_ino,	  &p32->bs_ino)		||
-	    put_user(buffer->bs_mode,	  &p32->bs_mode)	||
-	    put_user(buffer->bs_nlink,	  &p32->bs_nlink)	||
-	    put_user(buffer->bs_uid,	  &p32->bs_uid)		||
-	    put_user(buffer->bs_gid,	  &p32->bs_gid)		||
-	    put_user(buffer->bs_rdev,	  &p32->bs_rdev)	||
-	    put_user(buffer->bs_blksize,  &p32->bs_blksize)	||
-	    put_user(buffer->bs_size,	  &p32->bs_size)	||
-	    xfs_bstime_store_compat(&p32->bs_atime, &buffer->bs_atime) ||
-	    xfs_bstime_store_compat(&p32->bs_mtime, &buffer->bs_mtime) ||
-	    xfs_bstime_store_compat(&p32->bs_ctime, &buffer->bs_ctime) ||
-	    put_user(buffer->bs_blocks,	  &p32->bs_blocks)	||
-	    put_user(buffer->bs_xflags,	  &p32->bs_xflags)	||
-	    put_user(buffer->bs_extsize,  &p32->bs_extsize)	||
-	    put_user(buffer->bs_extents,  &p32->bs_extents)	||
-	    put_user(buffer->bs_gen,	  &p32->bs_gen)		||
-	    put_user(buffer->bs_projid,	  &p32->bs_projid)	||
-	    put_user(buffer->bs_projid_hi,	&p32->bs_projid_hi)	||
-	    put_user(buffer->bs_forkoff,  &p32->bs_forkoff)	||
-	    put_user(buffer->bs_dmevmask, &p32->bs_dmevmask)	||
-	    put_user(buffer->bs_dmstate,  &p32->bs_dmstate)	||
-	    put_user(buffer->bs_aextents, &p32->bs_aextents))
-		return -EFAULT;
-
-	return xfs_ibulk_advance(breq, sizeof(struct compat_xfs_bstat));
-}
-
 #else
 #define xfs_fsinumbers_fmt_compat xfs_fsinumbers_fmt
 #endif	/* BROKEN_X86_ALIGNMENT */
@@ -221,11 +126,6 @@ xfs_compat_ioc_fsbulkstat(
 	 */
 	inumbers_fmt_pf		inumbers_func = xfs_fsinumbers_fmt_compat;
 	bulkstat_one_fmt_pf	bs_one_func_old = xfs_fsbulkstat_time32_one_fmt;
-	bulkstat_one_fmt_pf	bs_one_func_new = xfs_fsbulkstat_one_fmt;
-
-#ifdef BROKEN_X86_ALIGNMENT
-	bs_one_func_new = xfs_fsbulkstat_one_fmt_compat;
-#endif
 
 #ifdef CONFIG_X86_X32
 	if (in_x32_syscall()) {
@@ -305,12 +205,12 @@ xfs_compat_ioc_fsbulkstat(
 	case XFS_IOC_FSBULKSTAT_SINGLE_NEW32:
 		breq.startino = lastino;
 		breq.icount = 1;
-		error = xfs_bulkstat_one(&breq, bs_one_func_new);
+		error = xfs_bulkstat_one(&breq, xfs_fsbulkstat_one_fmt);
 		lastino = breq.startino;
 		break;
 	case XFS_IOC_FSBULKSTAT_NEW32:
 		breq.startino = lastino ? lastino + 1 : 0;
-		error = xfs_bulkstat(&breq, bs_one_func_new);
+		error = xfs_bulkstat(&breq, xfs_fsbulkstat_one_fmt);
 		lastino = breq.startino - 1;
 		break;
 	default:
@@ -607,22 +507,6 @@ xfs_file_compat_ioctl(
 		if (error)
 			return error;
 		error = xfs_growfs_rt(mp, &in);
-		mnt_drop_write_file(filp);
-		return error;
-	}
-	case XFS_IOC_SWAPEXT_32: {
-		struct xfs_swapext	  sxp;
-		struct compat_xfs_swapext __user *sxu = arg;
-
-		/* Bulk copy in up to the sx_stat field, then copy bstat */
-		if (copy_from_user(&sxp, sxu,
-				   offsetof(struct xfs_swapext, sx_stat)) ||
-		    xfs_ioctl32_bstat_copyin(&sxp.sx_stat, &sxu->sx_stat))
-			return -EFAULT;
-		error = mnt_want_write_file(filp);
-		if (error)
-			return error;
-		error = xfs_ioc_swapext(&sxp);
 		mnt_drop_write_file(filp);
 		return error;
 	}

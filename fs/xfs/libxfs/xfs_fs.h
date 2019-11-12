@@ -319,6 +319,17 @@ typedef struct xfs_growfs_rt {
 	__u32		extsize;	/* new realtime extent size, fsblocks */
 } xfs_growfs_rt_t;
 
+/*
+ * on i386, u64 has 32-bit alignment, which makes the traditional xfs_bstat
+ * different from other architectures. Aligning all 64-bit members to
+ * sizeof(time_t) means that the new version with 64-bit time_t is padded
+ * the same as on all other architectures.
+ */
+#ifdef __i386__
+#define __TIME_ALIGN __attribute__((aligned(sizeof(time_t))))
+#else
+#define __TIME_ALIGN
+#endif
 
 /*
  * Structures returned from ioctl XFS_IOC_FSBULKSTAT & XFS_IOC_FSBULKSTAT_SINGLE
@@ -328,24 +339,24 @@ typedef struct xfs_bstime {
 	__s64		tv_sec;		/* seconds		*/
 	__s32		tv_nsec;	/* and nanoseconds	*/
 #else
-	time_t		tv_sec;		/* seconds		*/
+	time_t		tv_sec __TIME_ALIGN; /* seconds		*/
 	__s32		tv_nsec;	/* and nanoseconds	*/
 #endif
 } xfs_bstime_t;
 
 struct xfs_bstat {
-	__u64		bs_ino;		/* inode number			*/
+	__u64		bs_ino __TIME_ALIGN; /* inode number		*/
 	__u16		bs_mode;	/* type and mode		*/
 	__u16		bs_nlink;	/* number of links		*/
 	__u32		bs_uid;		/* user id			*/
 	__u32		bs_gid;		/* group id			*/
 	__u32		bs_rdev;	/* device value			*/
 	__s32		bs_blksize;	/* block size			*/
-	__s64		bs_size;	/* file size			*/
+	__s64		bs_size __TIME_ALIGN;	/* file size		*/
 	xfs_bstime_t	bs_atime;	/* access time			*/
 	xfs_bstime_t	bs_mtime;	/* modify time			*/
 	xfs_bstime_t	bs_ctime;	/* inode change time		*/
-	int64_t		bs_blocks;	/* number of blocks		*/
+	int64_t		bs_blocks __TIME_ALIGN;	/* number of blocks	*/
 	__u32		bs_xflags;	/* extended flags		*/
 	__s32		bs_extsize;	/* extent size			*/
 	__s32		bs_extents;	/* number of extents		*/
@@ -362,6 +373,7 @@ struct xfs_bstat {
 	__u16		bs_dmstate;	/* DMIG state info		*/
 	__u16		bs_aextents;	/* attribute number of extents	*/
 };
+#undef __TIME_ALIGN
 
 /* New bulkstat structure that reports v5 features and fixes padding issues */
 struct xfs_bulkstat {
