@@ -516,7 +516,8 @@ xfs_vn_getattr(
 	if (ip->i_d.di_version == 3) {
 		if (request_mask & STATX_BTIME) {
 			stat->result_mask |= STATX_BTIME;
-			stat->btime.tv_sec = ip->i_d.di_crtime.t_sec;
+			stat->btime.tv_sec = ip->i_d.di_crtime.t_sec +
+					((u64)ip->i_d.di_crtime_hi << 32);
 			stat->btime.tv_nsec = ip->i_d.di_crtime.t_nsec;
 		}
 	}

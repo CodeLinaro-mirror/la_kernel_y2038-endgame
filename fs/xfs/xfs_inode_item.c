@@ -314,11 +314,14 @@ xfs_inode_to_log_dinode(
 
 	memset(to->di_pad, 0, sizeof(to->di_pad));
 	memset(to->di_pad3, 0, sizeof(to->di_pad3));
-	to->di_atime.t_sec = inode->i_atime.tv_sec;
+	to->di_atime.t_sec = lower_32_bits(inode->i_atime.tv_sec);
+	to->di_atime_hi = upper_32_bits(inode->i_atime.tv_sec);
 	to->di_atime.t_nsec = inode->i_atime.tv_nsec;
-	to->di_mtime.t_sec = inode->i_mtime.tv_sec;
+	to->di_mtime.t_sec = lower_32_bits(inode->i_mtime.tv_sec);
+	to->di_mtime_hi = upper_32_bits(inode->i_mtime.tv_sec);
 	to->di_mtime.t_nsec = inode->i_mtime.tv_nsec;
-	to->di_ctime.t_sec = inode->i_ctime.tv_sec;
+	to->di_ctime.t_sec = lower_32_bits(inode->i_ctime.tv_sec);
+	to->di_ctime_hi = upper_32_bits(inode->i_ctime.tv_sec);
 	to->di_ctime.t_nsec = inode->i_ctime.tv_nsec;
 	to->di_nlink = inode->i_nlink;
 	to->di_gen = inode->i_generation;
@@ -341,6 +344,7 @@ xfs_inode_to_log_dinode(
 	if (from->di_version == 3) {
 		to->di_changecount = inode_peek_iversion(inode);
 		to->di_crtime.t_sec = from->di_crtime.t_sec;
+		to->di_crtime_hi = from->di_crtime_hi;
 		to->di_crtime.t_nsec = from->di_crtime.t_nsec;
 		to->di_flags2 = from->di_flags2;
 		to->di_cowextsize = from->di_cowextsize;
