@@ -83,6 +83,18 @@ struct xfs_inogrp;
 
 int xfs_fsbulkstat_one_fmt(struct xfs_ibulk *breq,
 			   const struct xfs_bulkstat *bstat);
+int xfs_fsbulkstat_time32_one_fmt(struct xfs_ibulk *breq,
+			   const struct xfs_bulkstat *bstat);
 int xfs_fsinumbers_fmt(struct xfs_ibulk *breq, const struct xfs_inumbers *igrp);
+
+/*
+ * On intel, even if sizes match, alignment and/or padding may differ.
+ */
+#if defined(CONFIG_IA64) || defined(CONFIG_X86_64)
+#define BROKEN_X86_ALIGNMENT
+#define __compat_packed __attribute__((packed))
+#else
+#define __compat_packed
+#endif
 
 #endif

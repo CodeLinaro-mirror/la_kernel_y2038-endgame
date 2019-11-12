@@ -24,6 +24,7 @@
 #include "xfs_export.h"
 #include "xfs_trace.h"
 #include "xfs_icache.h"
+#include "xfs_ioctl.h"
 #include "xfs_trans.h"
 #include "xfs_acl.h"
 #include "xfs_btree.h"
@@ -713,7 +714,96 @@ out_unlock:
 	return error;
 }
 
+/*
+ * Structures returned from ioctl XFS_IOC_FSBULKSTAT_TIME32 & XFS_IOC_FSBULKSTAT_SINGLE_TIME32
+ */
+struct xfs_bstime32 {
+	__s32		tv_sec;		/* seconds		*/
+	__s32		tv_nsec;	/* and nanoseconds	*/
+};
+
+struct xfs_bstat_time32 {
+	__u64		bs_ino;		/* inode number			*/
+	__u16		bs_mode;	/* type and mode		*/
+	__u16		bs_nlink;	/* number of links		*/
+	__u32		bs_uid;		/* user id			*/
+	__u32		bs_gid;		/* group id			*/
+	__u32		bs_rdev;	/* device value			*/
+	__s32		bs_blksize;	/* block size			*/
+	__s64		bs_size;	/* file size			*/
+	struct xfs_bstime32 bs_atime;	/* access time			*/
+	struct xfs_bstime32 bs_mtime;	/* modify time			*/
+	struct xfs_bstime32 bs_ctime;	/* inode change time		*/
+	int64_t		bs_blocks;	/* number of blocks		*/
+	__u32		bs_xflags;	/* extended flags		*/
+	__s32		bs_extsize;	/* extent size			*/
+	__s32		bs_extents;	/* number of extents		*/
+	__u32		bs_gen;		/* generation count		*/
+	__u16		bs_projid_lo;	/* lower part of project id	*/
+	__u16		bs_forkoff;	/* inode fork offset in bytes	*/
+	__u16		bs_projid_hi;	/* higher part of project id	*/
+	uint16_t	bs_sick;	/* sick inode metadata		*/
+	uint16_t	bs_checked;	/* checked inode metadata	*/
+	unsigned char	bs_pad[2];	/* pad space, unused		*/
+	__u32		bs_cowextsize;	/* cow extent size		*/
+	__u32		bs_dmevmask;	/* DMIG event mask		*/
+	__u16		bs_dmstate;	/* DMIG state info		*/
+	__u16		bs_aextents;	/* attribute number of extents	*/
+} __compat_packed; /* packing for x86-64 compat mode */
+
+/* Convert bulkstat (v5) to bstat (v1) with 32-bit time_t. */
+void
+xfs_bulkstat_to_bstat_time32(
+	struct xfs_mount		*mp,
+	struct xfs_bstat_time32		*bs1,
+	const struct xfs_bulkstat	*bstat)
+{
+	/* memset is needed here because of padding holes in the structure. */
+	memset(bs1, 0, sizeof(struct xfs_bstat));
+	bs1->bs_ino = bstat->bs_ino;
+	bs1->bs_mode = bstat->bs_mode;
+	bs1->bs_nlink = bstat->bs_nlink;
+	bs1->bs_uid = bstat->bs_uid;
+	bs1->bs_gid = bstat->bs_gid;
+	bs1->bs_rdev = bstat->bs_rdev;
+	bs1->bs_blksize = bstat->bs_blksize;
+	bs1->bs_size = bstat->bs_size;
+	bs1->bs_atime.tv_sec = bstat->bs_atime;
+	bs1->bs_mtime.tv_sec = bstat->bs_mtime;
+	bs1->bs_ctime.tv_sec = bstat->bs_ctime;
+	bs1->bs_atime.tv_nsec = bstat->bs_atime_nsec;
+	bs1->bs_mtime.tv_nsec = bstat->bs_mtime_nsec;
+	bs1->bs_ctime.tv_nsec = bstat->bs_ctime_nsec;
+	bs1->bs_blocks = bstat->bs_blocks;
+	bs1->bs_xflags = bstat->bs_xflags;
+	bs1->bs_extsize = XFS_FSB_TO_B(mp, bstat->bs_extsize_blks);
+	bs1->bs_extents = bstat->bs_extents;
+	bs1->bs_gen = bstat->bs_gen;
+	bs1->bs_projid_lo = bstat->bs_projectid & 0xFFFF;
+	bs1->bs_forkoff = bstat->bs_forkoff;
+	bs1->bs_projid_hi = bstat->bs_projectid >> 16;
+	bs1->bs_sick = bstat->bs_sick;
+	bs1->bs_checked = bstat->bs_checked;
+	bs1->bs_cowextsize = XFS_FSB_TO_B(mp, bstat->bs_cowextsize_blks);
+	bs1->bs_dmevmask = 0;
+	bs1->bs_dmstate = 0;
+	bs1->bs_aextents = bstat->bs_aextents;
+}
+
 /* Return 0 on success or positive error */
+int
+xfs_fsbulkstat_time32_one_fmt(
+	struct xfs_ibulk		*breq,
+	const struct xfs_bulkstat	*bstat)
+{
+	struct xfs_bstat_time32		bs1;
+
+	xfs_bulkstat_to_bstat_time32(breq->mp, &bs1, bstat);
+	if (copy_to_user(breq->ubuffer, &bs1, sizeof(bs1)))
+		return -EFAULT;
+	return xfs_ibulk_advance(breq, sizeof(struct xfs_bstat_time32));
+}
+
 int
 xfs_fsbulkstat_one_fmt(
 	struct xfs_ibulk		*breq,
@@ -789,18 +879,40 @@ xfs_ioc_fsbulkstat(
 	 * is a special case because it has traditionally meant "first inode
 	 * in filesystem".
 	 */
-	if (cmd == XFS_IOC_FSINUMBERS) {
+	switch (cmd) {
+	case XFS_IOC_FSINUMBERS:
 		breq.startino = lastino ? lastino + 1 : 0;
 		error = xfs_inumbers(&breq, xfs_fsinumbers_fmt);
 		lastino = breq.startino - 1;
-	} else if (cmd == XFS_IOC_FSBULKSTAT_SINGLE) {
+		break;
+	case XFS_IOC_FSBULKSTAT_SINGLE_OLD:
+		if (!IS_ENABLED(CONFIG_64BIT)) {
+			breq.startino = lastino;
+			breq.icount = 1;
+			error = xfs_bulkstat_one(&breq, xfs_fsbulkstat_time32_one_fmt);
+			break;
+		}
+		/* Fallthrough */
+	case XFS_IOC_FSBULKSTAT_SINGLE_NEW:
 		breq.startino = lastino;
 		breq.icount = 1;
 		error = xfs_bulkstat_one(&breq, xfs_fsbulkstat_one_fmt);
-	} else {	/* XFS_IOC_FSBULKSTAT */
+		break;
+	case XFS_IOC_FSBULKSTAT_OLD:
+		if (!IS_ENABLED(CONFIG_64BIT)) {
+			breq.startino = lastino ? lastino + 1 : 0;
+			error = xfs_bulkstat(&breq, xfs_fsbulkstat_time32_one_fmt);
+			lastino = breq.startino - 1;
+			break;
+		}
+		/* Fallthrough */
+	case XFS_IOC_FSBULKSTAT_NEW:
 		breq.startino = lastino ? lastino + 1 : 0;
 		error = xfs_bulkstat(&breq, xfs_fsbulkstat_one_fmt);
 		lastino = breq.startino - 1;
+		break;
+	default:
+		error = -EINVAL;
 	}
 
 	if (error)
@@ -2093,6 +2205,74 @@ out:
 	return error;
 }
 
+static int get_xfs_bstime32(struct xfs_bstime *bstime,
+				struct xfs_bstime32 __user *bstime32)
+{
+	struct xfs_bstime32 t;
+
+	if (copy_from_user(&t, bstime32, sizeof(t)))
+		return -EFAULT;
+
+	*bstime = (struct xfs_bstime){
+		.tv_sec = t.tv_sec,
+		.tv_nsec = t.tv_nsec,
+	};
+
+	return 0;
+}
+
+static int get_xfs_bstat_time32(struct xfs_bstat *bstat,
+				struct xfs_bstat_time32 __user *bstat32)
+{
+	if (copy_from_user(bstat, bstat32,
+			   offsetof(struct xfs_bstat, bs_atime)))
+		return -EFAULT;
+
+	if (get_xfs_bstime32(&bstat->bs_atime, &bstat32->bs_atime) ||
+	    get_xfs_bstime32(&bstat->bs_mtime, &bstat32->bs_mtime) ||
+	    get_xfs_bstime32(&bstat->bs_ctime, &bstat32->bs_ctime))
+		return -EFAULT;
+
+	if (copy_from_user(&bstat->bs_blocks, &bstat32->bs_blocks,
+			   sizeof(struct xfs_bstat) -
+			   offsetof(struct xfs_bstat, bs_blocks)))
+		return -EFAULT;
+
+	return 0;
+}
+
+/*
+ * Structure passed to XFS_IOC_SWAPEXT_TIME32
+ */
+struct xfs_swapext_time32
+{
+	int64_t		sx_version;	/* version */
+	int64_t		sx_fdtarget;	/* fd of target file */
+	int64_t		sx_fdtmp;	/* fd of tmp file */
+	xfs_off_t	sx_offset;	/* offset into file */
+	xfs_off_t	sx_length;	/* leng from offset */
+	char		sx_pad[16];	/* pad space, unused */
+	struct xfs_bstat_time32 sx_stat;/* stat of target b4 copy */
+};
+#define XFS_IOC_SWAPEXT_TIME32    _IOWR('X', 109, struct xfs_swapext_time32)
+
+static int get_xfs_swapext(struct xfs_swapext *sxp, unsigned int cmd, void __user *arg)
+{
+	struct xfs_swapext_time32 *sxp32 = arg;
+	int ret;
+
+	if (cmd == XFS_IOC_SWAPEXT) {
+		ret = copy_from_user(sxp, arg, sizeof(struct xfs_swapext));
+		return ret ? -EFAULT : 0;
+	}
+
+	ret = copy_from_user(sxp, arg, offsetof(struct xfs_swapext, sx_stat));
+	if (ret)
+		return -EFAULT;
+
+	return get_xfs_bstat_time32(&sxp->sx_stat, &sxp32->sx_stat);
+}
+
 /*
  * Note: some of the ioctl's return positive numbers as a
  * byte count indicating success, such as readlink_by_handle.
@@ -2149,8 +2329,10 @@ xfs_file_ioctl(
 		return 0;
 	}
 
-	case XFS_IOC_FSBULKSTAT_SINGLE:
-	case XFS_IOC_FSBULKSTAT:
+	case XFS_IOC_FSBULKSTAT_SINGLE_OLD:
+	case XFS_IOC_FSBULKSTAT_OLD:
+	case XFS_IOC_FSBULKSTAT_SINGLE_NEW:
+	case XFS_IOC_FSBULKSTAT_NEW:
 	case XFS_IOC_FSINUMBERS:
 		return xfs_ioc_fsbulkstat(mp, cmd, arg);
 
@@ -2242,10 +2424,11 @@ xfs_file_ioctl(
 	case XFS_IOC_ATTRMULTI_BY_HANDLE:
 		return xfs_attrmulti_by_handle(filp, arg);
 
+	case XFS_IOC_SWAPEXT_TIME32:
 	case XFS_IOC_SWAPEXT: {
 		struct xfs_swapext	sxp;
 
-		if (copy_from_user(&sxp, arg, sizeof(xfs_swapext_t)))
+		if (get_xfs_swapext(&sxp, cmd, arg))
 			return -EFAULT;
 		error = mnt_want_write_file(filp);
 		if (error)

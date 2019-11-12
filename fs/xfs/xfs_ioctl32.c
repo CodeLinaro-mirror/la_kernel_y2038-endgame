@@ -98,28 +98,18 @@ xfs_fsinumbers_fmt_compat(
 	return xfs_ibulk_advance(breq, sizeof(struct compat_xfs_inogrp));
 }
 
-#else
-#define xfs_fsinumbers_fmt_compat xfs_fsinumbers_fmt
-#endif	/* BROKEN_X86_ALIGNMENT */
-
+/* struct xfs_bstat has differing alignment on intel */
 STATIC int
 xfs_ioctl32_bstime_copyin(
 	xfs_bstime_t		*bstime,
 	compat_xfs_bstime_t	__user *bstime32)
 {
-	compat_time_t		sec32;	/* tv_sec differs on 64 vs. 32 */
-
-	if (get_user(sec32,		&bstime32->tv_sec)	||
+	if (get_user(bstime->tv_sec,	&bstime32->tv_sec)	||
 	    get_user(bstime->tv_nsec,	&bstime32->tv_nsec))
 		return -EFAULT;
-	bstime->tv_sec = sec32;
 	return 0;
 }
 
-/*
- * struct xfs_bstat has differing alignment on intel, & bstime_t sizes
- * everywhere
- */
 STATIC int
 xfs_ioctl32_bstat_copyin(
 	struct xfs_bstat		*bstat,
@@ -158,10 +148,7 @@ xfs_bstime_store_compat(
 	compat_xfs_bstime_t	__user *p32,
 	const xfs_bstime_t	*p)
 {
-	__s32			sec32;
-
-	sec32 = p->tv_sec;
-	if (put_user(sec32, &p32->tv_sec) ||
+	if (put_user(p->tv_sec, &p32->tv_sec) ||
 	    put_user(p->tv_nsec, &p32->tv_nsec))
 		return -EFAULT;
 	return 0;
@@ -206,6 +193,10 @@ xfs_fsbulkstat_one_fmt_compat(
 	return xfs_ibulk_advance(breq, sizeof(struct compat_xfs_bstat));
 }
 
+#else
+#define xfs_fsinumbers_fmt_compat xfs_fsinumbers_fmt
+#endif	/* BROKEN_X86_ALIGNMENT */
+
 /* copied from xfs_ioctl.c */
 STATIC int
 xfs_compat_ioc_fsbulkstat(
@@ -229,7 +220,12 @@ xfs_compat_ioc_fsbulkstat(
 	 * functions and structure size are the correct ones to use ...
 	 */
 	inumbers_fmt_pf		inumbers_func = xfs_fsinumbers_fmt_compat;
-	bulkstat_one_fmt_pf	bs_one_func = xfs_fsbulkstat_one_fmt_compat;
+	bulkstat_one_fmt_pf	bs_one_func_old = xfs_fsbulkstat_time32_one_fmt;
+	bulkstat_one_fmt_pf	bs_one_func_new = xfs_fsbulkstat_one_fmt;
+
+#ifdef BROKEN_X86_ALIGNMENT
+	bs_one_func_new = xfs_fsbulkstat_one_fmt_compat;
+#endif
 
 #ifdef CONFIG_X86_X32
 	if (in_x32_syscall()) {
@@ -242,7 +238,7 @@ xfs_compat_ioc_fsbulkstat(
 		 * x32 userspace expects.
 		 */
 		inumbers_func = xfs_fsinumbers_fmt;
-		bs_one_func = xfs_fsbulkstat_one_fmt;
+		bs_one_func_old = xfs_fsbulkstat_one_fmt;
 	}
 #endif
 
@@ -289,21 +285,37 @@ xfs_compat_ioc_fsbulkstat(
 	 * is a special case because it has traditionally meant "first inode
 	 * in filesystem".
 	 */
-	if (cmd == XFS_IOC_FSINUMBERS_32) {
+	switch (cmd) {
+	case XFS_IOC_FSINUMBERS_32:
 		breq.startino = lastino ? lastino + 1 : 0;
 		error = xfs_inumbers(&breq, inumbers_func);
 		lastino = breq.startino - 1;
-	} else if (cmd == XFS_IOC_FSBULKSTAT_SINGLE_32) {
+		break;
+	case XFS_IOC_FSBULKSTAT_SINGLE_OLD32:
 		breq.startino = lastino;
 		breq.icount = 1;
-		error = xfs_bulkstat_one(&breq, bs_one_func);
+		error = xfs_bulkstat_one(&breq, bs_one_func_old);
 		lastino = breq.startino;
-	} else if (cmd == XFS_IOC_FSBULKSTAT_32) {
+		break;
+	case XFS_IOC_FSBULKSTAT_OLD32:
 		breq.startino = lastino ? lastino + 1 : 0;
-		error = xfs_bulkstat(&breq, bs_one_func);
+		error = xfs_bulkstat(&breq, bs_one_func_old);
 		lastino = breq.startino - 1;
-	} else {
+		break;
+	case XFS_IOC_FSBULKSTAT_SINGLE_NEW32:
+		breq.startino = lastino;
+		breq.icount = 1;
+		error = xfs_bulkstat_one(&breq, bs_one_func_new);
+		lastino = breq.startino;
+		break;
+	case XFS_IOC_FSBULKSTAT_NEW32:
+		breq.startino = lastino ? lastino + 1 : 0;
+		error = xfs_bulkstat(&breq, bs_one_func_new);
+		lastino = breq.startino - 1;
+		break;
+	default:
 		error = -EINVAL;
+		break;
 	}
 	if (error)
 		return error;
@@ -548,7 +560,9 @@ xfs_file_compat_ioctl(
 	struct xfs_inode	*ip = XFS_I(inode);
 	struct xfs_mount	*mp = ip->i_mount;
 	void			__user *arg = compat_ptr(p);
+#if defined(BROKEN_X86_ALIGNMENT)
 	int			error;
+#endif
 
 	trace_xfs_file_compat_ioctl(ip);
 
@@ -596,13 +610,6 @@ xfs_file_compat_ioctl(
 		mnt_drop_write_file(filp);
 		return error;
 	}
-#endif
-	/* long changes size, but xfs only copiese out 32 bits */
-	case XFS_IOC_GETXFLAGS_32:
-	case XFS_IOC_SETXFLAGS_32:
-	case XFS_IOC_GETVERSION_32:
-		cmd = _NATIVE_IOC(cmd, long);
-		return xfs_file_ioctl(filp, cmd, p);
 	case XFS_IOC_SWAPEXT_32: {
 		struct xfs_swapext	  sxp;
 		struct compat_xfs_swapext __user *sxu = arg;
@@ -619,8 +626,17 @@ xfs_file_compat_ioctl(
 		mnt_drop_write_file(filp);
 		return error;
 	}
-	case XFS_IOC_FSBULKSTAT_32:
-	case XFS_IOC_FSBULKSTAT_SINGLE_32:
+#endif
+	/* long changes size, but xfs only copiese out 32 bits */
+	case XFS_IOC_GETXFLAGS_32:
+	case XFS_IOC_SETXFLAGS_32:
+	case XFS_IOC_GETVERSION_32:
+		cmd = _NATIVE_IOC(cmd, long);
+		return xfs_file_ioctl(filp, cmd, p);
+	case XFS_IOC_FSBULKSTAT_OLD32:
+	case XFS_IOC_FSBULKSTAT_SINGLE_OLD32:
+	case XFS_IOC_FSBULKSTAT_NEW32:
+	case XFS_IOC_FSBULKSTAT_SINGLE_NEW32:
 	case XFS_IOC_FSINUMBERS_32:
 		return xfs_compat_ioc_fsbulkstat(mp, cmd, arg);
 	case XFS_IOC_FD_TO_HANDLE_32:

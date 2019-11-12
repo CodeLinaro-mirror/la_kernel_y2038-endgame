@@ -21,20 +21,11 @@
 #define XFS_IOC_SETXFLAGS_32	FS_IOC32_SETFLAGS
 #define XFS_IOC_GETVERSION_32	FS_IOC32_GETVERSION
 
-/*
- * On intel, even if sizes match, alignment and/or padding may differ.
- */
-#if defined(CONFIG_IA64) || defined(CONFIG_X86_64)
-#define BROKEN_X86_ALIGNMENT
-#define __compat_packed __attribute__((packed))
-#else
-#define __compat_packed
-#endif
-
+#ifdef BROKEN_X86_ALIGNMENT
 typedef struct compat_xfs_bstime {
-	compat_time_t	tv_sec;		/* seconds		*/
+	__s64		tv_sec;		/* seconds		*/
 	__s32		tv_nsec;	/* and nanoseconds	*/
-} compat_xfs_bstime_t;
+} __compat_packed compat_xfs_bstime_t;
 
 struct compat_xfs_bstat {
 	__u64		bs_ino;		/* inode number			*/
@@ -62,6 +53,7 @@ struct compat_xfs_bstat {
 	__u16		bs_dmstate;	/* DMIG state info		*/
 	__u16		bs_aextents;	/* attribute number of extents	*/
 } __compat_packed;
+#endif
 
 struct compat_xfs_fsop_bulkreq {
 	compat_uptr_t	lastip;		/* last inode # pointer		*/
@@ -70,10 +62,14 @@ struct compat_xfs_fsop_bulkreq {
 	compat_uptr_t	ocount;		/* output count pointer		*/
 };
 
-#define XFS_IOC_FSBULKSTAT_32 \
+#define XFS_IOC_FSBULKSTAT_OLD32 \
 	_IOWR('X', 101, struct compat_xfs_fsop_bulkreq)
-#define XFS_IOC_FSBULKSTAT_SINGLE_32 \
+#define XFS_IOC_FSBULKSTAT_SINGLE_OLD32 \
 	_IOWR('X', 102, struct compat_xfs_fsop_bulkreq)
+#define XFS_IOC_FSBULKSTAT_NEW32 \
+	_IOWR('X', 129, struct compat_xfs_fsop_bulkreq)
+#define XFS_IOC_FSBULKSTAT_SINGLE_NEW32 \
+	_IOWR('X', 130, struct compat_xfs_fsop_bulkreq)
 #define XFS_IOC_FSINUMBERS_32 \
 	_IOWR('X', 103, struct compat_xfs_fsop_bulkreq)
 
@@ -98,6 +94,7 @@ typedef struct compat_xfs_fsop_handlereq {
 #define XFS_IOC_READLINK_BY_HANDLE_32 \
 	_IOWR('X', 108, struct compat_xfs_fsop_handlereq)
 
+#ifdef BROKEN_X86_ALIGNMENT
 /* The bstat field in the swapext struct needs translation */
 typedef struct compat_xfs_swapext {
 	int64_t			sx_version;	/* version */
@@ -110,6 +107,7 @@ typedef struct compat_xfs_swapext {
 } __compat_packed compat_xfs_swapext_t;
 
 #define XFS_IOC_SWAPEXT_32	_IOWR('X', 109, struct compat_xfs_swapext)
+#endif
 
 typedef struct compat_xfs_fsop_attrlist_handlereq {
 	struct compat_xfs_fsop_handlereq hreq; /* handle interface structure */

@@ -324,8 +324,13 @@ typedef struct xfs_growfs_rt {
  * Structures returned from ioctl XFS_IOC_FSBULKSTAT & XFS_IOC_FSBULKSTAT_SINGLE
  */
 typedef struct xfs_bstime {
-	__kernel_long_t tv_sec;		/* seconds		*/
+#ifdef __KERNEL__
+	__s64		tv_sec;		/* seconds		*/
 	__s32		tv_nsec;	/* and nanoseconds	*/
+#else
+	time_t		tv_sec;		/* seconds		*/
+	__s32		tv_nsec;	/* and nanoseconds	*/
+#endif
 } xfs_bstime_t;
 
 struct xfs_bstat {
@@ -775,8 +780,8 @@ struct xfs_scrub_metadata {
  * ioctl commands that replace IRIX syssgi()'s
  */
 #define XFS_IOC_FSGEOMETRY_V1	     _IOR ('X', 100, struct xfs_fsop_geom_v1)
-#define XFS_IOC_FSBULKSTAT	     _IOWR('X', 101, struct xfs_fsop_bulkreq)
-#define XFS_IOC_FSBULKSTAT_SINGLE    _IOWR('X', 102, struct xfs_fsop_bulkreq)
+#define XFS_IOC_FSBULKSTAT_OLD	     _IOWR('X', 101, struct xfs_fsop_bulkreq)
+#define XFS_IOC_FSBULKSTAT_SINGLE_OLD _IOWR('X', 102, struct xfs_fsop_bulkreq)
 #define XFS_IOC_FSINUMBERS	     _IOWR('X', 103, struct xfs_fsop_bulkreq)
 #define XFS_IOC_PATH_TO_FSHANDLE     _IOWR('X', 104, struct xfs_fsop_handlereq)
 #define XFS_IOC_PATH_TO_HANDLE	     _IOWR('X', 105, struct xfs_fsop_handlereq)
@@ -805,6 +810,14 @@ struct xfs_scrub_metadata {
 #define XFS_IOC_FSGEOMETRY	     _IOR ('X', 126, struct xfs_fsop_geom)
 #define XFS_IOC_BULKSTAT	     _IOR ('X', 127, struct xfs_bulkstat_req)
 #define XFS_IOC_INUMBERS	     _IOR ('X', 128, struct xfs_inumbers_req)
+#define XFS_IOC_FSBULKSTAT_NEW	     _IOWR('X', 129, struct xfs_fsop_bulkreq)
+#define XFS_IOC_FSBULKSTAT_SINGLE_NEW _IOWR('X', 130, struct xfs_fsop_bulkreq)
+
+#define XFS_IOC_FSBULKSTAT	  ((sizeof(time_t) == sizeof(__kernel_long_t)) ? \
+				   XFS_IOC_FSBULKSTAT_OLD : XFS_IOC_FSBULKSTAT_NEW)
+#define XFS_IOC_FSBULKSTAT_SINGLE ((sizeof(time_t) == sizeof(__kernel_long_t)) ? \
+				   XFS_IOC_FSBULKSTAT_OLD : XFS_IOC_FSBULKSTAT_NEW)
+
 /*	XFS_IOC_GETFSUUID ---------- deprecated 140	 */
 
 
