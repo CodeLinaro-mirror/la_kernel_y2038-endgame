@@ -38,6 +38,7 @@ struct xfs_icdinode {
 	uint32_t	di_cowextsize;	/* basic cow extent size for file */
 
 	xfs_ictimestamp_t di_crtime;	/* time created */
+	uint8_t		di_crtime_hi;	/* upper 8 bites of di_crtime */
 };
 
 /*
