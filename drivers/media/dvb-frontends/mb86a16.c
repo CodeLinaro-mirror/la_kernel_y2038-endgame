@@ -1501,6 +1501,7 @@ static int mb86a16_set_fe(struct mb86a16_state *state)
 		}
 	}
 
+	agcval = cnmval = -1;
 	mb86a16_read(state, 0x15, &agcval);
 	mb86a16_read(state, 0x26, &cnmval);
 	dprintk(verbose, MB86A16_INFO, 1, "AGC = %02x CNM = %02x", agcval, cnmval);
