@@ -634,7 +634,7 @@ static void omap1_clk_disable(struct clk_hw *clk_hw)
 	}
 }
 
-static omap1_clk_enable(struct clk_hw *clk_hw)
+static int omap1_clk_enable(struct clk_hw *clk_hw)
 {
 	struct omap1_clk *clk = to_omap1_clk(clk_hw);
 	struct clk_hw *parent = clk_hw_get_parent(clk_hw);
