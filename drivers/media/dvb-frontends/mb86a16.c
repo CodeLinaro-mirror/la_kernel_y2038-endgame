@@ -80,7 +80,7 @@ static int mb86a16_write(struct mb86a16_state *state, u8 reg, u8 val)
 	return (ret != 1) ? -EREMOTEIO : 0;
 }
 
-static int mb86a16_read(struct mb86a16_state *state, u8 reg, u8 *val)
+static int mb86a16_read_byte(struct mb86a16_state *state, u8 reg)
 {
 	int ret;
 	u8 b0[] = { reg };
@@ -108,9 +108,20 @@ static int mb86a16_read(struct mb86a16_state *state, u8 reg, u8 *val)
 			return ret;
 		return -EREMOTEIO;
 	}
-	*val = b1[0];
 
-	return ret;
+	return b1[0];
+}
+
+static __always_inline int mb86a16_read(struct mb86a16_state *state, u8 reg, u8 *val)
+{
+	int ret = mb86a16_read_byte(state, reg);
+
+	if (ret < 0)
+		return ret;
+
+	*val = ret;
+
+	return 2;
 }
 
 static int CNTM_set(struct mb86a16_state *state,
@@ -1487,6 +1498,7 @@ static int mb86a16_set_fe(struct mb86a16_state *state)
 		}
 	}
 
+	agcval = cnmval = -1;
 	mb86a16_read(state, 0x15, &agcval);
 	mb86a16_read(state, 0x26, &cnmval);
 	dprintk(verbose, MB86A16_INFO, 1, "AGC = %02x CNM = %02x", agcval, cnmval);
