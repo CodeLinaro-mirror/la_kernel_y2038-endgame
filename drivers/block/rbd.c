@@ -2001,6 +2001,8 @@ static int rbd_object_map_update_finish(struct rbd_obj_request *obj_req,
 	has_current_state = ceph_decode_8(&p);
 	if (has_current_state)
 		current_state = ceph_decode_8(&p);
+	else
+		current_state = 0;
 
 	spin_lock(&rbd_dev->object_map_lock);
 	state = __rbd_object_map_get(rbd_dev, objno);
