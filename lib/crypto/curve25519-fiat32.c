@@ -757,14 +757,18 @@ void curve25519_generic(u8 out[CURVE25519_KEY_SIZE],
 			const u8 scalar[CURVE25519_KEY_SIZE],
 			const u8 point[CURVE25519_KEY_SIZE])
 {
+	struct {
 	fe x1, x2, z2, x3, z3;
 	fe_loose x2l, z2l, x3l;
+	u8 e[32];
+	} s;
+
 	unsigned swap = 0;
 	int pos;
-	u8 e[32];
 
-	memcpy(e, scalar, 32);
-	curve25519_clamp_secret(e);
+	swap = 0;
+	memcpy(s.e, scalar, 32);
+	curve25519_clamp_secret(s.e);
 
 	/* The following implementation was transcribed to Coq and proven to
 	 * correspond to unary scalar multiplication in affine coordinates given
@@ -791,11 +795,11 @@ void curve25519_generic(u8 out[CURVE25519_KEY_SIZE],
 	 * preconditions: 0 <= e < 2^255 (not necessarily e < order),
 	 * fe_invert(0) = 0
 	 */
-	fe_frombytes(&x1, point);
-	fe_1(&x2);
-	fe_0(&z2);
-	fe_copy(&x3, &x1);
-	fe_1(&z3);
+	fe_frombytes(&s.x1, point);
+	fe_1(&s.x2);
+	fe_0(&s.z2);
+	fe_copy(&s.x3, &s.x1);
+	fe_1(&s.z3);
 
 	for (pos = 254; pos >= 0; --pos) {
 		fe tmp0, tmp1;
@@ -811,10 +815,10 @@ void curve25519_generic(u8 out[CURVE25519_KEY_SIZE],
 		 *   x1 is the nonzero x coordinate of the nonzero
 		 *   point (r*P-(r+1)*P)
 		 */
-		unsigned b = 1 & (e[pos / 8] >> (pos & 7));
+		unsigned b = 1 & (s.e[pos / 8] >> (pos & 7));
 		swap ^= b;
-		fe_cswap(&x2, &x3, swap);
-		fe_cswap(&z2, &z3, swap);
+		fe_cswap(&s.x2, &s.x3, swap);
+		fe_cswap(&s.z2, &s.z3, swap);
 		swap = b;
 		/* Coq transcription of ladderstep formula (called from
 		 * transcribed loop):
@@ -823,42 +827,34 @@ void curve25519_generic(u8 out[CURVE25519_KEY_SIZE],
 		 * x1 != 0 <https://github.com/mit-plv/fiat-crypto/blob/2456d821825521f7e03e65882cc3521795b0320f/src/Curves/Montgomery/XZProofs.v#L217>
 		 * x1  = 0 <https://github.com/mit-plv/fiat-crypto/blob/2456d821825521f7e03e65882cc3521795b0320f/src/Curves/Montgomery/XZProofs.v#L147>
 		 */
-		fe_sub(&tmp0l, &x3, &z3);
-		fe_sub(&tmp1l, &x2, &z2);
-		fe_add(&x2l, &x2, &z2);
-		fe_add(&z2l, &x3, &z3);
-		fe_mul_tll(&z3, &tmp0l, &x2l);
-		fe_mul_tll(&z2, &z2l, &tmp1l);
+		fe_sub(&tmp0l, &s.x3, &s.z3);
+		fe_sub(&tmp1l, &s.x2, &s.z2);
+		fe_add(&s.x2l, &s.x2, &s.z2);
+		fe_add(&s.z2l, &s.x3, &s.z3);
+		fe_mul_tll(&s.z3, &tmp0l, &s.x2l);
+		fe_mul_tll(&s.z2, &s.z2l, &tmp1l);
 		fe_sq_tl(&tmp0, &tmp1l);
-		fe_sq_tl(&tmp1, &x2l);
-		fe_add(&x3l, &z3, &z2);
-		fe_sub(&z2l, &z3, &z2);
-		fe_mul_ttt(&x2, &tmp1, &tmp0);
+		fe_sq_tl(&tmp1, &s.x2l);
+		fe_add(&s.x3l, &s.z3, &s.z2);
+		fe_sub(&s.z2l, &s.z3, &s.z2);
+		fe_mul_ttt(&s.x2, &tmp1, &tmp0);
 		fe_sub(&tmp1l, &tmp1, &tmp0);
-		fe_sq_tl(&z2, &z2l);
-		fe_mul121666(&z3, &tmp1l);
-		fe_sq_tl(&x3, &x3l);
-		fe_add(&tmp0l, &tmp0, &z3);
-		fe_mul_ttt(&z3, &x1, &z2);
-		fe_mul_tll(&z2, &tmp1l, &tmp0l);
+		fe_sq_tl(&s.z2, &s.z2l);
+		fe_mul121666(&s.z3, &tmp1l);
+		fe_sq_tl(&s.x3, &s.x3l);
+		fe_add(&tmp0l, &tmp0, &s.z3);
+		fe_mul_ttt(&s.z3, &s.x1, &s.z2);
+		fe_mul_tll(&s.z2, &tmp1l, &tmp0l);
 	}
 	/* here pos=-1, so r=e, so to_xz (e*P) === if swap then (x3, z3)
 	 * else (x2, z2)
 	 */
-	fe_cswap(&x2, &x3, swap);
-	fe_cswap(&z2, &z3, swap);
+	fe_cswap(&s.x2, &s.x3, swap);
+	fe_cswap(&s.z2, &s.z3, swap);
 
-	fe_invert(&z2, &z2);
-	fe_mul_ttt(&x2, &x2, &z2);
-	fe_tobytes(out, &x2);
+	fe_invert(&s.z2, &s.z2);
+	fe_mul_ttt(&s.x2, &s.x2, &s.z2);
+	fe_tobytes(out, &s.x2);
 
-	memzero_explicit(&x1, sizeof(x1));
-	memzero_explicit(&x2, sizeof(x2));
-	memzero_explicit(&z2, sizeof(z2));
-	memzero_explicit(&x3, sizeof(x3));
-	memzero_explicit(&z3, sizeof(z3));
-	memzero_explicit(&x2l, sizeof(x2l));
-	memzero_explicit(&z2l, sizeof(z2l));
-	memzero_explicit(&x3l, sizeof(x3l));
-	memzero_explicit(&e, sizeof(e));
+	memzero_explicit(&s, sizeof(s));
 }
