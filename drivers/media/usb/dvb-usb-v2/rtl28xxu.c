@@ -14,7 +14,8 @@ module_param_named(disable_rc, rtl28xxu_disable_rc, int, 0644);
 MODULE_PARM_DESC(disable_rc, "disable RTL2832U remote controller");
 DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
 
-static int rtl28xxu_ctrl_msg(struct dvb_usb_device *d, struct rtl28xxu_req *req)
+static int __rtl28xxu_ctrl_msg(struct dvb_usb_device *d, u16 value, u16 index,
+			     u16 size, u8 *data)
 {
 	struct rtl28xxu_dev *dev = d->priv;
 	int ret;
@@ -23,15 +24,15 @@ static int rtl28xxu_ctrl_msg(struct dvb_usb_device *d, struct rtl28xxu_req *req)
 
 	mutex_lock(&d->usb_mutex);
 
-	if (req->size > sizeof(dev->buf)) {
-		dev_err(&d->intf->dev, "too large message %u\n", req->size);
+	if (size > sizeof(dev->buf)) {
+		dev_err(&d->intf->dev, "too large message %u\n", size);
 		ret = -EINVAL;
 		goto err_mutex_unlock;
 	}
 
-	if (req->index & CMD_WR_FLAG) {
+	if (index & CMD_WR_FLAG) {
 		/* write */
-		memcpy(dev->buf, req->data, req->size);
+		memcpy(dev->buf, data, size);
 		requesttype = (USB_TYPE_VENDOR | USB_DIR_OUT);
 		pipe = usb_sndctrlpipe(d->udev, 0);
 	} else {
@@ -40,16 +41,16 @@ static int rtl28xxu_ctrl_msg(struct dvb_usb_device *d, struct rtl28xxu_req *req)
 		pipe = usb_rcvctrlpipe(d->udev, 0);
 	}
 
-	ret = usb_control_msg(d->udev, pipe, 0, requesttype, req->value,
-			req->index, dev->buf, req->size, 1000);
-	dvb_usb_dbg_usb_control_msg(d->udev, 0, requesttype, req->value,
-			req->index, dev->buf, req->size);
+	ret = usb_control_msg(d->udev, pipe, 0, requesttype, value,
+			index, dev->buf, size, 1000);
+	dvb_usb_dbg_usb_control_msg(d->udev, 0, requesttype, value,
+			index, dev->buf, size);
 	if (ret < 0)
 		goto err_mutex_unlock;
 
 	/* read request, copy returned data to return buf */
 	if (requesttype == (USB_TYPE_VENDOR | USB_DIR_IN))
-		memcpy(req->data, dev->buf, req->size);
+		memcpy(data, dev->buf, size);
 
 	mutex_unlock(&d->usb_mutex);
 
@@ -58,6 +59,13 @@ err_mutex_unlock:
 	mutex_unlock(&d->usb_mutex);
 	dev_dbg(&d->intf->dev, "failed=%d\n", ret);
 	return ret;
+}
+
+static inline int rtl28xxu_ctrl_msg(struct dvb_usb_device *d,
+				    const struct rtl28xxu_req *req)
+{
+	/* convert to register arguments for better object code */
+	return __rtl28xxu_ctrl_msg(d, req->value, req->index, req->size, req->data);
 }
 
 static int rtl28xxu_wr_regs(struct dvb_usb_device *d, u16 reg, u8 *val, int len)
