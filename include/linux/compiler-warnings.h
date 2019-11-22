@@ -12,7 +12,7 @@
 
 #ifdef KBUILD_ERR1
 #define KBUILD_WARN_LEVEL1 error
-#elif defined(KBUILD_WARN1)
+#elif defined(KBUILD_EXTRA_WARN1)
 #define KBUILD_WARN_LEVEL1 warning
 #else
 #define KBUILD_WARN_LEVEL1 ignored
@@ -20,7 +20,7 @@
 
 #ifdef KBUILD_ERR2
 #define KBUILD_WARN_LEVEL2 error
-#elif defined(KBUILD_WARN2)
+#elif defined(KBUILD_EXTRA_WARN2)
 #define KBUILD_WARN_LEVEL2 warning
 #else
 #define KBUILD_WARN_LEVEL2 ignored
@@ -28,7 +28,7 @@
 
 #ifdef KBUILD_ERR3
 #define KBUILD_WARN_LEVEL3 error
-#elif defined(KBUILD_WARN3)
+#elif defined(KBUILD_EXTRA_WARN3)
 #define KBUILD_WARN_LEVEL3 warning
 #else
 #define KBUILD_WARN_LEVEL3 ignored
