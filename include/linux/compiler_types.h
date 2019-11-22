@@ -346,4 +346,6 @@ struct ftrace_likely_data {
 #define __diag_error(compiler, version, option, comment) \
 	__diag_ ## compiler(version, error, option)
 
+#include <linux/compiler-warnings.h>
+
 #endif /* __LINUX_COMPILER_TYPES_H */
