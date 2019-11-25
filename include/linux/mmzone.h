@@ -1105,7 +1105,7 @@ static __always_inline struct zoneref *next_zones_zonelist(struct zoneref *z,
 					enum zone_type highest_zoneidx,
 					nodemask_t *nodes)
 {
-	if (likely(!nodes && zonelist_zone_idx(z) <= highest_zoneidx))
+	if (likely(!nodes && (enum zone_type)zonelist_zone_idx(z) <= highest_zoneidx))
 		return z;
 	return __next_zones_zonelist(z, highest_zoneidx, nodes);
 }

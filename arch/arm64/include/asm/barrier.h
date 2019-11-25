@@ -106,6 +106,8 @@ do {									\
 				: "r" (*(__u64 *)__u.__c)		\
 				: "memory");				\
 		break;							\
+	default:							\
+		break;							\
 	}								\
 } while (0)
 
@@ -135,6 +137,8 @@ do {									\
 		asm volatile ("ldar %0, %1"				\
 			: "=r" (*(__u64 *)__u.__c)			\
 			: "Q" (*__p) : "memory");			\
+		break;							\
+	default:							\
 		break;							\
 	}								\
 	(typeof(*p))__u.__val;						\
