@@ -776,7 +776,7 @@ ifdef CONFIG_CC_IS_CLANG
 # source of a reference will be _MergedGlobals and not on of the whitelisted names.
 # See modpost pattern 2
 KBUILD_CFLAGS += -mno-global-merge
-else
+endif
 
 ifdef CONFIG_FRAME_POINTER
 KBUILD_CFLAGS	+= -fno-omit-frame-pointer -fno-optimize-sibling-calls $(call cc-option, -mno-omit-leaf-frame-pointer)

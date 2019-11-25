@@ -133,12 +133,12 @@ do {									\
 
 #define this_cpu_generic_read(pcp)					\
 ({									\
-	typeof(pcp) __ret;						\
+	typeof(pcp) ___ret;						\
 	if (__native_word(pcp))						\
-		__ret = __this_cpu_generic_read_nopreempt(pcp);		\
+		___ret = __this_cpu_generic_read_nopreempt(pcp);	\
 	else								\
-		__ret = __this_cpu_generic_read_noirq(pcp);		\
-	__ret;								\
+		___ret = __this_cpu_generic_read_noirq(pcp);		\
+	___ret;								\
 })
 
 #define this_cpu_generic_to_op(pcp, val, op)				\
