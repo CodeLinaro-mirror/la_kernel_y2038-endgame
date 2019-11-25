@@ -606,6 +606,8 @@ out:
 	return 0;
 }
 
+KBUILD_WARN(3, GCC_4_6, "-Woverride-init")
+
 static void show_smap_vma_flags(struct seq_file *m, struct vm_area_struct *vma)
 {
 	/*

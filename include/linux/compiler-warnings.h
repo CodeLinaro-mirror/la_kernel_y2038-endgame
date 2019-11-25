@@ -34,15 +34,21 @@
 #define KBUILD_WARN_LEVEL3 ignored
 #endif
 
-_Pragma("GCC diagnostic warning \"-Wall\"");
+#ifdef KBUILD_ERR4
+#define KBUILD_WARN_LEVEL4 error
+#elif defined(KBUILD_EXTRA_WARN4)
+#define KBUILD_WARN_LEVEL4 warning
+#else
+#define KBUILD_WARN_LEVEL4 ignored
+#endif
 
 /* building blocks: support for compiler versions */
 #define __KBUILD_WARN_LEVEL(arg) _Pragma(#arg)
 
+#if defined(GCC_VERSION)
 #define KBUILD_WARN_LEVEL(level, warning)  \
 	__KBUILD_WARN_LEVEL(GCC diagnostic level warning)
 
-#if defined(GCC_VERSION) && GCC_VERSION >= 40600
 #define KBUILD_WARN_LEVEL_GCC_4_6(level, warning) \
 	KBUILD_WARN_LEVEL(level, warning)
 #else
@@ -105,14 +111,17 @@ _Pragma("GCC diagnostic warning \"-Wall\"");
 #define KBUILD_WARN_LEVEL_GCC_9(level, warning)
 #endif
 
-#if defined(CLANG_VERSION) && CLANG_VERSION >= 80000
+#if defined(__clang__)
+#define KBUILD_WARN_LEVEL(level, warning)  \
+	__KBUILD_WARN_LEVEL(GCC diagnostic level warning)
+
 #define KBUILD_WARN_LEVEL_CLANG_8(level, warning) \
 	KBUILD_WARN_LEVEL(level, warning)
 #else
 #define KBUILD_WARN_LEVEL_CLANG_8(level, warning)
 #endif
 
-#if defined(CLANG_VERSION) && CLANG_VERSION >= 90000
+#if defined(CONFIG_CLANG_VERSION) && CONFIG_CLANG_VERSION >= 90000
 #define KBUILD_WARN_LEVEL_CLANG_9(level, warning) \
 	KBUILD_WARN_LEVEL(level, warning)
 #else
@@ -121,10 +130,6 @@ _Pragma("GCC diagnostic warning \"-Wall\"");
 
 #define KBUILD_WARN(level, ver, warning) \
 	KBUILD_WARN_LEVEL_ ## ver(KBUILD_WARN_LEVEL ## level, warning)
-
-KBUILD_WARN(0, GCC_4_6, "-Wall")
-KBUILD_WARN(0, CLANG_8, "-Wall")
-KBUILD_WARN(0, GCC_4_6, "-Wattributes")
 
 #include <linux/warnings.h>
 

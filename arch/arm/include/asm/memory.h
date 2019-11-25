@@ -321,7 +321,7 @@ static inline unsigned long phys_to_idmap(phys_addr_t addr)
 {
 	if (IS_ENABLED(CONFIG_MMU) && arch_phys_to_idmap_offset) {
 		addr += arch_phys_to_idmap_offset;
-		if (addr > (u32)~0)
+		if ((u64)addr > (u32)~0)
 			addr = IDMAP_INVALID_ADDR;
 	}
 	return addr;
