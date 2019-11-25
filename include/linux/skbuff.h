@@ -1441,7 +1441,7 @@ static inline unsigned int skb_end_offset(const struct sk_buff *skb)
 #endif
 
 /* Internal */
-#define skb_shinfo(SKB)	((struct skb_shared_info *)(skb_end_pointer(SKB)))
+#define skb_shinfo(SKB)	((struct skb_shared_info *)(void *)(skb_end_pointer(SKB)))
 
 static inline struct skb_shared_hwtstamps *skb_hwtstamps(struct sk_buff *skb)
 {
@@ -4479,7 +4479,7 @@ struct skb_gso_cb {
 	__u16	csum_start;
 };
 #define SKB_GSO_CB_OFFSET	32
-#define SKB_GSO_CB(skb) ((struct skb_gso_cb *)((skb)->cb + SKB_GSO_CB_OFFSET))
+#define SKB_GSO_CB(skb) ((struct skb_gso_cb *)(void *)((skb)->cb + SKB_GSO_CB_OFFSET))
 
 static inline int skb_tnl_header_len(const struct sk_buff *inner_skb)
 {

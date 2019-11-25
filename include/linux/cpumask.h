@@ -240,7 +240,7 @@ int cpumask_any_distribute(const struct cpumask *srcp);
 #define for_each_cpu(cpu, mask)				\
 	for ((cpu) = -1;				\
 		(cpu) = cpumask_next((cpu), (mask)),	\
-		(cpu) < nr_cpu_ids;)
+		(unsigned)(cpu) < nr_cpu_ids;)
 
 /**
  * for_each_cpu_not - iterate over every cpu in a complemented mask
@@ -252,7 +252,7 @@ int cpumask_any_distribute(const struct cpumask *srcp);
 #define for_each_cpu_not(cpu, mask)				\
 	for ((cpu) = -1;					\
 		(cpu) = cpumask_next_zero((cpu), (mask)),	\
-		(cpu) < nr_cpu_ids;)
+		(unsigned)(cpu) < nr_cpu_ids;)
 
 extern int cpumask_next_wrap(int n, const struct cpumask *mask, int start, bool wrap);
 
@@ -268,7 +268,7 @@ extern int cpumask_next_wrap(int n, const struct cpumask *mask, int start, bool 
  */
 #define for_each_cpu_wrap(cpu, mask, start)					\
 	for ((cpu) = cpumask_next_wrap((start)-1, (mask), (start), false);	\
-	     (cpu) < nr_cpumask_bits;						\
+	     (unsigned)(cpu) < nr_cpumask_bits;					\
 	     (cpu) = cpumask_next_wrap((cpu), (mask), (start), true))
 
 /**
@@ -288,7 +288,7 @@ extern int cpumask_next_wrap(int n, const struct cpumask *mask, int start, bool 
 #define for_each_cpu_and(cpu, mask1, mask2)				\
 	for ((cpu) = -1;						\
 		(cpu) = cpumask_next_and((cpu), (mask1), (mask2)),	\
-		(cpu) < nr_cpu_ids;)
+		(unsigned)(cpu) < nr_cpu_ids;)
 #endif /* SMP */
 
 #define CPU_BITS_NONE						\
