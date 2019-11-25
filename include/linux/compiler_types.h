@@ -214,8 +214,6 @@ struct ftrace_likely_data {
 
 #endif /* __KERNEL__ */
 
-#endif /* __ASSEMBLY__ */
-
 /*
  * The below symbols may be defined for one or more, but not ALL, of the above
  * compilers. We don't consider that to be an error, so set them to nothing.
@@ -347,5 +345,7 @@ struct ftrace_likely_data {
 	__diag_ ## compiler(version, error, option)
 
 #include <linux/compiler-warnings.h>
+
+#endif /* __ASSEMBLY__ */
 
 #endif /* __LINUX_COMPILER_TYPES_H */

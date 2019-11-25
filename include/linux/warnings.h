@@ -1,3 +1,63 @@
+/*
+      6 -Wunused-but-set-parameter]
+     14 -Wold-style-definition]
+     16 -Wvla-larger-than=]
+     26 -Wstrict-overflow]
+     57 -Wundef]
+    145 -Wfloat-equal]
+    157 -Wframe-address]
+    190 -Wjump-misses-init]
+    232 -Wlogical-op]
+    304 -Wold-style-declaration]
+    307 -Wframe-larger-than=]
+    319 -Wignored-qualifiers]
+    393 -Wmaybe-uninitialized]
+    623 -Wsuggest-attribute=format]
+    647 -Wstack-usage=]
+    671 -Wstringop-truncation]
+    711 -Wcast-function-type]
+    743 -Wvector-operation-performance]
+    984 -Wformat-overflow=]
+    997 -Wsuggest-attribute=noreturn]
+   1013 -Wformat-security]
+   1500 -Wempty-body]
+   1972 -Wdouble-promotion]
+   2784 -Wformat-nonliteral]
+   4332 -Wduplicated-cond]
+   5171 -Wfloat-conversion]
+   6576 -Wformat-truncation=]
+   6697 -Wstack-protector]
+   7826 -Woverlength-strings]
+   7969 -Wunused-but-set-variable]
+  11801 -Wduplicated-branches]
+  15989 -Wuninitialized]
+  19518 -Wmissing-prototypes]
+  21354 -Woverride-init]
+  25315 -Wtype-limits]
+  28348 -Wsuggest-attribute=const]
+  35718 -Wsuggest-attribute=cold]
+  35789 -Wunsuffixed-float-constants]
+  37048 -Waggregate-return]
+  40664 -Wimplicit-fallthrough=]
+  43685 -Wunused-const-variable=]
+  68675 -Wshift-overflow=]
+  79124 -Wsuggest-attribute=pure]
+ 184929 -Wsuggest-attribute=malloc]
+ 285910 -Wpointer-sign]
+ 305056 -Wunused-macros]
+ 550802 -Wformat=]
+ 619302 -Wshadow]
+ 621102 -Wswitch-default]
+ 854764 -Wcast-align]
+1075660 -Wmissing-field-initializers]
+1141263 -Wlarger-than=]
+1171275 -Winline]
+1266195 -Wsign-compare]
+2241214 -Wswitch-enum]
+4828168 -Wpacked]
+5915026 -Wredundant-decls]
+*/
+
 /* default-enabled warnings */
 KBUILD_WARN(0, GCC_4_6, "-Wattributes")
 KBUILD_WARN(0, GCC_4_6, "-Wbuiltin-macro-redefined")
@@ -21,7 +81,7 @@ KBUILD_WARN(0, GCC_4_6, "-Wpragmas")
 KBUILD_WARN(0, GCC_4_6, "-Wpsabi")
 KBUILD_WARN(0, GCC_4_6, "-Wreturn-type")
 KBUILD_WARN(0, GCC_4_6, "-Wsync-nand")
-KBUILD_WARN(0, GCC_4_6, "-Wtrigraphs")
+KBUILD_WARN(0, GCC_4_6, "-Wtrigraphs") /* never */
 KBUILD_WARN(0, GCC_4_6, "-Wnormalized=nfc")
 KBUILD_WARN(0, GCC_4_7, "-Wfree-nonheap-object")
 KBUILD_WARN(0, GCC_4_7, "-Winvalid-memory-model")
@@ -48,22 +108,23 @@ KBUILD_WARN(0, GCC_6, "-Woverride-init-side-effects")
 KBUILD_WARN(0, GCC_6, "-Wscalar-storage-order")
 KBUILD_WARN(0, GCC_6, "-Wshift-negative-value")
 KBUILD_WARN(0, GCC_6, "-Wshift-overflow=1")
-KBUILD_WARN(3, GCC_6, "-Wshift-overflow=2")
+KBUILD_WARN(4, GCC_6, "-Wshift-overflow=2") /* lots */
 KBUILD_WARN(0, GCC_7, "-Wbuiltin-declaration-mismatch")
 KBUILD_WARN(0, GCC_7, "-Wpointer-compare")
 KBUILD_WARN(0, GCC_7, "-Wstringop-overflow=2")
-KBUILD_WARN(3, GCC_7, "-Wstringop-overflow=4")
+KBUILD_WARN(3, GCC_7, "-Wstringop-overflow=4") /* never */
 KBUILD_WARN(0, GCC_7, "-Wswitch-unreachable")
 KBUILD_WARN(0, GCC_8, "-Wattribute-alias")
 KBUILD_WARN(0, GCC_8, "-Wif-not-aligned")
-KBUILD_WARN(1, GCC_9, "-Waddress-of-packed-member")
+KBUILD_WARN(1, GCC_9, "-Waddress-of-packed-member") /* lots */
+KBUILD_WARN(1, CLANG_8, "-Waddress-of-packed-member") /* lots */
 KBUILD_WARN(0, CLANG_8, "-W#pragma-messages")
 KBUILD_WARN(0, CLANG_8, "-W#warnings")
 KBUILD_WARN(0, CLANG_8, "-Wabsolute-value")
 KBUILD_WARN(0, CLANG_8, "-Wabstract-final-class")
 KBUILD_WARN(0, CLANG_8, "-Waddress")
 KBUILD_WARN(0, CLANG_8, "-Wstring-compare")
-KBUILD_WARN(0, CLANG_8, "-Wtautological-pointer-compare")
+KBUILD_WARN(0, CLANG_8, "-Wtautological-pointer-compare") /* rare */
 KBUILD_WARN(0, CLANG_8, "-Waddress-of-temporary")
 KBUILD_WARN(0, CLANG_8, "-Wambiguous-macro")
 KBUILD_WARN(0, CLANG_8, "-Wambiguous-member-template")
@@ -133,7 +194,7 @@ KBUILD_WARN(0, CLANG_8, "-Winline-asm")
 KBUILD_WARN(0, CLANG_8, "-Wint-to-pointer-cast")
 KBUILD_WARN(0, CLANG_8, "-Wint-to-void-pointer-cast")
 KBUILD_WARN(0, CLANG_8, "-Winvalid-command-line-argument")
-KBUILD_WARN(0, CLANG_8, "-Wignored-optimization-argument")
+KBUILD_WARN(2, CLANG_8, "-Wignored-optimization-argument")
 KBUILD_WARN(0, CLANG_8, "-Winvalid-iboutlet")
 KBUILD_WARN(0, CLANG_8, "-Winvalid-noreturn")
 KBUILD_WARN(0, CLANG_8, "-Winvalid-offsetof")
@@ -148,7 +209,7 @@ KBUILD_WARN(0, CLANG_8, "-Wmalformed-warning-check")
 KBUILD_WARN(0, CLANG_8, "-Wmax-unsigned-zero")
 KBUILD_WARN(0, CLANG_8, "-Wmismatched-parameter-types")
 KBUILD_WARN(0, CLANG_8, "-Wmismatched-return-types")
-KBUILD_WARN(1, CLANG_8, "-Wmissing-declarations")
+KBUILD_WARN(1, CLANG_8, "-Wmissing-declarations") /* never */
 KBUILD_WARN(0, CLANG_8, "-Wmissing-noreturn")
 KBUILD_WARN(0, CLANG_8, "-Wmodule-conflict")
 KBUILD_WARN(0, CLANG_8, "-Wmodule-file-extension")
@@ -168,10 +229,11 @@ KBUILD_WARN(0, CLANG_8, "-Wnullability-inferred-on-nested-type")
 KBUILD_WARN(0, CLANG_8, "-Wold-style-cast")
 KBUILD_WARN(0, CLANG_8, "-Woption-ignored")
 KBUILD_WARN(0, CLANG_8, "-Wout-of-line-declaration")
-KBUILD_WARN(1, CLANG_8, "-Winitializer-overrides")
+KBUILD_WARN(1, CLANG_8, "-Winitializer-overrides") /* medium */
 KBUILD_WARN(0, CLANG_8, "-Wunguarded-availability-new")
 KBUILD_WARN(0, CLANG_8, "-Wpass-failed")
 KBUILD_WARN(0, CLANG_8, "-Wpedantic")
+KBUILD_WARN(1, CLANG_8, "-Wpointer-sign")  /* lots, but valuable */
 KBUILD_WARN(0, CLANG_8, "-Wprofile-instr-out-of-date")
 KBUILD_WARN(0, CLANG_8, "-Wprofile-instr-unprofiled")
 KBUILD_WARN(0, CLANG_8, "-Wproperty-access-dot-syntax")
@@ -217,27 +279,28 @@ KBUILD_WARN(0, GCC_4_6, "-Wall")
 KBUILD_WARN(0, GCC_4_6, "-Waddress")
 KBUILD_WARN(0, GCC_4_6, "-Warray-bounds")
 KBUILD_WARN(0, GCC_4_6, "-Warray-bounds=1")
-KBUILD_WARN(3, GCC_4_6, "-Warray-bounds=2")
+KBUILD_WARN(3, GCC_4_6, "-Warray-bounds=2") /* never */
 KBUILD_WARN(0, GCC_4_6, "-Wchar-subscripts")
 KBUILD_WARN(0, GCC_4_6, "-Wcomment")
 KBUILD_WARN(0, GCC_4_6, "-Wimplicit")
 KBUILD_WARN(0, GCC_4_6, "-Wmissing-braces")
 KBUILD_WARN(0, GCC_4_6, "-Wnonnull")
 KBUILD_WARN(0, GCC_4_6, "-Wparentheses")
-KBUILD_WARN(2, GCC_4_6, "-Wpointer-sign")
+KBUILD_WARN(2, GCC_4_6, "-Wpointer-sign") /* lots, but valuable */
+KBUILD_WARN(4, GCC_4_6, "-Wpointer-sign") /* lots, but valuable */
 KBUILD_WARN(0, GCC_4_6, "-Wsequence-point")
 KBUILD_WARN(0, GCC_4_6, "-Wswitch")
 KBUILD_WARN(0, GCC_4_6, "-Wstrict-aliasing=3")
 KBUILD_WARN(0, GCC_4_6, "-Wstrict-overflow=1")
-KBUILD_WARN(3, GCC_4_6, "-Wstrict-overflow=5")
-KBUILD_WARN(0, GCC_4_6, "-Wuninitialized")
+KBUILD_WARN(3, GCC_4_6, "-Wstrict-overflow=5") /* rare */
+KBUILD_WARN(0, GCC_4_6, "-Wuninitialized") /* medium */
 KBUILD_WARN(0, GCC_4_6, "-Wunknown-pragmas")
 KBUILD_WARN(0, GCC_4_6, "-Wvolatile-register-var")
 
 #if defined(CONFIG_CC_DISABLE_WARN_MAYBE_UNINITIALIZED)
 KBUILD_WARN(0, GCC_4_7, "-Wmaybe-uninitialized")
 #else
-KBUILD_WARN(1, GCC_4_7, "-Wmaybe-uninitialized")
+KBUILD_WARN(1, GCC_4_7, "-Wmaybe-uninitialized") /* medium */
 #endif
 
 KBUILD_WARN(0, GCC_4_8, "-Wsizeof-pointer-memaccess")
@@ -246,7 +309,7 @@ KBUILD_WARN(0, GCC_5, "-Wbool-compare")
 KBUILD_WARN(0, GCC_5, "-Wchkp")
 KBUILD_WARN(0, GCC_5, "-Wlogical-not-parentheses")
 KBUILD_WARN(0, GCC_5, "-Wmemset-transposed-args")
-KBUILD_WARN(1, GCC_6, "-Wframe-address")
+KBUILD_WARN(1, GCC_6, "-Wframe-address") /* rare */
 KBUILD_WARN(0, GCC_6, "-Wmisleading-indentation")
 KBUILD_WARN(0, GCC_6, "-Wnonnull-compare")
 KBUILD_WARN(0, GCC_6, "-Wtautological-compare")
@@ -260,7 +323,7 @@ KBUILD_WARN(0, GCC_8, "-Wmissing-attributes")
 KBUILD_WARN(0, GCC_8, "-Wmultistatement-macros")
 KBUILD_WARN(0, GCC_8, "-Wpacked-not-aligned")
 KBUILD_WARN(0, GCC_8, "-Wsizeof-pointer-div")
-KBUILD_WARN(1, GCC_8, "-Wstringop-truncation")
+KBUILD_WARN(1, GCC_8, "-Wstringop-truncation") /* medium */
 KBUILD_WARN(0, CLANG_8, "-Wall")
 KBUILD_WARN(0, CLANG_8, "-Wmost")
 KBUILD_WARN(0, CLANG_8, "-Wcast-of-sel-type")
@@ -294,7 +357,7 @@ KBUILD_WARN(0, CLANG_8, "-Wself-assign-overloaded")
 KBUILD_WARN(0, CLANG_8, "-Wsizeof-array-argument")
 KBUILD_WARN(0, CLANG_8, "-Wsizeof-array-decay")
 KBUILD_WARN(0, CLANG_8, "-Wstring-plus-int")
-KBUILD_WARN(1, CLANG_8, "-Wtrigraphs")
+KBUILD_WARN(1, CLANG_8, "-Wtrigraphs") /* rare */
 KBUILD_WARN(0, CLANG_8, "-Wuninitialized")
 KBUILD_WARN(0, CLANG_8, "-Wsometimes-uninitialized")
 KBUILD_WARN(0, CLANG_8, "-Wstatic-self-init")
@@ -318,67 +381,71 @@ KBUILD_WARN(0, GCC_4_6, "-Wformat=1")
 KBUILD_WARN(0, GCC_4_6, "-Wformat-contains-nul")
 KBUILD_WARN(0, GCC_4_6, "-Wformat-extra-args")
 KBUILD_WARN(2, GCC_4_6, "-Wformat-zero-length")
-KBUILD_WARN(1, GCC_7, "-Wformat-overflow=1")
 KBUILD_WARN(1, GCC_7, "-Wformat-truncation=1")
-KBUILD_WARN(3, GCC_4_6, "-Wformat=2")
-KBUILD_WARN(3, GCC_4_6, "-Wformat-nonliteral")
-KBUILD_WARN(3, GCC_4_6, "-Wformat-security")
+KBUILD_WARN(4, GCC_4_6, "-Wformat=2") /* huge */
+KBUILD_WARN(3, GCC_4_6, "-Wformat-nonliteral") /* medium */
+KBUILD_WARN(3, GCC_4_6, "-Wformat-security") /* medium */
 KBUILD_WARN(3, GCC_4_6, "-Wformat-y2k")
 KBUILD_WARN(3, GCC_5, "-Wformat-signedness")
-KBUILD_WARN(3, GCC_7, "-Wformat-overflow=2")
-KBUILD_WARN(3, GCC_7, "-Wformat-truncation=2")
+KBUILD_WARN(1, GCC_7, "-Wformat-overflow=1")
+KBUILD_WARN(3, GCC_7, "-Wformat-overflow=2") /* medium */
+KBUILD_WARN(4, GCC_7, "-Wformat-truncation=2")
 KBUILD_WARN(0, CLANG_8, "-Wformat")
 KBUILD_WARN(0, CLANG_8, "-Wformat-extra-args")
 KBUILD_WARN(1, CLANG_8, "-Wformat-invalid-specifier")
-KBUILD_WARN(1, CLANG_8, "-Wformat-security")
+KBUILD_WARN(1, CLANG_8, "-Wformat-security") /* medium */
 KBUILD_WARN(0, CLANG_8, "-Wformat-y2k")
 KBUILD_WARN(2, CLANG_8, "-Wformat-zero-length")
 KBUILD_WARN(0, CLANG_8, "-Wnonnull")
-KBUILD_WARN(3, CLANG_8, "-Wformat-non-iso")
-KBUILD_WARN(3, CLANG_8, "-Wformat-pedantic")
+KBUILD_WARN(3, CLANG_8, "-Wformat-non-iso") /* lots */
+KBUILD_WARN(4, CLANG_8, "-Wformat-pedantic") /* huge */
 KBUILD_WARN(3, CLANG_8, "-Wformat=2")
-KBUILD_WARN(3, CLANG_8, "-Wformat-nonliteral")
+KBUILD_WARN(3, CLANG_8, "-Wformat-nonliteral") /* medium */
 
 /* -Wextra level, corresponds to W=1 */
 KBUILD_WARN(1, GCC_4_6, "-Wextra")
-KBUILD_WARN(3, GCC_4_6, "-Wsign-compare")
-KBUILD_WARN(1, GCC_4_6, "-Wclobbered")
-KBUILD_WARN(1, GCC_4_6, "-Wempty-body")
-KBUILD_WARN(1, GCC_4_6, "-Wignored-qualifiers")
-KBUILD_WARN(2, GCC_4_6, "-Wmissing-field-initializers")
-KBUILD_WARN(1, GCC_4_6, "-Wmissing-parameter-type")
-KBUILD_WARN(1, GCC_4_6, "-Wold-style-declaration")
-KBUILD_WARN(1, GCC_4_6, "-Woverride-init")
-KBUILD_WARN(2, GCC_4_6, "-Wtype-limits")
-KBUILD_WARN(1, GCC_7, "-Wexpansion-to-defined")
-KBUILD_WARN(1, GCC_8, "-Wcast-function-type")
-KBUILD_WARN(0, GCC_7, "-Wimplicit-fallthrough=3")
-KBUILD_WARN(3, GCC_7, "-Wimplicit-fallthrough=5")
+KBUILD_WARN(3, GCC_4_6, "-Wsign-compare") /* huge */
+KBUILD_WARN(4, GCC_4_6, "-Wsign-compare") /* huge */
+KBUILD_WARN(1, GCC_4_6, "-Wclobbered") /* never */
+KBUILD_WARN(1, GCC_4_6, "-Wempty-body") /* medium */
+KBUILD_WARN(1, GCC_4_6, "-Wignored-qualifiers") /* rare */
+KBUILD_WARN(2, GCC_4_6, "-Wmissing-field-initializers") /* huge */
+KBUILD_WARN(4, GCC_4_6, "-Wmissing-field-initializers") /* huge */
+KBUILD_WARN(1, GCC_4_6, "-Wmissing-parameter-type") /* never */
+KBUILD_WARN(1, GCC_4_6, "-Wold-style-declaration") /* rare */
+KBUILD_WARN(1, GCC_4_6, "-Woverride-init") /* medium */
+KBUILD_WARN(2, GCC_4_6, "-Wtype-limits") /* medium */
+KBUILD_WARN(1, GCC_7, "-Wexpansion-to-defined") /* never */
+KBUILD_WARN(1, GCC_8, "-Wcast-function-type") /* never */
+KBUILD_WARN(0, GCC_7, "-Wimplicit-fallthrough=3") /* rare */
+KBUILD_WARN(4, GCC_7, "-Wimplicit-fallthrough=5") /* lots */
 KBUILD_WARN(1, CLANG_8, "-Wextra")
 KBUILD_WARN(1, CLANG_8, "-Wempty-init-stmt")
-KBUILD_WARN(partly, CLANG_8, "-Wignored-qualifiers")
-KBUILD_WARN(2, CLANG_8, "-Wmissing-field-initializers")
+KBUILD_WARN(partly, CLANG_8, "-Wignored-qualifiers") /* rare */
+KBUILD_WARN(2, CLANG_8, "-Wmissing-field-initializers") /* huge */
 KBUILD_WARN(1, CLANG_8, "-Wmissing-method-return-type")
-KBUILD_WARN(1, CLANG_8, "-Wnull-pointer-arithmetic")
+KBUILD_WARN(1, CLANG_8, "-Wnull-pointer-arithmetic") /* rare */
 KBUILD_WARN(1, CLANG_8, "-Wsemicolon-before-method-body")
-KBUILD_WARN(2, CLANG_8, "-Wsign-compare")
+KBUILD_WARN(2, CLANG_8, "-Wsign-compare") /* huge */
+KBUILD_WARN(4, CLANG_8, "-Wsign-compare") /* huge */
 
 /* Wunused and friends */
 KBUILD_WARN(partly, GCC_4_6, "-Wunused")
 KBUILD_WARN(0, GCC_4_6, "-Wunused-result")
-KBUILD_WARN(2, GCC_4_6, "-Wunused-macros")
-KBUILD_WARN(1, GCC_4_6, "-Wunused-but-set-variable")
+/*KBUILD_WARN(2, GCC_4_6, "-Wunused-macros") / lots */
+KBUILD_WARN(4, GCC_4_6, "-Wunused-macros") /* lots */
+KBUILD_WARN(1, GCC_4_6, "-Wunused-but-set-variable") /* medium */
 KBUILD_WARN(0, GCC_4_6, "-Wunused-function")
 KBUILD_WARN(0, GCC_4_6, "-Wunused-label")
 KBUILD_WARN(0, GCC_4_6, "-Wunused-value")
 KBUILD_WARN(0, GCC_4_6, "-Wunused-variable")
 KBUILD_WARN(0, GCC_4_7, "-Wunused-local-typedefs")
-KBUILD_WARN(1, GCC_4_6, "-Wunused-but-set-parameter")
-KBUILD_WARN(2, GCC_4_6, "-Wunused-parameter")
-KBUILD_WARN(1, GCC_6, "-Wunused-const-variable=1")
-KBUILD_WARN(2, GCC_6, "-Wunused-const-variable=2")
+KBUILD_WARN(1, GCC_4_6, "-Wunused-but-set-parameter") /* rare */
+KBUILD_WARN(4, GCC_4_6, "-Wunused-parameter") /* harmful */
+
+KBUILD_WARN(2, GCC_6, "-Wunused-const-variable=1")
+KBUILD_WARN(4, GCC_6, "-Wunused-const-variable=2") /* lots */
 KBUILD_WARN(1, CLANG_8, "-Wunused")
-KBUILD_WARN(3, CLANG_8, "-Wunused-argument")
 KBUILD_WARN(0, CLANG_8, "-Wunused-function")
 KBUILD_WARN(0, CLANG_8, "-Wunneeded-internal-declaration")
 KBUILD_WARN(0, CLANG_8, "-Wunused-label")
@@ -392,31 +459,31 @@ KBUILD_WARN(0, CLANG_8, "-Wpotentially-evaluated-expression")
 KBUILD_WARN(0, CLANG_8, "-Wunused-comparison")
 KBUILD_WARN(0, CLANG_8, "-Wunused-result")
 KBUILD_WARN(0, CLANG_8, "-Wunused-variable")
-KBUILD_WARN(1, CLANG_8, "-Wunused-const-variable")
-KBUILD_WARN(2, CLANG_8, "-Wunused-parameter")
+KBUILD_WARN(1, CLANG_8, "-Wunused-const-variable") /* medium */
+KBUILD_WARN(4, CLANG_8, "-Wunused-parameter") /* harmful */
 
-KBUILD_WARN(3, GCC_4_6, "-Wframe-larger-than=1024")
-KBUILD_WARN(3, GCC_4_6, "-Wlarger-than=4096")
-KBUILD_WARN(3, GCC_4_7, "-Wstack-usage=1024")
+KBUILD_WARN(0, GCC_4_6, "-Wframe-larger-than=2048") /* FIXME */
+KBUILD_WARN(4, GCC_4_6, "-Wlarger-than=16384") /* huge */
+KBUILD_WARN(3, GCC_4_7, "-Wstack-usage=1024") /* medium */
 KBUILD_WARN(3, GCC_7, "-Walloc-size-larger-than=4096")
 KBUILD_WARN(0, GCC_4_6, "-Wvla")
-KBUILD_WARN(3, GCC_7, "-Wvla-larger-than=1")
+KBUILD_WARN(3, GCC_7, "-Wvla-larger-than=1") /* rare but useless */
 
 KBUILD_WARN(partly, CLANG_8, "-Wdeprecated")
 KBUILD_WARN(0, CLANG_8, "-Wdeprecated-attributes")
 KBUILD_WARN(0, CLANG_8, "-Wdeprecated-declarations")
 KBUILD_WARN(3, CLANG_8, "-Wdeprecated-dynamic-exception-spec")
 
-KBUILD_WARN(partly, CLANG_8, "-Wtautological-compare")
+KBUILD_WARN(0, CLANG_8, "-Wtautological-compare")
 KBUILD_WARN(1, CLANG_8, "-Wtautological-constant-compare")
-KBUILD_WARN(1, CLANG_8, "-Wtautological-constant-out-of-range-compare")
+KBUILD_WARN(1, CLANG_8, "-Wtautological-constant-out-of-range-compare") /* rare */
 KBUILD_WARN(3, CLANG_8, "-Wtautological-overlap-compare")
 KBUILD_WARN(1, CLANG_8, "-Wtautological-pointer-compare")
 KBUILD_WARN(1, CLANG_8, "-Wtautological-undefined-compare")
 KBUILD_WARN(3, CLANG_8, "-Wtautological-constant-in-range-compare")
-KBUILD_WARN(3, CLANG_8, "-Wtautological-type-limit-compare")
-KBUILD_WARN(3, CLANG_8, "-Wtautological-unsigned-enum-zero-compare")
-KBUILD_WARN(3, CLANG_8, "-Wtautological-unsigned-zero-compare")
+KBUILD_WARN(3, CLANG_8, "-Wtautological-type-limit-compare") /* medium */
+KBUILD_WARN(3, CLANG_8, "-Wtautological-unsigned-enum-zero-compare") /* rare */
+KBUILD_WARN(3, CLANG_8, "-Wtautological-unsigned-zero-compare") /* rare */
 
 KBUILD_WARN(partly, CLANG_8, "-Wshadow-all")
 KBUILD_WARN(partly, CLANG_8, "-Wshadow")
@@ -440,54 +507,54 @@ KBUILD_WARN(1, CLANG_8, "-Wgnu")
 KBUILD_WARN(1, CLANG_8, "-Wgnu-alignof-expression")
 KBUILD_WARN(3, CLANG_8, "-Wgnu-anonymous-struct")
 KBUILD_WARN(3, CLANG_8, "-Wgnu-auto-type")
-KBUILD_WARN(3, CLANG_8, "-Wgnu-binary-literal")
-KBUILD_WARN(3, CLANG_8, "-Wgnu-case-range")
+KBUILD_WARN(3, CLANG_8, "-Wgnu-binary-literal") /* medium */
+KBUILD_WARN(4, CLANG_8, "-Wgnu-case-range") /* harmful */
 KBUILD_WARN(3, CLANG_8, "-Wgnu-complex-integer")
 KBUILD_WARN(3, CLANG_8, "-Wgnu-compound-literal-initializer")
-KBUILD_WARN(3, CLANG_8, "-Wgnu-conditional-omitted-operand")
-KBUILD_WARN(1, CLANG_8, "-Wgnu-designator")
-KBUILD_WARN(3, CLANG_8, "-Wgnu-empty-initializer")
-KBUILD_WARN(3, CLANG_8, "-Wgnu-empty-struct")
-KBUILD_WARN(3, CLANG_8, "-Wgnu-flexible-array-initializer")
+KBUILD_WARN(4, CLANG_8, "-Wgnu-conditional-omitted-operand") /* harmful */
+KBUILD_WARN(1, CLANG_8, "-Wgnu-designator") /* harmful */
+KBUILD_WARN(4, CLANG_8, "-Wgnu-empty-initializer") /* harmful */
+KBUILD_WARN(4, CLANG_8, "-Wgnu-empty-struct") /* useless */
+KBUILD_WARN(3, CLANG_8, "-Wgnu-flexible-array-initializer") /* medium */
 KBUILD_WARN(3, CLANG_8, "-Wgnu-flexible-array-union-member")
-KBUILD_WARN(3, CLANG_8, "-Wgnu-folding-constant")
+KBUILD_WARN(3, CLANG_8, "-Wgnu-folding-constant") /* huge, harmful */
 KBUILD_WARN(3, CLANG_8, "-Wgnu-imaginary-constant")
 KBUILD_WARN(3, CLANG_8, "-Wgnu-include-next")
-KBUILD_WARN(3, CLANG_8, "-Wgnu-label-as-value")
-KBUILD_WARN(3, CLANG_8, "-Wgnu-redeclared-enum")
-KBUILD_WARN(3, CLANG_8, "-Wgnu-statement-expression")
+KBUILD_WARN(4, CLANG_8, "-Wgnu-label-as-value") /* harmful */
+KBUILD_WARN(4, CLANG_8, "-Wgnu-redeclared-enum") /* harmful */
+KBUILD_WARN(4, CLANG_8, "-Wgnu-statement-expression") /* harmful */
 KBUILD_WARN(1, CLANG_8, "-Wgnu-static-float-init")
 KBUILD_WARN(1, CLANG_8, "-Wgnu-string-literal-operator-template")
 KBUILD_WARN(3, CLANG_8, "-Wgnu-union-cast")
-KBUILD_WARN(1, CLANG_8, "-Wgnu-variable-sized-type-not-at-end")
+KBUILD_WARN(1, CLANG_8, "-Wgnu-variable-sized-type-not-at-end") /* medium */
 KBUILD_WARN(3, CLANG_8, "-Wgnu-zero-line-directive")
-KBUILD_WARN(3, CLANG_8, "-Wgnu-zero-variadic-macro-arguments")
+KBUILD_WARN(4, CLANG_8, "-Wgnu-zero-variadic-macro-arguments") /* excessive */
 KBUILD_WARN(3, CLANG_8, "-Wredeclared-class-member")
 KBUILD_WARN(3, CLANG_8, "-Wvla-extension")
-KBUILD_WARN(3, CLANG_8, "-Wzero-length-array")
+KBUILD_WARN(4, CLANG_8, "-Wzero-length-array") /* excessive */
 
 KBUILD_WARN(partly, CLANG_8, "-Wnon-gcc")
 KBUILD_WARN(partly, CLANG_8, "-Wconversion")
-KBUILD_WARN(3, CLANG_8, "-Wbitfield-enum-conversion")
+KBUILD_WARN(3, CLANG_8, "-Wbitfield-enum-conversion") /* rare */
 KBUILD_WARN(0, CLANG_8, "-Wbool-conversion")
 KBUILD_WARN(0, CLANG_8, "-Wundefined-bool-conversion")
 KBUILD_WARN(0, CLANG_8, "-Wconstant-conversion")
 KBUILD_WARN(0, CLANG_8, "-Wbitfield-constant-conversion")
 KBUILD_WARN(0, CLANG_8, "-Wenum-conversion")
-KBUILD_WARN(3, CLANG_8, "-Wfloat-conversion")
+KBUILD_WARN(3, CLANG_8, "-Wfloat-conversion") /* lots */
 KBUILD_WARN(3, CLANG_8, "-Wfloat-overflow-conversion")
-KBUILD_WARN(3, CLANG_8, "-Wfloat-zero-conversion")
+KBUILD_WARN(3, CLANG_8, "-Wfloat-zero-conversion") /* rare */
 KBUILD_WARN(partly, CLANG_8, "-Wimplicit-float-conversion")
-KBUILD_WARN(3, CLANG_8, "-Wimplicit-int-conversion")
+KBUILD_WARN(4, CLANG_8, "-Wimplicit-int-conversion") /* huge */
 KBUILD_WARN(0, CLANG_8, "-Wint-conversion")
 KBUILD_WARN(0, CLANG_8, "-Wliteral-conversion")
 KBUILD_WARN(0, CLANG_8, "-Wnon-literal-null-conversion")
 KBUILD_WARN(0, CLANG_8, "-Wnull-conversion")
-KBUILD_WARN(3, CLANG_8, "-Wshorten-64-to-32")
-KBUILD_WARN(3, CLANG_8, "-Wsign-conversion")
+KBUILD_WARN(4, CLANG_8, "-Wshorten-64-to-32") /* excessive */
+KBUILD_WARN(4, CLANG_8, "-Wsign-conversion") /* excessive */
 KBUILD_WARN(3, CLANG_8, "-Wstring-conversion")
 KBUILD_WARN(0, CLANG_8, "-Wliteral-range")
-KBUILD_WARN(2, CLANG_8, "-Wsign-compare")
+//KBUILD_WARN(2, CLANG_8, "-Wsign-compare")
 
 KBUILD_WARN(0, CLANG_8, "-Wmicrosoft")
 KBUILD_WARN(0, CLANG_8, "-Winconsistent-dllimport")
@@ -533,6 +600,7 @@ KBUILD_WARN(partly, CLANG_8, "-Wmain")
 KBUILD_WARN(0, CLANG_8, "-Wstatic-in-inline")
 
 /* Supported but disabled by default */
+<<<<<<< HEAD
 KBUILD_WARN(3, GCC_4_6, "-Wabi")
 KBUILD_WARN(3, GCC_4_6, "-Waggregate-return")
 KBUILD_WARN(3, GCC_4_6, "-Wbad-function-cast")
@@ -595,31 +663,99 @@ KBUILD_WARN(3, GCC_8, "-Wcast-align=strict")
 KBUILD_WARN(3, GCC_8, "-Wsuggest-attribute=cold")
 KBUILD_WARN(3, GCC_8, "-Wsuggest-attribute=malloc")
 KBUILD_WARN(3, CLANG_8, "-Warray-bounds-pointer-arithmetic")
+=======
+KBUILD_WARN(3, GCC_4_6, "-Wabi") /* never */
+KBUILD_WARN(4, GCC_4_6, "-Waggregate-return") /* harmful */
+/* KBUILD_WARN(3, GCC_4_6, "-Wbad-function-cast") * excessive */
+/* KBUILD_WARN(3, GCC_4_6, "-Wcast-align") * huge */
+KBUILD_WARN(4, GCC_4_6, "-Wcast-align") /* huge */
+KBUILD_WARN(4, GCC_8, "-Wcast-align=strict") /* modifier */
+/* KBUILD_WARN(3, GCC_4_6, "-Wcast-qual") * excessive */
+KBUILD_WARN(4, GCC_4_6, "-Wc++-compat") /* excessive */
+KBUILD_WARN(4, GCC_4_6, "-Wconversion") /* excessive */
+KBUILD_WARN(2, GCC_4_6, "-Wdisabled-optimization") /* never */
+KBUILD_WARN(3, GCC_4_6, "-Wdouble-promotion") /* medium */
+KBUILD_WARN(3, GCC_4_6, "-Wfloat-equal") /* rare */
+KBUILD_WARN(3, GCC_4_6, "-Winit-self") /* medium */
+KBUILD_WARN(4, GCC_4_6, "-Winline") /* huge */
+KBUILD_WARN(3, GCC_4_6, "-Winvalid-pch") /* never */
+KBUILD_WARN(3, GCC_4_6, "-Wjump-misses-init") /* rare */
+KBUILD_WARN(2, GCC_4_6, "-Wlogical-op") /* rare */
+KBUILD_WARN(1, GCC_4_6, "-Wmissing-declarations") /* never */
+KBUILD_WARN(1, GCC_4_6, "-Wmissing-include-dirs") /* never */
+KBUILD_WARN(1, GCC_4_6, "-Wmissing-prototypes") /* medium */
+KBUILD_WARN(3, GCC_4_6, "-Wmultichar") /* never */
+KBUILD_WARN(4, GCC_4_6, "-Wnested-externs") /* excessive */
+KBUILD_WARN(4, GCC_4_6, "-Wnested-externs") /* excessive */
+KBUILD_WARN(1, GCC_4_6, "-Wold-style-definition") /* rare */
+KBUILD_WARN(3, GCC_4_6, "-Woverlength-strings") /* medium, useless */
+KBUILD_WARN(4, GCC_4_6, "-Wpacked") /* huge */
+KBUILD_WARN(4, GCC_4_6, "-Wpadded") /* excessive */
+KBUILD_WARN(4, GCC_4_6, "-Wpointer-arith") /* excessive */
+KBUILD_WARN(4, GCC_4_6, "-Wredundant-decls") /* huge */
+KBUILD_WARN(2, GCC_4_6, "-Wshadow") /* huge ? */
+KBUILD_WARN(4, GCC_4_6, "-Wshadow") /* huge ? */
+KBUILD_WARN(4, GCC_4_6, "-Wsign-conversion") /* excessive */
+KBUILD_WARN(3, GCC_4_6, "-Wstack-protector") /* medium */
+KBUILD_WARN(0, GCC_4_6, "-Wstrict-prototypes")
+KBUILD_WARN(4, GCC_4_6, "-Wsuggest-attribute=const") /* lots */
+KBUILD_WARN(3, GCC_4_6, "-Wsuggest-attribute=noreturn") /* medium */
+KBUILD_WARN(4, GCC_4_6, "-Wsuggest-attribute=pure") /* lots */
+KBUILD_WARN(4, GCC_4_6, "-Wswitch-default") /* huge */
+KBUILD_WARN(4, GCC_4_6, "-Wswitch-enum") /* huge */
+KBUILD_WARN(3, GCC_4_6, "-Wsystem-headers") /* modifier */
+KBUILD_WARN(4, GCC_4_6, "-Wtraditional-conversion") /* harmful */
+KBUILD_WARN(4, GCC_4_6, "-Wtraditional") /* harmful */
+KBUILD_WARN(3, GCC_4_6, "-Wtrampolines") /* never */
+KBUILD_WARN(0, GCC_4_6, "-Wundef") /* rare */
+KBUILD_WARN(4, GCC_4_6, "-Wunsuffixed-float-constants") /* lots */
+KBUILD_WARN(3, GCC_4_6, "-Wvariadic-macros") /* never */
+KBUILD_WARN(3, GCC_4_6, "-Wwrite-strings") /* never */
+KBUILD_WARN(3, GCC_4_7, "-Wvector-operation-performance") /* rare */
+KBUILD_WARN(4, GCC_4_8, "-Wpedantic") /* harmful */
+KBUILD_WARN(3, GCC_4_8, "-Wsuggest-attribute=format") /* medium */
+KBUILD_WARN(3, GCC_4_9, "-Wdate-time") /* never */
+KBUILD_WARN(3, GCC_4_9, "-Wfloat-conversion") /* medium */
+KBUILD_WARN(3, GCC_5, "-Wsuggest-final-methods") /* never */
+KBUILD_WARN(3, GCC_5, "-Wsuggest-final-types") /* never */
+KBUILD_WARN(3, GCC_6, "-Wduplicated-cond") /* medium */
+KBUILD_WARN(3, GCC_6, "-Wnull-dereference") /* never */
+KBUILD_WARN(3, GCC_7, "-Walloca") /* never */
+KBUILD_WARN(3, GCC_7, "-Walloca-larger-than=1") /* never */
+KBUILD_WARN(3, GCC_7, "-Walloc-zero") /* never */
+KBUILD_WARN(3, GCC_7, "-Wduplicated-branches") /* medium */
+KBUILD_WARN(4, GCC_7, "-Wshadow=compatible-local")
+KBUILD_WARN(4, GCC_7, "-Wshadow=local") /* huge */
+KBUILD_WARN(4, GCC_8, "-Wsuggest-attribute=cold") /* lots */
+KBUILD_WARN(4, GCC_8, "-Wsuggest-attribute=malloc") /* lots */
+KBUILD_WARN(3, CLANG_8, "-Warray-bounds-pointer-arithmetic") /* rare */
+>>>>>>> 54b3ee0a2aa3 (stash)
 KBUILD_WARN(3, CLANG_8, "-Watomic-properties")
 KBUILD_WARN(3, CLANG_8, "-Wcustom-atomic-properties")
 KBUILD_WARN(3, CLANG_8, "-Wimplicit-atomic-properties")
 KBUILD_WARN(3, CLANG_8, "-Wauto-import")
-KBUILD_WARN(3, CLANG_8, "-Wbad-function-cast")
+KBUILD_WARN(4, CLANG_8, "-Wbad-function-cast") /* excessive */
 KBUILD_WARN(3, CLANG_8, "-Wbinary-literal")
 KBUILD_WARN(3, CLANG_8, "-Wbitfield-width")
-KBUILD_WARN(3, CLANG_8, "-Wc11-extensions")
-KBUILD_WARN(2, CLANG_8, "-Wcast-align")
-KBUILD_WARN(3, CLANG_8, "-Wcast-qual")
-KBUILD_WARN(3, CLANG_8, "-Wconditional-uninitialized")
+KBUILD_WARN(4, CLANG_8, "-Wc11-extensions") /* harmful */
+KBUILD_WARN(3, CLANG_8, "-Wcast-align") /* huge */
+KBUILD_WARN(4, CLANG_8, "-Wcast-align") /* huge */
+KBUILD_WARN(4, CLANG_8, "-Wcast-qual") /* excessive */
+KBUILD_WARN(3, CLANG_8, "-Wconditional-uninitialized") /* huge */
 KBUILD_WARN(3, CLANG_8, "-Wconsumed")
-KBUILD_WARN(3, CLANG_8, "-Wcovered-switch-default")
+KBUILD_WARN(3, CLANG_8, "-Wcovered-switch-default") /* huge */
 KBUILD_WARN(3, CLANG_8, "-Wcstring-format-directive")
-KBUILD_WARN(3, CLANG_8, "-Wdocumentation")
+KBUILD_WARN(4, CLANG_8, "-Wdocumentation") /* huge */
 KBUILD_WARN(3, CLANG_8, "-Wdocumentation-deprecated-sync")
 KBUILD_WARN(3, CLANG_8, "-Wdocumentation-html")
 KBUILD_WARN(3, CLANG_8, "-Wdocumentation-pedantic")
-KBUILD_WARN(3, CLANG_8, "-Wdocumentation-unknown-command")
-KBUILD_WARN(3, CLANG_8, "-Wdouble-promotion")
+KBUILD_WARN(4, CLANG_8, "-Wdocumentation-unknown-command") /* excessive */
+KBUILD_WARN(3, CLANG_8, "-Wdouble-promotion") /* rare */
 KBUILD_WARN(3, CLANG_8, "-Wduplicate-method-arg")
 KBUILD_WARN(3, CLANG_8, "-Wduplicate-method-match")
 KBUILD_WARN(3, CLANG_8, "-Wexit-time-destructors")
-KBUILD_WARN(3, CLANG_8, "-Wextra-semi")
-KBUILD_WARN(3, CLANG_8, "-Wextra-semi-stmt")
+KBUILD_WARN(4, CLANG_8, "-Wextra-semi") /* excessive */
+KBUILD_WARN(3, CLANG_8, "-Wextra-semi-stmt") /* excessive */
 KBUILD_WARN(3, CLANG_8, "-Wfour-char-constants")
 KBUILD_WARN(3, CLANG_8, "-Wframe-larger-than=1024")
 KBUILD_WARN(3, CLANG_8, "-Wheader-hygiene")
@@ -627,7 +763,7 @@ KBUILD_WARN(3, CLANG_8, "-Wimplicit-fallthrough")
 KBUILD_WARN(3, CLANG_8, "-Wimplicit-fallthrough-per-function")
 KBUILD_WARN(3, CLANG_8, "-Winconsistent-missing-destructor-override")
 KBUILD_WARN(3, CLANG_8, "-Wkeyword-macro")
-KBUILD_WARN(3, CLANG_8, "-Wlong-long")
+KBUILD_WARN(4, CLANG_8, "-Wlong-long") /* harmful */
 KBUILD_WARN(3, CLANG_8, "-Wloop-analysis")
 KBUILD_WARN(3, CLANG_8, "-Wrange-loop-analysis")
 KBUILD_WARN(3, CLANG_8, "-Wmethod-signatures")
@@ -635,15 +771,15 @@ KBUILD_WARN(3, CLANG_8, "-Wmissing-noescape")
 KBUILD_WARN(3, CLANG_8, "-Wmodule-build")
 KBUILD_WARN(3, CLANG_8, "-Wnullable-to-nonnull-conversion")
 KBUILD_WARN(3, CLANG_8, "-Wover-aligned")
-KBUILD_WARN(3, CLANG_8, "-Woverlength-strings")
+KBUILD_WARN(3, CLANG_8, "-Woverlength-strings") /* huge, useless */
 KBUILD_WARN(3, CLANG_8, "-Woverriding-method-mismatch")
-KBUILD_WARN(3, CLANG_8, "-Wpacked")
-KBUILD_WARN(3, CLANG_8, "-Wpadded")
+KBUILD_WARN(4, CLANG_8, "-Wpacked") /* huge */
+KBUILD_WARN(4, CLANG_8, "-Wpadded") /* excessive */
 KBUILD_WARN(3, CLANG_8, "-Wpass")
 KBUILD_WARN(3, CLANG_8, "-Wpass-analysis")
 KBUILD_WARN(3, CLANG_8, "-Wprofile-instr-missing")
 KBUILD_WARN(3, CLANG_8, "-Wquoted-include-in-framework-header")
-KBUILD_WARN(3, CLANG_8, "-Wreserved-id-macro")
+KBUILD_WARN(4, CLANG_8, "-Wreserved-id-macro") /* excessive */
 KBUILD_WARN(3, CLANG_8, "-Wsanitize-address")
 KBUILD_WARN(3, CLANG_8, "-Wsection")
 KBUILD_WARN(3, CLANG_8, "-Wselector")
@@ -651,7 +787,7 @@ KBUILD_WARN(3, CLANG_8, "-Wselector-type-mismatch")
 KBUILD_WARN(3, CLANG_8, "-Wsigned-enum-bitfield")
 KBUILD_WARN(3, CLANG_8, "-Wspir-compat")
 KBUILD_WARN(3, CLANG_8, "-Wstrict-selector-match")
-KBUILD_WARN(3, CLANG_8, "-Wswitch-enum")
+KBUILD_WARN(3, CLANG_8, "-Wswitch-enum") /* huge */
 KBUILD_WARN(3, CLANG_8, "-Wthread-safety")
 KBUILD_WARN(3, CLANG_8, "-Wthread-safety-analysis")
 KBUILD_WARN(3, CLANG_8, "-Wthread-safety-attributes")
@@ -668,7 +804,7 @@ KBUILD_WARN(3, CLANG_8, "-Wunreachable-code-break")
 KBUILD_WARN(3, CLANG_8, "-Wunreachable-code-return")
 KBUILD_WARN(3, CLANG_8, "-Wunused-exception-parameter")
 KBUILD_WARN(3, CLANG_8, "-Wunused-local-typedef")
-KBUILD_WARN(3, CLANG_8, "-Wused-but-marked-unused")
+KBUILD_WARN(4, CLANG_8, "-Wused-but-marked-unused") /* huge */
 KBUILD_WARN(3, CLANG_8, "-Wvector-conversion")
 KBUILD_WARN(0, CLANG_8, "-Wvla")
 
@@ -686,11 +822,11 @@ KBUILD_WARN(3, CLANG_8, "-Winit-self")
 KBUILD_WARN(3, CLANG_8, "-Winline")
 KBUILD_WARN(3, CLANG_8, "-Winvalid-pch")
 KBUILD_WARN(3, CLANG_8, "-Wliblto")
-KBUILD_WARN(1, CLANG_8, "-Wmissing-format-attribute")
-KBUILD_WARN(1, CLANG_8, "-Wmissing-include-dirs")
+KBUILD_WARN(3, CLANG_8, "-Wmissing-format-attribute")
+KBUILD_WARN(3, CLANG_8, "-Wmissing-include-dirs")
 KBUILD_WARN(4, CLANG_8, "-Wnested-externs")
 KBUILD_WARN(3, CLANG_8, "-Wnonportable-cfstrings")
-KBUILD_WARN(1, CLANG_8, "-Wold-style-definition")
+KBUILD_WARN(3, CLANG_8, "-Wold-style-definition")
 KBUILD_WARN(3, CLANG_8, "-Woverflow")
 KBUILD_WARN(3, CLANG_8, "-Wpointer-to-int-cast")
 KBUILD_WARN(3, CLANG_8, "-Wredundant-decls")
@@ -710,4 +846,5 @@ KBUILD_WARN(3, CLANG_8, "-Wstrict-overflow=5")
 KBUILD_WARN(3, CLANG_8, "-Wstrict-prototypes")
 KBUILD_WARN(3, CLANG_8, "-Wswitch-default")
 KBUILD_WARN(3, CLANG_8, "-Wsynth")
-KBUILD_WARN(3, CLANG_8, "-Wtype-limits")
+KBUILD_WARN(3, CLANG_8, "-Wunused-argument")
+KBUILD_WARN(3, CLANG_8, "-Wtype-limits") /* medium */

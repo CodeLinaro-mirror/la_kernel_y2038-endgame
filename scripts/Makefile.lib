@@ -287,8 +287,8 @@ quiet_cmd_gzip = GZIP    $@
 DTC ?= $(objtree)/scripts/dtc/dtc
 DTC_FLAGS += -Wno-interrupt_provider
 
-# Disable noisy checks by default
-ifeq ($(findstring 1,$(KBUILD_EXTRA_WARN)),)
+## Disable noisy checks by default
+#ifeq ($(findstring 1,$(KBUILD_EXTRA_WARN)),)
 DTC_FLAGS += -Wno-unit_address_vs_reg \
 	-Wno-unit_address_format \
 	-Wno-avoid_unnecessary_addr_size \
@@ -297,13 +297,13 @@ DTC_FLAGS += -Wno-unit_address_vs_reg \
 	-Wno-simple_bus_reg \
 	-Wno-unique_unit_address \
 	-Wno-pci_device_reg
-endif
+#endif
 
-ifneq ($(findstring 2,$(KBUILD_EXTRA_WARN)),)
-DTC_FLAGS += -Wnode_name_chars_strict \
-	-Wproperty_name_chars_strict \
-	-Winterrupt_provider
-endif
+#ifneq ($(findstring 2,$(KBUILD_EXTRA_WARN)),)
+#DTC_FLAGS += -Wnode_name_chars_strict \
+#	-Wproperty_name_chars_strict \
+#	-Winterrupt_provider
+#endif
 
 DTC_FLAGS += $(DTC_FLAGS_$(basetarget))
 
