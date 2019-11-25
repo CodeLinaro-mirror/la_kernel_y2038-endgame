@@ -20,6 +20,8 @@ static inline int printk_get_level(const char *buffer)
 		case '0' ... '7':
 		case 'c':	/* KERN_CONT */
 			return buffer[1];
+		default:
+			break;
 		}
 	}
 	return 0;

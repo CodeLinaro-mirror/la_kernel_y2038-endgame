@@ -128,7 +128,8 @@ do {							\
 do {									\
 	typedef typeof(var) pao_T__;					\
 	const int pao_ID__ = (__builtin_constant_p(val) &&		\
-			      ((val) == 1 || (val) == -1)) ?		\
+			      ((unsigned long)(val) == 1ul || 		\
+				(unsigned long)(val) == -1ul)) ?	\
 				(int)(val) : 0;				\
 	if (0) {							\
 		pao_T__ pao_tmp__;					\

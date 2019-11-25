@@ -44,7 +44,7 @@
 #define TLB_BARRIER	(1 << 28)
 #define TLB_L2CLEAN_FR	(1 << 29)		/* Feroceon */
 #define TLB_DCLEAN	(1 << 30)
-#define TLB_WB		(1 << 31)
+#define TLB_WB		(1u << 31)
 
 /*
  *	MMU TLB Model

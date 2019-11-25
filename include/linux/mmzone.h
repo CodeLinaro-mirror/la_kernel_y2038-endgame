@@ -1010,7 +1010,7 @@ static __always_inline struct zoneref *next_zones_zonelist(struct zoneref *z,
 					enum zone_type highest_zoneidx,
 					nodemask_t *nodes)
 {
-	if (likely(!nodes && zonelist_zone_idx(z) <= highest_zoneidx))
+	if (likely(!nodes && (enum zone_type)zonelist_zone_idx(z) <= highest_zoneidx))
 		return z;
 	return __next_zones_zonelist(z, highest_zoneidx, nodes);
 }
@@ -1379,8 +1379,6 @@ struct mminit_pfnnid_cache {
 #ifndef early_pfn_valid
 #define early_pfn_valid(pfn)	(1)
 #endif
-
-void memory_present(int nid, unsigned long start, unsigned long end);
 
 /*
  * If it is possible to have holes within a MAX_ORDER_NR_PAGES, then we
