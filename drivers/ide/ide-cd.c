@@ -1727,8 +1727,12 @@ static int idecd_locked_compat_ioctl(struct block_device *bdev, fmode_t mode,
 		break;
 	}
 
-	return cdrom_ioctl(&info->devinfo, bdev, mode, cmd,
-			   (unsigned long)compat_ptr(arg));
+	err = generic_ide_ioctl(info->drive, bdev, cmd, arg);
+	if (err == -EINVAL)
+		err = cdrom_ioctl(&info->devinfo, bdev, mode, cmd,
+				  (unsigned long)compat_ptr(arg));
+
+	return err;
 }
 
 static int idecd_compat_ioctl(struct block_device *bdev, fmode_t mode,
