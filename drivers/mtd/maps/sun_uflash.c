@@ -42,7 +42,7 @@ struct uflash_dev {
 };
 
 struct map_info uflash_map_templ = {
-	.name =		"SUNW,???-????",
+	.name =		"SUNW,??\?-????",
 	.size =		UFLASH_WINDOW_SIZE,
 	.bankwidth =	UFLASH_BUSWIDTH,
 };
