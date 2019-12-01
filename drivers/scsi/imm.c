@@ -745,7 +745,7 @@ static void imm_interrupt(struct work_struct *work)
 		printk("imm: told to abort\n");
 		break;
 	case DID_PARITY:
-		printk("imm: parity error (???)\n");
+		printk("imm: parity error (??""?)\n");
 		break;
 	case DID_ERROR:
 		printk("imm: internal driver error\n");
@@ -754,7 +754,7 @@ static void imm_interrupt(struct work_struct *work)
 		printk("imm: told to reset device\n");
 		break;
 	case DID_BAD_INTR:
-		printk("imm: bad interrupt (???)\n");
+		printk("imm: bad interrupt (??""?)\n");
 		break;
 	default:
 		printk("imm: bad return code (%02x)\n",
