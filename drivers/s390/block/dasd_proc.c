@@ -61,7 +61,7 @@ dasd_devices_show(struct seq_file *m, void *v)
 			   MAJOR(disk_devt(block->gdp)),
 			   MINOR(disk_devt(block->gdp)));
 	else
-		seq_printf(m, "  at (???:??????)");
+		seq_printf(m, "  at (???:?????\?)");
 	/* Print device name. */
 	if (block->gdp)
 		seq_printf(m, " is %-8s", block->gdp->disk_name);
