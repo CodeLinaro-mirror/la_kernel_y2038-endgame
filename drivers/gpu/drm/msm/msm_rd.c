@@ -370,7 +370,7 @@ void msm_rd_dump_submit(struct msm_rd_state *rd, struct msm_gem_submit *submit,
 				TASK_COMM_LEN, task->comm,
 				pid_nr(submit->pid), submit->seqno);
 	} else {
-		n = scnprintf(msg, sizeof(msg), "???/%d: fence=%u",
+		n = scnprintf(msg, sizeof(msg), "??\?/%d: fence=%u",
 				pid_nr(submit->pid), submit->seqno);
 	}
 	rcu_read_unlock();
