@@ -4,10 +4,8 @@
 /* building blocks: support for "make W=0123" and "E=0123" */
 #ifdef KBUILD_ERR0
 #define KBUILD_WARN_LEVEL0 error
-#elif defined(KBUILD_WARN0)
-#define KBUILD_WARN_LEVEL0 warning
 #else
-#define KBUILD_WARN_LEVEL0 ignored
+#define KBUILD_WARN_LEVEL0 warning
 #endif
 
 #ifdef KBUILD_ERR1
