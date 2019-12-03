@@ -62,7 +62,7 @@ static void send_morse(const char *pattern)
 	}
 }
 
-void main(void)
+int main(void)
 {
 	/* Kill machine if structures are wrong */
 	if (wakeup_header.real_magic != 0x12345678)
@@ -80,4 +80,6 @@ void main(void)
 		probe_cards(0);
 		set_mode(wakeup_header.video_mode);
 	}
+
+	return 0;
 }
