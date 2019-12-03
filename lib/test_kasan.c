@@ -702,6 +702,9 @@ static void kasan_stack_oob(struct kunit *test)
 
 	KUNIT_EXPECT_KASAN_FAIL(test, *(volatile char *)p);
 }
+/* disable warning for alloca_array */
+KBUILD_WARN(4, GCC_4_6, "-Wvla");
+KBUILD_WARN(4, CLANG_8, "-Wvla");
 
 static void kasan_alloca_oob_left(struct kunit *test)
 {

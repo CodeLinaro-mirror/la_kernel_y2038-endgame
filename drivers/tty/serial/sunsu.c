@@ -53,7 +53,7 @@
 #define SU_BASE_BAUD	(1846200 / 16)
 
 enum su_type { SU_PORT_NONE, SU_PORT_MS, SU_PORT_KBD, SU_PORT_PORT };
-static char *su_typev[] = { "su(???)", "su(mouse)", "su(kbd)", "su(serial)" };
+static char *su_typev[] = { "su(\?\?\?)", "su(mouse)", "su(kbd)", "su(serial)" };
 
 struct serial_uart_config {
 	char	*name;
