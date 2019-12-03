@@ -444,7 +444,7 @@ static int register_info(struct seq_file *m)
 			   "RSE stacked physical registers   : %ld\n"
 			   "RSE load/store hints             : %ld (%s)\n",
 			   phys_stacked, hints.ph_data,
-			   hints.ph_data < RSE_HINTS_COUNT ? rse_hints[hints.ph_data]: "(??)");
+			   hints.ph_data < RSE_HINTS_COUNT ? rse_hints[hints.ph_data]: "(?\?)");
 
 	if (ia64_pal_debug_info(&iregs, &dregs))
 		return 0;

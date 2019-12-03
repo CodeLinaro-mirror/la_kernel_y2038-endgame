@@ -123,7 +123,7 @@ void do_priv_instruction(struct pt_regs *regs, unsigned long pc, unsigned long n
 			 unsigned long psr)
 {
 	if(psr & PSR_PS)
-		die_if_kernel("Penguin instruction from Penguin mode??!?!", regs);
+		die_if_kernel("Penguin instruction from Penguin mode?!?!", regs);
 	send_sig_fault(SIGILL, ILL_PRVOPC, (void __user *)pc, 0, current);
 }
 
