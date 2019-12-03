@@ -15,7 +15,12 @@ ifeq ("$(origin W)", "command line")
   KBUILD_EXTRA_WARN := $(W)
 endif
 
+ifeq ("$(origin E)", "command line")
+  KBUILD_EXTRA_ERR := $(E)
+endif
+
 export KBUILD_EXTRA_WARN
+export KBUILD_EXTRA_ERR
 
 #
 # W=1 - warnings which may be relevant and do not occur too often
@@ -41,5 +46,29 @@ endif
 ifneq ($(findstring 3, $(KBUILD_EXTRA_WARN)),)
 
 KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN3
+
+endif
+
+ifneq ($(findstring 0, $(KBUILD_EXTRA_ERR)),)
+
+KBUILD_CPPFLAGS += -DKBUILD_ERR0
+
+endif
+
+ifneq ($(findstring 1, $(KBUILD_EXTRA_ERR)),)
+
+KBUILD_CPPFLAGS += -DKBUILD_ERR1
+
+endif
+
+ifneq ($(findstring 2, $(KBUILD_EXTRA_ERR)),)
+
+KBUILD_CPPFLAGS += -DKBUILD_ERR2
+
+endif
+
+ifneq ($(findstring 3, $(KBUILD_EXTRA_ERR)),)
+
+KBUILD_CPPFLAGS += -DKBUILD_ERR3
 
 endif
