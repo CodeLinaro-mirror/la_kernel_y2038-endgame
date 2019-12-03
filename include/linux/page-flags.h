@@ -196,7 +196,7 @@ static __always_inline int PageCompound(struct page *page)
 	return test_bit(PG_head, &page->flags) || PageTail(page);
 }
 
-#define	PAGE_POISON_PATTERN	-1ul
+#define	PAGE_POISON_PATTERN	~0ul
 static inline int PagePoisoned(const struct page *page)
 {
 	return page->flags == PAGE_POISON_PATTERN;

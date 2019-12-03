@@ -544,6 +544,9 @@ static noinline void __init copy_user_test(void)
 	kfree(kmem);
 }
 
+/* disable warning for alloca_array */
+KBUILD_WARN(4, GCC_4_6, "-Wvla");
+
 static noinline void __init kasan_alloca_oob_left(void)
 {
 	volatile int i = 10;

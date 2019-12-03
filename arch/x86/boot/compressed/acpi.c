@@ -24,7 +24,7 @@ struct mem_vector immovable_mem[MAX_NUMNODES*2];
  * Search EFI system tables for RSDP.  If both ACPI_20_TABLE_GUID and
  * ACPI_TABLE_GUID are found, take the former, which has more features.
  */
-static acpi_physical_address
+static __maybe_unused acpi_physical_address
 __efi_get_rsdp_addr(unsigned long config_tables, unsigned int nr_tables,
 		    bool efi_64)
 {

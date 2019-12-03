@@ -131,7 +131,7 @@ static void init_heap(void)
 	}
 }
 
-void main(void)
+int main(void)
 {
 	/* First, copy the boot header into the "zeropage" */
 	copy_boot_params();
