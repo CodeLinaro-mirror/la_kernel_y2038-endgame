@@ -41,7 +41,11 @@
 #endif
 
 /* building blocks: support for compiler versions */
+#if defined __CHECKER__
+#define __KBUILD_WARN_LEVEL(arg) /* empty */
+#else
 #define __KBUILD_WARN_LEVEL(arg) _Pragma(#arg)
+#endif
 
 #if defined(GCC_VERSION)
 #define KBUILD_WARN_LEVEL(level, warning)  \
