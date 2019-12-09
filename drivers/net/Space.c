@@ -133,10 +133,6 @@ static int __init net_olddevs_init(void)
 {
 	int num;
 
-#ifdef CONFIG_SBNI
-	for (num = 0; num < 8; ++num)
-		sbni_probe(num);
-#endif
 	for (num = 0; num < 8; ++num)
 		ethif_probe2(num);
 

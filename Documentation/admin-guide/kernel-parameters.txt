@@ -4499,8 +4499,6 @@
 	sa1100ir	[NET]
 			See drivers/net/irda/sa1100_ir.c.
 
-	sbni=		[NET] Granch SBNI12 leased line adapter
-
 	sched_debug	[KNL] Enables verbose scheduler debug messages.
 
 	schedstats=	[KNL,X86] Enable or disable scheduled statistics.

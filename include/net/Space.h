@@ -25,6 +25,3 @@ struct net_device *ltpc_probe(void);
 
 /* Fibre Channel adapters */
 int iph5526_probe(struct net_device *dev);
-
-/* SBNI adapters */
-int sbni_probe(int unit);
