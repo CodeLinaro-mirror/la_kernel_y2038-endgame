@@ -22,8 +22,6 @@ obj-$(CONFIG_X25_ASY)		+= x25_asy.o
 
 obj-$(CONFIG_LANMEDIA)		+= lmc/
 
-obj-$(CONFIG_DLCI)		+= dlci.o 
-obj-$(CONFIG_SDLA)		+= sdla.o
 obj-$(CONFIG_LAPBETHER)		+= lapbether.o
 obj-$(CONFIG_N2)		+= n2.o
 obj-$(CONFIG_C101)		+= c101.o
