@@ -2158,12 +2158,8 @@ ARM/Orion SoC/Technologic Systems TS-78xx platform support
 M:	Alexander Clouter <alex@digriz.org.uk>
 L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
 S:	Maintained
-<<<<<<< HEAD
 W:	http://www.digriz.org.uk/ts78xx/kernel
-F:	arch/arm/mach-orion5x/ts78xx-*
-=======
 F:	arch/arm/mach-orion/ts78xx-*
->>>>>>> 8bea63ae8a83... ARM: orion/mv78xx0/dove: move to a common directory
 
 ARM/OXNAS platform support
 M:	Neil Armstrong <narmstrong@baylibre.com>
@@ -7119,6 +7115,7 @@ F:	include/linux/platform_data/i2c-mux-gpio.h
 
 GENERIC HDLC (WAN) DRIVERS
 M:	Krzysztof Halasa <khc@pm.waw.pl>
+R:	Martin Schiller <ms@dev.tdt.de>
 S:	Maintained
 W:	http://www.kernel.org/pub/linux/utils/net/hdlc/
 F:	drivers/net/wan/c101.c
@@ -9543,13 +9540,6 @@ L:	linux-mips@vger.kernel.org
 S:	Maintained
 F:	arch/mips/lantiq
 F:	drivers/soc/lantiq
-
-LAPB module
-L:	linux-x25@vger.kernel.org
-S:	Orphan
-F:	Documentation/networking/lapb-module.rst
-F:	include/*/lapb.h
-F:	net/lapb/
 
 LASI 53c700 driver for PARISC
 M:	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
@@ -18375,11 +18365,16 @@ S:	Maintained
 N:	axp[128]
 
 X.25 NETWORK LAYER
+M:	Martin Schiller <ms@dev.tdt.de>
 M:	Andrew Hendry <andrew.hendry@gmail.com>
 L:	linux-x25@vger.kernel.org
 S:	Odd Fixes
 F:	Documentation/networking/x25*
+F:	Documentation/networking/lapb-module.txt
+F:	include/linux/lapb.h
 F:	include/net/x25*
+F:	include/uapi/linux/x25.h
+F:	net/lapb/
 F:	net/x25/
 
 X86 ARCHITECTURE (32-BIT AND 64-BIT)
