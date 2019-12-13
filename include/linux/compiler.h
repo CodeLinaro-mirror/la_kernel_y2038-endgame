@@ -180,6 +180,8 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 #include <uapi/linux/types.h>
 #include <linux/kcsan-checks.h>
 
+extern void __broken_access_once(void *, const void *, unsigned long);
+
 #define __READ_ONCE_SIZE						\
 ({									\
 	switch (size) {							\
@@ -188,9 +190,7 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 	case 4: *(__u32 *)res = *(volatile __u32 *)p; break;		\
 	case 8: *(__u64 *)res = *(volatile __u64 *)p; break;		\
 	default:							\
-		barrier();						\
-		__builtin_memcpy((void *)res, (const void *)p, size);	\
-		barrier();						\
+		__broken_access_once((void *)res, (const void *)p, size);	\
 	}								\
 })
 
@@ -249,9 +249,7 @@ void __write_once_size(volatile void *p, void *res, int size)
 	case 4: *(volatile __u32 *)p = *(__u32 *)res; break;
 	case 8: *(volatile __u64 *)p = *(__u64 *)res; break;
 	default:
-		barrier();
-		__builtin_memcpy((void *)p, (const void *)res, size);
-		barrier();
+		__broken_access_once((void *)p, (const void *)res, size);
 	}
 }
 
