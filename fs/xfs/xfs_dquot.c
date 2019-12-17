@@ -98,6 +98,23 @@ xfs_qm_adjust_dqlimits(
 		xfs_dquot_set_prealloc_limits(dq);
 }
 
+static __be32 xfs_quota_timeout32(s64 limit)
+{
+	time64_t now = ktime_get_real_seconds();
+	u32 timeout;
+
+	/* avoid overflows in out-of-range limits */
+	if ((u64)limit > S32_MAX)
+		limit = S32_MAX;
+	timeout = now + limit;
+
+	/* avoid timeout of zero */
+	if (lower_32_bits(timeout) == 0)
+		return cpu_to_be32(1);
+
+	return cpu_to_be32(lower_32_bits(timeout));
+}
+
 /*
  * Check the limits and timers of a dquot and start or reset timers
  * if necessary.
@@ -137,7 +154,7 @@ xfs_qm_adjust_dqtimers(
 		    (d->d_blk_hardlimit &&
 		     (be64_to_cpu(d->d_bcount) >
 		      be64_to_cpu(d->d_blk_hardlimit)))) {
-			d->d_btimer = cpu_to_be32(ktime_get_real_seconds() +
+			d->d_btimer = xfs_quota_timeout32(
 					mp->m_quotainfo->qi_btimelimit);
 		} else {
 			d->d_bwarns = 0;
@@ -160,7 +177,7 @@ xfs_qm_adjust_dqtimers(
 		    (d->d_ino_hardlimit &&
 		     (be64_to_cpu(d->d_icount) >
 		      be64_to_cpu(d->d_ino_hardlimit)))) {
-			d->d_itimer = cpu_to_be32(ktime_get_real_seconds() +
+			d->d_itimer = xfs_quota_timeout32(
 					mp->m_quotainfo->qi_itimelimit);
 		} else {
 			d->d_iwarns = 0;
@@ -183,7 +200,7 @@ xfs_qm_adjust_dqtimers(
 		    (d->d_rtb_hardlimit &&
 		     (be64_to_cpu(d->d_rtbcount) >
 		      be64_to_cpu(d->d_rtb_hardlimit)))) {
-			d->d_rtbtimer = cpu_to_be32(ktime_get_real_seconds() +
+			d->d_rtbtimer = xfs_quota_timeout32(
 					mp->m_quotainfo->qi_rtbtimelimit);
 		} else {
 			d->d_rtbwarns = 0;
