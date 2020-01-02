@@ -636,8 +636,7 @@ xfs_trans_dqresv(
 			}
 			if (softlimit && total_count > softlimit) {
 				if ((timer != 0 &&
-				     time_after32(ktime_get_real_seconds(),
-						  timer)) ||
+				     ktime_get_real_seconds() > timer) ||
 				    (warns != 0 && warns >= warnlimit)) {
 					xfs_quota_warn(mp, dqp,
 						       QUOTA_NL_BSOFTLONGWARN);
@@ -665,8 +664,7 @@ xfs_trans_dqresv(
 			}
 			if (softlimit && total_count > softlimit) {
 				if  ((timer != 0 &&
-				     time_after32(ktime_get_real_seconds(),
-						  timer)) ||
+				      ktime_get_real_seconds() > timer) ||
 				     (warns != 0 && warns >= warnlimit)) {
 					xfs_quota_warn(mp, dqp,
 						       QUOTA_NL_ISOFTLONGWARN);
