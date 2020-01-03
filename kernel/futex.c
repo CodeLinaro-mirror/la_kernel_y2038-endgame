@@ -38,6 +38,7 @@
 #include <linux/freezer.h>
 #include <linux/memblock.h>
 #include <linux/fault-inject.h>
+#include <linux/time32.h>
 #include <linux/time_namespace.h>
 
 #include <asm/futex.h>

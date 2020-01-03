@@ -83,6 +83,7 @@
 #include <linux/ipc_namespace.h>
 #include <linux/uaccess.h>
 #include <linux/slab.h>
+#include <linux/time32.h>
 
 #include <asm/syscall.h>
 

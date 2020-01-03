@@ -20,6 +20,7 @@
 #include <linux/icmpv6.h>
 #include <linux/socket.h>
 #include <linux/syscalls.h>
+#include <linux/time32.h>
 #include <linux/filter.h>
 #include <linux/compat.h>
 #include <linux/security.h>

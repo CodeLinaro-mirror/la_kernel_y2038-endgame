@@ -27,6 +27,7 @@
 #include <linux/export.h>
 #include <linux/utsname.h>
 #include <linux/sched.h>
+#include <linux/time32.h>
 #include <asm/unaligned.h>
 
 #include <net/bluetooth/bluetooth.h>
