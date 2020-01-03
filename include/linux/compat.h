@@ -118,7 +118,6 @@ typedef __compat_uid32_t	compat_uid_t;
 typedef __compat_gid32_t	compat_gid_t;
 
 struct compat_sel_arg_struct;
-struct rusage;
 
 struct old_itimerval32;
 
@@ -259,25 +258,8 @@ struct compat_rlimit {
 	compat_ulong_t	rlim_max;
 };
 
-struct compat_rusage {
-	struct old_timeval32 ru_utime;
-	struct old_timeval32 ru_stime;
-	compat_long_t	ru_maxrss;
-	compat_long_t	ru_ixrss;
-	compat_long_t	ru_idrss;
-	compat_long_t	ru_isrss;
-	compat_long_t	ru_minflt;
-	compat_long_t	ru_majflt;
-	compat_long_t	ru_nswap;
-	compat_long_t	ru_inblock;
-	compat_long_t	ru_oublock;
-	compat_long_t	ru_msgsnd;
-	compat_long_t	ru_msgrcv;
-	compat_long_t	ru_nsignals;
-	compat_long_t	ru_nvcsw;
-	compat_long_t	ru_nivcsw;
-};
-
+struct rusage;
+struct compat_rusage;
 extern int put_compat_rusage(const struct rusage *,
 			     struct compat_rusage __user *);
 
