@@ -20,6 +20,7 @@
 #include <linux/export.h>
 #include <linux/migrate.h>
 #include <linux/posix-timers.h>
+#include <linux/time32.h>
 #include <linux/times.h>
 #include <linux/ptrace.h>
 #include <linux/gfp.h>

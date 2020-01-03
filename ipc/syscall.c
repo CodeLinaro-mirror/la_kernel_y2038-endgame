@@ -15,6 +15,7 @@
 #include <linux/errno.h>
 #include <linux/ipc.h>
 #include <linux/shm.h>
+#include <linux/time32.h>
 #include <linux/uaccess.h>
 
 int ksys_ipc(unsigned int call, int first, unsigned long second,

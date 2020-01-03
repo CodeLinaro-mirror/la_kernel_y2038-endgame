@@ -42,6 +42,7 @@ typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
 #include <linux/elfcore.h>
 #include <linux/compat.h>
 #include <linux/math64.h>
+#include <linux/time32.h>
 
 #define elf_prstatus elf_prstatus32
 struct elf_prstatus32

@@ -5,6 +5,7 @@
 #include <linux/elf.h>
 #include <linux/elfcore.h>
 #include <linux/compat.h>
+#include <linux/time32.h>
 
 /*
  * Make sure these layouts match the linux/elfcore.h native definitions.

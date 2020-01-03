@@ -22,6 +22,7 @@
 #include <linux/time.h>
 #include <linux/hrtimer.h>
 #include <linux/anon_inodes.h>
+#include <linux/time32.h>
 #include <linux/timerfd.h>
 #include <linux/syscalls.h>
 #include <linux/compat.h>

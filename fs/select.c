@@ -30,6 +30,7 @@
 #include <linux/hrtimer.h>
 #include <linux/freezer.h>
 #include <net/busy_poll.h>
+#include <linux/time32.h>
 #include <linux/vmalloc.h>
 
 #include <linux/uaccess.h>

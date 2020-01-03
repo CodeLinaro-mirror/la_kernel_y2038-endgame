@@ -75,6 +75,7 @@
 #include <linux/pseudo_fs.h>
 #include <linux/security.h>
 #include <linux/syscalls.h>
+#include <linux/time32.h>
 #include <linux/compat.h>
 #include <linux/kmod.h>
 #include <linux/audit.h>

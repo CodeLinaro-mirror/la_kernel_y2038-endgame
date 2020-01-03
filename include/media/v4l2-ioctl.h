@@ -16,6 +16,7 @@
 #include <linux/sched/signal.h>
 #include <linux/compiler.h> /* need __user */
 #include <linux/videodev2.h>
+#include <linux/time32.h>
 
 struct v4l2_fh;
 

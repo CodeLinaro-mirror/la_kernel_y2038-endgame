@@ -5,6 +5,7 @@
  */
 #include <linux/mount.h>
 #include <linux/fsmap.h>
+#include <linux/time32.h>
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"

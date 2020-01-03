@@ -12,6 +12,7 @@
 #include <linux/errno.h>
 #include <linux/syscalls.h>
 #include <linux/ktime.h>
+#include <linux/time32.h>
 #include <linux/timekeeping.h>
 #include <linux/posix-timers.h>
 #include <linux/time_namespace.h>

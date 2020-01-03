@@ -76,6 +76,7 @@
 #include <linux/init.h>
 #include <linux/proc_fs.h>
 #include <linux/time.h>
+#include <linux/time32.h>
 #include <linux/security.h>
 #include <linux/syscalls.h>
 #include <linux/audit.h>

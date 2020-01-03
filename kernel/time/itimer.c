@@ -8,6 +8,7 @@
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 #include <linux/syscalls.h>
+#include <linux/time32.h>
 #include <linux/time.h>
 #include <linux/sched/signal.h>
 #include <linux/sched/cputime.h>
