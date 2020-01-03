@@ -57,6 +57,9 @@ struct utimbuf;
 struct mq_attr;
 struct compat_stat;
 struct old_timeval32;
+struct old_itimerspec32;
+struct old_timex32;
+struct old_utimbuf32;
 struct robust_list_head;
 struct getcpu_cache;
 struct old_linux_dirent;
@@ -1117,8 +1120,6 @@ asmlinkage long sys_fadvise64(int fd, loff_t offset, size_t len, int advice);
 asmlinkage long sys_alarm(unsigned int seconds);
 asmlinkage long sys_getpgrp(void);
 asmlinkage long sys_pause(void);
-asmlinkage long sys_time(__kernel_old_time_t __user *tloc);
-asmlinkage long sys_time32(old_time32_t __user *tloc);
 #ifdef __ARCH_WANT_SYS_UTIME
 asmlinkage long sys_utime(char __user *filename,
 				struct utimbuf __user *times);
@@ -1156,8 +1157,12 @@ asmlinkage long sys_sysfs(int option,
 asmlinkage long sys_fork(void);
 
 /* obsolete: kernel/time/time.c */
+asmlinkage long sys_time(__kernel_old_time_t __user *tloc);
 asmlinkage long sys_stime(__kernel_old_time_t __user *tptr);
+#ifdef CONFIG_COMPAT_32BIT_TIME
+asmlinkage long sys_time32(old_time32_t __user *tloc);
 asmlinkage long sys_stime32(old_time32_t __user *tptr);
+#endif
 
 /* obsolete: kernel/signal.c */
 asmlinkage long sys_sigpending(old_sigset_t __user *uset);
