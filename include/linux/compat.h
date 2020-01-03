@@ -886,24 +886,6 @@ asmlinkage long compat_sys_socketcall(int call, u32 __user *args);
 static inline bool in_compat_syscall(void) { return is_compat_task(); }
 #endif
 
-/**
- * ns_to_old_timeval32 - Compat version of ns_to_timeval
- * @nsec:	the nanoseconds value to be converted
- *
- * Returns the old_timeval32 representation of the nsec parameter.
- */
-static inline struct old_timeval32 ns_to_old_timeval32(s64 nsec)
-{
-	struct __kernel_old_timeval tv;
-	struct old_timeval32 ctv;
-
-	tv = ns_to_kernel_old_timeval(nsec);
-	ctv.tv_sec = tv.tv_sec;
-	ctv.tv_usec = tv.tv_usec;
-
-	return ctv;
-}
-
 /*
  * Kernel code should not call compat syscalls (i.e., compat_sys_xyzyyz())
  * directly.  Instead, use one of the functions which work equivalently, such
