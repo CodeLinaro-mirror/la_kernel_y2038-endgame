@@ -69,6 +69,14 @@ static inline bool itimerspec64_valid(const struct itimerspec64 *its)
 }
 
 /**
+ * ns_to_kernel_old_timeval - Convert nanoseconds to __kernel_old_timeval
+ * @nsec:	the nanoseconds value to be converted
+ *
+ * Returns the __kernel_old_timeval representation of the nsec parameter.
+ */
+extern struct __kernel_old_timeval ns_to_kernel_old_timeval(s64 nsec);
+
+/**
  * time_after32 - compare two 32-bit relative times
  * @a:	the time which may be after @b
  * @b:	the time which may be before @a
