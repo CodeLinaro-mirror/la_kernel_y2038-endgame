@@ -376,6 +376,8 @@ struct compat_sysctl_args;
 struct compat_kexec_segment;
 struct compat_mq_attr;
 struct compat_msgbuf;
+struct old_timeval32;
+struct old_timespec32;
 
 #define BITS_PER_COMPAT_LONG    (8*sizeof(compat_long_t))
 
