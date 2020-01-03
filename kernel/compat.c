@@ -81,6 +81,25 @@ COMPAT_SYSCALL_DEFINE3(sigprocmask, int, how,
 
 #endif
 
+struct compat_rusage {
+	struct old_timeval32 ru_utime;
+	struct old_timeval32 ru_stime;
+	compat_long_t	ru_maxrss;
+	compat_long_t	ru_ixrss;
+	compat_long_t	ru_idrss;
+	compat_long_t	ru_isrss;
+	compat_long_t	ru_minflt;
+	compat_long_t	ru_majflt;
+	compat_long_t	ru_nswap;
+	compat_long_t	ru_inblock;
+	compat_long_t	ru_oublock;
+	compat_long_t	ru_msgsnd;
+	compat_long_t	ru_msgrcv;
+	compat_long_t	ru_nsignals;
+	compat_long_t	ru_nvcsw;
+	compat_long_t	ru_nivcsw;
+};
+
 int put_compat_rusage(const struct rusage *r, struct compat_rusage __user *ru)
 {
 	struct compat_rusage r32;
