@@ -42,6 +42,7 @@
 #include <linux/percpu-refcount.h>
 #include <linux/mount.h>
 #include <linux/pseudo_fs.h>
+#include <linux/time32.h>
 
 #include <linux/uaccess.h>
 #include <linux/nospec.h>

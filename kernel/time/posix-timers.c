@@ -24,6 +24,7 @@
 #include <linux/posix-clock.h>
 #include <linux/posix-timers.h>
 #include <linux/syscalls.h>
+#include <linux/time32.h>
 #include <linux/wait.h>
 #include <linux/workqueue.h>
 #include <linux/export.h>

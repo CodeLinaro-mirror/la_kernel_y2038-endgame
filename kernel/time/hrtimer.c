@@ -38,6 +38,7 @@
 #include <linux/sched/deadline.h>
 #include <linux/sched/nohz.h>
 #include <linux/sched/debug.h>
+#include <linux/time32.h>
 #include <linux/timer.h>
 #include <linux/freezer.h>
 #include <linux/compat.h>

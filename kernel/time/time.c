@@ -26,6 +26,7 @@
 
 #include <linux/export.h>
 #include <linux/kernel.h>
+#include <linux/time32.h>
 #include <linux/timex.h>
 #include <linux/capability.h>
 #include <linux/timekeeper_internal.h>

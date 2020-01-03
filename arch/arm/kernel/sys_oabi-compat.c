@@ -82,6 +82,7 @@
 #include <linux/ipc.h>
 #include <linux/uaccess.h>
 #include <linux/slab.h>
+#include <linux/time32.h>
 
 struct oldabi_stat64 {
 	unsigned long long st_dev;
