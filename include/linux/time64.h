@@ -5,6 +5,7 @@
 #include <linux/math64.h>
 #include <vdso/time64.h>
 
+typedef __s32 old_time32_t;
 typedef __s64 time64_t;
 typedef __u64 timeu64_t;
 
