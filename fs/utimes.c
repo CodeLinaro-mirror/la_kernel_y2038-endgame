@@ -4,6 +4,7 @@
 #include <linux/namei.h>
 #include <linux/utime.h>
 #include <linux/syscalls.h>
+#include <linux/time32.h>
 #include <linux/uaccess.h>
 #include <linux/compat.h>
 #include <asm/unistd.h>
