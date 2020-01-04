@@ -392,6 +392,7 @@ static long subdev_do_ioctl(struct file *file, unsigned int cmd, void *arg)
 
 		return v4l2_event_dequeue(vfh, arg, file->f_flags & O_NONBLOCK);
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	case VIDIOC_DQEVENT_TIME32: {
 		struct v4l2_event_time32 *ev32 = arg;
 		struct v4l2_event ev = { };
@@ -415,6 +416,7 @@ static long subdev_do_ioctl(struct file *file, unsigned int cmd, void *arg)
 
 		return rval;
 	}
+#endif
 
 	case VIDIOC_SUBSCRIBE_EVENT:
 		return v4l2_subdev_call(sd, core, subscribe_event, vfh, arg);
@@ -455,14 +457,12 @@ static long subdev_do_ioctl(struct file *file, unsigned int cmd, void *arg)
 #endif
 
 	case VIDIOC_LOG_STATUS: {
-		int ret;
-
 		pr_info("%s: =================  START STATUS  =================\n",
 			sd->name);
-		ret = v4l2_subdev_call(sd, core, log_status);
+		rval = v4l2_subdev_call(sd, core, log_status);
 		pr_info("%s: ==================  END STATUS  ==================\n",
 			sd->name);
-		return ret;
+		return rval;
 	}
 
 #if defined(CONFIG_VIDEO_V4L2_SUBDEV_API)

@@ -2772,6 +2772,9 @@ int __sys_recvmmsg(int fd, struct mmsghdr __user *mmsg,
 	int datagrams;
 	struct timespec64 timeout_sys;
 
+	if (!IS_ENABLED(CONFIG_COMPAT_32BIT_TIME) && timeout32)
+		return -ENOSYS;
+
 	if (timeout && get_timespec64(&timeout_sys, timeout))
 		return -EFAULT;
 

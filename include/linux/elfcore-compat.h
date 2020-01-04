@@ -18,6 +18,11 @@ struct compat_elf_siginfo
 	compat_int_t			si_errno;
 };
 
+struct compat_elf_timeval {
+	compat_long_t			tv_sec;
+	compat_long_t			tv_usec;
+};
+
 struct compat_elf_prstatus
 {
 	struct compat_elf_siginfo	pr_info;
@@ -28,10 +33,10 @@ struct compat_elf_prstatus
 	compat_pid_t			pr_ppid;
 	compat_pid_t			pr_pgrp;
 	compat_pid_t			pr_sid;
-	struct old_timeval32		pr_utime;
-	struct old_timeval32		pr_stime;
-	struct old_timeval32		pr_cutime;
-	struct old_timeval32		pr_cstime;
+	struct compat_elf_timeval	pr_utime;
+	struct compat_elf_timeval	pr_stime;
+	struct compat_elf_timeval	pr_cutime;
+	struct compat_elf_timeval	pr_cstime;
 	compat_elf_gregset_t		pr_reg;
 #ifdef CONFIG_BINFMT_ELF_FDPIC
 	compat_ulong_t			pr_exec_fdpic_loadmap;

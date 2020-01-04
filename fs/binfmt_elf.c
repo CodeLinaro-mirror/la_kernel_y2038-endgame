@@ -1592,6 +1592,19 @@ static void fill_note(struct memelfnote *note, const char *name, int type,
 }
 
 /*
+ * Fill pr_utime and pr_stime in the native format. Note this
+ * uses 32-bit fields on all 32-bit targets including x32 mode.
+ */
+static void prstatus_fill_time(struct __kernel_old_timeval *tv, u64 time)
+{
+	struct timespec64 ts;
+
+	ts = ns_to_timespec64(time);
+	tv->tv_sec = ts.tv_sec;
+	tv->tv_usec = ts.tv_nsec / NSEC_PER_USEC;
+}
+
+/*
  * fill up all the fields in prstatus from the given task struct, except
  * registers which need to be filled up separately.
  */
@@ -1615,18 +1628,18 @@ static void fill_prstatus(struct elf_prstatus *prstatus,
 		 * group-wide total, not its individual thread total.
 		 */
 		thread_group_cputime(p, &cputime);
-		prstatus->pr_utime = ns_to_kernel_old_timeval(cputime.utime);
-		prstatus->pr_stime = ns_to_kernel_old_timeval(cputime.stime);
+		prstatus_fill_time(&prstatus->pr_utime, cputime.utime);
+		prstatus_fill_time(&prstatus->pr_stime, cputime.stime);
 	} else {
 		u64 utime, stime;
 
 		task_cputime(p, &utime, &stime);
-		prstatus->pr_utime = ns_to_kernel_old_timeval(utime);
-		prstatus->pr_stime = ns_to_kernel_old_timeval(stime);
+		prstatus_fill_time(&prstatus->pr_utime, utime);
+		prstatus_fill_time(&prstatus->pr_stime, stime);
 	}
 
-	prstatus->pr_cutime = ns_to_kernel_old_timeval(p->signal->cutime);
-	prstatus->pr_cstime = ns_to_kernel_old_timeval(p->signal->cstime);
+	prstatus_fill_time(&prstatus->pr_cutime, p->signal->cutime);
+	prstatus_fill_time(&prstatus->pr_cstime, p->signal->cstime);
 }
 
 static int fill_psinfo(struct elf_prpsinfo *psinfo, struct task_struct *p,

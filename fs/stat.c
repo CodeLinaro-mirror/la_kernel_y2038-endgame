@@ -212,7 +212,7 @@ out:
 }
 EXPORT_SYMBOL(vfs_statx);
 
-
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_32BIT_TIME)
 #ifdef __ARCH_WANT_OLD_STAT
 
 /*
@@ -396,6 +396,7 @@ SYSCALL_DEFINE2(newfstat, unsigned int, fd, struct stat __user *, statbuf)
 	return error;
 }
 #endif
+#endif
 
 static int do_readlinkat(int dfd, const char __user *pathname,
 			 char __user *buf, int bufsiz)
@@ -447,7 +448,8 @@ SYSCALL_DEFINE3(readlink, const char __user *, path, char __user *, buf,
 
 
 /* ---------- LFS-64 ----------- */
-#if defined(__ARCH_WANT_STAT64) || defined(__ARCH_WANT_COMPAT_STAT64)
+#if (defined(__ARCH_WANT_STAT64) || defined(__ARCH_WANT_COMPAT_STAT64)) && \
+    (defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_32BIT_TIME))
 
 #ifndef INIT_STRUCT_STAT64_PADDING
 #  define INIT_STRUCT_STAT64_PADDING(st) memset(&st, 0, sizeof(st))
@@ -601,7 +603,7 @@ SYSCALL_DEFINE5(statx,
 	return cp_statx(&stat, buffer);
 }
 
-#ifdef CONFIG_COMPAT
+#if defined(CONFIG_COMPAT) && defined(CONFIG_COMPAT_32BIT_TIME)
 static int cp_compat_stat(struct kstat *stat, struct compat_stat __user *ubuf)
 {
 	struct compat_stat tmp;

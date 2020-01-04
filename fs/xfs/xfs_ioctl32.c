@@ -103,6 +103,7 @@ xfs_fsinumbers_fmt_compat(
 #define xfs_fsinumbers_fmt_compat xfs_fsinumbers_fmt
 #endif	/* BROKEN_X86_ALIGNMENT */
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 STATIC int
 xfs_ioctl32_bstime_copyin(
 	xfs_bstime_t		*bstime,
@@ -206,6 +207,7 @@ xfs_fsbulkstat_one_fmt_compat(
 
 	return xfs_ibulk_advance(breq, sizeof(struct compat_xfs_bstat));
 }
+#endif
 
 /* copied from xfs_ioctl.c */
 STATIC int
@@ -230,7 +232,11 @@ xfs_compat_ioc_fsbulkstat(
 	 * functions and structure size are the correct ones to use ...
 	 */
 	inumbers_fmt_pf		inumbers_func = xfs_fsinumbers_fmt_compat;
-	bulkstat_one_fmt_pf	bs_one_func = xfs_fsbulkstat_one_fmt_compat;
+	bulkstat_one_fmt_pf	bs_one_func = NULL;
+
+#ifdef CONFIG_COMPAT_32BIT_TIME
+	bs_one_func = xfs_fsbulkstat_one_fmt_compat;
+#endif
 
 #ifdef CONFIG_X86_X32
 	if (in_x32_syscall()) {
@@ -294,12 +300,12 @@ xfs_compat_ioc_fsbulkstat(
 		breq.startino = lastino ? lastino + 1 : 0;
 		error = xfs_inumbers(&breq, inumbers_func);
 		lastino = breq.startino - 1;
-	} else if (cmd == XFS_IOC_FSBULKSTAT_SINGLE_32) {
+	} else if (cmd == XFS_IOC_FSBULKSTAT_SINGLE_32 && bs_one_func) {
 		breq.startino = lastino;
 		breq.icount = 1;
 		error = xfs_bulkstat_one(&breq, bs_one_func);
 		lastino = breq.startino;
-	} else if (cmd == XFS_IOC_FSBULKSTAT_32) {
+	} else if (cmd == XFS_IOC_FSBULKSTAT_32 && bs_one_func) {
 		breq.startino = lastino ? lastino + 1 : 0;
 		error = xfs_bulkstat(&breq, bs_one_func);
 		lastino = breq.startino - 1;
@@ -439,7 +445,9 @@ xfs_file_compat_ioctl(
 	struct xfs_inode	*ip = XFS_I(inode);
 	struct xfs_mount	*mp = ip->i_mount;
 	void			__user *arg = compat_ptr(p);
+#if defined(BROKEN_X86_ALIGNMENT) || defined(CONFIG_COMPAT_32BIT_TIME)
 	int			error;
+#endif
 
 	trace_xfs_file_compat_ioctl(ip);
 
@@ -489,6 +497,7 @@ xfs_file_compat_ioctl(
 	case XFS_IOC_GETVERSION_32:
 		cmd = _NATIVE_IOC(cmd, long);
 		return xfs_file_ioctl(filp, cmd, p);
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	case XFS_IOC_SWAPEXT_32: {
 		struct xfs_swapext	  sxp;
 		struct compat_xfs_swapext __user *sxu = arg;
@@ -507,6 +516,7 @@ xfs_file_compat_ioctl(
 	}
 	case XFS_IOC_FSBULKSTAT_32:
 	case XFS_IOC_FSBULKSTAT_SINGLE_32:
+#endif
 	case XFS_IOC_FSINUMBERS_32:
 		return xfs_compat_ioc_fsbulkstat(mp, cmd, arg);
 	case XFS_IOC_FD_TO_HANDLE_32:

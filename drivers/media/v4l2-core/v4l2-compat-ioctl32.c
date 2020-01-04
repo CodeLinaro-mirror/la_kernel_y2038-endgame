@@ -498,6 +498,7 @@ struct v4l2_buffer32 {
 	__s32			request_fd;
 };
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 struct v4l2_buffer32_time32 {
 	__u32			index;
 	__u32			type;	/* enum v4l2_buf_type */
@@ -520,6 +521,7 @@ struct v4l2_buffer32_time32 {
 	__u32			reserved2;
 	__s32			request_fd;
 };
+#endif
 
 static int get_v4l2_plane32(struct v4l2_plane __user *p64,
 			    struct v4l2_plane32 __user *p32,
@@ -611,6 +613,7 @@ static int bufsize_v4l2_buffer(struct v4l2_buffer32 __user *p32, u32 *size)
 	return 0;
 }
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 static int bufsize_v4l2_buffer_time32(struct v4l2_buffer32_time32 __user *p32, u32 *size)
 {
 	u32 type;
@@ -635,6 +638,7 @@ static int bufsize_v4l2_buffer_time32(struct v4l2_buffer32_time32 __user *p32, u
 	}
 	return 0;
 }
+#endif
 
 static int get_v4l2_buffer32(struct v4l2_buffer __user *p64,
 			     struct v4l2_buffer32 __user *p32,
@@ -736,6 +740,7 @@ static int get_v4l2_buffer32(struct v4l2_buffer __user *p64,
 	return 0;
 }
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 static int get_v4l2_buffer32_time32(struct v4l2_buffer_time32 __user *p64,
 				    struct v4l2_buffer32_time32 __user *p32,
 				    void __user *aux_buf, u32 aux_space)
@@ -835,6 +840,7 @@ static int get_v4l2_buffer32_time32(struct v4l2_buffer_time32 __user *p64,
 
 	return 0;
 }
+#endif
 
 static int put_v4l2_buffer32(struct v4l2_buffer __user *p64,
 			     struct v4l2_buffer32 __user *p32)
@@ -916,6 +922,7 @@ static int put_v4l2_buffer32(struct v4l2_buffer __user *p64,
 	return 0;
 }
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 static int put_v4l2_buffer32_time32(struct v4l2_buffer_time32 __user *p64,
 				    struct v4l2_buffer32_time32 __user *p32)
 {
@@ -995,6 +1002,7 @@ static int put_v4l2_buffer32_time32(struct v4l2_buffer_time32 __user *p64,
 
 	return 0;
 }
+#endif
 
 struct v4l2_framebuffer32 {
 	__u32			capability;
@@ -1288,6 +1296,7 @@ struct v4l2_event32 {
 	__u32				reserved[8];
 };
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 struct v4l2_event32_time32 {
 	__u32				type;
 	union {
@@ -1300,6 +1309,7 @@ struct v4l2_event32_time32 {
 	__u32				id;
 	__u32				reserved[8];
 };
+#endif
 
 static int put_v4l2_event32(struct v4l2_event __user *p64,
 			    struct v4l2_event32 __user *p32)
@@ -1317,6 +1327,7 @@ static int put_v4l2_event32(struct v4l2_event __user *p64,
 	return 0;
 }
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 static int put_v4l2_event32_time32(struct v4l2_event_time32 __user *p64,
 				   struct v4l2_event32_time32 __user *p32)
 {
@@ -1332,6 +1343,7 @@ static int put_v4l2_event32_time32(struct v4l2_event_time32 __user *p64,
 		return -EFAULT;
 	return 0;
 }
+#endif
 #endif
 
 struct v4l2_edid32 {
@@ -1474,13 +1486,19 @@ static long do_video_ioctl(struct file *file, unsigned int cmd, unsigned long ar
 	case VIDIOC_G_FMT32: ncmd = VIDIOC_G_FMT; break;
 	case VIDIOC_S_FMT32: ncmd = VIDIOC_S_FMT; break;
 	case VIDIOC_QUERYBUF32: ncmd = VIDIOC_QUERYBUF; break;
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	case VIDIOC_QUERYBUF32_TIME32: ncmd = VIDIOC_QUERYBUF_TIME32; break;
+#endif
 	case VIDIOC_G_FBUF32: ncmd = VIDIOC_G_FBUF; break;
 	case VIDIOC_S_FBUF32: ncmd = VIDIOC_S_FBUF; break;
 	case VIDIOC_QBUF32: ncmd = VIDIOC_QBUF; break;
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	case VIDIOC_QBUF32_TIME32: ncmd = VIDIOC_QBUF_TIME32; break;
+#endif
 	case VIDIOC_DQBUF32: ncmd = VIDIOC_DQBUF; break;
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	case VIDIOC_DQBUF32_TIME32: ncmd = VIDIOC_DQBUF_TIME32; break;
+#endif
 	case VIDIOC_ENUMSTD32: ncmd = VIDIOC_ENUMSTD; break;
 	case VIDIOC_ENUMINPUT32: ncmd = VIDIOC_ENUMINPUT; break;
 	case VIDIOC_TRY_FMT32: ncmd = VIDIOC_TRY_FMT; break;
@@ -1489,7 +1507,9 @@ static long do_video_ioctl(struct file *file, unsigned int cmd, unsigned long ar
 	case VIDIOC_TRY_EXT_CTRLS32: ncmd = VIDIOC_TRY_EXT_CTRLS; break;
 #ifdef CONFIG_X86_64
 	case VIDIOC_DQEVENT32: ncmd = VIDIOC_DQEVENT; break;
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	case VIDIOC_DQEVENT32_TIME32: ncmd = VIDIOC_DQEVENT_TIME32; break;
+#endif
 #endif
 	case VIDIOC_OVERLAY32: ncmd = VIDIOC_OVERLAY; break;
 	case VIDIOC_STREAMON32: ncmd = VIDIOC_STREAMON; break;
@@ -1500,7 +1520,9 @@ static long do_video_ioctl(struct file *file, unsigned int cmd, unsigned long ar
 	case VIDIOC_S_OUTPUT32: ncmd = VIDIOC_S_OUTPUT; break;
 	case VIDIOC_CREATE_BUFS32: ncmd = VIDIOC_CREATE_BUFS; break;
 	case VIDIOC_PREPARE_BUF32: ncmd = VIDIOC_PREPARE_BUF; break;
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	case VIDIOC_PREPARE_BUF32_TIME32: ncmd = VIDIOC_PREPARE_BUF_TIME32; break;
+#endif
 	case VIDIOC_G_EDID32: ncmd = VIDIOC_G_EDID; break;
 	case VIDIOC_S_EDID32: ncmd = VIDIOC_S_EDID; break;
 	default: ncmd = cmd; break;
@@ -1582,6 +1604,7 @@ static long do_video_ioctl(struct file *file, unsigned int cmd, unsigned long ar
 		compatible_arg = 0;
 		break;
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	case VIDIOC_PREPARE_BUF32_TIME32:
 	case VIDIOC_QUERYBUF32_TIME32:
 	case VIDIOC_QBUF32_TIME32:
@@ -1597,6 +1620,7 @@ static long do_video_ioctl(struct file *file, unsigned int cmd, unsigned long ar
 		}
 		compatible_arg = 0;
 		break;
+#endif
 
 	case VIDIOC_S_FBUF32:
 		err = alloc_userspace(sizeof(struct v4l2_framebuffer), 0,
@@ -1646,10 +1670,12 @@ static long do_video_ioctl(struct file *file, unsigned int cmd, unsigned long ar
 		err = alloc_userspace(sizeof(struct v4l2_event), 0, &new_p64);
 		compatible_arg = 0;
 		break;
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	case VIDIOC_DQEVENT32_TIME32:
 		err = alloc_userspace(sizeof(struct v4l2_event_time32), 0, &new_p64);
 		compatible_arg = 0;
 		break;
+#endif
 #endif
 	}
 	if (err)
@@ -1719,10 +1745,11 @@ static long do_video_ioctl(struct file *file, unsigned int cmd, unsigned long ar
 	case VIDIOC_DQEVENT32:
 		err = put_v4l2_event32(new_p64, p32);
 		break;
-
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	case VIDIOC_DQEVENT32_TIME32:
 		err = put_v4l2_event32_time32(new_p64, p32);
 		break;
+#endif
 #endif
 
 	case VIDIOC_G_EDID32:
@@ -1746,12 +1773,14 @@ static long do_video_ioctl(struct file *file, unsigned int cmd, unsigned long ar
 		err = put_v4l2_buffer32(new_p64, p32);
 		break;
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	case VIDIOC_PREPARE_BUF32_TIME32:
 	case VIDIOC_QUERYBUF32_TIME32:
 	case VIDIOC_QBUF32_TIME32:
 	case VIDIOC_DQBUF32_TIME32:
 		err = put_v4l2_buffer32_time32(new_p64, p32);
 		break;
+#endif
 
 	case VIDIOC_ENUMSTD32:
 		err = put_v4l2_standard32(new_p64, p32);

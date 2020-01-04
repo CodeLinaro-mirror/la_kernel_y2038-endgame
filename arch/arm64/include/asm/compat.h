@@ -38,6 +38,7 @@ typedef __kernel_fsid_t	compat_fsid_t;
 typedef s64		compat_s64;
 typedef u64		compat_u64;
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 struct compat_stat {
 #ifdef __AARCH64EB__
 	short		st_dev;
@@ -67,6 +68,7 @@ struct compat_stat {
 	compat_ulong_t	st_ctime_nsec;
 	compat_ulong_t	__unused4[2];
 };
+#endif
 
 struct compat_flock {
 	short		l_type;

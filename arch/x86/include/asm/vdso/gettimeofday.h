@@ -121,6 +121,7 @@ long clock_gettime_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 	return ret;
 }
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 static __always_inline
 long clock_gettime32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
 {
@@ -137,6 +138,7 @@ long clock_gettime32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
 
 	return ret;
 }
+#endif
 
 static __always_inline
 long gettimeofday_fallback(struct __kernel_old_timeval *_tv,
@@ -173,6 +175,7 @@ clock_getres_fallback(clockid_t _clkid, struct __kernel_timespec *_ts)
 	return ret;
 }
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 static __always_inline
 long clock_getres32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
 {
@@ -189,7 +192,7 @@ long clock_getres32_fallback(clockid_t _clkid, struct old_timespec32 *_ts)
 
 	return ret;
 }
-
+#endif
 #endif
 
 #ifdef CONFIG_PARAVIRT_CLOCK
