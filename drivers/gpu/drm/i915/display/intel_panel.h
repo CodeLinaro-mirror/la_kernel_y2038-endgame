@@ -54,10 +54,10 @@ u32 intel_panel_invert_pwm_level(struct intel_connector *connector, u32 level);
 u32 intel_panel_backlight_level_to_pwm(struct intel_connector *connector, u32 level);
 u32 intel_panel_backlight_level_from_pwm(struct intel_connector *connector, u32 val);
 
-#if IS_ENABLED(CONFIG_BACKLIGHT_CLASS_DEVICE)
+#if IS_ENABLED(CONFIG_DRM_I915_BACKLIGHT)
 int intel_backlight_device_register(struct intel_connector *connector);
 void intel_backlight_device_unregister(struct intel_connector *connector);
-#else /* CONFIG_BACKLIGHT_CLASS_DEVICE */
+#else /* CONFIG_DRM_I915_BACKLIGHT */
 static inline int intel_backlight_device_register(struct intel_connector *connector)
 {
 	return 0;
@@ -65,6 +65,6 @@ static inline int intel_backlight_device_register(struct intel_connector *connec
 static inline void intel_backlight_device_unregister(struct intel_connector *connector)
 {
 }
-#endif /* CONFIG_BACKLIGHT_CLASS_DEVICE */
+#endif /* CONFIG_DRM_I915_BACKLIGHT */
 
 #endif /* __INTEL_PANEL_H__ */
