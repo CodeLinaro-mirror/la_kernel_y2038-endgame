@@ -1725,7 +1725,7 @@ SYSCALL_DEFINE4(old_semctl, int, semid, int, semnum, int, cmd, unsigned long, ar
 #endif
 
 #ifdef CONFIG_COMPAT
-
+#ifdef CONFIG_COMPAT_32BIT_TIME
 struct compat_semid_ds {
 	struct compat_ipc_perm sem_perm;
 	old_time32_t sem_otime;
@@ -1736,6 +1736,7 @@ struct compat_semid_ds {
 	compat_uptr_t undo;
 	unsigned short sem_nsems;
 };
+#endif
 
 static int copy_compat_semid_from_user(struct semid64_ds *out, void __user *buf,
 					int version)
@@ -1745,8 +1746,12 @@ static int copy_compat_semid_from_user(struct semid64_ds *out, void __user *buf,
 		struct compat_semid64_ds __user *p = buf;
 		return get_compat_ipc64_perm(&out->sem_perm, &p->sem_perm);
 	} else {
+#ifdef CONFIG_COMPAT_32BIT_TIME
 		struct compat_semid_ds __user *p = buf;
 		return get_compat_ipc_perm(&out->sem_perm, &p->sem_perm);
+#else
+		return -ENOSYS;
+#endif
 	}
 }
 
@@ -1764,6 +1769,7 @@ static int copy_compat_semid_to_user(void __user *buf, struct semid64_ds *in,
 		v.sem_nsems = in->sem_nsems;
 		return copy_to_user(buf, &v, sizeof(v));
 	} else {
+#ifdef CONFIG_COMPAT_32BIT_TIME
 		struct compat_semid_ds v;
 		memset(&v, 0, sizeof(v));
 		to_compat_ipc_perm(&v.sem_perm, &in->sem_perm);
@@ -1771,6 +1777,9 @@ static int copy_compat_semid_to_user(void __user *buf, struct semid64_ds *in,
 		v.sem_ctime = in->sem_ctime;
 		v.sem_nsems = in->sem_nsems;
 		return copy_to_user(buf, &v, sizeof(v));
+#else
+		return -ENOSYS;
+#endif
 	}
 }
 
@@ -1796,9 +1805,10 @@ static long compat_ksys_semctl(int semid, int semnum, int cmd, int arg, int vers
 		err = semctl_stat(ns, semid, cmd, &semid64);
 		if (err < 0)
 			return err;
-		if (copy_compat_semid_to_user(p, &semid64, version))
-			err = -EFAULT;
-		return err;
+		err = copy_compat_semid_to_user(p, &semid64, version); // XXX wrong err
+		if (err < 0)
+			return err;
+		return 0;
 	case GETVAL:
 	case GETPID:
 	case GETNCNT:
@@ -1809,8 +1819,9 @@ static long compat_ksys_semctl(int semid, int semnum, int cmd, int arg, int vers
 	case SETVAL:
 		return semctl_setval(ns, semid, semnum, arg);
 	case IPC_SET:
-		if (copy_compat_semid_from_user(&semid64, p, version))
-			return -EFAULT;
+		err = copy_compat_semid_from_user(&semid64, p, version);
+		if (err < 0)
+			return err;
 		fallthrough;
 	case IPC_RMID:
 		return semctl_down(ns, semid, cmd, &semid64);

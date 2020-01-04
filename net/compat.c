@@ -230,8 +230,10 @@ int put_cmsg_compat(struct msghdr *kmsg, int level, int type, int len, void *dat
 {
 	struct compat_cmsghdr __user *cm = (struct compat_cmsghdr __user *) kmsg->msg_control;
 	struct compat_cmsghdr cmhdr;
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	struct old_timeval32 ctv;
 	struct old_timespec32 cts[3];
+#endif
 	int cmlen;
 
 	if (cm == NULL || kmsg->msg_controllen < sizeof(*cm)) {
@@ -239,6 +241,7 @@ int put_cmsg_compat(struct msghdr *kmsg, int level, int type, int len, void *dat
 		return 0; /* XXX: return error? check spec. */
 	}
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	if (!COMPAT_USE_64BIT_TIME) {
 		if (level == SOL_SOCKET && type == SO_TIMESTAMP_OLD) {
 			struct __kernel_old_timeval *tv = (struct __kernel_old_timeval *)data;
@@ -260,6 +263,7 @@ int put_cmsg_compat(struct msghdr *kmsg, int level, int type, int len, void *dat
 			len = sizeof(cts[0]) * count;
 		}
 	}
+#endif
 
 	cmlen = CMSG_COMPAT_LEN(len);
 	if (kmsg->msg_controllen < cmlen) {

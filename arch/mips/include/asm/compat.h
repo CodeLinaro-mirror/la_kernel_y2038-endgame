@@ -32,6 +32,7 @@ typedef struct {
 	s32	val[2];
 } compat_fsid_t;
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 struct compat_stat {
 	compat_dev_t	st_dev;
 	s32		st_pad1[3];
@@ -54,6 +55,7 @@ struct compat_stat {
 	s32		st_blocks;
 	s32		st_pad4[14];
 };
+#endif
 
 struct compat_flock {
 	short		l_type;

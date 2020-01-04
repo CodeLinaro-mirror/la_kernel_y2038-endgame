@@ -22,6 +22,7 @@ typedef u32	compat_dev_t;
 typedef u16	compat_nlink_t;
 typedef u16	compat_ipc_pid_t;
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 struct compat_stat {
 	compat_dev_t		st_dev;	/* dev_t is 32 bits on parisc */
 	compat_ino_t		st_ino;	/* 32 bits */
@@ -52,6 +53,7 @@ struct compat_stat {
 	__compat_gid32_t	st_gid;
 	u32			st_spare4[3];
 };
+#endif
 
 struct compat_flock {
 	short			l_type;

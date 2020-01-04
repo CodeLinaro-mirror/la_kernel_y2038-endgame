@@ -82,8 +82,10 @@ COMPAT_SYSCALL_DEFINE3(sigprocmask, int, how,
 #endif
 
 struct compat_rusage {
-	struct old_timeval32 ru_utime;
-	struct old_timeval32 ru_stime;
+	compat_long_t	ru_utime_sec;
+	compat_long_t	ru_utime_usec;
+	compat_long_t	ru_stime_sec;
+	compat_long_t	ru_stime_usec;
 	compat_long_t	ru_maxrss;
 	compat_long_t	ru_ixrss;
 	compat_long_t	ru_idrss;
@@ -104,10 +106,10 @@ int put_compat_rusage(const struct rusage *r, struct compat_rusage __user *ru)
 {
 	struct compat_rusage r32;
 	memset(&r32, 0, sizeof(r32));
-	r32.ru_utime.tv_sec = r->ru_utime.tv_sec;
-	r32.ru_utime.tv_usec = r->ru_utime.tv_usec;
-	r32.ru_stime.tv_sec = r->ru_stime.tv_sec;
-	r32.ru_stime.tv_usec = r->ru_stime.tv_usec;
+	r32.ru_utime_sec = r->ru_utime.tv_sec;
+	r32.ru_utime_usec = r->ru_utime.tv_usec;
+	r32.ru_stime_sec = r->ru_stime.tv_sec;
+	r32.ru_stime_usec = r->ru_stime.tv_usec;
 	r32.ru_maxrss = r->ru_maxrss;
 	r32.ru_ixrss = r->ru_ixrss;
 	r32.ru_idrss = r->ru_idrss;

@@ -36,6 +36,7 @@
 #include <linux/in.h>
 #include <linux/export.h>
 #include <linux/time.h>
+#include <linux/time32.h>
 #include <linux/rds.h>
 
 #include "rds.h"
@@ -551,17 +552,27 @@ static int rds_cmsg_recv(struct rds_incoming *inc, struct msghdr *msg,
 
 	if ((inc->i_usercopy.rx_tstamp != 0) &&
 	    sock_flag(rds_rs_to_sk(rs), SOCK_RCVTSTAMP)) {
-		struct __kernel_old_timeval tv =
-			ns_to_kernel_old_timeval(inc->i_usercopy.rx_tstamp);
+		struct timespec64 ts =
+			ns_to_timespec64(inc->i_usercopy.rx_tstamp);
 
 		if (!sock_flag(rds_rs_to_sk(rs), SOCK_TSTAMP_NEW)) {
+#ifdef CONFIG_COMPAT_32BIT_TIME
+			struct old_timeval32 tv = {
+				.tv_sec  = ts.tv_sec,
+				.tv_usec = ts.tv_nsec / NSEC_PER_USEC,
+			};
+
 			ret = put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMP_OLD,
 				       sizeof(tv), &tv);
+#else
+			ret = -EINVAL;
+			goto out;
+#endif
 		} else {
-			struct __kernel_sock_timeval sk_tv;
-
-			sk_tv.tv_sec = tv.tv_sec;
-			sk_tv.tv_usec = tv.tv_usec;
+			struct __kernel_sock_timeval sk_tv = {
+				.tv_sec  = ts.tv_sec,
+				.tv_usec = ts.tv_nsec / NSEC_PER_USEC,
+			};
 
 			ret = put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMP_NEW,
 				       sizeof(sk_tv), &sk_tv);
