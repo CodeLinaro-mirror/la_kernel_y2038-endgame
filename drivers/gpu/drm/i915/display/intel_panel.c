@@ -1254,7 +1254,7 @@ void intel_panel_enable_backlight(const struct intel_crtc_state *crtc_state,
 	mutex_unlock(&dev_priv->backlight_lock);
 }
 
-#if IS_ENABLED(CONFIG_BACKLIGHT_CLASS_DEVICE)
+#if IS_ENABLED(CONFIG_DRM_I915_BACKLIGHT)
 static u32 intel_panel_get_backlight(struct intel_connector *connector)
 {
 	struct drm_i915_private *dev_priv = to_i915(connector->base.dev);
@@ -1431,7 +1431,7 @@ void intel_backlight_device_unregister(struct intel_connector *connector)
 		panel->backlight.device = NULL;
 	}
 }
-#endif /* CONFIG_BACKLIGHT_CLASS_DEVICE */
+#endif /* CONFIG_DRM_I915_BACKLIGHT */
 
 /*
  * CNP: PWM clock frequency is 19.2 MHz or 24 MHz.
