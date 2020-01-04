@@ -435,6 +435,32 @@ COND_SYSCALL_COMPAT(ppoll_time32);
 COND_SYSCALL(utimensat_time32);
 COND_SYSCALL(clock_adjtime32);
 
+COND_SYSCALL(gettimeofday);
+COND_SYSCALL(settimeofday);
+COND_SYSCALL_COMPAT(gettimeofday);
+COND_SYSCALL_COMPAT(settimeofday);
+
+COND_SYSCALL(old_select);
+COND_SYSCALL(select);
+COND_SYSCALL_COMPAT(old_select);
+COND_SYSCALL_COMPAT(select);
+
+COND_SYSCALL(stat);
+COND_SYSCALL(lstat);
+COND_SYSCALL(fstat);
+COND_SYSCALL(newstat);
+COND_SYSCALL(newlstat);
+COND_SYSCALL(newfstat);
+COND_SYSCALL(newfstatat);
+COND_SYSCALL(stat64);
+COND_SYSCALL(lstat64);
+COND_SYSCALL(fstat64);
+COND_SYSCALL(fstatat64);
+COND_SYSCALL_COMPAT(newstat);
+COND_SYSCALL_COMPAT(newlstat);
+COND_SYSCALL_COMPAT(newfstat);
+COND_SYSCALL_COMPAT(newfstatat);
+
 /*
  * The syscalls below are not found in include/uapi/asm-generic/unistd.h
  */

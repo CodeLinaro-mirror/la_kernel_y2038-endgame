@@ -651,6 +651,7 @@ SYSCALL_DEFINE3(old_msgctl, int, msqid, int, cmd, struct msqid_ds __user *, buf)
 
 #ifdef CONFIG_COMPAT
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 struct compat_msqid_ds {
 	struct compat_ipc_perm msg_perm;
 	compat_uptr_t msg_first;
@@ -666,6 +667,7 @@ struct compat_msqid_ds {
 	compat_ipc_pid_t msg_lspid;
 	compat_ipc_pid_t msg_lrpid;
 };
+#endif
 
 static int copy_compat_msqid_from_user(struct msqid64_ds *out, void __user *buf,
 					int version)
@@ -678,11 +680,15 @@ static int copy_compat_msqid_from_user(struct msqid64_ds *out, void __user *buf,
 		if (get_user(out->msg_qbytes, &p->msg_qbytes))
 			return -EFAULT;
 	} else {
+#ifdef CONFIG_COMPAT_32BIT_TIME
 		struct compat_msqid_ds __user *p = buf;
 		if (get_compat_ipc_perm(&out->msg_perm, &p->msg_perm))
 			return -EFAULT;
 		if (get_user(out->msg_qbytes, &p->msg_qbytes))
 			return -EFAULT;
+#else
+		return -ENOSYS;
+#endif
 	}
 	return 0;
 }
@@ -705,8 +711,9 @@ static int copy_compat_msqid_to_user(void __user *buf, struct msqid64_ds *in,
 		v.msg_qbytes = in->msg_qbytes;
 		v.msg_lspid = in->msg_lspid;
 		v.msg_lrpid = in->msg_lrpid;
-		return copy_to_user(buf, &v, sizeof(v));
+		return copy_to_user(buf, &v, sizeof(v)) ?: 0;
 	} else {
+#ifdef CONFIG_COMPAT_32BIT_TIME
 		struct compat_msqid_ds v;
 		memset(&v, 0, sizeof(v));
 		to_compat_ipc_perm(&v.msg_perm, &in->msg_perm);
@@ -718,7 +725,10 @@ static int copy_compat_msqid_to_user(void __user *buf, struct msqid64_ds *in,
 		v.msg_qbytes = in->msg_qbytes;
 		v.msg_lspid = in->msg_lspid;
 		v.msg_lrpid = in->msg_lrpid;
-		return copy_to_user(buf, &v, sizeof(v));
+		return copy_to_user(buf, &v, sizeof(v)) ?: 0;
+#else
+		return -ENOSYS;
+#endif
 	}
 }
 
@@ -750,12 +760,11 @@ static long compat_ksys_msgctl(int msqid, int cmd, void __user *uptr, int versio
 		err = msgctl_stat(ns, msqid, cmd, &msqid64);
 		if (err < 0)
 			return err;
-		if (copy_compat_msqid_to_user(uptr, &msqid64, version))
-			err = -EFAULT;
-		return err;
+		return copy_compat_msqid_to_user(uptr, &msqid64, version);
 	case IPC_SET:
-		if (copy_compat_msqid_from_user(&msqid64, uptr, version))
-			return -EFAULT;
+		err = copy_compat_msqid_from_user(&msqid64, uptr, version);
+		if (err < 0)
+			return err;
 		return msgctl_down(ns, msqid, cmd, &msqid64.msg_perm, msqid64.msg_qbytes);
 	case IPC_RMID:
 		return msgctl_down(ns, msqid, cmd, NULL, 0);

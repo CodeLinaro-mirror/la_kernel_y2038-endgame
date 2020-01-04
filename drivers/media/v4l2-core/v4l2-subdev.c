@@ -428,6 +428,7 @@ static long subdev_do_ioctl(struct file *file, unsigned int cmd, void *arg)
 
 		return v4l2_event_dequeue(vfh, arg, file->f_flags & O_NONBLOCK);
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	case VIDIOC_DQEVENT_TIME32: {
 		struct v4l2_event_time32 *ev32 = arg;
 		struct v4l2_event ev = { };
@@ -451,6 +452,7 @@ static long subdev_do_ioctl(struct file *file, unsigned int cmd, void *arg)
 
 		return rval;
 	}
+#endif
 
 	case VIDIOC_SUBSCRIBE_EVENT:
 		return v4l2_subdev_call(sd, core, subscribe_event, vfh, arg);

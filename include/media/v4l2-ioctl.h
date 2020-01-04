@@ -735,6 +735,8 @@ long int video_usercopy(struct file *file, unsigned int cmd,
 long int video_ioctl2(struct file *file,
 		      unsigned int cmd, unsigned long int arg);
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
+
 /*
  * The user space interpretation of the 'v4l2_event' differs
  * based on the 'time_t' definition on 32-bit architectures, so
@@ -789,5 +791,6 @@ struct v4l2_buffer_time32 {
 #define VIDIOC_QBUF_TIME32	_IOWR('V', 15, struct v4l2_buffer_time32)
 #define VIDIOC_DQBUF_TIME32	_IOWR('V', 17, struct v4l2_buffer_time32)
 #define VIDIOC_PREPARE_BUF_TIME32 _IOWR('V', 93, struct v4l2_buffer_time32)
+#endif
 
 #endif /* _V4L2_IOCTL_H */
