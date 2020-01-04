@@ -328,7 +328,9 @@ asmlinkage long sys_oabi_semtimedop(int semid,
 				    const struct old_timespec32 __user *timeout)
 {
 	struct sembuf *sops;
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	struct old_timespec32 local_timeout;
+#endif
 	long err;
 	int i;
 
@@ -349,9 +351,14 @@ asmlinkage long sys_oabi_semtimedop(int semid,
 		tsops++;
 	}
 	if (timeout) {
+#ifdef CONFIG_COMPAT_32BIT_TIME
 		/* copy this as well before changing domain protection */
 		err |= copy_from_user(&local_timeout, timeout, sizeof(*timeout));
 		timeout = &local_timeout;
+#else
+	kfree(sops);
+	return -ENOSYS;
+#endif
 	}
 	if (err) {
 		err = -EFAULT;
@@ -379,11 +386,13 @@ asmlinkage int sys_oabi_ipc(uint call, int first, int second, int third,
 		return  sys_oabi_semtimedop(first,
 					    (struct oabi_sembuf __user *)ptr,
 					    second, NULL);
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	case SEMTIMEDOP:
 		return  sys_oabi_semtimedop(first,
 					    (struct oabi_sembuf __user *)ptr,
 					    second,
 					    (const struct old_timespec32 __user *)fifth);
+#endif
 	default:
 		return sys_ipc(call, first, second, third, ptr, fifth);
 	}

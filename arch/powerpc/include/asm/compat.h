@@ -28,6 +28,7 @@ typedef u16		compat_ipc_pid_t;
 typedef u32		compat_caddr_t;
 typedef __kernel_fsid_t	compat_fsid_t;
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 struct compat_stat {
 	compat_dev_t	st_dev;
 	compat_ino_t	st_ino;
@@ -47,6 +48,7 @@ struct compat_stat {
 	u32		st_ctime_nsec;
 	u32		__unused4[2];
 };
+#endif
 
 struct compat_flock {
 	short		l_type;

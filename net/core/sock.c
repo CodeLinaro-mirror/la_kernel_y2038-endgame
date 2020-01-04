@@ -345,13 +345,21 @@ static int sock_get_timeout(long timeo, void *optval, bool old_timeval)
 	}
 
 	if (old_timeval && in_compat_syscall() && !COMPAT_USE_64BIT_TIME) {
+#ifdef CONFIG_COMPAT_32BIT_TIME
 		struct old_timeval32 tv32 = { tv.tv_sec, tv.tv_usec };
 		*(struct old_timeval32 *)optval = tv32;
 		return sizeof(tv32);
+#else
+		return -ENOPROTOOPT;
+#endif
 	}
 
 	if (old_timeval) {
 		struct __kernel_old_timeval old_tv;
+
+		if (!have_time32())
+			return -ENOPROTOOPT;
+
 		old_tv.tv_sec = tv.tv_sec;
 		old_tv.tv_usec = tv.tv_usec;
 		*(struct __kernel_old_timeval *)optval = old_tv;
@@ -368,6 +376,7 @@ static int sock_set_timeout(long *timeo_p, sockptr_t optval, int optlen,
 	struct __kernel_sock_timeval tv;
 
 	if (old_timeval && in_compat_syscall() && !COMPAT_USE_64BIT_TIME) {
+#ifdef CONFIG_COMPAT_32BIT_TIME
 		struct old_timeval32 tv32;
 
 		if (optlen < sizeof(tv32))
@@ -377,8 +386,14 @@ static int sock_set_timeout(long *timeo_p, sockptr_t optval, int optlen,
 			return -EFAULT;
 		tv.tv_sec = tv32.tv_sec;
 		tv.tv_usec = tv32.tv_usec;
+#else
+		return -ENOPROTOOPT;
+#endif
 	} else if (old_timeval) {
 		struct __kernel_old_timeval old_tv;
+
+		if (!have_time32())
+			return -ENOPROTOOPT;
 
 		if (optlen < sizeof(old_tv))
 			return -EINVAL;
@@ -989,14 +1004,16 @@ set_sndbuf:
 			clear_bit(SOCK_PASSCRED, &sock->flags);
 		break;
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	case SO_TIMESTAMP_OLD:
 		__sock_set_timestamps(sk, valbool, false, false);
 		break;
-	case SO_TIMESTAMP_NEW:
-		__sock_set_timestamps(sk, valbool, true, false);
-		break;
 	case SO_TIMESTAMPNS_OLD:
 		__sock_set_timestamps(sk, valbool, false, true);
+		break;
+#endif
+	case SO_TIMESTAMP_NEW:
+		__sock_set_timestamps(sk, valbool, true, false);
 		break;
 	case SO_TIMESTAMPNS_NEW:
 		__sock_set_timestamps(sk, valbool, true, true);
@@ -1308,7 +1325,9 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
 		u64 val64;
 		unsigned long ulval;
 		struct linger ling;
+#ifdef CONFIG_COMPAT_32BIT_TIME
 		struct old_timeval32 tm32;
+#endif
 		struct __kernel_old_timeval tm;
 		struct  __kernel_sock_timeval stm;
 		struct sock_txtime txtime;
@@ -1396,6 +1415,7 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
 	case SO_BSDCOMPAT:
 		break;
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 	case SO_TIMESTAMP_OLD:
 		v.val = sock_flag(sk, SOCK_RCVTSTAMP) &&
 				!sock_flag(sk, SOCK_TSTAMP_NEW) &&
@@ -1405,6 +1425,7 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
 	case SO_TIMESTAMPNS_OLD:
 		v.val = sock_flag(sk, SOCK_RCVTSTAMPNS) && !sock_flag(sk, SOCK_TSTAMP_NEW);
 		break;
+#endif
 
 	case SO_TIMESTAMP_NEW:
 		v.val = sock_flag(sk, SOCK_RCVTSTAMP) && sock_flag(sk, SOCK_TSTAMP_NEW);

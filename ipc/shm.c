@@ -1212,6 +1212,7 @@ SYSCALL_DEFINE3(old_shmctl, int, shmid, int, cmd, struct shmid_ds __user *, buf)
 
 #ifdef CONFIG_COMPAT
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 struct compat_shmid_ds {
 	struct compat_ipc_perm shm_perm;
 	int shm_segsz;
@@ -1225,6 +1226,7 @@ struct compat_shmid_ds {
 	compat_uptr_t shm_unused2;
 	compat_uptr_t shm_unused3;
 };
+#endif
 
 struct compat_shminfo64 {
 	compat_ulong_t shmmax;
@@ -1304,6 +1306,7 @@ static int copy_compat_shmid_to_user(void __user *buf, struct shmid64_ds *in,
 		v.shm_lpid = in->shm_lpid;
 		return copy_to_user(buf, &v, sizeof(v));
 	} else {
+#ifdef CONFIG_COMPAT_32BIT_TIME
 		struct compat_shmid_ds v;
 		memset(&v, 0, sizeof(v));
 		to_compat_ipc_perm(&v.shm_perm, &in->shm_perm);
@@ -1316,6 +1319,9 @@ static int copy_compat_shmid_to_user(void __user *buf, struct shmid64_ds *in,
 		v.shm_cpid = in->shm_cpid;
 		v.shm_lpid = in->shm_lpid;
 		return copy_to_user(buf, &v, sizeof(v));
+#else
+		return -ENOSYS;
+#endif
 	}
 }
 
@@ -1327,8 +1333,11 @@ static int copy_compat_shmid_from_user(struct shmid64_ds *out, void __user *buf,
 		struct compat_shmid64_ds __user *p = buf;
 		return get_compat_ipc64_perm(&out->shm_perm, &p->shm_perm);
 	} else {
+#ifdef CONFIG_COMPAT_32BIT_TIME
 		struct compat_shmid_ds __user *p = buf;
 		return get_compat_ipc_perm(&out->shm_perm, &p->shm_perm);
+#endif
+		return -ENOSYS;
 	}
 }
 
@@ -1368,13 +1377,15 @@ static long compat_ksys_shmctl(int shmid, int cmd, void __user *uptr, int versio
 		err = shmctl_stat(ns, shmid, cmd, &sem64);
 		if (err < 0)
 			return err;
-		if (copy_compat_shmid_to_user(uptr, &sem64, version))
-			err = -EFAULT;
-		return err;
+		err = copy_compat_shmid_to_user(uptr, &sem64, version);
+		if (err < 0)
+			return err;
+		return 0;
 
 	case IPC_SET:
-		if (copy_compat_shmid_from_user(&sem64, uptr, version))
-			return -EFAULT;
+		err = copy_compat_shmid_from_user(&sem64, uptr, version);
+		if (err < 0)
+			return err;
 		fallthrough;
 	case IPC_RMID:
 		return shmctl_down(ns, shmid, cmd, &sem64);

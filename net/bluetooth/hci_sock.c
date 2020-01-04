@@ -1407,8 +1407,9 @@ static void hci_sock_cmsg(struct sock *sk, struct msghdr *msg,
 			 &incoming);
 	}
 
+#if defined(CONFIG_64BIT) || defined(CONFIG_COMPAT_32BIT_TIME)
 	if (mask & HCI_CMSG_TSTAMP) {
-#ifdef CONFIG_COMPAT
+#ifdef CONFIG_COMPAT_32BIT_TIME
 		struct old_timeval32 ctv;
 #endif
 		struct __kernel_old_timeval tv;
@@ -1419,7 +1420,7 @@ static void hci_sock_cmsg(struct sock *sk, struct msghdr *msg,
 
 		data = &tv;
 		len = sizeof(tv);
-#ifdef CONFIG_COMPAT
+#ifdef CONFIG_COMPAT_32BIT_TIME
 		if (!COMPAT_USE_64BIT_TIME &&
 		    (msg->msg_flags & MSG_CMSG_COMPAT)) {
 			ctv.tv_sec = tv.tv_sec;
@@ -1431,6 +1432,7 @@ static void hci_sock_cmsg(struct sock *sk, struct msghdr *msg,
 
 		put_cmsg(msg, SOL_HCI, HCI_CMSG_TSTAMP, len, data);
 	}
+#endif
 }
 
 static int hci_sock_recvmsg(struct socket *sock, struct msghdr *msg,

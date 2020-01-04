@@ -53,6 +53,7 @@ static __always_inline long clock_gettime_fallback(
 	return ret;
 }
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 static __always_inline long clock_gettime32_fallback(
 					clockid_t _clkid,
 					struct old_timespec32 *_ts)
@@ -70,6 +71,7 @@ static __always_inline long clock_gettime32_fallback(
 
 	return ret;
 }
+#endif
 
 static __always_inline int clock_getres_fallback(
 					clockid_t _clkid,
@@ -89,6 +91,7 @@ static __always_inline int clock_getres_fallback(
 	return ret;
 }
 
+#ifdef CONFIG_COMPAT_32BIT_TIME
 static __always_inline int clock_getres32_fallback(
 					clockid_t _clkid,
 					struct old_timespec32 *_ts)
@@ -106,6 +109,7 @@ static __always_inline int clock_getres32_fallback(
 
 	return ret;
 }
+#endif
 
 static inline bool arm_vdso_hres_capable(void)
 {
