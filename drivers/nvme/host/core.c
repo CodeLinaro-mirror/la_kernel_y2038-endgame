@@ -819,14 +819,15 @@ int __nvme_submit_sync_cmd(struct request_queue *q, struct nvme_command *cmd,
 	int ret;
 
 	req = nvme_alloc_request(q, cmd, flags, qid);
-	if (IS_ERR(req))
-		return PTR_ERR(req);
+	ret = PTR_ERR_OR_ZERO(req);
+	if (ret < 0)
+		return ret;
 
 	req->timeout = timeout ? timeout : ADMIN_TIMEOUT;
 
 	if (buffer && bufflen) {
 		ret = blk_rq_map_kern(q, req, buffer, bufflen, GFP_KERNEL);
-		if (ret)
+		if (ret < 0)
 			goto out;
 	}
 
