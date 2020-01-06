@@ -330,7 +330,7 @@ static void atp_reinit(struct work_struct *work)
 			retval);
 }
 
-static int atp_calculate_abs(struct atp *dev, int offset, int nb_sensors,
+static noinline int atp_calculate_abs(struct atp *dev, int offset, int nb_sensors,
 			     int fact, int *z, int *fingers)
 {
 	int i, pass;
