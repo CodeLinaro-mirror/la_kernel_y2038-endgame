@@ -3187,9 +3187,10 @@ void unfix_nodes(struct tree_balance *);
 
 /* prints.c */
 void __reiserfs_panic(struct super_block *s, const char *id,
-		      const char *function, const char *fmt, ...);
+		      const char *function, const char *fmt, ...)
+    __attribute__ ((noreturn));
 #define reiserfs_panic(s, id, fmt, args...) \
-	do { __reiserfs_panic(s, id, __func__, fmt, ##args); BUG(); } while (0)
+	__reiserfs_panic(s, id, __func__, fmt, ##args)
 void __reiserfs_error(struct super_block *s, const char *id,
 		      const char *function, const char *fmt, ...);
 #define reiserfs_error(s, id, fmt, args...) \
