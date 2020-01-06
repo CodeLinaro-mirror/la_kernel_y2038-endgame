@@ -600,7 +600,7 @@ static long omap1_round_ext_clk_rate(struct clk_hw *clk_hw, unsigned long rate, 
 	return 96000000 / calc_ext_dsor(rate);
 }
 
-static void omap1_init_ext_clk(struct clk_hw *clk_hw)
+static int omap1_init_ext_clk(struct clk_hw *clk_hw)
 {
 	struct omap1_clk *clk = to_omap1_clk(clk_hw);
 	unsigned dsor;
@@ -617,6 +617,8 @@ static void omap1_init_ext_clk(struct clk_hw *clk_hw)
 		dsor = ratio_bits + 2;
 
 	clk-> rate = 96000000 / dsor;
+
+	return 0;
 }
 
 static void omap1_clk_disable(struct clk_hw *clk_hw)
