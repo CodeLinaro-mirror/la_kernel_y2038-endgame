@@ -98,29 +98,10 @@ static void pe_test_uints(struct kunit *test)
 	fwnode_remove_software_node(node);
 }
 
-static void pe_test_uint_arrays(struct kunit *test)
+static void pe_test_uint_array_u8(struct kunit *test, struct fwnode_handle *node)
 {
-	static const u8 a_u8[16] = { 8, 9 };
-	static const u16 a_u16[16] = { 16, 17 };
-	static const u32 a_u32[16] = { 32, 33 };
-	static const u64 a_u64[16] = { 64, 65 };
-	static const struct property_entry entries[] = {
-		PROPERTY_ENTRY_U8_ARRAY("prop-u8", a_u8),
-		PROPERTY_ENTRY_U16_ARRAY("prop-u16", a_u16),
-		PROPERTY_ENTRY_U32_ARRAY("prop-u32", a_u32),
-		PROPERTY_ENTRY_U64_ARRAY("prop-u64", a_u64),
-		{ }
-	};
-
-	struct fwnode_handle *node;
-	u8 val_u8, array_u8[32];
-	u16 val_u16, array_u16[32];
-	u32 val_u32, array_u32[32];
-	u64 val_u64, array_u64[32];
+	u8 val_u8, array_u8[32] = {};
 	int error;
-
-	node = fwnode_create_software_node(entries, NULL);
-	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, node);
 
 	error = fwnode_property_read_u8(node, "prop-u8", &val_u8);
 	KUNIT_EXPECT_EQ(test, error, 0);
@@ -143,6 +124,12 @@ static void pe_test_uint_arrays(struct kunit *test)
 
 	error = fwnode_property_read_u8_array(node, "no-prop-u8", array_u8, 1);
 	KUNIT_EXPECT_NE(test, error, 0);
+}
+
+static void pe_test_uint_array_u16(struct kunit *test, struct fwnode_handle *node)
+{
+	u16 val_u16, array_u16[32] = {};
+	int error;
 
 	error = fwnode_property_read_u16(node, "prop-u16", &val_u16);
 	KUNIT_EXPECT_EQ(test, error, 0);
@@ -165,6 +152,12 @@ static void pe_test_uint_arrays(struct kunit *test)
 
 	error = fwnode_property_read_u16_array(node, "no-prop-u16", array_u16, 1);
 	KUNIT_EXPECT_NE(test, error, 0);
+}
+
+static void pe_test_uint_array_u32(struct kunit *test, struct fwnode_handle *node)
+{
+	u32 val_u32, array_u32[32] = {};
+	int error;
 
 	error = fwnode_property_read_u32(node, "prop-u32", &val_u32);
 	KUNIT_EXPECT_EQ(test, error, 0);
@@ -187,6 +180,12 @@ static void pe_test_uint_arrays(struct kunit *test)
 
 	error = fwnode_property_read_u32_array(node, "no-prop-u32", array_u32, 1);
 	KUNIT_EXPECT_NE(test, error, 0);
+}
+
+static void pe_test_uint_array_u64(struct kunit *test, struct fwnode_handle *node)
+{
+	u64 val_u64, array_u64[32] = {};
+	int error;
 
 	error = fwnode_property_read_u64(node, "prop-u64", &val_u64);
 	KUNIT_EXPECT_EQ(test, error, 0);
@@ -209,6 +208,31 @@ static void pe_test_uint_arrays(struct kunit *test)
 
 	error = fwnode_property_read_u64_array(node, "no-prop-u64", array_u64, 1);
 	KUNIT_EXPECT_NE(test, error, 0);
+}
+
+static void pe_test_uint_arrays(struct kunit *test)
+{
+	static const u8 a_u8[16] = { 8, 9 };
+	static const u16 a_u16[16] = { 16, 17 };
+	static const u32 a_u32[16] = { 32, 33 };
+	static const u64 a_u64[16] = { 64, 65 };
+	const struct property_entry entries[] = {
+		PROPERTY_ENTRY_U8_ARRAY("prop-u8", a_u8),
+		PROPERTY_ENTRY_U16_ARRAY("prop-u16", a_u16),
+		PROPERTY_ENTRY_U32_ARRAY("prop-u32", a_u32),
+		PROPERTY_ENTRY_U64_ARRAY("prop-u64", a_u64),
+		{ }
+	};
+
+	struct fwnode_handle *node;
+
+	node = fwnode_create_software_node(entries, NULL);
+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, node);
+
+	pe_test_uint_array_u8(test, node);
+	pe_test_uint_array_u16(test, node);
+	pe_test_uint_array_u32(test, node);
+	pe_test_uint_array_u64(test, node);
 
 	fwnode_remove_software_node(node);
 }
