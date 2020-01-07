@@ -3128,7 +3128,10 @@ static int video_put_user(void __user *arg, void *parg, unsigned int cmd)
 #ifdef CONFIG_COMPAT_32BIT_TIME
 	case VIDIOC_DQEVENT_TIME32: {
 		struct v4l2_event *ev = parg;
-		struct v4l2_event_time32 ev32 = {
+		struct v4l2_event_time32 ev32;
+
+		memset(&ev32, 0, sizeof(ev32));
+		ev32 = (struct v4l2_event_time32){
 			.type		= ev->type,
 			.pending	= ev->pending,
 			.sequence	= ev->sequence,

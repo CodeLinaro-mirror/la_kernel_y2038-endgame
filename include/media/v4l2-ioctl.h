@@ -735,6 +735,7 @@ long int video_ioctl2(struct file *file,
  */
 struct v4l2_event_time32 {
 	__u32				type;
+	__u8				pad[__alignof(__u64) - __alignof(__u32)];
 	union {
 		struct v4l2_event_vsync		vsync;
 		struct v4l2_event_ctrl		ctrl;
@@ -764,6 +765,7 @@ struct v4l2_buffer_time32 {
 
 	/* memory location */
 	__u32			memory;
+	__u8			pad[__alignof(void *) - __alignof(__u32)];
 	union {
 		__u32           offset;
 		unsigned long   userptr;
