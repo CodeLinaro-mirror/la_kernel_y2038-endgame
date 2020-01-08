@@ -90,11 +90,9 @@ void __kprobes __patch_text_real(void *addr, unsigned int insn, bool remap)
 
 		size = sizeof(u32);
 	} else {
-#ifdef CONFIG_THUMB2_KERNEL
 		if (thumb2)
 			insn = __opcode_to_mem_thumb32(insn);
 		else
-#endif
 			insn = __opcode_to_mem_arm(insn);
 
 		*(u32 *)waddr = insn;
