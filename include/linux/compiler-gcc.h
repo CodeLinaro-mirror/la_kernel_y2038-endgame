@@ -14,6 +14,10 @@
 # error Sorry, your compiler is too old - please upgrade it.
 #endif
 
+#if GCC_VERSION < 40800
+# warning Your compiler is old and may miscompile the kernel due to https://gcc.gnu.org/bugzilla/show_bug.cgi?id=58145 - please upgrade it.
+#endif
+
 /* Optimization barrier */
 
 /* The "volatile" is due to gcc bugs */
