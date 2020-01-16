@@ -6,7 +6,6 @@
 #
 
 lib-y	:= backtrace.o delay.o findbit.o
-lib-y	+= strncpy_from_user.o strnlen_user.o
 lib-y	+= clear_user.o copy_page.o
 lib-y	+= copy_from_user.o copy_to_user.o
 
