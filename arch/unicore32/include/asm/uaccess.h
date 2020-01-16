@@ -11,8 +11,8 @@
 
 #include <asm/memory.h>
 
-#define __strncpy_from_user	__strncpy_from_user
-#define __strnlen_user		__strnlen_user
+#define strncpy_from_user	strncpy_from_user
+#define strnlen_user		strnlen_user
 #define __clear_user		__clear_user
 
 #define __kernel_ok		(uaccess_kernel())
@@ -30,6 +30,27 @@ extern unsigned long __must_check
 __strncpy_from_user(char *to, const char __user *from, unsigned long count);
 extern unsigned long
 __strnlen_user(const char __user *s, long n);
+
+static inline long
+strncpy_from_user(char *dst, const char __user *src, long count)
+{
+	if (!access_ok(src, 1))
+		return -EFAULT;
+	return __strncpy_from_user(dst, src, count);
+}
+
+/*
+ * Unlike strnlen, strnlen_user includes the nul terminator in
+ * its returned count. Callers should check for a returned value
+ * greater than N as an indication the string is too long.
+ */
+static inline long strnlen_user(const char __user *src, long n)
+{
+	if (!access_ok(src, 1))
+		return 0;
+	return __strnlen_user(src, n);
+}
+
 #define INLINE_COPY_FROM_USER
 #define INLINE_COPY_TO_USER
 
