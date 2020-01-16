@@ -26,9 +26,9 @@ extern unsigned long __must_check
 raw_copy_to_user(void __user *to, const void *from, unsigned long n);
 extern unsigned long __must_check
 __clear_user(void __user *addr, unsigned long n);
-extern unsigned long __must_check
+extern long __must_check
 strncpy_from_user(char *to, const char __user *from, unsigned long count);
-extern unsigned long
+extern long
 strnlen_user(const char __user *s, long n);
 
 #define INLINE_COPY_FROM_USER
