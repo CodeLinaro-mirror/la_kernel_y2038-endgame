@@ -189,10 +189,13 @@ static int strncpy_chunk_from_user(unsigned long from, int len, void *arg)
 	return 0;
 }
 
-long __strncpy_from_user(char *dst, const char __user *src, long count)
+long strncpy_from_user(char *dst, const char __user *src, long count)
 {
 	long n;
 	char *ptr = dst;
+
+	if (!access_ok(src, 1))
+		return -EFAULT;
 
 	if (uaccess_kernel()) {
 		strncpy(dst, (__force void *) src, count);
