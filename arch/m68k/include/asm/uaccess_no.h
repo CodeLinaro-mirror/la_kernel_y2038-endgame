@@ -120,29 +120,8 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 #define INLINE_COPY_FROM_USER
 #define INLINE_COPY_TO_USER
 
-/*
- * Copy a null terminated string from userspace.
- */
-
-static inline long
-strncpy_from_user(char *dst, const char *src, long count)
-{
-	char *tmp;
-	strncpy(dst, src, count);
-	for (tmp = dst; *tmp && count > 0; tmp++, count--)
-		;
-	return(tmp - dst); /* DAVIDM should we count a NUL ?  check getname */
-}
-
-/*
- * Return the size of a string (including the ending 0)
- *
- * Return 0 on exception, a value greater than N if too long
- */
-static inline long strnlen_user(const char *src, long n)
-{
-	return(strlen(src) + 1); /* DAVIDM make safer */
-}
+extern long strncpy_from_user(char *dst, const char *src, long count);
+extern long strnlen_user(const char *src, long n);
 
 /*
  * Zero Userspace
