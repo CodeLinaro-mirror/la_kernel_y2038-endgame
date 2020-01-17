@@ -11,8 +11,6 @@
 
 #include <asm/memory.h>
 
-#define strncpy_from_user	strncpy_from_user
-#define strnlen_user		strnlen_user
 #define __clear_user		__clear_user
 
 #define __kernel_ok		(uaccess_kernel())
@@ -26,10 +24,6 @@ extern unsigned long __must_check
 raw_copy_to_user(void __user *to, const void *from, unsigned long n);
 extern unsigned long __must_check
 __clear_user(void __user *addr, unsigned long n);
-extern long __must_check
-strncpy_from_user(char *to, const char __user *from, unsigned long count);
-extern long
-strnlen_user(const char __user *s, long n);
 
 #define INLINE_COPY_FROM_USER
 #define INLINE_COPY_TO_USER
