@@ -1127,6 +1127,7 @@ config SND_SOC_RT5670
 config SND_SOC_RT5677
 	tristate
 	depends on I2C
+	depends on SPI_MASTER
 	select REGMAP_I2C
 	select REGMAP_IRQ
 
