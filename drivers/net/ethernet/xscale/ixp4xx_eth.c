@@ -1442,12 +1442,6 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
 	if (!(port->npe = npe_request(NPE_ID(port->id))))
 		return -EIO;
 
-	port->mem_res = request_mem_region(regs_phys, REGS_SIZE, ndev->name);
-	if (!port->mem_res) {
-		err = -EBUSY;
-		goto err_npe_rel;
-	}
-
 	port->plat = plat;
 	npe_port_tab[NPE_ID(port->id)] = port;
 	memcpy(ndev->dev_addr, plat->hwaddr, ETH_ALEN);
