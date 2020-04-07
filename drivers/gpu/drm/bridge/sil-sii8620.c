@@ -2328,7 +2328,8 @@ static int sii8620_probe(struct i2c_client *client,
 	if (ret)
 		return ret;
 
-	ret = sii8620_extcon_init(ctx);
+	if (IS_REACHABLE(CONFIG_EXTCON))
+		ret = sii8620_extcon_init(ctx);
 	if (ret < 0) {
 		dev_err(ctx->dev, "failed to initialize EXTCON\n");
 		return ret;
@@ -2350,7 +2351,7 @@ static int sii8620_remove(struct i2c_client *client)
 {
 	struct sii8620 *ctx = i2c_get_clientdata(client);
 
-	if (ctx->extcon) {
+	if (IS_REACHABLE(CONFIG_EXTCON) && ctx->extcon) {
 		extcon_unregister_notifier(ctx->extcon, EXTCON_DISP_MHL,
 					   &ctx->extcon_nb);
 		flush_work(&ctx->extcon_wq);
