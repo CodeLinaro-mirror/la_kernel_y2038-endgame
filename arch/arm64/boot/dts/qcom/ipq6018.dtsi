@@ -124,7 +124,7 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges = <0 0 0 0xffffffff>;
-		dma-ranges;
+		dma-ranges = <0 0 0 0xffffffff>;
 		compatible = "simple-bus";
 
 		prng: qrng@e1000 {
