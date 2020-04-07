@@ -264,8 +264,7 @@ static void nvmet_execute_disc_identify(struct nvmet_req *req)
 		min(sizeof(ctrl->subsys->serial), sizeof(id->sn) / 2));
 	memset(id->fr, ' ', sizeof(id->fr));
 	memcpy_and_pad(id->mn, sizeof(id->mn), model, sizeof(model) - 1, ' ');
-	memcpy_and_pad(id->fr, sizeof(id->fr),
-		       UTS_RELEASE, strlen(UTS_RELEASE), ' ');
+//	memcpy_and_pad(id->fr, sizeof(id->fr), UTS_RELEASE, strlen(UTS_RELEASE), ' ');
 
 	/* no limit on data transfer sizes for now */
 	id->mdts = 0;

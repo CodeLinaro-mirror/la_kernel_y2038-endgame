@@ -333,7 +333,8 @@ static void nvmet_id_set_model_number(struct nvme_id_ctrl *id,
 	subsys_model = rcu_dereference(subsys->model);
 	if (subsys_model)
 		model = subsys_model->number;
-	memcpy_and_pad(id->mn, sizeof(id->mn), model, strlen(model), ' ');
+	memcpy_and_pad(id->mn, sizeof(id->mn), model,
+		       strnlen(model, sizeof(id->mn)), ' ');
 	rcu_read_unlock();
 }
 
@@ -357,8 +358,8 @@ static void nvmet_execute_identify_ctrl(struct nvmet_req *req)
 	bin2hex(id->sn, &ctrl->subsys->serial,
 		min(sizeof(ctrl->subsys->serial), sizeof(id->sn) / 2));
 	nvmet_id_set_model_number(id, ctrl->subsys);
-	memcpy_and_pad(id->fr, sizeof(id->fr),
-		       UTS_RELEASE, strlen(UTS_RELEASE), ' ');
+//	memcpy_and_pad(id->fr, sizeof(id->fr), UTS_RELEASE,
+//		       strnlen(UTS_RELEASE, sizeof(id->fr)), ' ');
 
 	id->rab = 6;
 
