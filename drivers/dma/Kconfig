@@ -618,6 +618,7 @@ config TEGRA186_GPC_DMA
 config TEGRA20_APB_DMA
 	tristate "NVIDIA Tegra20 APB DMA support"
 	depends on ARCH_TEGRA || COMPILE_TEST
+	default SOC_TEGRA_FUSE && ARCH_TEGRA_2x_SOC
 	select DMA_ENGINE
 	help
 	  Support for the NVIDIA Tegra20 APB DMA controller driver. The
