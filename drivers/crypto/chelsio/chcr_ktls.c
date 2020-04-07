@@ -221,6 +221,7 @@ static int chcr_ktls_act_open_req(struct sock *sk,
 	return cxgb4_l2t_send(tx_info->netdev, skb, tx_info->l2te);
 }
 
+#if IS_ENABLED(CONFIG_IPV6)
 /*
  * chcr_ktls_act_open_req6: creates TCB entry for ipv6 connection.
  * @sk - tcp socket.
@@ -270,6 +271,7 @@ static int chcr_ktls_act_open_req6(struct sock *sk,
 
 	return cxgb4_l2t_send(tx_info->netdev, skb, tx_info->l2te);
 }
+#endif
 
 /*
  * chcr_setup_connection:  create a TCB entry so that TP will form tcp packets.
@@ -290,12 +292,16 @@ static int chcr_setup_connection(struct sock *sk,
 	tx_info->atid = atid;
 	tx_info->ip_family = sk->sk_family;
 
-	if (sk->sk_family == AF_INET ||
-	    (sk->sk_family == AF_INET6 && !sk->sk_ipv6only &&
-	     ipv6_addr_type(&sk->sk_v6_daddr) == IPV6_ADDR_MAPPED)) {
+	if (sk->sk_family == AF_INET
+#if IS_ENABLED(CONFIG_IPV6)
+	    || (sk->sk_family == AF_INET6 && !sk->sk_ipv6only &&
+	     ipv6_addr_type(&sk->sk_v6_daddr) == IPV6_ADDR_MAPPED)
+#endif
+	    ) {
 		tx_info->ip_family = AF_INET;
 		ret = chcr_ktls_act_open_req(sk, tx_info, atid);
 	} else {
+#if IS_ENABLED(CONFIG_IPV6)
 		tx_info->ip_family = AF_INET6;
 		ret =
 		cxgb4_clip_get(tx_info->netdev,
@@ -304,6 +310,7 @@ static int chcr_setup_connection(struct sock *sk,
 		if (ret)
 			goto out;
 		ret = chcr_ktls_act_open_req6(sk, tx_info, atid);
+#endif
 	}
 
 	/* if return type is NET_XMIT_CN, msg will be sent but delayed, mark ret
@@ -394,11 +401,13 @@ static void chcr_ktls_dev_del(struct net_device *netdev,
 	if (tx_info->l2te)
 		cxgb4_l2t_release(tx_info->l2te);
 
+#if IS_ENABLED(CONFIG_IPV6)
 	/* clear clip entry */
 	if (tx_info->ip_family == AF_INET6)
 		cxgb4_clip_release(netdev,
 				   (const u32 *)&sk->sk_v6_daddr.in6_u.u6_addr8,
 				   1);
+#endif
 
 	/* clear tid */
 	if (tx_info->tid != -1) {
@@ -489,12 +498,17 @@ static int chcr_ktls_dev_add(struct net_device *netdev, struct sock *sk,
 		goto out2;
 
 	/* get peer ip */
-	if (sk->sk_family == AF_INET ||
-	    (sk->sk_family == AF_INET6 && !sk->sk_ipv6only &&
-	     ipv6_addr_type(&sk->sk_v6_daddr) == IPV6_ADDR_MAPPED)) {
+	if (sk->sk_family == AF_INET
+#if IS_ENABLED(CONFIG_IPV6)
+	    || (sk->sk_family == AF_INET6 && !sk->sk_ipv6only &&
+	     ipv6_addr_type(&sk->sk_v6_daddr) == IPV6_ADDR_MAPPED)
+#endif
+	    ) {
 		memcpy(daaddr, &sk->sk_daddr, 4);
 	} else {
+#if IS_ENABLED(CONFIG_IPV6)
 		memcpy(daaddr, sk->sk_v6_daddr.in6_u.u6_addr8, 16);
+#endif
 	}
 
 	/* get the l2t index */
