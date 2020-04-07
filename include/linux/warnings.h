@@ -78,7 +78,7 @@ KBUILD_WARN(0, GCC_4_6, "-Woverflow")
 KBUILD_WARN(0, GCC_4_6, "-Wpacked-bitfield-compat")
 KBUILD_WARN(0, GCC_4_6, "-Wpointer-to-int-cast")
 KBUILD_WARN(1, GCC_4_6, "-Wpragmas")
-KBUILD_WARN(0, GCC_4_6, "-Wpsabi")
+KBUILD_WARN(1, GCC_4_6, "-Wpsabi") /* rare */
 KBUILD_WARN(0, GCC_4_6, "-Wreturn-type")
 KBUILD_WARN(0, GCC_4_6, "-Wsync-nand")
 KBUILD_WARN(0, GCC_4_6, "-Wtrigraphs") /* never */
