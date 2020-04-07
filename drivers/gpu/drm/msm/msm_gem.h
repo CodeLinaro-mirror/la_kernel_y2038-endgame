@@ -374,7 +374,10 @@ static inline bool
 should_dump(struct msm_gem_submit *submit, int idx)
 {
 	extern bool rd_full;
-	return rd_full || (submit->bos[idx].flags & MSM_SUBMIT_BO_DUMP);
+	if (IS_ENABLED(CONFIG_DEBUG_FS) && rd_full)
+		return true;
+
+	return submit->bos[idx].flags & MSM_SUBMIT_BO_DUMP;
 }
 
 #endif /* __MSM_GEM_H__ */
