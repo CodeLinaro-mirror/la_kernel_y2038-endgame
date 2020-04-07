@@ -1091,6 +1091,8 @@
 
 		mbus: dram-controller@1c62000 {
 			compatible = "allwinner,sun50i-a64-mbus";
+			#address-cells = <1>;
+			#size-cells = <1>;
 			reg = <0x01c62000 0x1000>;
 			clocks = <&ccu 112>;
 			#address-cells = <1>;
