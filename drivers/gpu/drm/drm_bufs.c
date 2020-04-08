@@ -152,6 +152,7 @@ static int drm_addmap_core(struct drm_device *dev, resource_size_t offset,
 {
 	struct drm_local_map *map;
 	struct drm_map_list *list;
+	dma_addr_t dma_addr;
 	unsigned long user_token;
 	int ret;
 
@@ -328,8 +329,9 @@ static int drm_addmap_core(struct drm_device *dev, resource_size_t offset,
 		 * need to point to a 64bit variable first. */
 		map->handle = dma_alloc_coherent(dev->dev,
 						 map->size,
-						 &map->offset,
+						 &dma_addr,
 						 GFP_KERNEL);
+		map->offset = (resource_size_t)dma_addr;
 		if (!map->handle) {
 			kfree(map);
 			return -ENOMEM;
