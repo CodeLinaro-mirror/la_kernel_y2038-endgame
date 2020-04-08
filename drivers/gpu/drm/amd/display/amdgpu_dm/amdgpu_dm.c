@@ -51,9 +51,7 @@
 #include "amdgpu_dm_irq.h"
 #include "dm_helpers.h"
 #include "amdgpu_dm_mst_types.h"
-#if defined(CONFIG_DEBUG_FS)
 #include "amdgpu_dm_debugfs.h"
-#endif
 
 #include "ivsrcid/ivsrcid_vislands30.h"
 
@@ -4757,9 +4755,8 @@ amdgpu_dm_connector_late_register(struct drm_connector *connector)
 			return r;
 	}
 
-#if defined(CONFIG_DEBUG_FS)
-	connector_debugfs_init(amdgpu_dm_connector);
-#endif
+	if (IS_ENABLED(CONFIG_DEBUG_FS))
+		connector_debugfs_init(amdgpu_dm_connector);
 
 	return 0;
 }
