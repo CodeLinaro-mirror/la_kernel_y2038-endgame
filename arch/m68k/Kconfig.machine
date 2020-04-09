@@ -137,6 +137,7 @@ config SUN3
 	bool "Sun3 support"
 	depends on MMU
 	depends on !MMU_MOTOROLA
+	select ARCH_MIN_PAGE_SIZE_8KB
 	select MMU_SUN3 if MMU
 	select LEGACY_TIMER_TICK
 	select NO_DMA

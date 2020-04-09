@@ -120,25 +120,17 @@ config NR_CPUS
 	  This is purely to save memory - each supported CPU adds
 	  approximately eight kilobytes to the kernel image.
 
-choice
-	prompt "Kernel page size"
-	default PAGE_SIZE_4KB
-	help
-	  Changes the default page size; use with caution.
+config ARCH_HAVE_PAGE_SIZE_4KB
+	def_bool y
 
-config PAGE_SIZE_4KB
-	bool "4KB"
+config ARCH_HAVE_PAGE_SIZE_16KB
+	def_bool y
 
-config PAGE_SIZE_16KB
-	bool "16KB"
+config ARCH_HAVE_PAGE_SIZE_64KB
+	def_bool y
 
-config PAGE_SIZE_64KB
-	bool "64KB"
-
-config PAGE_SIZE_256KB
-	bool "256KB"
-
-endchoice
+config ARCH_HAVE_PAGE_SIZE_256KB
+	def_bool y
 
 source "kernel/Kconfig.hz"
 
