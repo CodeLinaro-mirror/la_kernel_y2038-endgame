@@ -4,7 +4,6 @@
 #ifndef __CHCR_KTLS_H__
 #define __CHCR_KTLS_H__
 
-#ifdef CONFIG_CHELSIO_TLS_DEVICE
 #include <net/tls.h>
 #include "cxgb4.h"
 #include "t4_msg.h"
@@ -94,5 +93,5 @@ void chcr_disable_ktls(struct adapter *adap);
 int chcr_ktls_cpl_act_open_rpl(struct adapter *adap, unsigned char *input);
 int chcr_ktls_cpl_set_tcb_rpl(struct adapter *adap, unsigned char *input);
 int chcr_ktls_xmit(struct sk_buff *skb, struct net_device *dev);
-#endif /* CONFIG_CHELSIO_TLS_DEVICE */
+
 #endif /* __CHCR_KTLS_H__ */
