@@ -7,7 +7,7 @@
 ccflags-y += -I $(srctree)/$(src)		# needed for trace events
 ccflags-y += -I $(srctree)/$(src)/libxfs
 
-ccflags-$(CONFIG_XFS_DEBUG) += -g $(call cc-option,-gz=none)
+ccflags-$(CONFIG_XFS_DEBUG) += -g
 
 obj-$(CONFIG_XFS_FS)		+= xfs.o
 
