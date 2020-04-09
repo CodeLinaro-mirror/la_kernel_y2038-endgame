@@ -394,6 +394,59 @@ config HAVE_ARCH_JUMP_LABEL
 config HAVE_ARCH_JUMP_LABEL_RELATIVE
 	bool
 
+config ARCH_MIN_PAGE_SIZE_8KB
+	bool
+	help
+	  A few architectures do not support 4KB pages but only 8KB,
+	  these should select ARCH_MIN_PAGE_SIZE_8K for the next
+	  option to work properly.
+
+choice
+	prompt "MMU Page size"
+	default PAGE_SIZE_8KB if ARCH_MIN_PAGE_SIZE_8KB
+	default PAGE_SIZE_4KB
+	help
+	  Page size used by the memory management unit. On most architectures,
+	  the default setting of 4KB or 8KB is the safe choice. Larger page sizes
+	  may help reduce TLB pressure at the cost of wasting significant
+	  amounts of memory.
+
+	config PAGE_SIZE_4KB
+	bool "4KB"
+	depends on !ARCH_MIN_PAGE_SIZE_8KB
+	depends on !(ANDES_PAGE_SIZE_8K || ARC_PAGE_SIZE_8K || IA64_PAGE_SIZE_8K || \
+		ARC_PAGE_SIZE_16K || ARM64_16K_PAGES || IA64_PAGE_SIZE_16K || \
+		PARISC_PAGE_SIZE_16KB || PPC_16K_PAGES || ARM64_64K_PAGES || \
+		IA64_PAGE_SIZE_64K || PARISC_PAGE_SIZE_64KB || PPC_64K_PAGES || \
+		PPC_256K_PAGES)
+
+	config PAGE_SIZE_8KB
+	bool "8KB"
+	depends on ARCH_HAVE_PAGE_SIZE_8KB || ARCH_MIN_PAGE_SIZE_8K || \
+		ANDES_PAGE_SIZE_8K || ARC_PAGE_SIZE_8K || IA64_PAGE_SIZE_8K
+
+	config PAGE_SIZE_16KB
+	bool "16KB"
+	depends on ARCH_HAVE_PAGE_SIZE_16KB || ARC_PAGE_SIZE_16K || \
+		ARM64_16K_PAGES || IA64_PAGE_SIZE_16K || \
+		PARISC_PAGE_SIZE_16KB || PPC_16K_PAGES
+
+	config PAGE_SIZE_32KB
+	bool "32KB"
+	depends on ARCH_HAVE_PAGE_SIZE_32KB
+
+	config PAGE_SIZE_64KB
+	bool "64KB"
+	depends on ARCH_HAVE_PAGE_SIZE_64KB || \
+		ARM64_64K_PAGES || IA64_PAGE_SIZE_64K || \
+		PARISC_PAGE_SIZE_64KB || PPC_64K_PAGES
+
+	config PAGE_SIZE_256KB
+	bool "256KB"
+	depends on ARCH_HAVE_PAGE_SIZE_256KB || PPC_256K_PAGES
+
+endchoice
+
 config MMU_GATHER_TABLE_FREE
 	bool
 
