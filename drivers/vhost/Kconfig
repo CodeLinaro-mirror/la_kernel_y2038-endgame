@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 config VHOST_IOTLB
 	tristate
+	default y if VHOST=m && VHOST_RING=y
 	help
 	  Generic IOTLB implementation for vhost and vringh.
 	  This option is selected by any driver which needs to support
