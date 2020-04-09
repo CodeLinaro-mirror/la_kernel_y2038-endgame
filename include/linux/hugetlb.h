@@ -894,7 +894,7 @@ static inline spinlock_t *huge_pte_lock(struct hstate *h,
 	return ptl;
 }
 
-#if defined(CONFIG_HUGETLB_PAGE) && defined(CONFIG_CMA)
+#if defined(CONFIG_HUGETLB_PAGE) && defined(CONFIG_CMA) && defined(CONFIG_HAVE_MEMBLOCK_NODE_MAP)
 extern void __init hugetlb_cma_reserve(int order);
 extern void __init hugetlb_cma_check(void);
 #else
