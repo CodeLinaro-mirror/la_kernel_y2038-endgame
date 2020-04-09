@@ -709,7 +709,7 @@ static bool ionic_notifyq_service(struct ionic_cq *cq,
 	lif->last_eid = eid;
 
 	dev_dbg(lif->ionic->dev, "notifyq event:\n");
-	dynamic_hex_dump("event ", DUMP_PREFIX_OFFSET, 16, 1,
+	print_hex_dump_debug("event ", DUMP_PREFIX_OFFSET, 16, 1,
 			 comp, sizeof(*comp), true);
 
 	switch (le16_to_cpu(comp->event.ecode)) {
