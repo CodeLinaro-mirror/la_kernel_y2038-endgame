@@ -2213,22 +2213,16 @@ config MIPS_VA_BITS_48
 
 	  If unsure, say N.
 
-choice
-	prompt "Kernel page size"
-	default PAGE_SIZE_4KB
-
-config PAGE_SIZE_4KB
-	bool "4kB"
-	depends on !CPU_LOONGSON2EF && !CPU_LOONGSON64
+config HAVE_PAGE_SIZE_4KB
+	def_bool !CPU_LOONGSON2EF && !CPU_LOONGSON64
 	help
 	  This option select the standard 4kB Linux page size.  On some
 	  R3000-family processors this is the only available page size.  Using
 	  4kB page size will minimize memory consumption and is therefore
 	  recommended for low memory systems.
 
-config PAGE_SIZE_8KB
-	bool "8kB"
-	depends on CPU_CAVIUM_OCTEON
+config ARCH_HAVE_PAGE_SIZE_8KB
+	def_bool CPU_CAVIUM_OCTEON
 	depends on !MIPS_VA_BITS_48
 	help
 	  Using 8kB page size will result in higher performance kernel at
@@ -2236,18 +2230,16 @@ config PAGE_SIZE_8KB
 	  only on cnMIPS processors.  Note that you will need a suitable Linux
 	  distribution to support this.
 
-config PAGE_SIZE_16KB
-	bool "16kB"
-	depends on !CPU_R3000 && !CPU_TX39XX
+config ARCH_HAVE_PAGE_SIZE_16KB
+	def_bool !CPU_R3000 && !CPU_TX39XX
 	help
 	  Using 16kB page size will result in higher performance kernel at
 	  the price of higher memory consumption.  This option is available on
 	  all non-R3000 family processors.  Note that you will need a suitable
 	  Linux distribution to support this.
 
-config PAGE_SIZE_32KB
-	bool "32kB"
-	depends on CPU_CAVIUM_OCTEON
+config ARCH_HAVE_PAGE_SIZE_32KB
+	def_bool CPU_CAVIUM_OCTEON
 	depends on !MIPS_VA_BITS_48
 	help
 	  Using 32kB page size will result in higher performance kernel at
@@ -2255,16 +2247,13 @@ config PAGE_SIZE_32KB
 	  only on cnMIPS cores.  Note that you will need a suitable Linux
 	  distribution to support this.
 
-config PAGE_SIZE_64KB
-	bool "64kB"
-	depends on !CPU_R3000 && !CPU_TX39XX
+config ARCH_HAVE_PAGE_SIZE_64KB
+	def_bool !CPU_R3000 && !CPU_TX39XX
 	help
 	  Using 64kB page size will result in higher performance kernel at
 	  the price of higher memory consumption.  This option is available on
 	  all non-R3000 family processor.  Not that at the time of this
 	  writing this option is still high experimental.
-
-endchoice
 
 config FORCE_MAX_ZONEORDER
 	int "Maximum zone order"
