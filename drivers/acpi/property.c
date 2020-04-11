@@ -587,8 +587,10 @@ static int acpi_data_get_property_array(const struct acpi_device_data *data,
 	int ret, i;
 
 	ret = acpi_data_get_property(data, name, ACPI_TYPE_PACKAGE, &prop);
-	if (ret)
+	if (ret && obj) {
+		*obj = NULL;
 		return ret;
+	}
 
 	if (type != ACPI_TYPE_ANY) {
 		/* Check that all elements are of correct type. */
