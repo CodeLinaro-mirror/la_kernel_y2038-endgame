@@ -365,9 +365,9 @@ void hubp21_validate_dml_output(struct hubp *hubp,
 		struct _vcs_dpi_display_ttu_regs_st *dml_ttu_attr)
 {
 	struct dcn21_hubp *hubp21 = TO_DCN21_HUBP(hubp);
-	struct _vcs_dpi_display_rq_regs_st rq_regs = {0};
-	struct _vcs_dpi_display_dlg_regs_st dlg_attr = {0};
-	struct _vcs_dpi_display_ttu_regs_st ttu_attr = {0};
+	struct _vcs_dpi_display_rq_regs_st rq_regs = { };
+	struct _vcs_dpi_display_dlg_regs_st dlg_attr = { };
+	struct _vcs_dpi_display_ttu_regs_st ttu_attr = { };
 	DC_LOGGER_INIT(ctx->logger);
 	DC_LOG_DEBUG("DML Validation | Running Validation");
 
