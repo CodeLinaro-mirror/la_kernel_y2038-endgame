@@ -9850,7 +9850,7 @@ bool amdgpu_dm_psr_enable(struct dc_stream_state *stream)
 {
 	struct dc_link *link = stream->link;
 	unsigned int vsync_rate_hz = 0;
-	struct dc_static_screen_params params = {0};
+	struct dc_static_screen_params params = { };
 	/* Calculate number of static frames before generating interrupt to
 	 * enter PSR.
 	 */

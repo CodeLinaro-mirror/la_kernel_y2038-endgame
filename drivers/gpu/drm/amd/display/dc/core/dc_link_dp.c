@@ -2818,9 +2818,9 @@ static void dp_test_send_link_test_pattern(struct dc_link *link)
 
 static void dp_test_get_audio_test_data(struct dc_link *link, bool disable_video)
 {
-	union audio_test_mode            dpcd_test_mode = {0};
-	struct audio_test_pattern_type   dpcd_pattern_type = {0};
-	union audio_test_pattern_period  dpcd_pattern_period[AUDIO_CHANNELS_COUNT] = {0};
+	union audio_test_mode            dpcd_test_mode = { };
+	struct audio_test_pattern_type   dpcd_pattern_type = { };
+	union audio_test_pattern_period  dpcd_pattern_period[AUDIO_CHANNELS_COUNT] = { };
 	enum dp_test_pattern test_pattern = DP_TEST_PATTERN_AUDIO_OPERATOR_DEFINED;
 
 	struct pipe_ctx *pipes = link->dc->current_state->res_ctx.pipe_ctx;

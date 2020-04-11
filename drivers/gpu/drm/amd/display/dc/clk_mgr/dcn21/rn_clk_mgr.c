@@ -877,7 +877,7 @@ void rn_clk_mgr_construct(
 		struct dccg *dccg)
 {
 	struct dc_debug_options *debug = &ctx->dc->debug;
-	struct dpm_clocks clock_table = { 0 };
+	struct dpm_clocks clock_table = { };
 	enum pp_smu_status status = 0;
 	int is_green_sardine = 0;
 
