@@ -113,6 +113,13 @@
 #define KBUILD_WARN_LEVEL_GCC_9(level, warning)
 #endif
 
+#if defined(GCC_VERSION) && GCC_VERSION >= 100000
+#define KBUILD_WARN_LEVEL_GCC_10(level, warning) \
+	KBUILD_WARN_LEVEL(level, warning)
+#else
+#define KBUILD_WARN_LEVEL_GCC_10(level, warning)
+#endif
+
 #if defined(__clang__)
 #define KBUILD_WARN_LEVEL(level, warning)  \
 	__KBUILD_WARN_LEVEL(clang diagnostic level warning)
@@ -128,6 +135,20 @@
 	KBUILD_WARN_LEVEL(level, warning)
 #else
 #define KBUILD_WARN_LEVEL_CLANG_9(level, warning)
+#endif
+
+#if defined(CONFIG_CLANG_VERSION) && CONFIG_CLANG_VERSION >= 100000
+#define KBUILD_WARN_LEVEL_CLANG_10(level, warning) \
+	KBUILD_WARN_LEVEL(level, warning)
+#else
+#define KBUILD_WARN_LEVEL_CLANG_10(level, warning)
+#endif
+
+#if defined(CONFIG_CLANG_VERSION) && CONFIG_CLANG_VERSION >= 110000
+#define KBUILD_WARN_LEVEL_CLANG_11(level, warning) \
+	KBUILD_WARN_LEVEL(level, warning)
+#else
+#define KBUILD_WARN_LEVEL_CLANG_11(level, warning)
 #endif
 
 #define KBUILD_WARN(level, ver, warning) \
