@@ -4,6 +4,28 @@
 
 #ifndef __ASSEMBLY__
 
+#ifdef __KERNEL__
+
+/* Attributes */
+#include <linux/compiler_attributes.h>
+
+/* Compiler specific macros. */
+#ifdef __clang__
+#include <linux/compiler-clang.h>
+#elif defined(__INTEL_COMPILER)
+#include <linux/compiler-intel.h>
+#elif defined(__GNUC__)
+/* The above compilers also define __GNUC__, so order is important here. */
+#include <linux/compiler-gcc.h>
+#else
+#error "Unknown compiler"
+#endif
+
+#include <linux/stringify.h>
+#include <linux/compiler-warnings.h>
+
+#endif
+
 #ifdef __CHECKER__
 # define __user		__attribute__((noderef, address_space(1)))
 # define __kernel	__attribute__((address_space(0)))
@@ -54,21 +76,6 @@ extern void __chk_io_ptr(const volatile void __iomem *);
 #define __PASTE(a,b) ___PASTE(a,b)
 
 #ifdef __KERNEL__
-
-/* Attributes */
-#include <linux/compiler_attributes.h>
-
-/* Compiler specific macros. */
-#ifdef __clang__
-#include <linux/compiler-clang.h>
-#elif defined(__INTEL_COMPILER)
-#include <linux/compiler-intel.h>
-#elif defined(__GNUC__)
-/* The above compilers also define __GNUC__, so order is important here. */
-#include <linux/compiler-gcc.h>
-#else
-#error "Unknown compiler"
-#endif
 
 /*
  * Some architectures need to provide custom definitions of macros provided
@@ -231,9 +238,6 @@ struct ftrace_likely_data {
 	__diag_ ## compiler(version, warn, option)
 #define __diag_error(compiler, version, option, comment) \
 	__diag_ ## compiler(version, error, option)
-
-#include <linux/stringify.h>
-#include <linux/compiler-warnings.h>
 
 #endif /* __ASSEMBLY__ */
 
