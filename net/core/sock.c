@@ -1542,11 +1542,15 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
 	case SO_RCVTIMEO_OLD:
 	case SO_RCVTIMEO_NEW:
 		lv = sock_get_timeout(sk->sk_rcvtimeo, &v, SO_RCVTIMEO_OLD == optname);
+		if (lv < 0)
+			return lv;
 		break;
 
 	case SO_SNDTIMEO_OLD:
 	case SO_SNDTIMEO_NEW:
 		lv = sock_get_timeout(sk->sk_sndtimeo, &v, SO_SNDTIMEO_OLD == optname);
+		if (lv < 0)
+			return lv;
 		break;
 
 	case SO_RCVLOWAT:
