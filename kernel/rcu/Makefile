@@ -4,7 +4,7 @@
 KCOV_INSTRUMENT := n
 
 ifeq ($(CONFIG_KCSAN),y)
-ccflags-y += -g -fno-omit-frame-pointer $(call cc-option, -gz=none)
+ccflags-y += -fno-omit-frame-pointer
 endif
 
 obj-y += update.o sync.o
