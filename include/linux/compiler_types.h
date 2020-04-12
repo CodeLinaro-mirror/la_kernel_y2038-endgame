@@ -4,6 +4,28 @@
 
 #ifndef __ASSEMBLY__
 
+#ifdef __KERNEL__
+
+/* Attributes */
+#include <linux/compiler_attributes.h>
+
+/* Compiler specific macros. */
+#ifdef __clang__
+#include <linux/compiler-clang.h>
+#elif defined(__INTEL_COMPILER)
+#include <linux/compiler-intel.h>
+#elif defined(__GNUC__)
+/* The above compilers also define __GNUC__, so order is important here. */
+#include <linux/compiler-gcc.h>
+#else
+#error "Unknown compiler"
+#endif
+
+#include <linux/stringify.h>
+#include <linux/compiler-warnings.h>
+
+#endif
+
 #ifdef __CHECKER__
 /* address spaces */
 # define __kernel	__attribute__((address_space(0)))
@@ -61,9 +83,6 @@ static inline void __chk_io_ptr(const volatile void __iomem *ptr) { }
 
 #ifdef __KERNEL__
 
-/* Attributes */
-#include <linux/compiler_attributes.h>
-
 /* Builtins */
 
 /*
@@ -73,18 +92,6 @@ static inline void __chk_io_ptr(const volatile void __iomem *ptr) { }
  */
 #ifndef __has_builtin
 #define __has_builtin(x) (0)
-#endif
-
-/* Compiler specific macros. */
-#ifdef __clang__
-#include <linux/compiler-clang.h>
-#elif defined(__INTEL_COMPILER)
-#include <linux/compiler-intel.h>
-#elif defined(__GNUC__)
-/* The above compilers also define __GNUC__, so order is important here. */
-#include <linux/compiler-gcc.h>
-#else
-#error "Unknown compiler"
 #endif
 
 /*
@@ -351,9 +358,6 @@ struct ftrace_likely_data {
 	__diag_ ## compiler(version, warn, option)
 #define __diag_error(compiler, version, option, comment) \
 	__diag_ ## compiler(version, error, option)
-
-#include <linux/stringify.h>
-#include <linux/compiler-warnings.h>
 
 #endif /* __ASSEMBLY__ */
 
