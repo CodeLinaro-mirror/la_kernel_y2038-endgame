@@ -38,9 +38,8 @@ config FB_DEVICE
 
 config FB_DDC
 	tristate
-	depends on FB
+	depends on FB && I2C
 	select I2C_ALGOBIT
-	select I2C
 
 config FB_CFB_FILLRECT
 	tristate
