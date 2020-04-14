@@ -4,6 +4,7 @@ menuconfig FB_TFT
 	depends on FB && SPI
 	depends on FB_DEVICE
 	depends on GPIOLIB || COMPILE_TEST
+	depends on BACKLIGHT_CLASS_DEVICE
 	select FB_BACKLIGHT
 	select FB_SYSMEM_HELPERS_DEFERRED
 
