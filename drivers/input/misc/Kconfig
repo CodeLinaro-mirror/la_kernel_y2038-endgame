@@ -332,9 +332,8 @@ config INPUT_CPCAP_PWRBUTTON
 config INPUT_WISTRON_BTNS
 	tristate "x86 Wistron laptop button interface"
 	depends on X86_32
+	depends on LEDS_CLASS
 	select INPUT_SPARSEKMAP
-	select NEW_LEDS
-	select LEDS_CLASS
 	select CHECK_SIGNATURE
 	help
 	  Say Y here for support of Wistron laptop button interfaces, used on

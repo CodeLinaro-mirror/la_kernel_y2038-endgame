@@ -315,9 +315,7 @@ config BACKLIGHT_ADP5520
 
 config BACKLIGHT_ADP8860
 	tristate "Backlight Driver for ADP8860/ADP8861/ADP8863 using WLED"
-	depends on I2C
-	select NEW_LEDS
-	select LEDS_CLASS
+	depends on I2C && LEDS_CLASS
 	help
 	  If you have a LCD backlight connected to the ADP8860, ADP8861 or
 	  ADP8863 say Y here to enable this driver.
@@ -327,9 +325,7 @@ config BACKLIGHT_ADP8860
 
 config BACKLIGHT_ADP8870
 	tristate "Backlight Driver for ADP8870 using WLED"
-	depends on I2C
-	select NEW_LEDS
-	select LEDS_CLASS
+	depends on I2C && LEDS_CLASS
 	help
 	  If you have a LCD backlight connected to the ADP8870,
 	  say Y here to enable this driver.
@@ -366,10 +362,8 @@ config BACKLIGHT_LM3630A
 
 config BACKLIGHT_LM3639
 	tristate "Backlight Driver for LM3639"
-	depends on I2C
+	depends on I2C && LEDS_CLASS
 	select REGMAP_I2C
-	select NEW_LEDS
-	select LEDS_CLASS
 	help
 	  This supports TI LM3639 Backlight + 1.5A Flash LED Driver
 

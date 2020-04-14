@@ -1,15 +1,15 @@
 # SPDX-License-Identifier: GPL-2.0-only
 config IWLEGACY
 	tristate
+	depends on LEDS_CLASS
 	select FW_LOADER
-	select NEW_LEDS
-	select LEDS_CLASS
 	select LEDS_TRIGGERS
 	select MAC80211_LEDS
 
 config IWL4965
 	tristate "Intel Wireless WiFi 4965AGN (iwl4965)"
 	depends on PCI && MAC80211
+	depends on LEDS_CLASS
 	select IWLEGACY
 	help
 	  This option enables support for
@@ -38,6 +38,7 @@ config IWL4965
 config IWL3945
 	tristate "Intel PRO/Wireless 3945ABG/BG Network Connection (iwl3945)"
 	depends on PCI && MAC80211
+	depends on LEDS_CLASS
 	select IWLEGACY
 	help
 	  Select to build the driver supporting the:
