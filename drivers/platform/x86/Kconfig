@@ -283,7 +283,7 @@ config EEEPC_LAPTOP
 	depends on ACPI_VIDEO || ACPI_VIDEO = n
 	depends on HOTPLUG_PCI
 	depends on BACKLIGHT_CLASS_DEVICE
-	select HWMON
+	depends on HWMON
 	depends on LEDS_CLASS
 	select INPUT_SPARSEKMAP
 	help
@@ -476,7 +476,7 @@ config THINKPAD_ACPI
 	depends on ACPI_VIDEO || ACPI_VIDEO = n
 	depends on BACKLIGHT_CLASS_DEVICE
 	select ACPI_PLATFORM_PROFILE
-	select HWMON
+	depends on HWMON
 	depends on LEDS_CLASS
 	select NVRAM
 	select LEDS_TRIGGERS
