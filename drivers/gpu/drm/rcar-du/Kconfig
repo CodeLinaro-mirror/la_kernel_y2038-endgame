@@ -4,6 +4,7 @@ config DRM_RCAR_DU
 	depends on DRM && OF
 	depends on ARM || ARM64
 	depends on ARCH_RENESAS || COMPILE_TEST
+	imply DRM_RCAR_LVDS
 	select DRM_KMS_HELPER
 	select DRM_KMS_CMA_HELPER
 	select DRM_GEM_CMA_HELPER
@@ -26,7 +27,7 @@ config DRM_RCAR_DW_HDMI
 	  Enable support for R-Car Gen3 or RZ/G2 internal HDMI encoder.
 
 config DRM_RCAR_LVDS
-	def_tristate DRM_RCAR_DU
+	tristate "R-Car DU LVDS Encoder Support"
 	depends on DRM && DRM_BRIDGE && OF
 	select DRM_KMS_HELPER
 	select DRM_PANEL
