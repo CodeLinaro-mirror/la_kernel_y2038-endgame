@@ -30,8 +30,9 @@ config SND_USB_PODHD
 
 config SND_USB_TONEPORT
 	tristate "TonePort GX, UX1 and UX2 USB support"
-	depends on LEDS_CLASS
 	select SND_USB_LINE6
+	select NEW_LEDS
+	select LEDS_CLASS
 	help
 	  This is a driver for TonePort GX, UX1 and UX2 devices.
 
