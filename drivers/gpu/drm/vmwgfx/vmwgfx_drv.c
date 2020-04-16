@@ -256,7 +256,6 @@ static const struct pci_device_id vmw_pci_id_list[] = {
 };
 MODULE_DEVICE_TABLE(pci, vmw_pci_id_list);
 
-static int enable_fbdev = IS_ENABLED(CONFIG_DRM_VMWGFX_FBCON);
 static int vmw_force_iommu;
 static int vmw_restrict_iommu;
 static int vmw_force_coherent;
@@ -267,8 +266,21 @@ static int vmw_probe(struct pci_dev *, const struct pci_device_id *);
 static int vmwgfx_pm_notifier(struct notifier_block *nb, unsigned long val,
 			      void *ptr);
 
+#ifdef CONFIG_DRM_VMWGFX_FBCON
+static int enable_fbdev = 1;
 MODULE_PARM_DESC(enable_fbdev, "Enable vmwgfx fbdev");
 module_param_named(enable_fbdev, enable_fbdev, int, 0600);
+static inline bool vmw_fb_enabled(struct vmw_private *dev_priv)
+{
+	return dev_priv->enable_fb;
+}
+#else
+#define enable_fbdev 0
+static inline bool vmw_fb_enabled(struct vmw_private *dev_priv)
+{
+	return false;
+}
+#endif
 MODULE_PARM_DESC(force_dma_api, "Force using the DMA API for TTM pages");
 module_param_named(force_dma_api, vmw_force_iommu, int, 0600);
 MODULE_PARM_DESC(restrict_iommu, "Try to limit IOMMU usage for TTM pages");
@@ -743,7 +755,6 @@ static int vmw_driver_load(struct vmw_private *dev_priv, u32 pci_id)
 	dev_priv->used_memory_size = 0;
 
 	dev_priv->assume_16bpp = !!vmw_assume_16bpp;
-
 	dev_priv->enable_fb = enable_fbdev;
 
 
@@ -986,7 +997,7 @@ static int vmw_driver_load(struct vmw_private *dev_priv, u32 pci_id)
 		VMWGFX_DRIVER_PATCHLEVEL);
 	vmw_host_log(host_log);
 
-	if (dev_priv->enable_fb) {
+	if (vmw_fb_enabled(dev_priv)) {
 		vmw_fifo_resource_inc(dev_priv);
 		vmw_svga_enable(dev_priv);
 		vmw_fb_init(dev_priv);
@@ -1037,7 +1048,7 @@ static void vmw_driver_unload(struct drm_device *dev)
 	if (dev_priv->ctx.res_ht_initialized)
 		drm_ht_remove(&dev_priv->ctx.res_ht);
 	vfree(dev_priv->ctx.cmd_bounce);
-	if (dev_priv->enable_fb) {
+	if (vmw_fb_enabled(dev_priv)) {
 		vmw_fb_off(dev_priv);
 		vmw_fb_close(dev_priv);
 		vmw_fifo_resource_dec(dev_priv);
@@ -1178,7 +1189,7 @@ static void vmw_master_drop(struct drm_device *dev,
 	struct vmw_private *dev_priv = vmw_priv(dev);
 
 	vmw_kms_legacy_hotspot_clear(dev_priv);
-	if (!dev_priv->enable_fb)
+	if (vmw_fb_enabled(dev_priv))
 		vmw_svga_disable(dev_priv);
 }
 
@@ -1376,7 +1387,7 @@ static int vmw_pm_freeze(struct device *kdev)
 		DRM_ERROR("Failed to freeze modesetting.\n");
 		return ret;
 	}
-	if (dev_priv->enable_fb)
+	if (vmw_fb_enabled(dev_priv))
 		vmw_fb_off(dev_priv);
 
 	ttm_suspend_lock(&dev_priv->reservation_sem);
@@ -1384,18 +1395,18 @@ static int vmw_pm_freeze(struct device *kdev)
 	vmw_resource_evict_all(dev_priv);
 	vmw_release_device_early(dev_priv);
 	while (ttm_bo_swapout(&ctx) == 0);
-	if (dev_priv->enable_fb)
+	if (vmw_fb_enabled(dev_priv))
 		vmw_fifo_resource_dec(dev_priv);
 	if (atomic_read(&dev_priv->num_fifo_resources) != 0) {
 		DRM_ERROR("Can't hibernate while 3D resources are active.\n");
-		if (dev_priv->enable_fb)
+		if (vmw_fb_enabled(dev_priv))
 			vmw_fifo_resource_inc(dev_priv);
 		WARN_ON(vmw_request_device_late(dev_priv));
 		dev_priv->suspend_locked = false;
 		ttm_suspend_unlock(&dev_priv->reservation_sem);
 		if (dev_priv->suspend_state)
 			vmw_kms_resume(dev);
-		if (dev_priv->enable_fb)
+		if (vmw_fb_enabled(dev_priv))
 			vmw_fb_on(dev_priv);
 		return -EBUSY;
 	}
@@ -1417,14 +1428,14 @@ static int vmw_pm_restore(struct device *kdev)
 	vmw_write(dev_priv, SVGA_REG_ID, SVGA_ID_2);
 	(void) vmw_read(dev_priv, SVGA_REG_ID);
 
-	if (dev_priv->enable_fb)
+	if (vmw_fb_enabled(dev_priv))
 		vmw_fifo_resource_inc(dev_priv);
 
 	ret = vmw_request_device(dev_priv);
 	if (ret)
 		return ret;
 
-	if (dev_priv->enable_fb)
+	if (vmw_fb_enabled(dev_priv))
 		__vmw_svga_enable(dev_priv);
 
 	vmw_fence_fifo_up(dev_priv->fman);
@@ -1433,7 +1444,7 @@ static int vmw_pm_restore(struct device *kdev)
 	if (dev_priv->suspend_state)
 		vmw_kms_resume(&dev_priv->drm);
 
-	if (dev_priv->enable_fb)
+	if (vmw_fb_enabled(dev_priv))
 		vmw_fb_on(dev_priv);
 
 	return 0;
