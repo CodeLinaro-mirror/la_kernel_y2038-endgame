@@ -301,7 +301,8 @@ config IR_REDRAT3
 	tristate "RedRat3 IR Transceiver"
 	depends on USB_ARCH_HAS_HCD
 	depends on RC_CORE
-	depends on LEDS_CLASS
+	select NEW_LEDS
+	select LEDS_CLASS
 	select USB
 	help
 	   Say Y here if you want to use a RedRat3 Infrared Transceiver.
@@ -335,7 +336,8 @@ config IR_WINBOND_CIR
 	tristate "Winbond IR remote control"
 	depends on (X86 && PNP) || COMPILE_TEST
 	depends on RC_CORE
-	depends on LEDS_CLASS
+	select NEW_LEDS
+	select LEDS_CLASS
 	select BITREVERSE
 	help
 	   Say Y here if you want to use the IR remote functionality found
@@ -381,8 +383,9 @@ config IR_TTUSBIR
 	tristate "TechnoTrend USB IR Receiver"
 	depends on USB_ARCH_HAS_HCD
 	depends on RC_CORE
-	depends on LEDS_CLASS
 	select USB
+	select NEW_LEDS
+	select LEDS_CLASS
 	help
 	   Say Y here if you want to use the TechnoTrend USB IR Receiver. The
 	   driver can control the led.
