@@ -324,7 +324,8 @@ config SENSORS_FAM15H_POWER
 config SENSORS_APPLESMC
 	tristate "Apple SMC (Motion sensor, light sensor, keyboard backlight)"
 	depends on INPUT && X86
-	depends on LEDS_CLASS
+	select NEW_LEDS
+	select LEDS_CLASS
 	help
 	  This driver provides support for the Apple System Management
 	  Controller, which provides an accelerometer (Apple Sudden Motion
