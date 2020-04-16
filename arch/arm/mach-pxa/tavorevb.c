@@ -165,7 +165,7 @@ static void __init tavorevb_init_keypad(void)
 static inline void tavorevb_init_keypad(void) {}
 #endif /* CONFIG_KEYBOARD_PXA27x || CONFIG_KEYBOARD_PXA27x_MODULE */
 
-#if defined(CONFIG_FB_PXA) || defined(CONFIG_FB_PXA_MODULE)
+#if defined(CONFIG_FB_PXA)
 static struct pwm_lookup tavorevb_pwm_lookup[] = {
 	PWM_LOOKUP("pxa27x-pwm.0", 1, "pwm-backlight.0", NULL, 100000,
 		   PWM_POLARITY_NORMAL),
