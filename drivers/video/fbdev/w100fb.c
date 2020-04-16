@@ -48,7 +48,6 @@ static void w100_init_lcd(struct w100fb_par*);
 static void w100_set_dispregs(struct w100fb_par*);
 static void w100_update_enable(void);
 static void w100_update_disable(void);
-static void calc_hsync(struct w100fb_par *par);
 static void w100_init_graphic_engine(struct w100fb_par *par);
 struct w100_pll_info *w100_get_xtal_table(unsigned int freq);
 
@@ -100,8 +99,6 @@ static ssize_t flip_store(struct device *dev, struct device_attribute *attr, con
 	w100_update_disable();
 	w100_set_dispregs(par);
 	w100_update_enable();
-
-	calc_hsync(par);
 
 	return count;
 }
@@ -157,7 +154,6 @@ static ssize_t fastpllclk_store(struct device *dev, struct device_attribute *att
 	}
 
 	w100_init_clocks(par);
-	calc_hsync(par);
 
 	return count;
 }
@@ -172,23 +168,6 @@ static struct attribute *w100fb_attrs[] = {
 	NULL,
 };
 ATTRIBUTE_GROUPS(w100fb);
-
-/*
- * Some touchscreens need hsync information from the video driver to
- * function correctly. We export it here.
- */
-unsigned long w100fb_get_hsynclen(struct device *dev)
-{
-	struct fb_info *info = dev_get_drvdata(dev);
-	struct w100fb_par *par=info->par;
-
-	/* If display is blanked/suspended, hsync isn't active */
-	if (par->blanked)
-		return 0;
-	else
-		return par->hsync_len;
-}
-EXPORT_SYMBOL(w100fb_get_hsynclen);
 
 static void w100fb_clear_screen(struct w100fb_par *par)
 {
@@ -405,6 +384,15 @@ static void w100fb_copyarea(struct fb_info *info,
 	writel((w << 16) | (h & 0xffff), remapped_regs + mmDST_WIDTH_HEIGHT);
 }
 
+static void w100fb_e800_tg_change(struct w100fb_par *par)
+{
+	u32 tmp = readl(remapped_regs + mmGPIO_DATA);
+	if (par->mode->xres == 480)
+		tmp |= 0x100;
+	else
+		tmp &= ~0x100;
+	writel(tmp, remapped_regs + mmGPIO_DATA);
+}
 
 /*
  *  Change the resolution by calling the appropriate hardware functions
@@ -425,10 +413,9 @@ static void w100fb_activate_var(struct w100fb_par *par)
 	w100_update_enable();
 	w100_init_graphic_engine(par);
 
-	calc_hsync(par);
-
-	if (!par->blanked && tg && tg->change)
-		tg->change(par);
+	if (IS_ENABLED(CONFIG_ARCH_PXA_ESERIES) &&
+	    !par->blanked && tg && tg->change_e800)
+		w100fb_e800_tg_change(par);
 }
 
 
@@ -836,28 +823,6 @@ static void w100_update_enable(void)
 	disp_db_buf_wr_cntl.f.en_db_buf = 1;
 	writel((u32) (disp_db_buf_wr_cntl.val), remapped_regs + mmDISP_DB_BUF_CNTL);
 }
-
-unsigned long w100fb_gpio_read(int port)
-{
-	unsigned long value;
-
-	if (port==W100_GPIO_PORT_A)
-		value = readl(remapped_regs + mmGPIO_DATA);
-	else
-		value = readl(remapped_regs + mmGPIO_DATA2);
-
-	return value;
-}
-
-void w100fb_gpio_write(int port, unsigned long value)
-{
-	if (port==W100_GPIO_PORT_A)
-		writel(value, remapped_regs + mmGPIO_DATA);
-	else
-		writel(value, remapped_regs + mmGPIO_DATA2);
-}
-EXPORT_SYMBOL(w100fb_gpio_read);
-EXPORT_SYMBOL(w100fb_gpio_write);
 
 /*
  * Initialization of critical w100 hardware
@@ -1495,31 +1460,6 @@ static void w100_set_dispregs(struct w100fb_par *par)
 	writel(graphic_ctrl.val, remapped_regs + mmGRAPHIC_CTRL);
 	writel(W100_FB_BASE + ((offset * BITS_PER_PIXEL/8)&~0x03UL), remapped_regs + mmGRAPHIC_OFFSET);
 	writel((par->xres*BITS_PER_PIXEL/8), remapped_regs + mmGRAPHIC_PITCH);
-}
-
-
-/*
- * Work out how long the sync pulse lasts
- * Value is 1/(time in seconds)
- */
-static void calc_hsync(struct w100fb_par *par)
-{
-	unsigned long hsync;
-	struct w100_mode *mode = par->mode;
-	union crtc_ss_u crtc_ss;
-
-	if (mode->pixclk_src == CLK_SRC_XTAL)
-		hsync=par->mach->xtal_freq;
-	else
-		hsync=((par->fastpll_mode && mode->fast_pll_freq) ? mode->fast_pll_freq : mode->pll_freq)*100000;
-
-	hsync /= (w100_pwr_state.pclk_cntl.f.pclk_post_div + 1);
-
-	crtc_ss.val = readl(remapped_regs + mmCRTC_SS);
-	if (crtc_ss.val)
-		par->hsync_len = hsync / (crtc_ss.f.ss_end-crtc_ss.f.ss_start);
-	else
-		par->hsync_len = 0;
 }
 
 static void w100_suspend(u32 mode)
