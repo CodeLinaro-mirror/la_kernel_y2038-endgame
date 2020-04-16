@@ -14,13 +14,9 @@
 
 struct w100fb_par;
 
-unsigned long w100fb_gpio_read(int port);
-void w100fb_gpio_write(int port, unsigned long value);
-unsigned long w100fb_get_hsynclen(struct device *dev);
-
 /* LCD Specific Routines and Config */
 struct w100_tg_info {
-	void (*change)(struct w100fb_par*);
+	bool change_e800;
 	void (*suspend)(struct w100fb_par*);
 	void (*resume)(struct w100fb_par*);
 };
