@@ -53,6 +53,7 @@ config ALIENWARE_WMI
 	tristate "Alienware Special feature control"
 	depends on ACPI
 	depends on LEDS_CLASS
+	depends on NEW_LEDS
 	depends on ACPI_WMI
 	---help---
 	 This is a driver for controlling Alienware BIOS driven
@@ -65,10 +66,11 @@ config HUAWEI_WMI
 	depends on ACPI_BATTERY
 	depends on ACPI_WMI
 	depends on INPUT
-	depends on LEDS_CLASS
 	select INPUT_SPARSEKMAP
+	select LEDS_CLASS
 	select LEDS_TRIGGERS
 	select LEDS_TRIGGER_AUDIO
+	select NEW_LEDS
 	help
 	  This driver provides support for Huawei WMI hotkeys, battery charge
 	  control, fn-lock, mic-mute LED, and other extra features.
@@ -150,7 +152,8 @@ config ACER_WIRELESS
 config ACER_WMI
 	tristate "Acer WMI Laptop Extras"
 	depends on ACPI
-	depends on LEDS_CLASS
+	select LEDS_CLASS
+	select NEW_LEDS
 	depends on BACKLIGHT_CLASS_DEVICE
 	depends on SERIO_I8042
 	depends on INPUT
@@ -183,7 +186,8 @@ config APPLE_GMUX
 config ASUS_LAPTOP
 	tristate "Asus Laptop Extras"
 	depends on ACPI
-	depends on LEDS_CLASS
+	select LEDS_CLASS
+	select NEW_LEDS
 	depends on BACKLIGHT_CLASS_DEVICE
 	depends on INPUT
 	depends on RFKILL || RFKILL = n
@@ -207,7 +211,8 @@ config ASUS_WIRELESS
 	tristate "Asus Wireless Radio Control Driver"
 	depends on ACPI
 	depends on INPUT
-	depends on LEDS_CLASS
+	select NEW_LEDS
+	select LEDS_CLASS
 	---help---
 	  The Asus Wireless Radio Control handles the airplane mode hotkey
 	  present on some Asus laptops.
@@ -228,8 +233,9 @@ config ASUS_WMI
 	depends on RFKILL || RFKILL = n
 	depends on HOTPLUG_PCI
 	depends on ACPI_VIDEO || ACPI_VIDEO = n
-	depends on LEDS_CLASS
 	select INPUT_SPARSEKMAP
+	select LEDS_CLASS
+	select NEW_LEDS
 	---help---
 	  Say Y here if you have a WMI aware Asus laptop (like Eee PCs or new
 	  Asus Notebooks).
@@ -260,7 +266,8 @@ config EEEPC_LAPTOP
 	depends on HOTPLUG_PCI
 	depends on BACKLIGHT_CLASS_DEVICE
 	select HWMON
-	depends on LEDS_CLASS
+	select LEDS_CLASS
+	select NEW_LEDS
 	select INPUT_SPARSEKMAP
 	---help---
 	  This driver supports the Fn-Fx keys on Eee PC laptops.
@@ -351,8 +358,9 @@ config DELL_LAPTOP
 	depends on RFKILL || RFKILL = n
 	depends on SERIO_I8042
 	depends on DELL_SMBIOS
-	depends on LEDS_CLASS
 	select POWER_SUPPLY
+	select LEDS_CLASS
+	select NEW_LEDS
 	select LEDS_TRIGGERS
 	select LEDS_TRIGGER_AUDIO
 	---help---
@@ -451,7 +459,7 @@ config FUJITSU_LAPTOP
 	depends on BACKLIGHT_CLASS_DEVICE
 	depends on ACPI_VIDEO || ACPI_VIDEO = n
 	select INPUT_SPARSEKMAP
-	depends on LEDS_CLASS
+	select LEDS_CLASS
 	---help---
 	  This is a driver for laptops built by Fujitsu:
 
@@ -496,8 +504,9 @@ config HP_ACCEL
 	tristate "HP laptop accelerometer"
 	depends on INPUT && ACPI
 	depends on SERIO_I8042
-	depends on LEDS_CLASS
 	select SENSORS_LIS3LV02D
+	select NEW_LEDS
+	select LEDS_CLASS
 	help
 	  This driver provides support for the "Mobile Data Protection System 3D"
 	  or "3D DriveGuard" feature of HP laptops. On such systems the driver
@@ -599,8 +608,9 @@ config THINKPAD_ACPI
 	depends on ACPI_VIDEO || ACPI_VIDEO = n
 	depends on BACKLIGHT_CLASS_DEVICE
 	select HWMON
-	depends on LEDS_CLASS
 	select NVRAM
+	select NEW_LEDS
+	select LEDS_CLASS
 	select LEDS_TRIGGERS
 	select LEDS_TRIGGER_AUDIO
 	---help---
@@ -930,7 +940,8 @@ config SAMSUNG_LAPTOP
 	depends on RFKILL || RFKILL = n
 	depends on ACPI_VIDEO || ACPI_VIDEO = n
 	depends on BACKLIGHT_CLASS_DEVICE
-	depends on LEDS_CLASS
+	select LEDS_CLASS
+	select NEW_LEDS
 	---help---
 	  This module implements a driver for a wide range of different
 	  Samsung laptops.  It offers control over the different
@@ -954,7 +965,8 @@ config ACPI_TOSHIBA
 	tristate "Toshiba Laptop Extras"
 	depends on ACPI
 	depends on ACPI_WMI
-	depends on LEDS_CLASS
+	select LEDS_CLASS
+	select NEW_LEDS
 	depends on BACKLIGHT_CLASS_DEVICE
 	depends on INPUT
 	depends on SERIO_I8042 || SERIO_I8042 = n
@@ -1067,8 +1079,8 @@ config LG_LAPTOP
 	depends on ACPI
 	depends on ACPI_WMI
 	depends on INPUT
-	depends on LEDS_CLASS
 	select INPUT_SPARSEKMAP
+	select LEDS_CLASS
 	help
 	 This driver adds support for hotkeys as well as control of keyboard
 	 backlight, battery maximum charge level and various other ACPI
@@ -1114,7 +1126,8 @@ config SONYPI_COMPAT
 config SYSTEM76_ACPI
 	tristate "System76 ACPI Driver"
 	depends on ACPI
-	depends on LEDS_CLASS
+	select NEW_LEDS
+	select LEDS_CLASS
 	select LEDS_TRIGGERS
 	help
 	  This is a driver for System76 laptops running open firmware. It adds
@@ -1127,8 +1140,9 @@ config TOPSTAR_LAPTOP
 	tristate "Topstar Laptop Extras"
 	depends on ACPI
 	depends on INPUT
-	depends on LEDS_CLASS
 	select INPUT_SPARSEKMAP
+	select LEDS_CLASS
+	select NEW_LEDS
 	---help---
 	  This driver adds support for hotkeys found on Topstar laptops.
 
