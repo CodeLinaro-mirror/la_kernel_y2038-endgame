@@ -871,20 +871,8 @@ static struct w100_mem_info e800_w100_mem_info = {
 	.size            = 0x1fffff,
 };
 
-static void e800_tg_change(struct w100fb_par *par)
-{
-	unsigned long tmp;
-
-	tmp = w100fb_gpio_read(W100_GPIO_PORT_A);
-	if (par->mode->xres == 480)
-		tmp |= 0x100;
-	else
-		tmp &= ~0x100;
-	w100fb_gpio_write(W100_GPIO_PORT_A, tmp);
-}
-
 static struct w100_tg_info e800_tg_info = {
-	.change = e800_tg_change,
+	.change_e800 = true,
 };
 
 static struct w100fb_mach_info e800_fb_info = {
