@@ -99,6 +99,7 @@ n	[A-Za-z0-9_-]
 "def_tristate"		return T_DEF_TRISTATE;
 "default"		return T_DEFAULT;
 "depends"		return T_DEPENDS;
+"uses"			return T_USES;
 "endchoice"		return T_ENDCHOICE;
 "endif"			return T_ENDIF;
 "endmenu"		return T_ENDMENU;
