@@ -56,6 +56,7 @@ struct menu *current_menu, *current_entry;
 %token T_DEF_BOOL
 %token T_DEF_TRISTATE
 %token T_DEPENDS
+%token T_USES
 %token T_ENDCHOICE
 %token T_ENDIF
 %token T_ENDMENU
@@ -171,6 +172,7 @@ config_option_list:
 	  /* empty */
 	| config_option_list config_option
 	| config_option_list depends
+	| config_option_list uses
 	| config_option_list help
 ;
 
@@ -256,6 +258,7 @@ choice_option_list:
 	  /* empty */
 	| choice_option_list choice_option
 	| choice_option_list depends
+	| choice_option_list uses
 	| choice_option_list help
 ;
 
@@ -353,6 +356,7 @@ menu_option_list:
 	  /* empty */
 	| menu_option_list visible
 	| menu_option_list depends
+	| menu_option_list uses
 ;
 
 source_stmt: T_SOURCE T_WORD_QUOTE T_EOL
@@ -377,6 +381,7 @@ comment_stmt: comment comment_option_list
 comment_option_list:
 	  /* empty */
 	| comment_option_list depends
+	| comment_option_list uses
 ;
 
 /* help option */
@@ -409,6 +414,17 @@ depends: T_DEPENDS T_ON expr T_EOL
 {
 	menu_add_dep($3);
 	printd(DEBUG_PARSE, "%s:%d:depends on\n", zconf_curname(), zconf_lineno());
+};
+
+/* uses symbol: depends on symbol || !symbol */
+uses: T_USES symbol T_EOL
+{
+	struct expr *symexpr1 = expr_alloc_symbol($2);
+	struct expr *symexpr2 = expr_alloc_symbol($2);
+
+	menu_add_dep(expr_alloc_two(E_OR, symexpr1, expr_alloc_one(E_NOT, symexpr2)));
+	printd(DEBUG_PARSE, "%s:%d: uses: depends on %s || ! %s\n",
+	       zconf_curname(), zconf_lineno(), $2->name, $2->name);
 };
 
 /* visibility option */
