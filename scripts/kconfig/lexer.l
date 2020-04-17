@@ -101,6 +101,7 @@ n	[A-Za-z0-9_-]
 "default"		return T_DEFAULT;
 "defconfig_list"	return T_DEFCONFIG_LIST;
 "depends"		return T_DEPENDS;
+"uses"			return T_USES;
 "endchoice"		return T_ENDCHOICE;
 "endif"			return T_ENDIF;
 "endmenu"		return T_ENDMENU;

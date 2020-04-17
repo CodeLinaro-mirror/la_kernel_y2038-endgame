@@ -1301,6 +1301,8 @@ const char *prop_get_type_name(enum prop_type type)
 		return "choice";
 	case P_SELECT:
 		return "select";
+	case P_USES:
+		return "uses";
 	case P_IMPLY:
 		return "imply";
 	case P_RANGE:
