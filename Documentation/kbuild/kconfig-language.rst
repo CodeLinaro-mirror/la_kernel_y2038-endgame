@@ -130,6 +130,16 @@ applicable everywhere (see syntax).
 	bool "foo"
 	default y
 
+- uses dependencies: "uses" <symbol>
+
+  Equivalent to: depends on symbol || !symbol
+  Semantically it means, if FOO is enabled (y/m) and has the option:
+  uses BAR, make sure it can reach/use BAR when possible.
+  For example: if FOO=y and BAR=m, FOO will be forced to m.
+
+  Note:
+      To understand how (symbol || !symbol) is actually computed, please see `Menu dependencies`_
+
 - reverse dependencies: "select" <symbol> ["if" <expr>]
 
   While normal dependencies reduce the upper limit of a symbol (see

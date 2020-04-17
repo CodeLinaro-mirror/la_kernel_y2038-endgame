@@ -275,7 +275,9 @@ static void sym_check_prop(struct symbol *sym)
 			break;
 		case P_SELECT:
 		case P_IMPLY:
-			use = prop->type == P_SELECT ? "select" : "imply";
+		case P_USES:
+			use = prop->type == P_SELECT ? "select" :
+				prop->type == P_IMPLY ? "imply" : "uses";
 			sym2 = prop_get_symbol(prop);
 			if (sym->type != S_BOOLEAN && sym->type != S_TRISTATE)
 				prop_warn(prop,
