@@ -18,8 +18,6 @@ struct mod_arch_specific {
 #  define MODULE_PROC_FAMILY "SH3LE "
 # elif defined  CONFIG_CPU_SH4
 #  define MODULE_PROC_FAMILY "SH4LE "
-# elif defined  CONFIG_CPU_SH5
-#  define MODULE_PROC_FAMILY "SH5LE "
 # else
 #  error unknown processor family
 # endif
@@ -30,8 +28,6 @@ struct mod_arch_specific {
 #  define MODULE_PROC_FAMILY "SH3BE "
 # elif defined  CONFIG_CPU_SH4
 #  define MODULE_PROC_FAMILY "SH4BE "
-# elif defined  CONFIG_CPU_SH5
-#  define MODULE_PROC_FAMILY "SH5BE "
 # else
 #  error unknown processor family
 # endif
