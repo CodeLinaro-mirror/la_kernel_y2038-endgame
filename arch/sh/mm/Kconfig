@@ -180,8 +180,6 @@ config ARCH_HAVE_PAGE_SIZE_64KB
 	  This enables support for 64kB pages, possible on all SH-4
 	  CPUs and later.
 
-endchoice
-
 choice
 	prompt "HugeTLB page size"
 	depends on HUGETLB_PAGE
