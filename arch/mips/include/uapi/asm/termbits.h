@@ -13,9 +13,9 @@
 
 #include <linux/posix_types.h>
 
-typedef unsigned char cc_t;
-typedef unsigned int speed_t;
-typedef unsigned int tcflag_t;
+typedef unsigned char	cc_t;
+typedef unsigned int	speed_t;
+typedef unsigned int	tcflag_t;
 
 /*
  * The ABI says nothing about NCC but seems to use NCCS as
