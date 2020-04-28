@@ -251,6 +251,7 @@ struct oabi_epoll_event {
 asmlinkage long sys_oabi_epoll_ctl(int epfd, int op, int fd,
 				   struct oabi_epoll_event __user *event)
 {
+#ifdef CONFIG_EPOLL
 	struct oabi_epoll_event user;
 	struct epoll_event kernel;
 
@@ -262,6 +263,9 @@ asmlinkage long sys_oabi_epoll_ctl(int epfd, int op, int fd,
 	kernel.data   = user.data;
 
 	return do_epoll_ctl(epfd, op, fd, &kernel, false);
+#else
+	return -ENOSYS;
+#endif
 }
 
 asmlinkage long sys_oabi_epoll_wait(int epfd,
