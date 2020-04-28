@@ -128,10 +128,10 @@ do {									\
 #ifndef __smp_load_acquire
 #define __smp_load_acquire(p)						\
 ({									\
-	__unqual_scalar_typeof(*p) ___p1 = READ_ONCE(*p);		\
+	typeof(*p) ___p1 = READ_ONCE(*p);				\
 	compiletime_assert_atomic_type(*p);				\
 	__smp_mb();							\
-	(typeof(*p))___p1;						\
+	___p1;								\
 })
 #endif
 
@@ -183,10 +183,10 @@ do {									\
 #ifndef smp_load_acquire
 #define smp_load_acquire(p)						\
 ({									\
-	__unqual_scalar_typeof(*p) ___p1 = READ_ONCE(*p);		\
+	typeof(*p) ___p1 = READ_ONCE(*p);				\
 	compiletime_assert_atomic_type(*p);				\
 	barrier();							\
-	(typeof(*p))___p1;						\
+	___p1;								\
 })
 #endif
 
@@ -229,14 +229,14 @@ do {									\
 #ifndef smp_cond_load_relaxed
 #define smp_cond_load_relaxed(ptr, cond_expr) ({		\
 	typeof(ptr) __PTR = (ptr);				\
-	__unqual_scalar_typeof(*ptr) VAL;			\
+	typeof(*ptr) VAL;					\
 	for (;;) {						\
 		VAL = READ_ONCE(*__PTR);			\
 		if (cond_expr)					\
 			break;					\
 		cpu_relax();					\
 	}							\
-	(typeof(*ptr))VAL;					\
+	VAL;							\
 })
 #endif
 
@@ -250,10 +250,10 @@ do {									\
  */
 #ifndef smp_cond_load_acquire
 #define smp_cond_load_acquire(ptr, cond_expr) ({		\
-	__unqual_scalar_typeof(*ptr) _val;			\
+	typeof(*ptr) _val;					\
 	_val = smp_cond_load_relaxed(ptr, cond_expr);		\
 	smp_acquire__after_ctrl_dep();				\
-	(typeof(*ptr))_val;					\
+	_val;							\
 })
 #endif
 
