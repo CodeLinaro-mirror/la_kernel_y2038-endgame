@@ -170,6 +170,7 @@ config CPA_DEBUG
 config DEBUG_ENTRY
 	bool "Debug low-level entry code"
 	depends on DEBUG_KERNEL
+	depends on BROKEN
 	help
 	  This option enables sanity checks in x86's low-level entry code.
 	  Some of these sanity checks may slow down kernel entries and
