@@ -14,6 +14,7 @@
 
 #include <linux/dm9000.h>
 #include <linux/leds.h>
+#include <linux/soc/pxa/cpu.h>
 
 #include <asm/mach/arch.h>
 #include <asm/mach-types.h>
@@ -31,14 +32,14 @@
 #undef GPIO87_GPIO
 #undef GPIO88_GPIO
 #undef GPIO89_GPIO
-#include <mach/audio.h>
+#include <linux/platform_data/asoc-pxa.h>
+#include "addr-map.h"
 #include <linux/platform_data/video-pxafb.h>
 #include <mach/smemc.h>
 
-#include <asm/hardware/it8152.h>
-
 #include "generic.h"
 #include "cm-x2xx-pci.h"
+#include "pci-it8152.h"
 
 extern void cmx255_init(void);
 extern void cmx270_init(void);
