@@ -286,7 +286,7 @@ config FRAME_WARN
 	default 4096 if DRM_AMD_DC
 	default 2048 if GCC_PLUGIN_LATENT_ENTROPY
 	default 1400 if  (!64BIT && KASAN)
-	default 1280 if (!64BIT && PARISC)
+	default 1280 if (!64BIT && (PARISC || KASAN))
 	default 1024 if (!64BIT && !PARISC)
 	default 2048 if 64BIT
 	help

@@ -45,11 +45,8 @@ static inline void pud_populate(struct mm_struct *mm, pud_t *pud, pmd_t *pmd)
  */
 #define pmd_alloc_one(mm,addr)		({ BUG(); ((pmd_t *)2); })
 #define pmd_free(mm, pmd)		do { } while (0)
-#ifndef CONFIG_KASAN
-#define pud_populate(mm, pmd, pte)	BUG()
-#else
-#define pud_populate(mm, pmd, pte)	do { } while (0)
-#endif
+#define pud_populate(mm,pmd,pte)	BUG()
+
 #endif	/* CONFIG_ARM_LPAE */
 
 extern pgd_t *pgd_alloc(struct mm_struct *mm);

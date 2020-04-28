@@ -24,7 +24,6 @@ OBJS		+= hyp-stub.o
 endif
 
 GCOV_PROFILE		:= n
-KASAN_SANITIZE		:= n
 
 # Prevents link failures: __sanitizer_cov_trace_pc() is not linked in.
 KCOV_INSTRUMENT		:= n
