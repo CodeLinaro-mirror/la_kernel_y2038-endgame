@@ -68,6 +68,7 @@ COND_SYSCALL(epoll_create1);
 COND_SYSCALL(epoll_ctl);
 COND_SYSCALL(epoll_pwait);
 COND_SYSCALL_COMPAT(epoll_pwait);
+COND_SYSCALL(oabi_epoll_ctl); /* ARM OABI specific */
 
 /* fs/fcntl.c */
 
