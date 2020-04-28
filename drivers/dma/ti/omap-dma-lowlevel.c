@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * linux/arch/arm/plat-omap/dma.c
- *
  * Copyright (C) 2003 - 2008 Nokia Corporation
  * Author: Juha Yrjölä <juha.yrjola@nokia.com>
  * DMA channel linking for 1610 by Samuel Ortiz <samuel.ortiz@nokia.com>
@@ -35,7 +33,8 @@
 #include <linux/omap-dma.h>
 
 #ifdef CONFIG_ARCH_OMAP1
-#include <mach/soc.h>
+#include <linux/soc/ti/omap1-io.h>
+#include <linux/soc/ti/omap1-soc.h>
 #endif
 
 /*
@@ -119,53 +118,6 @@ static inline void set_gdma_dev(int req, int dev)
 #define omap_readl(reg)		0
 #define omap_writel(val, reg)	do {} while (0)
 #endif
-
-#ifdef CONFIG_ARCH_OMAP1
-void omap_set_dma_priority(int lch, int dst_port, int priority)
-{
-	unsigned long reg;
-	u32 l;
-
-	if (dma_omap1()) {
-		switch (dst_port) {
-		case OMAP_DMA_PORT_OCP_T1:	/* FFFECC00 */
-			reg = OMAP_TC_OCPT1_PRIOR;
-			break;
-		case OMAP_DMA_PORT_OCP_T2:	/* FFFECCD0 */
-			reg = OMAP_TC_OCPT2_PRIOR;
-			break;
-		case OMAP_DMA_PORT_EMIFF:	/* FFFECC08 */
-			reg = OMAP_TC_EMIFF_PRIOR;
-			break;
-		case OMAP_DMA_PORT_EMIFS:	/* FFFECC04 */
-			reg = OMAP_TC_EMIFS_PRIOR;
-			break;
-		default:
-			BUG();
-			return;
-		}
-		l = omap_readl(reg);
-		l &= ~(0xf << 8);
-		l |= (priority & 0xf) << 8;
-		omap_writel(l, reg);
-	}
-}
-#endif
-
-#ifdef CONFIG_ARCH_OMAP2PLUS
-void omap_set_dma_priority(int lch, int dst_port, int priority)
-{
-	u32 ccr;
-
-	ccr = p->dma_read(CCR, lch);
-	if (priority)
-		ccr |= (1 << 6);
-	else
-		ccr &= ~(1 << 6);
-	p->dma_write(ccr, CCR, lch);
-}
-#endif
-EXPORT_SYMBOL(omap_set_dma_priority);
 
 void omap_set_dma_transfer_params(int lch, int data_type, int elem_count,
 				  int frame_count, int sync_mode,
@@ -791,21 +743,6 @@ int omap_get_dma_active_status(int lch)
 }
 EXPORT_SYMBOL(omap_get_dma_active_status);
 
-int omap_dma_running(void)
-{
-	int lch;
-
-	if (dma_omap1())
-		if (omap_lcd_dma_running())
-			return 1;
-
-	for (lch = 0; lch < dma_chan_count; lch++)
-		if (p->dma_read(CCR, lch) & OMAP_DMA_CCR_EN)
-			return 1;
-
-	return 0;
-}
-
 /*----------------------------------------------------------------------------*/
 
 #ifdef CONFIG_ARCH_OMAP1
@@ -983,11 +920,13 @@ static void __exit omap_system_dma_exit(void)
 {
 	platform_driver_unregister(&omap_system_dma_driver);
 }
+module_exit(omap_system_dma_exit)
 
 MODULE_DESCRIPTION("OMAP SYSTEM DMA DRIVER");
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Texas Instruments Inc");
 
+#ifndef MODULE
 /*
  * Reserve the omap SDMA channels using cmdline bootarg
  * "omap_dma_reserve_ch=". The valid range is 1 to 32
@@ -1000,5 +939,4 @@ static int __init omap_dma_cmdline_reserve_ch(char *str)
 }
 
 __setup("omap_dma_reserve_ch=", omap_dma_cmdline_reserve_ch);
-
-
+#endif
