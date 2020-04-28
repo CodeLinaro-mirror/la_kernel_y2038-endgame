@@ -3309,29 +3309,18 @@ void copy_siginfo_to_external32(struct compat_siginfo *to,
 	}
 }
 
+#ifndef CONFIG_X86_X32_ABI
 int copy_siginfo_to_user32(struct compat_siginfo __user *to,
 			   const struct kernel_siginfo *from)
-#if defined(CONFIG_X86_X32_ABI) || defined(CONFIG_IA32_EMULATION)
-{
-	return __copy_siginfo_to_user32(to, from, in_x32_syscall());
-}
-int __copy_siginfo_to_user32(struct compat_siginfo __user *to,
-			     const struct kernel_siginfo *from, bool x32_ABI)
-#endif
 {
 	struct compat_siginfo new;
 
 	copy_siginfo_to_external32(&new, from);
-#ifdef CONFIG_X86_X32_ABI
-	if (x32_ABI && from->si_signo == SIGCHLD) {
-		new._sifields._sigchld_x32._utime = from->si_utime;
-		new._sifields._sigchld_x32._stime = from->si_stime;
-	}
-#endif
 	if (copy_to_user(to, &new, sizeof(struct compat_siginfo)))
 		return -EFAULT;
 	return 0;
 }
+#endif
 
 static int post_copy_siginfo_from_user32(kernel_siginfo_t *to,
 					 const struct compat_siginfo *from)
