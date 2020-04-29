@@ -7,8 +7,6 @@ config EINT_MTK
 	depends on PINCTRL_MTK || PINCTRL_MTK_MOORE || PINCTRL_MTK_PARIS || COMPILE_TEST
 	select GPIOLIB
 	select IRQ_DOMAIN
-	default y if PINCTRL_MTK || PINCTRL_MTK_MOORE
-	default PINCTRL_MTK_PARIS
 
 config PINCTRL_MTK
 	bool
@@ -20,6 +18,7 @@ config PINCTRL_MTK
 	select OF_GPIO
 
 config PINCTRL_MTK_V2
+	select EINT_MTK
 	tristate
 
 config PINCTRL_MTK_MOORE
@@ -38,7 +37,6 @@ config PINCTRL_MTK_PARIS
 	select PINMUX
 	select GENERIC_PINCONF
 	select GPIOLIB
-	select EINT_MTK
 	select OF_GPIO
 	select PINCTRL_MTK_V2
 
