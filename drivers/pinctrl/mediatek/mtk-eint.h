@@ -74,7 +74,6 @@ struct mtk_eint {
 	const struct mtk_eint_xt *gpio_xlate;
 };
 
-#if IS_ENABLED(CONFIG_EINT_MTK)
 int mtk_eint_do_init(struct mtk_eint *eint);
 int mtk_eint_do_suspend(struct mtk_eint *eint);
 int mtk_eint_do_resume(struct mtk_eint *eint);
@@ -82,31 +81,4 @@ int mtk_eint_set_debounce(struct mtk_eint *eint, unsigned long eint_n,
 			  unsigned int debounce);
 int mtk_eint_find_irq(struct mtk_eint *eint, unsigned long eint_n);
 
-#else
-static inline int mtk_eint_do_init(struct mtk_eint *eint)
-{
-	return -EOPNOTSUPP;
-}
-
-static inline int mtk_eint_do_suspend(struct mtk_eint *eint)
-{
-	return -EOPNOTSUPP;
-}
-
-static inline int mtk_eint_do_resume(struct mtk_eint *eint)
-{
-	return -EOPNOTSUPP;
-}
-
-static inline int mtk_eint_set_debounce(struct mtk_eint *eint, unsigned long eint_n,
-			  unsigned int debounce)
-{
-	return -EOPNOTSUPP;
-}
-
-static inline int mtk_eint_find_irq(struct mtk_eint *eint, unsigned long eint_n)
-{
-	return -EOPNOTSUPP;
-}
-#endif
 #endif /* __MTK_EINT_H */
