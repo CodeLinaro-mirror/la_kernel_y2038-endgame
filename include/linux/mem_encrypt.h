@@ -18,6 +18,8 @@
 
 #else	/* !CONFIG_ARCH_HAS_MEM_ENCRYPT */
 
+static inline void mem_encrypt_init(void) { }
+
 static inline bool mem_encrypt_active(void) { return false; }
 
 #endif	/* CONFIG_ARCH_HAS_MEM_ENCRYPT */
