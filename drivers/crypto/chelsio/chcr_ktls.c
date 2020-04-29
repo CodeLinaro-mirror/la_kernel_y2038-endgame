@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Copyright (C) 2020 Chelsio Communications.  All rights reserved. */
 
+#ifdef CONFIG_CHELSIO_TLS_DEVICE
 #include <linux/highmem.h>
 #include "chcr_ktls.h"
 #include "clip_tbl.h"
@@ -2029,3 +2030,4 @@ out:
 	dev_kfree_skb_any(skb);
 	return NETDEV_TX_OK;
 }
+#endif /* CONFIG_CHELSIO_TLS_DEVICE */

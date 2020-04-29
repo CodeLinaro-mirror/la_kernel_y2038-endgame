@@ -360,7 +360,7 @@ struct chcr_stats_debug {
 	atomic_t tls_pdu_tx;
 	atomic_t tls_pdu_rx;
 	atomic_t tls_key;
-#if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
+#ifdef CONFIG_CHELSIO_TLS_DEVICE
 	atomic64_t ktls_tx_connection_open;
 	atomic64_t ktls_tx_connection_fail;
 	atomic64_t ktls_tx_connection_close;

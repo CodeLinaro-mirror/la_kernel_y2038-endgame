@@ -3409,7 +3409,7 @@ static int chcr_stats_show(struct seq_file *seq, void *v)
 		   atomic_read(&adap->chcr_stats.tls_pdu_rx));
 	seq_printf(seq, "TLS Keys (DDR) Count: %10u\n",
 		   atomic_read(&adap->chcr_stats.tls_key));
-#if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
+#ifdef CONFIG_CHELSIO_TLS_DEVICE
 	seq_puts(seq, "\nChelsio KTLS Crypto Accelerator Stats\n");
 	seq_printf(seq, "Tx HW offload contexts added:     %20llu\n",
 		   atomic64_read(&adap->chcr_stats.ktls_tx_ctx));
