@@ -662,7 +662,7 @@ static int uld_attach(struct adapter *adap, unsigned int uld)
 	return 0;
 }
 
-#ifdef CONFIG_CHELSIO_TLS_DEVICE
+#if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
 /* cxgb4_set_ktls_feature: request FW to enable/disable ktls settings.
  * @adap: adapter info
  * @enable: 1 to enable / 0 to disable ktls settings.
@@ -717,7 +717,7 @@ void cxgb4_register_uld(enum cxgb4_uld type,
 		}
 		if (adap->flags & CXGB4_FULL_INIT_DONE)
 			enable_rx_uld(adap, type);
-#ifdef CONFIG_CHELSIO_TLS_DEVICE
+#if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
 		/* send mbox to enable ktls related settings. */
 		if (type == CXGB4_ULD_CRYPTO &&
 		    (adap->params.crypto & FW_CAPS_CONFIG_TX_TLS_HW))
@@ -776,7 +776,7 @@ int cxgb4_unregister_uld(enum cxgb4_uld type)
 
 		cxgb4_shutdown_uld_adapter(adap, type);
 
-#ifdef CONFIG_CHELSIO_TLS_DEVICE
+#if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
 		/* send mbox to disable ktls related settings. */
 		if (type == CXGB4_ULD_CRYPTO &&
 		    (adap->params.crypto & FW_CAPS_CONFIG_TX_TLS_HW))

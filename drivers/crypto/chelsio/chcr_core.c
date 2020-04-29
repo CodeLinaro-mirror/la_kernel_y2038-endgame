@@ -39,7 +39,7 @@ static void update_netdev_features(void);
 
 static chcr_handler_func work_handlers[NUM_CPL_CMDS] = {
 	[CPL_FW6_PLD] = cpl_fw6_pld_handler,
-#ifdef CONFIG_CHELSIO_TLS_DEVICE
+#if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
 	[CPL_ACT_OPEN_RPL] = chcr_ktls_cpl_act_open_rpl,
 	[CPL_SET_TCB_RPL] = chcr_ktls_cpl_set_tcb_rpl,
 #endif
@@ -208,7 +208,7 @@ static void *chcr_uld_add(const struct cxgb4_lld_info *lld)
 	u_ctx->lldi = *lld;
 	chcr_dev_init(u_ctx);
 
-#ifdef CONFIG_CHELSIO_TLS_DEVICE
+#if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
 	if (lld->ulp_crypto & ULP_CRYPTO_KTLS_INLINE)
 		chcr_enable_ktls(padap(&u_ctx->dev));
 #endif
@@ -242,7 +242,7 @@ int chcr_uld_tx_handler(struct sk_buff *skb, struct net_device *dev)
 	/* In case if skb's decrypted bit is set, it's nic tls packet, else it's
 	 * ipsec packet.
 	 */
-#ifdef CONFIG_CHELSIO_TLS_DEVICE
+#if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
 	if (skb->decrypted)
 		return chcr_ktls_xmit(skb, dev);
 #endif
@@ -348,7 +348,7 @@ static void __exit chcr_crypto_exit(void)
 	list_for_each_entry_safe(u_ctx, tmp, &drv_data.act_dev, entry) {
 		adap = padap(&u_ctx->dev);
 		memset(&adap->chcr_stats, 0, sizeof(adap->chcr_stats));
-#ifdef CONFIG_CHELSIO_TLS_DEVICE
+#if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
 		if (u_ctx->lldi.ulp_crypto & ULP_CRYPTO_KTLS_INLINE)
 			chcr_disable_ktls(adap);
 #endif
@@ -358,7 +358,7 @@ static void __exit chcr_crypto_exit(void)
 	list_for_each_entry_safe(u_ctx, tmp, &drv_data.inact_dev, entry) {
 		adap = padap(&u_ctx->dev);
 		memset(&adap->chcr_stats, 0, sizeof(adap->chcr_stats));
-#ifdef CONFIG_CHELSIO_TLS_DEVICE
+#if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
 		if (u_ctx->lldi.ulp_crypto & ULP_CRYPTO_KTLS_INLINE)
 			chcr_disable_ktls(adap);
 #endif
