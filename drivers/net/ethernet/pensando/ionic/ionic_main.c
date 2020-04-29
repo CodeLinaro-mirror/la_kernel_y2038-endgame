@@ -235,7 +235,7 @@ static void ionic_adminq_cb(struct ionic_queue *q,
 	memcpy(&ctx->comp, comp, sizeof(*comp));
 
 	dev_dbg(dev, "comp admin queue command:\n");
-	print_hex_dump_debug("comp ", DUMP_PREFIX_OFFSET, 16, 1,
+	dynamic_hex_dump("comp ", DUMP_PREFIX_OFFSET, 16, 1,
 			 &ctx->comp, sizeof(ctx->comp), true);
 
 	complete_all(&ctx->work);
@@ -266,7 +266,7 @@ static int ionic_adminq_post(struct ionic_lif *lif, struct ionic_admin_ctx *ctx)
 	memcpy(adminq->head->desc, &ctx->cmd, sizeof(ctx->cmd));
 
 	dev_dbg(&lif->netdev->dev, "post admin queue command:\n");
-	print_hex_dump_debug("cmd ", DUMP_PREFIX_OFFSET, 16, 1,
+	dynamic_hex_dump("cmd ", DUMP_PREFIX_OFFSET, 16, 1,
 			 &ctx->cmd, sizeof(ctx->cmd), true);
 
 	ionic_q_post(adminq, true, ionic_adminq_cb, ctx);

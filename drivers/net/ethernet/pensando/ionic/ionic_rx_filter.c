@@ -36,7 +36,7 @@ void ionic_rx_filter_replay(struct ionic_lif *lif)
 			ctx.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work);
 			memcpy(ac, &f->cmd, sizeof(f->cmd));
 			dev_dbg(&lif->netdev->dev, "replay filter command:\n");
-			print_hex_dump_debug("cmd ", DUMP_PREFIX_OFFSET, 16, 1,
+			dynamic_hex_dump("cmd ", DUMP_PREFIX_OFFSET, 16, 1,
 					 &ctx.cmd, sizeof(ctx.cmd), true);
 
 			err = ionic_adminq_post_wait(lif, &ctx);
