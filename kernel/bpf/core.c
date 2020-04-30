@@ -1386,11 +1386,15 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
 #undef BPF_INSN_2_LBL
 	u32 tail_call_cnt = 0;
 
+#if defined(CONFIG_X86_64) && !defined(CONFIG_RETPOLINE)
+#define CONT	 ({ insn++; goto *jumptable[insn->code]; })
+#define CONT_JMP ({ insn++; goto *jumptable[insn->code]; })
+#else
 #define CONT	 ({ insn++; goto select_insn; })
 #define CONT_JMP ({ insn++; goto select_insn; })
-
 select_insn:
 	goto *jumptable[insn->code];
+#endif
 
 	/* Explicitly mask the register-based shift amounts with 63 or 31
 	 * to avoid undefined behavior. Normally this won't affect the
@@ -1574,7 +1578,7 @@ select_insn:
 		 * where arg1_type is ARG_PTR_TO_CTX.
 		 */
 		insn = prog->insnsi;
-		goto select_insn;
+		CONT;
 out:
 		CONT;
 	}
