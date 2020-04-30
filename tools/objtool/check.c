@@ -898,11 +898,9 @@ static int add_jump_destinations(struct objtool_file *file)
 			return -1;
 		}
 
-		/*
-		 * Cross-function jump.
-		 */
 		if (insn->func && insn->jump_dest->func &&
-		    insn->func != insn->jump_dest->func) {
+		    insn->func->pfunc != insn->jump_dest->func->pfunc &&
+		    insn->jump_dest->offset == insn->jump_dest->func->offset) {
 
 			/*
 			 * For GCC 8+, create parent/child links for any cold
