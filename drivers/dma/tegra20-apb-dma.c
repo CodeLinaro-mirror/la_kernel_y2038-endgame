@@ -225,7 +225,7 @@ struct tegra_dma {
 	u32				global_pause_count;
 
 	/* Last member of the structure */
-	struct tegra_dma_channel channels[];
+	struct tegra_dma_channel channels[0];
 };
 
 static inline void tdma_write(struct tegra_dma *tdma, u32 reg, u32 val)

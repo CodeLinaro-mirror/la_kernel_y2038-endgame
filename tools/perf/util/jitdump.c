@@ -57,7 +57,7 @@ struct debug_line_info {
 	unsigned long vma;
 	unsigned int lineno;
 	/* The filename format is unspecified, absolute path, relative etc. */
-	char const filename[];
+	char const filename[0];
 };
 
 struct jit_tool {

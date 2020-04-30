@@ -2291,7 +2291,7 @@ struct wmi_service_ready_event {
 	 * where FW can access this memory directly (or) by DMA.
 	 */
 	__le32 num_mem_reqs;
-	struct wlan_host_mem_req mem_reqs[];
+	struct wlan_host_mem_req mem_reqs[0];
 } __packed;
 
 /* This is the definition from 10.X firmware branch */
@@ -2330,7 +2330,7 @@ struct wmi_10x_service_ready_event {
 	 */
 	__le32 num_mem_reqs;
 
-	struct wlan_host_mem_req mem_reqs[];
+	struct wlan_host_mem_req mem_reqs[0];
 } __packed;
 
 #define WMI_SERVICE_READY_TIMEOUT_HZ (5 * HZ)
@@ -3085,19 +3085,19 @@ struct wmi_chan_list_entry {
 struct wmi_chan_list {
 	__le32 tag; /* WMI_CHAN_LIST_TAG */
 	__le32 num_chan;
-	struct wmi_chan_list_entry channel_list[];
+	struct wmi_chan_list_entry channel_list[0];
 } __packed;
 
 struct wmi_bssid_list {
 	__le32 tag; /* WMI_BSSID_LIST_TAG */
 	__le32 num_bssid;
-	struct wmi_mac_addr bssid_list[];
+	struct wmi_mac_addr bssid_list[0];
 } __packed;
 
 struct wmi_ie_data {
 	__le32 tag; /* WMI_IE_TAG */
 	__le32 ie_len;
-	u8 ie_data[];
+	u8 ie_data[0];
 } __packed;
 
 struct wmi_ssid {
@@ -3108,7 +3108,7 @@ struct wmi_ssid {
 struct wmi_ssid_list {
 	__le32 tag; /* WMI_SSID_LIST_TAG */
 	__le32 num_ssids;
-	struct wmi_ssid ssids[];
+	struct wmi_ssid ssids[0];
 } __packed;
 
 /* prefix used by scan requestor ids on the host */
@@ -3310,7 +3310,7 @@ struct wmi_stop_scan_arg {
 
 struct wmi_scan_chan_list_cmd {
 	__le32 num_scan_chans;
-	struct wmi_channel chan_info[];
+	struct wmi_channel chan_info[0];
 } __packed;
 
 struct wmi_scan_chan_list_arg {
@@ -3394,12 +3394,12 @@ struct wmi_mgmt_rx_hdr_v2 {
 
 struct wmi_mgmt_rx_event_v1 {
 	struct wmi_mgmt_rx_hdr_v1 hdr;
-	u8 buf[];
+	u8 buf[0];
 } __packed;
 
 struct wmi_mgmt_rx_event_v2 {
 	struct wmi_mgmt_rx_hdr_v2 hdr;
-	u8 buf[];
+	u8 buf[0];
 } __packed;
 
 struct wmi_10_4_mgmt_rx_hdr {
@@ -3414,7 +3414,7 @@ struct wmi_10_4_mgmt_rx_hdr {
 
 struct wmi_10_4_mgmt_rx_event {
 	struct wmi_10_4_mgmt_rx_hdr hdr;
-	u8 buf[];
+	u8 buf[0];
 } __packed;
 
 struct wmi_mgmt_rx_ext_info {
@@ -3454,14 +3454,14 @@ struct wmi_phyerr {
 	__le32 rssi_chains[4];
 	__le16 nf_chains[4];
 	__le32 buf_len;
-	u8 buf[];
+	u8 buf[0];
 } __packed;
 
 struct wmi_phyerr_event {
 	__le32 num_phyerrs;
 	__le32 tsf_l32;
 	__le32 tsf_u32;
-	struct wmi_phyerr phyerrs[];
+	struct wmi_phyerr phyerrs[0];
 } __packed;
 
 struct wmi_10_4_phyerr_event {
@@ -3478,7 +3478,7 @@ struct wmi_10_4_phyerr_event {
 	__le32 phy_err_mask[2];
 	__le32 tsf_timestamp;
 	__le32 buf_len;
-	u8 buf[];
+	u8 buf[0];
 } __packed;
 
 struct wmi_radar_found_info {
@@ -3591,7 +3591,7 @@ struct wmi_mgmt_tx_hdr {
 
 struct wmi_mgmt_tx_cmd {
 	struct wmi_mgmt_tx_hdr hdr;
-	u8 buf[];
+	u8 buf[0];
 } __packed;
 
 struct wmi_echo_event {
@@ -4619,7 +4619,7 @@ struct wmi_stats_event {
 	 *  By having a zero sized array, the pointer to data area
 	 *  becomes available without increasing the struct size
 	 */
-	u8 data[];
+	u8 data[0];
 } __packed;
 
 struct wmi_10_2_stats_event {
@@ -4629,7 +4629,7 @@ struct wmi_10_2_stats_event {
 	__le32 num_vdev_stats;
 	__le32 num_peer_stats;
 	__le32 num_bcnflt_stats;
-	u8 data[];
+	u8 data[0];
 } __packed;
 
 /*
@@ -5024,7 +5024,7 @@ struct wmi_vdev_install_key_cmd {
 	__le32 key_rxmic_len;
 
 	/* contains key followed by tx mic followed by rx mic */
-	u8 key_data[];
+	u8 key_data[0];
 } __packed;
 
 struct wmi_vdev_install_key_arg {
@@ -5694,7 +5694,7 @@ struct wmi_bcn_tx_hdr {
 
 struct wmi_bcn_tx_cmd {
 	struct wmi_bcn_tx_hdr hdr;
-	u8 *bcn[];
+	u8 *bcn[0];
 } __packed;
 
 struct wmi_bcn_tx_arg {
@@ -6111,7 +6111,7 @@ struct wmi_bcn_info {
 
 struct wmi_host_swba_event {
 	__le32 vdev_map;
-	struct wmi_bcn_info bcn_info[];
+	struct wmi_bcn_info bcn_info[0];
 } __packed;
 
 struct wmi_10_2_4_bcn_info {
@@ -6121,7 +6121,7 @@ struct wmi_10_2_4_bcn_info {
 
 struct wmi_10_2_4_host_swba_event {
 	__le32 vdev_map;
-	struct wmi_10_2_4_bcn_info bcn_info[];
+	struct wmi_10_2_4_bcn_info bcn_info[0];
 } __packed;
 
 /* 16 words = 512 client + 1 word = for guard */
@@ -6162,7 +6162,7 @@ struct wmi_10_4_bcn_info {
 
 struct wmi_10_4_host_swba_event {
 	__le32 vdev_map;
-	struct wmi_10_4_bcn_info bcn_info[];
+	struct wmi_10_4_bcn_info bcn_info[0];
 } __packed;
 
 #define WMI_MAX_AP_VDEV 16

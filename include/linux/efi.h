@@ -1234,7 +1234,7 @@ struct linux_efi_memreserve {
 	struct {
 		phys_addr_t	base;
 		phys_addr_t	size;
-	} entry[];
+	} entry[0];
 };
 
 #define EFI_MEMRESERVE_SIZE(count) (sizeof(struct linux_efi_memreserve) + \

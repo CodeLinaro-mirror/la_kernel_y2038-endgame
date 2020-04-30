@@ -37,7 +37,7 @@ struct obj_mlmeex {
 	u16 state;
 	u16 code;
 	u16 size;
-	u8 data[];
+	u8 data[0];
 } __packed;
 
 struct obj_buffer {
@@ -68,12 +68,12 @@ struct obj_bss {
 
 struct obj_bsslist {
 	u32 nr;
-	struct obj_bss bsslist[];
+	struct obj_bss bsslist[0];
 } __packed;
 
 struct obj_frequencies {
 	u16 nr;
-	u16 mhz[];
+	u16 mhz[0];
 } __packed;
 
 struct obj_attachment {
@@ -81,7 +81,7 @@ struct obj_attachment {
 	char reserved;
 	short id;
 	short size;
-	char data[];
+	char data[0];
 } __packed;
 
 /*

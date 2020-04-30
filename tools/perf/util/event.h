@@ -79,7 +79,7 @@ struct sample_read {
 
 struct ip_callchain {
 	u64 nr;
-	u64 ips[];
+	u64 ips[0];
 };
 
 struct branch_stack;

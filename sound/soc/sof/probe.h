@@ -36,7 +36,7 @@ struct sof_probe_point_desc {
 struct sof_ipc_probe_dma_add_params {
 	struct sof_ipc_cmd_hdr hdr;
 	unsigned int num_elems;
-	struct sof_probe_dma dma[];
+	struct sof_probe_dma dma[0];
 } __packed;
 
 struct sof_ipc_probe_info_params {
@@ -51,19 +51,19 @@ struct sof_ipc_probe_info_params {
 struct sof_ipc_probe_dma_remove_params {
 	struct sof_ipc_cmd_hdr hdr;
 	unsigned int num_elems;
-	unsigned int stream_tag[];
+	unsigned int stream_tag[0];
 } __packed;
 
 struct sof_ipc_probe_point_add_params {
 	struct sof_ipc_cmd_hdr hdr;
 	unsigned int num_elems;
-	struct sof_probe_point_desc desc[];
+	struct sof_probe_point_desc desc[0];
 } __packed;
 
 struct sof_ipc_probe_point_remove_params {
 	struct sof_ipc_cmd_hdr hdr;
 	unsigned int num_elems;
-	unsigned int buffer_id[];
+	unsigned int buffer_id[0];
 } __packed;
 
 int sof_ipc_probe_init(struct snd_sof_dev *sdev,

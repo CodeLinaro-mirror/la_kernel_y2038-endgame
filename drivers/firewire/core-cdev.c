@@ -117,7 +117,7 @@ struct inbound_transaction_resource {
 struct descriptor_resource {
 	struct client_resource resource;
 	struct fw_descriptor descriptor;
-	u32 data[];
+	u32 data[0];
 };
 
 struct iso_resource {

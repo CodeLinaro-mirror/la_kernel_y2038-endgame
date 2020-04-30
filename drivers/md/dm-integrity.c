@@ -92,7 +92,7 @@ struct journal_entry {
 		} s;
 		__u64 sector;
 	} u;
-	commit_id_t last_bytes[];
+	commit_id_t last_bytes[0];
 	/* __u8 tag[0]; */
 };
 

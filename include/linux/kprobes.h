@@ -161,7 +161,7 @@ struct kretprobe_instance {
 	kprobe_opcode_t *ret_addr;
 	struct task_struct *task;
 	void *fp;
-	char data[];
+	char data[0];
 };
 
 struct kretprobe_blackpoint {

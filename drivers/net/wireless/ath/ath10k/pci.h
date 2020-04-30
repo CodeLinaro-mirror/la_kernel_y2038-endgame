@@ -182,7 +182,7 @@ struct ath10k_pci {
 	 * allocated (ahb support enabled case) in the continuation of
 	 * this struct.
 	 */
-	struct ath10k_ahb ahb[];
+	struct ath10k_ahb ahb[0];
 };
 
 static inline struct ath10k_pci *ath10k_pci_priv(struct ath10k *ar)

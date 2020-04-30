@@ -80,7 +80,7 @@ struct tb {
 	int index;
 	enum tb_security_level security_level;
 	size_t nboot_acl;
-	unsigned long privdata[];
+	unsigned long privdata[0];
 };
 
 extern struct bus_type tb_bus_type;

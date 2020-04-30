@@ -34,7 +34,7 @@
 struct can_skb_priv {
 	int ifindex;
 	int skbcnt;
-	struct can_frame cf[];
+	struct can_frame cf[0];
 };
 
 static inline struct can_skb_priv *can_skb_prv(struct sk_buff *skb)

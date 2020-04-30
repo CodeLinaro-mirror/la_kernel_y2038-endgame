@@ -26,7 +26,7 @@ struct mlxsw_sp_span {
 	struct list_head trigger_entries_list;
 	atomic_t active_entries_count;
 	int entries_count;
-	struct mlxsw_sp_span_entry entries[];
+	struct mlxsw_sp_span_entry entries[0];
 };
 
 struct mlxsw_sp_span_analyzed_port {

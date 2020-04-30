@@ -19,7 +19,7 @@
 struct audit_sig_info {
 	uid_t		uid;
 	pid_t		pid;
-	char		ctx[];
+	char		ctx[0];
 };
 
 struct audit_buffer;

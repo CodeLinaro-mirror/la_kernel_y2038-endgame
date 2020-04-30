@@ -51,11 +51,11 @@
 
 /* CHRP NVRAM header */
 struct chrp_header {
-	u8		signature;
-	u8		cksum;
-	u16		len;
-	char		name[12];
-	u8		data[];
+  u8		signature;
+  u8		cksum;
+  u16		len;
+  char          name[12];
+  u8		data[0];
 };
 
 struct core99_header {

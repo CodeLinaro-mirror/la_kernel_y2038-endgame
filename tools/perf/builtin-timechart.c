@@ -128,7 +128,7 @@ struct sample_wrapper {
 	struct sample_wrapper *next;
 
 	u64		timestamp;
-	unsigned char	data[];
+	unsigned char	data[0];
 };
 
 #define TYPE_NONE	0

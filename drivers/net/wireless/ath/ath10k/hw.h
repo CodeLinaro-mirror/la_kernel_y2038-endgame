@@ -165,7 +165,7 @@ enum qca9377_chip_id_rev {
 struct ath10k_fw_ie {
 	__le32 id;
 	__le32 len;
-	u8 data[];
+	u8 data[0];
 };
 
 enum ath10k_fw_ie_type {

@@ -237,7 +237,7 @@ struct dfl_feature_platform_data {
 	int open_count;
 	void *private;
 	int num;
-	struct dfl_feature features[];
+	struct dfl_feature features[0];
 };
 
 static inline

@@ -74,7 +74,7 @@ struct milbeaut_xdmac_chan {
 struct milbeaut_xdmac_device {
 	struct dma_device ddev;
 	void __iomem *reg_base;
-	struct milbeaut_xdmac_chan channels[];
+	struct milbeaut_xdmac_chan channels[0];
 };
 
 static struct milbeaut_xdmac_chan *

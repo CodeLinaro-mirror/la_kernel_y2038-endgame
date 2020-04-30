@@ -52,7 +52,7 @@ struct sigframe {
 	/* Matches struct ucontext from its uc_mcontext field onwards */
 	struct sigcontext sf_sc;
 	sigset_t sf_mask;
-	unsigned long long sf_extcontext[];
+	unsigned long long sf_extcontext[0];
 };
 
 struct rt_sigframe {

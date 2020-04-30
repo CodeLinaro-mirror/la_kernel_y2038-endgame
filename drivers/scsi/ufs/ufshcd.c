@@ -3258,7 +3258,7 @@ static inline int ufshcd_read_desc(struct ufs_hba *hba,
 struct uc_string_id {
 	u8 len;
 	u8 type;
-	wchar_t uc[];
+	wchar_t uc[0];
 } __packed;
 
 /* replace non-printable or non-ASCII characters with spaces */

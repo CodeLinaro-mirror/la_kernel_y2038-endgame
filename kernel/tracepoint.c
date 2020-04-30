@@ -50,7 +50,7 @@ static bool ok_to_free_tracepoints;
  */
 struct tp_probes {
 	struct rcu_head rcu;
-	struct tracepoint_func probes[];
+	struct tracepoint_func probes[0];
 };
 
 static inline void *allocate_probes(int count)

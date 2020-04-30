@@ -73,7 +73,7 @@ struct resource_table {
 	u32 ver;
 	u32 num;
 	u32 reserved[2];
-	u32 offset[];
+	u32 offset[0];
 } __packed;
 
 /**
@@ -87,7 +87,7 @@ struct resource_table {
  */
 struct fw_rsc_hdr {
 	u32 type;
-	u8 data[];
+	u8 data[0];
 } __packed;
 
 /**
@@ -306,7 +306,7 @@ struct fw_rsc_vdev {
 	u8 status;
 	u8 num_of_vrings;
 	u8 reserved[2];
-	struct fw_rsc_vdev_vring vring[];
+	struct fw_rsc_vdev_vring vring[0];
 } __packed;
 
 struct rproc;
