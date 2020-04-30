@@ -98,6 +98,8 @@ struct isci_tmf {
 
 static inline void isci_print_tmf(struct isci_host *ihost, struct isci_tmf *tmf)
 {
+	u8 *resp = tmf->resp.resp_iu.resp_data;
+
 	if (SAS_PROTOCOL_SATA == tmf->proto)
 		dev_dbg(&ihost->pdev->dev,
 			"%s: status = %x\n"
@@ -122,10 +124,7 @@ static inline void isci_print_tmf(struct isci_host *ihost, struct isci_tmf *tmf)
 			tmf->resp.resp_iu.datapres,
 			tmf->resp.resp_iu.status,
 			be32_to_cpu(tmf->resp.resp_iu.response_data_len),
-			tmf->resp.resp_iu.resp_data[0],
-			tmf->resp.resp_iu.resp_data[1],
-			tmf->resp.resp_iu.resp_data[2],
-			tmf->resp.resp_iu.resp_data[3]);
+			resp[0], resp[1], resp[2], resp[3]);
 }
 
 
