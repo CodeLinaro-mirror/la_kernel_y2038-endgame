@@ -360,9 +360,9 @@ struct logicalVolIntegrityDesc {
 	uint8_t			logicalVolContentsUse[32];
 	__le32			numOfPartitions;
 	__le32			lengthOfImpUse;
-	__le32			freeSpaceTable[0];
 	__le32			sizeTable[0];
 	uint8_t			impUse[0];
+	__le32			freeSpaceTable[];
 } __packed;
 
 /* Integrity Type (ECMA 167r3 3/10.10.3) */
