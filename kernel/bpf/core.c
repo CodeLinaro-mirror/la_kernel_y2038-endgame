@@ -1364,7 +1364,7 @@ u64 __weak bpf_probe_read_kernel(void *dst, u32 size, const void *unsafe_ptr)
  *
  * Decode and execute eBPF instructions.
  */
-static u64 __no_fgcse ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
+static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
 {
 #define BPF_INSN_2_LBL(x, y)    [BPF_##x | BPF_##y] = &&x##_##y
 #define BPF_INSN_3_LBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = &&x##_##y##_##z
@@ -1384,11 +1384,15 @@ static u64 __no_fgcse ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u6
 #undef BPF_INSN_2_LBL
 	u32 tail_call_cnt = 0;
 
+#if defined(CONFIG_X86_64) && !defined(CONFIG_RETPOLINE)
+#define CONT	 ({ insn++; goto *jumptable[insn->code]; })
+#define CONT_JMP ({ insn++; goto *jumptable[insn->code]; })
+#else
 #define CONT	 ({ insn++; goto select_insn; })
 #define CONT_JMP ({ insn++; goto select_insn; })
-
 select_insn:
 	goto *jumptable[insn->code];
+#endif
 
 	/* ALU */
 #define ALU(OPCODE, OP)			\
@@ -1547,7 +1551,7 @@ select_insn:
 		 * where arg1_type is ARG_PTR_TO_CTX.
 		 */
 		insn = prog->insnsi;
-		goto select_insn;
+		CONT;
 out:
 		CONT;
 	}
