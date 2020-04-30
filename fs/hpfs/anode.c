@@ -200,14 +200,17 @@ secno hpfs_add_sector_to_btree(struct super_block *s, secno node, int fnod, unsi
 		brelse(bh);
 		a = na;
 		if ((new_anode = hpfs_alloc_anode(s, a, &na, &bh))) {
+			struct bplus_internal_node *internal;
+
 			anode = new_anode;
 			/*anode->up = cpu_to_le32(up != -1 ? up : ra);*/
 			anode->btree.flags |= BP_internal;
 			anode->btree.n_used_nodes = 1;
 			anode->btree.n_free_nodes = 59;
 			anode->btree.first_free = cpu_to_le16(16);
-			anode->btree.u.internal[0].down = cpu_to_le32(a);
-			anode->btree.u.internal[0].file_secno = cpu_to_le32(-1);
+			internal = anode->btree.u.internal;
+			internal->down = cpu_to_le32(a);
+			internal->file_secno = cpu_to_le32(-1);
 			mark_buffer_dirty(bh);
 			brelse(bh);
 			if ((anode = hpfs_map_anode(s, a, &bh))) {
