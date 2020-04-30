@@ -269,6 +269,7 @@ static int asd_get_tmf_resp_tasklet(struct asd_ascb *ascb,
 	struct ssp_frame_hdr *fh;
 	struct ssp_response_iu   *ru;
 	int res = TMF_RESP_FUNC_FAILED;
+	u8 *resp;
 
 	ASD_DPRINTK("tmf resp tasklet\n");
 
@@ -287,8 +288,9 @@ static int asd_get_tmf_resp_tasklet(struct asd_ascb *ascb,
 	fh = edb->vaddr + 16;
 	ru = edb->vaddr + 16 + sizeof(*fh);
 	res = ru->status;
+	resp = ru->resp_data;
 	if (ru->datapres == 1)	  /* Response data present */
-		res = ru->resp_data[3];
+		res = resp[3];
 #if 0
 	ascb->tag = fh->tag;
 #endif

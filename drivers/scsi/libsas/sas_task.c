@@ -12,13 +12,14 @@ void sas_ssp_task_response(struct device *dev, struct sas_task *task,
 			   struct ssp_response_iu *iu)
 {
 	struct task_status_struct *tstat = &task->task_status;
+	u8 *resp = iu->resp_data;
 
 	tstat->resp = SAS_TASK_COMPLETE;
 
 	if (iu->datapres == 0)
 		tstat->stat = iu->status;
 	else if (iu->datapres == 1)
-		tstat->stat = iu->resp_data[3];
+		tstat->stat = resp[3];
 	else if (iu->datapres == 2) {
 		tstat->stat = SAM_STAT_CHECK_CONDITION;
 		tstat->buf_valid_size =
