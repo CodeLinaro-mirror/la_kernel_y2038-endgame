@@ -1394,7 +1394,7 @@ static int testcase_successes;
 static int expected_testcase_failures;
 static int unexpected_testcase_failures;
 
-static void dotest(void (*testcase_fn)(void), int expected, int lockclass_mask)
+static noinline void dotest(void (*testcase_fn)(void), int expected, int lockclass_mask)
 {
 	unsigned long saved_preempt_count = preempt_count();
 
