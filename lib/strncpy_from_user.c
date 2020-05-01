@@ -30,9 +30,6 @@ static __always_inline long do_strncpy_from_user(char *dst, const char __user *s
 	const struct word_at_a_time constants = WORD_AT_A_TIME_CONSTANTS;
 	unsigned long res = 0;
 
-	if (!user_access_begin(src, max))
-		return -EFAULT;
-
 	if (IS_UNALIGNED(src, dst))
 		goto byte_at_a_time;
 
@@ -46,8 +43,7 @@ static __always_inline long do_strncpy_from_user(char *dst, const char __user *s
 		if (has_zero(c, &data, &constants)) {
 			data = prep_zero_mask(c, data, &constants);
 			data = create_zero_mask(data);
-			res += find_zero(data);
-			goto done;
+			return res + find_zero(data);
 		}
 		res += sizeof(unsigned long);
 		max -= sizeof(unsigned long);
@@ -60,7 +56,7 @@ byte_at_a_time:
 		unsafe_get_user(c,src+res, efault);
 		dst[res] = c;
 		if (!c)
-			goto done;
+			return res;
 		res++;
 		max--;
 	}
@@ -69,20 +65,14 @@ byte_at_a_time:
 	 * Uhhuh. We hit 'max'. But was that the user-specified maximum
 	 * too? If so, that's ok - we got as much as the user asked for.
 	 */
-	if (res < count) {
-		/*
-		 * Nope: we hit the address space limit, and we still had more
-		 * characters the caller would have wanted. That's an EFAULT.
-		 */
-		goto efault;
-	}
+	if (res >= count)
+		return res;
 
-done:
-	user_access_end();
-	return res;
-
+	/*
+	 * Nope: we hit the address space limit, and we still had more
+	 * characters the caller would have wanted. That's an EFAULT.
+	 */
 efault:
-	user_access_end();
 	return -EFAULT;
 }
 
@@ -116,6 +106,7 @@ long strncpy_from_user(char *dst, const char __user *src, long count)
 	src_addr = (unsigned long)untagged_addr(src);
 	if (likely(src_addr < max_addr)) {
 		unsigned long max = max_addr - src_addr;
+		long retval;
 
 		/*
 		 * Truncate 'max' to the user-specified limit, so that
@@ -126,7 +117,11 @@ long strncpy_from_user(char *dst, const char __user *src, long count)
 
 		kasan_check_write(dst, count);
 		check_object_size(dst, count, false);
-		return do_strncpy_from_user(dst, src, count, max);
+		if (user_access_begin(src, max)) {
+			retval = do_strncpy_from_user(dst, src, count, max);
+			user_access_end();
+			return retval;
+		}
 	}
 	return -EFAULT;
 }
