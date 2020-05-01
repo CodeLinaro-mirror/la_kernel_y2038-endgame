@@ -1150,7 +1150,7 @@ static int rtl2832_sdr_s_fmt_sdr_cap(struct file *file, void *priv,
 		return -EBUSY;
 
 	memset(f->fmt.sdr.reserved, 0, sizeof(f->fmt.sdr.reserved));
-	for (i = 0; i < dev->num_formats; i++) {
+	for (i = 0; i < min(dev->num_formats, NUM_FORMATS); i++) {
 		if (formats[i].pixelformat == f->fmt.sdr.pixelformat) {
 			dev->pixelformat = formats[i].pixelformat;
 			dev->buffersize = formats[i].buffersize;
@@ -1178,7 +1178,7 @@ static int rtl2832_sdr_try_fmt_sdr_cap(struct file *file, void *priv,
 		(char *)&f->fmt.sdr.pixelformat);
 
 	memset(f->fmt.sdr.reserved, 0, sizeof(f->fmt.sdr.reserved));
-	for (i = 0; i < dev->num_formats; i++) {
+	for (i = 0; i < min(dev->num_formats, NUM_FORMATS); i++) {
 		if (formats[i].pixelformat == f->fmt.sdr.pixelformat) {
 			f->fmt.sdr.buffersize = formats[i].buffersize;
 			return 0;
