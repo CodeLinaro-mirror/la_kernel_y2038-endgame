@@ -1398,7 +1398,7 @@ static void dotest(void (*testcase_fn)(void), int expected, int lockclass_mask)
 {
 	unsigned long saved_preempt_count = preempt_count();
 
-	WARN_ON(irqs_disabled());
+	lockdep_assert_irqs_enabled();
 
 	debug_locks_silent = !(debug_locks_verbose & lockclass_mask);
 
