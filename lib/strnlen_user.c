@@ -26,6 +26,9 @@ static inline long do_strnlen_user(const char __user *src, unsigned long count, 
 	unsigned long align, res = 0;
 	unsigned long c;
 
+	if (!user_access_begin(src, max))
+		return 0;
+
 	/*
 	 * Do everything aligned. But that means that we
 	 * need to also expand the maximum..
@@ -39,10 +42,12 @@ static inline long do_strnlen_user(const char __user *src, unsigned long count, 
 
 	for (;;) {
 		unsigned long data;
+
 		if (has_zero(c, &data, &constants)) {
 			data = prep_zero_mask(c, data, &constants);
 			data = create_zero_mask(data);
-			return res + find_zero(data) + 1 - align;
+			res += find_zero(data) + 1 - align;
+			goto done;
 		}
 		res += sizeof(unsigned long);
 		/* We already handled 'unsigned long' bytes. Did we do it all ? */
@@ -58,13 +63,21 @@ static inline long do_strnlen_user(const char __user *src, unsigned long count, 
 	 * too? If so, return the marker for "too long".
 	 */
 	if (res >= count)
-		return count+1;
+		res = count + 1;
+	else {
+		/*
+		 * Nope: we hit the address space limit, and we still had more
+		 * characters the caller would have wanted. That's 0.
+		 */
+		goto efault;
+	}
 
-	/*
-	 * Nope: we hit the address space limit, and we still had more
-	 * characters the caller would have wanted. That's 0.
-	 */
+done:
+	user_access_end();
+	return res;
+
 efault:
+	user_access_end();
 	return 0;
 }
 
@@ -100,7 +113,6 @@ long strnlen_user(const char __user *str, long count)
 	src_addr = (unsigned long)untagged_addr(str);
 	if (likely(src_addr < max_addr)) {
 		unsigned long max = max_addr - src_addr;
-		long retval;
 
 		/*
 		 * Truncate 'max' to the user-specified limit, so that
@@ -109,11 +121,7 @@ long strnlen_user(const char __user *str, long count)
 		if (max > count)
 			max = count;
 
-		if (user_access_begin(str, max)) {
-			retval = do_strnlen_user(str, count, max);
-			user_access_end();
-			return retval;
-		}
+		return do_strnlen_user(str, count, max);
 	}
 	return 0;
 }
