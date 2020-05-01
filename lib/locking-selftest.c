@@ -1134,11 +1134,11 @@ static int testcase_successes;
 static int expected_testcase_failures;
 static int unexpected_testcase_failures;
 
-static noinline void dotest(void (*testcase_fn)(void), int expected, int lockclass_mask)
+static void dotest(void (*testcase_fn)(void), int expected, int lockclass_mask)
 {
 	unsigned long saved_preempt_count = preempt_count();
 
-	WARN_ON(irqs_disabled());
+	lockdep_assert_irqs_enabled();
 
 	testcase_fn();
 	/*
