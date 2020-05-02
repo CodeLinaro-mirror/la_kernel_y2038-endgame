@@ -98,7 +98,7 @@ static void udf_add_free_space(struct super_block *sb, u16 partition, u32 cnt)
 		return;
 
 	lvid = (struct logicalVolIntegrityDesc *)sbi->s_lvid_bh->b_data;
-	le32_add_cpu(&lvid->freeSpaceTable[partition], cnt);
+	le32_add_cpu(lvid->freeSpaceTable + partition, cnt);
 	udf_updated_lvid(sb);
 }
 
