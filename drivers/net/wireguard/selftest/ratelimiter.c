@@ -153,19 +153,22 @@ bool __init wg_ratelimiter_selftest(void)
 	skb_reset_network_header(skb4);
 	++test;
 
-#if IS_ENABLED(CONFIG_IPV6)
-	skb6 = alloc_skb(sizeof(struct ipv6hdr), GFP_KERNEL);
-	if (unlikely(!skb6)) {
-		kfree_skb(skb4);
-		goto err_nofree;
+	if (IS_ENABLED(CONFIG_IPV6)) {
+		skb6 = alloc_skb(sizeof(struct ipv6hdr), GFP_KERNEL);
+		if (unlikely(!skb6)) {
+			kfree_skb(skb4);
+			goto err_nofree;
+		}
+		skb6->protocol = htons(ETH_P_IPV6);
+		hdr6 = (struct ipv6hdr *)skb_put(skb6, sizeof(*hdr6));
+		hdr6->saddr.in6_u.u6_addr32[0] = htonl(1212);
+		hdr6->saddr.in6_u.u6_addr32[1] = htonl(289188);
+		skb_reset_network_header(skb6);
+		++test;
+	} else {
+		skb6 = NULL;
+		hdr6 = NULL;
 	}
-	skb6->protocol = htons(ETH_P_IPV6);
-	hdr6 = (struct ipv6hdr *)skb_put(skb6, sizeof(*hdr6));
-	hdr6->saddr.in6_u.u6_addr32[0] = htonl(1212);
-	hdr6->saddr.in6_u.u6_addr32[1] = htonl(289188);
-	skb_reset_network_header(skb6);
-	++test;
-#endif
 
 	for (trials = TRIALS_BEFORE_GIVING_UP;;) {
 		int test_count = 0, ret;
@@ -206,9 +209,8 @@ bool __init wg_ratelimiter_selftest(void)
 
 err:
 	kfree_skb(skb4);
-#if IS_ENABLED(CONFIG_IPV6)
-	kfree_skb(skb6);
-#endif
+	if (IS_ENABLED(CONFIG_IPV6))
+		kfree_skb(skb6);
 err_nofree:
 	wg_ratelimiter_uninit();
 	wg_ratelimiter_uninit();
