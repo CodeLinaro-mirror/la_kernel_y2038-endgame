@@ -31,8 +31,9 @@ extern char _sdata[];
  * area possible. And because everything is statically allocated on the
  * stack then there is no need to clean up before returning.
  */
-KBUILD_WARN(0, GCC_4_6, "-Wframe-larger-than=10000");
-KBUILD_WARN(0, CLANG_8, "-Wframe-larger-than=10000");
+KBUILD_WARN(0, GCC_4_6, "-Wframe-larger-than=10000")
+KBUILD_WARN(3, CLANG_8, "-Wframe-larger-than=")
+
 int __init __inflate_kernel_data(void)
 {
 	struct z_stream_s stream, *strm = &stream;

@@ -70,6 +70,7 @@ static uint32_t get_cell_size(const void *fdt)
 
 /* this is just over the default warning limit, but called in a safe way */
 KBUILD_WARN(0, GCC_4_6, "-Wframe-larger-than=10000");
+KBUILD_WARN(3, CLANG_8, "-Wframe-larger-than=")
 
 static void merge_fdt_bootargs(void *fdt, const char *fdt_cmdline)
 {
