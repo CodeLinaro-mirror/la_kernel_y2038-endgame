@@ -122,7 +122,7 @@
 
 #if defined(__clang__)
 #define KBUILD_WARN_LEVEL(level, warning)  \
-	__KBUILD_WARN_LEVEL(GCC diagnostic level warning)
+	__KBUILD_WARN_LEVEL(clang diagnostic level warning)
 
 #define KBUILD_WARN_LEVEL_CLANG_8(level, warning) \
 	KBUILD_WARN_LEVEL(level, warning)
