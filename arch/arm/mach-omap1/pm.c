@@ -605,10 +605,25 @@ static const struct platform_suspend_ops omap_pm_ops = {
 	.valid		= suspend_valid_only_mem,
 };
 
+static void omap_wakeup_init(void)
+{
+	int irq;
+
+	if (cpu_is_omap7xx())
+		irq = INT_7XX_WAKE_UP_REQ;
+	else if (cpu_is_omap16xx())
+		irq = INT_1610_WAKE_UP_REQ;
+	else
+		return;
+
+	if (request_irq(irq, omap_wakeup_interrupt, 0, "peripheral wakeup",
+			NULL))
+		pr_err("Failed to request irq %d (peripheral wakeup)\n", irq);
+}
+
 static int __init omap_pm_init(void)
 {
 	int error = 0;
-	int irq;
 
 	if (!cpu_class_is_omap1())
 		return -ENODEV;
@@ -651,13 +666,7 @@ static int __init omap_pm_init(void)
 
 	arm_pm_idle = omap1_pm_idle;
 
-	if (cpu_is_omap7xx())
-		irq = INT_7XX_WAKE_UP_REQ;
-	else if (cpu_is_omap16xx())
-		irq = INT_1610_WAKE_UP_REQ;
-	if (request_irq(irq, omap_wakeup_interrupt, 0, "peripheral wakeup",
-			NULL))
-		pr_err("Failed to request irq %d (peripheral wakeup)\n", irq);
+	omap_wakeup_init();
 
 	/* Program new power ramp-up time
 	 * (0 for most boards since we don't lower voltage when in deep sleep)
