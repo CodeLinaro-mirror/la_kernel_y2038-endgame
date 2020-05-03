@@ -29,6 +29,7 @@ config UBSAN_TRAP
 config UBSAN_BOUNDS
 	bool "Perform array index bounds checking"
 	default UBSAN
+	depends on !(CC_IS_CLANG && KCOV)
 	help
 	  This option enables detection of directly indexed out of bounds
 	  array accesses, where the array size is known at compile time.
