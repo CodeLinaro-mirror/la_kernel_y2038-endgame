@@ -26,14 +26,15 @@
 #
 
 ifdef CONFIG_X86
-calcs_ccflags := -mhard-float -msse
+calcs_ccflags := -msse
 endif
 
 ifdef CONFIG_PPC64
-calcs_ccflags := -mhard-float -maltivec
+calcs_ccflags := -maltivec
 endif
 
 ifdef CONFIG_CC_IS_GCC
+calcs_ccflags += -mhard-float
 ifeq ($(call cc-ifversion, -lt, 0701, y), y)
 IS_OLD_GCC = 1
 endif
