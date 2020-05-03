@@ -3,14 +3,15 @@
 # Makefile for the 'dsc' sub-component of DAL.
 
 ifdef CONFIG_X86
-dsc_ccflags := -mhard-float -msse
+dsc_ccflags := -msse
 endif
 
 ifdef CONFIG_PPC64
-dsc_ccflags := -mhard-float -maltivec
+dsc_ccflags := -maltivec
 endif
 
 ifdef CONFIG_CC_IS_GCC
+dsc_ccflags += -mhard-float
 ifeq ($(call cc-ifversion, -lt, 0701, y), y)
 IS_OLD_GCC = 1
 endif
