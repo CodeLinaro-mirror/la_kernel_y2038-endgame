@@ -22,6 +22,7 @@
 #include <linux/slab.h>
 #include <linux/soc/ixp4xx/npe.h>
 #include <linux/soc/ixp4xx/qmgr.h>
+#include <linux/soc/ixp4xx/cpu.h>
 
 #define DEBUG_DESC		0
 #define DEBUG_RX		0
@@ -42,9 +43,9 @@
 #define RX_SIZE			(HDLC_MAX_MRU + 4) /* NPE needs more space */
 #define MAX_CLOSE_WAIT		1000 /* microseconds */
 #define HSS_COUNT		2
-#define FRAME_SIZE		256 /* doesn't matter at this point */
-#define FRAME_OFFSET		0
-#define MAX_CHANNELS		(FRAME_SIZE / 8)
+#define HSS_FRAME_SIZE		256 /* doesn't matter at this point */
+#define HSS_FRAME_OFFSET	0
+#define HSS_MAX_CHANNELS	(HSS_FRAME_SIZE / 8)
 
 #define NAPI_WEIGHT		16
 
@@ -374,7 +375,7 @@ static void hss_config_set_lut(struct port *port)
 	msg.cmd = PORT_CONFIG_WRITE;
 	msg.hss_port = port->id;
 
-	for (ch = 0; ch < MAX_CHANNELS; ch++) {
+	for (ch = 0; ch < HSS_MAX_CHANNELS; ch++) {
 		msg.data32 >>= 2;
 		msg.data32 |= TDMMAP_HDLC << 30;
 
@@ -425,16 +426,16 @@ static void hss_config(struct port *port)
 	msg.cmd = PORT_CONFIG_WRITE;
 	msg.hss_port = port->id;
 	msg.index = HSS_CONFIG_TX_FCR;
-	msg.data16a = FRAME_OFFSET;
-	msg.data16b = FRAME_SIZE - 1;
+	msg.data16a = HSS_FRAME_OFFSET;
+	msg.data16b = HSS_FRAME_SIZE - 1;
 	hss_npe_send(port, &msg, "HSS_SET_TX_FCR");
 
 	memset(&msg, 0, sizeof(msg));
 	msg.cmd = PORT_CONFIG_WRITE;
 	msg.hss_port = port->id;
 	msg.index = HSS_CONFIG_RX_FCR;
-	msg.data16a = FRAME_OFFSET;
-	msg.data16b = FRAME_SIZE - 1;
+	msg.data16a = HSS_FRAME_OFFSET;
+	msg.data16b = HSS_FRAME_SIZE - 1;
 	hss_npe_send(port, &msg, "HSS_SET_RX_FCR");
 
 	hss_config_set_lut(port);

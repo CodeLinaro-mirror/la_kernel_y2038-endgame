@@ -20,10 +20,11 @@
 #include <linux/delay.h>
 #include <asm/mach/pci.h>
 #include <asm/irq.h>
-#include <mach/hardware.h>
+
 #include <asm/mach-types.h>
 
 #include "irqs.h"
+#include "platform.h"
 
 #define AVILA_MAX_DEV	4
 #define LOFT_MAX_DEV	6

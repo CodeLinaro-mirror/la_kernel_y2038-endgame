@@ -23,16 +23,20 @@
 #include <linux/mtd/platnand.h>
 #include <linux/delay.h>
 #include <linux/gpio.h>
+#include <linux/soc/ixp4xx/cpu.h>
+
 #include <asm/types.h>
 #include <asm/setup.h>
 #include <asm/memory.h>
-#include <mach/hardware.h>
+
 #include <asm/mach-types.h>
 #include <asm/irq.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/flash.h>
 
 #include "irqs.h"
+#include "ixp4xx-regs.h"
+#include "platform.h"
 
 #define IXDP425_SDA_PIN		7
 #define IXDP425_SCL_PIN		6

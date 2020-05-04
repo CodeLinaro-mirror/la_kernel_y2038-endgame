@@ -14,21 +14,25 @@
 
 #include <linux/kernel.h>
 #include <linux/init.h>
+#include <linux/io.h>
 #include <linux/device.h>
 #include <linux/serial.h>
 #include <linux/tty.h>
 #include <linux/serial_8250.h>
 #include <linux/gpio/machine.h>
+#include <linux/platform_data/pata_ixp4xx_cf.h>
 #include <asm/types.h>
 #include <asm/setup.h>
 #include <asm/memory.h>
-#include <mach/hardware.h>
+
 #include <asm/mach-types.h>
 #include <asm/irq.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/flash.h>
 
 #include "irqs.h"
+#include "ixp4xx-regs.h"
+#include "platform.h"
 
 #define AVILA_SDA_PIN	7
 #define AVILA_SCL_PIN	6

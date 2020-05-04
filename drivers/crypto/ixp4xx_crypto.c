@@ -118,9 +118,9 @@ struct crypt_ctl {
 	u8 mode;		/* NPE_OP_*  operation mode */
 #endif
 	u8 iv[MAX_IVLEN];	/* IV for CBC mode or CTR IV for CTR mode */
-	dma_addr_t icv_rev_aes;	/* icv or rev aes */
-	dma_addr_t src_buf;
-	dma_addr_t dst_buf;
+	u32 icv_rev_aes;	/* icv or rev aes */
+	u32 src_buf;
+	u32 dst_buf;
 #ifdef __ARMEB__
 	u16 auth_offs;		/* Authentication start offset */
 	u16 auth_len;		/* Authentication data length */
@@ -224,8 +224,6 @@ static dma_addr_t crypt_phys;
 
 static int support_aes = 1;
 
-#define DRIVER_NAME "ixp4xx_crypto"
-
 static struct platform_device *pdev;
 
 static inline dma_addr_t crypt_virt2phys(struct crypt_ctl *virt)
@@ -265,7 +263,7 @@ static int setup_crypt_desc(void)
 	return 0;
 }
 
-static spinlock_t desc_lock;
+static DEFINE_SPINLOCK(desc_lock);
 static struct crypt_ctl *get_crypt_desc(void)
 {
 	int i;
@@ -293,7 +291,7 @@ static struct crypt_ctl *get_crypt_desc(void)
 	}
 }
 
-static spinlock_t emerg_lock;
+static DEFINE_SPINLOCK(emerg_lock);
 static struct crypt_ctl *get_crypt_desc_emerg(void)
 {
 	int i;
@@ -432,11 +430,6 @@ static int init_ixp_crypto(struct device *dev)
 	int ret = -ENODEV;
 	u32 msg[2] = { 0, 0 };
 
-	if (! ( ~(*IXP4XX_EXP_CFG2) & (IXP4XX_FEATURE_HASH |
-				IXP4XX_FEATURE_AES | IXP4XX_FEATURE_DES))) {
-		printk(KERN_ERR "ixp_crypto: No HW crypto available\n");
-		return ret;
-	}
 	npe_c = npe_request(NPE_ID);
 	if (!npe_c)
 		return ret;
@@ -1055,10 +1048,12 @@ static int aead_perform(struct aead_request *req, int encrypt,
 	}
 
 	if (unlikely(lastlen < authsize)) {
+		dma_addr_t icv_rev_aes;
 		/* The 12 hmac bytes are scattered,
 		 * we need to copy them into a safe buffer */
 		req_ctx->hmac_virt = dma_pool_alloc(buffer_pool, flags,
-				&crypt->icv_rev_aes);
+						    &icv_rev_aes);
+		crypt->icv_rev_aes = (u32)icv_rev_aes;
 		if (unlikely(!req_ctx->hmac_virt))
 			goto free_buf_dst;
 		if (!encrypt) {
@@ -1364,29 +1359,17 @@ static struct ixp_aead_alg ixp4xx_aeads[] = {
 
 #define IXP_POSTFIX "-ixp4xx"
 
-static const struct platform_device_info ixp_dev_info __initdata = {
-	.name		= DRIVER_NAME,
-	.id		= 0,
-	.dma_mask	= DMA_BIT_MASK(32),
-};
-
-static int __init ixp_module_init(void)
+static int ixp_crypto_probe(struct platform_device *_pdev)
 {
 	int num = ARRAY_SIZE(ixp4xx_algos);
 	int i, err;
 
-	pdev = platform_device_register_full(&ixp_dev_info);
-	if (IS_ERR(pdev))
-		return PTR_ERR(pdev);
-
-	spin_lock_init(&desc_lock);
-	spin_lock_init(&emerg_lock);
+	pdev = _pdev;
 
 	err = init_ixp_crypto(&pdev->dev);
-	if (err) {
-		platform_device_unregister(pdev);
+	if (err)
 		return err;
-	}
+
 	for (i=0; i< num; i++) {
 		struct skcipher_alg *cra = &ixp4xx_algos[i].crypto;
 
@@ -1457,7 +1440,7 @@ static int __init ixp_module_init(void)
 	return 0;
 }
 
-static void __exit ixp_module_exit(void)
+static int ixp_crypto_remove(struct platform_device *pdev)
 {
 	int num = ARRAY_SIZE(ixp4xx_algos);
 	int i;
@@ -1472,11 +1455,16 @@ static void __exit ixp_module_exit(void)
 			crypto_unregister_skcipher(&ixp4xx_algos[i].crypto);
 	}
 	release_ixp_crypto(&pdev->dev);
-	platform_device_unregister(pdev);
+
+	return 0;
 }
 
-module_init(ixp_module_init);
-module_exit(ixp_module_exit);
+static struct platform_driver ixp_crypto_driver = {
+	.probe = ixp_crypto_probe,
+	.remove = ixp_crypto_remove,
+	.driver = { .name = "ixp4xx_crypto" },
+};
+module_platform_driver(ixp_crypto_driver);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Christian Hohnstaedt <chohnstaedt@innominate.com>");

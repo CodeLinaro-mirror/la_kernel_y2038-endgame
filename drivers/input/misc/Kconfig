@@ -299,7 +299,7 @@ config INPUT_GPIO_VIBRA
 
 config INPUT_IXP4XX_BEEPER
 	tristate "IXP4XX Beeper support"
-	depends on ARCH_IXP4XX
+	depends on ARCH_IXP4XX || COMPILE_TEST
 	help
 	  If you say yes here, you can connect a beeper to the
 	  ixp4xx gpio pins. This is used by the LinkSys NSLU2.
