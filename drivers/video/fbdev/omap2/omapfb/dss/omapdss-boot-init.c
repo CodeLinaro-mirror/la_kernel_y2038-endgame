@@ -19,7 +19,7 @@
 #include <linux/slab.h>
 #include <linux/list.h>
 
-static struct list_head dss_conv_list __initdata;
+static struct list_head dss_conv_list;
 
 static const char prefix[] __initconst = "omapdss,";
 
