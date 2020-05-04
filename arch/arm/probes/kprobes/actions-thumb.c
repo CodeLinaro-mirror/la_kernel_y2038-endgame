@@ -454,7 +454,7 @@ t16_emulate_loregs(probes_opcode_t insn,
 		: [newcpsr] "=r" (newcpsr)
 		: [oldcpsr] "r" (oldcpsr), [regs] "r" (regs),
 		  [fn] "r" (asi->insn_fn)
-		: "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
+		: "r0", "r1", "r2", "r3", "r4", "r5", "r6",
 		  "lr", "memory", "cc"
 		);
 
@@ -531,7 +531,7 @@ t16_emulate_push(probes_opcode_t insn,
 		"str	r9, [%[regs], #13*4]	\n\t"
 		:
 		: [regs] "r" (regs), [fn] "r" (asi->insn_fn)
-		: "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9",
+		: "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r8", "r9",
 		  "lr", "memory", "cc"
 		);
 }
@@ -565,7 +565,7 @@ t16_emulate_pop_nopc(probes_opcode_t insn,
 		"str	r9, [%[regs], #13*4]	\n\t"
 		:
 		: [regs] "r" (regs), [fn] "r" (asi->insn_fn)
-		: "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r9",
+		: "r0", "r1", "r2", "r3", "r4", "r5", "r6",  "r9",
 		  "lr", "memory", "cc"
 		);
 }
@@ -584,7 +584,7 @@ t16_emulate_pop_pc(probes_opcode_t insn,
 		"str	r9, [%[regs], #13*4]	\n\t"
 		: "=r" (pc)
 		: [regs] "r" (regs), [fn] "r" (asi->insn_fn)
-		: "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r9",
+		: "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r9",
 		  "lr", "memory", "cc"
 		);
 
