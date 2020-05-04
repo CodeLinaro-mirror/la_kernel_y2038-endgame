@@ -27,7 +27,7 @@ config THUNDER_NIC_PF
 
 config THUNDER_NIC_VF
 	tristate "Thunder Virtual function driver"
-	select CAVIUM_PTP if POSIX_TIMERS
+	select CAVIUM_PTP if PTP_1588_CLOCK
 	depends on 64BIT && PCI
 	---help---
 	  This driver supports Thunder's NIC virtual function
