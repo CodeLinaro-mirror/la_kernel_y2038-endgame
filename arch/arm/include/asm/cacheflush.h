@@ -470,7 +470,7 @@ static inline void __sync_cache_range_r(volatile void *p, size_t size)
 	"isb	\n\t" \
 	"dsb	\n\t" \
 	"ldmfd	sp!, {fp, ip}" \
-	: : : "r0","r1","r2","r3","r4","r5","r6","r7", \
+	: : : "r0","r1","r2","r3","r4","r5","r6", \
 	      "r9","r10","lr","memory" )
 
 void flush_uprobe_xol_access(struct page *page, unsigned long uaddr,
