@@ -10,6 +10,10 @@
  * integer types.
  */
 
+#if (CONFIG_CLANG_VERSION >= 100000) && (CONFIG_CLANG_VERSION < 110000)
+#define __NO_FORTIFY /* https://bugs.llvm.org/show_bug.cgi?id=45802 */
+#endif
+
 #include <asm/unaligned.h>
 #include <crypto/curve25519.h>
 #include <linux/string.h>
