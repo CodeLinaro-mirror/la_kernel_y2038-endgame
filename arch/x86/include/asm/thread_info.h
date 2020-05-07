@@ -165,7 +165,7 @@ static inline int arch_within_stack_frames(const void * const stack,
 					   const void * const stackend,
 					   const void *obj, unsigned long len)
 {
-#if defined(CONFIG_FRAME_POINTER)
+#if defined(CONFIG_FRAME_POINTER) && (!defined(CONFIG_CC_IS_CLANG) || CONFIG_CLANG_VERSION < 110000)
 	const void *frame = NULL;
 	const void *oldframe;
 
