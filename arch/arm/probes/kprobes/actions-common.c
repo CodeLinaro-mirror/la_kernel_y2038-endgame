@@ -99,7 +99,7 @@ emulate_generic_r0_12_noflags(probes_opcode_t insn,
 		"ldr	r11, [sp], #4		\n\t"
 		: [regs] "=r" (rregs), [fn] "=r" (rfn)
 		: "0" (rregs), "1" (rfn)
-		: "r0", "r2", "r3", "r4", "r5", "r6",
+		: "r0", "r2", "r3", "r4", "r5", "r6", "r7",
 		  "r8", "r9", "r10", "r12", "memory", "cc"
 		);
 }
