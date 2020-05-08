@@ -791,3 +791,6 @@ KBUILD_WARN(3, CLANG_8, "-Wswitch-default")
 KBUILD_WARN(3, CLANG_8, "-Wsynth")
 KBUILD_WARN(3, CLANG_8, "-Wunused-argument")
 KBUILD_WARN(3, CLANG_8, "-Wtype-limits") /* medium */
+
+
+KBUILD_WARN(1, CLANG_11, "-Wframe-address") /* TBD */
