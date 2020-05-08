@@ -26,6 +26,13 @@
     PA header file -- do not include this header file for non-PA builds.
 #endif
 
+/* See arch/parisc/math-emu/README */
+KBUILD_WARN(3, GCC_4_8, "-Wparentheses")
+KBUILD_WARN(3, GCC_4_8, "-Wdangling-else")
+KBUILD_WARN(3, GCC_4_8, "-Wimplicit-function-declaration")
+KBUILD_WARN(3, GCC_4_8, "-Wreturn-type")
+KBUILD_WARN(3, GCC_4_8, "-Wstrict-prototypes")
+
 #include "fpbits.h"
 #include "hppa.h"
 /*
