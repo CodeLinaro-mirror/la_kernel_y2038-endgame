@@ -796,6 +796,13 @@ ifdef CONFIG_RUST_OVERFLOW_CHECKS
 KBUILD_RUSTFLAGS += -Coverflow-checks=y
 else
 KBUILD_RUSTFLAGS += -Coverflow-checks=n
+
+ifdef CONFIG_CPU_32v4
+# "warning: lld uses blx instruction, no object with architecture supporting feature detected"
+LD		= $(CROSS_COMPILE)ld
+else ifdef CONFIG_CPU_32v4T
+# "warning: lld uses blx instruction, no object with architecture supporting feature detected"
+LD		= $(CROSS_COMPILE)ld
 endif
 
 ifdef CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
