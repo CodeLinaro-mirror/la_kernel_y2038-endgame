@@ -1766,7 +1766,7 @@ endif
 
 config RELOCATABLE
 	bool "Build a relocatable kernel image" if EXPERT
-	select ARCH_HAS_RELR
+	select ARCH_HAS_RELR if !CPU_BIG_ENDIAN
 	default y
 	help
 	  This builds the kernel as a Position Independent Executable (PIE),
