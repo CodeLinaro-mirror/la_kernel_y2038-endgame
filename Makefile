@@ -737,6 +737,14 @@ include/config/auto.conf:
 endif # may-sync-config
 endif # need-config
 
+ifdef CONFIG_CPU_32v4
+# "warning: lld uses blx instruction, no object with architecture supporting feature detected"
+LD		= $(CROSS_COMPILE)ld
+else ifdef CONFIG_CPU_32v4T
+# "warning: lld uses blx instruction, no object with architecture supporting feature detected"
+LD		= $(CROSS_COMPILE)ld
+endif
+
 KBUILD_CFLAGS	+= $(call cc-option,-fno-delete-null-pointer-checks,)
 
 ifdef CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
