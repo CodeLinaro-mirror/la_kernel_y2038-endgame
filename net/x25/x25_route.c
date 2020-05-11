@@ -63,7 +63,7 @@ out:
  * Remove route from x25_route_list. If it was there.
  * Caller must hold x25_route_list_lock.
  */
-static void __x25_remove_route(struct x25_route *rt)
+static noinline void __x25_remove_route(struct x25_route *rt)
 {
 	if (rt->node.next) {
 		list_del(&rt->node);
