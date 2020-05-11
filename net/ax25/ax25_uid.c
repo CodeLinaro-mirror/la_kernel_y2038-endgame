@@ -186,6 +186,11 @@ const struct seq_operations ax25_uid_seqops = {
 };
 #endif
 
+static noinline void ax25_uid_put_final(ax25_uid_assoc *uid)
+{
+	ax25_uid_put(uid);
+}
+
 /*
  *	Free all memory associated with UID/Callsign structures.
  */
@@ -197,7 +202,7 @@ void __exit ax25_uid_free(void)
 again:
 	ax25_uid_for_each(ax25_uid, &ax25_uid_list) {
 		hlist_del_init(&ax25_uid->uid_node);
-		ax25_uid_put(ax25_uid);
+		ax25_uid_put_final(ax25_uid);
 		goto again;
 	}
 	write_unlock(&ax25_uid_lock);
