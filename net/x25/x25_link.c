@@ -296,7 +296,7 @@ void x25_link_device_up(struct net_device *dev)
  *	Remove neighbour from x25_neigh_list. If it was there.
  *	Caller must hold x25_neigh_list_lock.
  */
-static void __x25_remove_neigh(struct x25_neigh *nb)
+static noinline void __x25_remove_neigh(struct x25_neigh *nb)
 {
 	if (nb->node.next) {
 		list_del(&nb->node);
