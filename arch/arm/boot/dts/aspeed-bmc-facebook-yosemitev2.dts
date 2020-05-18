@@ -125,7 +125,7 @@
 	multi-master;
 	ipmb1@10 {
 		compatible = "ipmb-dev";
-		reg = <(0x10 | I2C_OWN_SLAVE_ADDRESS)>;
+		reg = <0x10>;
 		i2c-protocol;
 	};
 };
@@ -136,7 +136,7 @@
 	multi-master;
 	ipmb3@10 {
 		compatible = "ipmb-dev";
-		reg = <(0x10 | I2C_OWN_SLAVE_ADDRESS)>;
+		reg = <0x10>;
 		i2c-protocol;
 	};
 };
@@ -147,7 +147,7 @@
 	multi-master;
 	ipmb5@10 {
 		compatible = "ipmb-dev";
-		reg = <(0x10 | I2C_OWN_SLAVE_ADDRESS)>;
+		reg = <0x10>;
 		i2c-protocol;
 	};
 };
@@ -158,7 +158,7 @@
 	multi-master;
 	ipmb7@10 {
 		compatible = "ipmb-dev";
-		reg = <(0x10 | I2C_OWN_SLAVE_ADDRESS)>;
+		reg = <0x10>;
 		i2c-protocol;
 	};
 };
