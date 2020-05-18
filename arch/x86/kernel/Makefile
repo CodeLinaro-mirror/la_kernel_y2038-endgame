@@ -40,6 +40,9 @@ OBJECT_FILES_NON_STANDARD_paravirt_patch.o		:= y
 ifdef CONFIG_FRAME_POINTER
 OBJECT_FILES_NON_STANDARD_ftrace_$(BITS).o		:= y
 endif
+ifdef CONFIG_CC_IS_CLANG
+AFLAGS_ftrace_64.o					+= -fno-integrated-as
+endif
 
 # If instrumentation of this dir is enabled, boot hangs during first second.
 # Probably could be more selective here, but note that files related to irqs,
