@@ -190,6 +190,7 @@ struct ehci_regs {
 #define HOSTPC_PHCD	(1<<22)		/* Phy clock disable */
 #define HOSTPC_PSPD	(3<<25)		/* Port speed detection */
 
+		u32		brcm_insnreg[3]; /* Broadcom specific */
 		u32		reserved6[17];
 	};
 
