@@ -55,6 +55,7 @@
 #include <linux/fdtable.h>
 #include <linux/mm.h>
 #include <linux/mman.h>
+#include <linux/pagemap.h>
 #include <linux/percpu.h>
 #include <linux/slab.h>
 #include <linux/blkdev.h>
