@@ -5,6 +5,7 @@
  */
 
 #include <linux/delay.h>
+#include <linux/module.h>
 #include <linux/notifier.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
@@ -146,4 +147,13 @@ static struct platform_driver vexpress_reset_driver = {
 		.suppress_bind_attrs = true,
 	},
 };
-builtin_platform_driver(vexpress_reset_driver);
+
+static int __init vexpress_reset_init(void)
+{
+	return platform_driver_register(&vexpress_reset_driver);
+}
+module_init(vexpress_reset_init);
+
+MODULE_AUTHOR("Pawel Moll <pawel.moll@arm.com>");
+MODULE_DESCRIPTION("Vexpress reset driver");
+MODULE_LICENSE("GPL v2");
