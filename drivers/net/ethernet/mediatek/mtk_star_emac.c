@@ -1202,6 +1202,7 @@ static int mtk_star_receive_packet(struct mtk_star_priv *priv)
 	if ((desc_data.flags & MTK_STAR_DESC_BIT_RX_CRCE) ||
 	    (desc_data.flags & MTK_STAR_DESC_BIT_RX_OSIZE)) {
 		/* Error packet -> drop and reuse skb. */
+		new_dma_addr = 0;
 		new_skb = curr_skb;
 		goto push_new_skb;
 	}
@@ -1211,6 +1212,7 @@ static int mtk_star_receive_packet(struct mtk_star_priv *priv)
 	 */
 	new_skb = mtk_star_alloc_skb(ndev);
 	if (!new_skb) {
+		new_dma_addr = 0;
 		ndev->stats.rx_dropped++;
 		new_skb = curr_skb;
 		goto push_new_skb;
