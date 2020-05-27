@@ -11,7 +11,7 @@ if BPFILTER
 config BPFILTER_UMH
 	tristate "bpfilter kernel module with user mode helper"
 	depends on CC_CAN_LINK
-	depends on m || CC_CAN_LINK_STATIC
+	depends on m || (CC_CAN_LINK_STATIC && CC_IS_GCC)
 	default m
 	help
 	  This builds bpfilter kernel module with embedded user mode helper
