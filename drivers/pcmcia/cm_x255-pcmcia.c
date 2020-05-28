@@ -12,7 +12,7 @@
 #include <linux/gpio.h>
 #include <linux/export.h>
 
-#include "soc_common.h"
+#include <pcmcia/soc_common.h>
 
 #define GPIO_PCMCIA_SKTSEL	(54)
 #define GPIO_PCMCIA_S0_CD_VALID	(16)

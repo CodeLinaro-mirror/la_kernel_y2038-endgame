@@ -23,7 +23,7 @@
 #include <asm/irq.h>
 #include <asm/mach-types.h>
 
-#include "soc_common.h"
+#include <pcmcia/soc_common.h>
 
 #define SG2_S0_POWER_CTL	108
 #define SG2_S0_GPIO_RESET	82
