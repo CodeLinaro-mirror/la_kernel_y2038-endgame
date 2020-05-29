@@ -41,7 +41,7 @@
 
 static unsigned long arch_timer_freq;
 
-void set_cntfreq(void)
+void omap5_set_cntfreq(void)
 {
 	omap_smc1(OMAP5_DRA7_MON_SET_CNTFRQ_INDEX, arch_timer_freq);
 }
@@ -152,7 +152,7 @@ sysclk1_based:
 	writel_relaxed(reg, base + INCREMENTER_DENUMERATOR_RELOAD_OFFSET);
 
 	arch_timer_freq = DIV_ROUND_UP_ULL(rate * num, den);
-	set_cntfreq();
+	omap5_set_cntfreq();
 
 	iounmap(base);
 }
