@@ -1935,6 +1935,7 @@ static inline void blk_wake_io_task(struct task_struct *waiter)
 		wake_up_process(waiter);
 }
 
+struct gendisk;
 unsigned long disk_start_io_acct(struct gendisk *disk, unsigned int sectors,
 		unsigned int op);
 void disk_end_io_acct(struct gendisk *disk, unsigned int op,
