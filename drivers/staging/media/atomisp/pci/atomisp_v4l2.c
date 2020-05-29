@@ -703,7 +703,8 @@ static void punit_ddr_dvfs_enable(bool enable)
 		pr_info("DDR DVFS, door bell is not cleared within 3ms\n");
 }
 
-static int atomisp_mrfld_power(struct atomisp_device *isp, bool enable)
+static __attribute__((unused)) int
+atomisp_mrfld_power(struct atomisp_device *isp, bool enable)
 {
 	unsigned long timeout;
 	u32 val = enable ? MRFLD_ISPSSPM0_IUNIT_POWER_ON :
