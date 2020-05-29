@@ -82,14 +82,7 @@ extern u32 rx51_secure_rng_call(u32 ptr, u32 count, u32 flag);
 
 extern bool optee_available;
 void omap_secure_init(void);
-
-#ifdef CONFIG_SOC_HAS_REALTIME_COUNTER
-void set_cntfreq(void);
-#else
-static inline void set_cntfreq(void)
-{
-}
-#endif
+void omap5_set_cntfreq(void);
 
 #endif /* __ASSEMBLER__ */
 #endif /* OMAP_ARCH_OMAP_SECURE_H */
