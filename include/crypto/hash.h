@@ -9,6 +9,7 @@
 #define _CRYPTO_HASH_H
 
 #include <linux/crypto.h>
+#include <linux/slab.h>
 #include <linux/string.h>
 
 struct crypto_ahash;

@@ -9,6 +9,7 @@
 #ifndef _CRYPTO_KPP_
 #define _CRYPTO_KPP_
 #include <linux/crypto.h>
+#include <linux/slab.h>
 
 /**
  * struct kpp_request
