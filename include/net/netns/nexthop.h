@@ -7,6 +7,7 @@
 #define __NETNS_NEXTHOP_H__
 
 #include <linux/rbtree.h>
+#include <linux/notifier.h>
 
 struct netns_nexthop {
 	struct rb_root		rb_root;	/* tree of nexthops by id */

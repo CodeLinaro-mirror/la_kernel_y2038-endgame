@@ -11,6 +11,7 @@
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
+#include <linux/percpu.h>
 
 struct seq_file;
 

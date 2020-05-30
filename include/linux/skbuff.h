@@ -19,6 +19,7 @@
 #include <linux/rbtree.h>
 #include <linux/socket.h>
 #include <linux/refcount.h>
+#include <linux/gfp.h>
 
 #include <linux/atomic.h>
 #include <asm/types.h>

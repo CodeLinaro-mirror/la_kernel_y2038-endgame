@@ -7,6 +7,7 @@
 #include <linux/spinlock.h>
 #include <linux/pfn.h>
 #include <linux/mm.h>
+#include <linux/gfp-bits.h>
 #include <linux/device.h>
 
 #include <asm/extable.h>

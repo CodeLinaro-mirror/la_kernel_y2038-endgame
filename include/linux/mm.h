@@ -7,7 +7,7 @@
 #ifdef __KERNEL__
 
 #include <linux/mmdebug.h>
-#include <linux/gfp.h>
+#include <linux/gfp-bits.h>
 #include <linux/bug.h>
 #include <linux/list.h>
 #include <linux/mmzone.h>
@@ -2361,7 +2361,7 @@ static inline void __free_reserved_page(struct page *page)
 {
 	ClearPageReserved(page);
 	init_page_count(page);
-	__free_page(page);
+	__free_pages(page, 0);
 }
 
 static inline void free_reserved_page(struct page *page)

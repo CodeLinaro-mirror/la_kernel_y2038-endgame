@@ -2,6 +2,7 @@
 #ifndef __LINUX_GFP_BITS_H
 #define __LINUX_GFP_BITS_H
 
+#include <linux/types.h>
 /*
  * In case of changes, please don't forget to update
  * include/trace/events/mmflags.h and tools/perf/builtin-kmem.c
@@ -299,5 +300,9 @@
 #define GFP_TRANSHUGE_LIGHT	((GFP_HIGHUSER_MOVABLE | __GFP_COMP | \
 			 __GFP_NOMEMALLOC | __GFP_NOWARN) & ~__GFP_RECLAIM)
 #define GFP_TRANSHUGE	(GFP_TRANSHUGE_LIGHT | __GFP_DIRECT_RECLAIM)
+
+struct page;
+extern unsigned long __get_free_pages(gfp_t gfp_mask, unsigned int order);
+extern void __free_pages(struct page *page, unsigned int order);
 
 #endif /* __LINUX_GFP_BITS_H */
