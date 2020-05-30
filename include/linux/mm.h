@@ -3108,11 +3108,8 @@ extern long copy_huge_page_from_user(struct page *dst_page,
  * Return: true if transhuge page-table entries should be considered special,
  * false otherwise.
  */
-static inline bool vma_is_special_huge(const struct vm_area_struct *vma)
-{
-	return vma_is_dax(vma) || (vma->vm_file &&
-				   (vma->vm_flags & (VM_PFNMAP | VM_MIXEDMAP)));
-}
+#define vma_is_special_huge(vma) (vma_is_dax(vma) || \
+		((vma)->vm_file && (vma->vm_flags & (VM_PFNMAP | VM_MIXEDMAP))))
 
 #endif /* CONFIG_TRANSPARENT_HUGEPAGE || CONFIG_HUGETLBFS */
 

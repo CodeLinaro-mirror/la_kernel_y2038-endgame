@@ -5,8 +5,6 @@
 #include <linux/sched/coredump.h>
 #include <linux/mm_types.h>
 
-#include <linux/fs.h> /* only for vma_is_dax() */
-
 extern vm_fault_t do_huge_pmd_anonymous_page(struct vm_fault *vmf);
 extern int copy_huge_pmd(struct mm_struct *dst_mm, struct mm_struct *src_mm,
 			 pmd_t *dst_pmd, pmd_t *src_pmd, unsigned long addr,
@@ -126,39 +124,7 @@ extern struct kobj_attribute shmem_enabled_attr;
 
 extern unsigned long transparent_hugepage_flags;
 
-/*
- * to be used on vmas which are known to support THP.
- * Use transparent_hugepage_enabled otherwise
- */
-static inline bool __transparent_hugepage_enabled(struct vm_area_struct *vma)
-{
-	if (vma->vm_flags & VM_NOHUGEPAGE)
-		return false;
-
-	if (vma_is_temporary_stack(vma))
-		return false;
-
-	if (test_bit(MMF_DISABLE_THP, &vma->vm_mm->flags))
-		return false;
-
-	if (transparent_hugepage_flags & (1 << TRANSPARENT_HUGEPAGE_FLAG))
-		return true;
-	/*
-	 * For dax vmas, try to always use hugepage mappings. If the kernel does
-	 * not support hugepages, fsdax mappings will fallback to PAGE_SIZE
-	 * mappings, and device-dax namespaces, that try to guarantee a given
-	 * mapping size, will fail to enable
-	 */
-	if (vma_is_dax(vma))
-		return true;
-
-	if (transparent_hugepage_flags &
-				(1 << TRANSPARENT_HUGEPAGE_REQ_MADV_FLAG))
-		return !!(vma->vm_flags & VM_HUGEPAGE);
-
-	return false;
-}
-
+bool __transparent_hugepage_enabled(struct vm_area_struct *vma);
 bool transparent_hugepage_enabled(struct vm_area_struct *vma);
 
 #define HPAGE_CACHE_INDEX_MASK (HPAGE_PMD_NR - 1)
