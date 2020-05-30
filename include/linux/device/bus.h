@@ -20,6 +20,7 @@
 
 struct device_driver;
 struct fwnode_handle;
+struct device_node;
 
 /**
  * struct bus_type - The bus type of the device

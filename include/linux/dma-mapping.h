@@ -11,6 +11,7 @@
 #include <linux/scatterlist_struct.h>
 #include <linux/bug.h>
 #include <linux/mem_encrypt.h>
+#include <linux/mmzone.h> /* pfn_valid */
 
 /**
  * List of possible attributes associated with a DMA mapping. The semantics

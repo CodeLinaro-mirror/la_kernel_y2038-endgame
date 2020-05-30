@@ -18,6 +18,7 @@
 #include <linux/device.h>
 #include <linux/cpumask.h>
 #include <linux/list.h>
+#include <linux/mmzone.h>
 #include <linux/workqueue.h>
 
 /**
