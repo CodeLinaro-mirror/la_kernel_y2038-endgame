@@ -11,7 +11,7 @@
 
 #include <linux/bug.h>
 #include <linux/compiler.h>
-#include <linux/gfp.h>
+#include <linux/gfp-bits.h>
 #include <linux/kconfig.h>
 #include <linux/kernel.h>
 #include <linux/rcupdate.h>
