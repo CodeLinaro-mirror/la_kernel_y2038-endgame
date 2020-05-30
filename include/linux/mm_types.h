@@ -11,7 +11,6 @@
 #include <linux/rwsem.h>
 #include <linux/completion.h>
 #include <linux/cpumask.h>
-#include <linux/uprobes.h>
 #include <linux/page-flags-layout.h>
 #include <linux/workqueue.h>
 
@@ -291,6 +290,12 @@ struct vm_userfaultfd_ctx {
 #define NULL_VM_UFFD_CTX ((struct vm_userfaultfd_ctx) {})
 struct vm_userfaultfd_ctx {};
 #endif /* CONFIG_USERFAULTFD */
+
+struct uprobes_state {
+#ifdef CONFIG_UPROBES
+	struct xol_area		*xol_area;
+#endif
+};
 
 /*
  * This struct describes a virtual memory area. There is one of these
