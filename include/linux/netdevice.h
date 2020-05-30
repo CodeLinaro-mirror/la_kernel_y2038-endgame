@@ -26,6 +26,7 @@
 #include <linux/delay.h>
 #include <linux/atomic.h>
 #include <linux/prefetch.h>
+#include <linux/device.h>
 #include <asm/cache.h>
 #include <asm/byteorder.h>
 

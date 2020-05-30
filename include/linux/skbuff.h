@@ -28,7 +28,6 @@
 #include <net/checksum.h>
 #include <linux/rcupdate.h>
 #include <linux/hrtimer.h>
-#include <linux/dma-mapping.h>
 #include <linux/netdev_features.h>
 #include <linux/sched.h>
 #include <linux/sched/clock.h>
@@ -3115,14 +3114,9 @@ bool skb_page_frag_refill(unsigned int sz, struct page_frag *pfrag, gfp_t prio);
  *
  * Maps the page associated with @frag to @device.
  */
-static inline dma_addr_t skb_frag_dma_map(struct device *dev,
-					  const skb_frag_t *frag,
-					  size_t offset, size_t size,
-					  enum dma_data_direction dir)
-{
-	return dma_map_page(dev, skb_frag_page(frag),
-			    skb_frag_off(frag) + offset, size, dir);
-}
+#define skb_frag_dma_map(dev, frag, offset, size, dir) \
+	dma_map_page((dev), skb_frag_page(frag), \
+		     (skb_frag_off(frag) + (offset)), (size), (dir))
 
 static inline struct sk_buff *pskb_copy(struct sk_buff *skb,
 					gfp_t gfp_mask)
