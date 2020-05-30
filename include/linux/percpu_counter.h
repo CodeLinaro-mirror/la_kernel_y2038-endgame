@@ -13,7 +13,7 @@
 #include <linux/threads.h>
 #include <linux/percpu.h>
 #include <linux/types.h>
-#include <linux/gfp.h>
+#include <linux/gfp-bits.h>
 
 #ifdef CONFIG_SMP
 
