@@ -35,7 +35,6 @@
 #include <linux/delayed_call.h>
 #include <linux/uuid.h>
 #include <linux/errseq.h>
-#include <linux/ioprio.h>
 #include <linux/fs_types.h>
 #include <linux/build_bug.h>
 #include <linux/stddef.h>
@@ -2095,15 +2094,14 @@ static inline u16 ki_hint_validate(enum rw_hint hint)
 	return 0;
 }
 
-static inline void init_sync_kiocb(struct kiocb *kiocb, struct file *filp)
-{
-	*kiocb = (struct kiocb) {
-		.ki_filp = filp,
-		.ki_flags = iocb_flags(filp),
-		.ki_hint = ki_hint_validate(file_write_hint(filp)),
-		.ki_ioprio = get_current_ioprio(),
-	};
-}
+#define init_sync_kiocb(kiocb, filp) do {				\
+	struct file *___filp = (filp);					\
+	*(kiocb) = (struct kiocb) {					\
+		.ki_filp = ___filp,					\
+		.ki_flags = iocb_flags(___filp),			\
+		.ki_hint = ki_hint_validate(file_write_hint(___filp)),	\
+		.ki_ioprio = get_current_ioprio(),			\
+} while (0)
 
 static inline void kiocb_clone(struct kiocb *kiocb, struct kiocb *kiocb_src,
 			       struct file *filp)
