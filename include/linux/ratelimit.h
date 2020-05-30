@@ -3,7 +3,6 @@
 #define _LINUX_RATELIMIT_H
 
 #include <linux/param.h>
-#include <linux/sched.h>
 #include <linux/spinlock.h>
 
 #define DEFAULT_RATELIMIT_INTERVAL	(5 * HZ)
@@ -53,16 +52,15 @@ static inline void ratelimit_default_init(struct ratelimit_state *rs)
 					DEFAULT_RATELIMIT_BURST);
 }
 
+
+extern void ratelimit_state_exit_print(struct ratelimit_state *rs);
 static inline void ratelimit_state_exit(struct ratelimit_state *rs)
 {
 	if (!(rs->flags & RATELIMIT_MSG_ON_RELEASE))
 		return;
 
-	if (rs->missed) {
-		pr_warn("%s: %d output lines suppressed due to ratelimiting\n",
-			current->comm, rs->missed);
-		rs->missed = 0;
-	}
+	if (rs->missed)
+		ratelimit_state_exit_print(rs);
 }
 
 static inline void

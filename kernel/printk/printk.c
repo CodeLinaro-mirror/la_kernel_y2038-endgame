@@ -3108,6 +3108,14 @@ int __printk_ratelimit(const char *func)
 }
 EXPORT_SYMBOL(__printk_ratelimit);
 
+void ratelimit_state_exit_print(struct ratelimit_state *rs)
+{
+	pr_warn("%s: %d output lines suppressed due to ratelimiting\n",
+		current->comm, rs->missed);
+	rs->missed = 0;
+}
+EXPORT_SYMBOL(ratelimit_state_exit_print);
+
 /**
  * printk_timed_ratelimit - caller-controlled printk ratelimiting
  * @caller_jiffies: pointer to caller's state
