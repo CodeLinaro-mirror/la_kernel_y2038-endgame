@@ -15,6 +15,7 @@
 #include <linux/sem.h>
 #include <linux/shm.h>
 #include <linux/kcov.h>
+#include <linux/llist.h>
 #include <linux/mutex.h>
 #include <linux/plist.h>
 #include <linux/hrtimer.h>
