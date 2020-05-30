@@ -50,7 +50,6 @@
 #ifdef __KERNEL__
 
 #include <linux/device.h>
-#include <linux/mm.h>
 
 struct cma;
 struct page;

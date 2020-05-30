@@ -8,7 +8,7 @@
 #include <linux/err.h>
 #include <linux/dma-debug.h>
 #include <linux/dma-direction.h>
-#include <linux/scatterlist.h>
+#include <linux/scatterlist_struct.h>
 #include <linux/bug.h>
 #include <linux/mem_encrypt.h>
 
@@ -577,17 +577,18 @@ static inline unsigned long dma_get_merge_boundary(struct device *dev)
 }
 #endif /* CONFIG_HAS_DMA */
 
-static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
-		size_t size, enum dma_data_direction dir, unsigned long attrs)
-{
-	/* DMA must never operate on areas that might be remapped. */
-	if (dev_WARN_ONCE(dev, is_vmalloc_addr(ptr),
-			  "rejecting DMA map of vmalloc memory\n"))
-		return DMA_MAPPING_ERROR;
-	debug_dma_map_single(dev, ptr, size);
-	return dma_map_page_attrs(dev, virt_to_page(ptr), offset_in_page(ptr),
-			size, dir, attrs);
-}
+/* a macro to avoid including linux/mm.h */
+#define dma_map_single_attrs(dev, ptr, size, dir, attrs) ({		\
+	dma_addr_t ___addr = DMA_MAPPING_ERROR;				\
+	/* DMA must never operate on areas that might be remapped. */	\
+	if (!dev_WARN_ONCE(dev, is_vmalloc_addr(ptr),			\
+			  "rejecting DMA map of vmalloc memory\n")) {	\
+		debug_dma_map_single(dev, ptr, size);			\
+		___addr = dma_map_page_attrs(dev, virt_to_page(ptr), 	\
+				offset_in_page(ptr), size, dir, attrs);	\
+	}								\
+	___addr;							\
+})
 
 static inline void dma_unmap_single_attrs(struct device *dev, dma_addr_t addr,
 		size_t size, enum dma_data_direction dir, unsigned long attrs)

@@ -4,8 +4,6 @@
 
 #ifdef __KERNEL__
 
-#include <linux/mm_types.h>
-#include <linux/scatterlist.h>
 #include <linux/dma-debug.h>
 
 #include <asm/memory.h>
