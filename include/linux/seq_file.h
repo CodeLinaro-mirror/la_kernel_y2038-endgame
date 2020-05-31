@@ -8,7 +8,6 @@
 #include <linux/mutex.h>
 #include <linux/cpumask.h>
 #include <linux/nodemask.h>
-#include <linux/fs.h>
 #include <linux/cred.h>
 
 struct seq_operations;
@@ -132,6 +131,7 @@ void seq_hex_dump(struct seq_file *m, const char *prefix_str, int prefix_type,
 		  int rowsize, int groupsize, const void *buf, size_t len,
 		  bool ascii);
 
+struct path;
 int seq_path(struct seq_file *, const struct path *, const char *);
 int seq_file_path(struct seq_file *, struct file *, const char *);
 int seq_dentry(struct seq_file *, struct dentry *, const char *);
@@ -191,15 +191,12 @@ static const struct proc_ops __name ## _proc_ops = {			\
 	.proc_release	= single_release,				\
 }
 
-static inline struct user_namespace *seq_user_ns(struct seq_file *seq)
-{
 #ifdef CONFIG_USER_NS
-	return seq->file->f_cred->user_ns;
+#define seq_user_ns(seq) ((seq)->file->f_cred->user_ns)
 #else
-	extern struct user_namespace init_user_ns;
-	return &init_user_ns;
+extern struct user_namespace init_user_ns;
+#define seq_user_ns(seq) &init_user_ns;
 #endif
-}
 
 /**
  * seq_show_options - display mount options with appropriate escapes.
