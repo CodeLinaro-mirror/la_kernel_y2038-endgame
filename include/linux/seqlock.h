@@ -38,6 +38,7 @@
 #include <linux/lockdep.h>
 #include <linux/compiler.h>
 #include <linux/kcsan-checks.h>
+#include <linux/seqlock_types.h>
 #include <asm/processor.h>
 
 /*
@@ -54,19 +55,6 @@
  * interface is not affected.
  */
 #define KCSAN_SEQLOCK_REGION_MAX 1000
-
-/*
- * Version using sequence counter only.
- * This can be used when code has its own mutex protecting the
- * updating starting before the write_seqcountbeqin() and ending
- * after the write_seqcount_end().
- */
-typedef struct seqcount {
-	unsigned sequence;
-#ifdef CONFIG_DEBUG_LOCK_ALLOC
-	struct lockdep_map dep_map;
-#endif
-} seqcount_t;
 
 static inline void __seqcount_init(seqcount_t *s, const char *name,
 					  struct lock_class_key *key)
@@ -433,11 +421,6 @@ static inline void write_seqcount_invalidate(seqcount_t *s)
 	s->sequence+=2;
 	kcsan_nestable_atomic_end();
 }
-
-typedef struct {
-	struct seqcount seqcount;
-	spinlock_t lock;
-} seqlock_t;
 
 /*
  * These macros triggered gcc-3.x compile-time problems.  We think these are

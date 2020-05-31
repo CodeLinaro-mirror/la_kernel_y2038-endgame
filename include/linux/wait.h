@@ -6,7 +6,7 @@
  */
 #include <linux/list.h>
 #include <linux/stddef.h>
-#include <linux/spinlock.h>
+#include <linux/spinlock_types.h>
 
 #include <asm/current.h>
 #include <uapi/linux/wait.h>

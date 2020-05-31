@@ -16,7 +16,7 @@
 #include <linux/rbtree.h>
 #include <linux/init.h>
 #include <linux/list.h>
-#include <linux/seqlock.h>
+#include <linux/seqlock_types.h>
 #include <linux/timer.h>
 #include <linux/timerqueue.h>
 
