@@ -17,10 +17,11 @@
 
 #include <linux/types.h>
 #include <linux/list.h>
-#include <linux/sysfs.h>
+#include <linux/attribute.h>
 #include <linux/compiler.h>
 #include <linux/spinlock.h>
 #include <linux/kref.h>
+#include <linux/kobject-types.h>
 #include <linux/kobject_ns.h>
 #include <linux/kernel.h>
 #include <linux/wait.h>
@@ -40,56 +41,11 @@ extern char uevent_helper[];
 /* counter to tag the uevent, read only except for the kobject core */
 extern u64 uevent_seqnum;
 
-/*
- * The actions here must match the index to the string array
- * in lib/kobject_uevent.c
- *
- * Do not add new actions here without checking with the driver-core
- * maintainers. Action strings are not meant to express subsystem
- * or device specific properties. In most cases you want to send a
- * kobject_uevent_env(kobj, KOBJ_CHANGE, env) with additional event
- * specific variables added to the event environment.
- */
-enum kobject_action {
-	KOBJ_ADD,
-	KOBJ_REMOVE,
-	KOBJ_CHANGE,
-	KOBJ_MOVE,
-	KOBJ_ONLINE,
-	KOBJ_OFFLINE,
-	KOBJ_BIND,
-	KOBJ_UNBIND,
-	KOBJ_MAX
-};
-
-struct kobject {
-	const char		*name;
-	struct list_head	entry;
-	struct kobject		*parent;
-	struct kset		*kset;
-	struct kobj_type	*ktype;
-	struct kernfs_node	*sd; /* sysfs directory entry */
-	struct kref		kref;
-#ifdef CONFIG_DEBUG_KOBJECT_RELEASE
-	struct delayed_work	release;
-#endif
-	unsigned int state_initialized:1;
-	unsigned int state_in_sysfs:1;
-	unsigned int state_add_uevent_sent:1;
-	unsigned int state_remove_uevent_sent:1;
-	unsigned int uevent_suppress:1;
-};
-
 extern __printf(2, 3)
 int kobject_set_name(struct kobject *kobj, const char *name, ...);
 extern __printf(2, 0)
 int kobject_set_name_vargs(struct kobject *kobj, const char *fmt,
 			   va_list vargs);
-
-static inline const char *kobject_name(const struct kobject *kobj)
-{
-	return kobj->name;
-}
 
 extern void kobject_init(struct kobject *kobj, struct kobj_type *ktype);
 extern __printf(3, 4) __must_check
@@ -119,23 +75,6 @@ extern void kobject_get_ownership(struct kobject *kobj,
 				  kuid_t *uid, kgid_t *gid);
 extern char *kobject_get_path(struct kobject *kobj, gfp_t flag);
 
-/**
- * kobject_has_children - Returns whether a kobject has children.
- * @kobj: the object to test
- *
- * This will return whether a kobject has other kobjects as children.
- *
- * It does NOT account for the presence of attribute files, only sub
- * directories. It also assumes there is no concurrent addition or
- * removal of such children, and thus relies on external locking.
- */
-static inline bool kobject_has_children(struct kobject *kobj)
-{
-	WARN_ON_ONCE(kref_read(&kobj->kref) == 0);
-
-	return kobj->sd && kobj->sd->dir.subdirs;
-}
-
 struct kobj_type {
 	void (*release)(struct kobject *kobj);
 	const struct sysfs_ops *sysfs_ops;
@@ -159,14 +98,6 @@ struct kset_uevent_ops {
 	const char *(* const name)(struct kset *kset, struct kobject *kobj);
 	int (* const uevent)(struct kset *kset, struct kobject *kobj,
 		      struct kobj_uevent_env *env);
-};
-
-struct kobj_attribute {
-	struct attribute attr;
-	ssize_t (*show)(struct kobject *kobj, struct kobj_attribute *attr,
-			char *buf);
-	ssize_t (*store)(struct kobject *kobj, struct kobj_attribute *attr,
-			 const char *buf, size_t count);
 };
 
 extern const struct sysfs_ops kobj_sysfs_ops;
