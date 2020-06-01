@@ -8,7 +8,7 @@
  * portions Copyright 2005, Red Hat, Inc., Ingo Molnar
  * Released under the General Public License (GPL).
  */
-
+#include <linux/types.h>
 #if defined(CONFIG_SMP)
 # include <asm/spinlock_types.h>
 #else

@@ -2,7 +2,7 @@
 #ifndef _ASM_X86_MMU_H
 #define _ASM_X86_MMU_H
 
-#include <linux/spinlock.h>
+#include <linux/spinlock_types.h>
 #include <linux/rwsem.h>
 #include <linux/mutex.h>
 #include <linux/atomic.h>

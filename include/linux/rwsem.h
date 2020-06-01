@@ -13,7 +13,7 @@
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/list.h>
-#include <linux/spinlock.h>
+#include <linux/spinlock_types.h>
 #include <linux/atomic.h>
 #include <linux/err.h>
 #ifdef CONFIG_RWSEM_SPIN_ON_OWNER

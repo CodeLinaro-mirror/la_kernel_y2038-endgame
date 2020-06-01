@@ -2,7 +2,7 @@
 #ifndef _linux_POSIX_TIMERS_H
 #define _linux_POSIX_TIMERS_H
 
-#include <linux/spinlock.h>
+#include <linux/spinlock_types.h>
 #include <linux/list.h>
 #include <linux/alarmtimer.h>
 #include <linux/timerqueue.h>

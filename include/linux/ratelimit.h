@@ -4,6 +4,7 @@
 
 #include <linux/param.h>
 #include <linux/spinlock.h>
+#include <linux/string.h>
 
 #define DEFAULT_RATELIMIT_INTERVAL	(5 * HZ)
 #define DEFAULT_RATELIMIT_BURST		10

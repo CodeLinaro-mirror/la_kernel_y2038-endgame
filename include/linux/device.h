@@ -18,6 +18,7 @@
 #include <linux/klist.h>
 #include <linux/list.h>
 #include <linux/lockdep.h>
+#include <linux/numa.h>
 #include <linux/compiler.h>
 #include <linux/types.h>
 #include <linux/mutex.h>

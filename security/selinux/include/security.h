@@ -15,6 +15,7 @@
 #include <linux/types.h>
 #include <linux/refcount.h>
 #include <linux/workqueue.h>
+#include <linux/mutex.h>
 #include "flask.h"
 
 #define SECSID_NULL			0x00000000 /* unspecified SID */

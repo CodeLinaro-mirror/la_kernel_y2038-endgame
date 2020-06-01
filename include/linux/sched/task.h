@@ -8,6 +8,7 @@
  */
 
 #include <linux/sched.h>
+#include <linux/spinlock.h>
 #include <linux/uaccess.h>
 
 struct task_struct;

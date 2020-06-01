@@ -13,6 +13,7 @@
 #define _LINUX_HRTIMER_H
 
 #include <linux/hrtimer_defs.h>
+#include <linux/percpu.h>
 #include <linux/rbtree.h>
 #include <linux/init.h>
 #include <linux/list.h>
@@ -358,6 +359,7 @@ static inline void timerfd_clock_was_set(void) { }
 #endif
 extern void hrtimers_resume(void);
 
+struct tick_device;
 DECLARE_PER_CPU(struct tick_device, tick_cpu_device);
 
 #ifdef CONFIG_PREEMPT_RT

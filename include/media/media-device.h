@@ -13,6 +13,7 @@
 
 #include <linux/list.h>
 #include <linux/mutex.h>
+#include <linux/idr.h>
 
 #include <media/media-devnode.h>
 #include <media/media-entity.h>

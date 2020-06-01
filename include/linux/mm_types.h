@@ -6,7 +6,7 @@
 
 #include <linux/auxvec.h>
 #include <linux/list.h>
-#include <linux/spinlock.h>
+#include <linux/spinlock_types.h>
 #include <linux/rbtree.h>
 #include <linux/rwsem.h>
 #include <linux/completion.h>
