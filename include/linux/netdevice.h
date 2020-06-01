@@ -192,7 +192,7 @@ struct net_device_stats {
 
 
 #include <linux/cache.h>
-#include <linux/skbuff.h>
+#include <linux/skbuff-types.h>
 
 #ifdef CONFIG_RPS
 #include <linux/static_key.h>

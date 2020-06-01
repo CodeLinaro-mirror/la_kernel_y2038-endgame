@@ -35,7 +35,7 @@
 #include <net/netns/xdp.h>
 #include <linux/ns_common.h>
 #include <linux/idr.h>
-#include <linux/skbuff.h>
+#include <linux/skbuff-types.h>
 #include <linux/notifier.h>
 
 struct user_namespace;
