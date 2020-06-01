@@ -3,10 +3,9 @@
 #define _LINUX_JIFFIES_H
 
 #include <linux/cache.h>
-#include <linux/math64.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
-#include <linux/time.h>
+#include <linux/time_types.h>
 #include <vdso/jiffies.h>
 #include <asm/param.h>			/* for HZ */
 #include <generated/timeconst.h>
@@ -416,6 +415,7 @@ static __always_inline unsigned long usecs_to_jiffies(const unsigned int u)
 	}
 }
 
+struct timespec64;
 extern unsigned long timespec64_to_jiffies(const struct timespec64 *value);
 extern void jiffies_to_timespec64(const unsigned long jiffies,
 				  struct timespec64 *value);

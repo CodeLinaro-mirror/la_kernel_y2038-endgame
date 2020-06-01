@@ -3,7 +3,6 @@
 #define _LINUX_TIMER_H
 
 #include <linux/list.h>
-#include <linux/ktime.h>
 #include <linux/stddef.h>
 #include <linux/lockdep.h>
 #include <linux/stringify.h>

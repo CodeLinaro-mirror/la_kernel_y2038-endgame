@@ -25,6 +25,7 @@
 #include <linux/time.h>
 #include <linux/jiffies.h>
 #include <linux/bug.h>
+#include <asm/div64.h>
 
 /* Nanosecond scalar representation for kernel time values */
 typedef s64	ktime_t;

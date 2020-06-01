@@ -6,6 +6,7 @@
 #include <linux/list.h>
 #include <linux/workqueue.h>
 #include <linux/attribute.h>
+#include <linux/kref.h>
 
 /*
  * The actions here must match the index to the string array
