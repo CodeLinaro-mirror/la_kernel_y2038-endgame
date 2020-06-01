@@ -10,14 +10,10 @@
 #include <linux/types.h>
 #include <linux/compiler.h>
 #include <linux/bitops.h>
-#include <linux/log2.h>
 #include <linux/typecheck.h>
 #include <linux/printk.h>
 #include <linux/build_bug.h>
-#include <asm/byteorder.h>
-#include <asm/div64.h>
 #include <uapi/linux/kernel.h>
-#include <asm/div64.h>
 
 #define STACK_MAGIC	0xdeadbeef
 

@@ -14,6 +14,7 @@
 #include <linux/rwsem.h>
 
 struct posix_clock;
+struct timex;
 
 /**
  * struct posix_clock_operations - functional interface to the clock

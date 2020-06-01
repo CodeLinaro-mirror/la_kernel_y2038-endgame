@@ -11,8 +11,7 @@
 #ifndef LINUX_DMAPOOL_H
 #define	LINUX_DMAPOOL_H
 
-#include <linux/scatterlist.h>
-#include <asm/io.h>
+#include <linux/gfp-bits.h>
 
 struct device;
 

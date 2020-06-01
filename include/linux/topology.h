@@ -30,7 +30,6 @@
 #include <linux/arch_topology.h>
 #include <linux/cpumask.h>
 #include <linux/bitops.h>
-#include <linux/mmzone.h>
 #include <linux/smp.h>
 #include <linux/percpu.h>
 #include <asm/topology.h>

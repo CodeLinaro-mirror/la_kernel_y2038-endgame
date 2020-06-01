@@ -16,7 +16,8 @@
 #include <linux/errno.h>
 #include <linux/kobject.h>
 #include <linux/mod_devicetable.h>
-#include <linux/spinlock.h>
+#include <linux/numa.h>
+#include <linux/spinlock_types.h>
 #include <linux/topology.h>
 #include <linux/notifier.h>
 #include <linux/property.h>

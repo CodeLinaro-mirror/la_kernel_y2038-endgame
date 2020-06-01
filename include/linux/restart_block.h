@@ -7,7 +7,7 @@
 
 #include <linux/compiler.h>
 #include <linux/types.h>
-#include <linux/time64.h>
+#include <linux/time_types.h>
 
 struct timespec;
 struct old_timespec32;
