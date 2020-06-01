@@ -10,6 +10,7 @@
 #include <linux/clocksource.h>
 #include <linux/jiffies.h>
 #include <linux/time.h>
+#include <linux/ktime.h>
 
 /**
  * struct tk_read_base - base structure for timekeeping readout

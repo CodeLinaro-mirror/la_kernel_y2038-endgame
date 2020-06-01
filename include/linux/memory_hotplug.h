@@ -2,7 +2,6 @@
 #ifndef __LINUX_MEMORY_HOTPLUG_H
 #define __LINUX_MEMORY_HOTPLUG_H
 
-#include <linux/mmzone.h>
 #include <linux/spinlock.h>
 #include <linux/notifier.h>
 #include <linux/bug.h>

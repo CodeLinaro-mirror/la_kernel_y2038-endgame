@@ -6,6 +6,7 @@
 #define _TRACE_WBT_H
 
 #include <linux/tracepoint.h>
+#include <linux/math64.h>
 #include "../../../block/blk-wbt.h"
 
 /**
