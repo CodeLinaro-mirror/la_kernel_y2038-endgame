@@ -9,6 +9,7 @@
 #include <linux/kernel.h>
 #include <linux/err.h>
 #include <linux/list.h>
+#include <linux/math64.h>
 #include <linux/mutex.h>
 #include <linux/idr.h>
 #include <linux/lockdep.h>

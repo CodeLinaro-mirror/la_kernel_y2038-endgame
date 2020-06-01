@@ -13,7 +13,6 @@
 #include <linux/key.h>
 #include <linux/atomic.h>
 #include <linux/uidgid.h>
-#include <linux/sched.h>
 #include <linux/sched/user.h>
 
 struct cred;
