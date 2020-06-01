@@ -2,6 +2,7 @@
 #ifndef _LINUX_TIME64_H
 #define _LINUX_TIME64_H
 
+#include <linux/types.h>
 #include <vdso/time64.h>
 
 typedef __s64 time64_t;
