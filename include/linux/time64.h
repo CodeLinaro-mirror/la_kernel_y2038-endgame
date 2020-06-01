@@ -2,7 +2,6 @@
 #ifndef _LINUX_TIME64_H
 #define _LINUX_TIME64_H
 
-#include <linux/math64.h>
 #include <vdso/time64.h>
 
 typedef __s64 time64_t;
@@ -139,15 +138,8 @@ extern struct timespec64 ns_to_timespec64(const s64 nsec);
  * timespec64_add_ns - Adds nanoseconds to a timespec64
  * @a:		pointer to timespec64 to be incremented
  * @ns:		unsigned nanoseconds value to be added
- *
- * This must always be inlined because its used from the x86-64 vdso,
- * which cannot call other kernel functions.
  */
-static __always_inline void timespec64_add_ns(struct timespec64 *a, u64 ns)
-{
-	a->tv_sec += __iter_div_u64_rem(a->tv_nsec + ns, NSEC_PER_SEC, &ns);
-	a->tv_nsec = ns;
-}
+extern void timespec64_add_ns(struct timespec64 *a, u64 ns);
 
 /*
  * timespec64_add_safe assumes both values are positive and checks for
