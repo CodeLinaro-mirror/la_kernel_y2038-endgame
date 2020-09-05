@@ -25,6 +25,7 @@
 #include <linux/tracehook.h>
 #include <linux/unistd.h>
 
+#include <asm/syscall.h>
 #include <asm/traps.h>
 
 #define CREATE_TRACE_POINTS
@@ -885,9 +886,9 @@ static void tracehook_report_syscall(struct pt_regs *regs,
 	regs->ARM_ip = ip;
 }
 
-asmlinkage int syscall_trace_enter(struct pt_regs *regs, int scno)
+asmlinkage int syscall_trace_enter(struct pt_regs *regs)
 {
-	current_thread_info()->syscall = scno;
+	int scno;
 
 	if (test_thread_flag(TIF_SYSCALL_TRACE))
 		tracehook_report_syscall(regs, PTRACE_SYSCALL_ENTER);
@@ -898,11 +899,11 @@ asmlinkage int syscall_trace_enter(struct pt_regs *regs, int scno)
 		return -1;
 #else
 	/* XXX: remove this once OABI gets fixed */
-	secure_computing_strict(current_thread_info()->syscall);
+	secure_computing_strict(syscall_get_nr(current, regs));
 #endif
 
 	/* Tracer or seccomp may have changed syscall. */
-	scno = current_thread_info()->syscall;
+	scno = syscall_get_nr(current, regs);
 
 	if (test_thread_flag(TIF_SYSCALL_TRACEPOINT))
 		trace_sys_enter(regs, scno);
