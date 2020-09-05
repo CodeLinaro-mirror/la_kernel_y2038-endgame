@@ -60,7 +60,7 @@ static int __init user_debug_setup(char *str)
 __setup("user_debug=", user_debug_setup);
 #endif
 
-static void dump_mem(const char *, const char *, unsigned long, unsigned long);
+static void dump_mem(const char *, const char *, unsigned long, unsigned long, bool kernel_mode);
 
 void dump_backtrace_entry(unsigned long where, unsigned long from,
 			  unsigned long frame, const char *loglvl)
@@ -76,7 +76,7 @@ void dump_backtrace_entry(unsigned long where, unsigned long from,
 #endif
 
 	if (in_entry_text(from) && end <= ALIGN(frame, THREAD_SIZE))
-		dump_mem(loglvl, "Exception stack", frame + 4, end);
+		dump_mem(loglvl, "Exception stack", frame + 4, end, true);
 }
 
 void dump_backtrace_stm(u32 *stack, u32 instruction, const char *loglvl)
@@ -119,19 +119,10 @@ static int verify_stack(unsigned long sp)
  * Dump out the contents of some memory nicely...
  */
 static void dump_mem(const char *lvl, const char *str, unsigned long bottom,
-		     unsigned long top)
+		     unsigned long top, bool kernel_mode)
 {
 	unsigned long first;
-	mm_segment_t fs;
 	int i;
-
-	/*
-	 * We need to switch to kernel mode so that we can use __get_user
-	 * to safely read from kernel space.  Note that we now dump the
-	 * code first, just in case the backtrace kills us.
-	 */
-	fs = get_fs();
-	set_fs(KERNEL_DS);
 
 	printk("%s%s(0x%08lx to 0x%08lx)\n", lvl, str, bottom, top);
 
@@ -144,20 +135,25 @@ static void dump_mem(const char *lvl, const char *str, unsigned long bottom,
 
 		for (p = first, i = 0; i < 8 && p < top; i++, p += 4) {
 			if (p >= bottom && p < top) {
-				unsigned long val;
-				if (__get_user(val, (unsigned long *)p) == 0)
-					sprintf(str + i * 9, " %08lx", val);
+				u32 val;
+				int err;
+
+				if (kernel_mode)
+					err = get_kernel_nofault(val, (u32 *)p);
+				else
+					err = get_user(val, (u32 *)p);
+
+				if (!err)
+					sprintf(str + i * 9, " %08x", val);
 				else
 					sprintf(str + i * 9, " ????????");
 			}
 		}
 		printk("%s%04lx:%s\n", lvl, first & 0xffff, str);
 	}
-
-	set_fs(fs);
 }
 
-static void __dump_instr(const char *lvl, struct pt_regs *regs)
+static void dump_instr(const char *lvl, struct pt_regs *regs)
 {
 	unsigned long addr = instruction_pointer(regs);
 	const int thumb = thumb_mode(regs);
@@ -173,10 +169,20 @@ static void __dump_instr(const char *lvl, struct pt_regs *regs)
 	for (i = -4; i < 1 + !!thumb; i++) {
 		unsigned int val, bad;
 
-		if (thumb)
-			bad = get_user(val, &((u16 *)addr)[i]);
-		else
-			bad = get_user(val, &((u32 *)addr)[i]);
+		if (!user_mode(regs)) {
+			if (thumb) {
+				u16 val16;
+				bad = get_kernel_nofault(val16, &((u16 *)addr)[i]);
+				val = val16;
+			} else {
+				bad = get_kernel_nofault(val, &((u32 *)addr)[i]);
+			}
+		} else {
+			if (thumb)
+				bad = get_user(val, &((u16 *)addr)[i]);
+			else
+				bad = get_user(val, &((u32 *)addr)[i]);
+		}
 
 		if (!bad)
 			p += sprintf(p, i == 0 ? "(%0*x) " : "%0*x ",
@@ -187,20 +193,6 @@ static void __dump_instr(const char *lvl, struct pt_regs *regs)
 		}
 	}
 	printk("%sCode: %s\n", lvl, str);
-}
-
-static void dump_instr(const char *lvl, struct pt_regs *regs)
-{
-	mm_segment_t fs;
-
-	if (!user_mode(regs)) {
-		fs = get_fs();
-		set_fs(KERNEL_DS);
-		__dump_instr(lvl, regs);
-		set_fs(fs);
-	} else {
-		__dump_instr(lvl, regs);
-	}
 }
 
 #ifdef CONFIG_ARM_UNWIND
@@ -276,6 +268,7 @@ static int __die(const char *str, int err, struct pt_regs *regs)
 	struct task_struct *tsk = current;
 	static int die_counter;
 	int ret;
+	bool kernel_mode = !user_mode(regs);
 
 	pr_emerg("Internal error: %s: %x [#%d]" S_PREEMPT S_SMP S_ISA "\n",
 	         str, err, ++die_counter);
@@ -290,9 +283,9 @@ static int __die(const char *str, int err, struct pt_regs *regs)
 	pr_emerg("Process %.*s (pid: %d, stack limit = 0x%p)\n",
 		 TASK_COMM_LEN, tsk->comm, task_pid_nr(tsk), end_of_stack(tsk));
 
-	if (!user_mode(regs) || in_interrupt()) {
+	if (kernel_mode || in_interrupt()) {
 		dump_mem(KERN_EMERG, "Stack: ", regs->ARM_sp,
-			 THREAD_SIZE + (unsigned long)task_stack_page(tsk));
+			 THREAD_SIZE + (unsigned long)task_stack_page(tsk), kernel_mode);
 		dump_backtrace(regs, tsk, KERN_EMERG);
 		dump_instr(KERN_EMERG, regs);
 	}
