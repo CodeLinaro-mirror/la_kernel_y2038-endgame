@@ -22,7 +22,10 @@ extern const unsigned long sys_call_table[];
 static inline int syscall_get_nr(struct task_struct *task,
 				 struct pt_regs *regs)
 {
-	return task_thread_info(task)->syscall;
+	if (!IS_ENABLED(CONFIG_OABI_COMPAT))
+		return task_thread_info(task)->syscall;
+
+	return task_thread_info(task)->syscall & ~__NR_OABI_SYSCALL_BASE;
 }
 
 static inline void syscall_rollback(struct task_struct *task,
