@@ -88,14 +88,12 @@ struct kexec_segment {
 	size_t memsz;
 };
 
-#ifdef CONFIG_COMPAT
 struct compat_kexec_segment {
 	compat_uptr_t buf;
 	compat_size_t bufsz;
 	compat_ulong_t mem;	/* User space sees this as a (void *) ... */
 	compat_size_t memsz;
 };
-#endif
 
 #ifdef CONFIG_KEXEC_FILE
 struct purgatory_info {

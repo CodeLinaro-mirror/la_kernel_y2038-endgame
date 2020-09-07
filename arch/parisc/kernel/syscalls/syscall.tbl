@@ -336,7 +336,7 @@
 297	common	epoll_pwait		sys_epoll_pwait			compat_sys_epoll_pwait
 298	common	statfs64		sys_statfs64			compat_sys_statfs64
 299	common	fstatfs64		sys_fstatfs64			compat_sys_fstatfs64
-300	common	kexec_load		sys_kexec_load			compat_sys_kexec_load
+300	common	kexec_load		sys_kexec_load
 301	32	utimensat		sys_utimensat_time32
 301	64	utimensat		sys_utimensat
 302	common	signalfd		sys_signalfd			compat_sys_signalfd
