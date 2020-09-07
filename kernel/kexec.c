@@ -29,7 +29,25 @@ static int copy_user_segment_list(struct kimage *image,
 	/* Read in the segments */
 	image->nr_segments = nr_segments;
 	segment_bytes = nr_segments * sizeof(*segments);
-	ret = copy_from_user(image->segment, segments, segment_bytes);
+	if (in_compat_syscall()) {
+		struct compat_kexec_segment __user *cs = (void __user *)segments;
+		struct compat_kexec_segment segment;
+		int i;
+		for (i=0; i< nr_segments; i++) {
+			copy_from_user(&segment, &cs[i], sizeof(segment));
+			if (ret)
+				break;
+
+			image->segment[i] = (struct kexec_segment) {
+				.buf   = compat_ptr(segment.buf),
+				.bufsz = segment.bufsz,
+				.mem   = segment.mem,
+				.memsz = segment.memsz,
+			};
+		}
+	} else {
+		ret = copy_from_user(image->segment, segments, segment_bytes);
+	}
 	if (ret)
 		ret = -EFAULT;
 
@@ -264,58 +282,3 @@ SYSCALL_DEFINE4(kexec_load, unsigned long, entry, unsigned long, nr_segments,
 
 	return result;
 }
-
-#ifdef CONFIG_COMPAT
-COMPAT_SYSCALL_DEFINE4(kexec_load, compat_ulong_t, entry,
-		       compat_ulong_t, nr_segments,
-		       struct compat_kexec_segment __user *, segments,
-		       compat_ulong_t, flags)
-{
-	struct compat_kexec_segment in;
-	struct kexec_segment out, __user *ksegments;
-	unsigned long i, result;
-
-	result = kexec_load_check(nr_segments, flags);
-	if (result)
-		return result;
-
-	/* Don't allow clients that don't understand the native
-	 * architecture to do anything.
-	 */
-	if ((flags & KEXEC_ARCH_MASK) == KEXEC_ARCH_DEFAULT)
-		return -EINVAL;
-
-	ksegments = compat_alloc_user_space(nr_segments * sizeof(out));
-	for (i = 0; i < nr_segments; i++) {
-		result = copy_from_user(&in, &segments[i], sizeof(in));
-		if (result)
-			return -EFAULT;
-
-		out.buf   = compat_ptr(in.buf);
-		out.bufsz = in.bufsz;
-		out.mem   = in.mem;
-		out.memsz = in.memsz;
-
-		result = copy_to_user(&ksegments[i], &out, sizeof(out));
-		if (result)
-			return -EFAULT;
-	}
-
-	/* Because we write directly to the reserved memory
-	 * region when loading crash kernels we need a mutex here to
-	 * prevent multiple crash  kernels from attempting to load
-	 * simultaneously, and to prevent a crash kernel from loading
-	 * over the top of a in use crash kernel.
-	 *
-	 * KISS: always take the mutex.
-	 */
-	if (!mutex_trylock(&kexec_mutex))
-		return -EBUSY;
-
-	result = do_kexec_load(entry, nr_segments, ksegments, flags);
-
-	mutex_unlock(&kexec_mutex);
-
-	return result;
-}
-#endif
