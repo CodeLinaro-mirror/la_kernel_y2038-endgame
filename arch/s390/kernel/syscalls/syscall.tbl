@@ -283,7 +283,7 @@
 274  common	mq_timedreceive		sys_mq_timedreceive		sys_mq_timedreceive_time32
 275  common	mq_notify		sys_mq_notify			compat_sys_mq_notify
 276  common	mq_getsetattr		sys_mq_getsetattr		compat_sys_mq_getsetattr
-277  common	kexec_load		sys_kexec_load			compat_sys_kexec_load
+277  common	kexec_load		sys_kexec_load			sys_kexec_load
 278  common	add_key			sys_add_key			sys_add_key
 279  common	request_key		sys_request_key			sys_request_key
 280  common	keyctl			sys_keyctl			compat_sys_keyctl
