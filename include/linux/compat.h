@@ -91,6 +91,11 @@
 	static inline long __do_compat_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
 #endif /* COMPAT_SYSCALL_DEFINEx */
 
+struct compat_iovec {
+	compat_uptr_t	iov_base;
+	compat_size_t	iov_len;
+};
+
 #ifdef CONFIG_COMPAT
 
 #ifndef compat_user_stack_pointer
@@ -247,11 +252,6 @@ typedef struct compat_siginfo {
 		} _sigsys;
 	} _sifields;
 } compat_siginfo_t;
-
-struct compat_iovec {
-	compat_uptr_t	iov_base;
-	compat_size_t	iov_len;
-};
 
 struct compat_rlimit {
 	compat_ulong_t	rlim_cur;
