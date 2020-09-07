@@ -342,7 +342,7 @@ __SC_COMP(__NR_setitimer, sys_setitimer, compat_sys_setitimer)
 
 /* kernel/kexec.c */
 #define __NR_kexec_load 104
-__SC_COMP(__NR_kexec_load, sys_kexec_load, compat_sys_kexec_load)
+__SYSCALL(__NR_kexec_load, sys_kexec_load)
 
 /* kernel/module.c */
 #define __NR_init_module 105

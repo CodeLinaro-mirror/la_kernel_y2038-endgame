@@ -643,12 +643,6 @@ asmlinkage long compat_sys_setitimer(int which,
 				     struct old_itimerval32 __user *in,
 				     struct old_itimerval32 __user *out);
 
-/* kernel/kexec.c */
-asmlinkage long compat_sys_kexec_load(compat_ulong_t entry,
-				      compat_ulong_t nr_segments,
-				      struct compat_kexec_segment __user *,
-				      compat_ulong_t flags);
-
 /* kernel/posix-timers.c */
 asmlinkage long compat_sys_timer_create(clockid_t which_clock,
 			struct compat_sigevent __user *timer_event_spec,

@@ -705,7 +705,7 @@ __SYSCALL(__NR_getcpu, sys_getcpu)
 #define __NR_epoll_pwait 346
 __SYSCALL(__NR_epoll_pwait, compat_sys_epoll_pwait)
 #define __NR_kexec_load 347
-__SYSCALL(__NR_kexec_load, compat_sys_kexec_load)
+__SYSCALL(__NR_kexec_load, sys_kexec_load)
 #define __NR_utimensat 348
 __SYSCALL(__NR_utimensat, sys_utimensat_time32)
 #define __NR_signalfd 349
