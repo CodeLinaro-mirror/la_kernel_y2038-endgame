@@ -194,6 +194,22 @@ static void copy_to_if_dqblk(struct if_dqblk *dst, struct qc_dqblk *src)
 	dst->dqb_valid = QIF_ALL;
 }
 
+/*
+ * This code works only for 32 bit quota tools over 64 bit x86 kernels
+ * and is necessary due to alignment problems.
+ */
+struct compat_if_dqblk {
+	compat_u64 dqb_bhardlimit;
+	compat_u64 dqb_bsoftlimit;
+	compat_u64 dqb_curspace;
+	compat_u64 dqb_ihardlimit;
+	compat_u64 dqb_isoftlimit;
+	compat_u64 dqb_curinodes;
+	compat_u64 dqb_btime;
+	compat_u64 dqb_itime;
+	compat_uint_t dqb_valid;
+};
+
 static int quota_getquota(struct super_block *sb, int type, qid_t id,
 			  void __user *addr)
 {
@@ -211,8 +227,19 @@ static int quota_getquota(struct super_block *sb, int type, qid_t id,
 	if (ret)
 		return ret;
 	copy_to_if_dqblk(&idq, &fdq);
+
+#ifdef CONFIG_IA32_EMULATION
+	if (in_ia32_syscall()) {
+		if (copy_to_user(addr, &idq, sizeof(struct compat_if_dqblk)))
+			return -EFAULT;
+
+		return 0;
+	}
+#endif
+
 	if (copy_to_user(addr, &idq, sizeof(idq)))
 		return -EFAULT;
+
 	return 0;
 }
 
@@ -277,6 +304,14 @@ static int quota_setquota(struct super_block *sb, int type, qid_t id,
 	struct if_dqblk idq;
 	struct kqid qid;
 
+#ifdef CONFIG_IA32_EMULATION
+	if (in_ia32_syscall()) {
+		if (copy_from_user(&idq, addr, sizeof(struct compat_if_dqblk)))
+			return -EFAULT;
+
+		return 0;
+	} else
+#endif
 	if (copy_from_user(&idq, addr, sizeof(idq)))
 		return -EFAULT;
 	if (!sb->s_qcop->set_dqblk)
@@ -382,6 +417,27 @@ static int quota_getstate(struct super_block *sb, int type,
 	return 0;
 }
 
+/* XFS structures */
+struct compat_fs_qfilestat {
+	compat_u64 qfs_ino;
+	compat_u64 qfs_nblks;
+	compat_uint_t qfs_nextents;
+};
+
+struct compat_fs_quota_stat {
+	__s8		qs_version;
+	__u16		qs_flags;
+	__s8		qs_pad;
+	struct compat_fs_qfilestat	qs_uquota;
+	struct compat_fs_qfilestat	qs_gquota;
+	compat_uint_t	qs_incoredqs;
+	compat_int_t	qs_btimelimit;
+	compat_int_t	qs_itimelimit;
+	compat_int_t	qs_rtbtimelimit;
+	__u16		qs_bwarnlimit;
+	__u16		qs_iwarnlimit;
+};
+
 static int quota_getxstate(struct super_block *sb, int type, void __user *addr)
 {
 	struct fs_quota_stat fqs;
@@ -390,9 +446,48 @@ static int quota_getxstate(struct super_block *sb, int type, void __user *addr)
 	if (!sb->s_qcop->get_state)
 		return -ENOSYS;
 	ret = quota_getstate(sb, type, &fqs);
-	if (!ret && copy_to_user(addr, &fqs, sizeof(fqs)))
+	if (ret)
+		return ret;
+
+#ifdef CONFIG_IA32_EMULATION
+	if (in_ia32_syscall()) {
+		struct compat_fs_quota_stat cfqs;
+
+		memset(&cfqs, 0, sizeof(cfqs));
+
+		cfqs = (struct compat_fs_quota_stat) {
+			.qs_version	 = fqs.qs_version,
+			.qs_flags	 = fqs.qs_flags,
+			.qs_pad		 = fqs.qs_pad,
+			.qs_uquota	 = {
+			       .qfs_ino		= fqs.qs_uquota.qfs_ino,
+			       .qfs_nblks	= fqs.qs_uquota.qfs_nblks,
+			       .qfs_nextents	= fqs.qs_uquota.qfs_nextents,
+			},
+			.qs_gquota	 = {
+			       .qfs_ino		= fqs.qs_gquota.qfs_ino,
+			       .qfs_nblks	= fqs.qs_gquota.qfs_nblks,
+			       .qfs_nextents	= fqs.qs_gquota.qfs_nextents,
+			},
+			.qs_incoredqs	 = fqs.qs_incoredqs,
+			.qs_btimelimit	 = fqs.qs_btimelimit,
+			.qs_itimelimit	 = fqs.qs_itimelimit,
+			.qs_rtbtimelimit = fqs.qs_rtbtimelimit,
+			.qs_bwarnlimit	 = fqs.qs_bwarnlimit,
+			.qs_iwarnlimit	 = fqs.qs_iwarnlimit,
+		};
+
+		if (copy_to_user(addr, &cfqs, sizeof(cfqs)))
+			return -EFAULT;
+
+		return 0;
+	}
+#endif
+
+	if (copy_to_user(addr, &fqs, sizeof(fqs)))
 		return -EFAULT;
-	return ret;
+
+	return 0;
 }
 
 static int quota_getstatev(struct super_block *sb, int type,
