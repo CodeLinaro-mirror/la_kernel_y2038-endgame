@@ -290,7 +290,6 @@ COND_SYSCALL_COMPAT(set_mempolicy);
 COND_SYSCALL(migrate_pages);
 COND_SYSCALL_COMPAT(migrate_pages);
 COND_SYSCALL(move_pages);
-COND_SYSCALL_COMPAT(move_pages);
 
 COND_SYSCALL(perf_event_open);
 COND_SYSCALL(accept4);
