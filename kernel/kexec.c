@@ -30,11 +30,13 @@ static int copy_user_segment_list(struct kimage *image,
 	image->nr_segments = nr_segments;
 	segment_bytes = nr_segments * sizeof(*segments);
 	if (in_compat_syscall()) {
-		struct compat_kexec_segment __user *cs = (void __user *)segments;
+		struct compat_kexec_segment __user *cs;
 		struct compat_kexec_segment segment;
 		int i;
+
+		cs = (struct compat_kexec_segment __user *)segments;
 		for (i=0; i< nr_segments; i++) {
-			copy_from_user(&segment, &cs[i], sizeof(segment));
+			ret = copy_from_user(&segment, &cs[i], sizeof(segment));
 			if (ret)
 				break;
 
