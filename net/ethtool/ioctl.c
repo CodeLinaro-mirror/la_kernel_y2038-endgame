@@ -817,7 +817,7 @@ static bool ethtool_translate_compat(void)
 	BUILD_BUG_ON(sizeof(struct compat_ethtool_rxnfc) !=
 		     sizeof(struct ethtool_rxnfc));
 #endif
-	return 0;
+	return false;
 }
 
 static int ethtool_rxnfc_copy_from_compat(struct ethtool_rxnfc *rxnfc,
