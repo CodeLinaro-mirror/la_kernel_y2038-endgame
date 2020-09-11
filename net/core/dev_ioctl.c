@@ -98,6 +98,94 @@ int dev_ifconf(struct net *net, struct ifconf *ifc, int size)
 	return 0;
 }
 
+int dev_ifmap(struct net *net, struct ifreq __user *ifr, unsigned int cmd)
+{
+	struct net_device *dev;
+	char ifname[IFNAMSIZ];
+	char *colon;
+	struct compat_ifmap cifmap;
+	struct ifmap ifmap;
+	int ret;
+
+	if (copy_from_user(ifname, ifr->ifr_name, sizeof(ifname)))
+		return -EFAULT;
+	ifname[IFNAMSIZ-1] = 0;
+	colon = strchr(ifname, ':');
+	if (colon)
+		*colon = 0;
+	dev_load(net, ifname);
+
+	switch (cmd) {
+	case SIOCGIFMAP:
+		rcu_read_lock();
+		dev = dev_get_by_name_rcu(net, ifname);
+		if (!dev) {
+			rcu_read_unlock();
+			return -ENODEV;
+		}
+
+		if (in_compat_syscall()) {
+			cifmap.mem_start = dev->mem_start;
+			cifmap.mem_end   = dev->mem_end;
+			cifmap.base_addr = dev->base_addr;
+			cifmap.irq       = dev->irq;
+			cifmap.dma       = dev->dma;
+			cifmap.port      = dev->if_port;
+			rcu_read_unlock();
+
+			ret = copy_to_user(&ifr->ifr_data,
+					   &cifmap, sizeof(cifmap));
+		} else {
+			ifmap.mem_start  = dev->mem_start;
+			ifmap.mem_end    = dev->mem_end;
+			ifmap.base_addr  = dev->base_addr;
+			ifmap.irq        = dev->irq;
+			ifmap.dma        = dev->dma;
+			ifmap.port       = dev->if_port;
+			rcu_read_unlock();
+
+			ret = copy_to_user(&ifr->ifr_data,
+					   &ifmap, sizeof(ifmap));
+		}
+		ret = ret ? -EFAULT : 0;
+		break;
+
+	case SIOCSIFMAP:
+		if (!capable(CAP_NET_ADMIN) ||
+		    !ns_capable(net->user_ns, CAP_NET_ADMIN))
+			return -EPERM;
+
+		if (in_compat_syscall()) {
+			if (copy_from_user(&cifmap, &ifr->ifr_data,
+					   sizeof(cifmap)))
+				return -EFAULT;
+
+			ifmap.mem_start  = cifmap.mem_start;
+			ifmap.mem_end    = cifmap.mem_end;
+			ifmap.base_addr  = cifmap.base_addr;
+			ifmap.irq        = cifmap.irq;
+			ifmap.dma        = cifmap.dma;
+			ifmap.port       = cifmap.port;
+		} else {
+			if (copy_from_user(&ifmap, &ifr->ifr_data,
+					   sizeof(ifmap)))
+				return -EFAULT;
+		}
+
+		rtnl_lock();
+		dev = __dev_get_by_name(net, ifname);
+		if (!dev || !netif_device_present(dev))
+			ret = -ENODEV;
+		else if (!dev->netdev_ops->ndo_set_config)
+			ret = -EOPNOTSUPP;
+		else
+			ret = dev->netdev_ops->ndo_set_config(dev, &ifmap);
+		rtnl_unlock();
+		break;
+	}
+	return ret;
+}
+
 /*
  *	Perform the SIOCxIFxxx calls, inside rcu_read_lock()
  */
@@ -137,15 +225,6 @@ static int dev_ifsioc_locked(struct net *net, struct ifreq *ifr, unsigned int cm
 	case SIOCGIFSLAVE:
 		err = -EINVAL;
 		break;
-
-	case SIOCGIFMAP:
-		ifr->ifr_map.mem_start = dev->mem_start;
-		ifr->ifr_map.mem_end   = dev->mem_end;
-		ifr->ifr_map.base_addr = dev->base_addr;
-		ifr->ifr_map.irq       = dev->irq;
-		ifr->ifr_map.dma       = dev->dma;
-		ifr->ifr_map.port      = dev->if_port;
-		return 0;
 
 	case SIOCGIFINDEX:
 		ifr->ifr_ifindex = dev->ifindex;
@@ -285,14 +364,6 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, unsigned int cmd)
 		call_netdevice_notifiers(NETDEV_CHANGEADDR, dev);
 		return 0;
 
-	case SIOCSIFMAP:
-		if (ops->ndo_set_config) {
-			if (!netif_device_present(dev))
-				return -ENODEV;
-			return ops->ndo_set_config(dev, &ifr->ifr_map);
-		}
-		return -EOPNOTSUPP;
-
 	case SIOCADDMULTI:
 		if (!ops->ndo_set_rx_mode ||
 		    ifr->ifr_hwaddr.sa_family != AF_UNSPEC)
@@ -429,7 +500,6 @@ int dev_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr, bool *need_c
 	case SIOCGIFMTU:
 	case SIOCGIFHWADDR:
 	case SIOCGIFSLAVE:
-	case SIOCGIFMAP:
 	case SIOCGIFINDEX:
 	case SIOCGIFTXQLEN:
 		dev_load(net, ifr->ifr_name);
@@ -474,7 +544,6 @@ int dev_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr, bool *need_c
 	 *	- require strict serialization.
 	 *	- do not return a value
 	 */
-	case SIOCSIFMAP:
 	case SIOCSIFTXQLEN:
 		if (!capable(CAP_NET_ADMIN))
 			return -EPERM;
