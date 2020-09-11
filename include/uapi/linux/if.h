@@ -247,7 +247,13 @@ struct ifreq {
 		short	ifru_flags;
 		int	ifru_ivalue;
 		int	ifru_mtu;
+#ifndef __KERNEL__
+		/*
+		 * ifru_map is rarely used but causes the incompatibility
+		 * between native and compat mode.
+		 */
 		struct  ifmap ifru_map;
+#endif
 		char	ifru_slave[IFNAMSIZ];	/* Just fits the size */
 		char	ifru_newname[IFNAMSIZ];
 		void __user *	ifru_data;
