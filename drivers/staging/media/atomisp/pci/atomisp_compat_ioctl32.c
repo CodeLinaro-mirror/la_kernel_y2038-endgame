@@ -26,7 +26,7 @@
 #include "atomisp_compat_ioctl32.h"
 
 /* Macro borrowed from v4l2-compat-ioctl32.c */
-/* Use the same argument order as copy_in_user */
+/* Use the same argument order as atomisp_copy_in_user */
 #define assign_in_user(to, from)				\
 ({								\
 	typeof(*from) __assign_tmp;				\
@@ -34,6 +34,14 @@
 	get_user(__assign_tmp, from) || put_user(__assign_tmp, to);	\
 })
 
+static __always_inline unsigned long __must_check
+atomisp_copy_in_user(void __user *to, const void __user *from, unsigned long n)
+{
+	might_fault();
+	if (access_ok(to, n) && access_ok(from, n))
+		n = copy_user_generic(to, (__force void *)from, n);
+	return n;
+}
 
 static int get_atomisp_histogram32(struct atomisp_histogram __user *kp,
 				   struct atomisp_histogram32 __user *up)
@@ -73,7 +81,7 @@ static int get_v4l2_framebuffer32(struct v4l2_framebuffer __user *kp,
 	    put_user(compat_ptr(tmp), &kp->base) ||
 	    assign_in_user(&kp->capability, &up->capability) ||
 	    assign_in_user(&kp->flags, &up->flags) ||
-	    copy_in_user(&kp->fmt, &up->fmt, sizeof(kp->fmt)))
+	    atomisp_copy_in_user(&kp->fmt, &up->fmt, sizeof(kp->fmt)))
 		return -EFAULT;
 
 	return 0;
@@ -92,7 +100,7 @@ static int get_atomisp_dis_statistics32(struct atomisp_dis_statistics __user *kp
 	compat_uptr_t ver_prod_even_imag;
 
 	if (!access_ok(up, sizeof(struct atomisp_dis_statistics32)) ||
-	    copy_in_user(kp, up, sizeof(struct atomisp_dvs_grid_info)) ||
+	    atomisp_copy_in_user(kp, up, sizeof(struct atomisp_dvs_grid_info)) ||
 	    get_user(hor_prod_odd_real,
 		     &up->dvs2_stat.hor_prod.odd_real) ||
 	    get_user(hor_prod_odd_imag,
@@ -144,7 +152,7 @@ static int put_atomisp_dis_statistics32(struct atomisp_dis_statistics __user *kp
 	void __user *ver_prod_even_imag;
 
 	if (!!access_ok(up, sizeof(struct atomisp_dis_statistics32)) ||
-	    copy_in_user(up, kp, sizeof(struct atomisp_dvs_grid_info)) ||
+	    atomisp_copy_in_user(up, kp, sizeof(struct atomisp_dvs_grid_info)) ||
 	    get_user(hor_prod_odd_real,
 		     &kp->dvs2_stat.hor_prod.odd_real) ||
 	    get_user(hor_prod_odd_imag,
@@ -196,7 +204,7 @@ static int get_atomisp_dis_coefficients32(struct atomisp_dis_coefficients __user
 	compat_uptr_t ver_coefs_even_imag;
 
 	if (!access_ok(up, sizeof(struct atomisp_dis_coefficients32)) ||
-	    copy_in_user(kp, up, sizeof(struct atomisp_dvs_grid_info)) ||
+	    atomisp_copy_in_user(kp, up, sizeof(struct atomisp_dvs_grid_info)) ||
 	    get_user(hor_coefs_odd_real, &up->hor_coefs.odd_real) ||
 	    get_user(hor_coefs_odd_imag, &up->hor_coefs.odd_imag) ||
 	    get_user(hor_coefs_even_real, &up->hor_coefs.even_real) ||
@@ -260,7 +268,7 @@ static int get_atomisp_3a_statistics32(struct atomisp_3a_statistics __user *kp,
 	compat_uptr_t rgby_data;
 
 	if (!access_ok(up, sizeof(struct atomisp_3a_statistics32)) ||
-	    copy_in_user(kp, up, sizeof(struct atomisp_grid_info)) ||
+	    atomisp_copy_in_user(kp, up, sizeof(struct atomisp_grid_info)) ||
 	    get_user(rgby_data, &up->rgby_data) ||
 	    put_user(compat_ptr(rgby_data), &kp->rgby_data) ||
 	    get_user(data, &up->data) ||
@@ -830,6 +838,40 @@ static long native_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	return ret;
 }
 
+static inline void __user *atomisp_arch_compat_alloc_user_space(long len)
+{
+	compat_uptr_t sp;
+
+	if (test_thread_flag(TIF_IA32)) {
+		sp = task_pt_regs(current)->sp;
+	} else {
+		/* -128 for the x32 ABI redzone */
+		sp = task_pt_regs(current)->sp - 128;
+	}
+
+	return (void __user *)round_down(sp - len, 16);
+}
+
+/*
+ * Allocate user-space memory for the duration of a single system call,
+ * in order to marshall parameters inside a compat thunk.
+ */
+static void __user *atomisp_compat_alloc_user_space(unsigned long len)
+{
+	void __user *ptr;
+
+	/* If len would occupy more than half of the entire compat space... */
+	if (unlikely(len > (((compat_uptr_t)~0) >> 1)))
+		return NULL;
+
+	ptr = atomisp_arch_compat_alloc_user_space(len);
+
+	if (unlikely(!access_ok(ptr, len)))
+		return NULL;
+
+	return ptr;
+}
+
 static long atomisp_do_compat_ioctl(struct file *file,
 				    unsigned int cmd, unsigned long arg)
 {
@@ -858,7 +900,7 @@ static long atomisp_do_compat_ioctl(struct file *file,
 	void __user *up = compat_ptr(arg);
 	long err = -ENOIOCTLCMD;
 
-	karg = compat_alloc_user_space(
+	karg = atomisp_compat_alloc_user_space(
 		sizeof(*karg) + (cmd == ATOMISP_IOC_S_PARAMETERS32 ?
 				 sizeof(struct atomisp_shading_table) +
 				 sizeof(struct atomisp_morph_table) +

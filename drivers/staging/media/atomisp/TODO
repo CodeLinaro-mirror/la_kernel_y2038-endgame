@@ -120,6 +120,11 @@ TODO
     for this driver until the other work is done, as there will be a lot
     of code churn until this driver becomes functional again.
 
+16. The copy_in_user()/compat_alloc_user_space() interface is being
+    removed from the kernel, this driver now has a private copy that
+    needs to be removed as well, after the compat_ioctl handling has
+    been restructured.
+
 Limitations
 ===========
 
