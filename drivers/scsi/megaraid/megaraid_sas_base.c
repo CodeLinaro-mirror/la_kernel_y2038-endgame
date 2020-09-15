@@ -8279,16 +8279,18 @@ megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 	 * copy out the sense
 	 */
 	if (ioc->sense_len) {
+		void __user *uptr;
 		/*
 		 * sense_ptr points to the location that has the user
 		 * sense buffer address
 		 */
-		sense_ptr = (unsigned long *) ((unsigned long)ioc->frame.raw +
-				ioc->sense_off);
+		sense_ptr = (void *)ioc->frame.raw + ioc->sense_off;
+		if (in_compat_syscall())
+			uptr = compat_ptr(get_unaligned((u32 *)sense_ptr));
+		else
+			uptr = get_unaligned((void __user **)sense_ptr);
 
-		if (copy_to_user((void __user *)((unsigned long)
-				 get_unaligned((unsigned long *)sense_ptr)),
-				 sense, ioc->sense_len)) {
+		if (copy_to_user(uptr, sense, ioc->sense_len)) {
 			dev_err(&instance->pdev->dev, "Failed to copy out to user "
 					"sense data\n");
 			error = -EFAULT;
@@ -8331,10 +8333,10 @@ out:
 	return error;
 }
 
-static struct megasas_iocpacket *megasas_compat_iocpacket_get_user(void __user *arg)
+static struct megasas_iocpacket *
+megasas_compat_iocpacket_get_user(void __user *arg)
 {
 	int err = -EFAULT;
-#ifdef CONFIG_COMPAT
 	struct megasas_iocpacket *ioc;
 	struct compat_megasas_iocpacket __user *cioc = arg;
 	int i;
@@ -8343,27 +8345,6 @@ static struct megasas_iocpacket *megasas_compat_iocpacket_get_user(void __user *
 	if (copy_from_user(ioc, arg,
 			   offsetof(struct megasas_iocpacket, frame) + 128))
 		goto out;
-
-	/*
-	 * The sense_ptr is used in megasas_mgmt_fw_ioctl only when
-	 * sense_len is not null, so prepare the 64bit value under
-	 * the same condition.
-	 */
-	if (ioc->sense_len) {
-		compat_uptr_t *sense_ioc_ptr;
-		void __user *sense_cioc;
-
-		/* make sure the pointer is inside of frame.raw */
-		if (ioc->sense_off >
-		    (sizeof(ioc->frame.raw) - sizeof(void __user*))) {
-			err = -EINVAL;
-			goto out;
-		}
-
-		sense_ioc_ptr = (compat_uptr_t *)&ioc->frame.raw[ioc->sense_off];
-		sense_cioc = compat_ptr(get_unaligned(sense_ioc_ptr));
-		put_unaligned((unsigned long)sense_cioc, (void **)sense_ioc_ptr);
-	}
 
 	for (i = 0; i < MAX_IOCTL_SGE; i++) {
 		compat_uptr_t iov_base;
@@ -8377,7 +8358,7 @@ static struct megasas_iocpacket *megasas_compat_iocpacket_get_user(void __user *
 	return ioc;
 out:
 	kfree(ioc);
-#endif
+
 	return ERR_PTR(err);
 }
 
