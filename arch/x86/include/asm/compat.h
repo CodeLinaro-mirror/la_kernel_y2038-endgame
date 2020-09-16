@@ -175,20 +175,6 @@ typedef struct user_regs_struct compat_elf_gregset_t;
 	(!!(task_pt_regs(current)->orig_ax & __X32_SYSCALL_BIT))
 #endif
 
-static inline void __user *arch_compat_alloc_user_space(long len)
-{
-	compat_uptr_t sp;
-
-	if (test_thread_flag(TIF_IA32)) {
-		sp = task_pt_regs(current)->sp;
-	} else {
-		/* -128 for the x32 ABI redzone */
-		sp = task_pt_regs(current)->sp - 128;
-	}
-
-	return (void __user *)round_down(sp - len, 16);
-}
-
 static inline bool in_x32_syscall(void)
 {
 #ifdef CONFIG_X86_X32_ABI

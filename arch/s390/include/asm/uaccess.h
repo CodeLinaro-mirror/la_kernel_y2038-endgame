@@ -240,9 +240,6 @@ int __put_user_bad(void) __attribute__((noreturn));
 
 int __get_user_bad(void) __attribute__((noreturn));
 
-unsigned long __must_check
-raw_copy_in_user(void __user *to, const void __user *from, unsigned long n);
-
 /*
  * Copy a null terminated string from userspace.
  */
