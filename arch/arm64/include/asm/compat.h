@@ -115,11 +115,6 @@ typedef u32		compat_sigset_word;
 #define compat_user_stack_pointer() (user_stack_pointer(task_pt_regs(current)))
 #define COMPAT_MINSIGSTKSZ	2048
 
-static inline void __user *arch_compat_alloc_user_space(long len)
-{
-	return (void __user *)compat_user_stack_pointer() - len;
-}
-
 struct compat_ipc64_perm {
 	compat_key_t key;
 	__compat_uid32_t uid;
