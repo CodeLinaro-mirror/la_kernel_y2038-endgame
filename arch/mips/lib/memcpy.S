@@ -697,13 +697,4 @@ EXPORT_SYMBOL(__copy_to_user_eva)
 __BUILD_COPY_USER EVA_MODE KERNELOP USEROP
 END(__copy_to_user_eva)
 
-/*
- * __copy_in_user (EVA)
- */
-
-LEAF(__copy_in_user_eva)
-EXPORT_SYMBOL(__copy_in_user_eva)
-__BUILD_COPY_USER EVA_MODE USEROP USEROP
-END(__copy_in_user_eva)
-
 #endif
