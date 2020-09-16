@@ -457,8 +457,6 @@ extern ssize_t compat_rw_copy_check_uvector(int type,
 		unsigned long fast_segs, struct iovec *fast_pointer,
 		struct iovec **ret_pointer);
 
-extern void __user *compat_alloc_user_space(unsigned long len);
-
 int compat_restore_altstack(const compat_stack_t __user *uss);
 int __compat_save_altstack(compat_stack_t __user *, unsigned long);
 #define unsafe_compat_save_altstack(uss, sp, label) do { \
