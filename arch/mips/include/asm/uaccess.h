@@ -573,9 +573,6 @@ extern size_t __copy_user(void *__to, const void *__from, size_t __n);
 #define __invoke_copy_to_user(to, from, n)				\
 	__invoke_copy_to(__copy_user, to, from, n)
 
-#define ___invoke_copy_in_user(to, from, n)				\
-	__invoke_copy_from(__copy_user, to, from, n)
-
 #else
 
 /* EVA specific functions */
@@ -584,7 +581,6 @@ extern size_t __copy_from_user_eva(void *__to, const void *__from,
 				   size_t __n);
 extern size_t __copy_to_user_eva(void *__to, const void *__from,
 				 size_t __n);
-extern size_t __copy_in_user_eva(void *__to, const void *__from, size_t __n);
 
 /*
  * Source or destination address is in userland. We need to go through
@@ -595,9 +591,6 @@ extern size_t __copy_in_user_eva(void *__to, const void *__from, size_t __n);
 
 #define __invoke_copy_to_user(to, from, n)				\
 	__invoke_copy_to(__copy_to_user_eva, to, from, n)
-
-#define ___invoke_copy_in_user(to, from, n)				\
-	__invoke_copy_from(__copy_in_user_eva, to, from, n)
 
 #endif /* CONFIG_EVA */
 
@@ -621,15 +614,6 @@ raw_copy_from_user(void *to, const void __user *from, unsigned long n)
 
 #define INLINE_COPY_FROM_USER
 #define INLINE_COPY_TO_USER
-
-static inline unsigned long
-raw_copy_in_user(void __user*to, const void __user *from, unsigned long n)
-{
-	if (eva_kernel_access())
-		return ___invoke_copy_in_kernel(to, from, n);
-	else
-		return ___invoke_copy_in_user(to, from,	n);
-}
 
 extern __kernel_size_t __bzero_kernel(void __user *addr, __kernel_size_t size);
 extern __kernel_size_t __bzero(void __user *addr, __kernel_size_t size);
