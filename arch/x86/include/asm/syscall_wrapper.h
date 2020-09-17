@@ -171,12 +171,16 @@ extern long __ia32_sys_ni_syscall(const struct pt_regs *regs);
 	__SYS_STUBx(x32, compat_sys##name,				\
 		    SC_X86_64_REGS_TO_ARGS(x, __VA_ARGS__))
 
+#define __X32_COND_SYSCALL(name)					\
+	__COND_SYSCALL(x32, sys_##name)
+
 #define __X32_COMPAT_COND_SYSCALL(name)					\
 	__COND_SYSCALL(x32, compat_sys_##name)
 
 #define __X32_COMPAT_SYS_NI(name)					\
 	__SYS_NI(x32, compat_sys_##name)
 #else /* CONFIG_X86_X32 */
+#define __X32_COND_SYSCALL(name)
 #define __X32_COMPAT_SYS_STUB0(name)
 #define __X32_COMPAT_SYS_STUBx(x, name, ...)
 #define __X32_COMPAT_COND_SYSCALL(name)
@@ -253,6 +257,7 @@ extern long __ia32_sys_ni_syscall(const struct pt_regs *regs);
 	static long __do_sys_##sname(const struct pt_regs *__unused)
 
 #define COND_SYSCALL(name)						\
+	__X32_COND_SYSCALL(name)					\
 	__X64_COND_SYSCALL(name)					\
 	__IA32_COND_SYSCALL(name)
 
