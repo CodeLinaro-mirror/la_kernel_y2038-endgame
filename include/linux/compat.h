@@ -91,6 +91,13 @@
 	static inline long __do_compat_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
 #endif /* COMPAT_SYSCALL_DEFINEx */
 
+#ifndef compat_u64
+typedef u64 compat_u64;
+#endif
+#ifndef compat_s64
+typedef u64 compat_s64;
+#endif
+
 struct compat_iovec {
 	compat_uptr_t	iov_base;
 	compat_size_t	iov_len;
