@@ -2370,27 +2370,29 @@ void hardpps(const struct timespec64 *phase_ts, const struct timespec64 *raw_ts)
 EXPORT_SYMBOL(hardpps);
 #endif /* CONFIG_NTP_PPS */
 
+#ifdef CONFIG_LEGACY_TIMER_TICK
 /**
- * xtime_update() - advances the timekeeping infrastructure
+ * legacy_timer_tick() - advances the timekeeping infrastructure
  * @ticks:	number of ticks, that have elapsed since the last call.
+ *
+ * This is used by platforms that have not been converted to
+ * generic clockevents.
+ *
+ * If 'ticks' is zero, the CPU is not handling timekeeping, so
+ * only perform process accounting and profiling.
  *
  * Must be called with interrupts disabled.
  */
-void xtime_update(unsigned long ticks)
-{
-	raw_spin_lock(&jiffies_lock);
-	write_seqcount_begin(&jiffies_seq);
-	do_timer(ticks);
-	write_seqcount_end(&jiffies_seq);
-	raw_spin_unlock(&jiffies_lock);
-	update_wall_time();
-}
-
-#ifdef CONFIG_LEGACY_TIMER_TICK
 void legacy_timer_tick(unsigned long ticks)
 {
-	if (ticks)
-		xtime_update(ticks);
+	if (ticks) {
+		raw_spin_lock(&jiffies_lock);
+		write_seqcount_begin(&jiffies_seq);
+		do_timer(ticks);
+		write_seqcount_end(&jiffies_seq);
+		raw_spin_unlock(&jiffies_lock);
+		update_wall_time();
+	}
 	update_process_times(user_mode(get_irq_regs()));
 	profile_tick(CPU_PROFILING);
 }
