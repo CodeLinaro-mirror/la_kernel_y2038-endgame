@@ -146,6 +146,7 @@ config PILOT
 config PILOT3
 	bool "Pilot 1000/5000, PalmPilot Personal/Pro, or PalmIII support"
 	depends on M68328
+	select LEGACY_TIMER_TICK
 	select PILOT
 	help
 	  Support for the Palm Pilot 1000/5000, Personal/Pro and PalmIII.
@@ -159,18 +160,21 @@ config XCOPILOT_BUGS
 config UCSIMM
 	bool "uCsimm module support"
 	depends on M68EZ328
+	select LEGACY_TIMER_TICK
 	help
 	  Support for the Arcturus Networks uCsimm module.
 
 config UCDIMM
 	bool "uDsimm module support"
 	depends on M68VZ328
+	select LEGACY_TIMER_TICK
 	help
 	  Support for the Arcturus Networks uDsimm module.
 
 config DRAGEN2
 	bool "DragenEngine II board support"
 	depends on M68VZ328
+	select LEGACY_TIMER_TICK
 	help
 	  Support for the DragenEngine II board.
 
