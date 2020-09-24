@@ -7,7 +7,9 @@
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/percpu.h>
+#include <linux/profile.h>
 #include <linux/init.h>
+#include <linux/irq.h>
 #include <linux/mm.h>
 #include <linux/nmi.h>
 #include <linux/sched.h>
@@ -2383,3 +2385,13 @@ void xtime_update(unsigned long ticks)
 	raw_spin_unlock(&jiffies_lock);
 	update_wall_time();
 }
+
+#ifdef CONFIG_LEGACY_TIMER_TICK
+void legacy_timer_tick(unsigned long ticks)
+{
+	if (ticks)
+		xtime_update(ticks);
+	update_process_times(user_mode(get_irq_regs()));
+	profile_tick(CPU_PROFILING);
+}
+#endif
