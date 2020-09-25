@@ -145,9 +145,7 @@ static irqreturn_t q40_timer_int(int irq, void *dev_id)
 
 		local_irq_save(flags);
 		timer_routine(0, NULL);
-#ifdef CONFIG_HEARTBEAT
 		timer_heartbeat();
-#endif
 		local_irq_restore(flags);
 	}
 	return IRQ_HANDLED;
