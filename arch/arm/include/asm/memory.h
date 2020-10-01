@@ -29,6 +29,7 @@
  * TASK_UNMAPPED_BASE - the lower boundary of the mmap VM area
  */
 #define TASK_SIZE		(UL(CONFIG_PAGE_OFFSET) - UL(SZ_16M))
+#define TASK_SIZE_MAX		TASK_SIZE
 #define TASK_UNMAPPED_BASE	ALIGN(TASK_SIZE / 3, SZ_16M)
 
 /*
@@ -91,6 +92,7 @@ extern unsigned long vectors_base;
  * Fortunately, there is no reference for this in noMMU mode, for now.
  */
 #define TASK_SIZE		UL(0xffffffff)
+#define TASK_SIZE_MAX		TASK_SIZE
 
 #ifndef TASK_UNMAPPED_BASE
 #define TASK_UNMAPPED_BASE	UL(0x00000000)
