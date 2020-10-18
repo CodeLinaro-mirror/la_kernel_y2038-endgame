@@ -177,7 +177,14 @@ static const struct fb_ops psbfb_ops = {
 
 static const struct fb_ops psbfb_roll_ops = {
 	.owner = THIS_MODULE,
-	DRM_FB_HELPER_DEFAULT_OPS,
+	.fb_check_var = drm_fb_helper_check_var,
+	.fb_set_par = drm_fb_helper_set_par,
+	.fb_setcmap = drm_fb_helper_setcmap,
+	.fb_blank = drm_fb_helper_blank,
+	.fb_debug_enter = drm_fb_helper_debug_enter,
+	.fb_debug_leave = drm_fb_helper_debug_leave,
+	.fb_ioctl = drm_fb_helper_ioctl,
+
 	.fb_setcolreg = psbfb_setcolreg,
 	.fb_fillrect = drm_fb_helper_cfb_fillrect,
 	.fb_copyarea = drm_fb_helper_cfb_copyarea,
