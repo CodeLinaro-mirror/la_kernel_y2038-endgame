@@ -113,6 +113,7 @@ DEFINE_PER_CPU(struct hrtimer_cpu_base, hrtimer_bases) =
 	}
 };
 
+__diag_ignore(GCC, 8, "-Woverride-init", "intentional override")
 static const int hrtimer_clock_to_base_table[MAX_CLOCKS] = {
 	/* Make sure we catch unsupported clockids */
 	[0 ... MAX_CLOCKS - 1]	= HRTIMER_MAX_CLOCK_BASES,
