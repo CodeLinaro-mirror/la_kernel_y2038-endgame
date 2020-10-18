@@ -431,11 +431,13 @@ void fw_iso_buffer_destroy(struct fw_iso_buffer *buffer, struct fw_card *card);
 size_t fw_iso_buffer_lookup(struct fw_iso_buffer *buffer, dma_addr_t completed);
 
 struct fw_iso_context;
-typedef void (*fw_iso_callback_t)(struct fw_iso_context *context,
-				  u32 cycle, size_t header_length,
-				  void *header, void *data);
-typedef void (*fw_iso_mc_callback_t)(struct fw_iso_context *context,
-				     dma_addr_t completed, void *data);
+typedef union {
+	void (*sc)(struct fw_iso_context *context, u32 cycle,
+		   size_t header_length, void *header, void *data);
+	void (*mc)(struct fw_iso_context *context, dma_addr_t completed,
+		   void *data);
+} __attribute__ ((__transparent_union__)) fw_iso_callback_t;
+
 struct fw_iso_context {
 	struct fw_card *card;
 	int type;
@@ -443,10 +445,7 @@ struct fw_iso_context {
 	int speed;
 	bool drop_overflow_headers;
 	size_t header_size;
-	union {
-		fw_iso_callback_t sc;
-		fw_iso_mc_callback_t mc;
-	} callback;
+	fw_iso_callback_t callback;
 	void *callback_data;
 };
 
