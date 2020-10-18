@@ -1815,7 +1815,7 @@ static int hrz_init(hrz_dev *dev)
   
   int buff_count;
   
-  HDW * mem;
+  uintptr_t offset;
   
   cell_buf * tx_desc;
   cell_buf * rx_desc;
@@ -1841,8 +1841,8 @@ static int hrz_init(hrz_dev *dev)
   
   printk (" clearing memory");
   
-  for (mem = (HDW *) memmap; mem < (HDW *) (memmap + 1); ++mem)
-    wr_mem (dev, mem, 0);
+  for (offset = 0; offset < sizeof(struct MEMMAP); offset++)
+    wr_mem (dev, (HDW *)offset, 0);
   
   printk (" tx channels");
   
