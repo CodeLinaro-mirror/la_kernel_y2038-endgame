@@ -39,7 +39,10 @@ static const char *names_0[] = {
 	E(ECOMM),
 	E(ECONNABORTED),
 	E(ECONNRESET),
+	E(EDEADLK), /* EDEADLOCK */
+#if EDEADLK != EDEADLOCK /* mips, sparc, powerpc */
 	E(EDEADLOCK),
+#endif
 	E(EDESTADDRREQ),
 	E(EDOM),
 	E(EDOTDOT),
@@ -170,7 +173,6 @@ static const char *names_0[] = {
 	E(ECANCELED), /* ECANCELLED */
 	E(EAGAIN), /* EWOULDBLOCK */
 	E(ECONNREFUSED), /* EREFUSED */
-	E(EDEADLK), /* EDEADLOCK */
 };
 #undef E
 
