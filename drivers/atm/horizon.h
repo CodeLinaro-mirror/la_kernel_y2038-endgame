@@ -448,7 +448,7 @@ typedef struct hrz_dev hrz_dev;
 
 /* macros for use later */
 
-#define BUF_PTR(cbptr) ((cbptr) - (cell_buf *) 0)
+#define BUF_PTR(cbptr) ((uintptr_t)(cbptr) / sizeof(cell_buf))
 
 #define INTERESTING_INTERRUPTS \
   (RX_DATA_AV | RX_DISABLED | TX_BUS_MASTER_COMPLETE | RX_BUS_MASTER_COMPLETE)
