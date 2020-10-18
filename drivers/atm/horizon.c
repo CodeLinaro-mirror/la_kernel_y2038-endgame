@@ -382,13 +382,13 @@ static inline void rds_regb (const hrz_dev * dev, unsigned char reg, void * addr
    port accesses as these must form an atomic operation. */
 static inline void wr_mem (const hrz_dev * dev, HDW * addr, u32 data) {
   // wr_regl (dev, MEM_WR_ADDR_REG_OFF, (u32) addr);
-  wr_regl (dev, MEM_WR_ADDR_REG_OFF, (addr - (HDW *) 0) * sizeof(HDW));
+  wr_regl (dev, MEM_WR_ADDR_REG_OFF, (uintptr_t) addr * sizeof(HDW));
   wr_regl (dev, MEMORY_PORT_OFF, data);
 }
 
 static inline u32 rd_mem (const hrz_dev * dev, HDW * addr) {
   // wr_regl (dev, MEM_RD_ADDR_REG_OFF, (u32) addr);
-  wr_regl (dev, MEM_RD_ADDR_REG_OFF, (addr - (HDW *) 0) * sizeof(HDW));
+  wr_regl (dev, MEM_RD_ADDR_REG_OFF, (uintptr_t)(addr) * sizeof(HDW));
   return rd_regl (dev, MEMORY_PORT_OFF);
 }
 
@@ -1815,7 +1815,7 @@ static int hrz_init(hrz_dev *dev)
   
   int buff_count;
   
-  HDW * mem;
+  uintptr_t offset;
   
   cell_buf * tx_desc;
   cell_buf * rx_desc;
@@ -1841,8 +1841,8 @@ static int hrz_init(hrz_dev *dev)
   
   printk (" clearing memory");
   
-  for (mem = (HDW *) memmap; mem < (HDW *) (memmap + 1); ++mem)
-    wr_mem (dev, mem, 0);
+  for (offset = 0; offset < sizeof(struct MEMMAP); offset++)
+    wr_mem (dev, (HDW *)offset, 0);
   
   printk (" tx channels");
   
