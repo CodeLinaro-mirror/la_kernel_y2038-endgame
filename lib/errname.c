@@ -169,7 +169,9 @@ static const char *names_0[] = {
 	E(ECANCELED), /* ECANCELLED */
 	E(EAGAIN), /* EWOULDBLOCK */
 	E(ECONNREFUSED), /* EREFUSED */
+#if EDEADLK != EDEADLOCK
 	E(EDEADLK), /* EDEADLOCK */
+#endif
 };
 #undef E
 
