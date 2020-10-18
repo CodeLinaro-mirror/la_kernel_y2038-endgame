@@ -6,6 +6,9 @@
 # They are independent, and can be combined like W=12 or W=123.
 # ==========================================================================
 
+KBUILD_CFLAGS += -Wextra
+KBUILD_CFLAGS += -Wold-style-definition
+KBUILD_CFLAGS += -Wmissing-include-dirs
 
 # backward compatibility
 KBUILD_EXTRA_WARN ?= $(KBUILD_ENABLE_EXTRA_GCC_CHECKS)
@@ -21,12 +24,10 @@ export KBUILD_EXTRA_WARN
 #
 ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
 
-KBUILD_CFLAGS += -Wextra -Wunused
+KBUILD_CFLAGS += -Wunused
 KBUILD_CFLAGS += -Wmissing-declarations
 KBUILD_CFLAGS += -Wmissing-format-attribute
 KBUILD_CFLAGS += -Wmissing-prototypes
-KBUILD_CFLAGS += -Wold-style-definition
-KBUILD_CFLAGS += -Wmissing-include-dirs
 KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN1
 
 else
