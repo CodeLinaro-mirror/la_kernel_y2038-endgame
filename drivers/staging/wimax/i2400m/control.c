@@ -903,13 +903,6 @@ error_alloc:
 EXPORT_SYMBOL_GPL(i2400m_cmd_enter_powersave);
 
 
-/*
- * Definitions for getting device information
- */
-enum {
-	I2400M_TLV_DETAILED_DEVICE_INFO = 140
-};
-
 /**
  * i2400m_get_device_info - Query the device for detailed device information
  *
