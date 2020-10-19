@@ -31,7 +31,7 @@ u64 hw_nmi_get_sample_period(int watchdog_thresh)
 #ifdef arch_trigger_cpumask_backtrace
 static void nmi_raise_cpu_backtrace(cpumask_t *mask)
 {
-	apic->send_IPI_mask(mask, NMI_VECTOR);
+	x86_local_apic->send_IPI_mask(mask, NMI_VECTOR);
 }
 
 void arch_trigger_cpumask_backtrace(const cpumask_t *mask, bool exclude_self)

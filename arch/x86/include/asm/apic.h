@@ -361,7 +361,7 @@ struct apic {
  * always just one such driver in use - the kernel decides via an
  * early probing process which one it picks - and then sticks to it):
  */
-extern struct apic *apic;
+extern struct apic *x86_local_apic;
 
 /*
  * APIC drivers are probed based on how they are listed in the .apicdrivers
@@ -395,37 +395,37 @@ extern int lapic_can_unplug_cpu(void);
 
 static inline u32 apic_read(u32 reg)
 {
-	return apic->read(reg);
+	return x86_local_apic->read(reg);
 }
 
 static inline void apic_write(u32 reg, u32 val)
 {
-	apic->write(reg, val);
+	x86_local_apic->write(reg, val);
 }
 
 static inline void apic_eoi(void)
 {
-	apic->eoi_write(APIC_EOI, APIC_EOI_ACK);
+	x86_local_apic->eoi_write(APIC_EOI, APIC_EOI_ACK);
 }
 
 static inline u64 apic_icr_read(void)
 {
-	return apic->icr_read();
+	return x86_local_apic->icr_read();
 }
 
 static inline void apic_icr_write(u32 low, u32 high)
 {
-	apic->icr_write(low, high);
+	x86_local_apic->icr_write(low, high);
 }
 
 static inline void apic_wait_icr_idle(void)
 {
-	apic->wait_icr_idle();
+	x86_local_apic->wait_icr_idle();
 }
 
 static inline u32 safe_apic_wait_icr_idle(void)
 {
-	return apic->safe_wait_icr_idle();
+	return x86_local_apic->safe_wait_icr_idle();
 }
 
 extern void __init apic_set_eoi_write(void (*eoi_write)(u32 reg, u32 v));
@@ -494,7 +494,7 @@ static inline unsigned int read_apic_id(void)
 {
 	unsigned int reg = apic_read(APIC_ID);
 
-	return apic->get_apic_id(reg);
+	return x86_local_apic->get_apic_id(reg);
 }
 
 extern int default_apic_id_valid(u32 apicid);

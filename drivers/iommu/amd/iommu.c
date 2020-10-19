@@ -3642,8 +3642,10 @@ static void irq_remapping_prepare_irte(struct amd_ir_data *data,
 
 	data->irq_2_irte.devid = devid;
 	data->irq_2_irte.index = index + sub_handle;
-	iommu->irte_ops->prepare(data->entry, apic->delivery_mode,
-				 apic->dest_mode_logical, irq_cfg->vector,
+	iommu->irte_ops->prepare(data->entry,
+				 x86_local_apic->delivery_mode,
+				 x86_local_apic->dest_mode_logical,
+				 irq_cfg->vector,
 				 irq_cfg->dest_apicid, devid);
 
 	switch (info->type) {
@@ -3918,8 +3920,8 @@ int amd_iommu_deactivate_guest_mode(void *data)
 	entry->hi.val = 0;
 
 	entry->lo.fields_remap.valid       = valid;
-	entry->lo.fields_remap.dm          = apic->dest_mode_logical;
-	entry->lo.fields_remap.int_type    = apic->delivery_mode;
+	entry->lo.fields_remap.dm          = x86_local_apic->dest_mode_logical;
+	entry->lo.fields_remap.int_type    = x86_local_apic->delivery_mode;
 	entry->hi.fields.vector            = cfg->vector;
 	entry->lo.fields_remap.destination =
 				APICID_TO_IRTE_DEST_LO(cfg->dest_apicid);

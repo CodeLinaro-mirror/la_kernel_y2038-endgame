@@ -780,7 +780,8 @@ void detect_ht(struct cpuinfo_x86 *c)
 		return;
 
 	index_msb = get_count_order(smp_num_siblings);
-	c->phys_proc_id = apic->phys_pkg_id(c->initial_apicid, index_msb);
+	c->phys_proc_id = x86_local_apic->phys_pkg_id(c->initial_apicid,
+						       index_msb);
 
 	smp_num_siblings = smp_num_siblings / c->x86_max_cores;
 
@@ -788,8 +789,9 @@ void detect_ht(struct cpuinfo_x86 *c)
 
 	core_bits = get_count_order(c->x86_max_cores);
 
-	c->cpu_core_id = apic->phys_pkg_id(c->initial_apicid, index_msb) &
-				       ((1 << core_bits) - 1);
+	c->cpu_core_id = x86_local_apic->phys_pkg_id(c->initial_apicid,
+						      index_msb) &
+					       ((1 << core_bits) - 1);
 #endif
 }
 
@@ -1442,7 +1444,7 @@ static void generic_identify(struct cpuinfo_x86 *c)
 		c->initial_apicid = (cpuid_ebx(1) >> 24) & 0xFF;
 #ifdef CONFIG_X86_32
 # ifdef CONFIG_SMP
-		c->apicid = apic->phys_pkg_id(c->initial_apicid, 0);
+		c->apicid = x86_local_apic->phys_pkg_id(c->initial_apicid, 0);
 # else
 		c->apicid = c->initial_apicid;
 # endif
@@ -1481,7 +1483,7 @@ static void validate_apic_and_package_id(struct cpuinfo_x86 *c)
 #ifdef CONFIG_SMP
 	unsigned int apicid, cpu = smp_processor_id();
 
-	apicid = apic->cpu_present_to_apicid(cpu);
+	apicid = x86_local_apic->cpu_present_to_apicid(cpu);
 
 	if (apicid != c->apicid) {
 		pr_err(FW_BUG "CPU%u: APIC id mismatch. Firmware: %x APIC: %x\n",
@@ -1535,7 +1537,7 @@ static void identify_cpu(struct cpuinfo_x86 *c)
 	apply_forced_caps(c);
 
 #ifdef CONFIG_X86_64
-	c->apicid = apic->phys_pkg_id(c->initial_apicid, 0);
+	c->apicid = x86_local_apic->phys_pkg_id(c->initial_apicid, 0);
 #endif
 
 	/*

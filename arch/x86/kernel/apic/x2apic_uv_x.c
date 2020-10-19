@@ -809,7 +809,7 @@ static void uv_send_IPI_self(int vector)
 
 static int uv_probe(void)
 {
-	return apic == &apic_x2apic_uv_x;
+	return x86_local_apic == &apic_x2apic_uv_x;
 }
 
 static struct apic apic_x2apic_uv_x __ro_after_init = {

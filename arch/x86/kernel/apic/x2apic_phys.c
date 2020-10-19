@@ -98,7 +98,7 @@ static int x2apic_phys_probe(void)
 	if (x2apic_mode && (x2apic_phys || x2apic_fadt_phys()))
 		return 1;
 
-	return apic == &apic_x2apic_phys;
+	return x86_local_apic == &apic_x2apic_phys;
 }
 
 /* Common x2apic functions, also used by x2apic_cluster */

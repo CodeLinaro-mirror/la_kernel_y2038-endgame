@@ -173,7 +173,7 @@ void __init generic_bigsmp_probe(void)
 	if (!probe_bigsmp())
 		return;
 
-	apic = &apic_bigsmp;
+	x86_local_apic = &apic_bigsmp;
 
 	for_each_possible_cpu(cpu) {
 		if (early_per_cpu(x86_cpu_to_logical_apicid,

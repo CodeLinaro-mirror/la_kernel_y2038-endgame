@@ -122,7 +122,7 @@ static void apic_update_irq_cfg(struct irq_data *irqd, unsigned int vector,
 	lockdep_assert_held(&vector_lock);
 
 	apicd->hw_irq_cfg.vector = vector;
-	apicd->hw_irq_cfg.dest_apicid = apic->calc_dest_apicid(cpu);
+	apicd->hw_irq_cfg.dest_apicid = x86_local_apic->calc_dest_apicid(cpu);
 	irq_data_update_effective_affinity(irqd, cpumask_of(cpu));
 	trace_vector_config(irqd->irq, vector, cpu,
 			    apicd->hw_irq_cfg.dest_apicid);
@@ -672,7 +672,7 @@ static int x86_vector_select(struct irq_domain *d, struct irq_fwspec *fwspec,
 	 * if IRQ remapping is enabled. APIC IDs above 15 bits are
 	 * only permitted if IRQ remapping is enabled, so check that.
 	 */
-	if (apic->apic_id_valid(32768))
+	if (x86_local_apic->apic_id_valid(32768))
 		return 0;
 
 	return x86_fwspec_is_ioapic(fwspec) || x86_fwspec_is_hpet(fwspec);
@@ -843,7 +843,7 @@ static int apic_retrigger_irq(struct irq_data *irqd)
 	unsigned long flags;
 
 	raw_spin_lock_irqsave(&vector_lock, flags);
-	apic->send_IPI(apicd->cpu, apicd->vector);
+	x86_local_apic->send_IPI(apicd->cpu, apicd->vector);
 	raw_spin_unlock_irqrestore(&vector_lock, flags);
 
 	return 1;
@@ -925,7 +925,7 @@ DEFINE_IDTENTRY_SYSVEC(sysvec_irq_move_cleanup)
 		 */
 		irr = apic_read(APIC_IRR + (vector / 32 * 0x10));
 		if (irr & (1U << (vector % 32))) {
-			apic->send_IPI_self(IRQ_MOVE_CLEANUP_VECTOR);
+			x86_local_apic->send_IPI_self(IRQ_MOVE_CLEANUP_VECTOR);
 			continue;
 		}
 		free_moved_vector(apicd);
@@ -943,7 +943,7 @@ static void __send_cleanup_vector(struct apic_chip_data *apicd)
 	cpu = apicd->prev_cpu;
 	if (cpu_online(cpu)) {
 		hlist_add_head(&apicd->clist, per_cpu_ptr(&cleanup_list, cpu));
-		apic->send_IPI(cpu, IRQ_MOVE_CLEANUP_VECTOR);
+		x86_local_apic->send_IPI(cpu, IRQ_MOVE_CLEANUP_VECTOR);
 	} else {
 		apicd->prev_vector = 0;
 	}

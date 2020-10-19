@@ -159,12 +159,12 @@ static void numachip_send_IPI_self(int vector)
 
 static int __init numachip1_probe(void)
 {
-	return apic == &apic_numachip1;
+	return x86_local_apic == &apic_numachip1;
 }
 
 static int __init numachip2_probe(void)
 {
-	return apic == &apic_numachip2;
+	return x86_local_apic == &apic_numachip2;
 }
 
 static void fixup_cpu_id(struct cpuinfo_x86 *c, int node)

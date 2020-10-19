@@ -254,6 +254,8 @@ static void hv_send_ipi_self(int vector)
 
 void __init hv_apic_init(void)
 {
+	struct apic *apic = x86_local_apic;
+
 	if (ms_hyperv.hints & HV_X64_CLUSTER_IPI_RECOMMENDED) {
 		pr_info("Hyper-V: Using IPI hypercalls\n");
 		/*

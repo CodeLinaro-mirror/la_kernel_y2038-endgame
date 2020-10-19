@@ -748,7 +748,8 @@ static void __init smp_quirk_init_udelay(void)
 int
 wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip)
 {
-	u32 dm = apic->dest_mode_logical ? APIC_DEST_LOGICAL : APIC_DEST_PHYSICAL;
+	u32 dm = x86_local_apic->dest_mode_logical ? APIC_DEST_LOGICAL :
+						     APIC_DEST_PHYSICAL;
 	unsigned long send_status, accept_status = 0;
 	int maxlvt;
 
@@ -982,7 +983,8 @@ wakeup_cpu_via_init_nmi(int cpu, unsigned long start_ip, int apicid,
 	if (!boot_error) {
 		enable_start_cpu0 = 1;
 		*cpu0_nmi_registered = 1;
-		id = apic->dest_mode_logical ? cpu0_logical_apicid : apicid;
+		id = x86_local_apic->dest_mode_logical ? cpu0_logical_apicid :
+							 apicid;
 		boot_error = wakeup_secondary_cpu_via_nmi(id, start_ip);
 	}
 
@@ -1076,8 +1078,9 @@ static int do_boot_cpu(int apicid, int cpu, struct task_struct *idle,
 	 * Otherwise,
 	 * - Use an INIT boot APIC message for APs or NMI for BSP.
 	 */
-	if (apic->wakeup_secondary_cpu)
-		boot_error = apic->wakeup_secondary_cpu(apicid, start_ip);
+	if (x86_local_apic->wakeup_secondary_cpu)
+		boot_error = x86_local_apic->wakeup_secondary_cpu(apicid,
+								   start_ip);
 	else
 		boot_error = wakeup_cpu_via_init_nmi(cpu, start_ip, apicid,
 						     cpu0_nmi_registered);
@@ -1128,7 +1131,7 @@ static int do_boot_cpu(int apicid, int cpu, struct task_struct *idle,
 
 int native_cpu_up(unsigned int cpu, struct task_struct *tidle)
 {
-	int apicid = apic->cpu_present_to_apicid(cpu);
+	int apicid = x86_local_apic->cpu_present_to_apicid(cpu);
 	int cpu0_nmi_registered = 0;
 	unsigned long flags;
 	int err, ret = 0;
@@ -1139,7 +1142,7 @@ int native_cpu_up(unsigned int cpu, struct task_struct *tidle)
 
 	if (apicid == BAD_APICID ||
 	    !physid_isset(apicid, phys_cpu_present_map) ||
-	    !apic->apic_id_valid(apicid)) {
+	    !x86_local_apic->apic_id_valid(apicid)) {
 		pr_err("%s: bad cpu %d\n", __func__, cpu);
 		return -EINVAL;
 	}
@@ -1276,7 +1279,7 @@ static void __init smp_sanity_check(void)
 	 * Should not be necessary because the MP table should list the boot
 	 * CPU too, but we do it for the sake of robustness anyway.
 	 */
-	if (!apic->check_phys_apicid_present(boot_cpu_physical_apicid)) {
+	if (!x86_local_apic->check_phys_apicid_present(boot_cpu_physical_apicid)) {
 		pr_notice("weird, boot CPU (#%d) not listed by the BIOS\n",
 			  boot_cpu_physical_apicid);
 		physid_set(hard_smp_processor_id(), phys_cpu_present_map);
@@ -1463,8 +1466,9 @@ __init void prefill_possible_map(void)
 			pr_warn("Boot CPU (id %d) not listed by BIOS\n", cpu);
 
 			/* Make sure boot cpu is enumerated */
-			if (apic->cpu_present_to_apicid(0) == BAD_APICID &&
-			    apic->apic_id_valid(apicid))
+			if (x86_local_apic->cpu_present_to_apicid(0) ==
+					BAD_APICID &&
+			    x86_local_apic->apic_id_valid(apicid))
 				generic_processor_info(apicid, boot_cpu_apic_version);
 		}
 
