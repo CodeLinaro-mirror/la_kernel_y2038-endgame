@@ -79,7 +79,7 @@ static inline void freelist_add(struct freelist_node *node, struct freelist_head
 static inline struct freelist_node *freelist_try_get(struct freelist_head *list)
 {
 	struct freelist_node *prev, *next, *head = smp_load_acquire(&list->head);
-	unsigned int refs;
+	int refs;
 
 	while (head) {
 		prev = head;
