@@ -280,7 +280,7 @@ static __always_inline unsigned long __fls(unsigned long word)
  * set bit if value is nonzero. The first (least significant) bit
  * is at position 1.
  */
-static __always_inline int ffs(int x)
+static __always_inline int _ffs(int x)
 {
 	int r;
 
@@ -309,6 +309,7 @@ static __always_inline int ffs(int x)
 #endif
 	return r + 1;
 }
+#define ffs(x) _ffs(x)
 
 /**
  * fls - find last set bit in word
