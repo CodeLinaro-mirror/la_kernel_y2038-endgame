@@ -188,12 +188,12 @@ static struct apic xen_pv_apic = {
 
 static void __init xen_apic_check(void)
 {
-	if (apic == &xen_pv_apic)
+	if (x86_local_apic == &xen_pv_apic)
 		return;
 
-	pr_info("Switched APIC routing from %s to %s.\n", apic->name,
+	pr_info("Switched APIC routing from %s to %s.\n", x86_local_apic->name,
 		xen_pv_apic.name);
-	apic = &xen_pv_apic;
+	x86_local_apic = &xen_pv_apic;
 }
 void __init xen_init_apic(void)
 {
@@ -201,7 +201,7 @@ void __init xen_init_apic(void)
 	/* On PV guests the APIC CPUID bit is disabled so none of the
 	 * routines end up executing. */
 	if (!xen_initial_domain())
-		apic = &xen_pv_apic;
+		x86_local_apic = &xen_pv_apic;
 
 	x86_platform.apic_post_init = xen_apic_check;
 }
