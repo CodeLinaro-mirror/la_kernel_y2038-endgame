@@ -135,7 +135,7 @@ static int apicid_phys_pkg_id(int initial_apic_id, int index_msb)
 static void vsmp_apic_post_init(void)
 {
 	/* need to update phys_pkg_id */
-	apic->phys_pkg_id = apicid_phys_pkg_id;
+	x86_local_apic->phys_pkg_id = apicid_phys_pkg_id;
 }
 
 void __init vsmp_init(void)
