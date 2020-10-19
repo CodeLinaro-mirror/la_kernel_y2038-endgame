@@ -54,6 +54,8 @@
 __diag_push();
 __diag_ignore(GCC, 8, "-Woverride-init",
 	      "logic to initialize all and then override some is OK");
+__diag_ignore(CLANG, 9, "-Winitializer-overrides",
+	      "logic to initialize all and then override some is OK");
 static const u16 sh_eth_offset_gigabit[SH_ETH_MAX_REGISTER_OFFSET] = {
 	SH_ETH_OFFSET_DEFAULTS,
 
