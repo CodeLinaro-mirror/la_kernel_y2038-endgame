@@ -110,8 +110,8 @@ static struct apic apic_default __ro_after_init = {
 
 apic_driver(apic_default);
 
-struct apic *apic __ro_after_init = &apic_default;
-EXPORT_SYMBOL_GPL(apic);
+struct apic *x86_local_apic __ro_after_init = &apic_default;
+EXPORT_SYMBOL_GPL(x86_local_apic);
 
 static int cmdline_apic __initdata;
 static int __init parse_apic(char *arg)
@@ -123,7 +123,7 @@ static int __init parse_apic(char *arg)
 
 	for (drv = __apicdrivers; drv < __apicdrivers_end; drv++) {
 		if (!strcmp((*drv)->name, arg)) {
-			apic = *drv;
+			x86_local_apic = *drv;
 			cmdline_apic = 1;
 			return 0;
 		}
@@ -161,12 +161,12 @@ void __init default_setup_apic_routing(void)
 	 * - we find more than 8 CPUs in acpi LAPIC listing with xAPIC support
 	 */
 
-	if (!cmdline_apic && apic == &apic_default)
+	if (!cmdline_apic && x86_local_apic == &apic_default)
 		generic_bigsmp_probe();
 #endif
 
-	if (apic->setup_apic_routing)
-		apic->setup_apic_routing();
+	if (x86_local_apic->setup_apic_routing)
+		x86_local_apic->setup_apic_routing();
 }
 
 void __init generic_apic_probe(void)
@@ -176,7 +176,7 @@ void __init generic_apic_probe(void)
 
 		for (drv = __apicdrivers; drv < __apicdrivers_end; drv++) {
 			if ((*drv)->probe()) {
-				apic = *drv;
+				x86_local_apic = *drv;
 				break;
 			}
 		}
@@ -184,7 +184,7 @@ void __init generic_apic_probe(void)
 		if (drv == __apicdrivers_end)
 			panic("Didn't find an APIC driver");
 	}
-	printk(KERN_INFO "Using APIC driver %s\n", apic->name);
+	printk(KERN_INFO "Using APIC driver %s\n", x86_local_apic->name);
 }
 
 /* This function can switch the APIC even after the initial ->probe() */
@@ -199,9 +199,9 @@ int __init default_acpi_madt_oem_check(char *oem_id, char *oem_table_id)
 			continue;
 
 		if (!cmdline_apic) {
-			apic = *drv;
+			x86_local_apic = *drv;
 			printk(KERN_INFO "Switched to APIC driver `%s'.\n",
-			       apic->name);
+			       x86_local_apic->name);
 		}
 		return 1;
 	}

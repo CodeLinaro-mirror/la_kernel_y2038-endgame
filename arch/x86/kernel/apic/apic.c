@@ -247,7 +247,7 @@ static int modern_apic(void)
 static void __init apic_disable(void)
 {
 	pr_info("APIC: switched to apic NOOP\n");
-	apic = &apic_noop;
+	x86_local_apic = &apic_noop;
 }
 
 void native_apic_wait_icr_idle(void)
@@ -528,7 +528,7 @@ static int lapic_timer_set_oneshot(struct clock_event_device *evt)
 static void lapic_timer_broadcast(const struct cpumask *mask)
 {
 #ifdef CONFIG_SMP
-	apic->send_IPI_mask(mask, LOCAL_TIMER_VECTOR);
+	x86_local_apic->send_IPI_mask(mask, LOCAL_TIMER_VECTOR);
 #endif
 }
 
@@ -1453,7 +1453,7 @@ static void lapic_setup_esr(void)
 		return;
 	}
 
-	if (apic->disable_esr) {
+	if (x86_local_apic->disable_esr) {
 		/*
 		 * Something untraceable is creating bad interrupts on
 		 * secondary quads ... for the moment, just leave the
@@ -1579,7 +1579,7 @@ static void setup_local_APIC(void)
 
 #ifdef CONFIG_X86_32
 	/* Pound the ESR really hard over the head with a big hammer - mbligh */
-	if (lapic_is_integrated() && apic->disable_esr) {
+	if (lapic_is_integrated() && x86_local_apic->disable_esr) {
 		apic_write(APIC_ESR, 0);
 		apic_write(APIC_ESR, 0);
 		apic_write(APIC_ESR, 0);
@@ -1590,17 +1590,17 @@ static void setup_local_APIC(void)
 	 * Double-check whether this APIC is really registered.
 	 * This is meaningless in clustered apic mode, so we skip it.
 	 */
-	BUG_ON(!apic->apic_id_registered());
+	BUG_ON(!x86_local_apic->apic_id_registered());
 
 	/*
 	 * Intel recommends to set DFR, LDR and TPR before enabling
 	 * an APIC.  See e.g. "AP-388 82489DX User's Manual" (Intel
 	 * document number 292116).  So here it goes...
 	 */
-	apic->init_apic_ldr();
+	x86_local_apic->init_apic_ldr();
 
 #ifdef CONFIG_X86_32
-	if (apic->dest_mode_logical) {
+	if (x86_local_apic->dest_mode_logical) {
 		int logical_apicid, ldr_apicid;
 
 		/*
@@ -2494,7 +2494,7 @@ int generic_processor_info(int apicid, int version)
 #endif
 #ifdef CONFIG_X86_32
 	early_per_cpu(x86_cpu_to_logical_apicid, cpu) =
-		apic->x86_32_early_logical_apicid(cpu);
+		x86_local_apic->x86_32_early_logical_apicid(cpu);
 #endif
 	set_cpu_possible(cpu, true);
 	physid_set(apicid, phys_cpu_present_map);
@@ -2515,7 +2515,7 @@ void __irq_msi_compose_msg(struct irq_cfg *cfg, struct msi_msg *msg,
 	memset(msg, 0, sizeof(*msg));
 
 	msg->arch_addr_lo.base_address = X86_MSI_BASE_ADDRESS_LOW;
-	msg->arch_addr_lo.dest_mode_logical = apic->dest_mode_logical;
+	msg->arch_addr_lo.dest_mode_logical = x86_local_apic->dest_mode_logical;
 	msg->arch_addr_lo.destid_0_7 = cfg->dest_apicid & 0xFF;
 
 	msg->arch_data.delivery_mode = APIC_DELIVERY_MODE_FIXED;
@@ -2570,7 +2570,7 @@ void __init apic_set_eoi_write(void (*eoi_write)(u32 reg, u32 v))
 static void __init apic_bsp_up_setup(void)
 {
 #ifdef CONFIG_X86_64
-	apic_write(APIC_ID, apic->set_apic_id(boot_cpu_physical_apicid));
+	apic_write(APIC_ID, x86_local_apic->set_apic_id(boot_cpu_physical_apicid));
 #else
 	/*
 	 * Hack: In case of kdump, after a crash, kernel might be booting

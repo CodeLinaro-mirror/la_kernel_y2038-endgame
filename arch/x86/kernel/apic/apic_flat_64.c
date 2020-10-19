@@ -20,8 +20,8 @@
 static struct apic apic_physflat;
 static struct apic apic_flat;
 
-struct apic *apic __ro_after_init = &apic_flat;
-EXPORT_SYMBOL_GPL(apic);
+struct apic *x86_local_apic __ro_after_init = &apic_flat;
+EXPORT_SYMBOL_GPL(x86_local_apic);
 
 static int flat_acpi_madt_oem_check(char *oem_id, char *oem_table_id)
 {
@@ -189,7 +189,7 @@ static void physflat_init_apic_ldr(void)
 
 static int physflat_probe(void)
 {
-	if (apic == &apic_physflat || num_possible_cpus() > 8 ||
+	if (x86_local_apic == &apic_physflat || num_possible_cpus() > 8 ||
 	    jailhouse_paravirt())
 		return 1;
 
