@@ -23,10 +23,6 @@ extern const unsigned char _ctype[];
 #define isalnum(c)	((__ismask(c)&(_U|_L|_D)) != 0)
 #define isalpha(c)	((__ismask(c)&(_U|_L)) != 0)
 #define iscntrl(c)	((__ismask(c)&(_C)) != 0)
-static inline int isdigit(int c)
-{
-	return '0' <= c && c <= '9';
-}
 #define isgraph(c)	((__ismask(c)&(_P|_U|_L|_D)) != 0)
 #define islower(c)	((__ismask(c)&(_L)) != 0)
 #define isprint(c)	((__ismask(c)&(_P|_U|_L|_D|_SP)) != 0)
@@ -38,6 +34,18 @@ static inline int isdigit(int c)
 
 #define isascii(c) (((unsigned char)(c))<=0x7f)
 #define toascii(c) (((unsigned char)(c))&0x7f)
+
+#if defined __has_builtin
+#if __has_builtin(__builtin_isdigit)
+#define isdigit(ch) __builtin_isdigit(ch)
+#endif
+#endif
+#ifndef isdigit
+static inline int isdigit(int c)
+{
+	return '0' <= c && c <= '9';
+}
+#endif
 
 static inline unsigned char __tolower(unsigned char c)
 {
