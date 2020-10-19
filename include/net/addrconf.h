@@ -127,7 +127,8 @@ int addrconf_prefix_rcv_add_addr(struct net *net, struct net_device *dev,
 				 u32 addr_flags, bool sllao, bool tokenized,
 				 __u32 valid_lft, u32 prefered_lft);
 
-static inline void addrconf_addr_eui48_base(u8 *eui, const char *const addr)
+static inline void addrconf_addr_eui48_base(u8 *eui,
+					    const unsigned char *const addr)
 {
 	memcpy(eui, addr, 3);
 	eui[3] = 0xFF;
@@ -135,7 +136,7 @@ static inline void addrconf_addr_eui48_base(u8 *eui, const char *const addr)
 	memcpy(eui + 5, addr + 3, 3);
 }
 
-static inline void addrconf_addr_eui48(u8 *eui, const char *const addr)
+static inline void addrconf_addr_eui48(u8 *eui, const unsigned char *const addr)
 {
 	addrconf_addr_eui48_base(eui, addr);
 	eui[0] ^= 2;
