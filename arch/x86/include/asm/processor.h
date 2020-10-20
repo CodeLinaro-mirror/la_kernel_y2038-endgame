@@ -564,7 +564,10 @@ static inline void arch_thread_struct_whitelist(unsigned long *offset,
 static inline void
 native_load_sp0(unsigned long sp0)
 {
+	__diag_push();
+	__diag_ignore(CLANG, 9, "-Waddress-of-packed-member", "Known unaligned access in TSS");
 	this_cpu_write(cpu_tss_rw.x86_tss.sp0, sp0);
+	__diag_pop();
 }
 
 static __always_inline void native_swapgs(void)
@@ -581,7 +584,10 @@ static inline unsigned long current_top_of_stack(void)
 	 *  and around vm86 mode and sp0 on x86_64 is special because of the
 	 *  entry trampoline.
 	 */
+	__diag_push();
+	__diag_ignore(CLANG, 9, "-Waddress-of-packed-member", "Known unaligned access in TSS");
 	return this_cpu_read_stable(cpu_current_top_of_stack);
+	__diag_pop();
 }
 
 static inline bool on_thread_stack(void)
