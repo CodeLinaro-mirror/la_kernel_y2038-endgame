@@ -148,6 +148,10 @@
 
 #define SCORPION_ITLB_MISS				0x12021
 
+__diag_push()
+__diag_ignore(GCC, 5, "-Woverride-init", "for PERF_MAP_ALL_UNSUPPORTED")
+__diag_ignore(clang, 9, "-Winitializer-overrides", "for PERF_MAP_ALL_UNSUPPORTED")
+
 /*
  * Cortex-A8 HW events mapping
  *
@@ -531,6 +535,8 @@ static const unsigned scorpion_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
 	[C(BPU)][C(OP_WRITE)][C(RESULT_ACCESS)] = ARMV7_PERFCTR_PC_BRANCH_PRED,
 	[C(BPU)][C(OP_WRITE)][C(RESULT_MISS)] = ARMV7_PERFCTR_PC_BRANCH_MIS_PRED,
 };
+
+__diag_pop()
 
 PMU_FORMAT_ATTR(event, "config:0-7");
 
