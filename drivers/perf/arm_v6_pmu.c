@@ -67,6 +67,10 @@ enum armv6_counters {
 	ARMV6_NUM_COUNTERS
 };
 
+__diag_push()
+__diag_ignore(GCC, 5, "-Woverride-init", "for PERF_MAP_ALL_UNSUPPORTED")
+__diag_ignore(clang, 9, "-Winitializer-overrides", "for PERF_MAP_ALL_UNSUPPORTED")
+
 /*
  * The hardware events that we support. We do support cache operations but
  * we have harvard caches and no way to combine instruction and data
@@ -111,6 +115,8 @@ static const unsigned armv6_perf_cache_map[PERF_COUNT_HW_CACHE_MAX]
 	[C(ITLB)][C(OP_READ)][C(RESULT_MISS)]	= ARMV6_PERFCTR_ITLB_MISS,
 	[C(ITLB)][C(OP_WRITE)][C(RESULT_MISS)]	= ARMV6_PERFCTR_ITLB_MISS,
 };
+
+__diag_pop()
 
 static inline unsigned long
 armv6_pmcr_read(void)
