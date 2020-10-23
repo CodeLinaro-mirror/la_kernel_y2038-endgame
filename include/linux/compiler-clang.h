@@ -122,6 +122,24 @@
 #define __diag_str(s)		__diag_str1(s)
 #define __diag(s)		_Pragma(__diag_str(clang diagnostic s))
 
+#if CONFIG_CLANG_VERSION >= 160000
+#define __diag_clang_16(s)	__diag(s)
+#else
+#define __diag_clang_16(s)
+#endif
+
+#if CONFIG_CLANG_VERSION >= 170000
+#define __diag_clang_17(s)	__diag(s)
+#else
+#define __diag_clang_17(s)
+#endif
+
+#if CONFIG_CLANG_VERSION >= 180000
+#define __diag_clang_18(s)	__diag(s)
+#else
+#define __diag_clang_18(s)
+#endif
+
 #if CONFIG_CLANG_VERSION >= 230000
 #define __diag_clang_23(s)	__diag(s)
 #else
