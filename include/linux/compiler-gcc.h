@@ -123,6 +123,24 @@
 #define __diag_GCC_8(s)
 #endif
 
+#if GCC_VERSION >= 90000
+#define __diag_GCC_9(s)		__diag(s)
+#else
+#define __diag_GCC_9(s)
+#endif
+
+#if GCC_VERSION >= 100000
+#define __diag_GCC_10(s)	__diag(s)
+#else
+#define __diag_GCC_10(s)
+#endif
+
+#if GCC_VERSION >= 110000
+#define __diag_GCC_11(s)	__diag(s)
+#else
+#define __diag_GCC_11(s)
+#endif
+
 #define __diag_GCC_all(s)	__diag(s)
 
 #define __diag_ignore_all(option, comment) \
