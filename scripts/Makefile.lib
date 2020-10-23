@@ -122,15 +122,44 @@ basename_flags = -DKBUILD_BASENAME=$(call name-fix,$(basetarget))
 modname_flags  = -DKBUILD_MODNAME=$(call name-fix,$(modname))
 modfile_flags  = -DKBUILD_MODFILE=$(call stringify,$(modfile))
 
+KBUILD_EXTRA_WARN := $(KBUILD_EXTRA_WARN)$(subdir-extra-warn-y)
+
+ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
+extra-warn1 = W1
+else
+extra-warn1 = N1
+endif
+
+ifneq ($(findstring 2, $(KBUILD_EXTRA_WARN)),)
+extra-warn2 = W2
+else
+extra-warn2 = N2
+endif
+
+ifneq ($(findstring 3, $(KBUILD_EXTRA_WARN)),)
+extra-warn3 = W3
+else
+extra-warn3 = N3
+endif
+
+KBUILD_WARN_CPP = $(KBUILD_WARN_CPP_$(extra-warn1)) \
+                  $(KBUILD_WARN_CPP_$(extra-warn2)) \
+                  $(KBUILD_WARN_CPP_$(extra-warn3))
+
+KBUILD_WARN = $(KBUILD_WARN_$(extra-warn1)) \
+              $(KBUILD_WARN_$(extra-warn2)) \
+              $(KBUILD_WARN_$(extra-warn3))
+
 _c_flags       = $(filter-out $(CFLAGS_REMOVE_$(target-stem).o), \
                      $(filter-out $(ccflags-remove-y), \
-                         $(KBUILD_CPPFLAGS) $(KBUILD_CFLAGS) $(ccflags-y)) \
+                         $(KBUILD_CPPFLAGS) $(KBUILD_WARN_CPP) \
+                         $(KBUILD_CFLAGS) $(KBUILD_WARN) $(ccflags-y)) \
                      $(CFLAGS_$(target-stem).o))
 _a_flags       = $(filter-out $(AFLAGS_REMOVE_$(target-stem).o), \
                      $(filter-out $(asflags-remove-y), \
                          $(KBUILD_CPPFLAGS) $(KBUILD_AFLAGS) $(asflags-y)) \
                      $(AFLAGS_$(target-stem).o))
-_cpp_flags     = $(KBUILD_CPPFLAGS) $(cppflags-y) $(CPPFLAGS_$(target-stem).lds)
+_cpp_flags     = $(KBUILD_CPPFLAGS) $(KBUILD_WARN_CPP) $(cppflags-y) $(CPPFLAGS_$(target-stem).lds)
 
 #
 # Enable gcov profiling flags for a file, directory or for all files depending
