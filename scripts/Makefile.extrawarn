@@ -23,87 +23,71 @@ export KBUILD_EXTRA_WARN
 #
 # W=1 - warnings which may be relevant and do not occur too often
 #
-ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
 
-KBUILD_CFLAGS += -Wunused
-KBUILD_CFLAGS += -Wmissing-declarations
-KBUILD_CFLAGS += -Wmissing-format-attribute
-KBUILD_CFLAGS += -Wmissing-prototypes
-KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN1
-
-else
+KBUILD_WARN_W1 += -Wunused
+KBUILD_WARN_W1 += -Wmissing-declarations
+KBUILD_WARN_W1 += -Wmissing-format-attribute
+KBUILD_WARN_W1 += -Wmissing-prototypes
+KBUILD_CPPFLAGS_W1 += -DKBUILD_EXTRA_WARN1
 
 # Some diagnostics enabled by default are noisy.
 # Suppress them by using -Wno... except for W=1.
 
 ifdef CONFIG_CC_IS_CLANG
-KBUILD_CFLAGS += -Wno-format
-KBUILD_CFLAGS += -Wno-format-zero-length
-KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-enum-cast)
-KBUILD_CFLAGS += -Wno-tautological-constant-out-of-range-compare
+KBUILD_WARN_N1 += -Wno-format
+KBUILD_WARN_N1 += -Wno-format-zero-length
+KBUILD_WARN_N1 += $(call cc-disable-warning, pointer-to-enum-cast)
+KBUILD_WARN_N1 += -Wno-tautological-constant-out-of-range-compare
 else
-KBUILD_CFLAGS += $(call cc-disable-warning, unused-but-set-variable)
+KBUILD_WARN_N1 += $(call cc-disable-warning, unused-but-set-variable)
 endif
 
-KBUILD_CFLAGS += $(call cc-disable-warning, unused-const-variable)
-KBUILD_CFLAGS += $(call cc-disable-warning, packed-not-aligned)
-KBUILD_CFLAGS += -Wno-empty-body
-
-endif
-
+KBUILD_WARN_N1 += $(call cc-disable-warning, unused-const-variable)
+KBUILD_WARN_N1 += $(call cc-disable-warning, packed-not-aligned)
+KBUILD_WARN_N1 += -Wno-empty-body
 
 #
 # W=2 - warnings which occur quite often but may still be relevant
 #
-ifneq ($(findstring 2, $(KBUILD_EXTRA_WARN)),)
 
-KBUILD_CFLAGS += -Wshadow
-KBUILD_CFLAGS += $(call cc-option, -Wlogical-op)
-KBUILD_CFLAGS += $(call cc-option, -Wmaybe-uninitialized)
-KBUILD_CFLAGS += $(call cc-option, -Wunused-macros)
 
-KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN2
+KBUILD_WARN_W2 += -Wshadow
+KBUILD_WARN_W2 += $(call cc-option, -Wlogical-op)
+KBUILD_WARN_W2 += $(call cc-option, -Wmaybe-uninitialized)
+KBUILD_WARN_W2 += $(call cc-option, -Wunused-macros)
 
-else
+KBUILD_CPPFLAGS_W2 += -DKBUILD_EXTRA_WARN2
 
-KBUILD_CFLAGS += $(call cc-disable-warning, restrict)
-KBUILD_CFLAGS += $(call cc-disable-warning, frame-address,)
-KBUILD_CFLAGS += $(call cc-disable-warning, format-truncation)
-KBUILD_CFLAGS += $(call cc-disable-warning, format-overflow)
-KBUILD_CFLAGS += $(call cc-disable-warning, address-of-packed-member)
-KBUILD_CFLAGS += -Wno-format-security
-KBUILD_CFLAGS += -Wno-pointer-sign
-KBUILD_CFLAGS += $(call cc-disable-warning, maybe-uninitialized)
+KBUILD_WARN_N2 += $(call cc-disable-warning, restrict)
+KBUILD_WARN_N2 += $(call cc-disable-warning, frame-address,)
+KBUILD_WARN_N2 += $(call cc-disable-warning, format-truncation)
+KBUILD_WARN_N2 += $(call cc-disable-warning, format-overflow)
+KBUILD_WARN_N2 += $(call cc-disable-warning, address-of-packed-member)
+KBUILD_WARN_N2 += -Wno-format-security
+KBUILD_WARN_N2 += -Wno-pointer-sign
+KBUILD_WARN_N2 += $(call cc-disable-warning, maybe-uninitialized)
 
 # The following turn off the warnings enabled by -Wextra
-KBUILD_CFLAGS += -Wno-missing-field-initializers
-KBUILD_CFLAGS += -Wno-type-limits
-
-endif
+KBUILD_WARN_N2 += -Wno-missing-field-initializers
+KBUILD_WARN_N2 += -Wno-type-limits
 
 #
 # W=3 - more obscure warnings, can most likely be ignored
 #
-ifneq ($(findstring 3, $(KBUILD_EXTRA_WARN)),)
+KBUILD_WARN_W3 += -Wbad-function-cast
+KBUILD_WARN_W3 += -Wcast-align
+KBUILD_WARN_W3 += -Wcast-qual
+KBUILD_WARN_W3 += -Wconversion
+KBUILD_WARN_W3 += -Wpacked
+KBUILD_WARN_W3 += -Wpadded
+KBUILD_WARN_W3 += -Wpointer-arith
+KBUILD_WARN_W3 += -Wredundant-decls
+KBUILD_WARN_W3 += -Wsign-compare
+KBUILD_WARN_W3 += -Wswitch-default
+KBUILD_WARN_W3 += $(call cc-option, -Wpacked-bitfield-compat)
 
-KBUILD_CFLAGS += -Wbad-function-cast
-KBUILD_CFLAGS += -Wcast-align
-KBUILD_CFLAGS += -Wcast-qual
-KBUILD_CFLAGS += -Wconversion
-KBUILD_CFLAGS += -Wpacked
-KBUILD_CFLAGS += -Wpadded
-KBUILD_CFLAGS += -Wpointer-arith
-KBUILD_CFLAGS += -Wredundant-decls
-KBUILD_CFLAGS += -Wsign-compare
-KBUILD_CFLAGS += -Wswitch-default
-KBUILD_CFLAGS += $(call cc-option, -Wpacked-bitfield-compat)
+KBUILD_CPPFLAGS_W3 += -DKBUILD_EXTRA_WARN3
 
-KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN3
-
-else
-
-KBUILD_CFLAGS += -Wno-sign-compare
+KBUILD_WARN_N3 += -Wno-sign-compare
 # This is enabled by -Wunused, but generally not helpful
-KBUILD_CFLAGS += -Wno-unused-parameter
-
-endif
+KBUILD_WARN_N3 += -Wno-unused-parameter
