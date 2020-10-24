@@ -261,34 +261,8 @@ up_fail:
 /*
  * Create and map the vectors page for AArch32 tasks.
  */
-enum aarch32_map {
-	AA32_MAP_VECTORS, /* kuser helpers */
-	AA32_MAP_SIGPAGE,
-	AA32_MAP_VVAR,
-	AA32_MAP_VDSO,
-};
-
 static struct page *aarch32_vectors_page __ro_after_init;
 static struct page *aarch32_sig_page __ro_after_init;
-
-static struct vm_special_mapping aarch32_vdso_maps[] = {
-	[AA32_MAP_VECTORS] = {
-		.name	= "[vectors]", /* ABI */
-		.pages	= &aarch32_vectors_page,
-	},
-	[AA32_MAP_SIGPAGE] = {
-		.name	= "[sigpage]", /* ABI */
-		.pages	= &aarch32_sig_page,
-	},
-	[AA32_MAP_VVAR] = {
-		.name = "[vvar]",
-		.fault = vvar_fault,
-	},
-	[AA32_MAP_VDSO] = {
-		.name = "[vdso]",
-		.mremap = vdso_mremap,
-	},
-};
 
 static int aarch32_alloc_kuser_vdso_page(void)
 {
@@ -326,14 +300,24 @@ static int aarch32_alloc_sigpage(void)
 	return 0;
 }
 
+static struct vm_special_mapping aarch32_vdso_map_vvar = {
+	.name = "[vvar]",
+	.fault = vvar_fault,
+};
+
+static struct vm_special_mapping aarch32_vdso_map_vdso = {
+	.name = "[vdso]",
+	.mremap = vdso_mremap,
+};
+
 static int __aarch32_alloc_vdso_pages(void)
 {
 
 	if (!IS_ENABLED(CONFIG_COMPAT_VDSO))
 		return 0;
 
-	vdso_info[VDSO_ABI_AA32].dm = &aarch32_vdso_maps[AA32_MAP_VVAR];
-	vdso_info[VDSO_ABI_AA32].cm = &aarch32_vdso_maps[AA32_MAP_VDSO];
+	vdso_info[VDSO_ABI_AA32].dm = &aarch32_vdso_map_vvar;
+	vdso_info[VDSO_ABI_AA32].cm = &aarch32_vdso_map_vdso;
 
 	return __vdso_init(VDSO_ABI_AA32);
 }
@@ -354,6 +338,11 @@ static int __init aarch32_alloc_vdso_pages(void)
 }
 arch_initcall(aarch32_alloc_vdso_pages);
 
+static struct vm_special_mapping aarch32_vdso_map_vectors = {
+	.name	= "[vectors]", /* ABI */
+	.pages	= &aarch32_vectors_page,
+};
+
 static int aarch32_kuser_helpers_setup(struct mm_struct *mm)
 {
 	void *ret;
@@ -368,10 +357,15 @@ static int aarch32_kuser_helpers_setup(struct mm_struct *mm)
 	ret = _install_special_mapping(mm, AARCH32_VECTORS_BASE, PAGE_SIZE,
 				       VM_READ | VM_EXEC |
 				       VM_MAYREAD | VM_MAYEXEC,
-				       &aarch32_vdso_maps[AA32_MAP_VECTORS]);
+				       &aarch32_vdso_map_vectors);
 
 	return PTR_ERR_OR_ZERO(ret);
 }
+
+static struct vm_special_mapping aarch32_vdso_map_sigpage = {
+	.name	= "[sigpage]", /* ABI */
+	.pages	= &aarch32_sig_page,
+};
 
 static int aarch32_sigreturn_setup(struct mm_struct *mm)
 {
@@ -391,7 +385,7 @@ static int aarch32_sigreturn_setup(struct mm_struct *mm)
 	ret = _install_special_mapping(mm, addr, PAGE_SIZE,
 				       VM_READ | VM_EXEC | VM_MAYREAD |
 				       VM_MAYWRITE | VM_MAYEXEC,
-				       &aarch32_vdso_maps[AA32_MAP_SIGPAGE]);
+				       &aarch32_vdso_map_sigpage);
 	if (IS_ERR(ret))
 		goto out;
 
