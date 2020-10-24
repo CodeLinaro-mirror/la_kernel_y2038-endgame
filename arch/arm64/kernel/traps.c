@@ -804,7 +804,6 @@ void do_el0_sys(unsigned long esr, struct pt_regs *regs)
 }
 
 static const char *esr_class_str[] = {
-	[0 ... ESR_ELx_EC_MAX]		= "UNRECOGNIZED EC",
 	[ESR_ELx_EC_UNKNOWN]		= "Unknown/Uncategorized",
 	[ESR_ELx_EC_WFx]		= "WFI/WFE",
 	[ESR_ELx_EC_CP15_32]		= "CP15 MCR/MRC",
@@ -852,7 +851,7 @@ static const char *esr_class_str[] = {
 
 const char *esr_get_class_string(unsigned long esr)
 {
-	return esr_class_str[ESR_ELx_EC(esr)];
+	return esr_class_str[ESR_ELx_EC(esr)] ?: "UNRECOGNIZED EC";
 }
 
 /*
