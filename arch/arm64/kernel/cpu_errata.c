@@ -327,13 +327,11 @@ static const struct midr_range erratum_845719_list[] = {
 static const struct arm64_cpu_capabilities erratum_843419_list[] = {
 	{
 		/* Cortex-A53 r0p[01234] */
-		.matches = is_affected_midr_range,
 		ERRATA_MIDR_REV_RANGE(MIDR_CORTEX_A53, 0, 0, 4),
 		MIDR_FIXED(0x4, BIT(8)),
 	},
 	{
 		/* Brahma-B53 r0p[0] */
-		.matches = is_affected_midr_range,
 		ERRATA_MIDR_REV(MIDR_BRAHMA_B53, 0, 0),
 	},
 	{},
@@ -465,7 +463,6 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
 	{
 		.desc = "Cavium errata 23154 and 38545",
 		.capability = ARM64_WORKAROUND_CAVIUM_23154,
-		.type = ARM64_CPUCAP_LOCAL_CPU_ERRATUM,
 		ERRATA_MIDR_RANGE_LIST(cavium_erratum_23154_cpus),
 	},
 #endif
@@ -551,7 +548,7 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
 	{
 		.desc = "ARM erratum 1418040",
 		.capability = ARM64_WORKAROUND_1418040,
-		ERRATA_MIDR_RANGE_LIST(erratum_1418040_list),
+		CAP_MIDR_RANGE_LIST(erratum_1418040_list),
 		/*
 		 * We need to allow affected CPUs to come in late, but
 		 * also need the non-affected CPUs to be able to come
@@ -580,8 +577,8 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
 	{
 		.desc = "Cavium ThunderX2 erratum 219 (KVM guest sysreg trapping)",
 		.capability = ARM64_WORKAROUND_CAVIUM_TX2_219_TVM,
-		ERRATA_MIDR_RANGE_LIST(tx2_family_cpus),
 		.matches = needs_tx2_tvm_workaround,
+		.midr_range_list = tx2_family_cpus,
 	},
 	{
 		.desc = "Cavium ThunderX2 erratum 219 (PRFM removal)",
