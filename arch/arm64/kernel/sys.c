@@ -55,6 +55,9 @@ asmlinkage long __arm64_sys_ni_syscall(const struct pt_regs *__unused)
 #undef __SYSCALL
 #define __SYSCALL(nr, sym)	[nr] = __arm64_##sym,
 
+__diag_ignore(GCC, 8, "-Woverride-init", "for __arm64_sys_ni_syscall")
+__diag_ignore(CLANG, 9, "-Winitializer-overrides", "for __arm64_sys_ni_syscall")
+
 const syscall_fn_t sys_call_table[__NR_syscalls] = {
 	[0 ... __NR_syscalls - 1] = __arm64_sys_ni_syscall,
 #include <asm/unistd.h>
