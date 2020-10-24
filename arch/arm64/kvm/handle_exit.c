@@ -373,6 +373,10 @@ static int handle_other(struct kvm_vcpu *vcpu)
 	return 1;
 }
 
+__diag_push()
+__diag_ignore(GCC, 8, "-Woverride-init", "for ESR_ELx_EC_MAX")
+__diag_ignore(clang, 9, "-Winitializer-overrides", "for ESR_ELx_EC_MAX")
+
 static exit_handle_fn arm_exit_handlers[] = {
 	[0 ... ESR_ELx_EC_MAX]	= kvm_handle_unknown_ec,
 	[ESR_ELx_EC_WFx]	= kvm_handle_wfx,
@@ -438,6 +442,7 @@ static int handle_trap_exceptions(struct kvm_vcpu *vcpu)
 
 	return handled;
 }
+__diag_pop()
 
 /*
  * Return > 0 to return to guest, < 0 on error, 0 (and set exit_reason) on

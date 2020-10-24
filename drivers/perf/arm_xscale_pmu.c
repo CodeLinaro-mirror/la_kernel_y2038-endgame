@@ -56,7 +56,7 @@ enum xscale_counters {
 #define XSCALE1_NUM_COUNTERS	3
 #define XSCALE2_NUM_COUNTERS	5
 
-__diag_ignore(GCC, 5, "-Woverride-init", "PERF_MAP_ALL_UNSUPPORTED override")
+__diag_ignore(GCC, 8, "-Woverride-init", "PERF_MAP_ALL_UNSUPPORTED override")
 __diag_ignore(clang, 9, "-Winitializer-overrides", "PERF_MAP_ALL_UNSUPPORTED override")
 
 
