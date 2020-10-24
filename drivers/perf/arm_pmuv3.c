@@ -36,6 +36,10 @@
 #define ARMV8_THUNDER_PERFCTR_L1I_CACHE_PREF_ACCESS		0xEC
 #define ARMV8_THUNDER_PERFCTR_L1I_CACHE_PREF_MISS		0xED
 
+__diag_push()
+__diag_ignore(GCC, 5, "-Woverride-init", "for PERF_MAP_ALL_UNSUPPORTED")
+__diag_ignore(clang, 9, "-Winitializer-overrides", "for PERF_MAP_ALL_UNSUPPORTED")
+
 /*
  * ARMv8 Architectural defined events, not all of these may
  * be supported on any given implementation. Unsupported events will
@@ -261,6 +265,7 @@ static struct attribute *armv8_pmuv3_event_attrs[] = {
 	ARMV8_EVENT_ATTR(mem_access_checked_wr, ARMV8_MTE_PERFCTR_MEM_ACCESS_CHECKED_WR),
 	NULL,
 };
+__diag_pop()
 
 static umode_t
 armv8pmu_event_attr_is_visible(struct kobject *kobj,
