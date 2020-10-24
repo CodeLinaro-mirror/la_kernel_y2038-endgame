@@ -701,7 +701,6 @@ void do_sysinstr(unsigned int esr, struct pt_regs *regs)
 NOKPROBE_SYMBOL(do_sysinstr);
 
 static const char *esr_class_str[] = {
-	[0 ... ESR_ELx_EC_MAX]		= "UNRECOGNIZED EC",
 	[ESR_ELx_EC_UNKNOWN]		= "Unknown/Uncategorized",
 	[ESR_ELx_EC_WFx]		= "WFI/WFE",
 	[ESR_ELx_EC_CP15_32]		= "CP15 MCR/MRC",
@@ -747,7 +746,7 @@ static const char *esr_class_str[] = {
 
 const char *esr_get_class_string(u32 esr)
 {
-	return esr_class_str[ESR_ELx_EC(esr)];
+	return esr_class_str[ESR_ELx_EC(esr)] ?: "UNRECOGNIZED EC";
 }
 
 /*
