@@ -55,7 +55,7 @@ static inline void finish_rcuwait(struct rcuwait *w)
 
 #define rcuwait_wait_event(w, condition, state)				\
 ({									\
-	int __ret = 0;							\
+	int ___ret = 0;							\
 	prepare_to_rcuwait(w);						\
 	for (;;) {							\
 		/*							\
@@ -67,14 +67,14 @@ static inline void finish_rcuwait(struct rcuwait *w)
 			break;						\
 									\
 		if (signal_pending_state(state, current)) {		\
-			__ret = -EINTR;					\
+			___ret = -EINTR;				\
 			break;						\
 		}							\
 									\
 		schedule();						\
 	}								\
 	finish_rcuwait(w);						\
-	__ret;								\
+	___ret;								\
 })
 
 #endif /* _LINUX_RCUWAIT_H_ */
