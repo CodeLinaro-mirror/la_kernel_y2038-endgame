@@ -159,7 +159,7 @@ extern void finish_swait(struct swait_queue_head *q, struct swait_queue *wait);
 ({									\
 	__label__ __out;						\
 	struct swait_queue __wait;					\
-	long __ret = ret;						\
+	long ___ret = ret;						\
 									\
 	INIT_LIST_HEAD(&__wait.task_list);				\
 	for (;;) {							\
@@ -169,14 +169,14 @@ extern void finish_swait(struct swait_queue_head *q, struct swait_queue *wait);
 			break;						\
 									\
 		if (___wait_is_interruptible(state) && __int) {		\
-			__ret = __int;					\
+			___ret = __int;					\
 			goto __out;					\
 		}							\
 									\
 		cmd;							\
 	}								\
 	finish_swait(&wq, &__wait);					\
-__out:	__ret;								\
+__out:	___ret;								\
 })
 
 #define __swait_event(wq, condition)					\
@@ -190,16 +190,16 @@ do {									\
 	__swait_event(wq, condition);					\
 } while (0)
 
-#define __swait_event_timeout(wq, condition, timeout)			\
-	___swait_event(wq, ___wait_cond_timeout(condition),		\
+#define __swait_event_timeout(wq, condition, timeout, __ret)		\
+	___swait_event(wq, ___wait_cond_timeout(condition, __ret),	\
 		      TASK_UNINTERRUPTIBLE, timeout,			\
 		      __ret = schedule_timeout(__ret))
 
 #define swait_event_timeout_exclusive(wq, condition, timeout)		\
 ({									\
 	long __ret = timeout;						\
-	if (!___wait_cond_timeout(condition))				\
-		__ret = __swait_event_timeout(wq, condition, timeout);	\
+	if (!___wait_cond_timeout(condition, __ret))			\
+		__ret = __swait_event_timeout(wq, condition, timeout, __ret);	\
 	__ret;								\
 })
 
@@ -215,17 +215,17 @@ do {									\
 	__ret;								\
 })
 
-#define __swait_event_interruptible_timeout(wq, condition, timeout)	\
-	___swait_event(wq, ___wait_cond_timeout(condition),		\
+#define __swait_event_interruptible_timeout(wq, condition, timeout, __ret)	\
+	___swait_event(wq, ___wait_cond_timeout(condition, __ret),	\
 		      TASK_INTERRUPTIBLE, timeout,			\
 		      __ret = schedule_timeout(__ret))
 
 #define swait_event_interruptible_timeout_exclusive(wq, condition, timeout)\
 ({									\
 	long __ret = timeout;						\
-	if (!___wait_cond_timeout(condition))				\
+	if (!___wait_cond_timeout(condition, __ret))			\
 		__ret = __swait_event_interruptible_timeout(wq,		\
-						condition, timeout);	\
+						condition, timeout, __ret);	\
 	__ret;								\
 })
 
@@ -251,8 +251,8 @@ do {									\
 	__swait_event_idle(wq, condition);				\
 } while (0)
 
-#define __swait_event_idle_timeout(wq, condition, timeout)		\
-	___swait_event(wq, ___wait_cond_timeout(condition),		\
+#define __swait_event_idle_timeout(wq, condition, timeout, __ret)	\
+	___swait_event(wq, ___wait_cond_timeout(condition, __ret),	\
 		       TASK_IDLE, timeout,				\
 		       __ret = schedule_timeout(__ret))
 
@@ -278,9 +278,9 @@ do {									\
 #define swait_event_idle_timeout_exclusive(wq, condition, timeout)	\
 ({									\
 	long __ret = timeout;						\
-	if (!___wait_cond_timeout(condition))				\
+	if (!___wait_cond_timeout(condition, __ret))			\
 		__ret = __swait_event_idle_timeout(wq,			\
-						   condition, timeout);	\
+						   condition, timeout, __ret);	\
 	__ret;								\
 })
 

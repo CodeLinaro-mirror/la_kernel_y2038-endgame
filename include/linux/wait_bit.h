@@ -291,8 +291,8 @@ do {									\
 	__ret;								\
 })
 
-#define __wait_var_event_timeout(var, condition, timeout)		\
-	___wait_var_event(var, ___wait_cond_timeout(condition),		\
+#define __wait_var_event_timeout(var, condition, timeout, __ret)	\
+	___wait_var_event(var, ___wait_cond_timeout(condition, __ret),	\
 			  TASK_UNINTERRUPTIBLE, 0, timeout,		\
 			  __ret = schedule_timeout(__ret))
 
@@ -300,8 +300,8 @@ do {									\
 ({									\
 	long __ret = timeout;						\
 	might_sleep();							\
-	if (!___wait_cond_timeout(condition))				\
-		__ret = __wait_var_event_timeout(var, condition, timeout); \
+	if (!___wait_cond_timeout(condition, __ret))			\
+		__ret = __wait_var_event_timeout(var, condition, timeout, __ret); \
 	__ret;								\
 })
 
