@@ -254,7 +254,7 @@ void __wake_up_sync(struct wait_queue_head *wq_head, unsigned int mode);
 #define wake_up_interruptible_sync_poll_locked(x, m)				\
 	__wake_up_locked_sync_key((x), TASK_INTERRUPTIBLE, poll_to_key(m))
 
-#define ___wait_cond_timeout(condition)						\
+#define ___wait_cond_timeout(condition, __ret)					\
 ({										\
 	bool __cond = (condition);						\
 	if (__cond && !__ret)							\
@@ -284,11 +284,7 @@ extern void init_wait_entry(struct wait_queue_entry *wq_entry, int flags);
 ({										\
 	__label__ __out;							\
 	struct wait_queue_entry __wq_entry;					\
-	__diag_push() 								\
-	__diag_ignore(GCC, 8, "-Wshadow", "explicit shadow") 			\
-	__diag_ignore(CLANG, 9, "-Wshadow", "explicit shadow") 			\
-	long __ret = ret;							\
-	__diag_pop();								\
+	long ___ret = ret;							\
 										\
 	init_wait_entry(&__wq_entry, exclusive ? WQ_FLAG_EXCLUSIVE : 0);	\
 	for (;;) {								\
@@ -298,14 +294,14 @@ extern void init_wait_entry(struct wait_queue_entry *wq_entry, int flags);
 			break;							\
 										\
 		if (___wait_is_interruptible(state) && __int) {			\
-			__ret = __int;						\
+			___ret = __int;						\
 			goto __out;						\
 		}								\
 										\
 		cmd;								\
 	}									\
 	finish_wait(&wq_head, &__wq_entry);					\
-__out:	__ret;									\
+__out:	___ret;									\
 })
 
 #define __wait_event(wq_head, condition)					\
@@ -372,8 +368,8 @@ do {										\
 	__ret;									\
 })
 
-#define __wait_event_timeout(wq_head, condition, timeout)			\
-	___wait_event(wq_head, ___wait_cond_timeout(condition),			\
+#define __wait_event_timeout(wq_head, condition, timeout, __ret)		\
+	___wait_event(wq_head, ___wait_cond_timeout(condition, __ret),		\
 		      TASK_UNINTERRUPTIBLE, 0, timeout,				\
 		      __ret = schedule_timeout(__ret))
 
@@ -400,13 +396,13 @@ do {										\
 ({										\
 	long __ret = timeout;							\
 	might_sleep();								\
-	if (!___wait_cond_timeout(condition))					\
-		__ret = __wait_event_timeout(wq_head, condition, timeout);	\
+	if (!___wait_cond_timeout(condition, __ret))				\
+		__ret = __wait_event_timeout(wq_head, condition, timeout, __ret);\
 	__ret;									\
 })
 
-#define __wait_event_freezable_timeout(wq_head, condition, timeout)		\
-	___wait_event(wq_head, ___wait_cond_timeout(condition),			\
+#define __wait_event_freezable_timeout(wq_head, condition, timeout, __ret)	\
+	___wait_event(wq_head, ___wait_cond_timeout(condition, __ret),		\
 		      TASK_INTERRUPTIBLE, 0, timeout,				\
 		      __ret = freezable_schedule_timeout(__ret))
 
@@ -418,8 +414,8 @@ do {										\
 ({										\
 	long __ret = timeout;							\
 	might_sleep();								\
-	if (!___wait_cond_timeout(condition))					\
-		__ret = __wait_event_freezable_timeout(wq_head, condition, timeout); \
+	if (!___wait_cond_timeout(condition, __ret))				\
+		__ret = __wait_event_freezable_timeout(wq_head, condition, timeout, __ret); \
 	__ret;									\
 })
 
@@ -489,8 +485,8 @@ do {										\
 	__ret;									\
 })
 
-#define __wait_event_interruptible_timeout(wq_head, condition, timeout)		\
-	___wait_event(wq_head, ___wait_cond_timeout(condition),			\
+#define __wait_event_interruptible_timeout(wq_head, condition, timeout, __ret)	\
+	___wait_event(wq_head, ___wait_cond_timeout(condition, __ret),		\
 		      TASK_INTERRUPTIBLE, 0, timeout,				\
 		      __ret = schedule_timeout(__ret))
 
@@ -518,9 +514,9 @@ do {										\
 ({										\
 	long __ret = timeout;							\
 	might_sleep();								\
-	if (!___wait_cond_timeout(condition))					\
+	if (!___wait_cond_timeout(condition, __ret))				\
 		__ret = __wait_event_interruptible_timeout(wq_head,		\
-						condition, timeout);		\
+						condition, timeout, __ret);	\
 	__ret;									\
 })
 
@@ -684,8 +680,8 @@ do {										\
 		___wait_event(wq_head, condition, TASK_IDLE, 1, 0, schedule());	\
 } while (0)
 
-#define __wait_event_idle_timeout(wq_head, condition, timeout)			\
-	___wait_event(wq_head, ___wait_cond_timeout(condition),			\
+#define __wait_event_idle_timeout(wq_head, condition, timeout, __ret)		\
+	___wait_event(wq_head, ___wait_cond_timeout(condition, __ret),		\
 		      TASK_IDLE, 0, timeout,					\
 		      __ret = schedule_timeout(__ret))
 
@@ -712,13 +708,13 @@ do {										\
 ({										\
 	long __ret = timeout;							\
 	might_sleep();								\
-	if (!___wait_cond_timeout(condition))					\
-		__ret = __wait_event_idle_timeout(wq_head, condition, timeout);	\
+	if (!___wait_cond_timeout(condition, __ret))				\
+		__ret = __wait_event_idle_timeout(wq_head, condition, timeout, __ret);	\
 	__ret;									\
 })
 
-#define __wait_event_idle_exclusive_timeout(wq_head, condition, timeout)	\
-	___wait_event(wq_head, ___wait_cond_timeout(condition),			\
+#define __wait_event_idle_exclusive_timeout(wq_head, condition, timeout, __ret)	\
+	___wait_event(wq_head, ___wait_cond_timeout(condition, __ret),		\
 		      TASK_IDLE, 1, timeout,					\
 		      __ret = schedule_timeout(__ret))
 
@@ -749,8 +745,8 @@ do {										\
 ({										\
 	long __ret = timeout;							\
 	might_sleep();								\
-	if (!___wait_cond_timeout(condition))					\
-		__ret = __wait_event_idle_exclusive_timeout(wq_head, condition, timeout);\
+	if (!___wait_cond_timeout(condition, __ret))				\
+		__ret = __wait_event_idle_exclusive_timeout(wq_head, condition, timeout, __ret);\
 	__ret;									\
 })
 
@@ -918,8 +914,8 @@ extern int do_wait_intr_irq(wait_queue_head_t *, wait_queue_entry_t *);
 	__ret;									\
 })
 
-#define __wait_event_killable_timeout(wq_head, condition, timeout)		\
-	___wait_event(wq_head, ___wait_cond_timeout(condition),			\
+#define __wait_event_killable_timeout(wq_head, condition, timeout, __ret)	\
+	___wait_event(wq_head, ___wait_cond_timeout(condition, __ret),		\
 		      TASK_KILLABLE, 0, timeout,				\
 		      __ret = schedule_timeout(__ret))
 
@@ -949,9 +945,9 @@ extern int do_wait_intr_irq(wait_queue_head_t *, wait_queue_entry_t *);
 ({										\
 	long __ret = timeout;							\
 	might_sleep();								\
-	if (!___wait_cond_timeout(condition))					\
+	if (!___wait_cond_timeout(condition, __ret))				\
 		__ret = __wait_event_killable_timeout(wq_head,			\
-						condition, timeout);		\
+						condition, timeout, __ret);	\
 	__ret;									\
 })
 
@@ -1093,8 +1089,8 @@ do {										\
 	__ret;									\
 })
 
-#define __wait_event_lock_irq_timeout(wq_head, condition, lock, timeout, state)	\
-	___wait_event(wq_head, ___wait_cond_timeout(condition),			\
+#define __wait_event_lock_irq_timeout(wq_head, condition, lock, timeout, state, __ret)	\
+	___wait_event(wq_head, ___wait_cond_timeout(condition, __ret),		\
 		      state, 0, timeout,					\
 		      spin_unlock_irq(&lock);					\
 		      __ret = schedule_timeout(__ret);				\
@@ -1128,20 +1124,20 @@ do {										\
 						  timeout)			\
 ({										\
 	long __ret = timeout;							\
-	if (!___wait_cond_timeout(condition))					\
+	if (!___wait_cond_timeout(condition, __ret))				\
 		__ret = __wait_event_lock_irq_timeout(				\
 					wq_head, condition, lock, timeout,	\
-					TASK_INTERRUPTIBLE);			\
+					TASK_INTERRUPTIBLE, __ret);		\
 	__ret;									\
 })
 
 #define wait_event_lock_irq_timeout(wq_head, condition, lock, timeout)		\
 ({										\
 	long __ret = timeout;							\
-	if (!___wait_cond_timeout(condition))					\
+	if (!___wait_cond_timeout(condition, __ret))				\
 		__ret = __wait_event_lock_irq_timeout(				\
 					wq_head, condition, lock, timeout,	\
-					TASK_UNINTERRUPTIBLE);			\
+					TASK_UNINTERRUPTIBLE, __ret);		\
 	__ret;									\
 })
 
