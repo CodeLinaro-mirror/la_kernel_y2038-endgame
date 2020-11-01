@@ -19,6 +19,8 @@
 #define __x32_sys_vmsplice	__x64_sys_vmsplice
 #define __x32_sys_process_vm_readv	__x64_sys_process_vm_readv
 #define __x32_sys_process_vm_writev	__x64_sys_process_vm_writev
+#define __x32_sys_kexec_load	__x64_sys_kexec_load
+#define __x32_sys_move_pages	__x64_sys_move_pages
 
 #define __SYSCALL_64(nr, sym)
 
