@@ -258,9 +258,8 @@ static inline int kexec_load_check(unsigned long nr_segments,
 	return 0;
 }
 
-static int kernel_kexec_load(unsigned long entry, unsigned long nr_segments,
-			     struct kexec_segment __user * segments,
-			     unsigned long flags)
+SYSCALL_DEFINE4(kexec_load, unsigned long, entry, unsigned long, nr_segments,
+		struct kexec_segment __user *, segments, unsigned long, flags)
 {
 	int result;
 
@@ -290,21 +289,3 @@ static int kernel_kexec_load(unsigned long entry, unsigned long nr_segments,
 
 	return result;
 }
-
-SYSCALL_DEFINE4(kexec_load, unsigned long, entry, unsigned long, nr_segments,
-		struct kexec_segment __user *, segments, unsigned long, flags)
-{
-	return kernel_kexec_load(entry, nr_segments, segments, flags);
-}
-
-#ifdef CONFIG_COMPAT
-COMPAT_SYSCALL_DEFINE4(kexec_load, compat_ulong_t, entry,
-		       compat_ulong_t, nr_segments,
-		       struct compat_kexec_segment __user *, segments,
-		       compat_ulong_t, flags)
-{
-	return kernel_kexec_load(entry, nr_segments,
-				 (struct kexec_segment __user *)segments,
-				 flags);
-}
-#endif
