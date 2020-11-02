@@ -289,7 +289,6 @@ static const struct net_device_ops rtw_netdev_ops = {
 	.ndo_select_queue = rtw_select_queue,
 	.ndo_set_mac_address = rtw_net_set_mac_address,
 	.ndo_get_stats = rtw_net_get_stats,
-	.ndo_do_ioctl = rtw_ioctl,
 	.ndo_siocdevprivate = rtw_android_priv_cmd,
 };
 
