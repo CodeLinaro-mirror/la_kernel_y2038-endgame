@@ -229,7 +229,8 @@ static int dlci_config(struct net_device *dev, struct dlci_conf __user *conf, in
 	return 0;
 }
 
-static int dlci_dev_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+static int dlci_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
+			       void __user *data, int cmd)
 {
 	struct dlci_local *dlp;
 
@@ -252,7 +253,7 @@ static int dlci_dev_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 			if (!*(short *)(dev->dev_addr))
 				return -EINVAL;
 
-			return dlci_config(dev, ifr->ifr_data, cmd == DLCI_GET_CONF);
+			return dlci_config(dev, data, cmd == DLCI_GET_CONF);
 
 		default: 
 			return -EOPNOTSUPP;
@@ -458,7 +459,7 @@ static const struct header_ops dlci_header_ops = {
 static const struct net_device_ops dlci_netdev_ops = {
 	.ndo_open	= dlci_open,
 	.ndo_stop	= dlci_close,
-	.ndo_do_ioctl	= dlci_dev_ioctl,
+	.ndo_siocdevprivate = dlci_siocdevprivate,
 	.ndo_start_xmit	= dlci_transmit,
 	.ndo_change_mtu	= dlci_change_mtu,
 };
