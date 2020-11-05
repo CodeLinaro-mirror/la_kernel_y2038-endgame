@@ -1245,7 +1245,8 @@ static int sdla_reconfig(struct net_device *dev)
 	return 0;
 }
 
-static int sdla_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+static int sdla_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
+			       void __user *data, int cmd)
 {
 	struct frad_local *flp;
 
@@ -1261,7 +1262,7 @@ static int sdla_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 	{
 		case FRAD_GET_CONF:
 		case FRAD_SET_CONF:
-			return sdla_config(dev, ifr->ifr_data, cmd == FRAD_GET_CONF);
+			return sdla_config(dev, data, cmd == FRAD_GET_CONF);
 
 		case SDLA_IDENTIFY:
 			ifr->ifr_flags = flp->type;
@@ -1298,7 +1299,7 @@ NOTE:  This is rather a useless action right now, as the
 		case SDLA_READMEM:
 			if(!capable(CAP_SYS_RAWIO))
 				return -EPERM;
-			return sdla_xfer(dev, ifr->ifr_data, cmd == SDLA_READMEM);
+			return sdla_xfer(dev, data, cmd == SDLA_READMEM);
 
 		case SDLA_START:
 			sdla_start(dev);
@@ -1586,7 +1587,7 @@ fail:
 static const struct net_device_ops sdla_netdev_ops = {
 	.ndo_open	= sdla_open,
 	.ndo_stop	= sdla_close,
-	.ndo_do_ioctl	= sdla_ioctl,
+	.ndo_siocdevprivate = sdla_siocdevprivate,
 	.ndo_set_config	= sdla_set_config,
 	.ndo_start_xmit	= sdla_transmit,
 	.ndo_change_mtu	= sdla_change_mtu,
