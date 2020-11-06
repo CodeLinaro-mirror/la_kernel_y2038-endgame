@@ -664,7 +664,7 @@ static const struct net_device_ops ocelot_port_netdev_ops = {
 	.ndo_set_features		= ocelot_set_features,
 	.ndo_get_port_parent_id		= ocelot_get_port_parent_id,
 	.ndo_setup_tc			= ocelot_setup_tc,
-	.ndo_do_ioctl			= ocelot_ioctl,
+	.ndo_eth_ioctl			= ocelot_ioctl,
 };
 
 struct net_device *ocelot_port_to_netdev(struct ocelot *ocelot, int port)
