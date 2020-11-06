@@ -63,6 +63,10 @@ ndo_do_ioctl:
 	Synchronization: rtnl_lock() semaphore.
 	Context: process
 
+ndo_eth_ioctl:
+	Synchronization: rtnl_lock() semaphore.
+	Context: process
+
 ndo_get_stats:
 	Synchronization: dev_base_lock rwlock.
 	Context: nominally process, but don't sleep inside an rwlock
