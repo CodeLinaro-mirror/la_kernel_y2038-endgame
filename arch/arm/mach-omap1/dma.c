@@ -336,21 +336,6 @@ void omap_set_dma_priority(int lch, int dst_port, int priority)
 }
 EXPORT_SYMBOL(omap_set_dma_priority);
 
-static int dma_chan_count;
-int omap_dma_running(void)
-{
-	int lch;
-
-	if (omap_lcd_dma_running())
-		return 1;
-
-	for (lch = 0; lch < dma_chan_count; lch++)
-		if (dma_read(CCR, lch) & OMAP_DMA_CCR_EN)
-			return 1;
-
-	return 0;
-}
-
 static int __init omap1_system_dma_init(void)
 {
 	struct omap_system_dma_plat_info	p;
@@ -403,15 +388,14 @@ static int __init omap1_system_dma_init(void)
 
 	/* available logical channels */
 	if (cpu_is_omap15xx()) {
-		dma_chan_count = 9;
+		d->lch_count = 9;
 	} else {
 		if (d->dev_caps & ENABLE_1510_MODE)
-			dma_chan_count = 9;
+			d->lch_count = 9;
 		else
-			dma_chan_count = 16;
+			d->lch_count = 16;
 	}
 
-	d->lch_count = dma_chan_count;
 	p = dma_plat_info;
 	p.dma_attr = d;
 	p.errata = configure_dma_errata();
