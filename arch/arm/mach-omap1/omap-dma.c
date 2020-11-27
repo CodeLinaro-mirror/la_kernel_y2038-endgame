@@ -55,7 +55,6 @@
 
 static struct omap_system_dma_plat_info *p;
 static struct omap_dma_dev_attr *d;
-static void omap_clear_dma(int lch);
 static int enable_1510_mode;
 static u32 errata;
 
@@ -79,19 +78,13 @@ static int omap_dma_reserve_channels;
 static DEFINE_SPINLOCK(dma_chan_lock);
 static struct omap_dma_lch *dma_chan;
 
-static inline void disable_lnk(int lch);
-static void omap_disable_channel_irq(int lch);
-static inline void omap_enable_channel_irq(int lch);
-
-#ifdef CONFIG_ARCH_OMAP15XX
-/* Returns 1 if the DMA module is in OMAP1510-compatible mode, 0 otherwise */
-static int omap_dma_in_1510_mode(void)
+static inline void omap_disable_channel_irq(int lch)
 {
-	return enable_1510_mode;
+	/* disable channel interrupts */
+	p->dma_write(0, CICR, lch);
+	/* Clear CSR */
+	p->dma_read(CSR, lch);
 }
-#else
-#define omap_dma_in_1510_mode()		0
-#endif
 
 static inline void set_gdma_dev(int req, int dev)
 {
@@ -104,6 +97,17 @@ static inline void set_gdma_dev(int req, int dev)
 	l |= (dev - 1) << shift;
 	omap_writel(l, reg);
 }
+
+#if IS_ENABLED(CONFIG_USB_OMAP)
+#ifdef CONFIG_ARCH_OMAP15XX
+/* Returns 1 if the DMA module is in OMAP1510-compatible mode, 0 otherwise */
+static int omap_dma_in_1510_mode(void)
+{
+	return enable_1510_mode;
+}
+#else
+#define omap_dma_in_1510_mode()		0
+#endif
 
 void omap_set_dma_transfer_params(int lch, int data_type, int elem_count,
 				  int frame_count, int sync_mode,
@@ -290,14 +294,6 @@ static inline void omap_enable_channel_irq(int lch)
 	p->dma_write(dma_chan[lch].enabled_irqs, CICR, lch);
 }
 
-static inline void omap_disable_channel_irq(int lch)
-{
-	/* disable channel interrupts */
-	p->dma_write(0, CICR, lch);
-	/* Clear CSR */
-	p->dma_read(CSR, lch);
-}
-
 void omap_disable_dma_irq(int lch, u16 bits)
 {
 	dma_chan[lch].enabled_irqs &= ~bits;
@@ -334,6 +330,7 @@ static inline void disable_lnk(int lch)
 	p->dma_write(l, CLNK_CTRL, lch);
 	dma_chan[lch].flags &= ~OMAP_DMA_ACTIVE;
 }
+#endif
 
 int omap_request_dma(int dev_id, const char *dev_name,
 		     void (*callback)(int lch, u16 ch_status, void *data),
@@ -432,6 +429,7 @@ static void omap_clear_dma(int lch)
 	local_irq_restore(flags);
 }
 
+#if IS_ENABLED(CONFIG_USB_OMAP)
 void omap_start_dma(int lch)
 {
 	u32 l;
@@ -650,6 +648,7 @@ int omap_get_dma_active_status(int lch)
 	return (p->dma_read(CCR, lch) & OMAP_DMA_CCR_EN) != 0;
 }
 EXPORT_SYMBOL(omap_get_dma_active_status);
+#endif
 
 int omap_dma_running(void)
 {
