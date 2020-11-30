@@ -52,7 +52,7 @@ ipvs_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	struct netns_ipvs *ipvs = net_ipvs(xt_net(par));
 	/* ipvs_mt_check ensures that family is only NFPROTO_IPV[46]. */
 	const u_int8_t family = xt_family(par);
-	struct ip_vs_iphdr iph;
+	struct ip_vs_iphdr uninitialized_var(iph);
 	struct ip_vs_protocol *pp;
 	struct ip_vs_conn *cp;
 	bool match = true;

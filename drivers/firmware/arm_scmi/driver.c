@@ -583,7 +583,7 @@ static int version_get(const struct scmi_protocol_handle *ph, u32 *version)
 {
 	int ret;
 	__le32 *rev_info;
-	struct scmi_xfer *t;
+	struct scmi_xfer *uninitialized_var(t);
 
 	ret = xfer_get_init(ph, PROTOCOL_VERSION, 0, sizeof(*version), &t);
 	if (ret)

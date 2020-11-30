@@ -104,10 +104,12 @@ static int soc_button_lookup_gpio(struct device *dev, int acpi_index,
 				  int *gpio_ret, int *irq_ret)
 {
 	struct gpio_desc *desc;
+	int ret;
 
 	desc = gpiod_get_index(dev, NULL, acpi_index, GPIOD_ASIS);
-	if (IS_ERR(desc))
-		return PTR_ERR(desc);
+	ret = PTR_ERR(desc);
+	if (ret)
+		return ret;
 
 	*gpio_ret = desc_to_gpio(desc);
 	*irq_ret = gpiod_to_irq(desc);

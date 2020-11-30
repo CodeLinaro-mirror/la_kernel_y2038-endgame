@@ -200,6 +200,9 @@ static __always_inline struct ghcb *sev_es_get_ghcb(struct ghcb_state *state)
 	data = this_cpu_read(runtime_data);
 	ghcb = &data->ghcb_page;
 
+	state->ghcb = NULL;
+	data->ghcb_active = true;
+
 	if (unlikely(data->ghcb_active)) {
 		/* GHCB is already in use - save its contents */
 
@@ -213,9 +216,6 @@ static __always_inline struct ghcb *sev_es_get_ghcb(struct ghcb_state *state)
 
 		/* Backup GHCB content */
 		*state->ghcb = *ghcb;
-	} else {
-		state->ghcb = NULL;
-		data->ghcb_active = true;
 	}
 
 	return ghcb;

@@ -221,7 +221,7 @@ static int mlx5_eq_async_int(struct notifier_block *nb,
 	struct mlx5_eq_table *eqt;
 	struct mlx5_core_dev *dev;
 	struct mlx5_eqe *eqe;
-	unsigned long flags;
+	unsigned long uninitialized_var(flags);
 	int num_eqes = 0;
 	bool recovery;
 

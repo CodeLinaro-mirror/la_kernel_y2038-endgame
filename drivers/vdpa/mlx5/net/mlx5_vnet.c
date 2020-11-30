@@ -614,8 +614,8 @@ static int umem_size(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq
 		     struct mlx5_vdpa_umem **umemp)
 {
 	struct mlx5_core_dev *mdev = ndev->mvdev.mdev;
-	int p_a;
-	int p_b;
+	int uninitialized_var(p_a);
+	int uninitialized_var(p_b);
 
 	switch (num) {
 	case 1:
@@ -651,7 +651,7 @@ static int create_umem(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *m
 	int err;
 	__be64 *pas;
 	int size;
-	struct mlx5_vdpa_umem *umem;
+	struct mlx5_vdpa_umem *uninitialized_var(umem);
 
 	size = umem_size(ndev, mvq, num, &umem);
 	if (size < 0)
@@ -701,7 +701,7 @@ static void umem_destroy(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue 
 {
 	u32 in[MLX5_ST_SZ_DW(destroy_umem_in)] = {};
 	u32 out[MLX5_ST_SZ_DW(destroy_umem_out)] = {};
-	struct mlx5_vdpa_umem *umem;
+	struct mlx5_vdpa_umem *uninitialized_var(umem);
 
 	switch (num) {
 	case 1:

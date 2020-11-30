@@ -478,7 +478,7 @@ static int hw_break_get(struct task_struct *target,
 	unsigned int note_type = regset->core_note_type;
 	int ret, idx = 0;
 	u32 info, ctrl;
-	u64 addr;
+	u64 uninitialized_var(addr);
 
 	/* Resource info */
 	ret = ptrace_hbp_get_resource_info(note_type, &info);

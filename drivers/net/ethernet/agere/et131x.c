@@ -1298,7 +1298,7 @@ static void et1310_phy_read_mii_bit(struct et131x_adapter *adapter,
 				    u16 bitnum,
 				    u8 *value)
 {
-	u16 reg;
+	u16 uninitialized_var(reg);
 	u16 mask = 1 << bitnum;
 
 	et131x_mii_read(adapter, regnum, &reg);

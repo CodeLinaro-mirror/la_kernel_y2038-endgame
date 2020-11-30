@@ -80,7 +80,7 @@ gm200_i2c_aux_xfer(struct nvkm_i2c_aux *obj, bool retry,
 	struct nvkm_i2c *i2c = aux->base.pad->i2c;
 	struct nvkm_device *device = i2c->subdev.device;
 	const u32 base = aux->ch * 0x50;
-	u32 ctrl, stat, timeout, retries = 0;
+	u32 ctrl, uninitialized_var(stat), timeout, retries = 0;
 	u32 xbuf[4] = {};
 	int ret, i;
 

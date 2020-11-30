@@ -1285,7 +1285,7 @@ struct drm_gem_object *msm_gem_import(struct drm_device *dev,
 {
 	struct msm_drm_private *priv = dev->dev_private;
 	struct msm_gem_object *msm_obj;
-	struct drm_gem_object *obj;
+	struct drm_gem_object *uninitialized_var(obj);
 	uint32_t size;
 	int ret, npages;
 

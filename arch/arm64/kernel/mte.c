@@ -330,7 +330,7 @@ static int __access_remote_tags(struct mm_struct *mm, unsigned long addr,
 	struct vm_area_struct *vma;
 	void __user *buf = kiov->iov_base;
 	size_t len = kiov->iov_len;
-	int ret;
+	int uninitialized_var(ret);
 	int write = gup_flags & FOLL_WRITE;
 
 	if (!access_ok(buf, len))
