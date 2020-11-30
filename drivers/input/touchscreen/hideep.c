@@ -363,7 +363,7 @@ static int hideep_enter_pgm(struct hideep_ts *ts)
 
 static void hideep_nvm_unlock(struct hideep_ts *ts)
 {
-	u32 unmask_code;
+	u32 uninitialized_var(unmask_code);
 
 	hideep_pgm_w_reg(ts, HIDEEP_FLASH_CFG, HIDEEP_NVM_SFR_RPAGE);
 	hideep_pgm_r_reg(ts, 0x0000000C, &unmask_code);

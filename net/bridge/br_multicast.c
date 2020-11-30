@@ -706,7 +706,7 @@ static struct sk_buff *br_ip4_multicast_alloc_query(struct net_bridge *br,
 	struct sk_buff *skb;
 	struct igmphdr *ih;
 	struct ethhdr *eth;
-	unsigned long lmqt;
+	unsigned long uninitialized_var(lmqt);
 	struct iphdr *iph;
 	u16 lmqt_srcs = 0;
 
@@ -853,7 +853,7 @@ static struct sk_buff *br_ip6_multicast_alloc_query(struct net_bridge *br,
 	struct ipv6hdr *ip6h;
 	struct mld_msg *mldq;
 	struct sk_buff *skb;
-	unsigned long llqt;
+	unsigned long uninitialized_var(llqt);
 	struct ethhdr *eth;
 	u16 llqt_srcs = 0;
 	u8 *hopopt;

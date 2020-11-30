@@ -1468,7 +1468,7 @@ static struct backlight_device *acer_backlight_device;
 
 static int read_brightness(struct backlight_device *bd)
 {
-	u32 value;
+	u32 value = 0xffffffffu;
 	get_u32(&value, ACER_CAP_BRIGHTNESS);
 	return value;
 }

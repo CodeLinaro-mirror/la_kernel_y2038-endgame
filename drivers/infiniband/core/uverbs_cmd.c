@@ -3363,7 +3363,7 @@ static int __uverbs_create_xsrq(struct uverbs_attr_bundle *attrs,
 	struct ib_srq                   *srq;
 	struct ib_srq_init_attr          attr;
 	int ret;
-	struct ib_uobject *xrcd_uobj;
+	struct ib_uobject *uninitialized_var(xrcd_uobj);
 	struct ib_device *ib_dev;
 
 	obj = (struct ib_usrq_object *)uobj_alloc(UVERBS_OBJECT_SRQ, attrs,

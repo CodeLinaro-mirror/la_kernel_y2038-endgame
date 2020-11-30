@@ -2217,7 +2217,7 @@ ip_vs_forward_icmp_v6(void *priv, struct sk_buff *skb,
 {
 	int r;
 	struct netns_ipvs *ipvs = net_ipvs(state->net);
-	struct ip_vs_iphdr iphdr;
+	struct ip_vs_iphdr uninitialized_var(iphdr);
 
 	ip_vs_fill_iph_skb(AF_INET6, skb, false, &iphdr);
 	if (iphdr.protocol != IPPROTO_ICMPV6)

@@ -536,7 +536,7 @@ static int fsl_asoc_card_probe(struct platform_device *pdev)
 	struct fsl_asoc_card_priv *priv;
 	struct device *codec_dev = NULL;
 	const char *codec_dai_name;
-	const char *codec_dev_name;
+	const char *uninitialized_var(codec_dev_name);
 	unsigned int daifmt;
 	u32 width;
 	int ret;

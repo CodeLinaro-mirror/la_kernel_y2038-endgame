@@ -2454,7 +2454,7 @@ static int
 do_ip_vs_set_ctl(struct sock *sk, int cmd, sockptr_t ptr, unsigned int len)
 {
 	struct net *net = sock_net(sk);
-	int ret;
+	int uninitialized_var(ret);
 	unsigned char arg[MAX_SET_ARGLEN];
 	struct ip_vs_service_user *usvc_compat;
 	struct ip_vs_service_user_kern usvc;

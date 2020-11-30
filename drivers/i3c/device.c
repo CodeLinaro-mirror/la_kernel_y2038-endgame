@@ -211,7 +211,7 @@ const struct i3c_device_id *
 i3c_device_match_id(struct i3c_device *i3cdev,
 		    const struct i3c_device_id *id_table)
 {
-	struct i3c_device_info devinfo;
+	struct i3c_device_info uninitialized_var(devinfo);
 	const struct i3c_device_id *id;
 	u16 manuf, part, ext_info;
 	bool rndpid;

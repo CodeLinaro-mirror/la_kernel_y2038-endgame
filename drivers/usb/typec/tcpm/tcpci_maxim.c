@@ -390,7 +390,7 @@ static irqreturn_t max_tcpci_irq(int irq, void *dev_id)
 			break;
 	}
 
-	return irq_return;
+	return IRQ_HANDLED;
 }
 
 static irqreturn_t max_tcpci_isr(int irq, void *dev_id)

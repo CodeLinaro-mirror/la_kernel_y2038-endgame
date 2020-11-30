@@ -6229,7 +6229,7 @@ static inline bool asym_fits_capacity(int task_util, int cpu)
 static int select_idle_sibling(struct task_struct *p, int prev, int target)
 {
 	struct sched_domain *sd;
-	unsigned long task_util;
+	unsigned long uninitialized_var(task_util);
 	int i, recent_used_cpu;
 
 	/*

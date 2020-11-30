@@ -187,7 +187,7 @@ static struct clk_hw *raspberrypi_clk_register(struct raspberrypi_clk *rpi,
 {
 	struct raspberrypi_clk_data *data;
 	struct clk_init_data init = {};
-	u32 min_rate, max_rate;
+	u32 uninitialized_var(min_rate), uninitialized_var(max_rate);
 	int ret;
 
 	data = devm_kzalloc(rpi->dev, sizeof(*data), GFP_KERNEL);

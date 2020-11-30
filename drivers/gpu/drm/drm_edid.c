@@ -3098,7 +3098,7 @@ static int drm_cvt_modes(struct drm_connector *connector,
 	const u8 empty[3] = { 0, 0, 0 };
 
 	for (i = 0; i < 4; i++) {
-		int width, height;
+		int uninitialized_var(width), height; /* stupid gcc bug */
 
 		cvt = &(timing->data.other_data.data.cvt[i]);
 

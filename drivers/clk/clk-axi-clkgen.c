@@ -406,7 +406,7 @@ static long axi_clkgen_round_rate(struct clk_hw *hw, unsigned long rate,
 static unsigned int axi_clkgen_get_div(struct axi_clkgen *axi_clkgen,
 	unsigned int reg1, unsigned int reg2)
 {
-	unsigned int val1, val2;
+	unsigned int uninitialized_var(val1), uninitialized_var(val2);
 	unsigned int div;
 
 	axi_clkgen_mmcm_read(axi_clkgen, reg2, &val2);
@@ -436,7 +436,7 @@ static unsigned long axi_clkgen_recalc_rate(struct clk_hw *clk_hw,
 	struct axi_clkgen *axi_clkgen = clk_hw_to_axi_clkgen(clk_hw);
 	unsigned int d, m, dout;
 	unsigned long long tmp;
-	unsigned int val;
+	unsigned int uninitialized_var(val);
 
 	dout = axi_clkgen_get_div(axi_clkgen, MMCM_REG_CLKOUT0_1,
 		MMCM_REG_CLKOUT0_2);

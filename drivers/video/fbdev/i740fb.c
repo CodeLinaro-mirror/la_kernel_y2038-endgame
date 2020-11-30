@@ -216,7 +216,7 @@ static u32 i740_calc_fifo(struct i740fb_par *par, u32 freq, int bpp)
 	 * probably be required for other cards.
 	 */
 
-	u32 wm;
+	u32 uninitialized_var(wm);
 
 	switch (bpp) {
 	case 8:

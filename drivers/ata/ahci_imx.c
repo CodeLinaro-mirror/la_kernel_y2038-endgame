@@ -208,8 +208,10 @@ static int imx_phy_reg_read(u16 *val, void __iomem *mmio)
 
 	/* Assert the cr_read signal */
 	ret = imx_phy_crbit_assert(mmio, IMX_P0PHYCR_CR_READ, true);
-	if (ret)
+	if (ret) {
+		*val = 0xffff;
 		return ret;
+	}
 
 	/* Capture the data from cr_data_out[] */
 	*val = readl(mmio + IMX_P0PHYSR) & IMX_P0PHYSR_CR_DATA_OUT;

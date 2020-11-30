@@ -345,7 +345,7 @@ static int ksz8795_r_sta_mac_table(struct ksz_device *dev, u16 addr,
 				   struct alu_struct *alu)
 {
 	u32 data_hi, data_lo;
-	u64 data;
+	u64 uninitialized_var(data);
 
 	ksz8795_r_table(dev, TABLE_STATIC_MAC, addr, &data);
 	data_hi = data >> 32;
@@ -414,7 +414,7 @@ static void ksz8795_to_vlan(u8 fid, u8 member, u8 valid, u16 *vlan)
 
 static void ksz8795_r_vlan_entries(struct ksz_device *dev, u16 addr)
 {
-	u64 data;
+	u64 uninitialized_var(data);
 	int i;
 
 	ksz8795_r_table(dev, TABLE_VLAN, addr, &data);

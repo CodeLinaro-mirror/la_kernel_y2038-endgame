@@ -365,7 +365,7 @@ i915_gem_object_pin_to_display_plane(struct drm_i915_gem_object *obj,
 {
 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
 	struct i915_gem_ww_ctx ww;
-	struct i915_vma *vma;
+	struct i915_vma *uninitialized_var(vma);
 	int ret;
 
 	/* Frame buffer must be in LMEM (no migration yet) */
