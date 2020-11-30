@@ -731,7 +731,7 @@ static int stm32_mdma_setup_xfer(struct stm32_mdma_chan *chan,
 	struct dma_slave_config *dma_config = &chan->dma_config;
 	struct scatterlist *sg;
 	dma_addr_t src_addr, dst_addr;
-	u32 ccr, ctcr, ctbr;
+	u32 uninitialized_var(ccr), ctcr, ctbr;
 	int i, ret = 0;
 
 	for_each_sg(sgl, sg, sg_len, i) {

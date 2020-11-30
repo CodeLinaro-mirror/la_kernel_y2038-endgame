@@ -169,7 +169,7 @@ static void rsi_reset_card(struct sdio_func *pfunction)
 	struct mmc_card *card = pfunction->card;
 	struct mmc_host *host = card->host;
 	u8 cmd52_resp;
-	u32 clock, resp, i;
+	u32 clock, uninitialized_var(resp), i;
 	u16 rca;
 
 	/* Reset 9110 chip */
@@ -1319,7 +1319,7 @@ done:
 
 static int rsi_sdio_enable_interrupts(struct sdio_func *pfunc)
 {
-	u8 data;
+	u8 uninitialized_var(data);
 	int ret;
 	struct rsi_hw *adapter = sdio_get_drvdata(pfunc);
 	struct rsi_common *common = adapter->priv;

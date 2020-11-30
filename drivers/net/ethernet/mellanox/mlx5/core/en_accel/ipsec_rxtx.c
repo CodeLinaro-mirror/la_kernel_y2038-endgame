@@ -351,7 +351,7 @@ bool mlx5e_ipsec_handle_tx_skb(struct net_device *netdev,
 	struct mlx5e_priv *priv = netdev_priv(netdev);
 	struct xfrm_offload *xo = xfrm_offload(skb);
 	struct mlx5e_ipsec_sa_entry *sa_entry;
-	struct mlx5e_ipsec_metadata *mdata;
+	struct mlx5e_ipsec_metadata *uninitialized_var(mdata);
 	struct xfrm_state *x;
 	struct sec_path *sp;
 

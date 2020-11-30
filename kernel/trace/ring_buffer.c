@@ -3494,7 +3494,7 @@ __rb_reserve_next(struct ring_buffer_per_cpu *cpu_buffer,
 	}
 
 	if (likely(tail == w)) {
-		u64 save_before;
+		u64 uninitialized_var(save_before);
 		bool s_ok;
 
 		/* Nothing interrupted us between A and C */

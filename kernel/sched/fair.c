@@ -6331,7 +6331,7 @@ static int select_idle_sibling(struct task_struct *p, int prev, int target)
 {
 	bool has_idle_core = false;
 	struct sched_domain *sd;
-	unsigned long task_util;
+	unsigned long uninitialized_var(task_util);
 	int i, recent_used_cpu;
 
 	/*

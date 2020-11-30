@@ -207,7 +207,7 @@ EXPORT_SYMBOL_GPL(snd_hda_get_conn_list);
 int snd_hda_get_connections(struct hda_codec *codec, hda_nid_t nid,
 			    hda_nid_t *conn_list, int max_conns)
 {
-	const hda_nid_t *list;
+	const hda_nid_t *uninitialized_var(list);
 	int len = snd_hda_get_conn_list(codec, nid, &list);
 
 	if (len > 0 && conn_list) {

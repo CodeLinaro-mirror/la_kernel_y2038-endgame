@@ -2193,7 +2193,7 @@ int __sys_getsockopt(int fd, int level, int optname, char __user *optval,
 {
 	int err, fput_needed;
 	struct socket *sock;
-	int max_optlen;
+	int uninitialized_var(max_optlen);
 
 	sock = sockfd_lookup_light(fd, &err, &fput_needed);
 	if (!sock)

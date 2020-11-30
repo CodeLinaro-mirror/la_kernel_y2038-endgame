@@ -6053,7 +6053,7 @@ vm_fault_t ext4_page_mkwrite(struct vm_fault *vmf)
 	struct inode *inode = file_inode(file);
 	struct address_space *mapping = inode->i_mapping;
 	handle_t *handle;
-	get_block_t *get_block;
+	get_block_t *uninitialized_var(get_block);
 	int retries = 0;
 
 	if (unlikely(IS_IMMUTABLE(inode)))

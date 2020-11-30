@@ -257,7 +257,7 @@ int __rtsx_pci_read_phy_register(struct rtsx_pcr *pcr, u8 addr, u16 *val)
 {
 	int err, i, finished = 0;
 	u16 data;
-	u8 tmp, val1, val2;
+	u8 tmp, uninitialized_var(val1), uninitialized_var(val2);
 
 	rtsx_pci_write_register(pcr, PHYADDR, 0xFF, addr);
 	rtsx_pci_write_register(pcr, PHYRWCTL, 0xFF, 0x80);

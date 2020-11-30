@@ -555,7 +555,7 @@ void rtl92c_phy_set_txpower_level(struct ieee80211_hw *hw, u8 channel)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	struct rtl_efuse *rtlefuse = rtl_efuse(rtl_priv(hw));
-	u8 cckpowerlevel[2], ofdmpowerlevel[2];
+	u8 cckpowerlevel[2] = {}, ofdmpowerlevel[2] = {};
 
 	if (!rtlefuse->txpwr_fromeprom)
 		return;

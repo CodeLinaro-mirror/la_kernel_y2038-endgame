@@ -1017,7 +1017,7 @@ static int gbaudio_tplg_create_widget(struct gbaudio_module_info *module,
 				      struct gb_audio_widget *w, int *w_size)
 {
 	int i, ret, csize;
-	struct snd_kcontrol_new *widget_kctls;
+	struct snd_kcontrol_new *uninitialized_var(widget_kctls);
 	struct gb_audio_control *curr;
 	struct gbaudio_control *control, *_control;
 	size_t size;

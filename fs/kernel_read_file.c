@@ -37,7 +37,7 @@ int kernel_read_file(struct file *file, loff_t offset, void **buf,
 		     enum kernel_read_file_id id)
 {
 	loff_t i_size, pos;
-	size_t copied;
+	size_t uninitialized_var(copied);
 	void *allocated = NULL;
 	bool whole_file;
 	int ret;
