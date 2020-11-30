@@ -112,7 +112,13 @@ static inline int omap_l2_cache_init(void)
 #define omap4_l2c310_write_sec	NULL
 #endif
 
+#ifdef CONFIG_SOC_HAS_REALTIME_COUNTER
 extern void omap5_realtime_timer_init(void);
+#else
+static inline void omap5_realtime_timer_init(void)
+{
+}
+#endif
 
 void omap2420_init_early(void);
 void omap2430_init_early(void);
