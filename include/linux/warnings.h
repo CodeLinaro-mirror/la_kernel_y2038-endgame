@@ -298,7 +298,10 @@ KBUILD_WARN(0, GCC_4_6, "-Wuninitialized") /* medium */
 KBUILD_WARN(0, GCC_4_6, "-Wunknown-pragmas")
 KBUILD_WARN(0, GCC_4_6, "-Wvolatile-register-var")
 
-#if defined(CONFIG_CC_DISABLE_WARN_MAYBE_UNINITIALIZED) || defined(CONFIG_GCOV_PROFILE_ALL)
+#if defined(CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3) || \
+    defined(CONFIG_CC_OPTIMIZE_FOR_SIZE) || \
+    defined(CONFIG_PROFILE_ALL_BRANCHES) || \
+    defined(CONFIG_GCOV_PROFILE_ALL)
 KBUILD_WARN(1, GCC_4_7, "-Wmaybe-uninitialized")
 #else
 KBUILD_WARN(1, GCC_4_7, "-Wmaybe-uninitialized") /* medium */
