@@ -803,7 +803,7 @@ static bool __init crng_init_try_arch_early(struct crng_state *crng)
 {
 	int		i;
 	bool		arch_init = true;
-	unsigned long	rv;
+	unsigned long	uninitialized_var(rv);
 
 	for (i = 4; i < 16; i++) {
 		if (!arch_get_random_seed_long_early(&rv) &&

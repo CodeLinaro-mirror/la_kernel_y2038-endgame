@@ -410,7 +410,7 @@ static void __init setup_boot_config(const char *cmdline)
 	static char tmp_cmdline[COMMAND_LINE_SIZE] __initdata;
 	const char *msg;
 	int pos;
-	u32 size, csum;
+	u32 uninitialized_var(size), uninitialized_var(csum);
 	char *data, *copy, *err;
 	int ret;
 

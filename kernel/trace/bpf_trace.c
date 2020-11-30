@@ -794,7 +794,7 @@ BPF_CALL_4(bpf_seq_printf_btf, struct seq_file *, m, struct btf_ptr *, ptr,
 	   u32, btf_ptr_size, u64, flags)
 {
 	const struct btf *btf;
-	s32 btf_id;
+	s32 uninitialized_var(btf_id);
 	int ret;
 
 	ret = bpf_btf_printf_prepare(ptr, btf_ptr_size, flags, &btf, &btf_id);
@@ -1249,7 +1249,7 @@ BPF_CALL_5(bpf_snprintf_btf, char *, str, u32, str_size, struct btf_ptr *, ptr,
 	   u32, btf_ptr_size, u64, flags)
 {
 	const struct btf *btf;
-	s32 btf_id;
+	s32 uninitialized_var(btf_id);
 	int ret;
 
 	ret = bpf_btf_printf_prepare(ptr, btf_ptr_size, flags, &btf, &btf_id);

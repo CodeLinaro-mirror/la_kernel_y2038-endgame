@@ -1953,7 +1953,7 @@ static ssize_t conv_time_store(struct device *device,
 			return -EINVAL;
 
 	} else {
-		int conv_time;
+		int uninitialized_var(conv_time);
 
 		ret = conv_time_measure(sl, &conv_time);
 		if (ret)

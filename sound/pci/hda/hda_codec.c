@@ -264,7 +264,7 @@ EXPORT_SYMBOL_GPL(snd_hda_override_conn_list);
 int snd_hda_get_conn_index(struct hda_codec *codec, hda_nid_t mux,
 			   hda_nid_t nid, int recursive)
 {
-	const hda_nid_t *conn;
+	const hda_nid_t *uninitialized_var(conn);
 	int i, nums;
 
 	nums = snd_hda_get_conn_list(codec, mux, &conn);

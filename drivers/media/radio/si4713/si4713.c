@@ -1352,7 +1352,7 @@ static int si4713_g_frequency(struct v4l2_subdev *sd, struct v4l2_frequency *f)
 		return -EINVAL;
 
 	if (sdev->power_state) {
-		u16 freq;
+		u16 uninitialized_var(freq);
 		u8 p, a, n;
 
 		rval = si4713_tx_tune_status(sdev, 0x00, &freq, &p, &a, &n);

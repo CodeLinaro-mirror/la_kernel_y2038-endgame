@@ -439,7 +439,7 @@ static void policy_unpack_test_unpack_u32_with_null_name(struct kunit *test)
 {
 	struct policy_unpack_fixture *puf = test->priv;
 	bool success;
-	u32 data;
+	u32 uninitialized_var(data);
 
 	puf->e->pos += TEST_U32_BUF_OFFSET;
 
@@ -456,7 +456,7 @@ static void policy_unpack_test_unpack_u32_with_name(struct kunit *test)
 	struct policy_unpack_fixture *puf = test->priv;
 	const char name[] = TEST_U32_NAME;
 	bool success;
-	u32 data;
+	u32 uninitialized_var(data);
 
 	puf->e->pos += TEST_NAMED_U32_BUF_OFFSET;
 
@@ -489,7 +489,7 @@ static void policy_unpack_test_unpack_u64_with_null_name(struct kunit *test)
 {
 	struct policy_unpack_fixture *puf = test->priv;
 	bool success;
-	u64 data;
+	u64 uninitialized_var(data);
 
 	puf->e->pos += TEST_U64_BUF_OFFSET;
 
@@ -506,7 +506,7 @@ static void policy_unpack_test_unpack_u64_with_name(struct kunit *test)
 	struct policy_unpack_fixture *puf = test->priv;
 	const char name[] = TEST_U64_NAME;
 	bool success;
-	u64 data;
+	u64 uninitialized_var(data);
 
 	puf->e->pos += TEST_NAMED_U64_BUF_OFFSET;
 

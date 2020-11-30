@@ -757,7 +757,7 @@ static int vcodec_domains_get(struct device *dev)
 {
 	int ret;
 	struct opp_table *opp_table;
-	struct device **opp_virt_dev;
+	struct device **uninitialized_var(opp_virt_dev);
 	struct venus_core *core = dev_get_drvdata(dev);
 	const struct venus_resources *res = core->res;
 	struct device *pd;

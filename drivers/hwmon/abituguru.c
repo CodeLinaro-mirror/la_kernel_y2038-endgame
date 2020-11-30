@@ -472,7 +472,7 @@ static int
 abituguru_detect_bank1_sensor_type(struct abituguru_data *data,
 				   u8 sensor_addr)
 {
-	u8 val, test_flag, buf[3];
+	u8 uninitialized_var(val), test_flag, buf[3];
 	int i, ret = -ENODEV; /* error is the most common used retval :| */
 
 	/* If overriden by the user return the user selected type */

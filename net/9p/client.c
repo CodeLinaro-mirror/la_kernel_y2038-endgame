@@ -497,7 +497,7 @@ EXPORT_SYMBOL(p9_parse_header);
 
 static int p9_check_errors(struct p9_client *c, struct p9_req_t *req)
 {
-	int8_t type;
+	int8_t uninitialized_var(type);
 	int err;
 	int ecode;
 
@@ -570,7 +570,7 @@ static int p9_check_zc_errors(struct p9_client *c, struct p9_req_t *req,
 {
 	int err;
 	int ecode;
-	int8_t type;
+	int8_t uninitialized_var(type);
 	char *ename = NULL;
 
 	err = p9_parse_header(&req->rc, NULL, &type, NULL, 0);

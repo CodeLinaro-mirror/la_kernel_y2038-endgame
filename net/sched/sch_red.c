@@ -72,7 +72,7 @@ static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 {
 	struct red_sched_data *q = qdisc_priv(sch);
 	struct Qdisc *child = q->qdisc;
-	int ret;
+	int uninitialized_var(ret);
 
 	q->vars.qavg = red_calc_qavg(&q->parms,
 				     &q->vars,
