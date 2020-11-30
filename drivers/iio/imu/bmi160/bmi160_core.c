@@ -586,6 +586,8 @@ static int bmi160_config_pin(struct regmap *regmap, enum bmi160_int_pin pin,
 		int_latch_mask = BMI160_INT2_LATCH_MASK;
 		int_map_mask = BMI160_INT2_MAP_DRDY_EN;
 		break;
+	default:
+		return -EINVAL;
 	}
 	int_out_ctrl_mask = BMI160_INT_OUT_CTRL_MASK << int_out_ctrl_shift;
 
@@ -626,6 +628,9 @@ static int bmi160_config_pin(struct regmap *regmap, enum bmi160_int_pin pin,
 			break;
 		case BMI160_PIN_INT2:
 			pin_name = "INT2";
+			break;
+		default:
+			pin_name = "unknown";
 			break;
 		}
 		dev_err(dev, "Failed to configure %s IRQ pin", pin_name);
