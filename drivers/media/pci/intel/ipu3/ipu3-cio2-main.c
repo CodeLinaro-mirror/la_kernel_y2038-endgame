@@ -103,12 +103,12 @@ static inline u32 cio2_bytesperline(const unsigned int width)
 static void cio2_fbpt_exit_dummy(struct cio2_device *cio2)
 {
 	if (cio2->dummy_lop) {
-		dma_free_coherent(&cio2->pci_dev->dev, PAGE_SIZE,
+		dma_free_coherent(&cio2->pci_dev->dev, CIO2_PAGE_SIZE,
 				  cio2->dummy_lop, cio2->dummy_lop_bus_addr);
 		cio2->dummy_lop = NULL;
 	}
 	if (cio2->dummy_page) {
-		dma_free_coherent(&cio2->pci_dev->dev, PAGE_SIZE,
+		dma_free_coherent(&cio2->pci_dev->dev, CIO2_PAGE_SIZE,
 				  cio2->dummy_page, cio2->dummy_page_bus_addr);
 		cio2->dummy_page = NULL;
 	}
@@ -118,10 +118,10 @@ static int cio2_fbpt_init_dummy(struct cio2_device *cio2)
 {
 	unsigned int i;
 
-	cio2->dummy_page = dma_alloc_coherent(&cio2->pci_dev->dev, PAGE_SIZE,
+	cio2->dummy_page = dma_alloc_coherent(&cio2->pci_dev->dev, CIO2_PAGE_SIZE,
 					      &cio2->dummy_page_bus_addr,
 					      GFP_KERNEL);
-	cio2->dummy_lop = dma_alloc_coherent(&cio2->pci_dev->dev, PAGE_SIZE,
+	cio2->dummy_lop = dma_alloc_coherent(&cio2->pci_dev->dev, CIO2_PAGE_SIZE,
 					     &cio2->dummy_lop_bus_addr,
 					     GFP_KERNEL);
 	if (!cio2->dummy_page || !cio2->dummy_lop) {
@@ -166,7 +166,7 @@ static void cio2_fbpt_entry_init_dummy(struct cio2_device *cio2,
 
 	entry[0].first_entry.first_page_offset = 0;
 	entry[1].second_entry.num_of_pages = CIO2_LOP_ENTRIES * CIO2_MAX_LOPS;
-	entry[1].second_entry.last_page_available_bytes = PAGE_SIZE - 1;
+	entry[1].second_entry.last_page_available_bytes = CIO2_PAGE_SIZE - 1;
 
 	for (i = 0; i < CIO2_MAX_LOPS; i++)
 		entry[i].lop_page_addr = PFN_DOWN(cio2->dummy_lop_bus_addr);
@@ -192,17 +192,17 @@ static void cio2_fbpt_entry_init_buf(struct cio2_device *cio2,
 	 * last page which is still accessible by DMA. DMA cannot access
 	 * beyond this point. Valid range for this is from 0 to 4095.
 	 * 0 indicates 1st byte in the page is DMA accessible.
-	 * 4095 (PAGE_SIZE - 1) means every single byte in the last page
+	 * 4095 (CIO2_PAGE_SIZE - 1) means every single byte in the last page
 	 * is available for DMA transfer.
 	 */
-	remaining = offset_in_page(remaining) ?: PAGE_SIZE;
+	remaining = offset_in_page(remaining) ?: CIO2_PAGE_SIZE;
 	entry[1].second_entry.last_page_available_bytes = remaining - 1;
 	/* Fill FBPT */
 	remaining = length;
 	i = 0;
 	while (remaining > 0) {
 		entry->lop_page_addr = PFN_DOWN(b->lop_bus_addr[i]);
-		remaining -= CIO2_LOP_ENTRIES * PAGE_SIZE;
+		remaining -= CIO2_LOP_ENTRIES * CIO2_PAGE_SIZE;
 		entry++;
 		i++;
 	}
@@ -841,7 +841,7 @@ static int cio2_vb2_buf_init(struct vb2_buffer *vb)
 	memset(b->lop, 0, sizeof(b->lop));
 	/* Allocate LOP table */
 	for (i = 0; i < lops; i++) {
-		b->lop[i] = dma_alloc_coherent(dev, PAGE_SIZE,
+		b->lop[i] = dma_alloc_coherent(dev, CIO2_PAGE_SIZE,
 					       &b->lop_bus_addr[i], GFP_KERNEL);
 		if (!b->lop[i])
 			goto fail;
@@ -871,7 +871,7 @@ static int cio2_vb2_buf_init(struct vb2_buffer *vb)
 	return 0;
 fail:
 	while (i--)
-		dma_free_coherent(dev, PAGE_SIZE, b->lop[i], b->lop_bus_addr[i]);
+		dma_free_coherent(dev, CIO2_PAGE_SIZE, b->lop[i], b->lop_bus_addr[i]);
 	return -ENOMEM;
 }
 
@@ -961,7 +961,7 @@ static void cio2_vb2_buf_cleanup(struct vb2_buffer *vb)
 	/* Free LOP table */
 	for (i = 0; i < CIO2_MAX_LOPS; i++) {
 		if (b->lop[i])
-			dma_free_coherent(&cio2->pci_dev->dev, PAGE_SIZE,
+			dma_free_coherent(&cio2->pci_dev->dev, CIO2_PAGE_SIZE,
 					  b->lop[i], b->lop_bus_addr[i]);
 	}
 }
