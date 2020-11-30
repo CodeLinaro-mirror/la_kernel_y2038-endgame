@@ -2574,7 +2574,7 @@ static int mkdir_mondata_all(struct kernfs_node *parent_kn,
 			     struct kernfs_node **dest_kn)
 {
 	struct rdt_resource *r;
-	struct kernfs_node *kn;
+	struct kernfs_node *uninitialized_var(kn);
 	int ret;
 
 	/*

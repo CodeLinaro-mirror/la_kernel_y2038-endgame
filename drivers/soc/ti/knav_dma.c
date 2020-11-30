@@ -613,7 +613,7 @@ static int dma_init(struct device_node *cloud, struct device_node *dma_node)
 	struct device_node *node = dma_node;
 	struct knav_dma_device *dma;
 	int ret, len, num_chan = 0;
-	resource_size_t size;
+	resource_size_t uninitialized_var(size);
 	u32 timeout;
 	u32 i;
 

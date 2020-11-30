@@ -567,6 +567,15 @@ static int ti_sci_get_device_state(const struct ti_sci_handle *handle,
 	struct device *dev;
 	int ret = 0;
 
+	if (clcnt)
+		*clcnt = 0;
+	if (resets)
+		*resets = 0;
+	if (p_state)
+		*p_state = 0;
+	if (c_state)
+		*c_state = 0;
+
 	if (IS_ERR(handle))
 		return PTR_ERR(handle);
 	if (!handle)

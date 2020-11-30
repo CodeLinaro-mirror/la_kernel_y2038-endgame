@@ -395,7 +395,7 @@ static struct proc_dir_entry *__proc_create(struct proc_dir_entry **parent,
 					  nlink_t nlink)
 {
 	struct proc_dir_entry *ent = NULL;
-	const char *fn;
+	const char *uninitialized_var(fn);
 	struct qstr qstr;
 
 	if (xlate_proc_name(name, parent, &fn) != 0)

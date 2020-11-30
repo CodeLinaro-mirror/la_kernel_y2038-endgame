@@ -2957,7 +2957,7 @@ int mlx4_RST2INIT_QP_wrapper(struct mlx4_dev *dev, int slave,
 	int err;
 	int qpn = vhcr->in_modifier & 0x7fffff;
 	struct res_mtt *mtt;
-	struct res_qp *qp;
+	struct res_qp *uninitialized_var(qp);
 	struct mlx4_qp_context *qpc = inbox->buf + 8;
 	int mtt_base = qp_get_mtt_addr(qpc) / dev->caps.mtt_entry_sz;
 	int mtt_size = qp_get_mtt_size(qpc);

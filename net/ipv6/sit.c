@@ -455,7 +455,7 @@ static int ipip6_tunnel_prl_ctl(struct net_device *dev, struct ifreq *ifr,
 {
 	struct ip_tunnel *t = netdev_priv(dev);
 	struct ip_tunnel_prl prl;
-	int err;
+	int uninitialized_var(err);
 
 	if (!ns_capable(t->net->user_ns, CAP_NET_ADMIN))
 		return -EPERM;
