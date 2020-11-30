@@ -215,7 +215,7 @@ static int qt1010_set_params(struct dvb_frontend *fe)
 static int qt1010_init_meas1(struct qt1010_priv *priv,
 			     u8 oper, u8 reg, u8 reg_init_val, u8 *retval)
 {
-	u8 i, val1, val2;
+	u8 i, val1, uninitialized_var(val2);
 	int err;
 
 	qt1010_i2c_oper_t i2c_data[] = {

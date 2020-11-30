@@ -502,8 +502,8 @@ xs_read_stream_request(struct sock_xprt *transport, struct msghdr *msg,
 		int flags, struct rpc_rqst *req)
 {
 	struct xdr_buf *buf = &req->rq_private_buf;
-	size_t want, read;
-	ssize_t ret;
+	size_t want, uninitialized_var(read);
+	ssize_t uninitialized_var(ret);
 
 	xs_read_header(transport, buf);
 
@@ -851,7 +851,7 @@ static int xs_local_send_request(struct rpc_rqst *req)
 	struct msghdr msg = {
 		.msg_flags	= XS_SENDMSG_FLAGS,
 	};
-	unsigned int sent;
+	unsigned int uninitialized_var(sent);
 	int status;
 
 	/* Close the stream if the previous transmission was incomplete */
@@ -922,7 +922,7 @@ static int xs_udp_send_request(struct rpc_rqst *req)
 		.msg_namelen	= xprt->addrlen,
 		.msg_flags	= XS_SENDMSG_FLAGS,
 	};
-	unsigned int sent;
+	unsigned int uninitialized_var(sent);
 	int status;
 
 	xs_pktdump("packet data:",
@@ -1006,7 +1006,7 @@ static int xs_tcp_send_request(struct rpc_rqst *req)
 		.msg_flags	= XS_SENDMSG_FLAGS,
 	};
 	bool vm_wait = false;
-	unsigned int sent;
+	unsigned int uninitialized_var(sent);
 	int status;
 
 	/* Close the stream if the previous transmission was incomplete */

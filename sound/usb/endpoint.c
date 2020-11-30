@@ -410,7 +410,7 @@ static void queue_pending_output_urbs(struct snd_usb_endpoint *ep)
 	while (ep_state_running(ep)) {
 
 		unsigned long flags;
-		struct snd_usb_packet_info *packet;
+		struct snd_usb_packet_info *uninitialized_var(packet);
 		struct snd_urb_ctx *ctx = NULL;
 		int err, i;
 

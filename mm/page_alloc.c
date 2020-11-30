@@ -1061,7 +1061,7 @@ static inline void __free_one_page(struct page *page,
 		int migratetype, fpi_t fpi_flags)
 {
 	struct capture_control *capc = task_capc(zone);
-	unsigned long buddy_pfn;
+	unsigned long uninitialized_var(buddy_pfn);
 	unsigned long combined_pfn;
 	unsigned int max_order;
 	struct page *buddy;
