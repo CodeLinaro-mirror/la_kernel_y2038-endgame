@@ -34,10 +34,13 @@ struct pci_dev;
 #define CIO2_IMAGE_MAX_WIDTH				4224U
 #define CIO2_IMAGE_MAX_HEIGHT				3136U
 
+#define CIO2_PAGE_SIZE					4096ul
+#define CIO2_PAGE_MASK					~(CIO2_PAGE_SIZE - 1)
+
 /* 32MB = 8xFBPT_entry */
 #define CIO2_MAX_LOPS					8
-#define CIO2_MAX_BUFFERS			(PAGE_SIZE / 16 / CIO2_MAX_LOPS)
-#define CIO2_LOP_ENTRIES			(PAGE_SIZE / sizeof(u32))
+#define CIO2_MAX_BUFFERS			(CIO2_PAGE_SIZE / 16 / CIO2_MAX_LOPS)
+#define CIO2_LOP_ENTRIES			(CIO2_PAGE_SIZE / sizeof(u32))
 
 #define CIO2_PAD_SINK					0U
 #define CIO2_PAD_SOURCE					1U
