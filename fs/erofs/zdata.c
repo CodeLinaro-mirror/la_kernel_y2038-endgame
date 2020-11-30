@@ -1272,7 +1272,7 @@ static void z_erofs_submit_queue(struct super_block *sb,
 	void *bi_private;
 	z_erofs_next_pcluster_t owned_head = f->clt.owned_head;
 	/* since bio will be NULL, no need to initialize last_index */
-	pgoff_t last_index;
+	pgoff_t uninitialized_var(last_index);
 	unsigned int nr_bios = 0;
 	struct bio *bio = NULL;
 

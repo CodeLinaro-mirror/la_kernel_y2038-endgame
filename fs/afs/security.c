@@ -400,7 +400,7 @@ int afs_permission(struct user_namespace *mnt_userns, struct inode *inode,
 		   int mask)
 {
 	struct afs_vnode *vnode = AFS_FS_I(inode);
-	afs_access_t access;
+	afs_access_t uninitialized_var(access);
 	struct key *key;
 	int ret = 0;
 

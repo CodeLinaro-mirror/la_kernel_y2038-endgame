@@ -3496,11 +3496,11 @@ static int _mlx4_ib_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 	int nreq;
 	int err = 0;
 	unsigned ind;
-	int size;
-	unsigned seglen;
+	int uninitialized_var(size);
+	unsigned uninitialized_var(seglen);
 	__be32 dummy;
 	__be32 *lso_wqe;
-	__be32 lso_hdr_sz;
+	__be32 uninitialized_var(lso_hdr_sz);
 	__be32 blh;
 	int i;
 	struct mlx4_ib_dev *mdev = to_mdev(ibqp->device);
