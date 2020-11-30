@@ -953,7 +953,7 @@ u32 spu2_create_request(u8 *spu_hdr,
 	unsigned int buf_len;
 	int err;
 	enum spu2_cipher_type spu2_ciph_type = SPU2_CIPHER_TYPE_NONE;
-	enum spu2_cipher_mode spu2_ciph_mode;
+	enum spu2_cipher_mode uninitialized_var(spu2_ciph_mode);
 	enum spu2_hash_type spu2_auth_type = SPU2_HASH_TYPE_NONE;
 	enum spu2_hash_mode spu2_auth_mode;
 	bool return_md = true;

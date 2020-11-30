@@ -291,7 +291,7 @@ EXPORT_SYMBOL(qcom_wcnss_open_channel);
 static void wcnss_async_probe(struct work_struct *work)
 {
 	struct wcnss_ctrl *wcnss = container_of(work, struct wcnss_ctrl, probe_work);
-	bool expect_cbc;
+	bool uninitialized_var(expect_cbc);
 	int ret;
 
 	ret = wcnss_request_version(wcnss);

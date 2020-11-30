@@ -333,7 +333,7 @@ static void rcar_du_plane_setup_scanout(struct rcar_du_group *rgrp,
 	unsigned int index = state->hwindex;
 	unsigned int pitch;
 	bool interlaced;
-	u32 dma[2];
+	u32 dma[2] = {};
 
 	interlaced = state->state.crtc->state->adjusted_mode.flags
 		   & DRM_MODE_FLAG_INTERLACE;
@@ -354,8 +354,6 @@ static void rcar_du_plane_setup_scanout(struct rcar_du_group *rgrp,
 		}
 	} else {
 		pitch = drm_rect_width(&state->state.src) >> 16;
-		dma[0] = 0;
-		dma[1] = 0;
 	}
 
 	/*

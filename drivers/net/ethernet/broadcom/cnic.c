@@ -3714,7 +3714,7 @@ static struct cnic_dev *cnic_cm_select_dev(struct sockaddr_in *dst_addr,
 					   int ulp_type)
 {
 	struct cnic_dev *dev = NULL;
-	struct dst_entry *dst;
+	struct dst_entry *uninitialized_var(dst);
 	struct net_device *netdev = NULL;
 	int err = -ENETUNREACH;
 

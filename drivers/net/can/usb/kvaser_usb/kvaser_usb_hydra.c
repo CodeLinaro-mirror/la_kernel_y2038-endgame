@@ -870,7 +870,7 @@ static void kvaser_usb_hydra_update_state(struct kvaser_usb_net_priv *priv,
 	struct can_frame *cf;
 	struct sk_buff *skb;
 	struct net_device_stats *stats;
-	enum can_state new_state, old_state;
+	enum can_state uninitialized_var(new_state), old_state;
 
 	old_state = priv->can.state;
 
@@ -1019,7 +1019,7 @@ kvaser_usb_hydra_error_frame(struct kvaser_usb_net_priv *priv,
 	struct sk_buff *skb;
 	struct skb_shared_hwtstamps *shhwtstamps;
 	struct can_berr_counter bec;
-	enum can_state new_state, old_state;
+	enum can_state uninitialized_var(new_state), old_state;
 	u8 bus_status;
 
 	priv->can.can_stats.bus_error++;
