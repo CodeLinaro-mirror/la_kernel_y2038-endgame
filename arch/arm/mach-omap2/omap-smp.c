@@ -162,7 +162,7 @@ static void omap4_secondary_init(unsigned int cpu)
 		 * Configure the CNTFRQ register for the secondary cpu's which
 		 * indicates the frequency of the cpu local timers.
 		 */
-		omap5_set_cntfreq();
+		set_cntfreq();
 		/* Configure ACR to disable streaming WA for 801819 */
 		omap5_erratum_workaround_801819();
 		/* Enable ACR to allow for ICUALLU workaround */
