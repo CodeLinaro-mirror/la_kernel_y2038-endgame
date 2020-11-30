@@ -2396,7 +2396,7 @@ static int apply_to_pte_range(struct mm_struct *mm, pmd_t *pmd,
 {
 	pte_t *pte, *mapped_pte;
 	int err = 0;
-	spinlock_t *ptl;
+	spinlock_t *uninitialized_var(ptl);
 
 	if (create) {
 		mapped_pte = pte = (mm == &init_mm) ?

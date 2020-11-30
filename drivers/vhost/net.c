@@ -864,7 +864,7 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
 	struct tun_msg_ctl ctl;
 	size_t len, total_len = 0;
 	int err;
-	struct vhost_net_ubuf_ref *ubufs;
+	struct vhost_net_ubuf_ref *uninitialized_var(ubufs);
 	struct ubuf_info *ubuf;
 	bool zcopy_used;
 	int sent_pkts = 0;
@@ -1046,7 +1046,7 @@ static int get_rx_bufs(struct vhost_virtqueue *vq,
 	/* len is always initialized before use since we are always called with
 	 * datalen > 0.
 	 */
-	u32 len;
+	u32 uninitialized_var(len);
 
 	while (datalen > 0 && headcount < quota) {
 		if (unlikely(seg >= UIO_MAXIOV)) {
@@ -1103,7 +1103,7 @@ static void handle_rx(struct vhost_net *net)
 {
 	struct vhost_net_virtqueue *nvq = &net->vqs[VHOST_NET_VQ_RX];
 	struct vhost_virtqueue *vq = &nvq->vq;
-	unsigned in, log;
+	unsigned uninitialized_var(in), log;
 	struct vhost_log *vq_log;
 	struct msghdr msg = {
 		.msg_name = NULL,
