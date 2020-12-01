@@ -348,7 +348,7 @@ static int i2s_rx_event(struct snd_soc_dapm_widget *w,
 	}
 
 	return send_ec_host_command(priv->ec_device, EC_CMD_EC_CODEC_I2S_RX,
-				    (uint8_t *)&p, sizeof(p), NULL, 0);
+				    &p.cmd, sizeof(p.cmd), NULL, 0);
 }
 
 static struct snd_soc_dapm_widget i2s_rx_dapm_widgets[] = {
