@@ -199,11 +199,11 @@ union offset_union {
  THUMB(	"1:	"ins"	%1, [%2]\n"	)		\
  THUMB(	"	add	%2, %2, #1\n"	)		\
 	"2:\n"						\
-	"	.pushsection .text.fixup,\"ax\"\n"	\
+		__stringify(__enter_fixup_section) "\n"	\
 	"	.align	2\n"				\
 	"3:	mov	%0, #1\n"			\
 	"	b	2b\n"				\
-	"	.popsection\n"				\
+		__stringify(__exit_fixup_section) "\n"	\
 	"	.pushsection __ex_table,\"a\"\n"	\
 	"	.align	3\n"				\
 	"	.long	1b, 3b\n"			\
@@ -259,11 +259,11 @@ union offset_union {
 		"	mov	%1, %1, "NEXT_BYTE"\n"		\
 		"2:	"ins"	%1, [%2]\n"			\
 		"3:\n"						\
-		"	.pushsection .text.fixup,\"ax\"\n"	\
+			__stringify(__enter_fixup_section) "\n"	\
 		"	.align	2\n"				\
 		"4:	mov	%0, #1\n"			\
 		"	b	3b\n"				\
-		"	.popsection\n"				\
+			__stringify(__exit_fixup_section) "\n"	\
 		"	.pushsection __ex_table,\"a\"\n"	\
 		"	.align	3\n"				\
 		"	.long	1b, 4b\n"			\
@@ -299,11 +299,11 @@ union offset_union {
 		"	mov	%1, %1, "NEXT_BYTE"\n"		\
 		"4:	"ins"	%1, [%2]\n"			\
 		"5:\n"						\
-		"	.pushsection .text.fixup,\"ax\"\n"	\
+			__stringify(__enter_fixup_section) "\n"	\
 		"	.align	2\n"				\
 		"6:	mov	%0, #1\n"			\
 		"	b	5b\n"				\
-		"	.popsection\n"				\
+			__stringify(__exit_fixup_section) "\n"	\
 		"	.pushsection __ex_table,\"a\"\n"	\
 		"	.align	3\n"				\
 		"	.long	1b, 6b\n"			\

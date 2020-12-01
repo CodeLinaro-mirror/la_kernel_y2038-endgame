@@ -530,11 +530,11 @@ ENDPROC(__und_usr)
 /*
  * The out of line fixup for the ldrt instructions above.
  */
-	.pushsection .text.fixup, "ax"
+	__enter_fixup_section
 	.align	2
 4:	str     r4, [sp, #S_PC]			@ retry current instruction
 	ret	r9
-	.popsection
+	__exit_fixup_section
 	.pushsection __ex_table,"a"
 	.long	1b, 4b
 #if CONFIG_ARM_THUMB && __LINUX_ARM_ARCH__ >= 6 && CONFIG_CPU_V7

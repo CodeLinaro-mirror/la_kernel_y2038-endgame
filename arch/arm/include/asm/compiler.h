@@ -25,5 +25,12 @@
 	  ".endif; "				\
 	".endif\n\t"
 
+#ifdef CONFIG_MMU
+#define __enter_fixup_section	.subsection	1
+#define __exit_fixup_section	.previous
+#else
+#define __enter_fixup_section	.pushsection .text.fixup,"ax"
+#define __exit_fixup_section	.popsection
+#endif
 
 #endif /* __ASM_ARM_COMPILER_H */
