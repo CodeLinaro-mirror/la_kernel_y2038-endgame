@@ -76,8 +76,8 @@
  * We report fault by returning 0 csum - impossible in normal case, since
  * we start with 0xffffffff for initial sum.
  */
-		.pushsection .text.fixup,"ax"
+		__enter_fixup_section
 		.align	4
 9001:		mov	r0, #0
 		load_regs
-		.popsection
+		__exit_fixup_section

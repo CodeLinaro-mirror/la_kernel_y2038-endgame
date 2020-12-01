@@ -14,11 +14,11 @@
 	"	.align	3\n"					\
 	"	.long	1b, 4f, 2b, 4f\n"			\
 	"	.popsection\n"					\
-	"	.pushsection .text.fixup,\"ax\"\n"		\
+		__stringify(__enter_fixup_section) "\n"		\
 	"	.align	2\n"					\
 	"4:	mov	%0, " err_reg "\n"			\
 	"	b	3b\n"					\
-	"	.popsection"
+		__stringify(__exit_fixup_section)
 
 #ifdef CONFIG_SMP
 
