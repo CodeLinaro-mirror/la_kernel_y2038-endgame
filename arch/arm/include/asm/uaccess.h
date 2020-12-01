@@ -297,12 +297,12 @@ do {									\
 	__asm__ __volatile__(					\
 	"1:	" instr " %1, [%2], #0\n"			\
 	"2:\n"							\
-	"	.pushsection .text.fixup,\"ax\"\n"		\
+		__stringify(__enter_fixup_section) "\n"		\
 	"	.align	2\n"					\
 	"3:	mov	%0, %3\n"				\
 	"	mov	%1, #0\n"				\
 	"	b	2b\n"					\
-	"	.popsection\n"					\
+		__stringify(__exit_fixup_section) "\n"		\
 	"	.pushsection __ex_table,\"a\"\n"		\
 	"	.align	3\n"					\
 	"	.long	1b, 3b\n"				\
@@ -400,11 +400,11 @@ do {									\
 	__asm__ __volatile__(					\
 	"1:	" instr " %1, [%2], #0\n"		\
 	"2:\n"							\
-	"	.pushsection .text.fixup,\"ax\"\n"		\
+		__stringify(__enter_fixup_section) "\n"		\
 	"	.align	2\n"					\
 	"3:	mov	%0, %3\n"				\
 	"	b	2b\n"					\
-	"	.popsection\n"					\
+		__stringify(__exit_fixup_section) "\n"		\
 	"	.pushsection __ex_table,\"a\"\n"		\
 	"	.align	3\n"					\
 	"	.long	1b, 3b\n"				\
@@ -459,11 +459,11 @@ do {									\
  THUMB(	"1:	str" __t "	" __reg_oper1 ", [%1]\n"      ) \
  THUMB(	"2:	str" __t "	" __reg_oper0 ", [%1, #4]\n"  ) \
 	"3:\n"							\
-	"	.pushsection .text.fixup,\"ax\"\n"		\
+		__stringify(__enter_fixup_section) "\n"		\
 	"	.align	2\n"					\
 	"4:	mov	%0, %3\n"				\
 	"	b	3b\n"					\
-	"	.popsection\n"					\
+		__stringify(__exit_fixup_section) "\n"		\
 	"	.pushsection __ex_table,\"a\"\n"		\
 	"	.align	3\n"					\
 	"	.long	1b, 4b\n"				\
