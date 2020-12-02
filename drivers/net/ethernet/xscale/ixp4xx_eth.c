@@ -1374,7 +1374,6 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
 	struct phy_device *phydev = NULL;
 	struct device *dev = &pdev->dev;
 	struct eth_plat_info *plat;
-	resource_size_t regs_phys;
 	struct net_device *ndev;
 	struct resource *res;
 	struct port *port;
@@ -1395,7 +1394,6 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
 		return -ENODEV;
-	regs_phys = res->start;
 	port->regs = devm_ioremap_resource(dev, res);
 	if (IS_ERR(port->regs))
 		return PTR_ERR(port->regs);
