@@ -1049,6 +1049,7 @@ static int enetc_pf_probe(struct pci_dev *pdev,
 	struct net_device *ndev;
 	struct enetc_si *si;
 	struct enetc_pf *pf;
+	struct device_node *node = pdev->dev.of_node;
 	int err;
 
 	if (node && !of_device_is_available(node)) {
