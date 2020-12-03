@@ -301,7 +301,7 @@ KBUILD_WARN(0, GCC_4_6, "-Wvolatile-register-var")
 #if defined(CONFIG_CC_DISABLE_WARN_MAYBE_UNINITIALIZED) || defined(CONFIG_GCOV_PROFILE_ALL)
 KBUILD_WARN(1, GCC_4_7, "-Wmaybe-uninitialized")
 #else
-KBUILD_WARN(0, GCC_4_7, "-Wmaybe-uninitialized") /* medium */
+KBUILD_WARN(1, GCC_4_7, "-Wmaybe-uninitialized") /* medium */
 #endif
 
 KBUILD_WARN(0, GCC_4_8, "-Wsizeof-pointer-memaccess")
