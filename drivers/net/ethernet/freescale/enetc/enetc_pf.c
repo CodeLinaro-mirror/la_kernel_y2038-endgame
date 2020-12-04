@@ -851,12 +851,13 @@ static bool enetc_port_has_pcs(struct enetc_pf *pf)
 		pf->if_mode == PHY_INTERFACE_MODE_USXGMII);
 }
 
-static int enetc_mdiobus_create(struct enetc_pf *pf, struct device_node *node)
+static int enetc_mdiobus_create(struct enetc_pf *pf)
 {
+	struct device *dev = &pf->si->pdev->dev;
 	struct device_node *mdio_np;
 	int err;
 
-	mdio_np = of_get_child_by_name(node, "mdio");
+	mdio_np = of_get_child_by_name(dev->of_node, "mdio");
 	if (mdio_np) {
 		err = enetc_mdio_probe(pf, mdio_np);
 
@@ -968,17 +969,18 @@ static const struct phylink_mac_ops enetc_mac_phylink_ops = {
 	.mac_link_down = enetc_pl_mac_link_down,
 };
 
-static int enetc_phylink_create(struct enetc_ndev_priv *priv,
-				struct device_node *node)
+static int enetc_phylink_create(struct enetc_ndev_priv *priv)
 {
 	struct enetc_pf *pf = enetc_si_priv(priv->si);
+	struct device *dev = &pf->si->pdev->dev;
 	struct phylink *phylink;
 	int err;
 
 	pf->phylink_config.dev = &priv->ndev->dev;
 	pf->phylink_config.type = PHYLINK_NETDEV;
 
-	phylink = phylink_create(&pf->phylink_config, of_fwnode_handle(node),
+	phylink = phylink_create(&pf->phylink_config,
+				 of_fwnode_handle(dev->of_node),
 				 pf->if_mode, &enetc_mac_phylink_ops);
 	if (IS_ERR(phylink)) {
 		err = PTR_ERR(phylink);
@@ -1049,10 +1051,9 @@ static int enetc_pf_probe(struct pci_dev *pdev,
 	struct net_device *ndev;
 	struct enetc_si *si;
 	struct enetc_pf *pf;
-	struct device_node *node = pdev->dev.of_node;
 	int err;
 
-	if (node && !of_device_is_available(node)) {
+	if (pdev->dev.of_node && !of_device_is_available(pdev->dev.of_node)) {
 		dev_info(&pdev->dev, "device is disabled, skipping\n");
 		return -ENODEV;
 	}
@@ -1115,12 +1116,12 @@ static int enetc_pf_probe(struct pci_dev *pdev,
 		goto err_alloc_msix;
 	}
 
-	if (!of_get_phy_mode(node, &pf->if_mode)) {
-		err = enetc_mdiobus_create(pf, node);
+	if (!of_get_phy_mode(pdev->dev.of_node, &pf->if_mode)) {
+		err = enetc_mdiobus_create(pf);
 		if (err)
 			goto err_mdiobus_create;
 
-		err = enetc_phylink_create(priv, node);
+		err = enetc_phylink_create(priv);
 		if (err)
 			goto err_phylink_create;
 	}
