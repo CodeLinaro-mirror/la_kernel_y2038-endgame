@@ -33,22 +33,6 @@
 #include <asm/traps.h>
 #include <asm/unwind.h>
 
-/* Dummy functions to avoid linker complaints */
-void __aeabi_unwind_cpp_pr0(void)
-{
-};
-EXPORT_SYMBOL(__aeabi_unwind_cpp_pr0);
-
-void __aeabi_unwind_cpp_pr1(void)
-{
-};
-EXPORT_SYMBOL(__aeabi_unwind_cpp_pr1);
-
-void __aeabi_unwind_cpp_pr2(void)
-{
-};
-EXPORT_SYMBOL(__aeabi_unwind_cpp_pr2);
-
 struct unwind_ctrl_block {
 	unsigned long vrs[16];		/* virtual register set */
 	const unsigned long *insn;	/* pointer to the current instructions word */
