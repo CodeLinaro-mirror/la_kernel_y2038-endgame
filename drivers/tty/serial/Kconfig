@@ -498,6 +498,7 @@ config SERIAL_IMX_CONSOLE
 config SERIAL_IMX_EARLYCON
 	bool "Earlycon on IMX serial port"
 	depends on ARCH_MXC || COMPILE_TEST
+	depends on SERIAL_CORE=y
 	depends on OF
 	select SERIAL_CORE
 	select SERIAL_EARLYCON
@@ -709,6 +710,7 @@ config SERIAL_CORE
 
 config SERIAL_CORE_CONSOLE
 	bool
+	depends on SERIAL_CORE=y
 
 config CONSOLE_POLL
 	bool
