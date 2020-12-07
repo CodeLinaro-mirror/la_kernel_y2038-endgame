@@ -428,6 +428,7 @@ static void __init h2_init(void)
 	h2_i2c_board_info[0].irq = gpio_to_irq(58);
 	omap_register_i2c_bus(1, 100, h2_i2c_board_info,
 			      ARRAY_SIZE(h2_i2c_board_info));
+	gpiod_add_lookup_table(&isp1301_gpiod_table);
 	omap1_usb_init(&h2_usb_config);
 	h2_mmc_init();
 
