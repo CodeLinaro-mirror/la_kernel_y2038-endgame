@@ -80,6 +80,7 @@ config HVC_UDBG
 config HVC_DCC
 	bool "ARM JTAG DCC console"
 	depends on ARM || ARM64
+	depends on SERIAL_CORE=y
 	select HVC_DRIVER
 	select SERIAL_CORE_CONSOLE
 	help
