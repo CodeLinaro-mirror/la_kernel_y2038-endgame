@@ -246,6 +246,7 @@ config CRYPTO_ECRDSA
 	tristate "EC-RDSA (GOST 34.10) algorithm"
 	select CRYPTO_ECC
 	select CRYPTO_AKCIPHER
+	select CRYPTO_RNG_DEFAULT
 	select CRYPTO_STREEBOG
 	select OID_REGISTRY
 	select ASN1
