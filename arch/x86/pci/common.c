@@ -455,88 +455,32 @@ void __init dmi_check_pciprobe(void)
 	dmi_check_system(pciprobe_dmi_table);
 }
 
-static struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
-		struct pci_ops *ops, void *sysdata, struct list_head *resources)
-{
-	int error;
-	struct pci_host_bridge *bridge;
-
-	bridge = pci_alloc_host_bridge(0);
-	if (!bridge)
-		return NULL;
-
-	bridge->dev.parent = parent;
-
-	list_splice_init(resources, &bridge->windows);
-	bridge->sysdata = sysdata;
-	bridge->busnr = bus;
-	bridge->ops = ops;
-
-	error = pci_register_host_bridge(bridge);
-	if (error < 0)
-		goto err_out;
-
-	return bridge->bus;
-
-err_out:
-	put_device(&bridge->dev);
-	return NULL;
-}
-
-static struct pci_bus *pci_scan_root_bus(struct device *parent, int bus,
-		struct pci_ops *ops, void *sysdata, struct list_head *resources)
-{
-	struct resource_entry *window;
-	bool found = false;
-	struct pci_bus *b;
-	int max;
-
-	resource_list_for_each_entry(window, resources)
-		if (window->res->flags & IORESOURCE_BUS) {
-			found = true;
-			break;
-		}
-
-	b = pci_create_root_bus(parent, bus, ops, sysdata, resources);
-	if (!b)
-		return NULL;
-
-	if (!found) {
-		dev_info(&b->dev,
-		 "No busn resource found for root bus, will use [bus %02x-ff]\n",
-			bus);
-		pci_bus_insert_busn_res(b, bus, 255);
-	}
-
-	max = pci_scan_child_bus(b);
-
-	if (!found)
-		pci_bus_update_busn_res_end(b, max);
-
-	return b;
-}
-
 void pcibios_scan_root(int busnum)
 {
-	struct pci_bus *bus;
+	struct pci_host_bridge *bridge;
 	struct pci_sysdata *sd;
-	LIST_HEAD(resources);
+	int err;
 
-	sd = kzalloc(sizeof(*sd), GFP_KERNEL);
-	if (!sd) {
+	bridge = pci_alloc_host_bridge(sizeof(*sd));
+	if (!bridge) {
 		printk(KERN_ERR "PCI: OOM, skipping PCI bus %02x\n", busnum);
 		return;
 	}
+	sd = pci_host_bridge_priv(bridge);
 	sd->node = x86_pci_root_bus_node(busnum);
-	x86_pci_root_bus_resources(busnum, &resources);
+	bridge->sysdata = sd;
+	bridge->dev.parent = NULL;
+	bridge->busnr = busnum;
+	bridge->ops = &pci_root_ops;
+
+	x86_pci_root_bus_resources(busnum, &bridge->windows);
 	printk(KERN_DEBUG "PCI: Probing PCI hardware (bus %02x)\n", busnum);
-	bus = pci_scan_root_bus(NULL, busnum, &pci_root_ops, sd, &resources);
-	if (!bus) {
-		pci_free_resource_list(&resources);
-		kfree(sd);
+	err = pci_scan_root_bus_bridge(bridge);
+	if (err) {
+		put_device(&bridge->dev);
 		return;
 	}
-	pci_bus_add_devices(bus);
+	pci_bus_add_devices(bridge->bus);
 }
 
 void __init pcibios_set_cache_line_size(void)
