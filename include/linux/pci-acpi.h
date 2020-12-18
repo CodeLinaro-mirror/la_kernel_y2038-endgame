@@ -69,7 +69,6 @@ struct acpi_pci_root_info {
 };
 
 struct acpi_pci_root_ops {
-	struct pci_ops *pci_ops;
 	int (*init_info)(struct acpi_pci_root_info *info);
 	void (*release_info)(struct acpi_pci_root_info *info);
 	int (*prepare_resources)(struct acpi_pci_root_info *info);
@@ -78,8 +77,7 @@ struct acpi_pci_root_ops {
 extern int acpi_pci_probe_root_resources(struct acpi_pci_root_info *info);
 extern struct pci_bus *acpi_pci_root_create(struct acpi_pci_root *root,
 					    struct acpi_pci_root_ops *ops,
-					    struct acpi_pci_root_info *info,
-					    void *sd);
+					    struct acpi_pci_root_info *info);
 
 void acpi_pci_add_bus(struct pci_bus *bus);
 void acpi_pci_remove_bus(struct pci_bus *bus);

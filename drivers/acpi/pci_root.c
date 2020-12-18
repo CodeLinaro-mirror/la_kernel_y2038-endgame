@@ -520,15 +520,18 @@ static int acpi_pci_root_add(struct acpi_device *device,
 	unsigned long long segment, bus;
 	acpi_status status;
 	int result;
+	struct pci_host_bridge *bridge;
 	struct acpi_pci_root *root;
 	acpi_handle handle = device->handle;
 	int no_aspm = 0;
 	bool hotadd = system_state == SYSTEM_RUNNING;
 	bool is_pcie;
 
-	root = kzalloc(sizeof(struct acpi_pci_root), GFP_KERNEL);
-	if (!root)
+	bridge = pci_alloc_host_bridge(sizeof(struct acpi_pci_root));
+	if (!bridge)
 		return -ENOMEM;
+	root = pci_host_bridge_priv(bridge);
+	root->bridge = bridge;
 
 	segment = 0;
 	status = acpi_evaluate_integer(handle, METHOD_NAME__SEG, NULL,
@@ -637,7 +640,7 @@ remove_dmar:
 	if (hotadd)
 		dmar_device_remove(handle);
 end:
-	kfree(root);
+	pci_free_host_bridge(bridge);
 	return result;
 }
 
@@ -866,22 +869,22 @@ static void acpi_pci_root_release_info(struct pci_host_bridge *bridge)
 
 struct pci_bus *acpi_pci_root_create(struct acpi_pci_root *root,
 				     struct acpi_pci_root_ops *ops,
-				     struct acpi_pci_root_info *info,
-				     void *sysdata)
+				     struct acpi_pci_root_info *info)
 {
-	int ret, busnum = root->secondary.start;
 	struct acpi_device *device = root->device;
 	int node = acpi_get_node(device->handle);
-	struct pci_bus *bus;
-	struct pci_host_bridge *host_bridge;
+	struct pci_host_bridge *host_bridge = root->bridge;
 	union acpi_object *obj;
+	int ret;
 
 	info->root = root;
 	info->bridge = device;
 	info->ops = ops;
+	host_bridge->busnr = root->secondary.start;
+
 	INIT_LIST_HEAD(&info->resources);
 	snprintf(info->name, sizeof(info->name), "PCI Bus %04x:%02x",
-		 root->segment, busnum);
+		 root->segment, host_bridge->busnr);
 
 	if (ops->init_info && ops->init_info(info))
 		goto out_release_info;
@@ -894,12 +897,8 @@ struct pci_bus *acpi_pci_root_create(struct acpi_pci_root *root,
 
 	pci_acpi_root_add_resources(info);
 	pci_add_resource(&info->resources, &root->secondary);
-	bus = pci_create_root_bus(NULL, busnum, ops->pci_ops,
-				  sysdata, &info->resources);
-	if (!bus)
-		goto out_release_info;
+	list_splice_init(&info->resources, &host_bridge->windows);
 
-	host_bridge = to_pci_host_bridge(bus->bridge);
 	if (!(root->osc_control_set & OSC_PCI_EXPRESS_NATIVE_HP_CONTROL))
 		host_bridge->native_pcie_hotplug = 0;
 	if (!(root->osc_control_set & OSC_PCI_SHPC_NATIVE_HP_CONTROL))
@@ -918,18 +917,21 @@ struct pci_bus *acpi_pci_root_create(struct acpi_pci_root *root,
 	 * exists and returns 0, we must preserve any PCI resource
 	 * assignments made by firmware for this host bridge.
 	 */
-	obj = acpi_evaluate_dsm(ACPI_HANDLE(bus->bridge), &pci_acpi_dsm_guid, 1,
+	obj = acpi_evaluate_dsm(acpi_device_handle(info->bridge),
+				&pci_acpi_dsm_guid, 1,
 				DSM_PCI_PRESERVE_BOOT_CONFIG, NULL);
 	if (obj && obj->type == ACPI_TYPE_INTEGER && obj->integer.value == 0)
 		host_bridge->preserve_config = 1;
 	ACPI_FREE(obj);
 
-	pci_scan_child_bus(bus);
+	ret = pci_scan_root_bus_bridge(host_bridge);
+	if (ret)
+		goto out_release_info;
 	pci_set_host_bridge_release(host_bridge, acpi_pci_root_release_info,
 				    info);
 	if (node != NUMA_NO_NODE)
-		dev_printk(KERN_DEBUG, &bus->dev, "on NUMA node %d\n", node);
-	return bus;
+		dev_printk(KERN_DEBUG, &host_bridge->dev, "on NUMA node %d\n", node);
+	return host_bridge->bus;
 
 out_release_info:
 	__acpi_pci_root_release_info(info);

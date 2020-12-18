@@ -282,7 +282,6 @@ static void pci_acpi_root_release_info(struct acpi_pci_root_info *ci)
 }
 
 static struct acpi_pci_root_ops pci_acpi_root_ops = {
-	.pci_ops = &pci_root_ops,
 	.release_info = pci_acpi_root_release_info,
 	.prepare_resources = pci_acpi_root_prepare_resources,
 };
@@ -291,6 +290,7 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
 {
 	struct acpi_device *device = root->device;
 	struct pci_root_info *info;
+	struct pci_host_bridge *bridge = root->bridge;
 
 	info = kzalloc(sizeof(*info), GFP_KERNEL);
 	if (!info) {
@@ -304,8 +304,9 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
 	info->controller.companion = device;
 	info->controller.node = acpi_get_node(device->handle);
 	INIT_LIST_HEAD(&info->io_resources);
-	return acpi_pci_root_create(root, &pci_acpi_root_ops,
-				    &info->common, &info->controller);
+	bridge->ops = &pci_root_ops;
+	bridge->sysdata = &info->controller;
+	return acpi_pci_root_create(root, &pci_acpi_root_ops, &info->common);
 }
 
 int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
