@@ -1615,44 +1615,21 @@ struct device_node *pcibios_get_phb_of_node(struct pci_bus *bus)
 	return of_node_get(hose->dn);
 }
 
-static struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
-		struct pci_ops *ops, void *sysdata, struct list_head *resources)
-{
-	int error;
-	struct pci_host_bridge *bridge;
-
-	bridge = pci_alloc_host_bridge(0);
-	if (!bridge)
-		return NULL;
-
-	bridge->dev.parent = parent;
-
-	list_splice_init(resources, &bridge->windows);
-	bridge->sysdata = sysdata;
-	bridge->busnr = bus;
-	bridge->ops = ops;
-
-	error = pci_register_host_bridge(bridge);
-	if (error < 0)
-		goto err_out;
-
-	return bridge->bus;
-
-err_out:
-	put_device(&bridge->dev);
-	return NULL;
-}
-
 /**
  * pci_scan_phb - Given a pci_controller, setup and scan the PCI bus
  * @hose: Pointer to the PCI host controller instance structure
  */
 void pcibios_scan_phb(struct pci_controller *hose)
 {
-	LIST_HEAD(resources);
-	struct pci_bus *bus;
 	struct device_node *node = hose->dn;
+	struct pci_host_bridge *bridge;
 	int mode;
+	int error;
+
+	/* TODO: merge pci_controller into pci_host_bridge */
+	bridge = pci_alloc_host_bridge(0);
+	if (!bridge)
+		return;
 
 	pr_debug("PCI: Scanning PHB %pOF\n", node);
 
@@ -1660,23 +1637,27 @@ void pcibios_scan_phb(struct pci_controller *hose)
 	pcibios_setup_phb_io_space(hose);
 
 	/* Wire up PHB bus resources */
-	pcibios_setup_phb_resources(hose, &resources);
+	pcibios_setup_phb_resources(hose, &bridge->windows);
+
+	bridge->dev.parent = hose->parent;
+	bridge->sysdata = hose;
+	bridge->busnr = hose->first_busno;
+	bridge->ops = hose->ops;
 
 	hose->busn.start = hose->first_busno;
 	hose->busn.end	 = hose->last_busno;
 	hose->busn.flags = IORESOURCE_BUS;
-	pci_add_resource(&resources, &hose->busn);
+	pci_add_resource(&bridge->windows, &hose->busn);
 
 	/* Create an empty bus for the toplevel */
-	bus = pci_create_root_bus(hose->parent, hose->first_busno,
-				  hose->ops, hose, &resources);
-	if (bus == NULL) {
-		pr_err("Failed to create bus for PCI domain %04x\n",
-			hose->global_number);
-		pci_free_resource_list(&resources);
+	error = pci_register_host_bridge(bridge);
+	if (error) {
+		pr_err("Failed to create bus for PCI domain %04x: %d\n",
+			hose->global_number, error);
+		pci_free_host_bridge(bridge);
 		return;
 	}
-	hose->bus = bus;
+	hose->bus = bridge->bus;
 
 	/* Get probe mode and perform scan */
 	mode = PCI_PROBE_NORMAL;
