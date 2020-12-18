@@ -573,6 +573,7 @@ int acpi_unbind_one(struct device *dev);
 
 struct acpi_pci_root {
 	struct acpi_device * device;
+	struct pci_host_bridge *bridge;
 	struct pci_bus *bus;
 	u16 segment;
 	struct resource secondary;	/* downstream bus range */

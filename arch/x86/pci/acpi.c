@@ -317,7 +317,6 @@ static int pci_acpi_root_prepare_resources(struct acpi_pci_root_info *ci)
 }
 
 static struct acpi_pci_root_ops acpi_pci_root_ops = {
-	.pci_ops = &pci_root_ops,
 	.init_info = pci_acpi_root_init_info,
 	.release_info = pci_acpi_root_release_info,
 	.prepare_resources = pci_acpi_root_prepare_resources,
@@ -328,6 +327,7 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
 	int domain = root->segment;
 	int busnum = root->secondary.start;
 	int node = pci_acpi_root_get_node(root);
+	struct pci_host_bridge *bridge = root->bridge;
 	struct pci_bus *bus;
 
 	if (pci_ignore_seg)
@@ -365,8 +365,10 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
 			info->sd.domain = domain;
 			info->sd.node = node;
 			info->sd.companion = root->device;
+			bridge->ops = &pci_root_ops;
+			bridge->sysdata = &info->sd;
 			bus = acpi_pci_root_create(root, &acpi_pci_root_ops,
-						   &info->common, &info->sd);
+						   &info->common);
 		}
 	}
 
