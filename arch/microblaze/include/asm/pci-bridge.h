@@ -24,7 +24,7 @@ static inline int pcibios_vaddr_is_ioport(void __iomem *address)
  * Structure of a PCI controller (host bridge)
  */
 struct pci_controller {
-	struct pci_bus *bus;
+	struct pci_host_bridge *bridge;
 	char is_dynamic;
 	struct device_node *dn;
 	struct list_head list_node;
