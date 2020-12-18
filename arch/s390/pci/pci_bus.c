@@ -30,78 +30,16 @@ static LIST_HEAD(zbus_list);
 static DEFINE_SPINLOCK(zbus_list_lock);
 static int zpci_nb_devices;
 
-static struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
-		struct pci_ops *ops, void *sysdata, struct list_head *resources)
-{
-	int error;
-	struct pci_host_bridge *bridge;
-
-	bridge = pci_alloc_host_bridge(0);
-	if (!bridge)
-		return NULL;
-
-	bridge->dev.parent = parent;
-
-	list_splice_init(resources, &bridge->windows);
-	bridge->sysdata = sysdata;
-	bridge->busnr = bus;
-	bridge->ops = ops;
-
-	error = pci_register_host_bridge(bridge);
-	if (error < 0)
-		goto err_out;
-
-	return bridge->bus;
-
-err_out:
-	put_device(&bridge->dev);
-	return NULL;
-}
-
-static struct pci_bus *pci_scan_root_bus(struct device *parent, int bus,
-		struct pci_ops *ops, void *sysdata, struct list_head *resources)
-{
-	struct resource_entry *window;
-	bool found = false;
-	struct pci_bus *b;
-	int max;
-
-	resource_list_for_each_entry(window, resources)
-		if (window->res->flags & IORESOURCE_BUS) {
-			found = true;
-			break;
-		}
-
-	b = pci_create_root_bus(parent, bus, ops, sysdata, resources);
-	if (!b)
-		return NULL;
-
-	if (!found) {
-		dev_info(&b->dev,
-		 "No busn resource found for root bus, will use [bus %02x-ff]\n",
-			bus);
-		pci_bus_insert_busn_res(b, bus, 255);
-	}
-
-	max = pci_scan_child_bus(b);
-
-	if (!found)
-		pci_bus_update_busn_res_end(b, max);
-
-	return b;
-}
-
 /* zpci_bus_scan
  * @zbus: the zbus holding the zdevices
- * @ops: the pci operations
  *
  * The domain number must be set before pci_scan_root_bus is called.
  * This function can be called once the domain is known, hence
  * when the function_0 is dicovered.
  */
-static int zpci_bus_scan(struct zpci_bus *zbus, int domain, struct pci_ops *ops)
+static int zpci_bus_scan(struct zpci_bus *zbus, int domain)
 {
-	struct pci_bus *bus;
+	struct pci_host_bridge *bridge = zbus->bridge;
 	int rc;
 
 	rc = zpci_alloc_domain(domain);
@@ -109,14 +47,14 @@ static int zpci_bus_scan(struct zpci_bus *zbus, int domain, struct pci_ops *ops)
 		return rc;
 	zbus->domain_nr = rc;
 
-	bus = pci_scan_root_bus(NULL, ZPCI_BUS_NR, ops, zbus, &zbus->resources);
-	if (!bus) {
+	rc = pci_scan_root_bus_bridge(bridge);
+	if (!rc) {
 		zpci_free_domain(zbus->domain_nr);
-		return -EFAULT;
+		return rc;
 	}
 
-	zbus->bus = bus;
-	pci_bus_add_devices(bus);
+	zbus->bus = bridge->bus;
+	pci_bus_add_devices(bridge->bus);
 	return 0;
 }
 
@@ -129,7 +67,6 @@ static void zpci_bus_release(struct kref *kref)
 		pci_stop_root_bus(zbus->bus);
 
 		zpci_free_domain(zbus->domain_nr);
-		pci_free_resource_list(&zbus->resources);
 
 		pci_remove_root_bus(zbus->bus);
 		pci_unlock_rescan_remove();
@@ -138,7 +75,7 @@ static void zpci_bus_release(struct kref *kref)
 	spin_lock(&zbus_list_lock);
 	list_del(&zbus->bus_next);
 	spin_unlock(&zbus_list_lock);
-	kfree(zbus);
+	put_device(&zbus->bridge->dev);
 }
 
 static void zpci_bus_put(struct zpci_bus *zbus)
@@ -165,11 +102,15 @@ out_unlock:
 
 static struct zpci_bus *zpci_bus_alloc(int pchid)
 {
+	struct pci_host_bridge *bridge;
 	struct zpci_bus *zbus;
 
-	zbus = kzalloc(sizeof(*zbus), GFP_KERNEL);
-	if (!zbus)
+	bridge = pci_alloc_host_bridge(sizeof(*zbus));
+	if (!bridge)
 		return NULL;
+	zbus = pci_host_bridge_priv(bridge);
+	zbus->bridge = bridge;
+	bridge->sysdata = zbus;
 
 	zbus->pchid = pchid;
 	INIT_LIST_HEAD(&zbus->bus_next);
@@ -180,10 +121,12 @@ static struct zpci_bus *zpci_bus_alloc(int pchid)
 	kref_init(&zbus->kref);
 	INIT_LIST_HEAD(&zbus->resources);
 
+	bridge->dev.parent = NULL;
+	bridge->busnr = ZPCI_BUS_NR;
 	zbus->bus_resource.start = 0;
 	zbus->bus_resource.end = ZPCI_BUS_NR;
 	zbus->bus_resource.flags = IORESOURCE_BUS;
-	pci_add_resource(&zbus->resources, &zbus->bus_resource);
+	pci_add_resource(&bridge->windows, &zbus->bus_resource);
 
 	return zbus;
 }
@@ -253,6 +196,7 @@ static void zpci_bus_add_devices(struct zpci_bus *zbus)
 
 int zpci_bus_device_register(struct zpci_dev *zdev, struct pci_ops *ops)
 {
+	struct pci_host_bridge *bridge;
 	struct zpci_bus *zbus = NULL;
 	int rc = -EBADF;
 
@@ -273,16 +217,18 @@ int zpci_bus_device_register(struct zpci_dev *zdev, struct pci_ops *ops)
 		zbus = zpci_bus_alloc(zdev->pchid);
 		if (!zbus)
 			return -ENOMEM;
+		bridge->ops = ops;
 	}
 
 	zdev->zbus = zbus;
+
 	if (zbus->function[zdev->devfn]) {
 		pr_err("devfn %04x is already assigned\n", zdev->devfn);
 		goto error; /* rc already set */
 	}
 	zbus->function[zdev->devfn] = zdev;
 
-	zpci_setup_bus_resources(zdev, &zbus->resources);
+	zpci_setup_bus_resources(zdev, &zbus->bridge->windows);
 
 	if (zbus->bus) {
 		if (!zbus->multifunction) {
