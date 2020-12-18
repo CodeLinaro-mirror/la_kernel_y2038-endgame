@@ -206,6 +206,7 @@ static inline int IS_PLUTO(struct parisc_device *d) {
 */
 struct lba_device {
 	struct pci_hba_data	hba;
+	struct pci_host_bridge	*bridge;
 
 	spinlock_t		lba_lock;
 	void			*iosapic_obj;

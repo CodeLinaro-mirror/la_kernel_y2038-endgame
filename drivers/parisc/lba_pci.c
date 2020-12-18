@@ -1461,34 +1461,6 @@ lba_hw_init(struct lba_device *d)
  */
 static unsigned int lba_next_bus = 0;
 
-static struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
-		struct pci_ops *ops, void *sysdata, struct list_head *resources)
-{
-	int error;
-	struct pci_host_bridge *bridge;
-
-	bridge = pci_alloc_host_bridge(0);
-	if (!bridge)
-		return NULL;
-
-	bridge->dev.parent = parent;
-
-	list_splice_init(resources, &bridge->windows);
-	bridge->sysdata = sysdata;
-	bridge->busnr = bus;
-	bridge->ops = ops;
-
-	error = pci_register_host_bridge(bridge);
-	if (error < 0)
-		goto err_out;
-
-	return bridge->bus;
-
-err_out:
-	put_device(&bridge->dev);
-	return NULL;
-}
-
 /*
  * Determine if lba should claim this chip (return 0) or not (return 1).
  * If so, initialize the chip and tell other partners in crime they
@@ -1497,15 +1469,14 @@ err_out:
 static int __init
 lba_driver_probe(struct parisc_device *dev)
 {
+	struct pci_host_bridge *bridge;
 	struct lba_device *lba_dev;
-	LIST_HEAD(resources);
-	struct pci_bus *lba_bus;
 	struct pci_ops *cfg_ops;
 	u32 func_class;
 	void *tmp_obj;
 	char *version;
 	void __iomem *addr = ioremap(dev->hpa.start, 4096);
-	int max;
+	int ret;
 
 	/* Read HW Rev First */
 	func_class = READ_REG32(addr + LBA_FCLASS);
@@ -1569,15 +1540,16 @@ lba_driver_probe(struct parisc_device *dev)
 	**	have an IRT entry will get NULL back from iosapic code.
 	*/
 	
-	lba_dev = kzalloc(sizeof(struct lba_device), GFP_KERNEL);
-	if (!lba_dev) {
+	bridge = devm_pci_alloc_host_bridge(&dev->dev, sizeof(struct lba_device));
+	if (!bridge) {
 		printk(KERN_ERR "lba_init_chip - couldn't alloc lba_device\n");
 		return(1);
 	}
 
-
 	/* ---------- First : initialize data we already have --------- */
 
+	lba_dev = pci_host_bridge_priv(bridge);
+	lba_dev->bridge = bridge;
 	lba_dev->hw_rev = func_class;
 	lba_dev->hba.base_addr = addr;
 	lba_dev->hba.dev = dev;
@@ -1631,42 +1603,41 @@ lba_driver_probe(struct parisc_device *dev)
 		lba_dev->hba.lmmio_space.flags = 0;
 	}
 
-	pci_add_resource_offset(&resources, &lba_dev->hba.io_space,
+	pci_add_resource_offset(&bridge->windows, &lba_dev->hba.io_space,
 				HBA_PORT_BASE(lba_dev->hba.hba_num));
 	if (lba_dev->hba.elmmio_space.flags)
-		pci_add_resource_offset(&resources, &lba_dev->hba.elmmio_space,
+		pci_add_resource_offset(&bridge->windows, &lba_dev->hba.elmmio_space,
 					lba_dev->hba.lmmio_space_offset);
 	if (lba_dev->hba.lmmio_space.flags)
-		pci_add_resource_offset(&resources, &lba_dev->hba.lmmio_space,
+		pci_add_resource_offset(&bridge->windows, &lba_dev->hba.lmmio_space,
 					lba_dev->hba.lmmio_space_offset);
 	if (lba_dev->hba.gmmio_space.flags) {
 		/* Not registering GMMIO space - according to docs it's not
 		 * even used on HP-UX. */
-		/* pci_add_resource(&resources, &lba_dev->hba.gmmio_space); */
+		/* pci_add_resource(&bridge->windows, &lba_dev->hba.gmmio_space); */
 	}
 
-	pci_add_resource(&resources, &lba_dev->hba.bus_num);
+	pci_add_resource(&bridge->windows, &lba_dev->hba.bus_num);
+
+	bridge->sysdata = NULL;
+	bridge->busnr = lba_dev->hba.bus_num.start;
+	bridge->ops = cfg_ops;
+	ret = pci_scan_root_bus_bridge(bridge);
+	if (ret)
+		return 0;
 
 	dev->dev.platform_data = lba_dev;
-	lba_bus = lba_dev->hba.hba_bus =
-		pci_create_root_bus(&dev->dev, lba_dev->hba.bus_num.start,
-				    cfg_ops, NULL, &resources);
-	if (!lba_bus) {
-		pci_free_resource_list(&resources);
-		return 0;
-	}
-
-	max = pci_scan_child_bus(lba_bus);
+	lba_dev->hba.hba_bus = bridge->bus;
 
 	/* This is in lieu of calling pci_assign_unassigned_resources() */
 	if (is_pdc_pat()) {
 		/* assign resources to un-initialized devices */
 
 		DBG_PAT("LBA pci_bus_size_bridges()\n");
-		pci_bus_size_bridges(lba_bus);
+		pci_bus_size_bridges(bridge->bus);
 
 		DBG_PAT("LBA pci_bus_assign_resources()\n");
-		pci_bus_assign_resources(lba_bus);
+		pci_bus_assign_resources(bridge->bus);
 
 #ifdef DEBUG_LBA_PAT
 		DBG_PAT("\nLBA PIOP resource tree\n");
@@ -1681,12 +1652,12 @@ lba_driver_probe(struct parisc_device *dev)
 	** space is restricted. Avoids master aborts on config cycles.
 	** Early LBA revs go fatal on *any* master abort.
 	*/
-	if (cfg_ops == &elroy_cfg_ops) {
+	if (bridge->ops == &elroy_cfg_ops) {
 		lba_dev->flags |= LBA_FLAG_SKIP_PROBE;
 	}
 
-	lba_next_bus = max + 1;
-	pci_bus_add_devices(lba_bus);
+	lba_next_bus = bridge->bus->busn_res.end + 1;
+	pci_bus_add_devices(bridge->bus);
 
 	/* Whew! Finally done! Tell services we got this one covered. */
 	return 0;

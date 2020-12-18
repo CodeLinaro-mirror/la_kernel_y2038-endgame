@@ -141,6 +141,7 @@
 struct dino_device
 {
 	struct pci_hba_data	hba;	/* 'C' inheritance - must be first */
+	struct pci_host_bridge	*bridge;
 	spinlock_t		dinosaur_pen;
 	unsigned long		txn_addr; /* EIR addr to generate interrupt */ 
 	u32			txn_data; /* EIR data assign to each dino */ 
@@ -901,33 +902,6 @@ static const char cujo_vers[][4] = {
 
 void ccio_cujo20_fixup(struct parisc_device *dev, u32 iovp);
 
-static struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
-		struct pci_ops *ops, void *sysdata, struct list_head *resources)
-{
-	int error;
-	struct pci_host_bridge *bridge;
-
-	bridge = pci_alloc_host_bridge(0);
-	if (!bridge)
-		return NULL;
-
-	bridge->dev.parent = parent;
-
-	list_splice_init(resources, &bridge->windows);
-	bridge->sysdata = sysdata;
-	bridge->busnr = bus;
-	bridge->ops = ops;
-
-	error = pci_register_host_bridge(bridge);
-	if (error < 0)
-		goto err_out;
-
-	return bridge->bus;
-
-err_out:
-	put_device(&bridge->dev);
-	return NULL;
-}
 /*
 ** Determine if dino should claim this chip (return 0) or not (return 1).
 ** If so, initialize the chip appropriately (card-mode vs bridge mode).
@@ -936,13 +910,12 @@ err_out:
 static int __init dino_probe(struct parisc_device *dev)
 {
 	struct dino_device *dino_dev;	// Dino specific control struct
+	struct pci_host_bridge *bridge;
 	const char *version = "unknown";
 	char *name;
 	int is_cujo = 0;
-	LIST_HEAD(resources);
-	struct pci_bus *bus;
 	unsigned long hpa = dev->hpa.start;
-	int max;
+	int ret;
 
 	name = "Dino";
 	if (is_card_dino(&dev->id)) {
@@ -994,12 +967,13 @@ static int __init dino_probe(struct parisc_device *dev)
 */
 	}
 
-	dino_dev = kzalloc(sizeof(struct dino_device), GFP_KERNEL);
+	bridge = devm_pci_alloc_host_bridge(&dev->dev, sizeof(struct dino_device));
 	if (!dino_dev) {
 		printk("dino_init_chip - couldn't alloc dino_device\n");
 		return 1;
 	}
-
+	dino_dev = pci_host_bridge_priv(bridge);
+	dino_dev->bridge = bridge;
 	dino_dev->hba.dev = dev;
 	dino_dev->hba.base_addr = ioremap(hpa, 4096);
 	dino_dev->hba.lmmio_space_offset = PCI_F_EXTEND;
@@ -1017,45 +991,45 @@ static int __init dino_probe(struct parisc_device *dev)
 
 	dev->dev.platform_data = dino_dev;
 
-	pci_add_resource_offset(&resources, &dino_dev->hba.io_space,
+	pci_add_resource_offset(&bridge->windows, &dino_dev->hba.io_space,
 				HBA_PORT_BASE(dino_dev->hba.hba_num));
 	if (dino_dev->hba.lmmio_space.flags)
-		pci_add_resource_offset(&resources, &dino_dev->hba.lmmio_space,
+		pci_add_resource_offset(&bridge->windows, &dino_dev->hba.lmmio_space,
 					dino_dev->hba.lmmio_space_offset);
 	if (dino_dev->hba.elmmio_space.flags)
-		pci_add_resource_offset(&resources, &dino_dev->hba.elmmio_space,
+		pci_add_resource_offset(&bridge->windows, &dino_dev->hba.elmmio_space,
 					dino_dev->hba.lmmio_space_offset);
 	if (dino_dev->hba.gmmio_space.flags)
-		pci_add_resource(&resources, &dino_dev->hba.gmmio_space);
+		pci_add_resource(&bridge->windows, &dino_dev->hba.gmmio_space);
 
 	dino_dev->hba.bus_num.start = dino_current_bus;
 	dino_dev->hba.bus_num.end = 255;
 	dino_dev->hba.bus_num.flags = IORESOURCE_BUS;
-	pci_add_resource(&resources, &dino_dev->hba.bus_num);
+	pci_add_resource(&bridge->windows, &dino_dev->hba.bus_num);
 	/*
 	** It's not used to avoid chicken/egg problems
 	** with configuration accessor functions.
 	*/
-	dino_dev->hba.hba_bus = bus = pci_create_root_bus(&dev->dev,
-			 dino_current_bus, &dino_cfg_ops, NULL, &resources);
-	if (!bus) {
+	bridge->dev.parent = &dev->dev;
+	bridge->busnr = dino_current_bus;
+	bridge->ops = &dino_cfg_ops;
+	ret = pci_scan_root_bus_bridge(bridge);
+	if (ret) {
 		printk(KERN_ERR "ERROR: failed to scan PCI bus on %s (duplicate bus number %d?)\n",
 		       dev_name(&dev->dev), dino_current_bus);
-		pci_free_resource_list(&resources);
+		pci_free_host_bridge(bridge);
 		/* increment the bus number in case of duplicates */
 		dino_current_bus++;
 		return 0;
 	}
-
-	max = pci_scan_child_bus(bus);
-	pci_bus_update_busn_res_end(bus, max);
+	dino_dev->hba.hba_bus = bridge->bus;
 
 	/* This code *depends* on scanning being single threaded
 	 * if it isn't, this global bus number count will fail
 	 */
-	dino_current_bus = max + 1;
-	pci_bus_assign_resources(bus);
-	pci_bus_add_devices(bus);
+	dino_current_bus = bridge->bus->busn_res.end + 1;
+	pci_bus_assign_resources(bridge->bus);
+	pci_bus_add_devices(bridge->bus);
 	return 0;
 }
 
