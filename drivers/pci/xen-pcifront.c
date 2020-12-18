@@ -29,17 +29,12 @@
 #define INVALID_GRANT_REF (0)
 #define INVALID_EVTCHN    (-1)
 
-struct pci_bus_entry {
-	struct list_head list;
-	struct pci_bus *bus;
-};
-
 #define _PDEVB_op_active		(0)
 #define PDEVB_op_active			(1 << (_PDEVB_op_active))
 
 struct pcifront_device {
 	struct xenbus_device *xdev;
-	struct list_head root_buses;
+	struct list_head root_bridges;
 
 	int evtchn;
 	int gnt_ref;
@@ -55,7 +50,9 @@ struct pcifront_device {
 };
 
 struct pcifront_sd {
+	struct pci_host_bridge *bridge;
 	struct pci_sysdata sd;
+	struct list_head list;
 	struct pcifront_device *pdev;
 };
 
@@ -66,10 +63,12 @@ pcifront_get_pdev(struct pcifront_sd *sd)
 }
 
 static inline void pcifront_init_sd(struct pcifront_sd *sd,
+				    struct pci_host_bridge *bridge,
 				    unsigned int domain, unsigned int bus,
 				    struct pcifront_device *pdev)
 {
 	/* Because we do not expose that information via XenBus. */
+	sd->bridge = bridge;
 	sd->sd.node = first_online_node;
 	sd->sd.domain = domain;
 	sd->pdev = pdev;
@@ -436,74 +435,11 @@ static int pcifront_scan_bus(struct pcifront_device *pdev,
 	return 0;
 }
 
-static struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
-		struct pci_ops *ops, void *sysdata, struct list_head *resources)
-{
-	int error;
-	struct pci_host_bridge *bridge;
-
-	bridge = pci_alloc_host_bridge(0);
-	if (!bridge)
-		return NULL;
-
-	bridge->dev.parent = parent;
-
-	list_splice_init(resources, &bridge->windows);
-	bridge->sysdata = sysdata;
-	bridge->busnr = bus;
-	bridge->ops = ops;
-
-	error = pci_register_host_bridge(bridge);
-	if (error < 0)
-		goto err_out;
-
-	return bridge->bus;
-
-err_out:
-	put_device(&bridge->dev);
-	return NULL;
-}
-
-static struct pci_bus *pci_scan_root_bus(struct device *parent, int bus,
-		struct pci_ops *ops, void *sysdata, struct list_head *resources)
-{
-	struct resource_entry *window;
-	bool found = false;
-	struct pci_bus *b;
-	int max;
-
-	resource_list_for_each_entry(window, resources)
-		if (window->res->flags & IORESOURCE_BUS) {
-			found = true;
-			break;
-		}
-
-	b = pci_create_root_bus(parent, bus, ops, sysdata, resources);
-	if (!b)
-		return NULL;
-
-	if (!found) {
-		dev_info(&b->dev,
-		 "No busn resource found for root bus, will use [bus %02x-ff]\n",
-			bus);
-		pci_bus_insert_busn_res(b, bus, 255);
-	}
-
-	max = pci_scan_child_bus(b);
-
-	if (!found)
-		pci_bus_update_busn_res_end(b, max);
-
-	return b;
-}
-
 static int pcifront_scan_root(struct pcifront_device *pdev,
 				 unsigned int domain, unsigned int bus)
 {
-	struct pci_bus *b;
-	LIST_HEAD(resources);
-	struct pcifront_sd *sd = NULL;
-	struct pci_bus_entry *bus_entry = NULL;
+	struct pcifront_sd *sd;
+	struct pci_host_bridge *bridge = NULL;
 	int err = 0;
 	static struct resource busn_res = {
 		.start = 0,
@@ -517,58 +453,53 @@ static int pcifront_scan_root(struct pcifront_device *pdev,
 			"PCI Root in non-zero PCI Domain! domain=%d\n", domain);
 		dev_err(&pdev->xdev->dev,
 			"Please compile with CONFIG_PCI_DOMAINS\n");
-		err = -EINVAL;
-		goto err_out;
+		return -EINVAL;
 	}
 #endif
 
 	dev_info(&pdev->xdev->dev, "Creating PCI Frontend Bus %04x:%02x\n",
 		 domain, bus);
 
-	bus_entry = kzalloc(sizeof(*bus_entry), GFP_KERNEL);
-	sd = kzalloc(sizeof(*sd), GFP_KERNEL);
-	if (!bus_entry || !sd) {
-		err = -ENOMEM;
-		goto err_out;
+	bridge = devm_pci_alloc_host_bridge(&pdev->xdev->dev, sizeof(*sd));
+	if (!bridge) {
+		return -ENOMEM;
 	}
-	pci_add_resource(&resources, &ioport_resource);
-	pci_add_resource(&resources, &iomem_resource);
-	pci_add_resource(&resources, &busn_res);
-	pcifront_init_sd(sd, domain, bus, pdev);
+	bridge->sysdata = pci_host_bridge_priv(bridge);
+	pci_add_resource(&bridge->windows, &ioport_resource);
+	pci_add_resource(&bridge->windows, &iomem_resource);
+	pci_add_resource(&bridge->windows, &busn_res);
+	pcifront_init_sd(bridge->sysdata, bridge, domain, bus, pdev);
 
 	pci_lock_rescan_remove();
 
-	b = pci_scan_root_bus(&pdev->xdev->dev, bus,
-				  &pcifront_bus_ops, sd, &resources);
-	if (!b) {
+	bridge->busnr = bus;
+	bridge->ops = &pcifront_bus_ops;
+	err = pci_scan_root_bus_bridge(bridge);
+	if (err) {
 		dev_err(&pdev->xdev->dev,
 			"Error creating PCI Frontend Bus!\n");
-		err = -ENOMEM;
 		pci_unlock_rescan_remove();
-		pci_free_resource_list(&resources);
 		goto err_out;
 	}
 
-	bus_entry->bus = b;
-
-	list_add(&bus_entry->list, &pdev->root_buses);
+	sd = bridge->sysdata;
+	list_add(&sd->list, &pdev->root_bridges);
 
 	/* pci_scan_root_bus skips devices which do not have a
 	* devfn==0. The pcifront_scan_bus enumerates all devfn. */
-	err = pcifront_scan_bus(pdev, domain, bus, b);
+	err = pcifront_scan_bus(pdev, domain, bus, bridge->bus);
 
 	/* Claim resources before going "live" with our devices */
-	pci_walk_bus(b, pcifront_claim_resource, pdev);
+	pci_walk_bus(bridge->bus, pcifront_claim_resource, pdev);
 
 	/* Create SysFS and notify udev of the devices. Aka: "going live" */
-	pci_bus_add_devices(b);
+	pci_bus_add_devices(bridge->bus);
 
 	pci_unlock_rescan_remove();
 	return err;
 
 err_out:
-	kfree(bus_entry);
-	kfree(sd);
+	pci_free_host_bridge(bridge);
 
 	return err;
 }
@@ -622,22 +553,16 @@ static void free_root_bus_devs(struct pci_bus *bus)
 
 static void pcifront_free_roots(struct pcifront_device *pdev)
 {
-	struct pci_bus_entry *bus_entry, *t;
+	struct pcifront_sd *sd, *t;
 
 	dev_dbg(&pdev->xdev->dev, "cleaning up root buses\n");
 
 	pci_lock_rescan_remove();
-	list_for_each_entry_safe(bus_entry, t, &pdev->root_buses, list) {
-		list_del(&bus_entry->list);
-
-		free_root_bus_devs(bus_entry->bus);
-
-		kfree(bus_entry->bus->sysdata);
-
-		device_unregister(bus_entry->bus->bridge);
-		pci_remove_bus(bus_entry->bus);
-
-		kfree(bus_entry);
+	list_for_each_entry_safe(sd, t, &pdev->root_bridges, list) {
+		list_del(&sd->list);
+		free_root_bus_devs(sd->bridge->bus);
+		pci_remove_bus(sd->bridge->bus);
+		device_unregister(&sd->bridge->dev);
 	}
 	pci_unlock_rescan_remove();
 }
@@ -797,7 +722,7 @@ static struct pcifront_device *alloc_pdev(struct xenbus_device *xdev)
 	dev_set_drvdata(&xdev->dev, pdev);
 	pdev->xdev = xdev;
 
-	INIT_LIST_HEAD(&pdev->root_buses);
+	INIT_LIST_HEAD(&pdev->root_bridges);
 
 	spin_lock_init(&pdev->sh_info_lock);
 
