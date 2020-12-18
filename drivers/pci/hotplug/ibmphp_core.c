@@ -681,15 +681,7 @@ static void ibm_unconfigure_device(struct pci_func *func)
 	pci_unlock_rescan_remove();
 }
 
-static struct resource busn_resource = {
-	.name	= "PCI busn",
-	.start	= 0,
-	.end	= 255,
-	.flags	= IORESOURCE_BUS,
-};
-
-static struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
-		struct pci_ops *ops, void *sysdata, struct list_head *resources)
+static struct pci_bus *pci_create_root_bus(int bus, struct pci_ops *ops)
 {
 	int error;
 	struct pci_host_bridge *bridge;
@@ -697,15 +689,12 @@ static struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
 	bridge = pci_alloc_host_bridge(0);
 	if (!bridge)
 		return NULL;
-
-	bridge->dev.parent = parent;
-
-	list_splice_init(resources, &bridge->windows);
-	bridge->sysdata = sysdata;
+	pci_add_resource(&bridge->windows, &ioport_resource);
+	pci_add_resource(&bridge->windows, &iomem_resource);
 	bridge->busnr = bus;
 	bridge->ops = ops;
 
-	error = pci_register_host_bridge(bridge);
+	error = pci_scan_root_bus_bridge(bridge);
 	if (error < 0)
 		goto err_out;
 
@@ -714,24 +703,6 @@ static struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
 err_out:
 	put_device(&bridge->dev);
 	return NULL;
-}
-
-static struct pci_bus *pci_scan_bus(int bus, struct pci_ops *ops,
-					void *sysdata)
-{
-	LIST_HEAD(resources);
-	struct pci_bus *b;
-
-	pci_add_resource(&resources, &ioport_resource);
-	pci_add_resource(&resources, &iomem_resource);
-	pci_add_resource(&resources, &busn_resource);
-	b = pci_create_root_bus(NULL, bus, ops, sysdata, &resources);
-	if (b) {
-		pci_scan_child_bus(b);
-	} else {
-		pci_free_resource_list(&resources);
-	}
-	return b;
 }
 
 /*
@@ -766,7 +737,7 @@ static u8 bus_structure_fixup(u8 busno)
 					(l != 0x0000) && (l != 0xffff)) {
 			debug("%s - Inside bus_structure_fixup()\n",
 							__func__);
-			b = pci_scan_bus(busno, ibmphp_pci_bus->ops, NULL);
+			b = pci_create_root_bus(busno, ibmphp_pci_bus->ops);
 			if (!b)
 				continue;
 
