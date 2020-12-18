@@ -892,9 +892,9 @@ void __init pcibios_resource_survey(void)
 	pci_assign_unassigned_resources();
 }
 
-static void pcibios_setup_phb_resources(struct pci_controller *hose,
-					struct list_head *resources)
+static void pcibios_setup_phb_resources(struct pci_host_bridge *bridge)
 {
+	struct pci_controller *hose = bridge->sysdata;
 	unsigned long io_offset;
 	struct resource *res;
 	int i;
@@ -916,7 +916,7 @@ static void pcibios_setup_phb_resources(struct pci_controller *hose,
 		res->end = res->start + IO_SPACE_LIMIT;
 		res->flags = IORESOURCE_IO;
 	}
-	pci_add_resource_offset(resources, res,
+	pci_add_resource_offset(bridge->windows,res,
 		(__force resource_size_t)(hose->io_base_virt - _IO_BASE));
 
 	pr_debug("PCI: PHB IO resource    = %016llx-%016llx [%lx]\n",
@@ -940,7 +940,8 @@ static void pcibios_setup_phb_resources(struct pci_controller *hose,
 			res->flags = IORESOURCE_MEM;
 
 		}
-		pci_add_resource_offset(resources, res, hose->pci_mem_offset);
+		pci_add_resource_offset(&bridge->windows, res,
+					hose->pci_mem_offset);
 
 		pr_debug("PCI: PHB MEM resource %d = %016llx-%016llx [%lx]\n",
 			i, (unsigned long long)res->start,
@@ -954,102 +955,48 @@ static void pcibios_setup_phb_resources(struct pci_controller *hose,
 		 (unsigned long)hose->io_base_virt - _IO_BASE);
 }
 
-static struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
-		struct pci_ops *ops, void *sysdata, struct list_head *resources)
-{
-	int error;
-	struct pci_host_bridge *bridge;
-
-	bridge = pci_alloc_host_bridge(0);
-	if (!bridge)
-		return NULL;
-
-	bridge->dev.parent = parent;
-
-	list_splice_init(resources, &bridge->windows);
-	bridge->sysdata = sysdata;
-	bridge->busnr = bus;
-	bridge->ops = ops;
-
-	error = pci_register_host_bridge(bridge);
-	if (error < 0)
-		goto err_out;
-
-	return bridge->bus;
-
-err_out:
-	put_device(&bridge->dev);
-	return NULL;
-}
-
-static struct pci_bus *pci_scan_root_bus(struct device *parent, int bus,
-		struct pci_ops *ops, void *sysdata, struct list_head *resources)
-{
-	struct resource_entry *window;
-	bool found = false;
-	struct pci_bus *b;
-	int max;
-
-	resource_list_for_each_entry(window, resources)
-		if (window->res->flags & IORESOURCE_BUS) {
-			found = true;
-			break;
-		}
-
-	b = pci_create_root_bus(parent, bus, ops, sysdata, resources);
-	if (!b)
-		return NULL;
-
-	if (!found) {
-		dev_info(&b->dev,
-		 "No busn resource found for root bus, will use [bus %02x-ff]\n",
-			bus);
-		pci_bus_insert_busn_res(b, bus, 255);
-	}
-
-	max = pci_scan_child_bus(b);
-
-	if (!found)
-		pci_bus_update_busn_res_end(b, max);
-
-	return b;
-}
-
 static void pcibios_scan_phb(struct pci_controller *hose)
 {
-	LIST_HEAD(resources);
-	struct pci_bus *bus;
 	struct device_node *node = hose->dn;
+	struct pci_host_bridge *bridge;
 
 	pr_debug("PCI: Scanning PHB %pOF\n", node);
 
-	pcibios_setup_phb_resources(hose, &resources);
+	bridge = pci_alloc_host_bridge(0);
+	if (!bridge)
+		return -ENOMEM;
 
-	bus = pci_scan_root_bus(hose->parent, hose->first_busno,
-				hose->ops, hose, &resources);
-	if (bus == NULL) {
+	bridge->sysdata = hose;
+	bridge->dev.parent = hose->parent;
+	bridge->busnr = hose->first_busno;
+	bridge->ops = hose->ops;
+
+	pcibios_setup_phb_resources(bridge);
+
+	ret = pci_scan_root_bus_bridge(bridge);
+	if (ret) {
 		pr_err("Failed to create bus for PCI domain %04x\n",
 		       hose->global_number);
-		pci_free_resource_list(&resources);
-		return;
+		put_device(&bridge->dev);
+		return ret;
 	}
-	bus->busn_res.start = hose->first_busno;
-	hose->bus = bus;
+	hose->last_busno = bridge->bus->busn_res.end;
 
-	hose->last_busno = bus->busn_res.end;
+	return 0;
 }
 
 static int __init pcibios_init(void)
 {
 	struct pci_controller *hose, *tmp;
 	int next_busno = 0;
+	int ret = 0;
 
 	pr_info("PCI: Probing PCI hardware\n");
 
 	/* Scan all of the recorded PCI controllers.  */
 	list_for_each_entry_safe(hose, tmp, &hose_list, list_node) {
 		hose->last_busno = 0xff;
-		pcibios_scan_phb(hose);
+		ret = pcibios_scan_phb(hose);
 		if (next_busno <= hose->last_busno)
 			next_busno = hose->last_busno + 1;
 	}
@@ -1058,11 +1005,11 @@ static int __init pcibios_init(void)
 	/* Call common code to handle resource allocation */
 	pcibios_resource_survey();
 	list_for_each_entry_safe(hose, tmp, &hose_list, list_node) {
-		if (hose->bus)
-			pci_bus_add_devices(hose->bus);
+		if (hose->bridge)
+			pci_bus_add_devices(hose->bridge->bus);
 	}
 
-	return 0;
+	return ret;
 }
 
 subsys_initcall(pcibios_init);
