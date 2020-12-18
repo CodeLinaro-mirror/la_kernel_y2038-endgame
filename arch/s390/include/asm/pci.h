@@ -102,8 +102,8 @@ struct s390_domain;
 struct zpci_bus {
 	struct kref		kref;
 	struct pci_bus		*bus;
+	struct pci_host_bridge  *bridge;
 	struct zpci_dev		*function[ZPCI_FUNCTIONS_PER_BUS];
-	struct list_head	resources;
 	struct list_head	bus_next;
 	struct resource		bus_resource;
 	int			pchid;

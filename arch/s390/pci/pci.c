@@ -752,6 +752,7 @@ error:
  */
 int zpci_scan_configured_device(struct zpci_dev *zdev, u32 fh)
 {
+	struct pci_host_bridge *bridge = zdev->zbus->bridge;
 	int rc;
 
 	zdev->fh = fh;
@@ -764,9 +765,9 @@ int zpci_scan_configured_device(struct zpci_dev *zdev, u32 fh)
 	 * the PCI bus
 	 */
 	if (zdev->devfn == 0 && zdev->zbus->multifunction)
-		rc = zpci_bus_scan_bus(zdev->zbus);
+		rc = zpci_bus_scan_bus(bridge, zdev->zbus);
 	else
-		rc = zpci_bus_scan_device(zdev);
+		rc = zpci_bus_scan_device(bridge, zdev);
 
 	return rc;
 }

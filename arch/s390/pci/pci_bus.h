@@ -13,7 +13,7 @@ void zpci_bus_device_unregister(struct zpci_dev *zdev);
 int zpci_bus_scan_bus(struct zpci_bus *zbus);
 void zpci_bus_scan_busses(void);
 
-int zpci_bus_scan_device(struct zpci_dev *zdev);
+int zpci_bus_scan_device(struct pci_host_bridge *bridge, struct zpci_dev *zdev);
 void zpci_bus_remove_device(struct zpci_dev *zdev, bool set_error);
 
 void zpci_release_device(struct kref *kref);
