@@ -113,6 +113,7 @@ struct vmd_dev {
 	int msix_count;
 	struct vmd_irq_list	*irqs;
 
+	struct pci_host_bridge	*bridge;
 	struct pci_sysdata	sysdata;
 	struct resource		resources[3];
 	struct irq_domain	*irq_domain;
@@ -607,41 +608,13 @@ static int vmd_alloc_irqs(struct vmd_dev *vmd)
 	return 0;
 }
 
-static struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
-		struct pci_ops *ops, void *sysdata, struct list_head *resources)
-{
-	int error;
-	struct pci_host_bridge *bridge;
-
-	bridge = pci_alloc_host_bridge(0);
-	if (!bridge)
-		return NULL;
-
-	bridge->dev.parent = parent;
-
-	list_splice_init(resources, &bridge->windows);
-	bridge->sysdata = sysdata;
-	bridge->busnr = bus;
-	bridge->ops = ops;
-
-	error = pci_register_host_bridge(bridge);
-	if (error < 0)
-		goto err_out;
-
-	return bridge->bus;
-
-err_out:
-	put_device(&bridge->dev);
-	return NULL;
-}
-
 static int vmd_enable_domain(struct vmd_dev *vmd, unsigned long features)
 {
+	struct pci_host_bridge *bridge = vmd->bridge;
 	struct pci_sysdata *sd = &vmd->sysdata;
 	struct resource *res;
 	u32 upper_bits;
 	unsigned long flags;
-	LIST_HEAD(resources);
 	resource_size_t offset[2] = {0};
 	resource_size_t membar2_offset = 0x2000;
 	struct pci_bus *child;
@@ -759,23 +732,25 @@ static int vmd_enable_domain(struct vmd_dev *vmd, unsigned long features)
 		vmd_set_msi_remapping(vmd, false);
 	}
 
-	pci_add_resource(&resources, &vmd->resources[0]);
-	pci_add_resource_offset(&resources, &vmd->resources[1], offset[0]);
-	pci_add_resource_offset(&resources, &vmd->resources[2], offset[1]);
+	pci_add_resource(&bridge->windows, &vmd->resources[0]);
+	pci_add_resource_offset(&bridge->windows, &vmd->resources[1], offset[0]);
+	pci_add_resource_offset(&bridge->windows, &vmd->resources[2], offset[1]);
 
-	vmd->bus = pci_create_root_bus(&vmd->dev->dev, vmd->busn_start,
-				       &vmd_ops, sd, &resources);
-	if (!vmd->bus) {
-		pci_free_resource_list(&resources);
+	bridge->dev.parent = &vmd->dev->dev;
+	bridge->sysdata = sd;
+	bridge->busnr = vmd->busn_start;
+	bridge->ops = &vmd_ops;
+	dev_set_msi_domain(&bridge->dev, vmd->irq_domain);
+
+	/* FIXME: convert to pci_host_probe() */
+	ret = pci_scan_root_bus_bridge(bridge);
+	if (ret) {
 		vmd_remove_irq_domain(vmd);
-		return -ENODEV;
+		return ret;
 	}
 
 	vmd_attach_resources(vmd);
-	if (vmd->irq_domain)
-		dev_set_msi_domain(&vmd->bus->dev, vmd->irq_domain);
 
-	pci_scan_child_bus(vmd->bus);
 	pci_assign_unassigned_bus_resources(vmd->bus);
 
 	/*
@@ -796,15 +771,18 @@ static int vmd_enable_domain(struct vmd_dev *vmd, unsigned long features)
 static int vmd_probe(struct pci_dev *dev, const struct pci_device_id *id)
 {
 	unsigned long features = (unsigned long) id->driver_data;
+	struct pci_host_bridge *bridge;
 	struct vmd_dev *vmd;
 	int err;
 
 	if (resource_size(&dev->resource[VMD_CFGBAR]) < (1 << 20))
 		return -ENOMEM;
 
-	vmd = devm_kzalloc(&dev->dev, sizeof(*vmd), GFP_KERNEL);
-	if (!vmd)
+	bridge = devm_pci_alloc_host_bridge(&dev->dev, sizeof(*vmd));
+	if (!bridge)
 		return -ENOMEM;
+	vmd = pci_host_bridge_priv(bridge);
+	vmd->bridge = bridge;
 
 	vmd->dev = dev;
 	err = pcim_enable_device(dev);
