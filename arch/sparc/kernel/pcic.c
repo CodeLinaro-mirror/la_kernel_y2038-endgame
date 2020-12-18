@@ -387,74 +387,28 @@ int __init pcic_probe(void)
 	return 0;
 }
 
-static struct resource busn_resource = {
-	.name	= "PCI busn",
-	.start	= 0,
-	.end	= 255,
-	.flags	= IORESOURCE_BUS,
-};
-
-static struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
-		struct pci_ops *ops, void *sysdata, struct list_head *resources)
+static int __init pcic_pbm_scan_bus(struct linux_pcic *pcic)
 {
-	int error;
 	struct pci_host_bridge *bridge;
+	struct linux_pbm_info *pbm = &pcic->pbm;
+	int ret;
 
 	bridge = pci_alloc_host_bridge(0);
 	if (!bridge)
-		return NULL;
+		return -ENOMEM;
 
-	bridge->dev.parent = parent;
+	pci_add_resource(&bridge->windows, &ioport_resource);
+	pci_add_resource(&bridge->windows, &iomem_resource);
+	bridge->sysdata = pbm;
+	bridge->busnr = pbm->pci_first_busno;
+	bridge->ops = &pcic_ops;
+	pci_set_flags(PCI_PROBE_ONLY);
 
-	list_splice_init(resources, &bridge->windows);
-	bridge->sysdata = sysdata;
-	bridge->busnr = bus;
-	bridge->ops = ops;
+	ret = pci_host_probe(bridge);
 
-	error = pci_register_host_bridge(bridge);
-	if (error < 0)
-		goto err_out;
+	pbm->pci_bus = bridge->bus;
 
-	return bridge->bus;
-
-err_out:
-	put_device(&bridge->dev);
-	return NULL;
-}
-
-static struct pci_bus *pci_scan_bus(int bus, struct pci_ops *ops,
-					void *sysdata)
-{
-	LIST_HEAD(resources);
-	struct pci_bus *b;
-
-	pci_add_resource(&resources, &ioport_resource);
-	pci_add_resource(&resources, &iomem_resource);
-	pci_add_resource(&resources, &busn_resource);
-	b = pci_create_root_bus(NULL, bus, ops, sysdata, &resources);
-	if (b) {
-		pci_scan_child_bus(b);
-	} else {
-		pci_free_resource_list(&resources);
-	}
-	return b;
-}
-
-static void __init pcic_pbm_scan_bus(struct linux_pcic *pcic)
-{
-	struct linux_pbm_info *pbm = &pcic->pbm;
-
-	pbm->pci_bus = pci_scan_bus(pbm->pci_first_busno, &pcic_ops, pbm);
-	if (!pbm->pci_bus)
-		return;
-
-#if 0 /* deadwood transplanted from sparc64 */
-	pci_fill_in_pbm_cookies(pbm->pci_bus, pbm, pbm->prom_node);
-	pci_record_assignments(pbm, pbm->pci_bus);
-	pci_assign_unassigned(pbm, pbm->pci_bus);
-	pci_fixup_irq(pbm, pbm->pci_bus);
-#endif
-	pci_bus_add_devices(pbm->pci_bus);
+	return ret;
 }
 
 /*
@@ -487,9 +441,7 @@ static int __init pcic_init(void)
 	writel(0+PCI_BASE_ADDRESS_SPACE_MEMORY, 
 	       pcic->pcic_regs+PCI_BASE_ADDRESS_0);
 
-	pcic_pbm_scan_bus(pcic);
-
-	return 0;
+	return pcic_pbm_scan_bus(pcic);
 }
 
 int pcic_present(void)
