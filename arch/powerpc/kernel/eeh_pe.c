@@ -849,9 +849,10 @@ struct pci_bus *eeh_pe_bus_get(struct eeh_pe *pe)
 {
 	struct eeh_dev *edev;
 	struct pci_dev *pdev;
+	struct pci_host_bridge *bridge = pe->phb->bridge;
 
 	if (pe->type & EEH_PE_PHB)
-		return pe->phb->bus;
+		return bridge->bus;
 
 	/* The primary bus might be cached during probe time */
 	if (pe->state & EEH_PE_PRI_BUS)

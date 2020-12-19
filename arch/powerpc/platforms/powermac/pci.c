@@ -204,7 +204,7 @@ static void __init setup_chaos(struct pci_controller *hose,
 			       struct resource *addr)
 {
 	/* assume a `chaos' bridge */
-	hose->ops = &chaos_pci_ops;
+	hose->bridge->ops = &chaos_pci_ops;
 	hose->cfg_addr = ioremap(addr->start + 0x800000, 0x1000);
 	hose->cfg_data = ioremap(addr->start + 0xc00000, 0x1000);
 }
@@ -601,7 +601,7 @@ static void __init fixup_nec_usb2(void)
 static void __init setup_bandit(struct pci_controller *hose,
 				struct resource *addr)
 {
-	hose->ops = &macrisc_pci_ops;
+	hose->bridge->ops = &macrisc_pci_ops;
 	hose->cfg_addr = ioremap(addr->start + 0x800000, 0x1000);
 	hose->cfg_data = ioremap(addr->start + 0xc00000, 0x1000);
 	init_bandit(hose);
@@ -612,7 +612,7 @@ static int __init setup_uninorth(struct pci_controller *hose,
 {
 	pci_add_flags(PCI_REASSIGN_ALL_BUS);
 	has_uninorth = 1;
-	hose->ops = &macrisc_pci_ops;
+	hose->bridge->ops = &macrisc_pci_ops;
 	hose->cfg_addr = ioremap(addr->start + 0x800000, 0x1000);
 	hose->cfg_data = ioremap(addr->start + 0xc00000, 0x1000);
 	/* We "know" that the bridge at f2000000 has the PCI slots. */
@@ -635,7 +635,7 @@ static void __init setup_u3_agp(struct pci_controller* hose)
 	hose->first_busno = 0xf0;
 	hose->last_busno = 0xff;
 	has_uninorth = 1;
-	hose->ops = &macrisc_pci_ops;
+	hose->bridge->ops = &macrisc_pci_ops;
 	hose->cfg_addr = ioremap(0xf0000000 + 0x800000, 0x1000);
 	hose->cfg_data = ioremap(0xf0000000 + 0xc00000, 0x1000);
 	u3_agp = hose;
@@ -646,7 +646,7 @@ static void __init setup_u4_pcie(struct pci_controller* hose)
 	/* We currently only implement the "non-atomic" config space, to
 	 * be optimised later.
 	 */
-	hose->ops = &u4_pcie_pci_ops;
+	hose->bridge->ops = &u4_pcie_pci_ops;
 	hose->cfg_addr = ioremap(0xf0000000 + 0x800000, 0x1000);
 	hose->cfg_data = ioremap(0xf0000000 + 0xc00000, 0x1000);
 
@@ -704,7 +704,7 @@ static void __init setup_u3_ht(struct pci_controller* hose)
 	struct resource cfg_res, self_res;
 	u32 decode;
 
-	hose->ops = &u3_ht_pci_ops;
+	hose->bridge->ops = &u3_ht_pci_ops;
 
 	/* Get base addresses from OF tree
 	 */
@@ -789,7 +789,7 @@ static int __init pmac_add_bridge(struct device_node *dev)
 		       " bus 0\n", dev);
 	}
 
-	hose = pcibios_alloc_controller(dev);
+	hose = pcibios_alloc_controller_early(dev);
 	if (!hose)
 		return -ENOMEM;
 	hose->first_busno = bus_range ? bus_range[0] : 0;

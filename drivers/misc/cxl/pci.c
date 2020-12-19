@@ -1804,7 +1804,7 @@ static pci_ers_result_t cxl_vphb_error_detected(struct cxl_afu *afu,
 	if (afu == NULL || afu->phb == NULL)
 		return result;
 
-	list_for_each_entry(afu_dev, &afu->phb->bus->devices, bus_list) {
+	list_for_each_entry(afu_dev, &afu->phb->bridge->bus->devices, bus_list) {
 		if (!afu_dev->driver)
 			continue;
 
@@ -2002,7 +2002,8 @@ static pci_ers_result_t cxl_pci_slot_reset(struct pci_dev *pdev)
 		if (afu->phb == NULL)
 			continue;
 
-		list_for_each_entry(afu_dev, &afu->phb->bus->devices, bus_list) {
+		list_for_each_entry(afu_dev, &afu->phb->bridge->bus->devices,
+				    bus_list) {
 			/* Reset the device context.
 			 * TODO: make this less disruptive
 			 */
@@ -2073,7 +2074,7 @@ static void cxl_pci_resume(struct pci_dev *pdev)
 		if (afu == NULL || afu->phb == NULL)
 			continue;
 
-		list_for_each_entry(afu_dev, &afu->phb->bus->devices, bus_list) {
+		list_for_each_entry(afu_dev, &afu->phb->bridge->bus->devices, bus_list) {
 			if (afu_dev->driver && afu_dev->driver->err_handler &&
 			    afu_dev->driver->err_handler->resume)
 				afu_dev->driver->err_handler->resume(afu_dev);

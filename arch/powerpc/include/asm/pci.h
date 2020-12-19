@@ -115,7 +115,7 @@ extern pgprot_t	pci_phys_mem_access_prot(struct file *file,
 extern resource_size_t pcibios_io_space_offset(struct pci_controller *hose);
 extern void pcibios_setup_bus_self(struct pci_bus *bus);
 extern void pcibios_setup_phb_io_space(struct pci_controller *hose);
-extern void pcibios_scan_phb(struct pci_controller *hose);
+extern void pcibios_scan_host_bridge(struct pci_host_bridge *hose);
 
 #endif	/* __KERNEL__ */
 

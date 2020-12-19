@@ -1983,7 +1983,7 @@ static void __init ppc4xx_pciex_port_setup_hose(struct ppc4xx_pciex_port *port)
 		 hose->cfg_addr, hose->cfg_data);
 
 	/* Setup config space */
-	hose->ops = &ppc4xx_pciex_pci_ops;
+	hose->bridge->ops = &ppc4xx_pciex_pci_ops;
 	port->hose = hose;
 	mbase = (void __iomem *)hose->cfg_addr;
 

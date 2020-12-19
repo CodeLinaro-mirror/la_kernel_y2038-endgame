@@ -50,14 +50,13 @@ struct pci_controller_ops {
  * Structure of a PCI controller (host bridge)
  */
 struct pci_controller {
-	struct pci_bus *bus;
+	struct pci_host_bridge *bridge;
 	char is_dynamic;
 #ifdef CONFIG_PPC64
 	int node;
 #endif
 	struct device_node *dn;
 	struct list_head list_node;
-	struct device *parent;
 
 	int first_busno;
 	int last_busno;
@@ -79,7 +78,6 @@ struct pci_controller {
 	resource_size_t	isa_mem_size;
 
 	struct pci_controller_ops controller_ops;
-	struct pci_ops *ops;
 	unsigned int __iomem *cfg_addr;
 	void __iomem *cfg_data;
 
@@ -282,6 +280,7 @@ extern void pci_process_bridge_OF_ranges(struct pci_controller *hose,
 
 /* Allocate & free a PCI host bridge structure */
 extern struct pci_controller *pcibios_alloc_controller(struct device_node *dev);
+extern struct pci_controller *pcibios_alloc_controller_early(struct device_node *dev);
 extern void pcibios_free_controller(struct pci_controller *phb);
 extern void pcibios_free_controller_deferred(struct pci_host_bridge *bridge);
 

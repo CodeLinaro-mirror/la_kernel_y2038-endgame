@@ -55,14 +55,14 @@ static int __init pcibios_init(void)
 
 	/* Scan all of the recorded PCI controllers.  */
 	list_for_each_entry_safe(hose, tmp, &hose_list, list_node)
-		pcibios_scan_phb(hose);
+		pcibios_scan_host_bridge(hose->bridge);
 
 	/* Call common code to handle resource allocation */
 	pcibios_resource_survey();
 
 	/* Add devices. */
 	list_for_each_entry_safe(hose, tmp, &hose_list, list_node)
-		pci_bus_add_devices(hose->bus);
+		pci_bus_add_devices(hose->bridge->bus);
 
 	/* Call machine dependent fixup */
 	if (ppc_md.pcibios_fixup)

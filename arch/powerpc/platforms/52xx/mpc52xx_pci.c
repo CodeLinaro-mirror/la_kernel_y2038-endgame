@@ -393,14 +393,14 @@ mpc52xx_add_bridge(struct device_node *node)
 	 * tree are needed to configure the 52xx PCI controller.  Rather
 	 * than parse the tree here, let pci_process_bridge_OF_ranges()
 	 * do it for us and extract the values after the fact */
-	hose = pcibios_alloc_controller(node);
+	hose = pcibios_alloc_controller_early(node);
 	if (!hose)
 		return -ENOMEM;
 
 	hose->first_busno = bus_range ? bus_range[0] : 0;
 	hose->last_busno = bus_range ? bus_range[1] : 0xff;
 
-	hose->ops = &mpc52xx_pci_ops;
+	hose->bridge->ops = &mpc52xx_pci_ops;
 
 	pci_regs = ioremap(rsrc.start, resource_size(&rsrc));
 	if (!pci_regs)

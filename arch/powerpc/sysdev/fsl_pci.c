@@ -68,7 +68,7 @@ static int fsl_pcie_check_link(struct pci_controller *hose)
 	u32 val = 0;
 
 	if (hose->indirect_type & PPC_INDIRECT_TYPE_FSL_CFG_REG_LINK) {
-		if (hose->ops->read == fsl_indirect_read_config)
+		if (hose->bridge->ops->read == fsl_indirect_read_config)
 			__indirect_read_config(hose, hose->first_busno, 0,
 					       PCIE_LTSSM, 4, &val);
 		else
@@ -493,7 +493,7 @@ void fsl_pcibios_fixup_bus(struct pci_bus *bus)
 		is_pcie = early_find_capability(hose, 0, 0, PCI_CAP_ID_EXP);
 	no_link = !!(hose->indirect_type & PPC_INDIRECT_TYPE_NO_PCIE_LINK);
 
-	if (bus->parent == hose->bus && (is_pcie || no_link)) {
+	if (bus->parent == hose->bridge->bus && (is_pcie || no_link)) {
 		for (i = 0; i < PCI_BRIDGE_RESOURCE_NUM; ++i) {
 			struct resource *res = bus->resource[i];
 			struct resource *par;
@@ -552,7 +552,7 @@ int fsl_add_bridge(struct platform_device *pdev, int is_primary)
 		return -ENOMEM;
 
 	/* set platform device as the parent */
-	hose->parent = &pdev->dev;
+	hose->bridge->dev.parent = &pdev->dev;
 	hose->first_busno = bus_range ? bus_range[0] : 0x0;
 	hose->last_busno = bus_range ? bus_range[1] : 0xff;
 
@@ -571,7 +571,7 @@ int fsl_add_bridge(struct platform_device *pdev, int is_primary)
 
 	if (early_find_capability(hose, 0, 0, PCI_CAP_ID_EXP)) {
 		/* use fsl_indirect_read_config for PCIe */
-		hose->ops = &fsl_indirect_pcie_ops;
+		hose->bridge->ops = &fsl_indirect_pcie_ops;
 		/* For PCIE read HEADER_TYPE to identify controller mode */
 		early_read_config_byte(hose, 0, 0, PCI_HEADER_TYPE, &hdr_type);
 		if ((hdr_type & 0x7f) != PCI_HEADER_TYPE_BRIDGE)
@@ -774,7 +774,7 @@ static int __init mpc83xx_pcie_setup(struct pci_controller *hose,
 
 	WARN_ON(hose->dn->data);
 	hose->dn->data = pcie;
-	hose->ops = &mpc83xx_pcie_ops;
+	hose->bridge->ops = &mpc83xx_pcie_ops;
 	hose->indirect_type |= PPC_INDIRECT_TYPE_FSL_CFG_REG_LINK;
 
 	out_le32(pcie->cfg_type0 + PEX_OUTWIN0_TAH, 0);
@@ -912,7 +912,7 @@ u64 fsl_pci_immrbar_base(struct pci_controller *hose)
 	if (!is_mpc83xx_pci) {
 		u32 base;
 
-		pci_bus_read_config_dword(hose->bus,
+		pci_bus_read_config_dword(hose->bridge->bus,
 			PCI_DEVFN(0, 0), PCI_BASE_ADDRESS_0, &base);
 
 		/*
@@ -1163,7 +1163,8 @@ static int fsl_pci_pme_probe(struct pci_controller *hose)
 	u16 pms;
 
 	/* Get hose's pci_dev */
-	dev = list_first_entry(&hose->bus->devices, typeof(*dev), bus_list);
+	dev = list_first_entry(&hose->bridge->bus->devices,
+			       typeof(*dev), bus_list);
 
 	/* PME Disable */
 	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pms);
@@ -1177,7 +1178,7 @@ static int fsl_pci_pme_probe(struct pci_controller *hose)
 		return -ENXIO;
 	}
 
-	res = devm_request_irq(hose->parent, pme_irq,
+	res = devm_request_irq(hose->bridge->dev.parent, pme_irq,
 			fsl_pci_pme_handle,
 			IRQF_SHARED,
 			"[PCI] PME", hose);
