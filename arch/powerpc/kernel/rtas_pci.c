@@ -234,7 +234,7 @@ int rtas_setup_phb(struct pci_controller *phb)
 	if (phb_set_bus_ranges(dev, phb))
 		return 1;
 
-	phb->ops = &rtas_pci_ops;
+	phb->bridge->ops = &rtas_pci_ops;
 	phb->buid = get_phb_buid(dev);
 
 	return 0;

@@ -46,7 +46,7 @@ static int __init storcenter_add_bridge(struct device_node *dev)
 
 	printk("Adding PCI host bridge %pOF\n", dev);
 
-	hose = pcibios_alloc_controller(dev);
+	hose = pcibios_alloc_controller_early(dev);
 	if (hose == NULL)
 		return -ENOMEM;
 

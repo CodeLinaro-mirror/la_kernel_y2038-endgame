@@ -48,7 +48,7 @@ static int __init amigaone_add_bridge(struct device_node *dev)
 		printk(KERN_WARNING "Can't get bus-range for %pOF, assume"
 		       " bus 0\n", dev);
 
-	hose = pcibios_alloc_controller(dev);
+	hose = pcibios_alloc_controller_early(dev);
 	if (hose == NULL)
 		return -ENOMEM;
 

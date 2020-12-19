@@ -233,7 +233,7 @@ static struct pci_ops pa_pxp_ops = {
 
 static void __init setup_pa_pxp(struct pci_controller *hose)
 {
-	hose->ops = &pa_pxp_ops;
+	hose->bridge->ops = &pa_pxp_ops;
 	hose->cfg_data = ioremap(0xe0000000, 0x10000000);
 }
 
@@ -243,7 +243,7 @@ static int __init pas_add_bridge(struct device_node *dev)
 
 	pr_debug("Adding PCI host bridge %pOF\n", dev);
 
-	hose = pcibios_alloc_controller(dev);
+	hose = pcibios_alloc_controller_early(dev);
 	if (!hose)
 		return -ENOMEM;
 

@@ -573,6 +573,7 @@ static inline struct pci_host_bridge *pci_host_bridge_from_priv(void *priv)
 	return container_of(priv, struct pci_host_bridge, private);
 }
 
+void pci_init_host_bridge(struct pci_host_bridge *bridge);
 struct pci_host_bridge *pci_alloc_host_bridge(size_t priv);
 struct pci_host_bridge *devm_pci_alloc_host_bridge(struct device *dev,
 						   size_t priv);

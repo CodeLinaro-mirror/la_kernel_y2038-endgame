@@ -204,7 +204,7 @@ int __init tsi108_setup_pci(struct device_node *dev, u32 cfg_phys, int primary)
 		       " bus 0\n", dev);
 	}
 
-	hose = pcibios_alloc_controller(dev);
+	hose = pcibios_alloc_controller_early(dev);
 
 	if (!hose) {
 		printk("PCI Host bridge init failed\n");
@@ -214,7 +214,7 @@ int __init tsi108_setup_pci(struct device_node *dev, u32 cfg_phys, int primary)
 	hose->first_busno = bus_range ? bus_range[0] : 0;
 	hose->last_busno = bus_range ? bus_range[1] : 0xff;
 
-	(hose)->ops = &tsi108_direct_pci_ops;
+	hose->bridge->ops = &tsi108_direct_pci_ops;
 
 	printk(KERN_INFO "Found tsi108 PCI host bridge at 0x%08x. "
 	       "Firmware bus number: %d->%d\n",

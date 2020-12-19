@@ -193,7 +193,7 @@ static void __init setup_peg2(struct pci_controller *hose, struct device_node *d
 
 	rtas = of_find_node_by_name (root, "rtas");
 	if (rtas) {
-		hose->ops = &rtas_pci_ops;
+		hose->bridge->ops = &rtas_pci_ops;
 		of_node_put(rtas);
 	} else {
 		printk ("RTAS supporting Pegasos OF not found, please upgrade"
@@ -255,7 +255,7 @@ chrp_find_bridges(void)
 			printk(" at %llx", (unsigned long long)r.start);
 		printk("\n");
 
-		hose = pcibios_alloc_controller(dev);
+		hose = pcibios_alloc_controller_early(dev);
 		if (!hose) {
 			printk("Can't allocate PCI controller structure for %pOF\n",
 				dev);
@@ -274,7 +274,7 @@ chrp_find_bridges(void)
 			setup_grackle(hose);
 		} else if (is_longtrail) {
 			void __iomem *p = ioremap(GG2_PCI_CONFIG_BASE, 0x80000);
-			hose->ops = &gg2_pci_ops;
+			hose->bridge->ops = &gg2_pci_ops;
 			hose->cfg_data = p;
 			gg2_pci_config_base = p;
 		} else if (is_pegasos == 1) {
@@ -299,7 +299,7 @@ chrp_find_bridges(void)
 		} else {
 			printk("No methods for %pOF (model %s), using RTAS\n",
 			       dev, model);
-			hose->ops = &rtas_pci_ops;
+			hose->bridge->ops = &rtas_pci_ops;
 		}
 
 		pci_process_bridge_OF_ranges(hose, dev, index == 0);

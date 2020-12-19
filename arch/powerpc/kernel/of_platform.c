@@ -35,6 +35,7 @@
 static int of_pci_phb_probe(struct platform_device *dev)
 {
 	struct pci_controller *phb;
+	struct pci_host_bridge *bridge;
 
 	/* Check if we can do that ... */
 	if (ppc_md.pci_setup_phb == NULL)
@@ -47,8 +48,9 @@ static int of_pci_phb_probe(struct platform_device *dev)
 	if (!phb)
 		return -ENODEV;
 
+	bridge = phb->bridge;
 	/* Setup parent in sysfs */
-	phb->parent = &dev->dev;
+	bridge->dev.parent = &dev->dev;
 
 	/* Setup the PHB using arch provided callback */
 	if (ppc_md.pci_setup_phb(phb)) {
@@ -66,18 +68,18 @@ static int of_pci_phb_probe(struct platform_device *dev)
 	eeh_phb_pe_create(phb);
 
 	/* Scan the bus */
-	pcibios_scan_phb(phb);
-	if (phb->bus == NULL)
+	pcibios_scan_host_bridge(bridge);
+	if (bridge->bus == NULL)
 		return -ENXIO;
 
 	/* Claim resources. This might need some rework as well depending
 	 * whether we are doing probe-only or not, like assigning unassigned
 	 * resources etc...
 	 */
-	pcibios_claim_one_bus(phb->bus);
+	pcibios_claim_one_bus(bridge->bus);
 
 	/* Add probed PCI devices to the device model */
-	pci_bus_add_devices(phb->bus);
+	pci_bus_add_devices(bridge->bus);
 
 	return 0;
 }

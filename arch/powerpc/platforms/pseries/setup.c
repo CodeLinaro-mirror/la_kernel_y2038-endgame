@@ -476,7 +476,7 @@ static void __init pSeries_discover_phbs(void)
 		    !of_node_is_type(node, "pciex"))
 			continue;
 
-		phb = pcibios_alloc_controller(node);
+		phb = pcibios_alloc_controller_early(node);
 		if (!phb)
 			continue;
 		rtas_setup_phb(phb);

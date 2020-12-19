@@ -450,7 +450,7 @@ static void __init setup_u3_agp(struct pci_controller* hose)
 	 */
 	hose->first_busno = 0xf0;
 	hose->last_busno = 0xff;
-	hose->ops = &u3_agp_pci_ops;
+	hose->bridge->ops = &u3_agp_pci_ops;
 	hose->cfg_addr = ioremap(0xf0000000 + 0x800000, 0x1000);
 	hose->cfg_data = ioremap(0xf0000000 + 0xc00000, 0x1000);
 
@@ -462,7 +462,7 @@ static void __init setup_u4_pcie(struct pci_controller* hose)
         /* We currently only implement the "non-atomic" config space, to
          * be optimised later.
          */
-        hose->ops = &u4_pcie_pci_ops;
+        hose->bridge->ops = &u4_pcie_pci_ops;
         hose->cfg_addr = ioremap(0xf0000000 + 0x800000, 0x1000);
         hose->cfg_data = ioremap(0xf0000000 + 0xc00000, 0x1000);
 
@@ -471,7 +471,7 @@ static void __init setup_u4_pcie(struct pci_controller* hose)
 
 static void __init setup_u3_ht(struct pci_controller* hose)
 {
-	hose->ops = &u3_ht_pci_ops;
+	hose->bridge->ops = &u3_ht_pci_ops;
 
 	/* We hard code the address because of the different size of
 	 * the reg address cell, we shall fix that by killing struct
@@ -502,7 +502,7 @@ static int __init maple_add_bridge(struct device_node *dev)
 		dev);
 	}
 
-	hose = pcibios_alloc_controller(dev);
+	hose = pcibios_alloc_controller_early(dev);
 	if (hose == NULL)
 		return -ENOMEM;
 	hose->first_busno = bus_range ? bus_range[0] : 0;
