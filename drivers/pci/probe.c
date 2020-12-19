@@ -3109,10 +3109,12 @@ int pci_scan_root_bus_bridge(struct pci_host_bridge *bridge)
 		pci_bus_insert_busn_res(b, bus, 255);
 	}
 
-	max = pci_scan_child_bus(b);
+	if (!bridge->custom_bus_scan) {
+		max = pci_scan_child_bus(b);
 
-	if (!found)
-		pci_bus_update_busn_res_end(b, max);
+		if (!found)
+			pci_bus_update_busn_res_end(b, max);
+	}
 
 	return 0;
 }
