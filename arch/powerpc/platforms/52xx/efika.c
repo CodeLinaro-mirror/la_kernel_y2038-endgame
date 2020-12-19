@@ -110,7 +110,7 @@ static void __init efika_pcisetup(void)
 	printk(" controlled by %pOF\n", pcictrl);
 	printk("\n");
 
-	hose = pcibios_alloc_controller(pcictrl);
+	hose = pcibios_alloc_controller_early(pcictrl);
 	if (!hose) {
 		printk(KERN_WARNING EFIKA_PLATFORM_NAME
 		       ": Can't allocate PCI controller structure for %pOF\n",
@@ -120,7 +120,7 @@ static void __init efika_pcisetup(void)
 
 	hose->first_busno = bus_range[0];
 	hose->last_busno = bus_range[1];
-	hose->ops = &rtas_pci_ops;
+	hose->bridge->ops = &rtas_pci_ops;
 
 	pci_process_bridge_OF_ranges(hose, pcictrl, 0);
 	return;

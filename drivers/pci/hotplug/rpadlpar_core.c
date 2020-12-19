@@ -137,13 +137,13 @@ static struct pci_dev *dlpar_find_new_dev(struct pci_bus *parent,
 static void dlpar_pci_add_bus(struct device_node *dn)
 {
 	struct pci_dn *pdn = PCI_DN(dn);
-	struct pci_controller *phb = pdn->phb;
+	struct pci_host_bridge *bridge = pdn->phb->bridge;
 	struct pci_dev *dev = NULL;
 
 	pseries_eeh_init_edev_recursive(pdn);
 
 	/* Add EADS device to PHB bus, adding new entry to bus->devices */
-	dev = of_create_pci_dev(dn, phb->bus, pdn->devfn);
+	dev = of_create_pci_dev(dn, bridge->bus, pdn->devfn);
 	if (!dev) {
 		printk(KERN_ERR "%s: failed to create pci dev for %pOF\n",
 				__func__, dn);
@@ -162,13 +162,13 @@ static void dlpar_pci_add_bus(struct device_node *dn)
 	 * bus of the EADS bridge so the bridge device itself gets
 	 * properly added
 	 */
-	pcibios_finish_adding_to_bus(phb->bus);
+	pcibios_finish_adding_to_bus(bridge->bus);
 }
 
 static int dlpar_add_pci_slot(char *drc_name, struct device_node *dn)
 {
 	struct pci_dev *dev;
-	struct pci_controller *phb;
+	struct pci_host_bridge *bridge;
 
 	if (pci_find_bus_by_node(dn))
 		return -EINVAL;
@@ -177,8 +177,8 @@ static int dlpar_add_pci_slot(char *drc_name, struct device_node *dn)
 	dlpar_pci_add_bus(dn);
 
 	/* Confirm new bridge dev was created */
-	phb = PCI_DN(dn)->phb;
-	dev = dlpar_find_new_dev(phb->bus, dn);
+	bridge = PCI_DN(dn)->phb->bridge;
+	dev = dlpar_find_new_dev(bridge->bus, dn);
 
 	if (!dev) {
 		printk(KERN_ERR "%s: unable to add bus %s\n", __func__,

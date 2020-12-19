@@ -20,6 +20,7 @@
 #include <linux/export.h>
 #include <linux/of_address.h>
 #include <linux/of_pci.h>
+#include <linux/memblock.h>
 #include <linux/mm.h>
 #include <linux/shmem_fs.h>
 #include <linux/list.h>
@@ -105,19 +106,41 @@ static int get_phb_number(struct device_node *dn)
 	return phb_id;
 }
 
-struct pci_controller *pcibios_alloc_controller(struct device_node *dev)
+static void pcibios_unlink_controller(struct pci_host_bridge *bridge)
 {
-	struct pci_controller *phb;
+	struct pci_controller *phb = pci_host_bridge_priv(bridge);
 
-	phb = zalloc_maybe_bootmem(sizeof(struct pci_controller), GFP_KERNEL);
-	if (phb == NULL)
-		return NULL;
+	spin_lock(&hose_spinlock);
+
+	/* Clear bit of phb_bitmap to allow reuse of this PHB number. */
+	if (phb->global_number < MAX_PHBS)
+		clear_bit(phb->global_number, phb_bitmap);
+
+	list_del(&phb->list_node);
+	spin_unlock(&hose_spinlock);
+}
+
+static void pcibios_release_early_host_bridge(struct device *dev)
+{
+	struct pci_host_bridge *bridge = to_pci_host_bridge(dev);
+
+	pcibios_unlink_controller(bridge);
+
+	pci_free_resource_list(&bridge->windows);
+	pci_free_resource_list(&bridge->dma_ranges);
+	WARN(1, "attempt to free non-dynamic PHB\n");
+}
+
+static void pcibios_init_bridge(struct pci_host_bridge *bridge, struct device_node *dev)
+{
+	struct pci_controller *phb = pci_host_bridge_priv(bridge);
+
+	phb->bridge = bridge;
 	spin_lock(&hose_spinlock);
 	phb->global_number = get_phb_number(dev);
 	list_add_tail(&phb->list_node, &hose_list);
 	spin_unlock(&hose_spinlock);
 	phb->dn = dev;
-	phb->is_dynamic = slab_is_available();
 #ifdef CONFIG_PPC64
 	if (dev) {
 		int nid = of_node_to_nid(dev);
@@ -128,23 +151,45 @@ struct pci_controller *pcibios_alloc_controller(struct device_node *dev)
 		PHB_SET_NODE(phb, nid);
 	}
 #endif
-	return phb;
+}
+
+struct pci_controller *pcibios_alloc_controller(struct device_node *dev)
+{
+	struct pci_host_bridge *bridge;
+
+	bridge = pci_alloc_host_bridge(sizeof(struct pci_controller));
+	if (!bridge)
+		return NULL;
+
+	pcibios_init_bridge(bridge, dev);
+
+	pci_set_host_bridge_release(bridge, pcibios_unlink_controller, NULL);
+
+	return pci_host_bridge_priv(bridge);
 }
 EXPORT_SYMBOL_GPL(pcibios_alloc_controller);
 
+struct pci_controller * __init
+pcibios_alloc_controller_early(struct device_node *dev)
+{
+	struct pci_host_bridge *bridge;
+
+	bridge = memblock_alloc(sizeof(struct pci_host_bridge) +
+			sizeof(struct pci_controller), SMP_CACHE_BYTES);
+	if (!bridge)
+		panic("%s: Failed to allocate pci_host_bridge\n", __func__);
+
+	pci_init_host_bridge(bridge);
+	pcibios_init_bridge(bridge, dev);
+
+	bridge->dev.release = pcibios_release_early_host_bridge;
+
+	return pci_host_bridge_priv(bridge);
+}
+
 void pcibios_free_controller(struct pci_controller *phb)
 {
-	spin_lock(&hose_spinlock);
-
-	/* Clear bit of phb_bitmap to allow reuse of this PHB number. */
-	if (phb->global_number < MAX_PHBS)
-		clear_bit(phb->global_number, phb_bitmap);
-
-	list_del(&phb->list_node);
-	spin_unlock(&hose_spinlock);
-
-	if (phb->is_dynamic)
-		kfree(phb);
+	pci_free_host_bridge(phb->bridge);
 }
 EXPORT_SYMBOL_GPL(pcibios_free_controller);
 
@@ -1502,8 +1547,7 @@ resource_size_t pcibios_io_space_offset(struct pci_controller *hose)
 	return (unsigned long) hose->io_base_virt - _IO_BASE;
 }
 
-static void pcibios_setup_phb_resources(struct pci_controller *hose,
-					struct list_head *resources)
+static void pcibios_setup_phb_resources(struct pci_controller *hose)
 {
 	struct resource *res;
 	resource_size_t offset;
@@ -1521,7 +1565,7 @@ static void pcibios_setup_phb_resources(struct pci_controller *hose,
 
 		pr_debug("PCI: PHB IO resource    = %pR off 0x%08llx\n",
 			 res, (unsigned long long)offset);
-		pci_add_resource_offset(resources, res, offset);
+		pci_add_resource_offset(&hose->bridge->windows, res, offset);
 	}
 
 	/* Hookup PHB Memory resources */
@@ -1534,7 +1578,7 @@ static void pcibios_setup_phb_resources(struct pci_controller *hose,
 		pr_debug("PCI: PHB MEM resource %d = %pR off 0x%08llx\n", i,
 			 res, (unsigned long long)offset);
 
-		pci_add_resource_offset(resources, res, offset);
+		pci_add_resource_offset(&hose->bridge->windows, res, offset);
 	}
 }
 
@@ -1583,7 +1627,7 @@ fake_pci_bus(struct pci_controller *hose, int busnr)
 	}
 	bus.number = busnr;
 	bus.sysdata = hose;
-	bus.ops = hose? hose->ops: &null_pci_ops;
+	bus.ops = hose? hose->bridge->ops: &null_pci_ops;
 	return &bus;
 }
 
@@ -1616,20 +1660,15 @@ struct device_node *pcibios_get_phb_of_node(struct pci_bus *bus)
 }
 
 /**
- * pci_scan_phb - Given a pci_controller, setup and scan the PCI bus
- * @hose: Pointer to the PCI host controller instance structure
+ * pci_scan_host_bridge - Given a pci_controller, setup and scan the PCI bus
+ * @bridge: Pointer to the PCI host controller instance structure
  */
-void pcibios_scan_phb(struct pci_controller *hose)
+void pcibios_scan_host_bridge(struct pci_host_bridge *bridge)
 {
+	struct pci_controller *hose = pci_host_bridge_priv(bridge);
 	struct device_node *node = hose->dn;
-	struct pci_host_bridge *bridge;
 	int mode;
 	int error;
-
-	/* TODO: merge pci_controller into pci_host_bridge */
-	bridge = pci_alloc_host_bridge(0);
-	if (!bridge)
-		return;
 
 	pr_debug("PCI: Scanning PHB %pOF\n", node);
 
@@ -1637,41 +1676,36 @@ void pcibios_scan_phb(struct pci_controller *hose)
 	pcibios_setup_phb_io_space(hose);
 
 	/* Wire up PHB bus resources */
-	pcibios_setup_phb_resources(hose, &bridge->windows);
+	pcibios_setup_phb_resources(hose);
 
-	bridge->dev.parent = hose->parent;
 	bridge->sysdata = hose;
 	bridge->busnr = hose->first_busno;
-	bridge->ops = hose->ops;
+	bridge->custom_bus_scan = 1;
 
 	hose->busn.start = hose->first_busno;
 	hose->busn.end	 = hose->last_busno;
 	hose->busn.flags = IORESOURCE_BUS;
 	pci_add_resource(&bridge->windows, &hose->busn);
 
+	mode = PCI_PROBE_NORMAL;
+	if (node && hose->controller_ops.probe_mode)
+		mode = hose->controller_ops.probe_mode(bridge->bus);
+	/* Get probe mode and perform scan */
+	pr_debug("    probe mode: %d\n", mode);
+	if (mode == PCI_PROBE_DEVTREE)
+		bridge->custom_bus_scan = 1;
+
 	/* Create an empty bus for the toplevel */
-	error = pci_register_host_bridge(bridge);
+	error = pci_scan_root_bus_bridge(bridge);
 	if (error) {
 		pr_err("Failed to create bus for PCI domain %04x: %d\n",
 			hose->global_number, error);
 		pci_free_host_bridge(bridge);
 		return;
 	}
-	hose->bus = bridge->bus;
 
-	/* Get probe mode and perform scan */
-	mode = PCI_PROBE_NORMAL;
-	if (node && hose->controller_ops.probe_mode)
-		mode = hose->controller_ops.probe_mode(bus);
-	pr_debug("    probe mode: %d\n", mode);
 	if (mode == PCI_PROBE_DEVTREE)
-		of_scan_bus(node, bus);
-
-	if (mode == PCI_PROBE_NORMAL) {
-		pci_bus_update_busn_res_end(bus, 255);
-		hose->last_busno = pci_scan_child_bus(bus);
-		pci_bus_update_busn_res_end(bus, hose->last_busno);
-	}
+		of_scan_bus(node, bridge->bus);
 
 	/* Platform gets a chance to do some global fixups before
 	 * we proceed to resource allocation
@@ -1680,13 +1714,13 @@ void pcibios_scan_phb(struct pci_controller *hose)
 		ppc_md.pcibios_fixup_phb(hose);
 
 	/* Configure PCI Express settings */
-	if (bus && !pci_has_flag(PCI_PROBE_ONLY)) {
+	if (bridge->bus && !pci_has_flag(PCI_PROBE_ONLY)) {
 		struct pci_bus *child;
-		list_for_each_entry(child, &bus->children, node)
+		list_for_each_entry(child, &bridge->bus->children, node)
 			pcie_bus_configure_settings(child);
 	}
 }
-EXPORT_SYMBOL_GPL(pcibios_scan_phb);
+EXPORT_SYMBOL_GPL(pcibios_scan_host_bridge);
 
 static void fixup_hide_host_resource_fsl(struct pci_dev *dev)
 {

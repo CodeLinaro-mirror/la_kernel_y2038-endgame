@@ -21,12 +21,14 @@
 struct pci_controller *init_phb_dynamic(struct device_node *dn)
 {
 	struct pci_controller *phb;
+	struct pci_host_bridge *bridge;
 
 	pr_debug("PCI: Initializing new hotplug PHB %pOF\n", dn);
 
 	phb = pcibios_alloc_controller(dn);
 	if (!phb)
 		return NULL;
+	bridge = phb->bridge;
 	rtas_setup_phb(phb);
 	pci_process_bridge_OF_ranges(phb, dn, 0);
 	phb->controller_ops = pseries_pci_controller_ops;
@@ -39,8 +41,8 @@ struct pci_controller *init_phb_dynamic(struct device_node *dn)
 	if (dn->child)
 		pseries_eeh_init_edev_recursive(PCI_DN(dn));
 
-	pcibios_scan_phb(phb);
-	pcibios_finish_adding_to_bus(phb->bus);
+	pcibios_scan_host_bridge(bridge);
+	pcibios_finish_adding_to_bus(bridge->bus);
 
 	return phb;
 }
@@ -49,15 +51,16 @@ EXPORT_SYMBOL_GPL(init_phb_dynamic);
 /* RPA-specific bits for removing PHBs */
 int remove_phb_dynamic(struct pci_controller *phb)
 {
-	struct pci_bus *b = phb->bus;
+	struct pci_host_bridge *bridge = phb->bridge;
 	struct resource *res;
 	int rc, i;
 
 	pr_debug("PCI: Removing PHB %04x:%02x...\n",
-		 pci_domain_nr(b), b->number);
+		 pci_domain_nr(bridge->bus), bridge->busnr);
 
 	/* We cannot to remove a root bus that has children */
-	if (!(list_empty(&b->children) && list_empty(&b->devices)))
+	if (!(list_empty(&bridge->bus->children) &&
+	      list_empty(&bridge->bus->devices)))
 		return -EBUSY;
 
 	/* We -know- there aren't any child devices anymore at this stage
@@ -65,18 +68,16 @@ int remove_phb_dynamic(struct pci_controller *phb)
 	 */
 	res = &phb->io_resource;
 	if (res->flags & IORESOURCE_IO) {
-		rc = pcibios_unmap_io_space(b);
+		rc = pcibios_unmap_io_space(bridge->bus);
 		if (rc) {
 			printk(KERN_ERR "%s: failed to unmap IO on bus %s\n",
-			       __func__, b->name);
+			       __func__, bridge->bus->name);
 			return 1;
 		}
 	}
 
 	/* Remove the PCI bus and unregister the bridge device from sysfs */
-	phb->bus = NULL;
-	pci_remove_bus(b);
-	device_unregister(b->bridge);
+	pci_remove_bus(bridge->bus);
 
 	/* Now release the IO resource */
 	if (res->flags & IORESOURCE_IO)
@@ -90,11 +91,7 @@ int remove_phb_dynamic(struct pci_controller *phb)
 		release_resource(res);
 	}
 
-	/*
-	 * The pci_controller data structure is freed by
-	 * the pcibios_free_controller_deferred() callback;
-	 * see pseries_root_bridge_prepare().
-	 */
+	device_unregister(&bridge->dev);
 
 	return 0;
 }

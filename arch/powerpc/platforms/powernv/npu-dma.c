@@ -23,9 +23,10 @@
 static struct pci_dev *get_pci_dev(struct device_node *dn)
 {
 	struct pci_dn *pdn = PCI_DN(dn);
+	struct pci_host_bridge *bridge = pdn->phb->bridge;
 	struct pci_dev *pdev;
 
-	pdev = pci_get_domain_bus_and_slot(pci_domain_nr(pdn->phb->bus),
+	pdev = pci_get_domain_bus_and_slot(pci_domain_nr(bridge->bus),
 					   pdn->busno, pdn->devfn);
 
 	/*
@@ -502,6 +503,7 @@ static struct iommu_table_group *pnv_npu_compound_attach(struct pnv_ioda_pe *pe)
 	struct pci_dev *gpdev = NULL;
 	struct pci_dev *npdev;
 	struct pnv_ioda_pe *gpe = get_gpu_pci_dev_and_pe(pe, &gpdev);
+	struct pci_host_bridge *bridge = pe->phb->hose->bridge;
 
 	WARN_ON(!(pe->flags & PNV_IODA_PE_DEV));
 	if (!gpe)
@@ -527,7 +529,7 @@ static struct iommu_table_group *pnv_npu_compound_attach(struct pnv_ioda_pe *pe)
 	npucomp = container_of(table_group, struct npu_comp, table_group);
 	pnv_comp_attach_table_group(npucomp, pe);
 
-	list_for_each_entry(npdev, &pe->phb->hose->bus->devices, bus_list) {
+	list_for_each_entry(npdev, &bridge->bus->devices, bus_list) {
 		struct pci_dev *gpdevtmp = pnv_pci_get_gpu_dev(npdev);
 
 		if (gpdevtmp != gpdev)
