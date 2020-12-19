@@ -114,7 +114,7 @@ static int __init mvme5100_add_bridge(struct device_node *dev)
 
 	bus_range = of_get_property(dev, "bus-range", &len);
 
-	hose = pcibios_alloc_controller(dev);
+	hose = pcibios_alloc_controller_early(dev);
 	if (hose == NULL)
 		return -ENOMEM;
 

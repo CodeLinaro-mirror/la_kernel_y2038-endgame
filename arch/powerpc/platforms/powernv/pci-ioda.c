@@ -1513,6 +1513,7 @@ static void pnv_pci_ioda1_setup_dma_pe(struct pnv_phb *phb,
 				       struct pnv_ioda_pe *pe)
 {
 
+	struct pci_host_bridge *bridge = phb->hose->bridge;
 	struct page *tce_mem = NULL;
 	struct iommu_table *tbl;
 	unsigned int weight, total_weight = 0;
@@ -1527,7 +1528,7 @@ static void pnv_pci_ioda1_setup_dma_pe(struct pnv_phb *phb,
 	if (!weight)
 		return;
 
-	pci_walk_bus(phb->hose->bus, pnv_pci_ioda_dev_dma_weight,
+	pci_walk_bus(bridge->bus, pnv_pci_ioda_dev_dma_weight,
 		     &total_weight);
 	segs = (weight * phb->ioda.dma32_count) / total_weight;
 	if (!segs)
@@ -2301,7 +2302,7 @@ static void pnv_pci_enable_bridges(void)
 	struct pci_controller *hose;
 
 	list_for_each_entry(hose, &hose_list, list_node)
-		pnv_pci_enable_bridge(hose->bus);
+		pnv_pci_enable_bridge(hose->bridge->bus);
 }
 
 static void pnv_pci_ioda_fixup(void)
@@ -2763,7 +2764,7 @@ static void __init pnv_pci_init_ioda_phb(struct device_node *np,
 		      sizeof(*phb));
 
 	/* Allocate PCI controller */
-	phb->hose = hose = pcibios_alloc_controller(np);
+	phb->hose = hose = pcibios_alloc_controller_early(np);
 	if (!phb->hose) {
 		pr_err("  Can't allocate PCI controller for %pOF\n",
 		       np);
@@ -2931,7 +2932,7 @@ static void __init pnv_pci_init_ioda_phb(struct device_node *np,
 			phb->ioda.io_size, phb->ioda.io_segsize);
 
 
-	phb->hose->ops = &pnv_pci_ops;
+	phb->hose->bridge->ops = &pnv_pci_ops;
 	phb->get_pe_state = pnv_ioda_get_pe_state;
 	phb->freeze_pe = pnv_ioda_freeze_pe;
 	phb->unfreeze_pe = pnv_ioda_unfreeze_pe;

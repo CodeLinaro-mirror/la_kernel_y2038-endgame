@@ -65,7 +65,7 @@ static void spiderpci_memcpy_fromio(void *dest, const PCI_IO_ADDR src,
 	spiderpci_io_flush(iowa_mem_find_bus(src));
 }
 
-static int __init spiderpci_pci_setup_chip(struct pci_controller *phb,
+static int __init spiderpci_pci_setup_chip(struct pci_host_bridge *bridge,
 					   void __iomem *regs)
 {
 	void *dummy_page_va;
@@ -95,9 +95,9 @@ static int __init spiderpci_pci_setup_chip(struct pci_controller *phb,
 		return -1;
 	}
 
-	dummy_page_da = dma_map_single(phb->parent, dummy_page_va,
+	dummy_page_da = dma_map_single(bridge->dev.parent, dummy_page_va,
 				       PAGE_SIZE, DMA_FROM_DEVICE);
-	if (dma_mapping_error(phb->parent, dummy_page_da)) {
+	if (dma_mapping_error(bridge->dev.parent, dummy_page_da)) {
 		pr_err("SPIDER-IOWA:Map dummy page filed.\n");
 		kfree(dummy_page_va);
 		return -1;
@@ -139,7 +139,7 @@ int __init spiderpci_iowa_init(struct iowa_bus *bus, void *data)
 	priv->regs = regs;
 	bus->private = priv;
 
-	if (spiderpci_pci_setup_chip(bus->phb, regs))
+	if (spiderpci_pci_setup_chip(bus->phb->bridge, regs))
 		goto error;
 
 	return 0;

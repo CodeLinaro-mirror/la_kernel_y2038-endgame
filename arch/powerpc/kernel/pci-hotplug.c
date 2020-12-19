@@ -39,10 +39,10 @@ struct pci_bus *pci_find_bus_by_node(struct device_node *dn)
 {
 	struct pci_dn *pdn = PCI_DN(dn);
 
-	if (!pdn  || !pdn->phb || !pdn->phb->bus)
+	if (!pdn  || !pdn->phb || !pdn->phb->bridge || !pdn->phb->bridge->bus)
 		return NULL;
 
-	return find_bus_among_children(pdn->phb->bus, dn);
+	return find_bus_among_children(pdn->phb->bridge->bus, dn);
 }
 EXPORT_SYMBOL_GPL(pci_find_bus_by_node);
 

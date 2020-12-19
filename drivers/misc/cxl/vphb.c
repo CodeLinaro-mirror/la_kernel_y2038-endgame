@@ -208,6 +208,7 @@ static struct pci_controller_ops cxl_pci_controller_ops =
 
 int cxl_pci_vphb_add(struct cxl_afu *afu)
 {
+	struct pci_host_bridge *bridge;
 	struct pci_controller *phb;
 	struct device_node *vphb_dn;
 	struct device *parent;
@@ -238,34 +239,30 @@ int cxl_pci_vphb_add(struct cxl_afu *afu)
 	if (!phb)
 		return -ENODEV;
 
-	/* Setup parent in sysfs */
-	phb->parent = parent;
+	/* Setup bridge */
+	bridge = phb->bridge;
+	bridge->dev.parent = parent;
+	bridge->ops = &cxl_pcie_pci_ops;
 
 	/* Setup the PHB using arch provided callback */
-	phb->ops = &cxl_pcie_pci_ops;
 	phb->cfg_addr = NULL;
 	phb->cfg_data = NULL;
 	phb->private_data = afu;
 	phb->controller_ops = cxl_pci_controller_ops;
 
 	/* Scan the bus */
-	pcibios_scan_phb(phb);
-	if (phb->bus == NULL)
+	pcibios_scan_host_bridge(bridge);
+	if (bridge->bus == NULL)
 		return -ENXIO;
-
-	/* Set release hook on root bus */
-	pci_set_host_bridge_release(to_pci_host_bridge(phb->bus->bridge),
-				    pcibios_free_controller_deferred,
-				    (void *) phb);
 
 	/* Claim resources. This might need some rework as well depending
 	 * whether we are doing probe-only or not, like assigning unassigned
 	 * resources etc...
 	 */
-	pcibios_claim_one_bus(phb->bus);
+	pcibios_claim_one_bus(bridge->bus);
 
 	/* Add probed PCI devices to the device model */
-	pci_bus_add_devices(phb->bus);
+	pci_bus_add_devices(bridge->bus);
 
 	afu->phb = phb;
 
@@ -283,11 +280,7 @@ void cxl_pci_vphb_remove(struct cxl_afu *afu)
 	phb = afu->phb;
 	afu->phb = NULL;
 
-	pci_remove_root_bus(phb->bus);
-	/*
-	 * We don't free phb here - that's handled by
-	 * pcibios_free_controller_deferred()
-	 */
+	pci_remove_root_bus(phb->bridge->bus);
 }
 
 bool cxl_pci_is_vphb_device(struct pci_dev *dev)
@@ -296,7 +289,7 @@ bool cxl_pci_is_vphb_device(struct pci_dev *dev)
 
 	phb = pci_bus_to_host(dev->bus);
 
-	return (phb->ops == &cxl_pcie_pci_ops);
+	return (phb->bridge->ops == &cxl_pcie_pci_ops);
 }
 
 struct cxl_afu *cxl_pci_to_afu(struct pci_dev *dev)

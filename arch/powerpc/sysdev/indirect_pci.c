@@ -168,6 +168,6 @@ void setup_indirect_pci(struct pci_controller *hose, resource_size_t cfg_addr,
 	if ((cfg_data & PAGE_MASK) != base)
 		mbase = ioremap(cfg_data & PAGE_MASK, PAGE_SIZE);
 	hose->cfg_data = mbase + (cfg_data & ~PAGE_MASK);
-	hose->ops = &indirect_pci_ops;
+	hose->bridge->ops = &indirect_pci_ops;
 	hose->indirect_type = flags;
 }

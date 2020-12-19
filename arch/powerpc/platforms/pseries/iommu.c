@@ -495,6 +495,7 @@ static void iommu_table_setparms(struct pci_controller *phb,
 				 struct device_node *dn,
 				 struct iommu_table *tbl)
 {
+	struct pci_host_bridge *bridge = phb->bridge;
 	struct device_node *node;
 	const unsigned long *basep;
 	const u32 *sizep;
@@ -514,7 +515,7 @@ static void iommu_table_setparms(struct pci_controller *phb,
 	if (!is_kdump_kernel())
 		memset((void *)tbl->it_base, 0, *sizep);
 
-	tbl->it_busno = phb->bus->number;
+	tbl->it_busno = bridge->bus->number;
 	tbl->it_page_shift = IOMMU_PAGE_SHIFT_4K;
 
 	/* Units of tce entries */
@@ -547,11 +548,12 @@ static void iommu_table_setparms_lpar(struct pci_controller *phb,
 				      struct iommu_table_group *table_group,
 				      const __be32 *dma_window)
 {
+	struct pci_host_bridge *bridge = phb->bridge;
 	unsigned long offset, size;
 
 	of_parse_dma_window(dn, dma_window, &tbl->it_index, &offset, &size);
 
-	tbl->it_busno = phb->bus->number;
+	tbl->it_busno = bridge->bus->number;
 	tbl->it_page_shift = IOMMU_PAGE_SHIFT_4K;
 	tbl->it_base   = 0;
 	tbl->it_blocksize  = 16;
@@ -1362,6 +1364,7 @@ out_unlock:
 
 static void pci_dma_dev_setup_pSeriesLP(struct pci_dev *dev)
 {
+	struct pci_host_bridge *bridge;
 	struct device_node *pdn, *dn;
 	struct iommu_table *tbl;
 	const __be32 *dma_window = NULL;
@@ -1394,6 +1397,7 @@ static void pci_dma_dev_setup_pSeriesLP(struct pci_dev *dev)
 	pr_debug("  parent is %pOF\n", pdn);
 
 	pci = PCI_DN(pdn);
+	bridge = pci->phb->bridge;
 	if (!pci->table_group) {
 		pci->table_group = iommu_pseries_alloc_group(pci->phb->node);
 		tbl = pci->table_group->tables[0];
@@ -1402,7 +1406,7 @@ static void pci_dma_dev_setup_pSeriesLP(struct pci_dev *dev)
 		tbl->it_ops = &iommu_table_lpar_multi_ops;
 		iommu_init_table(tbl, pci->phb->node, 0, 0);
 		iommu_register_group(pci->table_group,
-				pci_domain_nr(pci->phb->bus), 0);
+				pci_domain_nr(bridge->bus), 0);
 		pr_debug("  created table: %p\n", pci->table_group);
 	} else {
 		pr_debug("  found DMA window, table: %p\n", pci->table_group);
