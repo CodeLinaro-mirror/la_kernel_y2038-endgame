@@ -107,7 +107,7 @@ SECTIONS
  * From this point, stuff is considered writable and will be copied to RAM
  */
 	__data_loc = ALIGN(4);		/* location in file */
-	. = PAGE_OFFSET + TEXT_OFFSET;	/* location in memory */
+	. = PAGE_OFFSET + TEXT_OFFSET + 0x10000000; /* location in memory */
 #undef LOAD_OFFSET
 #define LOAD_OFFSET (PAGE_OFFSET + TEXT_OFFSET - __data_loc)
 
