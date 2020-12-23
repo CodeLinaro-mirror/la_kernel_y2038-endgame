@@ -607,70 +607,6 @@ KBUILD_WARN(4, CLANG_8, "-Wvariadic-macros")
 KBUILD_WARN(1, CLANG_8, "-Wstatic-in-inline")
 
 /* Supported but disabled by default */
-<<<<<<< HEAD
-KBUILD_WARN(3, GCC_4_6, "-Wabi")
-KBUILD_WARN(3, GCC_4_6, "-Waggregate-return")
-KBUILD_WARN(3, GCC_4_6, "-Wbad-function-cast")
-KBUILD_WARN(3, GCC_4_6, "-Wcast-align")
-KBUILD_WARN(3, GCC_4_6, "-Wcast-qual")
-KBUILD_WARN(3, GCC_4_6, "-Wc++-compat")
-KBUILD_WARN(3, GCC_4_6, "-Wconversion")
-KBUILD_WARN(2, GCC_4_6, "-Wdisabled-optimization")
-KBUILD_WARN(3, GCC_4_6, "-Wdouble-promotion")
-KBUILD_WARN(3, GCC_4_6, "-Wfloat-equal")
-KBUILD_WARN(3, GCC_4_6, "-Winit-self")
-KBUILD_WARN(3, GCC_4_6, "-Winline")
-KBUILD_WARN(3, GCC_4_6, "-Winvalid-pch")
-KBUILD_WARN(3, GCC_4_6, "-Wjump-misses-init")
-KBUILD_WARN(2, GCC_4_6, "-Wlogical-op")
-KBUILD_WARN(1, GCC_4_6, "-Wmissing-declarations")
-KBUILD_WARN(1, GCC_4_6, "-Wmissing-include-dirs")
-KBUILD_WARN(1, GCC_4_6, "-Wmissing-prototypes")
-KBUILD_WARN(3, GCC_4_6, "-Wmultichar")
-KBUILD_WARN(4, GCC_4_6, "-Wnested-externs")
-KBUILD_WARN(1, GCC_4_6, "-Wold-style-definition")
-KBUILD_WARN(3, GCC_4_6, "-Woverlength-strings")
-KBUILD_WARN(3, GCC_4_6, "-Wpacked")
-KBUILD_WARN(3, GCC_4_6, "-Wpadded")
-KBUILD_WARN(3, GCC_4_6, "-Wpointer-arith")
-KBUILD_WARN(3, GCC_4_6, "-Wredundant-decls")
-KBUILD_WARN(2, GCC_4_6, "-Wshadow")
-KBUILD_WARN(3, GCC_4_6, "-Wsign-conversion")
-KBUILD_WARN(3, GCC_4_6, "-Wstack-protector")
-KBUILD_WARN(3, GCC_4_6, "-Wstrict-prototypes")
-KBUILD_WARN(3, GCC_4_6, "-Wsuggest-attribute=const")
-KBUILD_WARN(3, GCC_4_6, "-Wsuggest-attribute=noreturn")
-KBUILD_WARN(3, GCC_4_6, "-Wsuggest-attribute=pure")
-KBUILD_WARN(3, GCC_4_6, "-Wswitch-default")
-KBUILD_WARN(3, GCC_4_6, "-Wswitch-enum")
-KBUILD_WARN(3, GCC_4_6, "-Wsystem-headers")
-KBUILD_WARN(3, GCC_4_6, "-Wtraditional-conversion")
-KBUILD_WARN(3, GCC_4_6, "-Wtraditional")
-KBUILD_WARN(3, GCC_4_6, "-Wtrampolines")
-KBUILD_WARN(3, GCC_4_6, "-Wundef")
-KBUILD_WARN(3, GCC_4_6, "-Wunsuffixed-float-constants")
-KBUILD_WARN(3, GCC_4_6, "-Wvariadic-macros")
-KBUILD_WARN(3, GCC_4_6, "-Wwrite-strings")
-KBUILD_WARN(3, GCC_4_7, "-Wvector-operation-performance")
-KBUILD_WARN(3, GCC_4_8, "-Wpedantic")
-KBUILD_WARN(3, GCC_4_8, "-Wsuggest-attribute=format")
-KBUILD_WARN(3, GCC_4_9, "-Wdate-time")
-KBUILD_WARN(3, GCC_4_9, "-Wfloat-conversion")
-KBUILD_WARN(3, GCC_5, "-Wsuggest-final-methods")
-KBUILD_WARN(3, GCC_5, "-Wsuggest-final-types")
-KBUILD_WARN(3, GCC_6, "-Wduplicated-cond")
-KBUILD_WARN(3, GCC_6, "-Wnull-dereference")
-KBUILD_WARN(3, GCC_7, "-Walloca")
-KBUILD_WARN(3, GCC_7, "-Walloca-larger-than=1")
-KBUILD_WARN(3, GCC_7, "-Walloc-zero")
-KBUILD_WARN(3, GCC_7, "-Wduplicated-branches")
-KBUILD_WARN(3, GCC_7, "-Wshadow=compatible-local")
-KBUILD_WARN(3, GCC_7, "-Wshadow=local")
-KBUILD_WARN(3, GCC_8, "-Wcast-align=strict")
-KBUILD_WARN(3, GCC_8, "-Wsuggest-attribute=cold")
-KBUILD_WARN(3, GCC_8, "-Wsuggest-attribute=malloc")
-KBUILD_WARN(3, CLANG_8, "-Warray-bounds-pointer-arithmetic")
-=======
 KBUILD_WARN(3, GCC_4_6, "-Wabi") /* never */
 KBUILD_WARN(4, GCC_4_6, "-Waggregate-return") /* harmful */
 /* KBUILD_WARN(3, GCC_4_6, "-Wbad-function-cast") * excessive */
@@ -692,7 +628,6 @@ KBUILD_WARN(1, GCC_4_6, "-Wmissing-declarations") /* never */
 KBUILD_WARN(1, GCC_4_6, "-Wmissing-include-dirs") /* never */
 KBUILD_WARN(1, GCC_4_6, "-Wmissing-prototypes") /* medium */
 KBUILD_WARN(3, GCC_4_6, "-Wmultichar") /* never */
-KBUILD_WARN(4, GCC_4_6, "-Wnested-externs") /* excessive */
 KBUILD_WARN(4, GCC_4_6, "-Wnested-externs") /* excessive */
 KBUILD_WARN(1, GCC_4_6, "-Wold-style-definition") /* rare */
 KBUILD_WARN(3, GCC_4_6, "-Woverlength-strings") /* medium, useless */
@@ -736,7 +671,6 @@ KBUILD_WARN(4, GCC_7, "-Wshadow=local") /* huge */
 KBUILD_WARN(4, GCC_8, "-Wsuggest-attribute=cold") /* lots */
 KBUILD_WARN(4, GCC_8, "-Wsuggest-attribute=malloc") /* lots */
 KBUILD_WARN(3, CLANG_8, "-Warray-bounds-pointer-arithmetic") /* rare */
->>>>>>> 54b3ee0a2aa3 (stash)
 KBUILD_WARN(3, CLANG_8, "-Watomic-properties")
 KBUILD_WARN(3, CLANG_8, "-Wcustom-atomic-properties")
 KBUILD_WARN(3, CLANG_8, "-Wimplicit-atomic-properties")
