@@ -61,6 +61,8 @@ static inline void pci_common_init(struct hw_pci *hw)
 	pci_common_init_dev(NULL, hw);
 }
 
+int pcibios_init_resource(int nr, struct pci_sys_data *sys);
+
 /*
  * Setup early fixed I/O mapping.
  */

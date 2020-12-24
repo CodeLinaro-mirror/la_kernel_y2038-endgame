@@ -394,7 +394,7 @@ static int pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 	return irq;
 }
 
-static int pcibios_init_resource(int busnr, struct pci_sys_data *sys)
+int pcibios_init_resource(int busnr, struct pci_sys_data *sys)
 {
 	int ret;
 	struct resource_entry *window;
