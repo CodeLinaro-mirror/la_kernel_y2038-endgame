@@ -137,10 +137,12 @@ static struct pci_ops pcie_ops = {
 };
 
 
-static int __init pcie_setup(struct pci_sys_data *sys)
+static int __init pcie_setup(int nr, struct pci_host_bridge *bridge)
 {
 	struct resource *res;
 	int dev;
+
+	bridge->ops = &pcie_ops;
 
 	/*
 	 * Generic PCIe unit setup.
@@ -162,7 +164,7 @@ static int __init pcie_setup(struct pci_sys_data *sys)
 		pcie_ops.read = pcie_rd_conf_wa;
 	}
 
-	pci_ioremap_io(sys->busnr * SZ_64K, ORION5X_PCIE_IO_PHYS_BASE);
+	pci_ioremap_io(nr * SZ_64K, ORION5X_PCIE_IO_PHYS_BASE);
 
 	/*
 	 * Request resources.
@@ -180,7 +182,7 @@ static int __init pcie_setup(struct pci_sys_data *sys)
 	res->end = res->start + ORION5X_PCIE_MEM_SIZE - 1;
 	if (request_resource(&iomem_resource, res))
 		panic("Request PCIe Memory resource failed\n");
-	pci_add_resource_offset(&sys->resources, res, sys->mem_offset);
+	pci_add_resource(&bridge->windows, res);
 
 	return 1;
 }
@@ -461,9 +463,11 @@ static void __init orion5x_setup_pci_wins(void)
 	orion5x_setbits(PCI_ADDR_DECODE_CTRL, 1);
 }
 
-static int __init pci_setup(struct pci_sys_data *sys)
+static int __init pci_setup(int nr, struct pci_host_bridge *bridge)
 {
 	struct resource *res;
+
+	bridge->ops = &pci_ops;
 
 	/*
 	 * Point PCI unit MBUS decode windows to DRAM space.
@@ -480,7 +484,7 @@ static int __init pci_setup(struct pci_sys_data *sys)
 	 */
 	orion5x_setbits(PCI_CMD, PCI_CMD_HOST_REORDER);
 
-	pci_ioremap_io(sys->busnr * SZ_64K, ORION5X_PCI_IO_PHYS_BASE);
+	pci_ioremap_io(nr * SZ_64K, ORION5X_PCI_IO_PHYS_BASE);
 
 	/*
 	 * Request resources
@@ -498,7 +502,7 @@ static int __init pci_setup(struct pci_sys_data *sys)
 	res->end = res->start + ORION5X_PCI_MEM_SIZE - 1;
 	if (request_resource(&iomem_resource, res))
 		panic("Request PCI Memory resource failed\n");
-	pci_add_resource_offset(&sys->resources, res, sys->mem_offset);
+	pci_add_resource(&bridge->windows, res);
 
 	return 1;
 }
@@ -536,44 +540,21 @@ void __init orion5x_pci_set_cardbus_mode(void)
 	orion5x_pci_cardbus_mode = 1;
 }
 
-static int __init orion5x_pci_sys_setup(int nr, struct pci_sys_data *sys)
+static int __init orion5x_pci_setup(int nr, struct pci_host_bridge *bridge)
 {
 	vga_base = ORION5X_PCIE_MEM_PHYS_BASE;
 
 	if (nr == 0) {
-		orion_pcie_set_local_bus_nr(PCIE_BASE, sys->busnr);
-		return pcie_setup(sys);
+		orion_pcie_set_local_bus_nr(PCIE_BASE, bridge->busnr);
+		return pcie_setup(nr, bridge);
 	}
 
 	if (nr == 1 && !orion5x_pci_disabled) {
-		orion5x_pci_set_bus_nr(sys->busnr);
-		return pci_setup(sys);
+		orion5x_pci_set_bus_nr(bridge->busnr);
+		return pci_setup(nr, bridge);
 	}
 
 	return 0;
-}
-
-static int __init orion5x_pci_sys_scan_bus(int nr, struct pci_host_bridge *bridge)
-{
-	struct pci_sys_data *sys = pci_host_bridge_priv(bridge);
-
-	list_splice_init(&sys->resources, &bridge->windows);
-	bridge->dev.parent = NULL;
-	bridge->sysdata = sys;
-	bridge->busnr = sys->busnr;
-
-	if (nr == 0) {
-		bridge->ops = &pcie_ops;
-		return pci_scan_root_bus_bridge(bridge);
-	}
-
-	if (nr == 1 && !orion5x_pci_disabled) {
-		bridge->ops = &pci_ops;
-		return pci_scan_root_bus_bridge(bridge);
-	}
-
-	BUG();
-	return -ENODEV;
 }
 
 int __init orion5x_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
@@ -589,14 +570,7 @@ int __init orion5x_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 	return -1;
 }
 
-void orion5x_pci_init(int *(*map_irq)(const struct pci_dev *dev, u8 slot, u8 pin))
+void __init orion5x_pci_init(int (*map_irq)(const struct pci_dev *dev, u8 slot, u8 pin))
 {
-	struct hw_pci hw = {
-		.nr_controllers	= 2,
-		.setup		= orion5x_pci_sys_setup,
-		.scan		= orion5x_pci_sys_scan_bus,
-		.map_irq	= map_irq,
-	};
-
-	return orion_pci_probe(&hw);
+	return orion_pci_probe(2, orion5x_pci_setup, map_irq);
 }
