@@ -226,7 +226,6 @@ static int __init mv78xx0_pcie_map_irq(const struct pci_dev *dev, u8 slot,
 
 static struct hw_pci mv78xx0_pci __initdata = {
 	.nr_controllers	= 8,
-	.preinit	= mv78xx0_pcie_preinit,
 	.setup		= mv78xx0_pcie_setup,
 	.scan		= mv78xx0_pcie_scan_bus,
 	.map_irq	= mv78xx0_pcie_map_irq,
@@ -274,5 +273,6 @@ void __init mv78xx0_pcie_init(int init_port0, int init_port1)
 		}
 	}
 
-	pci_common_init(&mv78xx0_pci);
+	mv78xx0_pcie_preinit();
+	orion_pci_probe(&mv78xx0_pci);
 }

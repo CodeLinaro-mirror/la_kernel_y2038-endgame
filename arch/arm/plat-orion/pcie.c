@@ -286,3 +286,107 @@ int orion_pcie_wr_conf(void __iomem *base, struct pci_bus *bus,
 
 	return ret;
 }
+
+static void orion_pcie_init_hw(struct device *parent, struct hw_pci *hw,
+			    struct list_head *head)
+{
+	struct pci_sys_data *sys = NULL;
+	int ret;
+	int nr, busnr;
+
+	for (nr = busnr = 0; nr < hw->nr_controllers; nr++) {
+		struct pci_host_bridge *bridge;
+
+		bridge = pci_alloc_host_bridge(sizeof(struct pci_sys_data));
+		if (WARN(!bridge, "PCI: unable to allocate bridge!"))
+			break;
+
+		sys = pci_host_bridge_priv(bridge);
+
+		sys->busnr   = busnr;
+		sys->swizzle = hw->swizzle;
+		sys->map_irq = hw->map_irq;
+		INIT_LIST_HEAD(&sys->resources);
+
+		if (hw->private_data)
+			sys->private_data = hw->private_data[nr];
+
+		ret = hw->setup(nr, sys);
+
+		if (ret > 0) {
+
+			ret = pcibios_init_resource(nr, sys);
+			if (ret)  {
+				pci_free_host_bridge(bridge);
+				break;
+			}
+
+			bridge->map_irq = sys->map_irq;
+			bridge->swizzle_irq = pci_common_swizzle;
+
+			if (hw->scan)
+				ret = hw->scan(nr, bridge);
+			else {
+				list_splice_init(&sys->resources,
+						 &bridge->windows);
+				bridge->dev.parent = parent;
+				bridge->sysdata = sys;
+				bridge->busnr = sys->busnr;
+				bridge->ops = hw->ops;
+
+				ret = pci_scan_root_bus_bridge(bridge);
+			}
+
+			if (WARN(ret < 0, "PCI: unable to scan bus!")) {
+				pci_free_host_bridge(bridge);
+				break;
+			}
+
+			sys->bus = bridge->bus;
+
+			busnr = sys->bus->busn_res.end + 1;
+
+			list_add(&sys->node, head);
+		} else {
+			pci_free_host_bridge(bridge);
+			if (ret < 0)
+				break;
+		}
+	}
+}
+
+void orion_pci_probe(struct hw_pci *hw)
+{
+	struct pci_sys_data *sys;
+	LIST_HEAD(head);
+
+	pci_add_flags(PCI_REASSIGN_ALL_BUS);
+	if (hw->preinit)
+		hw->preinit();
+	orion_pcie_init_hw(NULL, hw, &head);
+	if (hw->postinit)
+		hw->postinit();
+
+	list_for_each_entry(sys, &head, node) {
+		struct pci_bus *bus = sys->bus;
+
+		/*
+		 * We insert PCI resources into the iomem_resource and
+		 * ioport_resource trees in either pci_bus_claim_resources()
+		 * or pci_bus_assign_resources().
+		 */
+		if (pci_has_flag(PCI_PROBE_ONLY)) {
+			pci_bus_claim_resources(bus);
+		} else {
+			struct pci_bus *child;
+
+			pci_bus_size_bridges(bus);
+			pci_bus_assign_resources(bus);
+
+			list_for_each_entry(child, &bus->children, node)
+				pcie_bus_configure_settings(child);
+		}
+
+		pci_bus_add_devices(bus);
+	}
+}

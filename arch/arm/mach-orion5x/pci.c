@@ -606,5 +606,5 @@ void orion5x_pci_init(int *(*map_irq)(const struct pci_dev *dev, u8 slot, u8 pin
 		.map_irq	= map_irq,
 	};
 
-	return pci_common_init(&hw);
+	return orion_pci_probe(&hw);
 }
