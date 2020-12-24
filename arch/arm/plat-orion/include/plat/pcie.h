@@ -30,6 +30,8 @@ int orion_pcie_rd_conf_wa(void __iomem *wa_base, struct pci_bus *bus,
 int orion_pcie_wr_conf(void __iomem *base, struct pci_bus *bus,
 		       u32 devfn, int where, int size, u32 val);
 
-void orion_pci_probe(struct hw_pci *hw);
+void orion_pci_probe(int nr_controllers,
+	int (*setup)(int nr, struct pci_host_bridge *),
+	int (*map_irq)(const struct pci_dev *dev, u8 slot, u8 pin));
 
 #endif
