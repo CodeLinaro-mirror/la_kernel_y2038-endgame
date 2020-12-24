@@ -98,7 +98,9 @@ static void __init mv78xx0_pcie_preinit(void)
 	}
 }
 
-static int __init mv78xx0_pcie_setup(int nr, struct pci_sys_data *sys)
+static struct pci_ops pcie_ops;
+
+static int __init mv78xx0_pcie_setup(int nr, struct pci_host_bridge *bridge)
 {
 	struct pcie_port *pp;
 	struct resource realio;
@@ -107,20 +109,21 @@ static int __init mv78xx0_pcie_setup(int nr, struct pci_sys_data *sys)
 		return 0;
 
 	pp = &pcie_port[nr];
-	sys->private_data = pp;
-	pp->root_bus_nr = sys->busnr;
+	bridge->sysdata = pp;
+	bridge->ops = &pcie_ops;
+	pp->root_bus_nr = bridge->busnr;
 
 	/*
 	 * Generic PCIe unit setup.
 	 */
-	orion_pcie_set_local_bus_nr(pp->base, sys->busnr);
+	orion_pcie_set_local_bus_nr(pp->base, bridge->busnr);
 	orion_pcie_setup(pp->base);
 
 	realio.start = nr * SZ_64K;
 	realio.end = realio.start + SZ_64K - 1;
 	pci_remap_iospace(&realio, MV78XX0_PCIE_IO_PHYS_BASE(nr));
 
-	pci_add_resource_offset(&sys->resources, &pp->res, sys->mem_offset);
+	pci_add_resource(&bridge->windows, &pp->res);
 
 	return 1;
 }
@@ -140,8 +143,7 @@ static int pcie_valid_config(struct pcie_port *pp, int bus, int dev)
 static int pcie_rd_conf(struct pci_bus *bus, u32 devfn, int where,
 			int size, u32 *val)
 {
-	struct pci_sys_data *sys = bus->sysdata;
-	struct pcie_port *pp = sys->private_data;
+	struct pcie_port *pp = bus->sysdata;
 	unsigned long flags;
 	int ret;
 
@@ -160,8 +162,7 @@ static int pcie_rd_conf(struct pci_bus *bus, u32 devfn, int where,
 static int pcie_wr_conf(struct pci_bus *bus, u32 devfn,
 			int where, int size, u32 val)
 {
-	struct pci_sys_data *sys = bus->sysdata;
-	struct pcie_port *pp = sys->private_data;
+	struct pcie_port *pp = bus->sysdata;
 	unsigned long flags;
 	int ret;
 
@@ -197,39 +198,13 @@ static void rc_pci_fixup(struct pci_dev *dev)
 }
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL, PCI_ANY_ID, rc_pci_fixup);
 
-static int __init mv78xx0_pcie_scan_bus(int nr, struct pci_host_bridge *bridge)
-{
-	struct pci_sys_data *sys = pci_host_bridge_priv(bridge);
-
-	if (nr >= num_pcie_ports) {
-		BUG();
-		return -EINVAL;
-	}
-
-	list_splice_init(&sys->resources, &bridge->windows);
-	bridge->dev.parent = NULL;
-	bridge->sysdata = sys;
-	bridge->busnr = sys->busnr;
-	bridge->ops = &pcie_ops;
-
-	return pci_scan_root_bus_bridge(bridge);
-}
-
 static int __init mv78xx0_pcie_map_irq(const struct pci_dev *dev, u8 slot,
 	u8 pin)
 {
-	struct pci_sys_data *sys = dev->bus->sysdata;
-	struct pcie_port *pp = sys->private_data;
+	struct pcie_port *pp = dev->bus->sysdata;
 
 	return IRQ_MV78XX0_PCIE_00 + (pp->maj << 2) + pp->min;
 }
-
-static struct hw_pci mv78xx0_pci __initdata = {
-	.nr_controllers	= 8,
-	.setup		= mv78xx0_pcie_setup,
-	.scan		= mv78xx0_pcie_scan_bus,
-	.map_irq	= mv78xx0_pcie_map_irq,
-};
 
 static void __init add_pcie_port(int maj, int min, void __iomem *base)
 {
@@ -274,5 +249,5 @@ void __init mv78xx0_pcie_init(int init_port0, int init_port1)
 	}
 
 	mv78xx0_pcie_preinit();
-	orion_pci_probe(&mv78xx0_pci);
+	orion_pci_probe(8, mv78xx0_pcie_setup, mv78xx0_pcie_map_irq);
 }

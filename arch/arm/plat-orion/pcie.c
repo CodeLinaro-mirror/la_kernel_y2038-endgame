@@ -9,6 +9,7 @@
  */
 
 #include <linux/kernel.h>
+#include <linux/ioport.h>
 #include <linux/pci.h>
 #include <linux/mbus.h>
 #include <asm/mach/pci.h>
@@ -287,106 +288,76 @@ int orion_pcie_wr_conf(void __iomem *base, struct pci_bus *bus,
 	return ret;
 }
 
-static void orion_pcie_init_hw(struct device *parent, struct hw_pci *hw,
-			    struct list_head *head)
+struct orion_pci_sys_data {
+	struct resource io_res;
+	char io_res_name[16];
+};
+
+static int orion_pci_init_resource(int nr, struct pci_host_bridge *bridge)
 {
-	struct pci_sys_data *sys = NULL;
+	struct orion_pci_sys_data *sys = pci_host_bridge_priv(bridge);
+	int ret;
+
+	pci_add_resource(&bridge->windows, &iomem_resource);
+
+	sys->io_res.start = (nr * SZ_64K) ?  : pcibios_min_io;
+	sys->io_res.end = (nr + 1) * SZ_64K - 1;
+	sys->io_res.flags = IORESOURCE_IO;
+	sys->io_res.name = sys->io_res_name;
+	sprintf(sys->io_res_name, "PCI%d I/O", nr);
+
+	ret = request_resource(&ioport_resource, &sys->io_res);
+	if (ret) {
+		pr_err("PCI: unable to allocate I/O port region (%d)\n", ret);
+		return ret;
+	}
+	pci_add_resource(&bridge->windows, &sys->io_res);
+
+	return 0;
+}
+
+void orion_pci_probe(int nr_controllers,
+	int (*setup)(int nr, struct pci_host_bridge *),
+	int (*map_irq)(const struct pci_dev *dev, u8 slot, u8 pin))
+{
 	int ret;
 	int nr, busnr;
 
-	for (nr = busnr = 0; nr < hw->nr_controllers; nr++) {
+	pci_add_flags(PCI_REASSIGN_ALL_BUS);
+
+	for (nr = busnr = 0; nr < nr_controllers; nr++) {
 		struct pci_host_bridge *bridge;
 
-		bridge = pci_alloc_host_bridge(sizeof(struct pci_sys_data));
+		bridge = pci_alloc_host_bridge(
+				sizeof(struct orion_pci_sys_data));
 		if (WARN(!bridge, "PCI: unable to allocate bridge!"))
 			break;
 
-		sys = pci_host_bridge_priv(bridge);
-
-		sys->busnr   = busnr;
-		sys->swizzle = hw->swizzle;
-		sys->map_irq = hw->map_irq;
-		INIT_LIST_HEAD(&sys->resources);
-
-		if (hw->private_data)
-			sys->private_data = hw->private_data[nr];
-
-		ret = hw->setup(nr, sys);
+		bridge->busnr   = busnr;
+		ret = setup(nr, bridge);
 
 		if (ret > 0) {
-
-			ret = pcibios_init_resource(nr, sys);
+			ret = orion_pci_init_resource(nr, bridge);
 			if (ret)  {
 				pci_free_host_bridge(bridge);
 				break;
 			}
 
-			bridge->map_irq = sys->map_irq;
+			bridge->map_irq = map_irq;
 			bridge->swizzle_irq = pci_common_swizzle;
 
-			if (hw->scan)
-				ret = hw->scan(nr, bridge);
-			else {
-				list_splice_init(&sys->resources,
-						 &bridge->windows);
-				bridge->dev.parent = parent;
-				bridge->sysdata = sys;
-				bridge->busnr = sys->busnr;
-				bridge->ops = hw->ops;
-
-				ret = pci_scan_root_bus_bridge(bridge);
-			}
+			ret = pci_host_probe(bridge);
 
 			if (WARN(ret < 0, "PCI: unable to scan bus!")) {
 				pci_free_host_bridge(bridge);
 				break;
 			}
 
-			sys->bus = bridge->bus;
-
-			busnr = sys->bus->busn_res.end + 1;
-
-			list_add(&sys->node, head);
+			busnr = bridge->bus->busn_res.end + 1;
 		} else {
 			pci_free_host_bridge(bridge);
 			if (ret < 0)
 				break;
 		}
-	}
-}
-
-void orion_pci_probe(struct hw_pci *hw)
-{
-	struct pci_sys_data *sys;
-	LIST_HEAD(head);
-
-	pci_add_flags(PCI_REASSIGN_ALL_BUS);
-	if (hw->preinit)
-		hw->preinit();
-	orion_pcie_init_hw(NULL, hw, &head);
-	if (hw->postinit)
-		hw->postinit();
-
-	list_for_each_entry(sys, &head, node) {
-		struct pci_bus *bus = sys->bus;
-
-		/*
-		 * We insert PCI resources into the iomem_resource and
-		 * ioport_resource trees in either pci_bus_claim_resources()
-		 * or pci_bus_assign_resources().
-		 */
-		if (pci_has_flag(PCI_PROBE_ONLY)) {
-			pci_bus_claim_resources(bus);
-		} else {
-			struct pci_bus *child;
-
-			pci_bus_size_bridges(bus);
-			pci_bus_assign_resources(bus);
-
-			list_for_each_entry(child, &bus->children, node)
-				pcie_bus_configure_settings(child);
-		}
-
-		pci_bus_add_devices(bus);
 	}
 }

@@ -34,8 +34,9 @@ struct pcie_port {
 static struct pcie_port pcie_port[2];
 static int num_pcie_ports;
 
+static struct pci_ops pcie_ops;
 
-static int __init dove_pcie_setup(int nr, struct pci_sys_data *sys)
+static int __init dove_pcie_setup(int nr, struct pci_host_bridge *bridge)
 {
 	struct pcie_port *pp;
 	struct resource realio;
@@ -44,17 +45,18 @@ static int __init dove_pcie_setup(int nr, struct pci_sys_data *sys)
 		return 0;
 
 	pp = &pcie_port[nr];
-	sys->private_data = pp;
-	pp->root_bus_nr = sys->busnr;
+	bridge->sysdata = pp;
+	bridge->ops = &pcie_ops;
+	pp->root_bus_nr = bridge->busnr;
 
 	/*
 	 * Generic PCIe unit setup.
 	 */
-	orion_pcie_set_local_bus_nr(pp->base, sys->busnr);
+	orion_pcie_set_local_bus_nr(pp->base, bridge->busnr);
 
 	orion_pcie_setup(pp->base);
 
-	realio.start = sys->busnr * SZ_64K;
+	realio.start = nr * SZ_64K;
 	realio.end = realio.start + SZ_64K - 1;
 	pci_remap_iospace(&realio, pp->index == 0 ? DOVE_PCIE0_IO_PHYS_BASE :
 						    DOVE_PCIE1_IO_PHYS_BASE);
@@ -76,7 +78,7 @@ static int __init dove_pcie_setup(int nr, struct pci_sys_data *sys)
 	pp->res.flags = IORESOURCE_MEM;
 	if (request_resource(&iomem_resource, &pp->res))
 		panic("Request PCIe Memory resource failed\n");
-	pci_add_resource_offset(&sys->resources, &pp->res, sys->mem_offset);
+	pci_add_resource(&bridge->windows, &pp->res);
 
 	return 1;
 }
@@ -96,8 +98,7 @@ static int pcie_valid_config(struct pcie_port *pp, int bus, int dev)
 static int pcie_rd_conf(struct pci_bus *bus, u32 devfn, int where,
 			int size, u32 *val)
 {
-	struct pci_sys_data *sys = bus->sysdata;
-	struct pcie_port *pp = sys->private_data;
+	struct pcie_port *pp = bus->sysdata;
 	unsigned long flags;
 	int ret;
 
@@ -116,8 +117,7 @@ static int pcie_rd_conf(struct pci_bus *bus, u32 devfn, int where,
 static int pcie_wr_conf(struct pci_bus *bus, u32 devfn,
 			int where, int size, u32 val)
 {
-	struct pci_sys_data *sys = bus->sysdata;
-	struct pcie_port *pp = sys->private_data;
+	struct pcie_port *pp = bus->sysdata;
 	unsigned long flags;
 	int ret;
 
@@ -153,39 +153,12 @@ static void rc_pci_fixup(struct pci_dev *dev)
 }
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL, PCI_ANY_ID, rc_pci_fixup);
 
-static int __init
-dove_pcie_scan_bus(int nr, struct pci_host_bridge *bridge)
-{
-	struct pci_sys_data *sys = pci_host_bridge_priv(bridge);
-
-	if (nr >= num_pcie_ports) {
-		BUG();
-		return -EINVAL;
-	}
-
-	list_splice_init(&sys->resources, &bridge->windows);
-	bridge->dev.parent = NULL;
-	bridge->sysdata = sys;
-	bridge->busnr = sys->busnr;
-	bridge->ops = &pcie_ops;
-
-	return pci_scan_root_bus_bridge(bridge);
-}
-
 static int __init dove_pcie_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
-	struct pci_sys_data *sys = dev->sysdata;
-	struct pcie_port *pp = sys->private_data;
+	struct pcie_port *pp = dev->sysdata;
 
 	return pp->index ? IRQ_DOVE_PCIE1 : IRQ_DOVE_PCIE0;
 }
-
-static struct hw_pci dove_pci __initdata = {
-	.nr_controllers	= 2,
-	.setup		= dove_pcie_setup,
-	.scan		= dove_pcie_scan_bus,
-	.map_irq	= dove_pcie_map_irq,
-};
 
 static void __init add_pcie_port(int index, void __iomem *base)
 {
@@ -220,5 +193,5 @@ void __init dove_pcie_init(int init_port0, int init_port1)
 	if (init_port1)
 		add_pcie_port(1, DOVE_PCIE1_VIRT_BASE);
 
-	orion_pci_probe(&dove_pci);
+	orion_pci_probe(2, dove_pcie_setup, dove_pcie_map_irq);
 }
