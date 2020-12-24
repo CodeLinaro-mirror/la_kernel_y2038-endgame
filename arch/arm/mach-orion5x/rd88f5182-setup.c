@@ -168,18 +168,12 @@ static int __init rd88f5182_pci_map_irq(const struct pci_dev *dev, u8 slot,
 	}
 }
 
-static struct hw_pci rd88f5182_pci __initdata = {
-	.nr_controllers	= 2,
-	.preinit	= rd88f5182_pci_preinit,
-	.setup		= orion5x_pci_sys_setup,
-	.scan		= orion5x_pci_sys_scan_bus,
-	.map_irq	= rd88f5182_pci_map_irq,
-};
-
 static int __init rd88f5182_pci_init(void)
 {
-	if (machine_is_rd88f5182())
-		pci_common_init(&rd88f5182_pci);
+	if (machine_is_rd88f5182()) {
+		rd88f5182_pci_preinit();
+		orion5x_pci_init(rd88f5182_pci_map_irq);
+	}
 
 	return 0;
 }

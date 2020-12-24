@@ -163,18 +163,12 @@ static int __init qnap_ts209_pci_map_irq(const struct pci_dev *dev, u8 slot,
 	}
 }
 
-static struct hw_pci qnap_ts209_pci __initdata = {
-	.nr_controllers	= 2,
-	.preinit	= qnap_ts209_pci_preinit,
-	.setup		= orion5x_pci_sys_setup,
-	.scan		= orion5x_pci_sys_scan_bus,
-	.map_irq	= qnap_ts209_pci_map_irq,
-};
-
 static int __init qnap_ts209_pci_init(void)
 {
-	if (machine_is_ts209())
-		pci_common_init(&qnap_ts209_pci);
+	if (machine_is_ts209()) {
+		qnap_ts209_pci_preinit();
+		orion5x_pci_init(&qnap_ts209_pci_map_irq);
+	}
 
 	return 0;
 }

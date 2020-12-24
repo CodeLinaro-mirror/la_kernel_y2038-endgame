@@ -91,18 +91,11 @@ static void __init rd88f6183ap_ge_init(void)
 	orion5x_uart0_init();
 }
 
-static struct hw_pci rd88f6183ap_ge_pci __initdata = {
-	.nr_controllers	= 2,
-	.setup		= orion5x_pci_sys_setup,
-	.scan		= orion5x_pci_sys_scan_bus,
-	.map_irq	= orion5x_pci_map_irq,
-};
-
 static int __init rd88f6183ap_ge_pci_init(void)
 {
 	if (machine_is_rd88f6183ap_ge()) {
 		orion5x_pci_disable();
-		pci_common_init(&rd88f6183ap_ge_pci);
+		orion5x_pci_init(orion5x_pci_map_irq);
 	}
 
 	return 0;

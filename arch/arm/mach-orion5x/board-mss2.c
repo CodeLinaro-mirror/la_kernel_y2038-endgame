@@ -24,31 +24,10 @@
 /****************************************************************************
  * PCI setup
  ****************************************************************************/
-static int __init mss2_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-{
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
-	return -1;
-}
-
-static struct hw_pci mss2_pci __initdata = {
-	.nr_controllers = 2,
-	.setup		= orion5x_pci_sys_setup,
-	.scan		= orion5x_pci_sys_scan_bus,
-	.map_irq	= mss2_pci_map_irq,
-};
-
 static int __init mss2_pci_init(void)
 {
 	if (machine_is_mss2())
-		pci_common_init(&mss2_pci);
+		orion5x_pci_init(orion5x_pci_map_irq);
 
 	return 0;
 }

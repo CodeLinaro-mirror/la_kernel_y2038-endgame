@@ -115,18 +115,12 @@ static int __init tsp2_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 	return -1;
 }
 
-static struct hw_pci tsp2_pci __initdata = {
-	.nr_controllers = 2,
-	.preinit        = tsp2_pci_preinit,
-	.setup          = orion5x_pci_sys_setup,
-	.scan           = orion5x_pci_sys_scan_bus,
-	.map_irq        = tsp2_pci_map_irq,
-};
-
 static int __init tsp2_pci_init(void)
 {
-	if (machine_is_terastation_pro2())
-		pci_common_init(&tsp2_pci);
+	if (machine_is_terastation_pro2()) {
+		tsp2_pci_preinit();
+		orion5x_pci_init(tsp2_pci_map_irq);
+	}
 
 	return 0;
 }

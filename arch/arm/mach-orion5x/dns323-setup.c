@@ -71,34 +71,13 @@ enum {
  * PCI setup
  */
 
-static int __init dns323_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-{
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
-	return -1;
-}
-
-static struct hw_pci dns323_pci __initdata = {
-	.nr_controllers = 2,
-	.setup		= orion5x_pci_sys_setup,
-	.scan		= orion5x_pci_sys_scan_bus,
-	.map_irq	= dns323_pci_map_irq,
-};
-
 static int __init dns323_pci_init(void)
 {
 	/* Rev B1 and C1 doesn't really use its PCI bus, and initialising PCI
 	 * gets in the way of initialising the SATA controller.
 	 */
 	if (machine_is_dns323() && system_rev == DNS323_REV_A1)
-		pci_common_init(&dns323_pci);
+		orion5x_pci_init(orion5x_pci_map_irq);
 
 	return 0;
 }
