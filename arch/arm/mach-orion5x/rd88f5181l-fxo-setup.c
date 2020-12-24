@@ -143,18 +143,11 @@ rd88f5181l_fxo_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 	return gpio_to_irq(1);
 }
 
-static struct hw_pci rd88f5181l_fxo_pci __initdata = {
-	.nr_controllers	= 2,
-	.setup		= orion5x_pci_sys_setup,
-	.scan		= orion5x_pci_sys_scan_bus,
-	.map_irq	= rd88f5181l_fxo_pci_map_irq,
-};
-
 static int __init rd88f5181l_fxo_pci_init(void)
 {
 	if (machine_is_rd88f5181l_fxo()) {
 		orion5x_pci_set_cardbus_mode();
-		pci_common_init(&rd88f5181l_fxo_pci);
+		orion5x_pci_init(rd88f5181l_fxo_pci_map_irq);
 	}
 
 	return 0;

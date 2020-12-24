@@ -262,18 +262,12 @@ static int __init db88f5281_pci_map_irq(const struct pci_dev *dev, u8 slot,
 	}
 }
 
-static struct hw_pci db88f5281_pci __initdata = {
-	.nr_controllers	= 2,
-	.preinit	= db88f5281_pci_preinit,
-	.setup		= orion5x_pci_sys_setup,
-	.scan		= orion5x_pci_sys_scan_bus,
-	.map_irq	= db88f5281_pci_map_irq,
-};
-
 static int __init db88f5281_pci_init(void)
 {
-	if (machine_is_db88f5281())
-		pci_common_init(&db88f5281_pci);
+	if (machine_is_db88f5281()) {
+		db88f5281_pci_preinit();
+		orion5x_pci_init(db88f5281_pci_map_irq);
+	}
 
 	return 0;
 }

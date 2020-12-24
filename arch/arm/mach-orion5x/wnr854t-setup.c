@@ -150,17 +150,10 @@ static int __init wnr854t_pci_map_irq(const struct pci_dev *dev, u8 slot,
 	return -1;
 }
 
-static struct hw_pci wnr854t_pci __initdata = {
-	.nr_controllers	= 2,
-	.setup		= orion5x_pci_sys_setup,
-	.scan		= orion5x_pci_sys_scan_bus,
-	.map_irq	= wnr854t_pci_map_irq,
-};
-
 static int __init wnr854t_pci_init(void)
 {
 	if (machine_is_wnr854t())
-		pci_common_init(&wnr854t_pci);
+		orion5x_pci_init(&wnr854t_pci_map_irq);
 
 	return 0;
 }

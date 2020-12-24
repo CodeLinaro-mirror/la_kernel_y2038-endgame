@@ -544,7 +544,7 @@ void __init orion5x_pci_set_cardbus_mode(void)
 	orion5x_pci_cardbus_mode = 1;
 }
 
-int __init orion5x_pci_sys_setup(int nr, struct pci_sys_data *sys)
+static int __init orion5x_pci_sys_setup(int nr, struct pci_sys_data *sys)
 {
 	vga_base = ORION5X_PCIE_MEM_PHYS_BASE;
 
@@ -561,7 +561,7 @@ int __init orion5x_pci_sys_setup(int nr, struct pci_sys_data *sys)
 	return 0;
 }
 
-int __init orion5x_pci_sys_scan_bus(int nr, struct pci_host_bridge *bridge)
+static int __init orion5x_pci_sys_scan_bus(int nr, struct pci_host_bridge *bridge)
 {
 	struct pci_sys_data *sys = pci_host_bridge_priv(bridge);
 
@@ -595,4 +595,16 @@ int __init orion5x_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 		return IRQ_ORION5X_PCIE0_INT;
 
 	return -1;
+}
+
+void orion5x_pci_init(int *(*map_irq)(const struct pci_dev *dev, u8 slot, u8 pin))
+{
+	struct hw_pci hw = {
+		.nr_controllers	= 2,
+		.setup		= orion5x_pci_sys_setup,
+		.scan		= orion5x_pci_sys_scan_bus,
+		.map_irq	= map_irq,
+	};
+
+	return pci_common_init(&hw);
 }
