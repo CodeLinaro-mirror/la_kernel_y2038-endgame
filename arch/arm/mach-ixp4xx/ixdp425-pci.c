@@ -57,7 +57,6 @@ static int __init ixdp425_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 }
 
 struct hw_pci ixdp425_pci __initdata = {
-	.nr_controllers = 1,
 	.ops		= &ixp4xx_ops,
 	.preinit	= ixdp425_pci_preinit,
 	.setup		= ixp4xx_setup,
