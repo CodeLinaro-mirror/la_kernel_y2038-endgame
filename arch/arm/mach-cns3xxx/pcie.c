@@ -104,8 +104,9 @@ static int cns3xxx_pci_read_config(struct pci_bus *bus, unsigned int devfn,
 	return ret;
 }
 
-static int cns3xxx_pci_setup(int nr, struct pci_sys_data *sys)
+static int cns3xxx_pci_setup(struct pci_host_bridge *bridge)
 {
+	struct pci_sys_data *sys = pci_host_bridge_priv(bridge);
 	struct cns3xxx_pcie *cnspci = sysdata_to_cnspci(sys);
 	struct resource *res_io = &cnspci->res_io;
 	struct resource *res_mem = &cnspci->res_mem;
@@ -113,8 +114,8 @@ static int cns3xxx_pci_setup(int nr, struct pci_sys_data *sys)
 	BUG_ON(request_resource(&iomem_resource, res_io) ||
 	       request_resource(&iomem_resource, res_mem));
 
-	pci_add_resource_offset(&sys->resources, res_io, sys->io_offset);
-	pci_add_resource_offset(&sys->resources, res_mem, sys->mem_offset);
+	pci_add_resource_offset(&bridge->windows, res_io, sys->io_offset);
+	pci_add_resource_offset(&bridge->windows, res_mem, sys->mem_offset);
 
 	return 1;
 }
@@ -264,7 +265,6 @@ void __init cns3xxx_pcie_init_late(void)
 	int i;
 	void *private_data;
 	struct hw_pci hw_pci = {
-	       .nr_controllers = 1,
 	       .ops = &cns3xxx_pcie_ops,
 	       .setup = cns3xxx_pci_setup,
 	       .map_irq = cns3xxx_pcie_map_irq,

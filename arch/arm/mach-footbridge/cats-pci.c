@@ -47,7 +47,6 @@ static int cats_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 static struct hw_pci cats_pci __initdata = {
 	.swizzle		= cats_no_swizzle,
 	.map_irq		= cats_map_irq,
-	.nr_controllers		= 1,
 	.ops			= &dc21285_ops,
 	.setup			= dc21285_setup,
 	.preinit		= dc21285_preinit,

@@ -18,10 +18,8 @@ struct device;
 
 struct hw_pci {
 	struct pci_ops	*ops;
-	int		nr_controllers;
-	void		**private_data;
-	int		(*setup)(int nr, struct pci_sys_data *);
-	int		(*scan)(int nr, struct pci_host_bridge *);
+	void		*private_data;
+	int		(*setup)(struct pci_host_bridge *bridge);
 	void		(*preinit)(void);
 	void		(*postinit)(void);
 	u8		(*swizzle)(struct pci_dev *dev, u8 *pin);
@@ -32,36 +30,26 @@ struct hw_pci {
  * Per-controller structure
  */
 struct pci_sys_data {
-	struct list_head node;
-	int		busnr;		/* primary bus number			*/
 	u64		mem_offset;	/* bus->cpu memory mapping offset	*/
 	unsigned long	io_offset;	/* bus->cpu IO mapping offset		*/
-	struct pci_bus	*bus;		/* PCI bus				*/
-	struct list_head resources;	/* root bus resources (apertures)       */
 	struct resource io_res;
 	char		io_res_name[12];
-					/* Bridge swizzling			*/
-	u8		(*swizzle)(struct pci_dev *, u8 *);
-					/* IRQ mapping				*/
-	int		(*map_irq)(const struct pci_dev *, u8, u8);
 	void		*private_data;	/* platform controller private data	*/
 };
 
 /*
  * Call this with your hw_pci struct to initialise the PCI system.
  */
-void pci_common_init_dev(struct device *, struct hw_pci *);
+int pci_common_init_dev(struct device *, struct hw_pci *);
 
 /*
  * Compatibility wrapper for older platforms that do not care about
  * passing the parent device.
  */
-static inline void pci_common_init(struct hw_pci *hw)
+static inline int pci_common_init(struct hw_pci *hw)
 {
-	pci_common_init_dev(NULL, hw);
+	return pci_common_init_dev(NULL, hw);
 }
-
-int pcibios_init_resource(int nr, struct pci_sys_data *sys);
 
 /*
  * Setup early fixed I/O mapping.
@@ -76,12 +64,12 @@ static inline void pci_map_io_early(unsigned long pfn) {}
  * PCI controllers
  */
 extern struct pci_ops iop3xx_ops;
-extern int iop3xx_pci_setup(int nr, struct pci_sys_data *);
+extern int iop3xx_pci_setup(struct pci_host_bridge *bridge);
 extern void iop3xx_pci_preinit(void);
 extern void iop3xx_pci_preinit_cond(void);
 
 extern struct pci_ops dc21285_ops;
-extern int dc21285_setup(int nr, struct pci_sys_data *);
+extern int dc21285_setup(struct pci_host_bridge *bridge);
 extern void dc21285_preinit(void);
 extern void dc21285_postinit(void);
 

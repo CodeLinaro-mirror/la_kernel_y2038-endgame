@@ -35,10 +35,10 @@
  */
 static u32 iop3xx_cfg_address(struct pci_bus *bus, int devfn, int where)
 {
-	struct pci_sys_data *sys = bus->sysdata;
+	struct pci_host_bridge *bridge = pci_find_host_bridge(bus);
 	u32 addr;
 
-	if (sys->busnr == bus->number)
+	if (bridge->busnr == bus->number)
 		addr = 1 << (PCI_SLOT(devfn) + 16) | (PCI_SLOT(devfn) << 11);
 	else
 		addr = bus->number << 16 | PCI_SLOT(devfn) << 11 | 1;
@@ -182,13 +182,11 @@ iop3xx_pci_abort(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 	return 0;
 }
 
-int iop3xx_pci_setup(int nr, struct pci_sys_data *sys)
+int iop3xx_pci_setup(struct pci_host_bridge *bridge)
 {
+	struct pci_sys_data *sys = pci_host_bridge_priv(bridge);
 	struct resource *res;
 	struct resource realio;
-
-	if (nr != 0)
-		return 0;
 
 	res = kzalloc(sizeof(struct resource), GFP_KERNEL);
 	if (!res)
@@ -205,7 +203,7 @@ int iop3xx_pci_setup(int nr, struct pci_sys_data *sys)
 	 */
 	sys->mem_offset = IOP3XX_PCI_LOWER_MEM_PA - *IOP3XX_OMWTVR0;
 
-	pci_add_resource_offset(&sys->resources, res, sys->mem_offset);
+	pci_add_resource_offset(&bridge->windows, res, sys->mem_offset);
 
 	realio.start = 0;
 	realio.end = realio.start + SZ_64K - 1;
