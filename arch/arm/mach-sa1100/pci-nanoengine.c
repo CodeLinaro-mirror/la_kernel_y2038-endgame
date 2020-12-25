@@ -126,8 +126,13 @@ static struct resource pci_prefetchable_memory = {
 	.flags	= IORESOURCE_MEM  | IORESOURCE_PREFETCH,
 };
 
-static int __init pci_nanoengine_setup_resources(struct pci_sys_data *sys)
+static int __init pci_nanoengine_setup_resources(struct pci_host_bridge *bridge)
 {
+	struct pci_sys_data *sys = pci_host_bridge_priv(bridge);
+
+	sys->mem_offset = NANO_PCI_MEM_RW_PHYS;
+	sys->io_offset = 0x400;
+
 	if (request_resource(&ioport_resource, &pci_io_ports)) {
 		printk(KERN_ERR "PCI: unable to allocate io port region\n");
 		return -EBUSY;
@@ -143,40 +148,35 @@ static int __init pci_nanoengine_setup_resources(struct pci_sys_data *sys)
 		printk(KERN_ERR "PCI: unable to allocate prefetchable\n");
 		return -EBUSY;
 	}
-	pci_add_resource_offset(&sys->resources, &pci_io_ports, sys->io_offset);
-	pci_add_resource_offset(&sys->resources,
+	pci_add_resource_offset(&bridge->windows, &pci_io_ports, sys->io_offset);
+	pci_add_resource_offset(&bridge->windows,
 				&pci_non_prefetchable_memory, sys->mem_offset);
-	pci_add_resource_offset(&sys->resources,
+	pci_add_resource_offset(&bridge->windows,
 				&pci_prefetchable_memory, sys->mem_offset);
 
 	return 1;
 }
 
-int __init pci_nanoengine_setup(int nr, struct pci_sys_data *sys)
+int __init pci_nanoengine_setup(struct pci_host_bridge *bridge)
 {
 	int ret = 0;
 
 	pcibios_min_io = 0;
 	pcibios_min_mem = 0;
 
-	if (nr == 0) {
-		sys->mem_offset = NANO_PCI_MEM_RW_PHYS;
-		sys->io_offset = 0x400;
-		ret = pci_nanoengine_setup_resources(sys);
-		/* Enable alternate memory bus master mode, see
-		 * "Intel StrongARM SA1110 Developer's Manual",
-		 * section 10.8, "Alternate Memory Bus Master Mode". */
-		GPDR = (GPDR & ~GPIO_MBREQ) | GPIO_MBGNT;
-		GAFR |= GPIO_MBGNT | GPIO_MBREQ;
-		TUCR |= TUCR_MBGPIO;
-	}
+	ret = pci_nanoengine_setup_resources(bridge);
+	/* Enable alternate memory bus master mode, see
+	 * "Intel StrongARM SA1110 Developer's Manual",
+	 * section 10.8, "Alternate Memory Bus Master Mode". */
+	GPDR = (GPDR & ~GPIO_MBREQ) | GPIO_MBGNT;
+	GAFR |= GPIO_MBGNT | GPIO_MBREQ;
+	TUCR |= TUCR_MBGPIO;
 
 	return ret;
 }
 
 static struct hw_pci nanoengine_pci __initdata = {
 	.map_irq		= pci_nanoengine_map_irq,
-	.nr_controllers		= 1,
 	.ops			= &pci_nano_ops,
 	.setup			= pci_nanoengine_setup,
 };

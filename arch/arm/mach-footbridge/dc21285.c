@@ -241,11 +241,12 @@ static irqreturn_t dc21285_parity_irq(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-int __init dc21285_setup(int nr, struct pci_sys_data *sys)
+int __init dc21285_setup(struct pci_host_bridge *bridge)
 {
+	struct pci_sys_data *sys = pci_host_bridge_priv(bridge);
 	struct resource *res;
 
-	if (nr || !footbridge_cfn_mode())
+	if (!footbridge_cfn_mode())
 		return 0;
 
 	res = kcalloc(2, sizeof(struct resource), GFP_KERNEL);
@@ -266,8 +267,8 @@ int __init dc21285_setup(int nr, struct pci_sys_data *sys)
 
 	sys->mem_offset  = DC21285_PCI_MEM;
 
-	pci_add_resource_offset(&sys->resources, &res[0], sys->mem_offset);
-	pci_add_resource_offset(&sys->resources, &res[1], sys->mem_offset);
+	pci_add_resource_offset(&bridge->windows, &res[0], sys->mem_offset);
+	pci_add_resource_offset(&bridge->windows, &res[1], sys->mem_offset);
 
 	return 1;
 }
