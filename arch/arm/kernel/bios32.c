@@ -344,189 +344,100 @@ void pcibios_fixup_bus(struct pci_bus *bus)
 }
 EXPORT_SYMBOL(pcibios_fixup_bus);
 
-/*
- * Swizzle the device pin each time we cross a bridge.  If a platform does
- * not provide a swizzle function, we perform the standard PCI swizzling.
- *
- * The default swizzling walks up the bus tree one level at a time, applying
- * the standard swizzle function at each step, stopping when it finds the PCI
- * root bus.  This will return the slot number of the bridge device on the
- * root bus and the interrupt pin on that device which should correspond
- * with the downstream device interrupt.
- *
- * Platforms may override this, in which case the slot and pin returned
- * depend entirely on the platform code.  However, please note that the
- * PCI standard swizzle is implemented on plug-in cards and Cardbus based
- * PCI extenders, so it can not be ignored.
- */
-static u8 pcibios_swizzle(struct pci_dev *dev, u8 *pin)
-{
-	struct pci_sys_data *sys = dev->sysdata;
-	int slot, oldpin = *pin;
-
-	if (sys->swizzle)
-		slot = sys->swizzle(dev, pin);
-	else
-		slot = pci_common_swizzle(dev, pin);
-
-	if (debug_pci)
-		printk("PCI: %s swizzling pin %d => pin %d slot %d\n",
-			pci_name(dev), oldpin, *pin, slot);
-
-	return slot;
-}
-
-/*
- * Map a slot/pin to an IRQ.
- */
-static int pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-{
-	struct pci_sys_data *sys = dev->sysdata;
-	int irq = -1;
-
-	if (sys->map_irq)
-		irq = sys->map_irq(dev, slot, pin);
-
-	if (debug_pci)
-		printk("PCI: %s mapping slot %d pin %d => irq %d\n",
-			pci_name(dev), slot, pin, irq);
-
-	return irq;
-}
-
-int pcibios_init_resource(int busnr, struct pci_sys_data *sys)
+static int pcibios_init_resource(struct pci_host_bridge *bridge)
 {
 	int ret;
 	struct resource_entry *window;
+	struct pci_sys_data *sys = pci_host_bridge_priv(bridge);
 
-	if (list_empty(&sys->resources)) {
-		pci_add_resource_offset(&sys->resources,
+	if (list_empty(&bridge->windows)) {
+		pci_add_resource_offset(&bridge->windows,
 			 &iomem_resource, sys->mem_offset);
 	}
 
-	resource_list_for_each_entry(window, &sys->resources)
+	resource_list_for_each_entry(window, &bridge->windows)
 		if (resource_type(window->res) == IORESOURCE_IO)
 			return 0;
 
-	sys->io_res.start = (busnr * SZ_64K) ?  : pcibios_min_io;
-	sys->io_res.end = (busnr + 1) * SZ_64K - 1;
+	sys->io_res.start = pcibios_min_io;
+	sys->io_res.end = SZ_64K - 1;
 	sys->io_res.flags = IORESOURCE_IO;
 	sys->io_res.name = sys->io_res_name;
-	sprintf(sys->io_res_name, "PCI%d I/O", busnr);
+	sprintf(sys->io_res_name, "PCI I/O");
 
 	ret = request_resource(&ioport_resource, &sys->io_res);
 	if (ret) {
 		pr_err("PCI: unable to allocate I/O port region (%d)\n", ret);
 		return ret;
 	}
-	pci_add_resource_offset(&sys->resources, &sys->io_res,
+	pci_add_resource_offset(&bridge->windows, &sys->io_res,
 				sys->io_offset);
 
 	return 0;
 }
 
-static void pcibios_init_hw(struct device *parent, struct hw_pci *hw,
-			    struct list_head *head)
+int pci_common_init_dev(struct device *parent, struct hw_pci *hw)
 {
-	struct pci_sys_data *sys = NULL;
-	int ret;
-	int nr, busnr;
-
-	for (nr = busnr = 0; nr < hw->nr_controllers; nr++) {
-		struct pci_host_bridge *bridge;
-
-		bridge = pci_alloc_host_bridge(sizeof(struct pci_sys_data));
-		if (WARN(!bridge, "PCI: unable to allocate bridge!"))
-			break;
-
-		sys = pci_host_bridge_priv(bridge);
-
-		sys->busnr   = busnr;
-		sys->swizzle = hw->swizzle;
-		sys->map_irq = hw->map_irq;
-		INIT_LIST_HEAD(&sys->resources);
-
-		if (hw->private_data)
-			sys->private_data = hw->private_data[nr];
-
-		ret = hw->setup(nr, sys);
-
-		if (ret > 0) {
-
-			ret = pcibios_init_resource(nr, sys);
-			if (ret)  {
-				pci_free_host_bridge(bridge);
-				break;
-			}
-
-			bridge->map_irq = pcibios_map_irq;
-			bridge->swizzle_irq = pcibios_swizzle;
-
-			if (hw->scan)
-				ret = hw->scan(nr, bridge);
-			else {
-				list_splice_init(&sys->resources,
-						 &bridge->windows);
-				bridge->dev.parent = parent;
-				bridge->sysdata = sys;
-				bridge->busnr = sys->busnr;
-				bridge->ops = hw->ops;
-
-				ret = pci_scan_root_bus_bridge(bridge);
-			}
-
-			if (WARN(ret < 0, "PCI: unable to scan bus!")) {
-				pci_free_host_bridge(bridge);
-				break;
-			}
-
-			sys->bus = bridge->bus;
-
-			busnr = sys->bus->busn_res.end + 1;
-
-			list_add(&sys->node, head);
-		} else {
-			pci_free_host_bridge(bridge);
-			if (ret < 0)
-				break;
-		}
-	}
-}
-
-void pci_common_init_dev(struct device *parent, struct hw_pci *hw)
-{
+	struct pci_host_bridge *bridge;
 	struct pci_sys_data *sys;
-	LIST_HEAD(head);
+	int ret;
 
 	pci_add_flags(PCI_REASSIGN_ALL_BUS);
 	if (hw->preinit)
 		hw->preinit();
-	pcibios_init_hw(parent, hw, &head);
+
+	bridge = pci_alloc_host_bridge(sizeof(struct pci_sys_data));
+	if (WARN(!bridge, "PCI: unable to allocate bridge!"))
+		return -ENOMEM;
+
+	sys = pci_host_bridge_priv(bridge);
+	sys->private_data = hw->private_data;
+
+	ret = hw->setup(bridge);
+
+	if (ret <= 0) {
+		WARN(ret < 0, "PCI: unable to scan bus!");
+		pci_free_host_bridge(bridge);
+		return ret;
+	}
+
+	ret = pcibios_init_resource(bridge);
+	if (ret)  {
+		pci_free_host_bridge(bridge);
+		return -ENXIO;
+	}
+
+	bridge->map_irq = hw->map_irq;
+	bridge->swizzle_irq = hw->swizzle ?: pci_common_swizzle;
+	bridge->dev.parent = parent;
+	bridge->sysdata = sys;
+	bridge->ops = hw->ops;
+
+	ret = pci_scan_root_bus_bridge(bridge);
+
 	if (hw->postinit)
 		hw->postinit();
 
-	list_for_each_entry(sys, &head, node) {
-		struct pci_bus *bus = sys->bus;
+	/*
+	 * We insert PCI resources into the iomem_resource and
+	 * ioport_resource trees in either pci_bus_claim_resources()
+	 * or pci_bus_assign_resources().
+	 */
+	if (pci_has_flag(PCI_PROBE_ONLY)) {
+		pci_bus_claim_resources(bridge->bus);
+	} else {
+		struct pci_bus *child;
 
-		/*
-		 * We insert PCI resources into the iomem_resource and
-		 * ioport_resource trees in either pci_bus_claim_resources()
-		 * or pci_bus_assign_resources().
-		 */
-		if (pci_has_flag(PCI_PROBE_ONLY)) {
-			pci_bus_claim_resources(bus);
-		} else {
-			struct pci_bus *child;
+		pci_bus_size_bridges(bridge->bus);
+		pci_bus_assign_resources(bridge->bus);
 
-			pci_bus_size_bridges(bus);
-			pci_bus_assign_resources(bus);
-
-			list_for_each_entry(child, &bus->children, node)
-				pcie_bus_configure_settings(child);
-		}
-
-		pci_bus_add_devices(bus);
+		list_for_each_entry(child, &bridge->bus->children, node)
+			pcie_bus_configure_settings(child);
 	}
+
+	pci_bus_add_devices(bridge->bus);
+
+	return 0;
 }
 
 #ifndef CONFIG_PCI_HOST_ITE8152

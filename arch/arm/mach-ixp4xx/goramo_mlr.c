@@ -499,7 +499,6 @@ static int __init gmlr_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 }
 
 static struct hw_pci gmlr_hw_pci __initdata = {
-	.nr_controllers = 1,
 	.ops		= &ixp4xx_ops,
 	.preinit	= gmlr_pci_preinit,
 	.postinit	= gmlr_pci_postinit,
