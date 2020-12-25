@@ -28,9 +28,3 @@ obj-$(CONFIG_INPUT_MISC)	+= misc/
 obj-$(CONFIG_INPUT_APMPOWER)	+= apm-power.o
 
 obj-$(CONFIG_RMI4_CORE)		+= rmi4/
-
-ifdef CONFIG_CC_IS_CLANG
-# https://github.com/ClangBuiltLinux/linux/issues/1208
-KASAN_SANITIZE_joydev.o		:= n
-KASAN_SANITIZE_mousedev.o	:= n
-endif

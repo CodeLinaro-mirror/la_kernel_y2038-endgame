@@ -12,9 +12,6 @@ obj-$(CONFIG_XFS_FS)		+= xfs.o
 # this one should be compiled first, as the tracing macros can easily blow up
 xfs-y				+= xfs_trace.o
 
-CFLAGS_REMOVE_libxfs/xfs_bmap.o		+= $(CC_FLAGS_LTO)
-CFLAGS_REMOVE_libxfs/xfs_inode_fork.o	+= $(CC_FLAGS_LTO)
-
 # build the libxfs code first
 xfs-y				+= $(addprefix libxfs/, \
 				   xfs_ag.o \

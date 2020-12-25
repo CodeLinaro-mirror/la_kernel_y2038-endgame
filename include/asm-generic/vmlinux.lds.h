@@ -977,9 +977,12 @@
  */
 #if defined(CONFIG_GCOV_KERNEL) || defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KCSAN)
 # ifdef CONFIG_CONSTRUCTORS
-#  define SANITIZER_DISCARDS
+#  define SANITIZER_DISCARDS						\
+	*(.eh_frame)
 # else
-#  define SANITIZER_DISCARDS *(.init_array) *(.init_array.*)
+#  define SANITIZER_DISCARDS						\
+	*(.init_array) *(.init_array.*)					\
+	*(.eh_frame)
 # endif
 #else
 # define SANITIZER_DISCARDS
@@ -987,7 +990,6 @@
 
 #define COMMON_DISCARDS							\
 	SANITIZER_DISCARDS						\
-	*(.eh_frame)							\
 	*(.discard)							\
 	*(.discard.*)							\
 	*(.modinfo)							\
