@@ -418,12 +418,10 @@ void __init ixp4xx_pci_preinit(void)
 	pr_debug("DONE\n");
 }
 
-int ixp4xx_setup(int nr, struct pci_sys_data *sys)
+int ixp4xx_setup(struct pci_host_bridge *bridge)
 {
+	struct pci_sys_data *sys = pci_host_bridge_priv(bridge);
 	struct resource *res;
-
-	if (nr >= 1)
-		return 0;
 
 	res = kcalloc(2, sizeof(*res), GFP_KERNEL);
 	if (res == NULL) {
@@ -449,8 +447,8 @@ int ixp4xx_setup(int nr, struct pci_sys_data *sys)
 	request_resource(&ioport_resource, &res[0]);
 	request_resource(&iomem_resource, &res[1]);
 
-	pci_add_resource_offset(&sys->resources, &res[0], sys->io_offset);
-	pci_add_resource_offset(&sys->resources, &res[1], sys->mem_offset);
+	pci_add_resource_offset(&bridge->windows, &res[0], sys->io_offset);
+	pci_add_resource_offset(&bridge->windows, &res[1], sys->mem_offset);
 
 	return 1;
 }
