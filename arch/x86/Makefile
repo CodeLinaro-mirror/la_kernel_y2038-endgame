@@ -78,6 +78,9 @@ ifeq ($(CONFIG_X86_32),y)
         include arch/x86/Makefile_32.cpu
         KBUILD_CFLAGS += $(cflags-y)
 
+        # temporary until string.h is fixed
+        KBUILD_CFLAGS += -ffreestanding
+
 	ifeq ($(CONFIG_STACKPROTECTOR),y)
 		ifeq ($(CONFIG_SMP),y)
 			KBUILD_CFLAGS += -mstack-protector-guard-reg=fs -mstack-protector-guard-symbol=__stack_chk_guard
@@ -183,7 +186,7 @@ endif
 # Workaround for a gcc prelease that unfortunately was shipped in a suse release
 KBUILD_CFLAGS += -Wno-sign-compare
 #
-#KBUILD_CFLAGS += -fno-asynchronous-unwind-tables
+KBUILD_CFLAGS += -fno-asynchronous-unwind-tables
 
 # Avoid indirect branches in kernel to deal with Spectre
 ifdef CONFIG_RETPOLINE

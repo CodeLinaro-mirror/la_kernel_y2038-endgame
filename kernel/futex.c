@@ -146,6 +146,12 @@
  * double_lock_hb() and double_unlock_hb(), respectively.
  */
 
+#ifdef CONFIG_HAVE_FUTEX_CMPXCHG
+#define futex_cmpxchg_enabled 1
+#else
+static int  __read_mostly futex_cmpxchg_enabled;
+#endif
+
 /*
  * Futex flags used to encode options to functions and preserve them across
  * restarts.
@@ -839,6 +845,8 @@ static void exit_pi_state_list(struct task_struct *curr)
 	struct futex_hash_bucket *hb;
 	union futex_key key = FUTEX_KEY_INIT;
 
+	if (!futex_cmpxchg_enabled)
+		return;
 	/*
 	 * We are a ZOMBIE and nobody can enqueue itself on
 	 * pi_state_list anymore, but we have to be careful
@@ -3325,6 +3333,8 @@ out:
 SYSCALL_DEFINE2(set_robust_list, struct robust_list_head __user *, head,
 		size_t, len)
 {
+	if (!futex_cmpxchg_enabled)
+		return -ENOSYS;
 	/*
 	 * The kernel knows only one size for now:
 	 */
@@ -3349,6 +3359,9 @@ SYSCALL_DEFINE3(get_robust_list, int, pid,
 	struct robust_list_head __user *head;
 	unsigned long ret;
 	struct task_struct *p;
+
+	if (!futex_cmpxchg_enabled)
+		return -ENOSYS;
 
 	rcu_read_lock();
 
@@ -3522,6 +3535,9 @@ static void exit_robust_list(struct task_struct *curr)
 	unsigned int next_pi;
 	unsigned long futex_offset;
 	int rc;
+
+	if (!futex_cmpxchg_enabled)
+		return;
 
 	/*
 	 * Fetch the list head (which was registered earlier, via
@@ -3700,6 +3716,16 @@ long do_futex(u32 __user *uaddr, int op, u32 val, ktime_t *timeout,
 	}
 
 	switch (cmd) {
+	case FUTEX_LOCK_PI:
+	case FUTEX_UNLOCK_PI:
+	case FUTEX_TRYLOCK_PI:
+	case FUTEX_WAIT_REQUEUE_PI:
+	case FUTEX_CMP_REQUEUE_PI:
+		if (!futex_cmpxchg_enabled)
+			return -ENOSYS;
+	}
+
+	switch (cmd) {
 	case FUTEX_WAIT:
 		val3 = FUTEX_BITSET_MATCH_ANY;
 		fallthrough;
@@ -3822,6 +3848,9 @@ static void compat_exit_robust_list(struct task_struct *curr)
 	compat_long_t futex_offset;
 	int rc;
 
+	if (!futex_cmpxchg_enabled)
+		return;
+
 	/*
 	 * Fetch the list head (which was registered earlier, via
 	 * sys_set_robust_list()):
@@ -3884,6 +3913,9 @@ COMPAT_SYSCALL_DEFINE2(set_robust_list,
 		struct compat_robust_list_head __user *, head,
 		compat_size_t, len)
 {
+	if (!futex_cmpxchg_enabled)
+		return -ENOSYS;
+
 	if (unlikely(len != sizeof(*head)))
 		return -EINVAL;
 
@@ -3899,6 +3931,9 @@ COMPAT_SYSCALL_DEFINE3(get_robust_list, int, pid,
 	struct compat_robust_list_head __user *head;
 	unsigned long ret;
 	struct task_struct *p;
+
+	if (!futex_cmpxchg_enabled)
+		return -ENOSYS;
 
 	rcu_read_lock();
 
@@ -3951,6 +3986,26 @@ SYSCALL_DEFINE6(futex_time32, u32 __user *, uaddr, int, op, u32, val,
 }
 #endif /* CONFIG_COMPAT_32BIT_TIME */
 
+static noinline void futex_detect_cmpxchg(void)
+{
+#ifndef CONFIG_HAVE_FUTEX_CMPXCHG
+	u32 curval;
+
+	/*
+	 * This will fail and we want it. Some arch implementations do
+	 * runtime detection of the futex_atomic_cmpxchg_inatomic()
+	 * functionality. We want to know that before we call in any
+	 * of the complex code paths. Also we want to prevent
+	 * registration of robust lists in that case. NULL is
+	 * guaranteed to fault and we get -EFAULT on functional
+	 * implementation, the non-functional ones will return
+	 * -ENOSYS.
+	 */
+	if (cmpxchg_futex_value_locked(&curval, NULL, 0, 0) == -EFAULT)
+		futex_cmpxchg_enabled = 1;
+#endif
+}
+
 static int __init futex_init(void)
 {
 	unsigned int futex_shift;
@@ -3968,6 +4023,8 @@ static int __init futex_init(void)
 					       &futex_shift, NULL,
 					       futex_hashsize, futex_hashsize);
 	futex_hashsize = 1UL << futex_shift;
+
+	futex_detect_cmpxchg();
 
 	for (i = 0; i < futex_hashsize; i++) {
 		atomic_set(&futex_queues[i].waiters, 0);
