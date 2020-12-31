@@ -1623,7 +1623,7 @@ tgl_revids_get(struct drm_i915_private *dev_priv)
 	unsigned int first__ = (first);					\
 	unsigned int count__ = (count);					\
 	((gt)->info.engine_mask &						\
-	 GENMASK_ULL(first__ + count__ - 1, first__)) >> first__;		\
+	 GENMASK(first__ + count__ - 1, first__)) >> first__;		\
 })
 #define VDBOX_MASK(gt) \
 	ENGINE_INSTANCES_MASK(gt, VCS0, I915_MAX_VCS)
