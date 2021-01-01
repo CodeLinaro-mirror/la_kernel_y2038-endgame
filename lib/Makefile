@@ -353,6 +353,7 @@ obj-$(CONFIG_PLDMFW) += pldmfw/
 # KUnit tests
 CFLAGS_bitfield_kunit.o := $(call cc-option,-Wframe-larger-than=10240)
 obj-$(CONFIG_BITFIELD_KUNIT) += bitfield_kunit.o
+CFLAGS_REMOVE_bitfield_kunit.o += -fplugin-arg-structleak_plugin-byref -fplugin-arg-structleak_plugin-byref-all
 obj-$(CONFIG_LIST_KUNIT_TEST) += list-test.o
 obj-$(CONFIG_LINEAR_RANGES_TEST) += test_linear_ranges.o
 obj-$(CONFIG_BITS_TEST) += test_bits.o
