@@ -1743,7 +1743,7 @@ static int __init rnbd_client_init(void)
 	return err;
 }
 
-static void __exit rnbd_client_exit(void)
+static void rnbd_client_exit(void)
 {
 	rnbd_destroy_sessions();
 	unregister_blkdev(rnbd_client_major, "rnbd");
