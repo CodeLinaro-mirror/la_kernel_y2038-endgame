@@ -38,12 +38,6 @@
  ****************************************************************************/
 #define PCIE_BASE	(ORION5X_PCIE_VIRT_BASE)
 
-void __init orion5x_pcie_id(u32 *dev, u32 *rev)
-{
-	*dev = orion_pcie_dev_id(PCIE_BASE);
-	*rev = orion_pcie_rev(PCIE_BASE);
-}
-
 static int pcie_valid_config(int bus, int dev)
 {
 	/*
