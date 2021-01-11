@@ -57,7 +57,7 @@ void __init orion5x_map_io(void)
 	iotable_init(orion5x_io_desc, ARRAY_SIZE(orion5x_io_desc));
 }
 
-
+#ifdef CONFIG_ARCH_ORION5X
 /*****************************************************************************
  * CLK tree
  ****************************************************************************/
@@ -226,6 +226,7 @@ void __init orion5x_init_early(void)
 			ORION5X_BRIDGE_WINS_SZ,
 			ORION5X_DDR_WINS_BASE, ORION5X_DDR_WINS_SZ);
 }
+#endif
 
 void orion5x_setup_wins(void)
 {
@@ -279,6 +280,26 @@ void __init orion5x_timer_init(void)
 /*****************************************************************************
  * General
  ****************************************************************************/
+#define PCIE_BASE	(ORION5X_PCIE_VIRT_BASE)
+#define PCIE_DEV_ID_OFF		0x0
+#define PCIE_DEV_REV_OFF	0x8
+
+u32 orion_pcie_dev_id(void __iomem *base)
+{
+	return readl(base + PCIE_DEV_ID_OFF) >> 16;
+}
+
+u32 orion_pcie_rev(void __iomem *base)
+{
+	return readl(base + PCIE_DEV_REV_OFF) & 0xff;
+}
+
+void __init orion5x_pcie_id(u32 *dev, u32 *rev)
+{
+	*dev = orion_pcie_dev_id(PCIE_BASE);
+	*rev = orion_pcie_rev(PCIE_BASE);
+}
+
 /*
  * Identify device ID and rev from PCIe configuration header space '0'.
  */
@@ -321,6 +342,7 @@ void __init orion5x_id(u32 *dev, u32 *rev, char **dev_name)
 	}
 }
 
+#ifdef CONFIG_ARCH_ORION5X
 void __init orion5x_init(void)
 {
 	char *dev_name;
@@ -359,6 +381,7 @@ void __init orion5x_init(void)
 	 */
 	orion5x_wdt_init();
 }
+#endif
 
 void orion5x_restart(enum reboot_mode mode, const char *cmd)
 {
