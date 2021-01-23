@@ -36,6 +36,7 @@
 #include <linux/pci.h>
 #include <linux/dma-buf.h>
 #include <linux/mman.h>
+#include <asm/smp.h>
 
 #include "display/intel_display.h"
 #include "display/intel_frontbuffer.h"
