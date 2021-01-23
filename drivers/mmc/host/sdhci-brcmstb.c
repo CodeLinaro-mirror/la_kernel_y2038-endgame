@@ -314,7 +314,8 @@ err_clk:
 
 static void sdhci_brcmstb_shutdown(struct platform_device *pdev)
 {
-	sdhci_pltfm_suspend(&pdev->dev);
+	if (IS_ENABLED(CONFIG_PM_SLEEP))
+		sdhci_pltfm_suspend(&pdev->dev);
 }
 
 MODULE_DEVICE_TABLE(of, sdhci_brcm_of_match);
