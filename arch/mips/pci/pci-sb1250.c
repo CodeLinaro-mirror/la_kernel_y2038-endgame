@@ -191,6 +191,7 @@ struct pci_controller sb1250_controller = {
 	.pci_ops	= &sb1250_pci_ops,
 	.mem_resource	= &sb1250_mem_resource,
 	.io_resource	= &sb1250_io_resource,
+	.probe_only	= true; /* CFE will assign PCI resources */
 };
 
 static int __init sb1250_pcibios_init(void)
@@ -198,9 +199,6 @@ static int __init sb1250_pcibios_init(void)
 	void __iomem *io_map_base;
 	uint32_t cmdreg;
 	uint64_t reg;
-
-	/* CFE will assign PCI resources */
-	pci_set_flags(PCI_PROBE_ONLY);
 
 	/* Avoid ISA compat ranges.  */
 	PCIBIOS_MIN_IO = 0x00008000UL;

@@ -46,7 +46,7 @@ const char *const pci_mem_names[] = {
 const char pci_hae0_name[] = "HAE0";
 
 /*
- * If PCI_PROBE_ONLY in pci_flags is set, we don't change any PCI resource
+ * If bridge->probe_only is set, we don't change any PCI resource
  * assignments.
  */
 
@@ -210,9 +210,10 @@ static struct pdev_srm_saved_conf *srm_saved_configs;
 static void pdev_save_srm_config(struct pci_dev *dev)
 {
 	struct pdev_srm_saved_conf *tmp;
+	struct pci_host_bridge = pci_find_host_bridge(dev->bus);
 	static int printed = 0;
 
-	if (!alpha_using_srm || pci_has_flag(PCI_PROBE_ONLY))
+	if (!alpha_using_srm || bridge->probe_only)
 		return;
 
 	if (!printed) {
@@ -238,10 +239,6 @@ pci_restore_srm_config(void)
 {
 	struct pdev_srm_saved_conf *tmp;
 
-	/* No need to restore if probed only. */
-	if (pci_has_flag(PCI_PROBE_ONLY))
-		return;
-
 	/* Restore SRM config. */
 	for (tmp = srm_saved_configs; tmp; tmp = tmp->next) {
 		pci_restore_state(tmp->dev);
@@ -254,8 +251,9 @@ pci_restore_srm_config(void)
 void pcibios_fixup_bus(struct pci_bus *bus)
 {
 	struct pci_dev *dev = bus->self;
+	struct pci_host_bridge = pci_find_host_bridge(bus);
 
-	if (pci_has_flag(PCI_PROBE_ONLY) && dev &&
+	if (bridge->probe_only && dev &&
 	    (dev->class >> 8) == PCI_CLASS_BRIDGE_PCI) {
 		pci_read_bridge_bases(bus);
 	}
@@ -284,6 +282,7 @@ pcibios_set_master(struct pci_dev *dev)
 void __init
 pcibios_claim_one_bus(struct pci_bus *b)
 {
+	struct pci_host_bridge *bridge = pci_find_host_bridge(b);
 	struct pci_dev *dev;
 	struct pci_bus *child_bus;
 
@@ -295,7 +294,7 @@ pcibios_claim_one_bus(struct pci_bus *b)
 
 			if (r->parent || !r->start || !r->flags)
 				continue;
-			if (pci_has_flag(PCI_PROBE_ONLY) ||
+			if (bridge->probe_only ||
 			    (r->flags & IORESOURCE_PCI_FIXED)) {
 				if (pci_claim_resource(dev, i) == 0)
 					continue;
@@ -359,6 +358,7 @@ common_init_pci(void)
 		bridge->ops = alpha_mv.pci_ops;
 		bridge->swizzle_irq = alpha_mv.pci_swizzle;
 		bridge->map_irq = alpha_mv.pci_map_irq;
+		bridge->probe_only = hose->probe_only;
 
 		ret = pci_scan_root_bus_bridge(bridge);
 		if (ret) {

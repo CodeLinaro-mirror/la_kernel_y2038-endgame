@@ -254,6 +254,9 @@ titan_init_one_pachip_port(titan_pachip_port *port, int index)
 	hose->io_space = alloc_resource();
 	hose->mem_space = alloc_resource();
 
+	/* Indicate that we trust the console to configure things properly */
+	hose->probe_only = true;
+
 	/*
 	 * This is for userland consumption.  The 40-bit PIO bias that we 
 	 * use in the kernel through KSEG doesn't work in the page table 

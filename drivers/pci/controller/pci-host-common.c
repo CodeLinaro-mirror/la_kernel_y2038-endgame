@@ -66,7 +66,7 @@ int pci_host_common_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, bridge);
 
-	of_pci_check_probe_only();
+	of_pci_check_probe_only(bridge);
 
 	/* Parse and map our Configuration Space windows */
 	cfg = gen_pci_init(dev, bridge, ops);
@@ -74,7 +74,7 @@ int pci_host_common_probe(struct platform_device *pdev)
 		return PTR_ERR(cfg);
 
 	/* Do not reassign resources if probe only */
-	if (!pci_has_flag(PCI_PROBE_ONLY))
+	if (!bridge->probe_only)
 		pci_add_flags(PCI_REASSIGN_ALL_BUS);
 
 	bridge->sysdata = cfg;

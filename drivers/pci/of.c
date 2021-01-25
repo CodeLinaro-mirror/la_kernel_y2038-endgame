@@ -215,7 +215,7 @@ EXPORT_SYMBOL_GPL(of_get_pci_domain_nr);
  * of_pci_check_probe_only - Setup probe only mode if linux,pci-probe-only
  *                           is present and valid
  */
-void of_pci_check_probe_only(void)
+void of_pci_check_probe_only(struct pci_host_bridge *bridge)
 {
 	u32 val;
 	int ret;
@@ -227,11 +227,7 @@ void of_pci_check_probe_only(void)
 		return;
 	}
 
-	if (val)
-		pci_add_flags(PCI_PROBE_ONLY);
-	else
-		pci_clear_flags(PCI_PROBE_ONLY);
-
+	bridge->probe_only = !!val;
 	pr_info("PROBE_ONLY %sabled\n", val ? "en" : "dis");
 }
 EXPORT_SYMBOL_GPL(of_pci_check_probe_only);

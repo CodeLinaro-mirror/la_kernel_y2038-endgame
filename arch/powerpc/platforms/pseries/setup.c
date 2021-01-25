@@ -484,15 +484,15 @@ static void __init pSeries_discover_phbs(void)
 
 		/* create pci_dn's for DT nodes under this PHB */
 		pci_devs_phb_init_dynamic(phb);
+
+		/*
+		 * PCI_PROBE_ONLY and PCI_REASSIGN_ALL_BUS can be set via properties
+		 * in chosen.
+		 */
+		of_pci_check_probe_only(pbh->bridge);
 	}
 
 	of_node_put(root);
-
-	/*
-	 * PCI_PROBE_ONLY and PCI_REASSIGN_ALL_BUS can be set via properties
-	 * in chosen.
-	 */
-	of_pci_check_probe_only();
 }
 
 static void init_cpu_char_feature_flags(struct h_cpu_char_result *result)
