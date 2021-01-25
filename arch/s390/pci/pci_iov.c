@@ -81,7 +81,7 @@ int zpci_iov_setup_virtfn(struct zpci_bus *zbus, struct pci_dev *virtfn, int vfn
 	for (i = 0; i < ZPCI_FUNCTIONS_PER_BUS; i++) {
 		zdev = zbus->function[i];
 		if (zdev && zdev->is_physfn) {
-			pdev = pci_get_slot(zbus->bus, zdev->devfn);
+			pdev = pci_get_slot(zbus->bridge->bus, zdev->devfn);
 			if (!pdev)
 				continue;
 			cand_devfn = pci_iov_virtfn_devfn(pdev, vfid);

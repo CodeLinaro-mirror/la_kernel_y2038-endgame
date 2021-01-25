@@ -684,10 +684,10 @@ EXPORT_SYMBOL_GPL(zpci_disable_device);
 
 void zpci_remove_device(struct zpci_dev *zdev)
 {
-	struct zpci_bus *zbus = zdev->zbus;
+	struct pci_host_bridge *bridge = zdev->zbus->bridge;
 	struct pci_dev *pdev;
 
-	pdev = pci_get_slot(zbus->bus, zdev->devfn);
+	pdev = pci_get_slot(bridge->bus, zdev->devfn);
 	if (pdev) {
 		if (pdev->is_virtfn)
 			return zpci_iov_remove_virtfn(pdev, zdev->vfn);
@@ -764,7 +764,7 @@ void zpci_release_device(struct kref *kref)
 {
 	struct zpci_dev *zdev = container_of(kref, struct zpci_dev, kref);
 
-	if (zdev->zbus->bus)
+	if (zdev->zbus->bridge->bus)
 		zpci_remove_device(zdev);
 
 	switch (zdev->state) {
