@@ -632,8 +632,6 @@ static int bridge_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
-	pci_set_flags(PCI_PROBE_ONLY);
-
 	host = devm_pci_alloc_host_bridge(dev, sizeof(*bc));
 	if (!host) {
 		err = -ENOMEM;
@@ -641,6 +639,7 @@ static int bridge_probe(struct platform_device *pdev)
 	}
 
 	bc = pci_host_bridge_priv(host);
+	host->probe_only = true;
 
 	bc->busn.name		= "Bridge PCI busn";
 	bc->busn.start		= 0;

@@ -174,6 +174,7 @@ struct pci_controller nlm_pci_controller = {
 	.mem_offset	= 0x00000000UL,
 	.io_resource	= &nlm_pci_io_resource,
 	.io_offset	= 0x00000000UL,
+	.probe_only	= true; /* Firmware assigns PCI resources */
 };
 
 struct pci_dev *xlp_get_pcie_link(const struct pci_dev *dev)
@@ -292,8 +293,6 @@ static int __init pcibios_init(void)
 	int link, n;
 	u32 reg;
 
-	/* Firmware assigns PCI resources */
-	pci_set_flags(PCI_PROBE_ONLY);
 	pci_config_base = ioremap(XLP_DEFAULT_PCI_ECFG_BASE, 64 << 20);
 
 	/* Extend IO port for memory mapped io */

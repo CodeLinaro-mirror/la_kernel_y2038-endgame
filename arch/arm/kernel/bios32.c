@@ -423,7 +423,7 @@ int pci_common_init_dev(struct device *parent, struct hw_pci *hw)
 	 * ioport_resource trees in either pci_bus_claim_resources()
 	 * or pci_bus_assign_resources().
 	 */
-	if (pci_has_flag(PCI_PROBE_ONLY)) {
+	if (bridge->probe_only) {
 		pci_bus_claim_resources(bridge->bus);
 	} else {
 		struct pci_bus *child;

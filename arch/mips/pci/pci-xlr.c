@@ -156,6 +156,7 @@ struct pci_controller nlm_pci_controller = {
 	.mem_offset	= 0x00000000UL,
 	.io_resource	= &nlm_pci_io_resource,
 	.io_offset	= 0x00000000UL,
+	.probe_only	= true;
 };
 
 /*
@@ -332,7 +333,6 @@ static int __init pcibios_init(void)
 	int link, irq;
 
 	/* PSB assigns PCI resources */
-	pci_set_flags(PCI_PROBE_ONLY);
 	pci_config_base = ioremap(DEFAULT_PCI_CONFIG_BASE, 16 << 20);
 
 	/* Extend IO port for memory mapped io */

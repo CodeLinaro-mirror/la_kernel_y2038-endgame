@@ -509,6 +509,9 @@ static int __init maple_add_bridge(struct device_node *dev)
 	hose->last_busno = bus_range ? bus_range[1] : 0xff;
 	hose->controller_ops = maple_pci_controller_ops;
 
+	/* Tell pci.c to not change any resource allocations.  */
+	bridge->probe_only = true;
+
 	disp_name = NULL;
 	if (of_device_is_compatible(dev, "u3-agp")) {
 		setup_u3_agp(hose);
@@ -624,9 +627,6 @@ void __init maple_pci_init(void)
 		of_node_put(ht);
 
 	ppc_md.pcibios_root_bridge_prepare = maple_pci_root_bridge_prepare;
-
-	/* Tell pci.c to not change any resource allocations.  */
-	pci_add_flags(PCI_PROBE_ONLY);
 }
 
 int maple_pci_get_legacy_ide_irq(struct pci_dev *pdev, int channel)

@@ -330,8 +330,6 @@ titan_init_pci(void)
  	 */
  	titan_late_init();
  
-	/* Indicate that we trust the console to configure things properly */
-	pci_set_flags(PCI_PROBE_ONLY);
 	common_init_pci();
 	SMC669_Init(0);
 	locate_and_init_vga(NULL);

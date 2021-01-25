@@ -7,12 +7,13 @@
 
 struct pci_dev;
 struct device_node;
+struct pci_host_bridge;
 
 #if IS_ENABLED(CONFIG_OF) && IS_ENABLED(CONFIG_PCI)
 struct device_node *of_pci_find_child_device(struct device_node *parent,
 					     unsigned int devfn);
 int of_pci_get_devfn(struct device_node *np);
-void of_pci_check_probe_only(void);
+void of_pci_check_probe_only(struct pci_host_bridge *bridge);
 #else
 static inline struct device_node *of_pci_find_child_device(struct device_node *parent,
 					     unsigned int devfn)
@@ -25,7 +26,7 @@ static inline int of_pci_get_devfn(struct device_node *np)
 	return -EINVAL;
 }
 
-static inline void of_pci_check_probe_only(void) { }
+static inline void of_pci_check_probe_only(struct pci_host_bridge *bridge) { }
 #endif
 
 #if IS_ENABLED(CONFIG_OF_IRQ)
