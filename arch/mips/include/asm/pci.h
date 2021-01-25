@@ -50,6 +50,8 @@ struct pci_controller {
 	   of the PCI controller */
 	int (*get_busno)(void);
 	void (*set_busno)(int busno);
+
+	bool probe_only; /* trust firmware to allocate resources */
 };
 
 /*

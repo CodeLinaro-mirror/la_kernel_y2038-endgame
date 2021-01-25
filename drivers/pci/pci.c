@@ -6263,13 +6263,15 @@ static DEFINE_SPINLOCK(resource_alignment_lock);
 
 /**
  * pci_specified_resource_alignment - get resource alignment specified by user.
+ * @bridge: host bridge the device is on
  * @dev: the PCI device to get
  * @resize: whether or not to change resources' size when reassigning alignment
  *
  * RETURNS: Resource alignment if it is specified.
  *          Zero if it is not specified.
  */
-static resource_size_t pci_specified_resource_alignment(struct pci_dev *dev,
+static resource_size_t pci_specified_resource_alignment(struct pci_host_bridge *bridge,
+							struct pci_dev *dev,
 							bool *resize)
 {
 	int align_order, count;
@@ -6281,9 +6283,9 @@ static resource_size_t pci_specified_resource_alignment(struct pci_dev *dev,
 	p = resource_alignment_param;
 	if (!p || !*p)
 		goto out;
-	if (pci_has_flag(PCI_PROBE_ONLY)) {
+	if (bridge->probe_only) {
 		align = 0;
-		pr_info_once("PCI: Ignoring requested alignments (PCI_PROBE_ONLY)\n");
+		pr_info_once("PCI: Ignoring requested alignments (probe_only)\n");
 		goto out;
 	}
 
@@ -6392,7 +6394,8 @@ static void pci_request_resource_alignment(struct pci_dev *dev, int bar,
  * Later on, the kernel will assign page-aligned memory resource back
  * to the device.
  */
-void pci_reassigndev_resource_alignment(struct pci_dev *dev)
+void pci_reassigndev_resource_alignment(struct pci_host_bridge *bridge,
+					struct pci_dev *dev)
 {
 	int i;
 	struct resource *r;
@@ -6410,7 +6413,7 @@ void pci_reassigndev_resource_alignment(struct pci_dev *dev)
 		return;
 
 	/* check if specified PCI is target device to reassign */
-	align = pci_specified_resource_alignment(dev, &resize);
+	align = pci_specified_resource_alignment(bridge, dev, &resize);
 	if (!align)
 		return;
 

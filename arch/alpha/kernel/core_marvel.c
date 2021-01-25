@@ -212,6 +212,9 @@ io7_init_hose(struct io7 *io7, int port)
 	int i;
 
 	hose->index = hose_index++;	/* arbitrary */
+
+	/* Indicate that we trust the console to configure things properly */
+	hose->probe_only = true;
 	
 	/*
 	 * We don't have an isa or legacy hose, but glibc expects to be

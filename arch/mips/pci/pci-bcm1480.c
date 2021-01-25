@@ -178,11 +178,12 @@ static struct resource bcm1480_io_resource = {
 	.flags	= IORESOURCE_IO,
 };
 
-struct pci_controller bcm1480_controller = {
+struct pci_controller bycm1480_controller = {
 	.pci_ops	= &bcm1480_pci_ops,
 	.mem_resource	= &bcm1480_mem_resource,
 	.io_resource	= &bcm1480_io_resource,
 	.io_offset	= A_BCM1480_PHYS_PCI_IO_MATCH_BYTES,
+	.probe_only	= true; /* CFE will assign PCI resources */
 };
 
 
@@ -190,9 +191,6 @@ static int __init bcm1480_pcibios_init(void)
 {
 	uint32_t cmdreg;
 	uint64_t reg;
-
-	/* CFE will assign PCI resources */
-	pci_set_flags(PCI_PROBE_ONLY);
 
 	/* Avoid ISA compat ranges.  */
 	PCIBIOS_MIN_IO = 0x00008000UL;

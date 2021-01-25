@@ -162,7 +162,7 @@ static void dlpar_pci_add_bus(struct device_node *dn)
 	 * bus of the EADS bridge so the bridge device itself gets
 	 * properly added
 	 */
-	pcibios_finish_adding_to_bus(bridge->bus);
+	pcibios_finish_adding_to_bus(bridge);
 }
 
 static int dlpar_add_pci_slot(char *drc_name, struct device_node *dn)

@@ -402,7 +402,7 @@ static int __init pcic_pbm_scan_bus(struct linux_pcic *pcic)
 	bridge->sysdata = pbm;
 	bridge->busnr = pbm->pci_first_busno;
 	bridge->ops = &pcic_ops;
-	pci_set_flags(PCI_PROBE_ONLY);
+	bridge->probe_only = true;
 
 	ret = pci_host_probe(bridge);
 

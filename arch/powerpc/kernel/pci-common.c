@@ -906,6 +906,7 @@ int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
 static void pcibios_fixup_resources(struct pci_dev *dev)
 {
 	struct pci_controller *hose = pci_bus_to_host(dev->bus);
+	struct pci_host_bridge *bridge = hose->bridge;
 	int i;
 
 	if (!hose) {
@@ -925,12 +926,12 @@ static void pcibios_fixup_resources(struct pci_dev *dev)
 
 		/* If we're going to re-assign everything, we mark all resources
 		 * as unset (and 0-base them). In addition, we mark BARs starting
-		 * at 0 as unset as well, except if PCI_PROBE_ONLY is also set
+		 * at 0 as unset as well, except if ->probe_only is also set
 		 * since in that case, we don't want to re-assign anything
 		 */
 		pcibios_resource_to_bus(dev->bus, &reg, res);
 		if (pci_has_flag(PCI_REASSIGN_ALL_RSRC) ||
-		    (reg.start == 0 && !pci_has_flag(PCI_PROBE_ONLY))) {
+		    (reg.start == 0 && !bridge->probe_only)) {
 			/* Only print message if not re-assigning */
 			if (!pci_has_flag(PCI_REASSIGN_ALL_RSRC))
 				pr_debug("PCI:%s Resource %d %pR is unassigned\n",
@@ -959,14 +960,15 @@ static int pcibios_uninitialized_bridge_resource(struct pci_bus *bus,
 						 struct resource *res)
 {
 	struct pci_controller *hose = pci_bus_to_host(bus);
+	struct pci_host_bridge *bridge = hose->bridge;
 	struct pci_dev *dev = bus->self;
 	resource_size_t offset;
 	struct pci_bus_region region;
 	u16 command;
 	int i;
 
-	/* We don't do anything if PCI_PROBE_ONLY is set */
-	if (pci_has_flag(PCI_PROBE_ONLY))
+	/* We don't do anything if bridge->probe_only is set */
+	if (bridge->probe_only)
 		return 0;
 
 	/* Job is a bit different between memory and IO */
@@ -1435,6 +1437,7 @@ static void __init pcibios_reserve_legacy_regions(struct pci_bus *bus)
 void __init pcibios_resource_survey(void)
 {
 	struct pci_bus *b;
+	struct pci_host_bridge *bridge;
 
 	/* Allocate and assign resources */
 	list_for_each_entry(b, &pci_root_buses, node)
@@ -1448,17 +1451,17 @@ void __init pcibios_resource_survey(void)
 	 * the low IO area and the VGA memory area if they intersect the
 	 * bus available resources to avoid allocating things on top of them
 	 */
-	if (!pci_has_flag(PCI_PROBE_ONLY)) {
-		list_for_each_entry(b, &pci_root_buses, node)
-			pcibios_reserve_legacy_regions(b);
-	}
-
-	/* Now, if the platform didn't decide to blindly trust the firmware,
-	 * we proceed to assigning things that were left unassigned
-	 */
-	if (!pci_has_flag(PCI_PROBE_ONLY)) {
-		pr_debug("PCI: Assigning unassigned resources...\n");
-		pci_assign_unassigned_resources();
+	list_for_each_entry(b, &pci_root_buses, node) {
+		bridge = pci_find_host_bridge(b);
+		if (!bridge->probe_only) {
+			pcibios_reserve_legacy_regions(bridge->bus);
+			/* Now, if the platform didn't decide to blindly
+			 * trust the firmware, we proceed to assigning
+			 * things that were left unassigned
+			 */
+			pr_debug("PCI: Assigning unassigned resources...\n");
+			pci_assign_unassigned_root_bus_resources(bridge->bus);
+		}
 	}
 }
 
@@ -1503,23 +1506,23 @@ EXPORT_SYMBOL_GPL(pcibios_claim_one_bus);
  * added to a bus, this include calling it for a PHB that is just
  * being added
  */
-void pcibios_finish_adding_to_bus(struct pci_bus *bus)
+void pcibios_finish_adding_to_bus(struct pci_host_bridge *bridge)
 {
 	pr_debug("PCI: Finishing adding to hotplug bus %04x:%02x\n",
-		 pci_domain_nr(bus), bus->number);
+		 pci_domain_nr(bridge->bus), bridge->busnr);
 
 	/* Allocate bus and devices resources */
-	pcibios_allocate_bus_resources(bus);
-	pcibios_claim_one_bus(bus);
-	if (!pci_has_flag(PCI_PROBE_ONLY)) {
-		if (bus->self)
-			pci_assign_unassigned_bridge_resources(bus->self);
+	pcibios_allocate_bus_resources(bridge->bus);
+	pcibios_claim_one_bus(bridge->bus);
+	if (!bridge->probe_only) {
+		if (bridge->bus->self)
+			pci_assign_unassigned_bridge_resources(bridge->bus->self);
 		else
-			pci_assign_unassigned_bus_resources(bus);
+			pci_assign_unassigned_bus_resources(bridge->bus);
 	}
 
 	/* Add new devices to global lists.  Register in proc, sysfs. */
-	pci_bus_add_devices(bus);
+	pci_bus_add_devices(bridge->bus);
 }
 EXPORT_SYMBOL_GPL(pcibios_finish_adding_to_bus);
 
@@ -1714,7 +1717,7 @@ void pcibios_scan_host_bridge(struct pci_host_bridge *bridge)
 		ppc_md.pcibios_fixup_phb(hose);
 
 	/* Configure PCI Express settings */
-	if (bridge->bus && !pci_has_flag(PCI_PROBE_ONLY)) {
+	if (bridge->bus && !bridge->probe_only) {
 		struct pci_bus *child;
 		list_for_each_entry(child, &bridge->bus->children, node)
 			pcie_bus_configure_settings(child);

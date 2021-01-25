@@ -2477,6 +2477,7 @@ static void pci_set_msi_domain(struct pci_dev *dev)
 
 void pci_device_add(struct pci_dev *dev, struct pci_bus *bus)
 {
+	struct pci_host_bridge *bridge;
 	int ret;
 
 	pci_configure_device(dev);
@@ -2495,7 +2496,8 @@ void pci_device_add(struct pci_dev *dev, struct pci_bus *bus)
 	/* Fix up broken headers */
 	pci_fixup_device(pci_fixup_header, dev);
 
-	pci_reassigndev_resource_alignment(dev);
+	bridge = pci_find_host_bridge(bus);
+	pci_reassigndev_resource_alignment(bridge, dev);
 
 	dev->state_saved = false;
 
@@ -2999,7 +3001,7 @@ int pci_host_probe(struct pci_host_bridge *bridge)
 	 * ioport_resource trees in either pci_bus_claim_resources()
 	 * or pci_bus_assign_resources().
 	 */
-	if (pci_has_flag(PCI_PROBE_ONLY)) {
+	if (bridge->probe_only) {
 		pci_bus_claim_resources(bus);
 	} else {
 		pci_bus_size_bridges(bus);

@@ -143,6 +143,6 @@ void pci_hp_add_devices(struct pci_bus *bus)
 		for_each_pci_bridge(dev, bus)
 			max = pci_scan_bridge(bus, dev, max, 1);
 	}
-	pcibios_finish_adding_to_bus(bus);
+	pcibios_finish_adding_to_bus(phb->bridge);
 }
 EXPORT_SYMBOL_GPL(pci_hp_add_devices);
