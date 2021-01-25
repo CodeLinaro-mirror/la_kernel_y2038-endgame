@@ -208,8 +208,6 @@ static int ltq_pci_probe(struct platform_device *pdev)
 {
 	struct resource *res_cfg, *res_bridge;
 
-	pci_clear_flags(PCI_PROBE_ONLY);
-
 	res_bridge = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 	ltq_pci_membase = devm_ioremap_resource(&pdev->dev, res_bridge);
 	if (IS_ERR(ltq_pci_membase))

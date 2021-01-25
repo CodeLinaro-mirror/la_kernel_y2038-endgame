@@ -18,7 +18,7 @@
 #include <asm/cpu-info.h>
 
 /*
- * If PCI_PROBE_ONLY in pci_flags is set, we don't change any PCI resource
+ * If bridge->probe_only is set, we don't change any PCI resource
  * assignments.
  */
 
@@ -82,7 +82,8 @@ static void pcibios_scanbus(struct pci_controller *hose)
 	if (!bridge)
 		return;
 
-	if (hose->get_busno && pci_has_flag(PCI_PROBE_ONLY))
+	bridge->probe_only = hose->probe_only;
+	if (hose->get_busno && bridge->probe_only)
 		next_busno = (*hose->get_busno)();
 
 	pci_add_resource_offset(&resources,
@@ -120,7 +121,7 @@ static void pcibios_scanbus(struct pci_controller *hose)
 	 * ioport_resource trees in either pci_bus_claim_resources()
 	 * or pci_bus_assign_resources().
 	 */
-	if (pci_has_flag(PCI_PROBE_ONLY)) {
+	if (bridge->probe_only) {
 		pci_bus_claim_resources(bus);
 	} else {
 		struct pci_bus *child;
@@ -290,8 +291,9 @@ int pcibios_enable_device(struct pci_dev *dev, int mask)
 void pcibios_fixup_bus(struct pci_bus *bus)
 {
 	struct pci_dev *dev = bus->self;
+	struct pci_host_bridge *bridge = pci_find_host_bridge(bus);
 
-	if (pci_has_flag(PCI_PROBE_ONLY) && dev &&
+	if (bridge->probe_only && dev &&
 	    (dev->class >> 8) == PCI_CLASS_BRIDGE_PCI) {
 		pci_read_bridge_bases(bus);
 	}
