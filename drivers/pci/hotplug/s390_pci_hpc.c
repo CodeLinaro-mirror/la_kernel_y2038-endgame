@@ -52,7 +52,7 @@ static int enable_slot(struct hotplug_slot *hotplug_slot)
 {
 	struct zpci_dev *zdev = container_of(hotplug_slot, struct zpci_dev,
 					     hotplug_slot);
-	struct zpci_bus *zbus = zdev->zbus;
+	struct pci_host_bridge *bridge = zdev->zbus->bridge;
 	int rc;
 
 	if (zdev->state != ZPCI_FN_STATE_STANDBY)
@@ -66,9 +66,9 @@ static int enable_slot(struct hotplug_slot *hotplug_slot)
 	if (rc)
 		goto out_deconfigure;
 
-	pci_scan_slot(zbus->bus, zdev->devfn);
+	pci_scan_slot(bridge->bus, zdev->devfn);
 	pci_lock_rescan_remove();
-	pci_bus_add_devices(zbus->bus);
+	pci_bus_add_devices(bridge->bus);
 	pci_unlock_rescan_remove();
 
 	return rc;
@@ -88,7 +88,7 @@ static int disable_slot(struct hotplug_slot *hotplug_slot)
 	if (!zpci_fn_configured(zdev->state))
 		return -EIO;
 
-	pdev = pci_get_slot(zdev->zbus->bus, zdev->devfn);
+	pdev = pci_get_slot(zdev->zbus->bridge->bus, zdev->devfn);
 	if (pdev && pci_num_vf(pdev)) {
 		pci_dev_put(pdev);
 		return -EBUSY;
@@ -141,7 +141,7 @@ int zpci_init_slot(struct zpci_dev *zdev)
 	zdev->hotplug_slot.ops = &s390_hotplug_slot_ops;
 
 	snprintf(name, SLOT_NAME_SIZE, "%08x", zdev->fid);
-	return pci_hp_register(&zdev->hotplug_slot, zbus->bus,
+	return pci_hp_register(&zdev->hotplug_slot, zbus->bridge->bus,
 			       zdev->devfn, name);
 }
 

@@ -53,7 +53,6 @@ static int zpci_bus_scan(struct zpci_bus *zbus, int domain)
 		return rc;
 	}
 
-	zbus->bus = bridge->bus;
 	pci_bus_add_devices(bridge->bus);
 	return 0;
 }
@@ -61,21 +60,22 @@ static int zpci_bus_scan(struct zpci_bus *zbus, int domain)
 static void zpci_bus_release(struct kref *kref)
 {
 	struct zpci_bus *zbus = container_of(kref, struct zpci_bus, kref);
+	struct pci_host_bridge *bridge = zbus->bridge;
 
-	if (zbus->bus) {
+	if (bridge) {
 		pci_lock_rescan_remove();
-		pci_stop_root_bus(zbus->bus);
+		pci_stop_root_bus(bridge->bus);
 
 		zpci_free_domain(zbus->domain_nr);
 
-		pci_remove_root_bus(zbus->bus);
+		pci_remove_root_bus(bridge->bus);
 		pci_unlock_rescan_remove();
 	}
 
 	spin_lock(&zbus_list_lock);
 	list_del(&zbus->bus_next);
 	spin_unlock(&zbus_list_lock);
-	put_device(&zbus->bridge->dev);
+	put_device(&bridge->dev);
 }
 
 static void zpci_bus_put(struct zpci_bus *zbus)
@@ -147,17 +147,16 @@ void pcibios_bus_add_device(struct pci_dev *pdev)
 
 static int zpci_bus_add_device(struct zpci_bus *zbus, struct zpci_dev *zdev)
 {
-	struct pci_bus *bus;
+	struct pci_host_bridge *bridge = zbus->bridge;
 	struct resource_entry *window, *n;
 	struct resource *res;
 	struct pci_dev *pdev;
 	int rc;
 
-	bus = zbus->bus;
-	if (!bus)
+	if (!bridge || !bridge->bus)
 		return -EINVAL;
 
-	pdev = pci_get_slot(bus, zdev->devfn);
+	pdev = pci_get_slot(bridge->bus, zdev->devfn);
 	if (pdev) {
 		/* Device is already known. */
 		pci_dev_put(pdev);
@@ -171,10 +170,10 @@ static int zpci_bus_add_device(struct zpci_bus *zbus, struct zpci_dev *zdev)
 
 	resource_list_for_each_entry_safe(window, n, &zbus->resources) {
 		res = window->res;
-		pci_bus_add_resource(bus, res, 0);
+		pci_bus_add_resource(bridge->bus, res, 0);
 	}
 
-	pdev = pci_scan_single_device(bus, zdev->devfn);
+	pdev = pci_scan_single_device(bridge->bus, zdev->devfn);
 	if (pdev)
 		pci_bus_add_device(pdev);
 
@@ -190,7 +189,7 @@ static void zpci_bus_add_devices(struct zpci_bus *zbus)
 			zpci_bus_add_device(zbus, zbus->function[i]);
 
 	pci_lock_rescan_remove();
-	pci_bus_add_devices(zbus->bus);
+	pci_bus_add_devices(zbus->bridge->bus);
 	pci_unlock_rescan_remove();
 }
 
@@ -230,7 +229,7 @@ int zpci_bus_device_register(struct zpci_dev *zdev, struct pci_ops *ops)
 
 	zpci_setup_bus_resources(zdev, &zbus->bridge->windows);
 
-	if (zbus->bus) {
+	if (zbus->bridge->bus) {
 		if (!zbus->multifunction) {
 			WARN_ONCE(1, "zbus is not multifunction\n");
 			goto error_bus;
@@ -247,7 +246,7 @@ int zpci_bus_device_register(struct zpci_dev *zdev, struct pci_ops *ops)
 			WARN_ONCE(1, "rid_available not set on function 0 for multifunction\n");
 			goto error_bus;
 		}
-		rc = zpci_bus_scan(zbus, (u16)zdev->uid, ops);
+		rc = zpci_bus_scan(zbus, (u16)zdev->uid);
 		if (rc)
 			goto error_bus;
 		zpci_bus_add_devices(zbus);

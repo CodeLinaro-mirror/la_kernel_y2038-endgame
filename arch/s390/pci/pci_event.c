@@ -55,7 +55,7 @@ static void __zpci_event_error(struct zpci_ccdf_err *ccdf)
 	zpci_err_hex(ccdf, sizeof(*ccdf));
 
 	if (zdev)
-		pdev = pci_get_slot(zdev->zbus->bus, zdev->devfn);
+		pdev = pci_get_slot(zdev->zbus->bridge->bus, zdev->devfn);
 
 	pr_err("%s: Event 0x%x reports an error for PCI function 0x%x\n",
 	       pdev ? pci_name(pdev) : "n/a", ccdf->pec, ccdf->fid);
@@ -76,12 +76,16 @@ void zpci_event_error(void *data)
 static void __zpci_event_availability(struct zpci_ccdf_avail *ccdf)
 {
 	struct zpci_dev *zdev = get_zdev_by_fid(ccdf->fid);
+	struct pci_host_bridge *bridge = NULL;
 	struct pci_dev *pdev = NULL;
 	enum zpci_state state;
 	int ret;
 
-	if (zdev && zdev->zbus->bus)
-		pdev = pci_get_slot(zdev->zbus->bus, zdev->devfn);
+	if (zdev && zdev->zbus->bridge) {
+		bridge = zdev->zbus->bridge;
+		if (bridge)
+			pdev = pci_get_slot(bridge->bus, zdev->devfn);
+	}
 
 	zpci_err("avail CCDF:\n");
 	zpci_err_hex(ccdf, sizeof(*ccdf));
@@ -102,16 +106,16 @@ static void __zpci_event_availability(struct zpci_ccdf_avail *ccdf)
 			break;
 
 		/* the PCI function will be scanned once function 0 appears */
-		if (!zdev->zbus->bus)
+		if (bridge)
 			break;
 
-		pdev = pci_scan_single_device(zdev->zbus->bus, zdev->devfn);
+		pdev = pci_scan_single_device(bridge->bus, zdev->devfn);
 		if (!pdev)
 			break;
 
 		pci_bus_add_device(pdev);
 		pci_lock_rescan_remove();
-		pci_bus_add_devices(zdev->zbus->bus);
+		pci_bus_add_devices(bridge->bus);
 		pci_unlock_rescan_remove();
 		break;
 	case 0x0302: /* Reserved -> Standby */
