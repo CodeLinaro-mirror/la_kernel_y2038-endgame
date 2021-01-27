@@ -1146,7 +1146,8 @@ static void pci_enable_crs(struct pci_dev *pdev)
 					 PCI_EXP_RTCTL_CRSSVE);
 }
 
-static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
+static unsigned int pci_scan_child_bus_extend(struct pci_host_bridge *bridge,
+					      struct pci_bus *bus,
 					      unsigned int available_buses);
 /**
  * pci_ea_fixed_busnrs() - Read fixed Secondary and Subordinate bus
@@ -1208,7 +1209,8 @@ static bool pci_ea_fixed_busnrs(struct pci_dev *dev, u8 *sec, u8 *sub)
  *
  * Return: New subordinate number covering all buses behind this bridge.
  */
-static int pci_scan_bridge_extend(struct pci_bus *bus, struct pci_dev *dev,
+static int pci_scan_bridge_extend(struct pci_host_bridge *bridge,
+				  struct pci_bus *bus, struct pci_dev *dev,
 				  int max, unsigned int available_buses,
 				  int pass)
 {
@@ -1260,7 +1262,7 @@ static int pci_scan_bridge_extend(struct pci_bus *bus, struct pci_dev *dev,
 
 	pci_enable_crs(dev);
 
-	if ((secondary || subordinate) && !pcibios_assign_all_busses() &&
+	if ((secondary || subordinate) && !pci_assign_all_busses(bridge) &&
 	    !is_cardbus && !broken) {
 		unsigned int cmax;
 
@@ -1287,7 +1289,7 @@ static int pci_scan_bridge_extend(struct pci_bus *bus, struct pci_dev *dev,
 			child->bridge_ctl = bctl;
 		}
 
-		cmax = pci_scan_child_bus(child);
+		cmax = pci_scan_child_bus(bridge, child);
 		if (cmax > subordinate)
 			pci_warn(dev, "bridge has subordinate %02x but max busn %02x\n",
 				 subordinate, cmax);
@@ -1302,7 +1304,7 @@ static int pci_scan_bridge_extend(struct pci_bus *bus, struct pci_dev *dev,
 		 * do in the second pass.
 		 */
 		if (!pass) {
-			if (pcibios_assign_all_busses() || broken || is_cardbus)
+			if (pci_assign_all_busses(bridge) || broken || is_cardbus)
 
 				/*
 				 * Temporarily disable forwarding of the
@@ -1363,7 +1365,8 @@ static int pci_scan_bridge_extend(struct pci_bus *bus, struct pci_dev *dev,
 
 		if (!is_cardbus) {
 			child->bridge_ctl = bctl;
-			max = pci_scan_child_bus_extend(child, available_buses);
+			max = pci_scan_child_bus_extend(bridge, child,
+							available_buses);
 		} else {
 
 			/*
@@ -1377,7 +1380,7 @@ static int pci_scan_bridge_extend(struct pci_bus *bus, struct pci_dev *dev,
 							max+i+1))
 					break;
 				while (parent->parent) {
-					if ((!pcibios_assign_all_busses()) &&
+					if ((!pci_assign_all_busses(bridge)) &&
 					    (parent->busn_res.end > max) &&
 					    (parent->busn_res.end <= max+i)) {
 						j = 1;
@@ -1455,7 +1458,8 @@ out:
  */
 int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max, int pass)
 {
-	return pci_scan_bridge_extend(bus, dev, max, 0, pass);
+	struct pci_host_bridge *bridge = pci_find_host_bridge(bus);
+	return pci_scan_bridge_extend(bridge, bus, dev, max, 0, pass);
 }
 EXPORT_SYMBOL(pci_scan_bridge);
 
@@ -2791,7 +2795,8 @@ void __weak pcibios_fixup_bus(struct pci_bus *bus)
  * equally between hotplug-capable bridges to allow future extension of the
  * hierarchy.
  */
-static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
+static unsigned int pci_scan_child_bus_extend(struct pci_host_bridge *bridge,
+					      struct pci_bus *bus,
 					      unsigned int available_buses)
 {
 	unsigned int used_buses, normal_bridges = 0, hotplug_bridges = 0;
@@ -2853,7 +2858,7 @@ static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
 	 */
 	for_each_pci_bridge(dev, bus) {
 		cmax = max;
-		max = pci_scan_bridge_extend(bus, dev, max, 0, 0);
+		max = pci_scan_bridge_extend(bridge, bus, dev, max, 0, 0);
 
 		/*
 		 * Reserve one bus for each bridge now to avoid extending
@@ -2888,7 +2893,7 @@ static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
 		}
 
 		cmax = max;
-		max = pci_scan_bridge_extend(bus, dev, cmax, buses, 1);
+		max = pci_scan_bridge_extend(bridge, bus, dev, cmax, buses, 1);
 		/* One bus is already accounted so don't add it again */
 		if (max - cmax > 1)
 			used_buses += max - cmax - 1;
@@ -2932,9 +2937,9 @@ static unsigned int pci_scan_child_bus_extend(struct pci_bus *bus,
  * Scans devices below @bus including subordinate buses. Returns new
  * subordinate number including all the found devices.
  */
-unsigned int pci_scan_child_bus(struct pci_bus *bus)
+unsigned int pci_scan_child_bus(struct pci_host_bridge *bridge, struct pci_bus *bus)
 {
-	return pci_scan_child_bus_extend(bus, 0);
+	return pci_scan_child_bus_extend(bridge, bus, 0);
 }
 EXPORT_SYMBOL_GPL(pci_scan_child_bus);
 
@@ -3084,7 +3089,7 @@ int pci_scan_root_bus_bridge(struct pci_host_bridge *bridge)
 	}
 
 	if (!bridge->custom_bus_scan) {
-		max = pci_scan_child_bus(b);
+		max = pci_scan_child_bus(bridge, b);
 
 		if (!found)
 			pci_bus_update_busn_res_end(b, max);
@@ -3105,14 +3110,16 @@ EXPORT_SYMBOL(pci_scan_root_bus_bridge);
  *
  * Returns the max number of subordinate bus discovered.
  */
-unsigned int pci_rescan_bus_bridge_resize(struct pci_dev *bridge)
+unsigned int pci_rescan_bus_bridge_resize(struct pci_dev *bridge_dev)
 {
 	unsigned int max;
-	struct pci_bus *bus = bridge->subordinate;
+	struct pci_bus *bus = bridge_dev->subordinate;
+	struct pci_host_bridge *host_bridge;
 
-	max = pci_scan_child_bus(bus);
+	host_bridge = pci_find_host_bridge(bridge_dev->bus);
+	max = pci_scan_child_bus(host_bridge, bus);
 
-	pci_assign_unassigned_bridge_resources(bridge);
+	pci_assign_unassigned_bridge_resources(bridge_dev);
 
 	pci_bus_add_devices(bus);
 
@@ -3130,9 +3137,10 @@ unsigned int pci_rescan_bus_bridge_resize(struct pci_dev *bridge)
  */
 unsigned int pci_rescan_bus(struct pci_bus *bus)
 {
+	struct pci_host_bridge *bridge = pci_find_host_bridge(bus);
 	unsigned int max;
 
-	max = pci_scan_child_bus(bus);
+	max = pci_scan_child_bus(bridge, bus);
 	pci_assign_unassigned_bus_resources(bus);
 	pci_bus_add_devices(bus);
 
@@ -3184,6 +3192,7 @@ void __init pci_sort_breadthfirst(void)
 int pci_hp_add_bridge(struct pci_dev *dev)
 {
 	struct pci_bus *parent = dev->bus;
+	struct pci_host_bridge *bridge = pci_find_host_bridge(parent);
 	int busnr, start = parent->busn_res.start;
 	unsigned int available_buses = 0;
 	int end = parent->busn_res.end;
@@ -3198,7 +3207,7 @@ int pci_hp_add_bridge(struct pci_dev *dev)
 	}
 
 	/* Scan bridges that are already configured */
-	busnr = pci_scan_bridge(parent, dev, busnr, 0);
+	busnr = pci_scan_bridge_extend(bridge, parent, dev, busnr, 0, 0);
 
 	/*
 	 * Distribute the available bus numbers between hotplug-capable
@@ -3207,7 +3216,7 @@ int pci_hp_add_bridge(struct pci_dev *dev)
 	available_buses = end - busnr;
 
 	/* Scan bridges that need to be reconfigured */
-	pci_scan_bridge_extend(parent, dev, busnr, available_buses, 1);
+	pci_scan_bridge_extend(bridge, parent, dev, busnr, available_buses, 1);
 
 	if (!dev->subordinate)
 		return -1;

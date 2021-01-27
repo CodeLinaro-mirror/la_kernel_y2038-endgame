@@ -73,12 +73,12 @@ static inline bool is_vmd(struct pci_bus *bus)
 /* Can be used to override the logic in pci_scan_bus for skipping
    already-configured bus numbers - to be used for buggy BIOSes
    or architectures with incomplete PCI setup by the loader */
-
 extern unsigned int pcibios_assign_all_busses(void);
 extern int pci_legacy_init(void);
 #else
 static inline int pcibios_assign_all_busses(void) { return 0; }
 #endif
+#define pcibios_assign_all_busses pcibios_assign_all_busses
 
 extern unsigned long pci_mem_start;
 #define PCIBIOS_MIN_IO		0x1000

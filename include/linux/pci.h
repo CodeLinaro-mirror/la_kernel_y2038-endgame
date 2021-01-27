@@ -542,6 +542,7 @@ struct pci_host_bridge {
 	void		*release_data;
 	struct msi_controller *msi;
 	unsigned int	probe_only:1;		/* use BIOS assigned resources */
+	unsigned int	bus_assigned_by_firmware:1; /* use BIOS assigned bus */
 	unsigned int	ignore_reset_delay:1;	/* For entire hierarchy */
 	unsigned int	no_ext_tags:1;		/* No Extended Tags */
 	unsigned int	native_aer:1;		/* OS may use PCIe AER */
@@ -1043,7 +1044,7 @@ static inline void pci_dev_assign_slot(struct pci_dev *dev) { }
 int pci_scan_slot(struct pci_bus *bus, int devfn);
 struct pci_dev *pci_scan_single_device(struct pci_bus *bus, int devfn);
 void pci_device_add(struct pci_dev *dev, struct pci_bus *bus);
-unsigned int pci_scan_child_bus(struct pci_bus *bus);
+unsigned int pci_scan_child_bus(struct pci_host_bridge *bridge, struct pci_bus *bus);
 void pci_bus_add_device(struct pci_dev *dev);
 void pci_read_bridge_bases(struct pci_bus *child);
 struct resource *pci_find_parent_resource(const struct pci_dev *dev,
@@ -1852,6 +1853,14 @@ int pci_iobar_pfn(struct pci_dev *pdev, int bar, struct vm_area_struct *vma);
 #ifndef pci_root_bus_fwnode
 #define pci_root_bus_fwnode(bus)	NULL
 #endif
+
+static inline int pci_assign_all_busses(struct pci_host_bridge *bridge)
+{
+#ifdef pcibios_assign_all_busses
+	return pcibios_assign_all_busses();
+#endif
+	return !bridge->bus_assigned_by_firmware;
+}
 
 /*
  * These helpers provide future and backwards compatibility
