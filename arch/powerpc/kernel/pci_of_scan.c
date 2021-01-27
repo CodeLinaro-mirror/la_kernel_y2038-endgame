@@ -341,7 +341,7 @@ void of_scan_pci_bridge(struct pci_dev *dev)
 	if (mode == PCI_PROBE_DEVTREE)
 		of_scan_bus(node, bus);
 	else if (mode == PCI_PROBE_NORMAL)
-		pci_scan_child_bus(bus);
+		pci_scan_child_bus(phb->bridge, bus);
 }
 EXPORT_SYMBOL(of_scan_pci_bridge);
 

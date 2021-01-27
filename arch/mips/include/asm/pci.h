@@ -97,10 +97,7 @@ static inline void set_pci_need_domain_info(struct pci_controller *hose,
 /* Can be used to override the logic in pci_scan_bus for skipping
    already-configured bus numbers - to be used for buggy BIOSes
    or architectures with incomplete PCI setup by the loader */
-static inline unsigned int pcibios_assign_all_busses(void)
-{
-	return 1;
-}
+#define pcibios_assign_all_busses() 1
 
 extern unsigned long PCIBIOS_MIN_IO;
 extern unsigned long PCIBIOS_MIN_MEM;
