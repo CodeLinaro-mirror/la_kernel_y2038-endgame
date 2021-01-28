@@ -272,6 +272,7 @@ config EDAC_IGEN6
 	tristate "Intel client SoC Integrated MC"
 	depends on PCI && PCI_MMCONFIG && ARCH_HAVE_NMI_SAFE_CMPXCHG
 	depends on X86_64 && X86_MCE_INTEL
+	select GENERIC_ALLOCATOR
 	help
 	  Support for error detection and correction on the Intel
 	  client SoC Integrated Memory Controller using In-Band ECC IP.
@@ -422,7 +423,8 @@ config EDAC_ALTERA_L2C
 
 config EDAC_ALTERA_OCRAM
 	bool "Altera On-Chip RAM ECC"
-	depends on EDAC_ALTERA=y && SRAM && GENERIC_ALLOCATOR
+	depends on EDAC_ALTERA=y && SRAM
+	select GENERIC_ALLOCATOR
 	help
 	  Support for error detection and correction on the
 	  Altera On-Chip RAM Memory for Altera SoCs.
