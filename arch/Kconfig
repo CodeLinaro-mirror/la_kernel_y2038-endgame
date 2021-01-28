@@ -681,12 +681,15 @@ config ARCH_SUPPORTS_LTO_CLANG_THIN
 	  An architecture should select this option if it can support Clang's
 	  ThinLTO mode.
 
+config LLVM_IAS
+	def_bool y
+	depends on $(success,test $(LLVM_IAS) -eq 1)
+
 config HAS_LTO_CLANG
 	def_bool y
 	# Clang >= 11: https://github.com/ClangBuiltLinux/linux/issues/510
-	depends on CC_IS_CLANG && CLANG_VERSION >= 110000 && LD_IS_LLD
+	depends on CC_IS_CLANG && CLANG_VERSION >= 110000 && LD_IS_LLD && LLVM_IAS
 	depends on $(success,test $(LLVM) -eq 1)
-	depends on $(success,test $(LLVM_IAS) -eq 1)
 	depends on $(success,$(NM) --help | head -n 1 | grep -qi llvm)
 	depends on $(success,$(AR) --help | head -n 1 | grep -qi llvm)
 	depends on ARCH_SUPPORTS_LTO_CLANG

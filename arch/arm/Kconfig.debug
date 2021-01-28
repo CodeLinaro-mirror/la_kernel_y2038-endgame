@@ -1884,6 +1884,7 @@ config EARLY_PRINTK
 config ARM_KPROBES_TEST
 	tristate "Kprobes test module"
 	depends on KPROBES && MODULES
+	depends on !(THUMB2_KERNEL && LLVM_IAS)
 	help
 	  Perform tests of kprobes API and instruction set simulation.
 

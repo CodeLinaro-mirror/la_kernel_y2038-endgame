@@ -11,6 +11,7 @@ config EP93XX_SOC_COMMON
 
 config CRUNCH
 	bool "Support for MaverickCrunch"
+	depends on !LLVM_IAS
 	help
 	  Enable kernel support for MaverickCrunch.
 
