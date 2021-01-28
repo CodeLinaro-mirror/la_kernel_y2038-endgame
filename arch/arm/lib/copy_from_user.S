@@ -60,7 +60,7 @@
 #define LDR1W_SHIFT	0
 
 	.macro ldr1w ptr reg abort
-	USERL(\abort, W(ldr) \reg, [\ptr], #4)
+	USERL(\abort, ldr \reg, [\ptr], #4)
 	.endm
 
 	.macro ldr4w ptr reg1 reg2 reg3 reg4 abort
@@ -80,7 +80,7 @@
 #define STR1W_SHIFT	0
 
 	.macro str1w ptr reg abort
-	W(str) \reg, [\ptr], #4
+	str \reg, [\ptr], #4
 	.endm
 
 	.macro str8w ptr reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 abort
