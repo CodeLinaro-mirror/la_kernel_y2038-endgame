@@ -12,9 +12,6 @@
 #define PCIBIOS_MIN_IO		0
 #define PCIBIOS_MIN_MEM		0
 
-/* C-SKY shim does not initialize PCI bus */
-#define pcibios_assign_all_busses() 1
-
 extern int isa_dma_bridge_buggy;
 
 #ifdef CONFIG_PCI

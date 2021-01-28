@@ -2,12 +2,6 @@
 #ifndef __ASM_SH_PCI_H
 #define __ASM_SH_PCI_H
 
-/* Can be used to override the logic in pci_scan_bus for skipping
-   already-configured bus numbers - to be used for buggy BIOSes
-   or architectures with incomplete PCI setup by the loader */
-
-#define pcibios_assign_all_busses()	1
-
 /*
  * A board can define one or more PCI channels that represent built-in (or
  * external) PCI controllers.

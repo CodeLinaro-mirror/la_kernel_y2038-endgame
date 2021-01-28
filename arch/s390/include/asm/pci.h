@@ -14,6 +14,7 @@
 #define PCIBIOS_MIN_IO		0x1000
 #define PCIBIOS_MIN_MEM		0x10000000
 
+/* Never try to reassign buses, regardless of bridge->probe_only */
 #define pcibios_assign_all_busses()	(0)
 
 void __iomem *pci_iomap(struct pci_dev *, int, unsigned long);

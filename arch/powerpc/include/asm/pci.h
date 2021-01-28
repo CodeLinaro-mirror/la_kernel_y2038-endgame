@@ -32,13 +32,6 @@
 #define IOBASE_ISA_IO		3
 #define IOBASE_ISA_MEM		4
 
-/*
- * Set this to 1 if you want the kernel to re-assign all PCI
- * bus numbers (don't do that on ppc64 yet !)
- */
-#define pcibios_assign_all_busses() \
-	(pci_has_flag(PCI_REASSIGN_ALL_BUS))
-
 #define HAVE_ARCH_PCI_GET_LEGACY_IDE_IRQ
 static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
 {
