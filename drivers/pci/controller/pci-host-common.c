@@ -74,9 +74,7 @@ int pci_host_common_probe(struct platform_device *pdev)
 		return PTR_ERR(cfg);
 
 	/* Do not reassign resources if probe only */
-	if (!bridge->probe_only)
-		pci_add_flags(PCI_REASSIGN_ALL_BUS);
-
+	bridge->bus_assigned_by_firmware = bridge->probe_only;
 	bridge->sysdata = cfg;
 	bridge->ops = (struct pci_ops *)&ops->pci_ops;
 	bridge->msi_domain = true;
