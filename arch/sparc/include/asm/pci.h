@@ -6,6 +6,8 @@
 /* Can be used to override the logic in pci_scan_bus for skipping
  * already-configured bus numbers - to be used for buggy BIOSes
  * or architectures with incomplete PCI setup by the loader.
+ * On SPARC, we always trust the firmware, even when not setting
+ * bridge->probe_only.
  */
 #define pcibios_assign_all_busses()	0
 
