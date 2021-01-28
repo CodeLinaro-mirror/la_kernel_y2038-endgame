@@ -124,7 +124,11 @@ endif
 AFLAGS_NOWARN	:=$(call as-option,-Wa$(comma)-mno-warn-deprecated,-Wa$(comma)-W)
 
 ifeq ($(CONFIG_THUMB2_KERNEL),y)
+ifeq ($(LLVM_IAS),1)
+CFLAGS_ISA	:=-mthumb -mllvm --arm-implicit-it=always $(AFLAGS_NOWARN)
+else
 CFLAGS_ISA	:=-mthumb -Wa,-mimplicit-it=always $(AFLAGS_NOWARN)
+endif
 AFLAGS_ISA	:=$(CFLAGS_ISA) -Wa$(comma)-mthumb
 else
 CFLAGS_ISA	:=$(call cc-option,-marm,) $(AFLAGS_NOWARN)
