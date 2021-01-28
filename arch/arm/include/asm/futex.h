@@ -114,7 +114,7 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 	"1:	" TUSER(ldr) "	%1, [%2]\n"
 	"	teq	%1, %3\n"
 	"	it	eq	@ explicit IT needed for the 2b label\n"
-	"2:	" TUSER(streq) "	%4, [%2]\n"
+	"2:	" TUSERCOND(str, eq) "	%4, [%2]\n"
 	__futex_atomic_ex_table("%5")
 	: "+&r" (ret), "=&r" (val), "+&r" (uaddr)
 	: "r" (oldval), "r" (newval), "Ir" (-EFAULT)
