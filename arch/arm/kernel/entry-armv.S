@@ -1031,7 +1031,7 @@ vector_\name:
  THUMB(	ldr	lr, [r0, lr, lsl #2]	)
 	mov	r0, sp
  ARM(	ldr	lr, [pc, lr, lsl #2]	)
-	movs	pc, lr			@ branch to handler in SVC mode
+	ret	lr			@ branch to handler in SVC mode
 ENDPROC(vector_\name)
 
 	.align	2
