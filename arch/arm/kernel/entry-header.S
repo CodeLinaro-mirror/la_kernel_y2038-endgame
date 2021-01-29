@@ -313,7 +313,7 @@
 	mov	r0, r0				@ ARMv5T and earlier require a nop
 						@ after ldm {}^
 	add	sp, sp, #\offset + PT_REGS_SIZE
-	movs	pc, lr				@ return & move spsr_svc into cpsr
+	ret	lr				@ return & move spsr_svc into cpsr
 1:	bug	"Returning to usermode but unexpected PSR bits set?", \@
 #elif defined(CONFIG_CPU_V7M)
 	@ V7M restore.
@@ -343,7 +343,7 @@
 	ldmdb	sp, {r0 - r12}			@ get calling r0 - r12
 	.endif
 	add	sp, sp, #PT_REGS_SIZE - S_SP
-	movs	pc, lr				@ return & move spsr_svc into cpsr
+	ret	lr				@ return & move spsr_svc into cpsr
 1:	bug	"Returning to usermode but unexpected PSR bits set?", \@
 #endif	/* !CONFIG_THUMB2_KERNEL */
 	.endm
