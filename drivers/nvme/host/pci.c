@@ -2443,11 +2443,11 @@ static int nvme_pci_enable(struct nvme_dev *dev)
 	return result;
 }
 
-static void nvme_dev_unmap(struct nvme_dev *dev)
+static void nvme_pci_dev_unmap(struct pci_device *pdev, struct nvme_dev *dev)
 {
 	if (dev->bar)
 		iounmap(dev->bar);
-	pci_release_mem_regions(to_pci_dev(dev->dev));
+	pci_release_mem_regions(pdev);
 }
 
 static void nvme_pci_disable(struct nvme_dev *dev)
@@ -2724,10 +2724,9 @@ static void nvme_reset_work(struct work_struct *work)
 static void nvme_remove_dead_ctrl_work(struct work_struct *work)
 {
 	struct nvme_dev *dev = container_of(work, struct nvme_dev, remove_work);
-	struct pci_dev *pdev = to_pci_dev(dev->dev);
 
-	if (pci_get_drvdata(pdev))
-		device_release_driver(&pdev->dev);
+	if (dev_get_drvdata(dev->dev))
+		device_release_driver(&dev->dev);
 	nvme_put_ctrl(&dev->ctrl);
 }
 
@@ -2751,9 +2750,9 @@ static int nvme_pci_reg_read64(struct nvme_ctrl *ctrl, u32 off, u64 *val)
 
 static int nvme_pci_get_address(struct nvme_ctrl *ctrl, char *buf, int size)
 {
-	struct pci_dev *pdev = to_pci_dev(to_nvme_dev(ctrl)->dev);
+	struct device *dev = to_nvme_dev(ctrl)->dev;
 
-	return snprintf(buf, size, "%s\n", dev_name(&pdev->dev));
+	return snprintf(buf, size, "%s\n", dev_name(dev));
 }
 
 static const struct nvme_ctrl_ops nvme_pci_ctrl_ops = {
@@ -2769,10 +2768,20 @@ static const struct nvme_ctrl_ops nvme_pci_ctrl_ops = {
 	.get_address		= nvme_pci_get_address,
 };
 
-static int nvme_dev_map(struct nvme_dev *dev)
-{
-	struct pci_dev *pdev = to_pci_dev(dev->dev);
+static const struct nvme_ctrl_ops nvme_platform_ctrl_ops = {
+	.name			= "platform",
+	.module			= THIS_MODULE,
+	.flags			= NVME_F_METADATA_SUPPORTED;
+	.reg_read32		= nvme_pci_reg_read32,
+	.reg_write32		= nvme_pci_reg_write32,
+	.reg_read64		= nvme_pci_reg_read64,
+	.free_ctrl		= nvme_pci_free_ctrl,
+	.submit_async_event	= nvme_pci_submit_async_event,
+	.get_address		= nvme_pci_get_address,
+};
 
+static int nvme_pci_dev_map(struct pci_device *pdev, struct nvme_dev *dev)
+{
 	if (pci_request_mem_regions(pdev, "nvme"))
 		return -ENODEV;
 
@@ -2885,20 +2894,17 @@ static void nvme_async_probe(void *data, async_cookie_t cookie)
 	nvme_put_ctrl(&dev->ctrl);
 }
 
-static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+static struct nvme_dev *nvme_dev_alloc(struct device *parent)
 {
-	int node, result = -ENOMEM;
 	struct nvme_dev *dev;
-	unsigned long quirks = id->driver_data;
-	size_t alloc_size;
 
-	node = dev_to_node(&pdev->dev);
+	node = dev_to_node(parent);
 	if (node == NUMA_NO_NODE)
-		set_dev_node(&pdev->dev, first_memory_node);
+		set_dev_node(parent, first_memory_node);
 
 	dev = kzalloc_node(sizeof(*dev), GFP_KERNEL, node);
 	if (!dev)
-		return -ENOMEM;
+		return NULL;
 
 	dev->nr_write_queues = write_queues;
 	dev->nr_poll_queues = poll_queues;
@@ -2908,20 +2914,66 @@ static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (!dev->queues)
 		goto free;
 
-	dev->dev = get_device(&pdev->dev);
-	pci_set_drvdata(pdev, dev);
-
-	result = nvme_dev_map(dev);
-	if (result)
-		goto put_pci;
-
 	INIT_WORK(&dev->ctrl.reset_work, nvme_reset_work);
 	INIT_WORK(&dev->remove_work, nvme_remove_dead_ctrl_work);
 	mutex_init(&dev->shutdown_lock);
 
-	result = nvme_setup_prp_pools(dev);
+	if (nvme_setup_prp_pools(dev))
+		goto free_queue;
+
+	/*
+	 * Double check that our mempool alloc size will cover the biggest
+	 * command we support.
+	 */
+	alloc_size = nvme_pci_iod_alloc_size();
+	WARN_ON_ONCE(alloc_size > PAGE_SIZE);
+
+	dev->iod_mempool = mempool_create_node(1, mempool_kmalloc,
+						mempool_kfree,
+						(void *) alloc_size,
+						GFP_KERNEL, node);
+	if (!dev->iod_mempool)
+		goto free_pools;
+
+	dev->dev = get_device(parent);
+	return dev;
+
+free_mempool:
+	mempool_destroy(dev->iod_mempool);
+free_pools:
+	nvme_release_prp_pools(dev);
+free_queue:
+	kfree(dev->queues);
+free_dev:
+	kfree(dev);
+	return NULL;
+}
+
+static void nvme_dev_free(struct nvme_dev *dev)
+{
+	mempool_destroy(dev->iod_mempool);
+	nvme_release_prp_pools(dev);
+	put_device(dev->dev);
+	kfree(dev->queues);
+	kfree(dev);
+}
+
+static int nvme_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+{
+	int node, result;
+	struct nvme_dev *dev;
+	unsigned long quirks = id->driver_data;
+	size_t alloc_size;
+
+	dev = nvme_dev_alloc(&pdev->dev);
+	if (!dev)
+		return -ENOMEM;
+
+	pci_set_drvdata(pdev, dev);
+
+	result = nvme_pci_dev_map(pdev, dev);
 	if (result)
-		goto unmap;
+		goto put_pci;
 
 	quirks |= check_vendor_combination_bug(pdev);
 
@@ -2935,26 +2987,10 @@ static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		quirks |= NVME_QUIRK_SIMPLE_SUSPEND;
 	}
 
-	/*
-	 * Double check that our mempool alloc size will cover the biggest
-	 * command we support.
-	 */
-	alloc_size = nvme_pci_iod_alloc_size();
-	WARN_ON_ONCE(alloc_size > PAGE_SIZE);
-
-	dev->iod_mempool = mempool_create_node(1, mempool_kmalloc,
-						mempool_kfree,
-						(void *) alloc_size,
-						GFP_KERNEL, node);
-	if (!dev->iod_mempool) {
-		result = -ENOMEM;
-		goto release_pools;
-	}
-
 	result = nvme_init_ctrl(&dev->ctrl, &pdev->dev, &nvme_pci_ctrl_ops,
 			quirks);
 	if (result)
-		goto release_mempool;
+		goto out;
 
 	dev_info(dev->ctrl.device, "pci function %s\n", dev_name(&pdev->dev));
 
@@ -2963,17 +2999,10 @@ static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	return 0;
 
- release_mempool:
-	mempool_destroy(dev->iod_mempool);
- release_pools:
-	nvme_release_prp_pools(dev);
- unmap:
-	nvme_dev_unmap(dev);
- put_pci:
-	put_device(dev->dev);
- free:
-	kfree(dev->queues);
-	kfree(dev);
+out_unmap:
+	nvme_pci_dev_unmap(pdev, dev);
+out:
+	nvme_dev_free(dev);
 	return result;
 }
 
@@ -3010,7 +3039,20 @@ static void nvme_shutdown(struct pci_dev *pdev)
  * state. This function must not have any dependencies on the device state in
  * order to proceed.
  */
-static void nvme_remove(struct pci_dev *pdev)
+static void nvme_remove(struct nvme_dev *dev)
+{
+	flush_work(&dev->ctrl.reset_work);
+	nvme_stop_ctrl(&dev->ctrl);
+	nvme_remove_namespaces(&dev->ctrl);
+	nvme_dev_disable(dev, true);
+	nvme_release_cmb(dev);
+	nvme_free_host_mem(dev);
+	nvme_dev_remove_admin(dev);
+	nvme_free_queues(dev, 0);
+	nvme_release_prp_pools(dev);
+}
+
+static void nvme_pci_remove(struct pci_dev *pdev)
 {
 	struct nvme_dev *dev = pci_get_drvdata(pdev);
 
@@ -3023,16 +3065,27 @@ static void nvme_remove(struct pci_dev *pdev)
 		nvme_dev_remove_admin(dev);
 	}
 
-	flush_work(&dev->ctrl.reset_work);
-	nvme_stop_ctrl(&dev->ctrl);
-	nvme_remove_namespaces(&dev->ctrl);
-	nvme_dev_disable(dev, true);
-	nvme_release_cmb(dev);
-	nvme_free_host_mem(dev);
-	nvme_dev_remove_admin(dev);
-	nvme_free_queues(dev, 0);
-	nvme_release_prp_pools(dev);
-	nvme_dev_unmap(dev);
+	nvme_remove(dev);
+
+	nvme_pci_dev_unmap(pdev, dev);
+	nvme_uninit_ctrl(&dev->ctrl);
+}
+
+static void nvme_platform_remove(struct platform_device *pdev)
+{
+	struct nvme_dev *dev = platform_get_drvdata(pdev);
+	struct resource *res;
+
+	nvme_change_ctrl_state(&dev->ctrl, NVME_CTRL_DELETING);
+	platform_set_drvdata(pdev, NULL);
+
+	nvme_remove(dev);
+
+	iounmap(dev->bar);
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	if (res)
+		release_resource(res);	
+	pci_release_mem_regions(pdev);
 	nvme_uninit_ctrl(&dev->ctrl);
 }
 
@@ -3299,8 +3352,8 @@ MODULE_DEVICE_TABLE(pci, nvme_id_table);
 static struct pci_driver nvme_driver = {
 	.name		= "nvme",
 	.id_table	= nvme_id_table,
-	.probe		= nvme_probe,
-	.remove		= nvme_remove,
+	.probe		= nvme_pci_probe,
+	.remove		= nvme_pci_remove,
 	.shutdown	= nvme_shutdown,
 #ifdef CONFIG_PM_SLEEP
 	.driver		= {
@@ -3313,17 +3366,36 @@ static struct pci_driver nvme_driver = {
 
 static int __init nvme_init(void)
 {
+	int ret;
+
 	BUILD_BUG_ON(sizeof(struct nvme_create_cq) != 64);
 	BUILD_BUG_ON(sizeof(struct nvme_create_sq) != 64);
 	BUILD_BUG_ON(sizeof(struct nvme_delete_queue) != 64);
 	BUILD_BUG_ON(IRQ_AFFINITY_MAX_SETS < 2);
 
-	return pci_register_driver(&nvme_driver);
+	if (IS_ENABLED(CONFIG_NVME_PCI))
+		ret = pci_register_driver(&nvme_driver);
+
+	if (ret)
+		return ret;
+
+	if (IS_ENABLED(CONFIG_NVME_PLATFORM))
+		ret = platform_driver_register(&nvme_platform_driver);
+
+	if (ret)
+		pci_unregister_driver(&nvme_driver);
+
+	return ret;
 }
 
 static void __exit nvme_exit(void)
 {
-	pci_unregister_driver(&nvme_driver);
+	if (IS_ENABLED(CONFIG_NVME_PCI))
+		pci_unregister_driver(&nvme_driver);
+
+	if (IS_ENABLED(CONFIG_NVME_PLATFORM))
+		platform_driver_unregister(&nvme_platform_driver);
+
 	flush_workqueue(nvme_wq);
 }
 
