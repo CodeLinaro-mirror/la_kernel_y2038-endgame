@@ -2733,8 +2733,8 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
 
 			if (!no_fp && func && !is_fentry_call(insn) &&
 			    !has_valid_stack_frame(&state)) {
-				WARN_FUNC("call without frame pointer save/setup",
-					  sec, insn->offset);
+				//WARN_FUNC("call without frame pointer save/setup",
+				//	  sec, insn->offset);
 				return 1;
 			}
 
