@@ -326,7 +326,7 @@ KBUILD_WARN(0, GCC_7, "-Wrestrict")
 KBUILD_WARN(1, GCC_10, "-Wrestrict")
 KBUILD_WARN(0, GCC_8, "-Wmissing-attributes")
 KBUILD_WARN(0, GCC_8, "-Wmultistatement-macros")
-KBUILD_WARN(1, GCC_8, "-Wpacked-not-aligned")
+KBUILD_WARN(0, GCC_8, "-Wpacked-not-aligned")
 KBUILD_WARN(0, GCC_8, "-Wsizeof-pointer-div")
 KBUILD_WARN(1, GCC_8, "-Wstringop-truncation") /* medium */
 KBUILD_WARN(0, CLANG_8, "-Wall")
