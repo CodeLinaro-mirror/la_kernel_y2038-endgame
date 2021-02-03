@@ -55,3 +55,19 @@
 #if __has_feature(shadow_call_stack)
 # define __noscs	__attribute__((__no_sanitize__("shadow-call-stack")))
 #endif
+
+/*
+ * Turn individual warnings and errors on and off locally, depending
+ * on version.
+ */
+#define __diag_CLANG(version, severity, s) \
+	__diag(__diag_CLANG_ ## severity s)
+
+#define __diag_str1(s)		#s
+#define __diag_str(s)		__diag_str1(s)
+#define __diag(s)		_Pragma(__diag_str(GCC diagnostic s))
+
+/* Severity used in pragma directives */
+#define __diag_CLANG_ignore	ignored
+#define __diag_CLANG_warn	warning
+#define __diag_CLANG_error	error
