@@ -3953,6 +3953,8 @@ static double TruncToValidBPP(
 	return BPP_INVALID;
 }
 
+__diag_push()
+__diag_ignore(CLANG, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 void dml31_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
@@ -5739,6 +5741,7 @@ void dml31_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 		v->maxMpcComb = MaximumMPCCombine;
 	}
 }
+__diag_pop()
 
 static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 		struct display_mode_lib *mode_lib,
