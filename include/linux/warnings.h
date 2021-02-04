@@ -432,6 +432,7 @@ KBUILD_WARN(1, CLANG_8, "-Wnull-pointer-arithmetic") /* rare */
 KBUILD_WARN(1, CLANG_8, "-Wsemicolon-before-method-body")
 KBUILD_WARN(2, CLANG_8, "-Wsign-compare") /* huge */
 KBUILD_WARN(4, CLANG_8, "-Wsign-compare") /* huge */
+KBUILD_WARN(1, CLANG_8, "-Wmissing-prototypes") /* medium */
 
 /* Wunused and friends */
 //KBUILD_WARN(partly, GCC_4_6, "-Wunused")
