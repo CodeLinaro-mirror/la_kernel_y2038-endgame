@@ -144,6 +144,11 @@ enum nvme_quirks {
 	 * NVMe 1.3 compliance.
 	 */
 	NVME_QUIRK_NO_NS_DESC_LIST		= (1 << 15),
+
+	/*
+	 * MMIO based hardware that is not on a PCI bus
+	 */
+	NVME_QUIRK_PLATFORM_DEVICE		= (1 << 16),
 };
 
 /*
