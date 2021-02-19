@@ -20,7 +20,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "agp.h"
-#ifdef __NVKM_PCI_AGP_H__
 #include <core/option.h>
 
 struct nvkm_device_agp_quirk {
@@ -172,4 +171,3 @@ nvkm_agp_ctor(struct nvkm_pci *pci)
 
 	pci->agp.mtrr = arch_phys_wc_add(pci->agp.base, pci->agp.size);
 }
-#endif
