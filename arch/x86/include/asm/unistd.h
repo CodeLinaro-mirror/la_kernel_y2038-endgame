@@ -9,7 +9,6 @@
 
 #  include <asm/unistd_32.h>
 #  define __ARCH_WANT_STAT64
-#  define __ARCH_WANT_SYS_IPC
 #  define __ARCH_WANT_SYS_OLD_MMAP
 #  define __ARCH_WANT_SYS_OLD_SELECT
 
