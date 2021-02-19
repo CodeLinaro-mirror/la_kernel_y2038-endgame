@@ -11,7 +11,7 @@
 #include <linux/ipc_namespace.h>
 #include "util.h"
 
-#ifdef __ARCH_WANT_SYS_IPC
+#ifdef CONFIG_ARCH_WANT_OLD_IPC
 #include <linux/errno.h>
 #include <linux/ipc.h>
 #include <linux/shm.h>

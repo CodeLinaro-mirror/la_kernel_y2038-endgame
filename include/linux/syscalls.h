@@ -1359,7 +1359,7 @@ static inline unsigned int ksys_personality(unsigned int personality)
 	return old;
 }
 
-/* for __ARCH_WANT_SYS_IPC */
+/* for CONFIG_ARCH_WANT_OLD_IPC */
 long ksys_semtimedop(int semid, struct sembuf __user *tsops,
 		     unsigned int nsops,
 		     const struct __kernel_timespec __user *timeout);

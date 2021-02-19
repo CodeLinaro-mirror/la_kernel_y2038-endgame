@@ -40,9 +40,7 @@
 #define __ARCH_WANT_SYS_OLDUMOUNT
 #define __ARCH_WANT_SYS_SIGPENDING
 #define __ARCH_WANT_SYS_SIGPROCMASK
-#ifdef __32bit_syscall_numbers__
-#define __ARCH_WANT_SYS_IPC
-#else
+#ifndef __32bit_syscall_numbers__
 #define __ARCH_WANT_SYS_TIME
 #define __ARCH_WANT_SYS_UTIME
 #define __ARCH_WANT_COMPAT_SYS_SENDFILE
