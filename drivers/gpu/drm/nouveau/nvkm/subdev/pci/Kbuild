@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-nvkm-y += nvkm/subdev/pci/agp.o
+nvkm-$(CONFIG_AGP) += nvkm/subdev/pci/agp.o
 nvkm-y += nvkm/subdev/pci/base.o
 nvkm-y += nvkm/subdev/pci/pcie.o
 nvkm-y += nvkm/subdev/pci/nv04.o

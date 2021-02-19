@@ -2,6 +2,7 @@
 config DRM_NOUVEAU
 	tristate "Nouveau (NVIDIA) cards"
 	depends on DRM && PCI && MMU
+	depends on AGP || !AGP
 	select IOMMU_API
 	select FW_LOADER
 	select DRM_KMS_HELPER
