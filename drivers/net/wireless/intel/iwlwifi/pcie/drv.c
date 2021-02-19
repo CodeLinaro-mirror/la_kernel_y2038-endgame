@@ -1186,7 +1186,8 @@ static int iwl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	 * here.  But if we detect that the MAC type is actually SnJ,
 	 * we should switch to it here to avoid problems later.
 	 */
-	if (CSR_HW_REV_TYPE(iwl_trans->hw_rev) == IWL_CFG_MAC_TYPE_SNJ)
+	if (IS_ENABLED(CONFIG_IWLMVM) &&
+	    CSR_HW_REV_TYPE(iwl_trans->hw_rev) == IWL_CFG_MAC_TYPE_SNJ)
 		iwl_trans->trans_cfg = &iwl_so_trans_cfg;
 
 	/*
