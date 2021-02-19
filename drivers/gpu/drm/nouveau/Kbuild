@@ -15,6 +15,7 @@ nouveau-y := $(nvif-y)
 #- code also used by various userspace tools/tests
 include $(src)/nvkm/Kbuild
 nouveau-y += $(nvkm-y)
+nouveau-m += $(nvkm-m)
 
 # DRM - general
 ifdef CONFIG_X86
