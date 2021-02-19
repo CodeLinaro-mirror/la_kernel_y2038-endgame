@@ -17,10 +17,6 @@
 #include "fdinfo.h"
 #include "fsnotify.h"
 
-#if defined(CONFIG_PROC_FS)
-
-#if defined(CONFIG_INOTIFY_USER) || defined(CONFIG_FANOTIFY)
-
 static void show_fdinfo(struct seq_file *m, struct file *f,
 			void (*show)(struct seq_file *m,
 				     struct fsnotify_mark *mark))
@@ -151,7 +147,3 @@ void fanotify_show_fdinfo(struct seq_file *m, struct file *f)
 }
 
 #endif /* CONFIG_FANOTIFY */
-
-#endif /* CONFIG_INOTIFY_USER || CONFIG_FANOTIFY */
-
-#endif /* CONFIG_PROC_FS */
