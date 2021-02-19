@@ -484,7 +484,7 @@ COND_SYSCALL(ssetmask);
 /* obsolete: SYSFS_SYSCALL */
 COND_SYSCALL(sysfs);
 
-/* obsolete: __ARCH_WANT_SYS_IPC */
+/* obsolete: CONFIG_ARCH_WANT_OLD_IPC */
 COND_SYSCALL(ipc);
 COND_SYSCALL_COMPAT(ipc);
 
