@@ -68,6 +68,7 @@ config SECONDARY_TRUSTED_KEYRING
 config SYSTEM_BLACKLIST_KEYRING
 	bool "Provide system-wide ring of blacklisted keys"
 	depends on KEYS
+	select PKCS7_MESSAGE_PARSER if INTEGRITY_PLATFORM_KEYRING
 	help
 	  Provide a system keyring to which blacklisted keys can be added.
 	  Keys in the keyring are considered entirely untrusted.  Keys in this
