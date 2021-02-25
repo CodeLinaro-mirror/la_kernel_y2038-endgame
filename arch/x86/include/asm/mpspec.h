@@ -46,17 +46,17 @@ extern int smp_found_config;
 # define smp_found_config 0
 #endif
 
-static inline void get_smp_config(void)
+static inline __init void get_smp_config(void)
 {
 	x86_init.mpparse.get_smp_config(0);
 }
 
-static inline void early_get_smp_config(void)
+static inline __init void early_get_smp_config(void)
 {
 	x86_init.mpparse.get_smp_config(1);
 }
 
-static inline void find_smp_config(void)
+static inline __init void find_smp_config(void)
 {
 	x86_init.mpparse.find_smp_config();
 }
