@@ -96,6 +96,7 @@ obj-$(CONFIG_ARM_PATCH_PHYS_VIRT)	+= phys2virt.o
 obj-$(CONFIG_XIP_DEFLATED_DATA) += head-inflate-data.o
 
 obj-$(CONFIG_ARM_VIRT_EXT)	+= hyp-stub.o
+AFLAGS_hyp-stub.o		:=-Wa,-march=armv7-a
 ifeq ($(CONFIG_ARM_PSCI),y)
 obj-$(CONFIG_SMP)		+= psci_smp.o
 endif
