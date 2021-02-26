@@ -7,7 +7,7 @@ obj-y			:= core.o clock.o timer-ep93xx.o
 obj-$(CONFIG_EP93XX_DMA)	+= dma.o
 
 obj-$(CONFIG_CRUNCH)		+= crunch.o crunch-bits.o
-AFLAGS_crunch-bits.o		:= -Wa,-mcpu=ep9312
+AFLAGS_crunch-bits.o		:= -Wa,-mcpu=ep9312 $(call cc-option, -no-integrated-as)
 
 obj-$(CONFIG_MACH_ADSSPHERE)	+= adssphere.o
 obj-$(CONFIG_MACH_EDB93XX)	+= edb93xx.o
