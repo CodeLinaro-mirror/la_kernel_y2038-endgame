@@ -16,6 +16,7 @@
 
 #include <asm/assembler.h>
 #include <linux/soc/ti/omap1-io.h>
+#include <asm/irq.h>
 
 #include "hardware.h"
 #include "ams-delta-fiq.h"
