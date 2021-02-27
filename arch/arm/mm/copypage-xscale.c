@@ -41,7 +41,7 @@ static void mc_copy_user_page(void *from, void *to)
 	 * when prefetching destination as well.  (NP)
 	 */
 	asm volatile ("\
-.arch xscale					\n\
+.arch armv5te					\n\
 	pld	[%0, #0]			\n\
 	pld	[%0, #32]			\n\
 	pld	[%1, #0]			\n\
@@ -107,7 +107,7 @@ xscale_mc_clear_user_highpage(struct page *page, unsigned long vaddr)
 {
 	void *ptr, *kaddr = kmap_atomic(page);
 	asm volatile("\
-.arch xscale					\n\
+.arch armv5te					\n\
 	mov	r1, %2				\n\
 	mov	r2, #0				\n\
 	mov	r3, #0				\n\
