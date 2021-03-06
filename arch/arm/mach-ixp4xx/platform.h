@@ -1,16 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
- * arch/arm/mach-ixp4xx/include/mach/platform.h
- *
  * Constants and functions that are useful to IXP4xx platform-specific code
  * and device drivers.
  *
  * Copyright (C) 2004 MontaVista Software, Inc.
  */
-
-#ifndef __ASM_ARCH_HARDWARE_H__
-#error "Do not include this directly, instead #include <mach/hardware.h>"
-#endif
+#ifndef __IXP4XX_PLATFORM_H
+#define __IXP4XX_PLATFORM_H
 
 #ifndef __ASSEMBLY__
 
@@ -18,6 +14,8 @@
 #include <linux/platform_data/eth_ixp4xx.h>
 
 #include <asm/types.h>
+
+#include "ixp4xx-regs.h"
 
 #ifndef	__ARMEB__
 #define	REG_OFFSET	0
@@ -80,20 +78,6 @@ extern unsigned long ixp4xx_exp_bus_size;
 #define IXP4XX_UART_XTAL        	14745600
 
 /*
- * This structure provide a means for the board setup code
- * to give information to th pata_ixp4xx driver. It is
- * passed as platform_data.
- */
-struct ixp4xx_pata_data {
-	volatile u32	*cs0_cfg;
-	volatile u32	*cs1_cfg;
-	unsigned long	cs0_bits;
-	unsigned long	cs1_bits;
-	void __iomem	*cs0;
-	void __iomem	*cs1;
-};
-
-/*
  * Frequency of clock used for primary clocksource
  */
 extern unsigned long ixp4xx_timer_freq;
@@ -114,3 +98,4 @@ extern struct pci_ops ixp4xx_ops;
 
 #endif // __ASSEMBLY__
 
+#endif

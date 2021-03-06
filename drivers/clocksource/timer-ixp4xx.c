@@ -61,6 +61,7 @@ struct ixp4xx_timer {
 #ifdef CONFIG_ARM
 	struct delay_timer delay_timer;
 #endif
+	spinlock_t wdt_lock;
 };
 
 /*
@@ -182,6 +183,7 @@ static __init int ixp4xx_timer_register(void __iomem *base,
 		return -ENOMEM;
 	tmr->base = base;
 	tmr->tick_rate = timer_freq;
+	spin_lock_init(&tmr->wdt_lock);
 
 	/*
 	 * The timer register doesn't allow to specify the two least
@@ -238,6 +240,38 @@ static __init int ixp4xx_timer_register(void __iomem *base,
 
 	return 0;
 }
+
+#if IS_ENABLED(CONFIG_IXP4XX_WATCHDOG)
+void ixp4xx_wdt_set(int heartbeat)
+{
+	void __iomem *regs;
+
+	regs = local_ixp4xx_timer->base;
+
+	spin_lock(&local_ixp4xx_timer->wdt_lock);
+	__raw_writel(IXP4XX_WDT_KEY, regs + IXP4XX_OSWK_OFFSET);
+	__raw_writel(0, regs + IXP4XX_OSWE_OFFSET);
+	if (heartbeat) {
+		__raw_writel(local_ixp4xx_timer->tick_rate * heartbeat,
+			     regs + IXP4XX_OSWT_OFFSET);
+		__raw_writel(IXP4XX_WDT_COUNT_ENABLE | IXP4XX_WDT_RESET_ENABLE,
+			     regs + IXP4XX_OSWE_OFFSET);
+	}
+	__raw_writel(0, regs + IXP4XX_OSWK_OFFSET);
+	spin_unlock(&local_ixp4xx_timer->wdt_lock);
+}
+EXPORT_SYMBOL_GPL(ixp4xx_wdt_set);
+
+int ixp4xx_boot_status(void)
+{
+	if (!local_ixp4xx_timer || !local_ixp4xx_timer->base)
+		return -ENXIO;
+
+	return !!(__raw_readl(local_ixp4xx_timer->base + IXP4XX_OSST_OFFSET) &
+		  IXP4XX_OSST_TIMER_WARM_RESET);
+}
+EXPORT_SYMBOL_GPL(ixp4xx_boot_status);
+#endif
 
 /**
  * ixp4xx_timer_setup() - Timer setup function to be called from boardfiles
