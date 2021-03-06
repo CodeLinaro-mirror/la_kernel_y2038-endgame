@@ -28,13 +28,10 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
-#include <mach/mux.h>
-
-#include <mach/hardware.h>
-#include <mach/usb.h>
-
+#include "mux.h"
+#include "hardware.h"
+#include "usb.h"
 #include "common.h"
-#include "clock.h"
 #include "mmc.h"
 
 #define ADS7846_PENDOWN_GPIO	15
