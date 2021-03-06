@@ -633,7 +633,6 @@ source "arch/arm/mach-orion/Kconfig"
 source "arch/arm/mach-oxnas/Kconfig"
 
 source "arch/arm/mach-pxa/Kconfig"
-source "arch/arm/plat-pxa/Kconfig"
 
 source "arch/arm/mach-qcom/Kconfig"
 
@@ -702,9 +701,6 @@ config ARCH_ACORN
 	bool
 
 config PLAT_IOP
-	bool
-
-config PLAT_PXA
 	bool
 
 config PLAT_VERSATILE
