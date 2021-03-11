@@ -1359,12 +1359,13 @@ static uintptr_t __used kprobes_test_case_start(const char **title, void *stack)
 		current_instruction = __mem_to_opcode_arm(*(u32 *)test_code);
 	}
 
-	if (current_title[0] == '.')
+	if (current_title[0] == '.') {
 		verbose("%s\n", current_title);
-	else
+	} else {
 		verbose("%s\t@ %0*x\n", current_title,
 					test_case_is_thumb ? 4 : 8,
 					current_instruction);
+	}
 
 	test_code = next_instruction(test_code);
 	test_after_probe.kprobe.addr = (kprobe_opcode_t *)test_code;
