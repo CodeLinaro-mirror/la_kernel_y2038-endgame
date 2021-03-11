@@ -23,8 +23,6 @@
 # Makefile for the 'controller' sub-component of DAL.
 # It provides the control and status of HW CRTC block.
 
-CFLAGS_$(AMDDALPATH)/dc/dce112/dce112_resource.o = -Wno-override-init
-
 DCE112 = dce112_compressor.o
 
 AMD_DAL_DCE112 = $(addprefix $(AMDDALPATH)/dc/dce112/,$(DCE112))
