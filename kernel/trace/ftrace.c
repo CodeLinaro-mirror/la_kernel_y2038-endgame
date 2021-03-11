@@ -125,7 +125,7 @@ static void ftrace_ops_list_func(unsigned long ip, unsigned long parent_ip,
 #else
 /* See comment below, where ftrace_ops_list_func is defined */
 static void ftrace_ops_no_ops(unsigned long ip, unsigned long parent_ip);
-#define ftrace_ops_list_func ((ftrace_func_t)ftrace_ops_no_ops)
+#define ftrace_ops_list_func ((ftrace_func_t)(void *)ftrace_ops_no_ops)
 #endif
 
 static inline void ftrace_ops_init(struct ftrace_ops *ops)
