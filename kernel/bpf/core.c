@@ -1335,6 +1335,9 @@ EXPORT_SYMBOL_GPL(__bpf_call_base);
 	/*   Immediate based. */		\
 	INSN_3(LD, IMM, DW)
 
+KBUILD_WARN(3, GCC_4_6, "-Woverride-init")
+KBUILD_WARN(3, CLANG_8, "-Winitializer-overrides")
+
 bool bpf_opcode_in_insntable(u8 code)
 {
 #define BPF_INSN_2_TBL(x, y)    [BPF_##x | BPF_##y] = true
