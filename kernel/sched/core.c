@@ -5399,7 +5399,7 @@ static void sched_dynamic_update(int mode)
 	switch (mode) {
 	case preempt_dynamic_none:
 		static_call_update(cond_resched, __cond_resched);
-		static_call_update(might_resched, (typeof(&__cond_resched)) __static_call_return0);
+		static_call_update(might_resched, __static_call_return0);
 		static_call_update(preempt_schedule, (typeof(&preempt_schedule)) NULL);
 		static_call_update(preempt_schedule_notrace, (typeof(&preempt_schedule_notrace)) NULL);
 		static_call_update(irqentry_exit_cond_resched, (typeof(&irqentry_exit_cond_resched)) NULL);
@@ -5416,8 +5416,8 @@ static void sched_dynamic_update(int mode)
 		break;
 
 	case preempt_dynamic_full:
-		static_call_update(cond_resched, (typeof(&__cond_resched)) __static_call_return0);
-		static_call_update(might_resched, (typeof(&__cond_resched)) __static_call_return0);
+		static_call_update(cond_resched, __static_call_return0);
+		static_call_update(might_resched, __static_call_return0);
 		static_call_update(preempt_schedule, __preempt_schedule_func);
 		static_call_update(preempt_schedule_notrace, __preempt_schedule_notrace_func);
 		static_call_update(irqentry_exit_cond_resched, irqentry_exit_cond_resched);
