@@ -78,27 +78,33 @@
 
 #define __diag_str1(s)		#s
 #define __diag_str(s)		__diag_str1(s)
-#define __diag(s)		_Pragma(__diag_str(GCC diagnostic s))
+#define __diag(s)		_Pragma(__diag_str(clang diagnostic s))
 
-#if CLANG_VERSION >= 100000
+#if CONFIG_CLANG_VERSION >= 90000
+#define __diag_CLANG_9(s)	__diag(s)
+#else
+#define __diag_CLANG_9(s)
+#endif
+
+#if CONFIG_CLANG_VERSION >= 100000
 #define __diag_CLANG_10(s)	__diag(s)
 #else
 #define __diag_CLANG_10(s)
 #endif
 
-#if CLANG_VERSION >= 110000
+#if CONFIG_CLANG_VERSION >= 110000
 #define __diag_CLANG_11(s)	__diag(s)
 #else
 #define __diag_CLANG_11(s)
 #endif
 
-#if CLANG_VERSION >= 120000
+#if CONFIG_CLANG_VERSION >= 120000
 #define __diag_CLANG_12(s)	__diag(s)
 #else
 #define __diag_CLANG_12(s)
 #endif
 
-#if CLANG_VERSION >= 130000
+#if CONFIG_CLANG_VERSION >= 130000
 #define __diag_CLANG_13(s)	__diag(s)
 #else
 #define __diag_CLANG_13(s)
