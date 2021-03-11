@@ -1887,20 +1887,20 @@ static inline int test_tsk_need_resched(struct task_struct *tsk)
  * cond_resched_lock() will drop the spinlock before scheduling,
  */
 #if !defined(CONFIG_PREEMPTION) || defined(CONFIG_PREEMPT_DYNAMIC)
-extern int __cond_resched(void);
+extern long __cond_resched(void);
 
 #ifdef CONFIG_PREEMPT_DYNAMIC
 
 DECLARE_STATIC_CALL(cond_resched, __cond_resched);
 
-static __always_inline int _cond_resched(void)
+static __always_inline long _cond_resched(void)
 {
 	return static_call_mod(cond_resched)();
 }
 
 #else
 
-static inline int _cond_resched(void)
+static inline long _cond_resched(void)
 {
 	return __cond_resched();
 }
@@ -1909,7 +1909,7 @@ static inline int _cond_resched(void)
 
 #else
 
-static inline int _cond_resched(void) { return 0; }
+static inline long _cond_resched(void) { return 0; }
 
 #endif /* !defined(CONFIG_PREEMPTION) || defined(CONFIG_PREEMPT_DYNAMIC) */
 
@@ -1918,9 +1918,9 @@ static inline int _cond_resched(void) { return 0; }
 	_cond_resched();			\
 })
 
-extern int __cond_resched_lock(spinlock_t *lock);
-extern int __cond_resched_rwlock_read(rwlock_t *lock);
-extern int __cond_resched_rwlock_write(rwlock_t *lock);
+extern long __cond_resched_lock(spinlock_t *lock);
+extern long __cond_resched_rwlock_read(rwlock_t *lock);
+extern long __cond_resched_rwlock_write(rwlock_t *lock);
 
 #define cond_resched_lock(lock) ({				\
 	___might_sleep(__FILE__, __LINE__, PREEMPT_LOCK_OFFSET);\

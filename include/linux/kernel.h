@@ -77,12 +77,12 @@ struct user;
 
 #ifdef CONFIG_PREEMPT_VOLUNTARY
 
-extern int __cond_resched(void);
+extern long __cond_resched(void);
 # define might_resched() __cond_resched()
 
 #elif defined(CONFIG_PREEMPT_DYNAMIC)
 
-extern int __cond_resched(void);
+extern long __cond_resched(void);
 
 DECLARE_STATIC_CALL(might_resched, __cond_resched);
 
