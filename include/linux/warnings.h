@@ -78,7 +78,7 @@ KBUILD_WARN(0, GCC_4_6, "-Woverflow")
 KBUILD_WARN(0, GCC_4_6, "-Wpacked-bitfield-compat")
 KBUILD_WARN(0, GCC_4_6, "-Wpointer-to-int-cast")
 KBUILD_WARN(1, GCC_4_6, "-Wpragmas")
-KBUILD_WARN(1, GCC_4_6, "-Wpsabi") /* rare */
+KBUILD_WARN(2, GCC_4_6, "-Wpsabi") /* rare */
 KBUILD_WARN(0, GCC_4_6, "-Wreturn-type")
 KBUILD_WARN(0, GCC_4_6, "-Wsync-nand")
 KBUILD_WARN(0, GCC_4_6, "-Wtrigraphs") /* never */
@@ -106,7 +106,7 @@ KBUILD_WARN(0, GCC_6, "-Wignored-attributes")
 KBUILD_WARN(0, GCC_6, "-Wlto-type-mismatch")
 KBUILD_WARN(0, GCC_6, "-Woverride-init-side-effects")
 KBUILD_WARN(0, GCC_6, "-Wscalar-storage-order")
-KBUILD_WARN(1, GCC_6, "-Wshift-negative-value")
+KBUILD_WARN(2, GCC_6, "-Wshift-negative-value")
 KBUILD_WARN(0, GCC_6, "-Wshift-overflow=1")
 KBUILD_WARN(4, GCC_6, "-Wshift-overflow=2") /* lots */
 KBUILD_WARN(0, GCC_7, "-Wbuiltin-declaration-mismatch")
@@ -116,7 +116,7 @@ KBUILD_WARN(3, GCC_7, "-Wstringop-overflow=4") /* never */
 KBUILD_WARN(0, GCC_7, "-Wswitch-unreachable")
 KBUILD_WARN(0, GCC_8, "-Wattribute-alias")
 KBUILD_WARN(0, GCC_8, "-Wif-not-aligned")
-KBUILD_WARN(1, GCC_9, "-Waddress-of-packed-member") /* lots */
+KBUILD_WARN(2, GCC_9, "-Waddress-of-packed-member") /* lots */
 KBUILD_WARN(2, CLANG_8, "-Waddress-of-packed-member") /* lots */
 KBUILD_WARN(0, CLANG_8, "-W#pragma-messages")
 KBUILD_WARN(0, CLANG_8, "-W#warnings")
@@ -303,9 +303,9 @@ KBUILD_WARN(0, GCC_4_6, "-Wvolatile-register-var")
     defined(CONFIG_CC_OPTIMIZE_FOR_SIZE) || \
     defined(CONFIG_PROFILE_ALL_BRANCHES) || \
     defined(CONFIG_GCOV_PROFILE_ALL)
-KBUILD_WARN(1, GCC_4_7, "-Wmaybe-uninitialized")
+KBUILD_WARN(2, GCC_4_7, "-Wmaybe-uninitialized")
 #else
-KBUILD_WARN(1, GCC_4_7, "-Wmaybe-uninitialized") /* medium */
+KBUILD_WARN(2, GCC_4_7, "-Wmaybe-uninitialized") /* medium */
 #endif
 
 KBUILD_WARN(0, GCC_4_8, "-Wsizeof-pointer-memaccess")
@@ -314,7 +314,7 @@ KBUILD_WARN(0, GCC_5, "-Wbool-compare")
 KBUILD_WARN(0, GCC_5, "-Wchkp")
 KBUILD_WARN(0, GCC_5, "-Wlogical-not-parentheses")
 KBUILD_WARN(0, GCC_5, "-Wmemset-transposed-args")
-KBUILD_WARN(1, GCC_6, "-Wframe-address") /* rare */
+KBUILD_WARN(2, GCC_6, "-Wframe-address") /* rare */
 KBUILD_WARN(0, GCC_6, "-Wmisleading-indentation")
 KBUILD_WARN(0, GCC_6, "-Wnonnull-compare")
 KBUILD_WARN(0, GCC_6, "-Wtautological-compare")
@@ -329,7 +329,7 @@ KBUILD_WARN(0, GCC_8, "-Wmissing-attributes")
 KBUILD_WARN(0, GCC_8, "-Wmultistatement-macros")
 KBUILD_WARN(0, GCC_8, "-Wpacked-not-aligned")
 KBUILD_WARN(0, GCC_8, "-Wsizeof-pointer-div")
-KBUILD_WARN(1, GCC_8, "-Wstringop-truncation") /* medium */
+KBUILD_WARN(2, GCC_8, "-Wstringop-truncation") /* medium */
 KBUILD_WARN(0, CLANG_8, "-Wall")
 KBUILD_WARN(0, CLANG_8, "-Wmost")
 KBUILD_WARN(0, CLANG_8, "-Wcast-of-sel-type")
@@ -413,13 +413,13 @@ KBUILD_WARN(1, GCC_4_6, "-Wextra")
 KBUILD_WARN(3, GCC_4_6, "-Wsign-compare") /* huge */
 KBUILD_WARN(4, GCC_4_6, "-Wsign-compare") /* huge */
 KBUILD_WARN(1, GCC_4_6, "-Wclobbered") /* never */
-KBUILD_WARN(1, GCC_4_6, "-Wempty-body") /* medium */
+KBUILD_WARN(2, GCC_4_6, "-Wempty-body") /* medium */
 KBUILD_WARN(1, GCC_4_6, "-Wignored-qualifiers") /* rare */
 KBUILD_WARN(2, GCC_4_6, "-Wmissing-field-initializers") /* huge */
 KBUILD_WARN(4, GCC_4_6, "-Wmissing-field-initializers") /* huge */
 KBUILD_WARN(1, GCC_4_6, "-Wmissing-parameter-type") /* never */
 KBUILD_WARN(1, GCC_4_6, "-Wold-style-declaration") /* rare */
-KBUILD_WARN(1, GCC_4_6, "-Woverride-init") /* medium */
+KBUILD_WARN(2, GCC_4_6, "-Woverride-init") /* medium */
 KBUILD_WARN(2, GCC_4_6, "-Wtype-limits") /* medium */
 KBUILD_WARN(1, GCC_7, "-Wexpansion-to-defined") /* never */
 KBUILD_WARN(1, GCC_8, "-Wcast-function-type") /* never */
@@ -440,7 +440,7 @@ KBUILD_WARN(2, CLANG_8, "-Wmissing-prototypes") /* medium */
 KBUILD_WARN(0, GCC_4_6, "-Wunused-result")
 /*KBUILD_WARN(2, GCC_4_6, "-Wunused-macros") / lots */
 KBUILD_WARN(4, GCC_4_6, "-Wunused-macros") /* lots */
-KBUILD_WARN(1, GCC_4_6, "-Wunused-but-set-variable") /* medium */
+KBUILD_WARN(2, GCC_4_6, "-Wunused-but-set-variable") /* medium */
 KBUILD_WARN(0, GCC_4_6, "-Wunused-function")
 KBUILD_WARN(0, GCC_4_6, "-Wunused-label")
 KBUILD_WARN(0, GCC_4_6, "-Wunused-value")
@@ -629,9 +629,9 @@ KBUILD_WARN(4, GCC_4_6, "-Winline") /* huge */
 KBUILD_WARN(3, GCC_4_6, "-Winvalid-pch") /* never */
 KBUILD_WARN(3, GCC_4_6, "-Wjump-misses-init") /* rare */
 KBUILD_WARN(2, GCC_4_6, "-Wlogical-op") /* rare */
-KBUILD_WARN(1, GCC_4_6, "-Wmissing-declarations") /* never */
+KBUILD_WARN(2, GCC_4_6, "-Wmissing-declarations") /* never */
 KBUILD_WARN(1, GCC_4_6, "-Wmissing-include-dirs") /* never */
-KBUILD_WARN(1, GCC_4_6, "-Wmissing-prototypes") /* medium */
+KBUILD_WARN(2, GCC_4_6, "-Wmissing-prototypes") /* medium */
 KBUILD_WARN(3, GCC_4_6, "-Wmultichar") /* never */
 KBUILD_WARN(4, GCC_4_6, "-Wnested-externs") /* excessive */
 KBUILD_WARN(1, GCC_4_6, "-Wold-style-definition") /* rare */
