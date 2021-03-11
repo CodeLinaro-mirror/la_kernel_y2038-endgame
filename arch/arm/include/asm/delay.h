@@ -81,7 +81,7 @@ extern void __bad_udelay(void);
 
 #define udelay(n)							\
 	(__builtin_constant_p(n) ?					\
-	  ((n) > (MAX_UDELAY_MS * 1000) ? __bad_udelay() :		\
+	  ((u64)(n) > (MAX_UDELAY_MS * 1000) ? __bad_udelay() :		\
 			__const_udelay((n) * UDELAY_MULT)) :		\
 	  __udelay(n))
 
