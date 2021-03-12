@@ -464,7 +464,7 @@ static int hinic_set_settings_to_hw(struct hinic_dev *nic_dev,
 	char set_link_str[SET_LINK_STR_MAX_LEN] = {0};
 	struct net_device *netdev = nic_dev->netdev;
 	enum nic_speed_level speed_level = 0;
-	int err;
+	int err, off;
 
 	err = snprintf(set_link_str, SET_LINK_STR_MAX_LEN, "%s",
 		       (set_settings & HILINK_LINK_SET_AUTONEG) ?
@@ -475,10 +475,11 @@ static int hinic_set_settings_to_hw(struct hinic_dev *nic_dev,
 		return -EFAULT;
 	}
 
+	off = err;
 	if (set_settings & HILINK_LINK_SET_SPEED) {
 		speed_level = hinic_ethtool_to_hw_speed_level(speed);
-		err = snprintf(set_link_str, SET_LINK_STR_MAX_LEN,
-			       "%sspeed %d ", set_link_str, speed);
+		err = snprintf(set_link_str + off, SET_LINK_STR_MAX_LEN - off,
+			       "speed %d ", speed);
 		if (err <= 0 || err >= SET_LINK_STR_MAX_LEN) {
 			netif_err(nic_dev, drv, netdev, "Failed to snprintf link speed, function return(%d) and dest_len(%d)\n",
 				  err, SET_LINK_STR_MAX_LEN);
