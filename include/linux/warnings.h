@@ -278,9 +278,10 @@ KBUILD_WARN(0, CLANG_8, "-Wdeprecated-writable-strings")
 KBUILD_WARN(0, GCC_4_6, "-Wall")
 KBUILD_WARN(0, GCC_4_6, "-Waddress")
 KBUILD_WARN(0, GCC_4_6, "-Warray-bounds")
-KBUILD_WARN(0, GCC_4_6, "-Warray-bounds=1")
+KBUILD_WARN(1, GCC_4_6, "-Warray-bounds=1")
+KBUILD_WARN(2, GCC_9, "-Warray-bounds") /* false-positives in gcc-9.2 */
+KBUILD_WARN(2, GCC_11, "-Warray-bounds=1")
 KBUILD_WARN(3, GCC_4_6, "-Warray-bounds=2") /* never */
-KBUILD_WARN(1, GCC_9, "-Warray-bounds") /* false-positives in gcc-9.2 */
 KBUILD_WARN(0, GCC_4_6, "-Wchar-subscripts")
 KBUILD_WARN(0, GCC_4_6, "-Wcomment")
 KBUILD_WARN(0, GCC_4_6, "-Wimplicit")
