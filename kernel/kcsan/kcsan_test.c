@@ -1243,9 +1243,6 @@ static void test_atomic_builtins(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, 241L, __atomic_fetch_nand(&test_var, 0xf, __ATOMIC_RELAXED));
 		KUNIT_EXPECT_EQ(test, -2L, test_var);
 
-		__atomic_thread_fence(__ATOMIC_SEQ_CST);
-		__atomic_signal_fence(__ATOMIC_SEQ_CST);
-
 		kcsan_disable_current();
 
 		match_never = report_available();
