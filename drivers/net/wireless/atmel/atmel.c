@@ -2881,13 +2881,18 @@ static void send_association_request(struct atmel_private *priv, int is_reassoc)
 	struct ass_req_format {
 		__le16 capability;
 		__le16 listen_interval;
-		u8 ap[ETH_ALEN]; /* nothing after here directly accessible */
-		u8 ssid_el_id;
-		u8 ssid_len;
-		u8 ssid[MAX_SSID_LENGTH];
-		u8 sup_rates_el_id;
-		u8 sup_rates_len;
-		u8 rates[4];
+		u8 ssid_el[ETH_ALEN + 2 + MAX_SSID_LENGTH + 2 + 4];
+		/*
+		 * nothing after here directly accessible:
+		 *
+		 * u8 ap[ETH_ALEN];
+		 * u8 ssid_el_id;
+		 * u8 ssid_len;
+		 * u8 ssid[MAX_SSID_LENGTH];
+		 * u8 sup_rates_el_id;
+		 * u8 sup_rates_len;
+		 * u8 rates[4];
+		 */
 	} body;
 
 	header.frame_control = cpu_to_le16(IEEE80211_FTYPE_MGMT |
@@ -2907,13 +2912,13 @@ static void send_association_request(struct atmel_private *priv, int is_reassoc)
 
 	body.listen_interval = cpu_to_le16(priv->listen_interval * priv->beacon_period);
 
+	ssid_el_p = body.ssid_el;
 	/* current AP address - only in reassoc frame */
 	if (is_reassoc) {
-		memcpy(body.ap, priv->CurrentBSSID, ETH_ALEN);
-		ssid_el_p = &body.ssid_el_id;
+		memcpy(ssid_el_p, priv->CurrentBSSID, ETH_ALEN);
+		ssid_el_p += ETH_ALEN;
 		bodysize = 18 + priv->SSID_size;
 	} else {
-		ssid_el_p = &body.ap[0];
 		bodysize = 12 + priv->SSID_size;
 	}
 
