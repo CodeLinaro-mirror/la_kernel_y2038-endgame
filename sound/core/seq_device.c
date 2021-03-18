@@ -135,8 +135,8 @@ void snd_seq_device_load_drivers(void)
 EXPORT_SYMBOL(snd_seq_device_load_drivers);
 #define cancel_autoload_drivers()	cancel_work_sync(&autoload_work)
 #else
-#define queue_autoload_drivers() /* NOP */
-#define cancel_autoload_drivers() /* NOP */
+#define queue_autoload_drivers()	do { } while (0)
+#define cancel_autoload_drivers() 	do { } while (0)
 #endif
 
 /*
