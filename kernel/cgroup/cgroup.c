@@ -456,7 +456,7 @@ static u16 cgroup_ss_mask(struct cgroup *cgrp)
 static struct cgroup_subsys_state *cgroup_css(struct cgroup *cgrp,
 					      struct cgroup_subsys *ss)
 {
-	if (ss)
+	if (ss && (CGROUP_SUBSYS_COUNT > 0))
 		return rcu_dereference_check(cgrp->subsys[ss->id],
 					lockdep_is_held(&cgroup_mutex));
 	else
@@ -534,6 +534,9 @@ struct cgroup_subsys_state *cgroup_e_css(struct cgroup *cgrp,
 {
 	struct cgroup_subsys_state *css;
 
+	if (CGROUP_SUBSYS_COUNT == 0)
+		return NULL;
+
 	do {
 		css = cgroup_css(cgrp, ss);
 
@@ -560,6 +563,9 @@ struct cgroup_subsys_state *cgroup_get_e_css(struct cgroup *cgrp,
 					     struct cgroup_subsys *ss)
 {
 	struct cgroup_subsys_state *css;
+
+	if (CGROUP_SUBSYS_COUNT == 0)
+		return NULL;
 
 	rcu_read_lock();
 
@@ -630,7 +636,7 @@ struct cgroup_subsys_state *of_css(struct kernfs_open_file *of)
 	 * the matching css from the cgroup's subsys table is guaranteed to
 	 * be and stay valid until the enclosing operation is complete.
 	 */
-	if (cft->ss)
+	if (cft->ss && CGROUP_SUBSYS_COUNT > 0)
 		return rcu_dereference_raw(cgrp->subsys[cft->ss->id]);
 	else
 		return &cgrp->self;
@@ -2342,6 +2348,9 @@ struct task_struct *cgroup_taskset_next(struct cgroup_taskset *tset,
 {
 	struct css_set *cset = tset->cur_cset;
 	struct task_struct *task = tset->cur_task;
+
+	if (CGROUP_SUBSYS_COUNT == 0)
+		return NULL;
 
 	while (&cset->mg_node != tset->csets) {
 		if (!task)
@@ -4523,7 +4532,7 @@ void css_task_iter_start(struct cgroup_subsys_state *css, unsigned int flags,
 	it->ss = css->ss;
 	it->flags = flags;
 
-	if (it->ss)
+	if (it->ss && CGROUP_SUBSYS_COUNT > 0)
 		it->cset_pos = &css->cgroup->e_csets[css->ss->id];
 	else
 		it->cset_pos = &css->cgroup->cset_links;
