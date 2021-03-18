@@ -136,7 +136,7 @@ static struct resource nslu2_beeper_resources[] = {
 	},
 	{
 		.start	= IXP4XX_TIMER_BASE_PHYS,
-		.start	= IXP4XX_TIMER_BASE_PHYS + 0x0fff,
+		.end	= IXP4XX_TIMER_BASE_PHYS + 0x0fff,
 		.flags	= IORESOURCE_MEM,
 	}
 };
