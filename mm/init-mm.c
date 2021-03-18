@@ -16,6 +16,10 @@
 #define INIT_MM_CONTEXT(name)
 #endif
 
+#ifndef INIT_PG_DIR
+#define INIT_PG_DIR swapper_pg_dir
+#endif
+
 /*
  * For dynamically allocated mm_structs, there is a dynamically sized cpumask
  * at the end of the structure, the size of which depends on the maximum CPU
@@ -28,7 +32,7 @@
  */
 struct mm_struct init_mm = {
 	.mm_rb		= RB_ROOT,
-	.pgd		= swapper_pg_dir,
+	.pgd		= INIT_PG_DIR,
 	.mm_users	= ATOMIC_INIT(2),
 	.mm_count	= ATOMIC_INIT(1),
 	.write_protect_seq = SEQCNT_ZERO(init_mm.write_protect_seq),
