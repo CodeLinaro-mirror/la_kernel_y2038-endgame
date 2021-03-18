@@ -296,7 +296,7 @@ void dev_coredumpm(struct device *dev, struct module *owner,
 				       "failing_device"));
 
 	WARN_ON_ONCE(sysfs_create_link(&dev->kobj, &devcd->devcd_dev.kobj,
-				       "devcoredump"))
+				       "devcoredump"));
 
 	INIT_DELAYED_WORK(&devcd->del_wk, devcd_del);
 	schedule_delayed_work(&devcd->del_wk, DEVCD_TIMEOUT);
