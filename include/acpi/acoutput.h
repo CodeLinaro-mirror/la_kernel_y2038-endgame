@@ -433,23 +433,23 @@
  * This is the non-debug case -- make everything go away,
  * leaving no executable debug code!
  */
-#define ACPI_DEBUG_PRINT(pl)
-#define ACPI_DEBUG_PRINT_RAW(pl)
-#define ACPI_DEBUG_EXEC(a)
-#define ACPI_DEBUG_ONLY_MEMBERS(a)
-#define ACPI_FUNCTION_NAME(a)
-#define ACPI_FUNCTION_TRACE(a)
-#define ACPI_FUNCTION_TRACE_PTR(a, b)
-#define ACPI_FUNCTION_TRACE_U32(a, b)
-#define ACPI_FUNCTION_TRACE_STR(a, b)
-#define ACPI_FUNCTION_ENTRY()
-#define ACPI_DUMP_STACK_ENTRY(a)
-#define ACPI_DUMP_OPERANDS(a, b, c)
-#define ACPI_DUMP_ENTRY(a, b)
-#define ACPI_DUMP_PATHNAME(a, b, c, d)
-#define ACPI_DUMP_BUFFER(a, b)
+#define ACPI_DEBUG_PRINT(pl)			do { } while (0)
+#define ACPI_DEBUG_PRINT_RAW(pl)		do { } while (0)
+#define ACPI_DEBUG_EXEC(a)			do { } while (0)
+#define ACPI_DEBUG_ONLY_MEMBERS(a)		do { } while (0)
+#define ACPI_FUNCTION_NAME(a)			do { } while (0)
+#define ACPI_FUNCTION_TRACE(a)			do { } while (0)
+#define ACPI_FUNCTION_TRACE_PTR(a, b)		do { } while (0)
+#define ACPI_FUNCTION_TRACE_U32(a, b)		do { } while (0)
+#define ACPI_FUNCTION_TRACE_STR(a, b)		do { } while (0)
+#define ACPI_FUNCTION_ENTRY()			do { } while (0)
+#define ACPI_DUMP_STACK_ENTRY(a)		do { } while (0)
+#define ACPI_DUMP_OPERANDS(a, b, c)		do { } while (0)
+#define ACPI_DUMP_ENTRY(a, b)			do { } while (0)
+#define ACPI_DUMP_PATHNAME(a, b, c, d)		do { } while (0)
+#define ACPI_DUMP_BUFFER(a, b)			do { } while (0)
 #define ACPI_IS_DEBUG_ENABLED(level, component) 0
-#define ACPI_TRACE_POINT(a, b, c, d)
+#define ACPI_TRACE_POINT(a, b, c, d)		do { } while (0)
 
 /* Return macros must have a return statement at the minimum */
 
