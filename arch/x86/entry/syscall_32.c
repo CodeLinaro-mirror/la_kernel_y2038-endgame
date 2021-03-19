@@ -15,6 +15,9 @@
 
 #define __SYSCALL_I386(nr, sym) [nr] = __ia32_##sym,
 
+__diag_ignore(GCC, 8, "-Woverride-init", "default to __ia32_sys_ni_syscall")
+__diag_ignore(CLANG, 9, "-Winitializer-overrides", "default to __ia32_sys_ni_syscall")
+
 __visible const sys_call_ptr_t ia32_sys_call_table[__NR_ia32_syscall_max+1] = {
 	/*
 	 * Smells like a compiler bug -- it doesn't work

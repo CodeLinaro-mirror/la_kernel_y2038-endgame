@@ -31,6 +31,9 @@
 #define __SYSCALL_X32(nr, sym) [nr] = __x32_##sym,
 #define __SYSCALL_COMMON(nr, sym) [nr] = __x64_##sym,
 
+__diag_ignore(GCC, 8, "-Woverride-init", "default to __x32_sys_ni_syscall")
+__diag_ignore(CLANG, 9, "-Winitializer-overrides", "default to __x32_sys_ni_syscall")
+
 asmlinkage const sys_call_ptr_t x32_sys_call_table[__NR_x32_syscall_max+1] = {
 	/*
 	 * Smells like a compiler bug -- it doesn't work

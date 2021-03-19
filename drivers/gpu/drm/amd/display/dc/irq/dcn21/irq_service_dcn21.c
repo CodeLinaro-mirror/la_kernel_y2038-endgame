@@ -185,6 +185,8 @@ static const struct irq_source_info_funcs vupdate_no_lock_irq_info_funcs = {
 	BASE(mm ## block ## id ## _ ## reg_name ## _BASE_IDX) + \
 			mm ## block ## id ## _ ## reg_name
 
+__diag_ignore(GCC, 8, "-Woverride-init", "override IRQ_REG_ENTRY")
+__diag_ignore(CLANG, 9, "-Winitializer-overrides", "override IRQ_REG_ENTRY")
 
 #define IRQ_REG_ENTRY(block, reg_num, reg1, mask1, reg2, mask2)\
 	.enable_reg = SRI(reg1, block, reg_num),\
