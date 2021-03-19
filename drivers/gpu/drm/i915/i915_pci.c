@@ -30,6 +30,10 @@
 #include "i915_drv.h"
 #include "i915_pci.h"
 
+
+__diag_ignore(GCC, 8, "-Woverride-init", "features all override one another")
+__diag_ignore(CLANG, 9, "-Winitializer-overrides", "features all override one another")
+
 #define PLATFORM(x) .platform = (x)
 #define GEN(x) \
 	.graphics_ver = (x), \
