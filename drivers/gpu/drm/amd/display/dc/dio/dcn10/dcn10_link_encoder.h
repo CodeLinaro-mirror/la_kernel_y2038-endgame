@@ -177,6 +177,9 @@ struct dcn10_link_enc_registers {
 	uint32_t HDCP_INT_CONTROL;
 };
 
+__diag_ignore(GCC, 5, "-Woverride-init", "lots of intentional overrides")
+__diag_ignore(clang, 9, "-Winitializer-overrides", "lots of intentional overrides")
+
 #define LE_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
 
