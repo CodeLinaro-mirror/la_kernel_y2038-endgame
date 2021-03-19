@@ -38,6 +38,10 @@
 #include "i915_reg.h"
 #include "intel_pci_config.h"
 
+__diag_push();
+__diag_ignore(GCC, 5, "-Woverride-init", "features all override one another")
+__diag_ignore(clang, 9, "-Winitializer-overrides", "features all override one another")
+
 #define PLATFORM(x) .platform = (x)
 #define GEN(x) \
 	.__runtime.graphics.ip.ver = (x), \
