@@ -56,6 +56,10 @@ enum xscale_counters {
 	XSCALE_COUNTER3,
 };
 
+__diag_ignore(GCC, 8, "-Woverride-init", "PERF_MAP_ALL_UNSUPPORTED override")
+__diag_ignore(CLANG, 9, "-Winitializer-overrides", "PERF_MAP_ALL_UNSUPPORTED override")
+
+
 static const unsigned xscale_perf_map[PERF_COUNT_HW_MAX] = {
 	PERF_MAP_ALL_UNSUPPORTED,
 	[PERF_COUNT_HW_CPU_CYCLES]		= XSCALE_PERFCTR_CCNT,
