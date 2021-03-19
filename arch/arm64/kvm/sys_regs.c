@@ -1501,6 +1501,8 @@ static unsigned int mte_visibility(const struct kvm_vcpu *vcpu,
  * This should be revisited if we ever encounter a more demanding
  * guest...
  */
+__diag_ignore(GCC, 5, "-Woverride-init", "SYS_DESC overrides")
+__diag_ignore(clang, 9, "-Winitializer-overrides", "SYS_DESC overrides")
 static const struct sys_reg_desc sys_reg_descs[] = {
 	{ SYS_DESC(SYS_DC_ISW), access_dcsw },
 	{ SYS_DESC(SYS_DC_CSW), access_dcsw },
