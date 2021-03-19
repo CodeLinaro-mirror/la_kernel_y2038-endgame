@@ -196,7 +196,7 @@ int jffs2_sum_scan_sumnode(struct jffs2_sb_info *c, struct jffs2_eraseblock *jeb
 #define jffs2_sum_init(a) (0)
 #define jffs2_sum_exit(a) do { } while (0)
 #define jffs2_sum_disable_collecting(a)
-#define jffs2_sum_is_disabled(a) (0) do { } while (0)
+#define jffs2_sum_is_disabled(a) (0)
 #define jffs2_sum_reset_collected(a) do { } while (0)
 #define jffs2_sum_add_kvec(a,b,c,d) (0)
 #define jffs2_sum_move_collected(a,b) do { } while (0)
