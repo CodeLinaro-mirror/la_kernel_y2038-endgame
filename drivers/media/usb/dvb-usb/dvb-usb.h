@@ -38,8 +38,8 @@
 }
 #define DVB_USB_DEBUG_STATUS
 #else
-#define dprintk(args...)
-#define debug_dump(b,l,func)
+#define dprintk(args...) no_printk(args)
+#define debug_dump(b,l,func) do { } while (0)
 
 #define DVB_USB_DEBUG_STATUS " (debugging is not enabled)"
 
