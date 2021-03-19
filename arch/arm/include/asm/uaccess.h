@@ -195,7 +195,7 @@ extern int __get_user_64t_4(void *);
 #define __get_user_check(x, p)						\
 	({								\
 		unsigned long __limit = current_thread_info()->addr_limit - 1; \
-		register typeof(*(p)) __user *__p asm("r0") = (p);	\
+		register __auto_type __p asm("r0") = (p);		\
 		register __inttype(x) __r2 asm("r2");			\
 		register unsigned long __l asm("r1") = __limit;		\
 		register int __e asm("r0");				\
@@ -228,7 +228,7 @@ extern int __get_user_64t_4(void *);
 		default: __e = __get_user_bad(); break;			\
 		}							\
 		uaccess_restore(__ua_flags);				\
-		x = (typeof(*(p))) __r2;				\
+		x = (typeof(*(__p))) __r2;				\
 		__e;							\
 	})
 
@@ -246,7 +246,7 @@ extern int __put_user_8(void *, unsigned long long);
 #define __put_user_check(__pu_val, __ptr, __err, __s)			\
 	({								\
 		unsigned long __limit = current_thread_info()->addr_limit - 1; \
-		register typeof(__pu_val) __r2 asm("r2") = __pu_val;	\
+		register __auto_type __r2 asm("r2") = __pu_val;		\
 		register const void __user *__p asm("r0") = __ptr;	\
 		register unsigned long __l asm("r1") = __limit;		\
 		register int __e asm("r0");				\
@@ -391,8 +391,8 @@ do {									\
 
 #define __put_user_switch(x, ptr, __err, __fn)				\
 	do {								\
-		const __typeof__(*(ptr)) __user *__pu_ptr = (ptr);	\
-		__typeof__(*(ptr)) __pu_val = (x);			\
+		__auto_type __pu_ptr = (ptr);				\
+		__typeof__(*(__pu_ptr)) __pu_val = (x);			\
 		unsigned int __ua_flags;				\
 		might_fault();						\
 		__ua_flags = uaccess_save_and_enable();			\
