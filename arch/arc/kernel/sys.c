@@ -12,6 +12,9 @@
 #undef __SYSCALL
 #define __SYSCALL(nr, call) [nr] = (call),
 
+__diag_ignore(GCC, 8, "-Woverride-init", "default to sys_ni_syscall")
+__diag_ignore(CLANG, 9, "-Winitializer-overrides", "default to sys_ni_syscall")
+
 void *sys_call_table[NR_syscalls] = {
 	[0 ... NR_syscalls-1] = sys_ni_syscall,
 #include <asm/unistd.h>
