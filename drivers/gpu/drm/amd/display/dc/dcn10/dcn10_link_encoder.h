@@ -168,6 +168,9 @@ struct dcn10_link_enc_registers {
 	uint32_t DIO_LINKF_CNTL;
 };
 
+__diag_ignore(GCC, 8, "-Woverride-init", "lots of intentional overrides")
+__diag_ignore(CLANG, 9, "-Winitializer-overrides", "lots of intentional overrides")
+
 #define LE_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
 
