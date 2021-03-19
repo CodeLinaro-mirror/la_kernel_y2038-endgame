@@ -413,13 +413,13 @@ KBUILD_WARN(1, GCC_4_6, "-Wextra")
 KBUILD_WARN(3, GCC_4_6, "-Wsign-compare") /* huge */
 KBUILD_WARN(4, GCC_4_6, "-Wsign-compare") /* huge */
 KBUILD_WARN(1, GCC_4_6, "-Wclobbered") /* never */
-KBUILD_WARN(2, GCC_4_6, "-Wempty-body") /* medium */
+KBUILD_WARN(1, GCC_4_6, "-Wempty-body") /* medium */
 KBUILD_WARN(1, GCC_4_6, "-Wignored-qualifiers") /* rare */
 KBUILD_WARN(2, GCC_4_6, "-Wmissing-field-initializers") /* huge */
 KBUILD_WARN(4, GCC_4_6, "-Wmissing-field-initializers") /* huge */
 KBUILD_WARN(1, GCC_4_6, "-Wmissing-parameter-type") /* never */
 KBUILD_WARN(1, GCC_4_6, "-Wold-style-declaration") /* rare */
-KBUILD_WARN(2, GCC_4_6, "-Woverride-init") /* medium */
+KBUILD_WARN(1, GCC_4_6, "-Woverride-init") /* medium */
 KBUILD_WARN(2, GCC_4_6, "-Wtype-limits") /* medium */
 KBUILD_WARN(1, GCC_7, "-Wexpansion-to-defined") /* never */
 KBUILD_WARN(1, GCC_8, "-Wcast-function-type") /* never */
