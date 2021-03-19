@@ -103,7 +103,12 @@ static int intel_fbdev_pan_display(struct fb_var_screeninfo *var,
 
 static const struct fb_ops intelfb_ops = {
 	.owner = THIS_MODULE,
-	DRM_FB_HELPER_DEFAULT_OPS,
+	.fb_check_var	= drm_fb_helper_check_var,
+	.fb_setcmap	= drm_fb_helper_setcmap,
+	.fb_debug_enter = drm_fb_helper_debug_enter,
+	.fb_debug_leave = drm_fb_helper_debug_leave,
+	.fb_ioctl	= drm_fb_helper_ioctl,
+
 	.fb_set_par = intel_fbdev_set_par,
 	.fb_fillrect = drm_fb_helper_cfb_fillrect,
 	.fb_copyarea = drm_fb_helper_cfb_copyarea,
