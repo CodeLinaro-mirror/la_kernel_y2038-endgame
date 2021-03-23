@@ -197,7 +197,7 @@ static void __init build_tag_list(struct param_struct *params, void *taglist)
 	tag->hdr.tag = ATAG_CMDLINE;
 	tag->hdr.size = (strlen(params->commandline) + 3 +
 			 sizeof(struct tag_header)) >> 2;
-	strcpy((void*)&tag->u, params->commandline);
+	strcpy(tag->u.cmdline.cmdline, params->commandline);
 
 	tag = tag_next(tag);
 	tag->hdr.tag = ATAG_NONE;
