@@ -5074,7 +5074,6 @@ static void init_alloc_chunk_ctl_policy_zoned(
 	u64 type = ctl->type;
 
 	ctl->max_stripe_size = zone_size;
-	ctl->max_chunk_size = UINT_MAX;
 	if (type & BTRFS_BLOCK_GROUP_DATA) {
 		ctl->max_chunk_size = round_down(BTRFS_MAX_DATA_CHUNK_SIZE,
 						 zone_size);
