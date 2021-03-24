@@ -388,7 +388,7 @@ KBUILD_WARN(0, GCC_4_6, "-Wformat-contains-nul")
 KBUILD_WARN(0, GCC_4_6, "-Wformat-extra-args")
 KBUILD_WARN(2, GCC_4_6, "-Wformat-zero-length")
 KBUILD_WARN(1, GCC_7, "-Wformat-truncation=1")
-KBUILD_WARN(4, GCC_4_6, "-Wformat=2") /* huge */
+//KBUILD_WARN(4, GCC_4_6, "-Wformat=2") /* huge */
 KBUILD_WARN(3, GCC_4_6, "-Wformat-nonliteral") /* medium */
 KBUILD_WARN(3, GCC_4_6, "-Wformat-security") /* medium */
 KBUILD_WARN(3, GCC_4_6, "-Wformat-y2k")
