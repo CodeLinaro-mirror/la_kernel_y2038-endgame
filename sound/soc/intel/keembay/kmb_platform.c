@@ -236,12 +236,12 @@ static void kmb_pcm_operation(struct kmb_i2s_info *kmb_i2s, bool playback)
 		ptr = kmb_i2s->tx_ptr;
 		new_ptr = kmb_pcm_tx_fn(kmb_i2s, substream->runtime,
 					ptr, &period_elapsed);
-		cmpxchg(&kmb_i2s->tx_ptr, ptr, new_ptr);
+		cmpxchg32(&kmb_i2s->tx_ptr, ptr, new_ptr);
 	} else {
 		ptr = kmb_i2s->rx_ptr;
 		new_ptr = kmb_pcm_rx_fn(kmb_i2s, substream->runtime,
 					ptr, &period_elapsed);
-		cmpxchg(&kmb_i2s->rx_ptr, ptr, new_ptr);
+		cmpxchg32(&kmb_i2s->rx_ptr, ptr, new_ptr);
 	}
 
 	if (period_elapsed)

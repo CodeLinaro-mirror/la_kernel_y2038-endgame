@@ -3309,7 +3309,7 @@ int btrfs_orphan_cleanup(struct btrfs_root *root)
 	u64 last_objectid = 0;
 	int ret = 0, nr_unlink = 0;
 
-	if (cmpxchg(&root->orphan_cleanup_state, 0, ORPHAN_CLEANUP_STARTED))
+	if (cmpxchg32(&root->orphan_cleanup_state, 0, ORPHAN_CLEANUP_STARTED))
 		return 0;
 
 	path = btrfs_alloc_path();

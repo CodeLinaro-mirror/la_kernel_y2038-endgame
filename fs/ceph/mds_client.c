@@ -3561,7 +3561,7 @@ void ceph_mdsc_release_dir_caps(struct ceph_mds_request *req)
 {
 	int dcaps;
 
-	dcaps = xchg(&req->r_dir_caps, 0);
+	dcaps = xchg32(&req->r_dir_caps, 0);
 	if (dcaps) {
 		dout("releasing r_dir_caps=%s\n", ceph_cap_string(dcaps));
 		ceph_put_cap_refs(ceph_inode(req->r_parent), dcaps);
@@ -3572,7 +3572,7 @@ void ceph_mdsc_release_dir_caps_no_check(struct ceph_mds_request *req)
 {
 	int dcaps;
 
-	dcaps = xchg(&req->r_dir_caps, 0);
+	dcaps = xchg32(&req->r_dir_caps, 0);
 	if (dcaps) {
 		dout("releasing r_dir_caps=%s\n", ceph_cap_string(dcaps));
 		ceph_put_cap_refs_no_check_caps(ceph_inode(req->r_parent),

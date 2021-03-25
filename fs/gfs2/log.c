@@ -111,7 +111,7 @@ __acquires(&sdp->sd_ail_lock)
 					  &tr->tr_ail2_list);
 				continue;
 			}
-			if (!cmpxchg(&sdp->sd_log_error, 0, -EIO)) {
+			if (!cmpxchg32(&sdp->sd_log_error, 0, -EIO)) {
 				gfs2_io_error_bh(sdp, bh);
 				gfs2_withdraw_delayed(sdp);
 			}
@@ -319,7 +319,7 @@ static int gfs2_ail1_empty_one(struct gfs2_sbd *sdp, struct gfs2_trans *tr,
 			continue;
 		}
 		if (!buffer_uptodate(bh) &&
-		    !cmpxchg(&sdp->sd_log_error, 0, -EIO)) {
+		    !cmpxchg32(&sdp->sd_log_error, 0, -EIO)) {
 			gfs2_io_error_bh(sdp, bh);
 			gfs2_withdraw_delayed(sdp);
 		}

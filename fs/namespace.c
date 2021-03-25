@@ -1606,7 +1606,7 @@ static int do_umount(struct mount *mnt, int flags)
 		}
 		unlock_mount_hash();
 
-		if (!xchg(&mnt->mnt_expiry_mark, 1))
+		if (!xchg32(&mnt->mnt_expiry_mark, 1))
 			return -EAGAIN;
 	}
 
@@ -3018,7 +3018,7 @@ void mark_mounts_for_expiry(struct list_head *mounts)
 	 *   cleared by mntput())
 	 */
 	list_for_each_entry_safe(mnt, next, mounts, mnt_expire) {
-		if (!xchg(&mnt->mnt_expiry_mark, 1) ||
+		if (!xchg32(&mnt->mnt_expiry_mark, 1) ||
 			propagate_mount_busy(mnt, 1))
 			continue;
 		list_move(&mnt->mnt_expire, &graveyard);

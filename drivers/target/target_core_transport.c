@@ -728,7 +728,7 @@ static void transport_lun_remove_cmd(struct se_cmd *cmd)
 	if (!lun)
 		return;
 
-	if (cmpxchg(&cmd->lun_ref_active, true, false))
+	if (cmpxchg32(&cmd->lun_ref_active, true, false))
 		percpu_ref_put(&lun->lun_ref);
 }
 

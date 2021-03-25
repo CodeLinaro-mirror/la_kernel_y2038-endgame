@@ -457,7 +457,7 @@ static int z_erofs_lookup_collection(struct z_erofs_collector *clt,
 			llen |= Z_EROFS_PCLUSTER_FULL_LENGTH;
 
 		while (llen > length &&
-		       length != cmpxchg_relaxed(&pcl->length, length, llen)) {
+		       length != cmpxchg32_relaxed(&pcl->length, length, llen)) {
 			cpu_relax();
 			length = READ_ONCE(pcl->length);
 		}

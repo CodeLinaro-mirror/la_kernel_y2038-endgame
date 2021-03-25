@@ -411,7 +411,7 @@ int efx_mcdi_poll_reboot(struct efx_nic *efx)
 
 static bool efx_mcdi_acquire_async(struct efx_mcdi_iface *mcdi)
 {
-	return cmpxchg(&mcdi->state,
+	return cmpxchg32(&mcdi->state,
 		       MCDI_STATE_QUIESCENT, MCDI_STATE_RUNNING_ASYNC) ==
 		MCDI_STATE_QUIESCENT;
 }
@@ -422,7 +422,7 @@ static void efx_mcdi_acquire_sync(struct efx_mcdi_iface *mcdi)
 	 * to mark it RUNNING_SYNC.
 	 */
 	wait_event(mcdi->wq,
-		   cmpxchg(&mcdi->state,
+		   cmpxchg32(&mcdi->state,
 			   MCDI_STATE_QUIESCENT, MCDI_STATE_RUNNING_SYNC) ==
 		   MCDI_STATE_QUIESCENT);
 }
@@ -454,7 +454,7 @@ static int efx_mcdi_await_completion(struct efx_nic *efx)
  */
 static bool efx_mcdi_complete_sync(struct efx_mcdi_iface *mcdi)
 {
-	if (cmpxchg(&mcdi->state,
+	if (cmpxchg32(&mcdi->state,
 		    MCDI_STATE_RUNNING_SYNC, MCDI_STATE_COMPLETED) ==
 	    MCDI_STATE_RUNNING_SYNC) {
 		wake_up(&mcdi->wq);
@@ -506,7 +506,7 @@ static bool efx_mcdi_complete_async(struct efx_mcdi_iface *mcdi, bool timeout)
 	MCDI_DECLARE_BUF_ERR(errbuf);
 	int rc;
 
-	if (cmpxchg(&mcdi->state,
+	if (cmpxchg32(&mcdi->state,
 		    MCDI_STATE_RUNNING_ASYNC, MCDI_STATE_COMPLETED) !=
 	    MCDI_STATE_RUNNING_ASYNC)
 		return false;
@@ -1293,7 +1293,7 @@ static void efx_mcdi_abandon(struct efx_nic *efx)
 {
 	struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
 
-	if (xchg(&mcdi->mode, MCDI_MODE_FAIL) == MCDI_MODE_FAIL)
+	if (xchg32(&mcdi->mode, MCDI_MODE_FAIL) == MCDI_MODE_FAIL)
 		return; /* it had already been done */
 	netif_dbg(efx, hw, efx->net_dev, "MCDI is timing out; trying to recover\n");
 	efx_schedule_reset(efx, RESET_TYPE_MCDI_TIMEOUT);

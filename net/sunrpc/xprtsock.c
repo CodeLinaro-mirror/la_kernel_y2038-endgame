@@ -2361,7 +2361,7 @@ static void xs_wake_error(struct sock_xprt *transport)
 		goto out;
 	if (!test_and_clear_bit(XPRT_SOCK_WAKE_ERROR, &transport->sock_state))
 		goto out;
-	sockerr = xchg(&transport->xprt_err, 0);
+	sockerr = xchg32(&transport->xprt_err, 0);
 	if (sockerr < 0)
 		xprt_wake_pending_tasks(&transport->xprt, sockerr);
 out:

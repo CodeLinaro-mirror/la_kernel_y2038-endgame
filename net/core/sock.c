@@ -1214,7 +1214,7 @@ set_sndbuf:
 			break;
 		}
 		if (ulval != ~0UL)
-			cmpxchg(&sk->sk_pacing_status,
+			cmpxchg32(&sk->sk_pacing_status,
 				SK_PACING_NONE,
 				SK_PACING_NEEDED);
 		sk->sk_max_pacing_rate = ulval;
@@ -1391,7 +1391,7 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
 	case SO_ERROR:
 		v.val = -sock_error(sk);
 		if (v.val == 0)
-			v.val = xchg(&sk->sk_err_soft, 0);
+			v.val = xchg32(&sk->sk_err_soft, 0);
 		break;
 
 	case SO_OOBINLINE:

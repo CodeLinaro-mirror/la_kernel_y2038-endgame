@@ -58,7 +58,7 @@ static u8 ssh_seq_next(struct ssh_seq_counter *c)
 	u8 new = old + 1;
 	u8 ret;
 
-	while (unlikely((ret = cmpxchg(&c->value, old, new)) != old)) {
+	while (unlikely((ret = cmpxchg8(&c->value, old, new)) != old)) {
 		old = ret;
 		new = old + 1;
 	}
@@ -88,7 +88,7 @@ static u16 ssh_rqid_next(struct ssh_rqid_counter *c)
 	u16 new = ssh_rqid_next_valid(old);
 	u16 ret;
 
-	while (unlikely((ret = cmpxchg(&c->value, old, new)) != old)) {
+	while (unlikely((ret = cmpxchg16(&c->value, old, new)) != old)) {
 		old = ret;
 		new = ssh_rqid_next_valid(old);
 	}

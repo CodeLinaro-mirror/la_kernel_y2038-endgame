@@ -46,7 +46,7 @@ static void update_mitigation_state(enum mitigation_state *oldp,
 		/* Userspace almost certainly can't deal with this. */
 		if (WARN_ON(system_capabilities_finalized()))
 			break;
-	} while (cmpxchg_relaxed(oldp, state, new) != state);
+	} while (cmpxchg32_relaxed(oldp, state, new) != state);
 }
 
 /*

@@ -1094,7 +1094,7 @@ static void ceph_aio_complete_req(struct ceph_osd_request *req)
 	ceph_osdc_put_request(req);
 
 	if (rc < 0)
-		cmpxchg(&aio_req->error, 0, rc);
+		cmpxchg32(&aio_req->error, 0, rc);
 
 	ceph_aio_complete(inode, aio_req);
 	return;

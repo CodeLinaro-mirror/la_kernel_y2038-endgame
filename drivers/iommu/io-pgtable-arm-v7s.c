@@ -466,7 +466,7 @@ static arm_v7s_iopte arm_v7s_install_table(arm_v7s_iopte *table,
 	 */
 	dma_wmb();
 
-	old = cmpxchg_relaxed(ptep, curr, new);
+	old = cmpxchg32_relaxed(ptep, curr, new);
 	__arm_v7s_pte_sync(ptep, 1, cfg);
 
 	return old;

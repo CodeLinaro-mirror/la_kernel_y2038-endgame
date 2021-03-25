@@ -37,7 +37,7 @@ rds_transition_frwr_state(struct rds_ib_mr *ibmr,
 			  enum rds_ib_fr_state old_state,
 			  enum rds_ib_fr_state new_state)
 {
-	if (cmpxchg(&ibmr->u.frmr.fr_state,
+	if (cmpxchg32(&ibmr->u.frmr.fr_state,
 		    old_state, new_state) == old_state &&
 	    old_state == FRMR_IS_INUSE) {
 		/* enforce order of ibmr->u.frmr.fr_state update
@@ -136,7 +136,7 @@ static int rds_ib_post_reg_frmr(struct rds_ib_mr *ibmr)
 	if (unlikely(ret != ibmr->sg_len))
 		return ret < 0 ? ret : -EINVAL;
 
-	if (cmpxchg(&frmr->fr_state,
+	if (cmpxchg32(&frmr->fr_state,
 		    FRMR_IS_FREE, FRMR_IS_INUSE) != FRMR_IS_FREE)
 		return -EBUSY;
 

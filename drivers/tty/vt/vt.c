@@ -3024,7 +3024,7 @@ int vt_kmsg_redirect(int new)
 	static int kmsg_con;
 
 	if (new != -1)
-		return xchg(&kmsg_con, new);
+		return xchg32(&kmsg_con, new);
 	else
 		return kmsg_con;
 }

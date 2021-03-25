@@ -716,7 +716,7 @@ void serial8250_rpm_get_tx(struct uart_8250_port *p)
 	if (!(p->capabilities & UART_CAP_RPM))
 		return;
 
-	rpm_active = xchg(&p->rpm_tx_active, 1);
+	rpm_active = xchg32(&p->rpm_tx_active, 1);
 	if (rpm_active)
 		return;
 	pm_runtime_get_sync(p->port.dev);
@@ -730,7 +730,7 @@ void serial8250_rpm_put_tx(struct uart_8250_port *p)
 	if (!(p->capabilities & UART_CAP_RPM))
 		return;
 
-	rpm_active = xchg(&p->rpm_tx_active, 0);
+	rpm_active = xchg32(&p->rpm_tx_active, 0);
 	if (!rpm_active)
 		return;
 	pm_runtime_mark_last_busy(p->port.dev);

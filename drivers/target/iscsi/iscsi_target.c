@@ -4150,13 +4150,13 @@ int iscsit_close_connection(
 
 	if (!strcmp(current->comm, ISCSI_RX_THREAD_NAME)) {
 		if (conn->tx_thread &&
-		    cmpxchg(&conn->tx_thread_active, true, false)) {
+		    cmpxchg32(&conn->tx_thread_active, true, false)) {
 			send_sig(SIGINT, conn->tx_thread, 1);
 			kthread_stop(conn->tx_thread);
 		}
 	} else if (!strcmp(current->comm, ISCSI_TX_THREAD_NAME)) {
 		if (conn->rx_thread &&
-		    cmpxchg(&conn->rx_thread_active, true, false)) {
+		    cmpxchg32(&conn->rx_thread_active, true, false)) {
 			send_sig(SIGINT, conn->rx_thread, 1);
 			kthread_stop(conn->rx_thread);
 		}
@@ -4449,7 +4449,7 @@ static void iscsit_logout_post_handler_closesession(
 	 * within iscsit_close_connection().
 	 */
 	if (!conn->conn_transport->rdma_shutdown) {
-		sleep = cmpxchg(&conn->tx_thread_active, true, false);
+		sleep = cmpxchg32(&conn->tx_thread_active, true, false);
 		if (!sleep)
 			return;
 	}
@@ -4469,7 +4469,7 @@ static void iscsit_logout_post_handler_samecid(
 	int sleep = 1;
 
 	if (!conn->conn_transport->rdma_shutdown) {
-		sleep = cmpxchg(&conn->tx_thread_active, true, false);
+		sleep = cmpxchg32(&conn->tx_thread_active, true, false);
 		if (!sleep)
 			return;
 	}

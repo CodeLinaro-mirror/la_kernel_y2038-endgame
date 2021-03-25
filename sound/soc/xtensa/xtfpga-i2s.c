@@ -166,7 +166,7 @@ static bool xtfpga_pcm_push_tx(struct xtfpga_i2s *i2s)
 		unsigned new_tx_ptr = i2s->tx_fn(i2s, tx_substream->runtime,
 						 tx_ptr);
 
-		cmpxchg(&i2s->tx_ptr, tx_ptr, new_tx_ptr);
+		cmpxchg32(&i2s->tx_ptr, tx_ptr, new_tx_ptr);
 	}
 	rcu_read_unlock();
 

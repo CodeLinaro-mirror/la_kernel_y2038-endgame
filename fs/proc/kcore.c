@@ -263,7 +263,7 @@ static int kcore_update_ram(void)
 	int ret = 0;
 
 	down_write(&kclist_lock);
-	if (!xchg(&kcore_need_update, 0))
+	if (!xchg32(&kcore_need_update, 0))
 		goto out;
 
 	ret = kcore_ram_list(&list);

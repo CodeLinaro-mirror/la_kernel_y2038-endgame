@@ -220,7 +220,7 @@ static long snd_usb_sbrc_hwdep_read(struct snd_hwdep *hw, char __user *buf,
 	if (count != 1 && count != 4)
 		return -EINVAL;
 	err = wait_event_interruptible(mixer->rc_waitq,
-				       (rc_code = xchg(&mixer->rc_code, 0)) != 0);
+				       (rc_code = xchg32(&mixer->rc_code, 0)) != 0);
 	if (err == 0) {
 		if (count == 1)
 			err = put_user(rc_code, buf);

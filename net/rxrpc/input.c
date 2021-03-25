@@ -1343,7 +1343,7 @@ int rxrpc_input_packet(struct sock *udp_sk, struct sk_buff *skb)
 
 			if (!test_bit(RXRPC_CONN_PROBING_FOR_UPGRADE, &conn->flags))
 				goto reupgrade;
-			old_id = cmpxchg(&conn->service_id, conn->params.service_id,
+			old_id = cmpxchg32(&conn->service_id, conn->params.service_id,
 					 sp->hdr.serviceId);
 
 			if (old_id != conn->params.service_id &&

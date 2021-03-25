@@ -381,7 +381,7 @@ static void bpf_ringbuf_commit(void *sample, u64 flags, bool discard)
 		new_len |= BPF_RINGBUF_DISCARD_BIT;
 
 	/* update record header with correct final size prefix */
-	xchg(&hdr->len, new_len);
+	xchg32(&hdr->len, new_len);
 
 	/* if consumer caught up and is waiting for our record, notify about
 	 * new data availability
