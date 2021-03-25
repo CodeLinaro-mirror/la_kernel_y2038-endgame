@@ -524,7 +524,7 @@ static inline void mod_zone_state(struct zone *zone,
 			z = n + os;
 			n = -os;
 		}
-	} while (this_cpu_cmpxchg(*p, o, n) != o);
+	} while (this_cpu_cmpxchg_1(*p, o, n) != o);
 
 	if (z)
 		zone_page_state_add(z, zone, item);
@@ -592,7 +592,7 @@ static inline void mod_node_state(struct pglist_data *pgdat,
 			z = n + os;
 			n = -os;
 		}
-	} while (this_cpu_cmpxchg(*p, o, n) != o);
+	} while (this_cpu_cmpxchg_1(*p, o, n) != o);
 
 	if (z)
 		node_page_state_add(z, pgdat, item);

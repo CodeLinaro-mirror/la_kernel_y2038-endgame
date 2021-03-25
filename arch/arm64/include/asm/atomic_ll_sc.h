@@ -258,7 +258,7 @@ __ll_sc_atomic64_dec_if_positive(atomic64_t *v)
 
 #define __CMPXCHG_CASE(w, sfx, name, sz, mb, acq, rel, cl, constraint)	\
 static inline u##sz							\
-__ll_sc__cmpxchg_case_##name##sz(volatile void *ptr,			\
+__ll_sc__cmpxchg ## sz ## name(volatile void *ptr,			\
 					 unsigned long old,		\
 					 u##sz new)			\
 {									\
@@ -296,22 +296,22 @@ __ll_sc__cmpxchg_case_##name##sz(volatile void *ptr,			\
  * handle the 'K' constraint for the value 4294967295 - thus we use no
  * constraint for 32 bit operations.
  */
-__CMPXCHG_CASE(w, b,     ,  8,        ,  ,  ,         , K)
-__CMPXCHG_CASE(w, h,     , 16,        ,  ,  ,         , K)
-__CMPXCHG_CASE(w,  ,     , 32,        ,  ,  ,         , K)
-__CMPXCHG_CASE( ,  ,     , 64,        ,  ,  ,         , L)
-__CMPXCHG_CASE(w, b, acq_,  8,        , a,  , "memory", K)
-__CMPXCHG_CASE(w, h, acq_, 16,        , a,  , "memory", K)
-__CMPXCHG_CASE(w,  , acq_, 32,        , a,  , "memory", K)
-__CMPXCHG_CASE( ,  , acq_, 64,        , a,  , "memory", L)
-__CMPXCHG_CASE(w, b, rel_,  8,        ,  , l, "memory", K)
-__CMPXCHG_CASE(w, h, rel_, 16,        ,  , l, "memory", K)
-__CMPXCHG_CASE(w,  , rel_, 32,        ,  , l, "memory", K)
-__CMPXCHG_CASE( ,  , rel_, 64,        ,  , l, "memory", L)
-__CMPXCHG_CASE(w, b,  mb_,  8, dmb ish,  , l, "memory", K)
-__CMPXCHG_CASE(w, h,  mb_, 16, dmb ish,  , l, "memory", K)
-__CMPXCHG_CASE(w,  ,  mb_, 32, dmb ish,  , l, "memory", K)
-__CMPXCHG_CASE( ,  ,  mb_, 64, dmb ish,  , l, "memory", L)
+__CMPXCHG_CASE(w, b,  _relaxed,  8,        ,  ,  ,         , K)
+__CMPXCHG_CASE(w, h,  _relaxed, 16,        ,  ,  ,         , K)
+__CMPXCHG_CASE(w,  ,  _relaxed, 32,        ,  ,  ,         , K)
+__CMPXCHG_CASE( ,  ,  _relaxed, 64,        ,  ,  ,         , L)
+__CMPXCHG_CASE(w, b,  _acquire,  8,        , a,  , "memory", K)
+__CMPXCHG_CASE(w, h,  _acquire, 16,        , a,  , "memory", K)
+__CMPXCHG_CASE(w,  ,  _acquire, 32,        , a,  , "memory", K)
+__CMPXCHG_CASE( ,  ,  _acquire, 64,        , a,  , "memory", L)
+__CMPXCHG_CASE(w, b,  _release,  8,        ,  , l, "memory", K)
+__CMPXCHG_CASE(w, h,  _release, 16,        ,  , l, "memory", K)
+__CMPXCHG_CASE(w,  ,  _release, 32,        ,  , l, "memory", K)
+__CMPXCHG_CASE( ,  ,  _release, 64,        ,  , l, "memory", L)
+__CMPXCHG_CASE(w, b,          ,  8, dmb ish,  , l, "memory", K)
+__CMPXCHG_CASE(w, h,          , 16, dmb ish,  , l, "memory", K)
+__CMPXCHG_CASE(w,  ,          , 32, dmb ish,  , l, "memory", K)
+__CMPXCHG_CASE( ,  ,          , 64, dmb ish,  , l, "memory", L)
 
 #undef __CMPXCHG_CASE
 

@@ -282,7 +282,7 @@ static inline void free_thread_stack(struct task_struct *tsk)
 			memcg_kmem_uncharge_page(vm->pages[i], 0);
 
 		for (i = 0; i < NR_CACHED_STACKS; i++) {
-			if (this_cpu_cmpxchg(cached_stacks[i],
+			if (this_cpu_cmpxchg_long(cached_stacks[i],
 					NULL, tsk->stack_vm_area) != NULL)
 				continue;
 
