@@ -138,7 +138,7 @@ int ubifs_fileattr_get(struct dentry *dentry, struct fileattr *fa)
 	if (d_is_special(dentry))
 		return -ENOTTY;
 
-	dbg_gen("get flags: %#x, i_flags %#x", flags, inode->i_flags);
+	dbg_gen("get flags: %#x, i_flags %#lx", flags, inode->i_flags);
 	fileattr_fill_flags(fa, flags);
 
 	return 0;
@@ -164,7 +164,7 @@ int ubifs_fileattr_set(struct user_namespace *mnt_userns,
 	if (!S_ISDIR(inode->i_mode))
 		flags &= ~FS_DIRSYNC_FL;
 
-	dbg_gen("set flags: %#x, i_flags %#x", flags, inode->i_flags);
+	dbg_gen("set flags: %#x, i_flags %#lx", flags, inode->i_flags);
 	return setflags(inode, flags);
 }
 
