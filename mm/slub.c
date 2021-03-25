@@ -2469,7 +2469,7 @@ static void put_cpu_partial(struct kmem_cache *s, struct page *page, int drain)
 		page->pobjects = pobjects;
 		page->next = oldpage;
 
-	} while (this_cpu_cmpxchg(s->cpu_slab->partial, oldpage, page)
+	} while (this_cpu_cmpxchg_long(s->cpu_slab->partial, oldpage, page)
 								!= oldpage);
 	if (unlikely(!slub_cpu_partial(s))) {
 		unsigned long flags;
