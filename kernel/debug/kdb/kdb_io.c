@@ -600,7 +600,7 @@ int vkdb_printf(enum kdb_msgsrc src, const char *fmt, va_list ap)
 	local_irq_save(flags);
 	this_cpu = smp_processor_id();
 	for (;;) {
-		old_cpu = cmpxchg(&kdb_printf_cpu, -1, this_cpu);
+		old_cpu = cmpxchg32(&kdb_printf_cpu, -1, this_cpu);
 		if (old_cpu == -1 || old_cpu == this_cpu)
 			break;
 

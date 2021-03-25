@@ -641,7 +641,7 @@ __acquires(&gl->gl_lockref.lock)
 		 * release the glock to other nodes.
 		 */
 		if (ret) {
-			if (cmpxchg(&sdp->sd_log_error, 0, ret)) {
+			if (cmpxchg32(&sdp->sd_log_error, 0, ret)) {
 				fs_err(sdp, "Error %d syncing glock \n", ret);
 				gfs2_dump_glock(NULL, gl, true);
 			}
@@ -657,7 +657,7 @@ __acquires(&gl->gl_lockref.lock)
 		 * through and wait for logd to do the withdraw for us.
 		 */
 		if ((atomic_read(&gl->gl_ail_count) != 0) &&
-		    (!cmpxchg(&sdp->sd_log_error, 0, -EIO))) {
+		    (!cmpxchg32(&sdp->sd_log_error, 0, -EIO))) {
 			gfs2_glock_assert_warn(gl,
 					       !atomic_read(&gl->gl_ail_count));
 			gfs2_dump_glock(NULL, gl, true);

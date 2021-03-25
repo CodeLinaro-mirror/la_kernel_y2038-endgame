@@ -618,7 +618,7 @@ struct inode {
 	unsigned short		i_opflags;
 	kuid_t			i_uid;
 	kgid_t			i_gid;
-	unsigned int		i_flags;
+	unsigned long		i_flags;
 
 #ifdef CONFIG_FS_POSIX_ACL
 	struct posix_acl	*i_acl;

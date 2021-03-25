@@ -696,7 +696,7 @@ static void nvmet_update_sq_head(struct nvmet_req *req)
 		do {
 			old_sqhd = req->sq->sqhd;
 			new_sqhd = (old_sqhd + 1) % req->sq->size;
-		} while (cmpxchg(&req->sq->sqhd, old_sqhd, new_sqhd) !=
+		} while (cmpxchg32(&req->sq->sqhd, old_sqhd, new_sqhd) !=
 					old_sqhd);
 	}
 	req->cqe->sq_head = cpu_to_le16(req->sq->sqhd & 0x0000FFFF);

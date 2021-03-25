@@ -637,7 +637,7 @@ lpfc_sli4_process_eq(struct lpfc_hba *phba, struct lpfc_queue *eq,
 	struct lpfc_eqe *eqe;
 	int count = 0, consumed = 0;
 
-	if (cmpxchg(&eq->queue_claimed, 0, 1) != 0)
+	if (cmpxchg32(&eq->queue_claimed, 0, 1) != 0)
 		goto rearm_and_exit;
 
 	eqe = lpfc_sli4_eq_get(eq);
@@ -663,7 +663,7 @@ lpfc_sli4_process_eq(struct lpfc_hba *phba, struct lpfc_queue *eq,
 	if (count > eq->EQ_max_eqe)
 		eq->EQ_max_eqe = count;
 
-	xchg(&eq->queue_claimed, 0);
+	xchg32(&eq->queue_claimed, 0);
 
 rearm_and_exit:
 	/* Always clear the EQ. */
@@ -14196,7 +14196,7 @@ __lpfc_sli4_process_cq(struct lpfc_hba *phba, struct lpfc_queue *cq,
 	/* default - no reschedule */
 	*delay = 0;
 
-	if (cmpxchg(&cq->queue_claimed, 0, 1) != 0)
+	if (cmpxchg32(&cq->queue_claimed, 0, 1) != 0)
 		goto rearm_and_exit;
 
 	/* Process all the entries to the CQ */
@@ -14243,7 +14243,7 @@ __lpfc_sli4_process_cq(struct lpfc_hba *phba, struct lpfc_queue *cq,
 				"0369 No entry from completion queue "
 				"qid=%d\n", cq->queue_id);
 
-	xchg(&cq->queue_claimed, 0);
+	xchg32(&cq->queue_claimed, 0);
 
 rearm_and_exit:
 	phba->sli4_hba.sli4_write_cq_db(phba, cq, consumed,

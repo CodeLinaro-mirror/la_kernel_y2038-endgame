@@ -111,12 +111,12 @@ static void dw_pcm_transfer(struct dw_i2s_dev *dev, bool push)
 			ptr = READ_ONCE(dev->tx_ptr);
 			new_ptr = dev->tx_fn(dev, substream->runtime, ptr,
 					&period_elapsed);
-			cmpxchg(&dev->tx_ptr, ptr, new_ptr);
+			cmpxchg32(&dev->tx_ptr, ptr, new_ptr);
 		} else {
 			ptr = READ_ONCE(dev->rx_ptr);
 			new_ptr = dev->rx_fn(dev, substream->runtime, ptr,
 					&period_elapsed);
-			cmpxchg(&dev->rx_ptr, ptr, new_ptr);
+			cmpxchg32(&dev->rx_ptr, ptr, new_ptr);
 		}
 
 		if (period_elapsed)

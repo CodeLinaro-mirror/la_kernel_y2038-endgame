@@ -560,7 +560,7 @@ __tracing_map_insert(struct tracing_map *map, void *key, bool lookup_only)
 			if (lookup_only)
 				break;
 
-			if (!cmpxchg(&entry->key, 0, key_hash)) {
+			if (!cmpxchg32(&entry->key, 0, key_hash)) {
 				struct tracing_map_elt *elt;
 
 				elt = get_free_elt(map);

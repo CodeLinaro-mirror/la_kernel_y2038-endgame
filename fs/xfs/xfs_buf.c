@@ -1392,7 +1392,7 @@ xfs_buf_bio_end_io(
 	if (bio->bi_status) {
 		int error = blk_status_to_errno(bio->bi_status);
 
-		cmpxchg(&bp->b_io_error, 0, error);
+		cmpxchg32(&bp->b_io_error, 0, error);
 	}
 
 	if (!bp->b_error && xfs_buf_is_vmapped(bp) && (bp->b_flags & XBF_READ))

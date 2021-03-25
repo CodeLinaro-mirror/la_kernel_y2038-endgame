@@ -2280,7 +2280,7 @@ static inline int sock_error(struct sock *sk)
 	if (likely(data_race(!sk->sk_err)))
 		return 0;
 
-	err = xchg(&sk->sk_err, 0);
+	err = xchg32(&sk->sk_err, 0);
 	return -err;
 }
 

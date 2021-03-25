@@ -720,7 +720,7 @@ static void write_endio(struct dm_buffer *b, blk_status_t status)
 	if (unlikely(status)) {
 		struct dm_bufio_client *c = b->c;
 
-		(void)cmpxchg(&c->async_write_error, 0,
+		(void)cmpxchg32(&c->async_write_error, 0,
 				blk_status_to_errno(status));
 	}
 
@@ -1327,7 +1327,7 @@ again:
 	wake_up(&c->free_buffer_wait);
 	dm_bufio_unlock(c);
 
-	a = xchg(&c->async_write_error, 0);
+	a = xchg32(&c->async_write_error, 0);
 	f = dm_bufio_issue_flush(c);
 	if (a)
 		return a;

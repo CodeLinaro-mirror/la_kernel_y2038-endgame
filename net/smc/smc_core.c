@@ -1790,7 +1790,7 @@ static struct smc_buf_desc *smc_buf_get_slot(int compressed_bufsize,
 
 	mutex_lock(lock);
 	list_for_each_entry(buf_slot, buf_list, list) {
-		if (cmpxchg(&buf_slot->used, 0, 1) == 0) {
+		if (cmpxchg32(&buf_slot->used, 0, 1) == 0) {
 			mutex_unlock(lock);
 			return buf_slot;
 		}

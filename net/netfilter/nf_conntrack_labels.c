@@ -22,7 +22,7 @@ static int replace_u32(u32 *address, u32 mask, u32 new)
 		tmp = (old & mask) ^ new;
 		if (old == tmp)
 			return 0;
-	} while (cmpxchg(address, old, tmp) != old);
+	} while (cmpxchg32(address, old, tmp) != old);
 
 	return 1;
 }

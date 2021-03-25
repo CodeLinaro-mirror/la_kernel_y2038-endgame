@@ -153,7 +153,7 @@ static int __dm_get_module_param_int(int *module_param, int min, int max)
 		modified = false;
 
 	if (modified) {
-		(void)cmpxchg(module_param, param, modified_param);
+		(void)cmpxchg32(module_param, param, modified_param);
 		param = modified_param;
 	}
 
@@ -172,7 +172,7 @@ unsigned __dm_get_module_param(unsigned *module_param,
 		modified_param = max;
 
 	if (modified_param) {
-		(void)cmpxchg(module_param, param, modified_param);
+		(void)cmpxchg32(module_param, param, modified_param);
 		param = modified_param;
 	}
 

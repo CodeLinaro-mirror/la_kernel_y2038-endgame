@@ -1839,7 +1839,7 @@ COMPAT_SYSCALL_DEFINE2(getrusage, int, who, struct compat_rusage __user *, ru)
 
 SYSCALL_DEFINE1(umask, int, mask)
 {
-	mask = xchg(&current->fs->umask, mask & S_IRWXUGO);
+	mask = xchg32(&current->fs->umask, mask & S_IRWXUGO);
 	return mask;
 }
 

@@ -641,7 +641,7 @@ static void bcm2835_spi_dma_tx_done(void *data)
 	 * issued yet.  The onus is then on bcm2835_spi_transfer_one_dma()
 	 * to terminate it immediately after issuing.
 	 */
-	if (cmpxchg(&bs->rx_dma_active, true, false))
+	if (cmpxchg32(&bs->rx_dma_active, true, false))
 		dmaengine_terminate_async(ctlr->dma_rx);
 
 	bcm2835_spi_undo_prologue(bs);
@@ -827,7 +827,7 @@ static int bcm2835_spi_transfer_one_dma(struct spi_controller *ctlr,
 	 * may run before RX DMA is issued.  Terminate RX DMA if so.
 	 */
 	if (!bs->rx_buf && !bs->tx_dma_active &&
-	    cmpxchg(&bs->rx_dma_active, true, false)) {
+	    cmpxchg32(&bs->rx_dma_active, true, false)) {
 		dmaengine_terminate_async(ctlr->dma_rx);
 		bcm2835_spi_reset_hw(bs);
 	}

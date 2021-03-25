@@ -1530,7 +1530,7 @@ static void eni_tasklet(unsigned long data)
 
 	DPRINTK("eni_tasklet (dev %p)\n",dev);
 	spin_lock_irqsave(&eni_dev->lock,flags);
-	events = xchg(&eni_dev->events,0);
+	events = xchg32(&eni_dev->events,0);
 	spin_unlock_irqrestore(&eni_dev->lock,flags);
 	if (events & MID_RX_DMA_COMPLETE) {
 		EVENT("INT: RX DMA complete, starting dequeue_rx\n",0,0);

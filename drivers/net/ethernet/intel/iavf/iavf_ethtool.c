@@ -504,7 +504,7 @@ static int iavf_set_priv_flags(struct net_device *netdev, u32 flags)
 	 * copied it. We'll just punt with an error and log something in the
 	 * message buffer.
 	 */
-	if (cmpxchg(&adapter->flags, orig_flags, new_flags) != orig_flags) {
+	if (cmpxchg32(&adapter->flags, orig_flags, new_flags) != orig_flags) {
 		dev_warn(&adapter->pdev->dev,
 			 "Unable to update adapter->flags as it was modified by another thread...\n");
 		return -EAGAIN;

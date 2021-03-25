@@ -35,7 +35,7 @@ static irqreturn_t qxl_irq_handler(int irq, void *arg)
 	struct qxl_device *qdev = to_qxl(dev);
 	uint32_t pending;
 
-	pending = xchg(&qdev->ram_header->int_pending, 0);
+	pending = xchg32(&qdev->ram_header->int_pending, 0);
 
 	if (!pending)
 		return IRQ_NONE;

@@ -1490,7 +1490,7 @@ static int audit_receive_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 			t = READ_ONCE(current->signal->audit_tty);
 		else {
 			t = s.enabled | (-s.log_passwd & AUDIT_TTY_LOG_PASSWD);
-			t = xchg(&current->signal->audit_tty, t);
+			t = xchg32(&current->signal->audit_tty, t);
 		}
 		old.enabled = t & AUDIT_TTY_ENABLE;
 		old.log_passwd = !!(t & AUDIT_TTY_LOG_PASSWD);

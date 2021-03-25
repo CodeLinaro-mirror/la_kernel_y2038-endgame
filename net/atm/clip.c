@@ -256,7 +256,7 @@ static void clip_pop(struct atm_vcc *vcc, struct sk_buff *skb)
 		return;
 	spin_lock_irqsave(&PRIV(dev)->xoff_lock, flags);
 	if (atm_may_send(vcc, 0)) {
-		old = xchg(&clip_vcc->xoff, 0);
+		old = xchg32(&clip_vcc->xoff, 0);
 		if (old)
 			netif_wake_queue(dev);
 	}
@@ -385,7 +385,7 @@ static netdev_tx_t clip_start_xmit(struct sk_buff *skb,
 	atm_account_tx(vcc, skb);
 	entry->vccs->last_use = jiffies;
 	pr_debug("atm_skb(%p)->vcc(%p)->dev(%p)\n", skb, vcc, vcc->dev);
-	old = xchg(&entry->vccs->xoff, 1);	/* assume XOFF ... */
+	old = xchg32(&entry->vccs->xoff, 1);	/* assume XOFF ... */
 	if (old) {
 		pr_warn("XOFF->XOFF transition\n");
 		goto out_release_neigh;

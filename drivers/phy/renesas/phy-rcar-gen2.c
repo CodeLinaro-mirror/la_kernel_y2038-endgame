@@ -88,7 +88,7 @@ static int rcar_gen2_phy_init(struct phy *p)
 	 * PHY on this channel will fail until phy_exit() is called by the first
 	 * driver.   Achieving this with cmpxcgh() should be SMP-safe.
 	 */
-	if (cmpxchg(&channel->selected_phy, -1, phy->number) != -1)
+	if (cmpxchg32(&channel->selected_phy, -1, phy->number) != -1)
 		return -EBUSY;
 
 	clk_prepare_enable(drv->clk);

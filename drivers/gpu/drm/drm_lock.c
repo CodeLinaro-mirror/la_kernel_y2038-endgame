@@ -72,7 +72,7 @@ int drm_lock_take(struct drm_lock_data *lock_data,
 				((lock_data->user_waiters + lock_data->kernel_waiters > 1) ?
 				 _DRM_LOCK_CONT : 0);
 		}
-		prev = cmpxchg(lock, old, new);
+		prev = cmpxchg32(lock, old, new);
 	} while (prev != old);
 	spin_unlock_bh(&lock_data->spinlock);
 
@@ -115,7 +115,7 @@ static int drm_lock_transfer(struct drm_lock_data *lock_data,
 	do {
 		old = *lock;
 		new = context | _DRM_LOCK_HELD;
-		prev = cmpxchg(lock, old, new);
+		prev = cmpxchg32(lock, old, new);
 	} while (prev != old);
 	return 1;
 }
@@ -138,7 +138,7 @@ static int drm_legacy_lock_free(struct drm_lock_data *lock_data,
 	do {
 		old = *lock;
 		new = _DRM_LOCKING_CONTEXT(old);
-		prev = cmpxchg(lock, old, new);
+		prev = cmpxchg32(lock, old, new);
 	} while (prev != old);
 
 	if (_DRM_LOCK_IS_HELD(old) && _DRM_LOCKING_CONTEXT(old) != context) {
@@ -316,7 +316,7 @@ void drm_legacy_idlelock_release(struct drm_lock_data *lock_data)
 		if (lock_data->idle_has_lock) {
 			do {
 				old = *lock;
-				prev = cmpxchg(lock, old, DRM_KERNEL_CONTEXT);
+				prev = cmpxchg32(lock, old, DRM_KERNEL_CONTEXT);
 			} while (prev != old);
 			wake_up_interruptible(&lock_data->lock_queue);
 			lock_data->idle_has_lock = 0;

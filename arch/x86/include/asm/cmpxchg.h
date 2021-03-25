@@ -151,6 +151,9 @@ extern void __add_wrong_size(void)
 #define arch_sync_cmpxchg(ptr, old, new)				\
 	__sync_cmpxchg(ptr, old, new, sizeof(*(ptr)))
 
+#define arch_sync_cmpxchg32(ptr, old, new)				\
+	__sync_cmpxchg(ptr, old, new, sizeof(*(ptr)))
+
 #define arch_cmpxchg_local(ptr, old, new)				\
 	__cmpxchg_local(ptr, old, new, sizeof(*(ptr)))
 

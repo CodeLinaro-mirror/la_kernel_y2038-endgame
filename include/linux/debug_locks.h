@@ -14,7 +14,7 @@ extern int debug_locks_silent __read_mostly;
 
 static __always_inline int __debug_locks_off(void)
 {
-	return xchg(&debug_locks, 0);
+	return xchg32(&debug_locks, 0);
 }
 
 /*

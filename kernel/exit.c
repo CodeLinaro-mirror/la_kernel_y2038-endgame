@@ -1019,7 +1019,7 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
 	 */
 	state = (ptrace_reparented(p) && thread_group_leader(p)) ?
 		EXIT_TRACE : EXIT_DEAD;
-	if (cmpxchg(&p->exit_state, EXIT_ZOMBIE, state) != EXIT_ZOMBIE)
+	if (cmpxchg32(&p->exit_state, EXIT_ZOMBIE, state) != EXIT_ZOMBIE)
 		return 0;
 	/*
 	 * We own this thread, nobody else can reap it.
