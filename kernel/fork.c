@@ -221,7 +221,7 @@ static unsigned long *alloc_thread_stack_node(struct task_struct *tsk, int node)
 	for (i = 0; i < NR_CACHED_STACKS; i++) {
 		struct vm_struct *s;
 
-		s = this_cpu_xchg_long(cached_stacks[i], NULL);
+		s = this_cpu_xchg(cached_stacks[i], NULL);
 
 		if (!s)
 			continue;
