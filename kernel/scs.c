@@ -75,7 +75,7 @@ void scs_free(void *s)
 	 */
 
 	for (i = 0; i < NR_CACHED_SCS; i++)
-		if (this_cpu_cmpxchg_long(scs_cache[i], 0, s) == NULL)
+		if (this_cpu_cmpxchg(scs_cache[i], 0, s) == NULL)
 			return;
 
 	vfree_atomic(s);
