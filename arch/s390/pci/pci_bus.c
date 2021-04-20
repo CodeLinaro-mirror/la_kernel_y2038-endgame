@@ -177,6 +177,34 @@ void zpci_bus_scan_busses(void)
 	mutex_unlock(&zbus_list_lock);
 }
 
+static struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
+		struct pci_ops *ops, void *sysdata, struct list_head *resources)
+{
+	int error;
+	struct pci_host_bridge *bridge;
+
+	bridge = pci_alloc_host_bridge(0);
+	if (!bridge)
+		return NULL;
+
+	bridge->dev.parent = parent;
+
+	list_splice_init(resources, &bridge->windows);
+	bridge->sysdata = sysdata;
+	bridge->busnr = bus;
+	bridge->ops = ops;
+
+	error = pci_register_host_bridge(bridge);
+	if (error < 0)
+		goto err_out;
+
+	return bridge->bus;
+
+err_out:
+	put_device(&bridge->dev);
+	return NULL;
+}
+
 /* zpci_bus_create_pci_bus - Create the PCI bus associated with this zbus
  * @zbus: the zbus holding the zdevices
  * @f0: function 0 of the bus
