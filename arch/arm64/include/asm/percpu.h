@@ -228,8 +228,6 @@ PERCPU_RET_OP(add, add, ldadd)
 #define this_cpu_xchg_4(pcp, val)	\
 	_pcp_protect_return(xchg32_relaxed, pcp, val)
 #define this_cpu_xchg_8(pcp, val)	\
-	_pcp_protect_return(xchg64_relaxed, pcp, val)
-#define this_cpu_xchg_long(pcp, val)	\
 	_pcp_protect_return(xchg_relaxed, pcp, val)
 
 #define this_cpu_cmpxchg_1(pcp, o, n)	\

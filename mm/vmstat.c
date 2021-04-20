@@ -786,7 +786,7 @@ static int refresh_cpu_vm_stats(bool do_pagesets)
 		for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++) {
 			int v;
 
-			v = this_cpu_xchg_1(p->vm_stat_diff[i], 0);
+			v = this_cpu_xchg(p->vm_stat_diff[i], 0);
 			if (v) {
 
 				atomic_long_add(v, &zone->vm_stat[i]);
@@ -801,7 +801,7 @@ static int refresh_cpu_vm_stats(bool do_pagesets)
 		for (i = 0; i < NR_VM_NUMA_STAT_ITEMS; i++) {
 			int v;
 
-			v = this_cpu_xchg_2(p->vm_numa_stat_diff[i], 0);
+			v = this_cpu_xchg(p->vm_numa_stat_diff[i], 0);
 			if (v) {
 
 				atomic_long_add(v, &zone->vm_numa_stat[i]);
@@ -848,7 +848,7 @@ static int refresh_cpu_vm_stats(bool do_pagesets)
 		for (i = 0; i < NR_VM_NODE_STAT_ITEMS; i++) {
 			int v;
 
-			v = this_cpu_xchg_1(p->vm_node_stat_diff[i], 0);
+			v = this_cpu_xchg(p->vm_node_stat_diff[i], 0);
 			if (v) {
 				atomic_long_add(v, &pgdat->vm_stat[i]);
 				global_node_diff[i] += v;
