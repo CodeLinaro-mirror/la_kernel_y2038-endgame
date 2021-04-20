@@ -131,7 +131,7 @@ static void tipc_net_finalize(struct net *net, u32 addr)
 	tipc_uaddr(&ua, TIPC_SERVICE_RANGE, TIPC_CLUSTER_SCOPE,
 		   TIPC_NODE_STATE, addr, addr);
 
-	if (cmpxchg32(&tn->node_addr, 0, addr))
+	if (cmpxchg(&tn->node_addr, 0, addr))
 		return;
 	tipc_set_node_addr(net, addr);
 	tipc_named_reinit(net);

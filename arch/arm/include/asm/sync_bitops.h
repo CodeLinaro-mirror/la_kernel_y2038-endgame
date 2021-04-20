@@ -22,8 +22,6 @@
 #define sync_test_and_change_bit(nr, p)	_test_and_change_bit(nr, p)
 #define sync_test_bit(nr, addr)		test_bit(nr, addr)
 #define sync_cmpxchg			cmpxchg
-#define sync_cmpxchg16			cmpxchg16
-#define sync_cmpxchg32			cmpxchg32
 
 
 #endif

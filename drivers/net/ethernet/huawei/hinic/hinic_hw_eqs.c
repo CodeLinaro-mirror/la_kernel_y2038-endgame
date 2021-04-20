@@ -295,7 +295,7 @@ static void ceq_event_handler(struct hinic_ceqs *ceqs, u32 ceqe)
 
 	ceq_cb = &ceqs->ceq_cb[event];
 
-	eqe_state = cmpxchg32(&ceq_cb->ceqe_state,
+	eqe_state = cmpxchg(&ceq_cb->ceqe_state,
 			    HINIC_EQE_ENABLED,
 			    HINIC_EQE_ENABLED | HINIC_EQE_RUNNING);
 

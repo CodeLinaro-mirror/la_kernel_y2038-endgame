@@ -1601,7 +1601,7 @@ static bool rcu_torture_one_read(struct torture_random_state *trsp, long myid)
 	WARN_ON_ONCE(leakpointer && READ_ONCE(p->rtort_pipe_count) > 1);
 
 	/* If error or close call, record the sequence of reader protections. */
-	if ((pipe_count > 1 || completed > 1) && !xchg32(&err_segs_recorded, 1)) {
+	if ((pipe_count > 1 || completed > 1) && !xchg(&err_segs_recorded, 1)) {
 		i = 0;
 		for (rtrsp1 = &rtseg[0]; rtrsp1 < rtrsp; rtrsp1++)
 			err_segs[i++] = *rtrsp1;

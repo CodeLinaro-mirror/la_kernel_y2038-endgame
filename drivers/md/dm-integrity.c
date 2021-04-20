@@ -385,7 +385,7 @@ static void dm_integrity_io_error(struct dm_integrity_c *ic, const char *msg, in
 {
 	if (err == -EILSEQ)
 		atomic64_inc(&ic->number_of_mismatches);
-	if (!cmpxchg32(&ic->failed, 0, err))
+	if (!cmpxchg(&ic->failed, 0, err))
 		DMERR("Error on %s: %d", msg, err);
 }
 

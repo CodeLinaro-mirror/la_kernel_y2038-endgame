@@ -311,7 +311,7 @@ static int gnttab_end_foreign_access_ref_v1(grant_ref_t ref, int readonly)
 		flags = nflags;
 		if (flags & (GTF_reading|GTF_writing))
 			return 0;
-	} while ((nflags = sync_cmpxchg16(pflags, flags, 0)) != flags);
+	} while ((nflags = sync_cmpxchg(pflags, flags, 0)) != flags);
 
 	return 1;
 }
@@ -481,7 +481,7 @@ static unsigned long gnttab_end_foreign_transfer_ref_v1(grant_ref_t ref)
 	 * reference and return failure (== 0).
 	 */
 	while (!((flags = *pflags) & GTF_transfer_committed)) {
-		if (sync_cmpxchg16(pflags, flags, 0) == flags)
+		if (sync_cmpxchg(pflags, flags, 0) == flags)
 			return 0;
 		cpu_relax();
 	}
@@ -512,7 +512,7 @@ static unsigned long gnttab_end_foreign_transfer_ref_v2(grant_ref_t ref)
 	 * reference and return failure (== 0).
 	 */
 	while (!((flags = *pflags) & GTF_transfer_committed)) {
-		if (sync_cmpxchg16(pflags, flags, 0) == flags)
+		if (sync_cmpxchg(pflags, flags, 0) == flags)
 			return 0;
 		cpu_relax();
 	}

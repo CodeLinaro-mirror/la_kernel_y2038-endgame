@@ -713,7 +713,7 @@ retry:
 		entropy_count = 0;
 	} else if (entropy_count > pool_size)
 		entropy_count = pool_size;
-	if (cmpxchg32(&r->entropy_count, orig, entropy_count) != orig)
+	if (cmpxchg(&r->entropy_count, orig, entropy_count) != orig)
 		goto retry;
 
 	trace_credit_entropy_bits(r->name, nbits,
@@ -1349,7 +1349,7 @@ retry:
 	else
 		entropy_count = 0;
 
-	if (cmpxchg32(&r->entropy_count, orig, entropy_count) != orig)
+	if (cmpxchg(&r->entropy_count, orig, entropy_count) != orig)
 		goto retry;
 
 	trace_debit_entropy(r->name, 8 * ibytes);

@@ -476,7 +476,7 @@ u32 ip_idents_reserve(u32 hash, int segs)
 	p_id = ip_idents + bucket;
 	old = READ_ONCE(*p_tstamp);
 
-	if (old != now && cmpxchg32(p_tstamp, old, now) == old)
+	if (old != now && cmpxchg(p_tstamp, old, now) == old)
 		delta = prandom_u32_max(now - old);
 
 	/* If UBSAN reports an error there, please make sure your compiler

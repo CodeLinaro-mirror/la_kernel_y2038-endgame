@@ -73,7 +73,7 @@ static inline void *netpoll_poll_lock(struct napi_struct *napi)
 	if (dev && dev->npinfo) {
 		int owner = smp_processor_id();
 
-		while (cmpxchg32(&napi->poll_owner, -1, owner) != -1)
+		while (cmpxchg(&napi->poll_owner, -1, owner) != -1)
 			cpu_relax();
 
 		return napi;

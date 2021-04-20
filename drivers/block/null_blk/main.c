@@ -451,7 +451,7 @@ static ssize_t nullb_device_badblocks_store(struct config_item *item,
 	if (start > end)
 		goto out;
 	/* enable badblocks */
-	cmpxchg32(&t_dev->badblocks.shift, -1, 0);
+	cmpxchg(&t_dev->badblocks.shift, -1, 0);
 	if (buf[0] == '+')
 		ret = badblocks_set(&t_dev->badblocks, start,
 			end - start + 1, 1);

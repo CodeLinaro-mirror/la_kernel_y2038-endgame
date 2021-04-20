@@ -33,13 +33,13 @@ static void dma_fence_array_set_pending_error(struct dma_fence_array *array,
 	 * before we ourselves are signaled.
 	 */
 	if (error)
-		cmpxchg32(&array->base.error, PENDING_ERROR, error);
+		cmpxchg(&array->base.error, PENDING_ERROR, error);
 }
 
 static void dma_fence_array_clear_pending_error(struct dma_fence_array *array)
 {
 	/* Clear the error flag if not actually set. */
-	cmpxchg32(&array->base.error, PENDING_ERROR, 0);
+	cmpxchg(&array->base.error, PENDING_ERROR, 0);
 }
 
 static void irq_dma_fence_array_work(struct irq_work *wrk)

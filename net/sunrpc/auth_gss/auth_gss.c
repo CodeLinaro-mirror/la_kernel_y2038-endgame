@@ -2088,7 +2088,7 @@ gss_xmit_need_reencode(struct rpc_task *task)
 	while (gss_seq_is_newer(req->rq_seqno, seq_xmit)) {
 		u32 tmp = seq_xmit;
 
-		seq_xmit = cmpxchg32(&ctx->gc_seq_xmit, tmp, req->rq_seqno);
+		seq_xmit = cmpxchg(&ctx->gc_seq_xmit, tmp, req->rq_seqno);
 		if (seq_xmit == tmp) {
 			ret = false;
 			goto out_ctx;

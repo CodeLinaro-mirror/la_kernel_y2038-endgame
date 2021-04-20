@@ -92,7 +92,7 @@ errseq_t errseq_set(errseq_t *eseq, int err)
 		}
 
 		/* Try to swap the new value into place */
-		cur = cmpxchg32(eseq, old, new);
+		cur = cmpxchg(eseq, old, new);
 
 		/*
 		 * Call it success if we did the swap or someone else beat us
@@ -198,7 +198,7 @@ int errseq_check_and_advance(errseq_t *eseq, errseq_t *since)
 		 */
 		new = old | ERRSEQ_SEEN;
 		if (new != old)
-			cmpxchg32(eseq, old, new);
+			cmpxchg(eseq, old, new);
 		*since = new;
 		err = -(new & MAX_ERRNO);
 	}

@@ -82,7 +82,7 @@ struct fuse_inode {
 	u64 i_time;
 
 	/* Which attributes are invalid */
-	unsigned long inval_mask;
+	u32 inval_mask;
 
 	/** The sticky bit in inode->i_mode may have been removed, so
 	    preserve the original mode */

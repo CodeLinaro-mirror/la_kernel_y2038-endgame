@@ -485,9 +485,9 @@ static int bpf_struct_ops_map_delete_elem(struct bpf_map *map, void *key)
 	struct bpf_struct_ops_map *st_map;
 
 	st_map = (struct bpf_struct_ops_map *)map;
-	prev_state = cmpxchg32(&st_map->kvalue.state,
-			       BPF_STRUCT_OPS_STATE_INUSE,
-			       BPF_STRUCT_OPS_STATE_TOBEFREE);
+	prev_state = cmpxchg(&st_map->kvalue.state,
+			     BPF_STRUCT_OPS_STATE_INUSE,
+			     BPF_STRUCT_OPS_STATE_TOBEFREE);
 	switch (prev_state) {
 	case BPF_STRUCT_OPS_STATE_INUSE:
 		st_map->st_ops->unreg(&st_map->kvalue.data);

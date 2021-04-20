@@ -1982,8 +1982,8 @@ void efx_time_sync_event(struct efx_channel *channel, efx_qword_t *ev)
 	/* if sync events have been disabled then we want to silently ignore
 	 * this event, so throw away result.
 	 */
-	(void) cmpxchg32(&channel->sync_events_state, SYNC_EVENTS_REQUESTED,
-		         SYNC_EVENTS_VALID);
+	(void) cmpxchg(&channel->sync_events_state, SYNC_EVENTS_REQUESTED,
+		       SYNC_EVENTS_VALID);
 }
 
 static inline u32 efx_rx_buf_timestamp_minor(struct efx_nic *efx, const u8 *eh)

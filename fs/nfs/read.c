@@ -179,7 +179,7 @@ static void nfs_read_completion(struct nfs_pgio_header *hdr)
 				nfs_page_group_set_uptodate(req);
 			else {
 				error = hdr->error;
-				xchg32(&nfs_req_openctx(req)->error, error);
+				xchg(&nfs_req_openctx(req)->error, error);
 			}
 		} else
 			nfs_page_group_set_uptodate(req);
@@ -369,7 +369,7 @@ int nfs_readpage(struct file *file, struct page *page)
 			goto out;
 	}
 
-	xchg32(&desc.ctx->error, 0);
+	xchg(&desc.ctx->error, 0);
 	nfs_pageio_init_read(&desc.pgio, inode, false,
 			     &nfs_async_read_completion_ops);
 
@@ -382,7 +382,7 @@ int nfs_readpage(struct file *file, struct page *page)
 	if (!ret) {
 		ret = wait_on_page_locked_killable(page);
 		if (!PageUptodate(page) && !ret)
-			ret = xchg32(&desc.ctx->error, 0);
+			ret = xchg(&desc.ctx->error, 0);
 	}
 out:
 	put_nfs_open_context(desc.ctx);
