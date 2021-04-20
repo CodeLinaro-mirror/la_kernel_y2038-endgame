@@ -164,7 +164,7 @@ static void poll_napi(struct net_device *dev)
 	int cpu = smp_processor_id();
 
 	list_for_each_entry_rcu(napi, &dev->napi_list, dev_list) {
-		if (cmpxchg32(&napi->poll_owner, -1, cpu) == -1) {
+		if (cmpxchg(&napi->poll_owner, -1, cpu) == -1) {
 			poll_one_napi(napi);
 			smp_store_release(&napi->poll_owner, -1);
 		}

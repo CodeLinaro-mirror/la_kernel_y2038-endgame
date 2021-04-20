@@ -44,7 +44,7 @@ static int speakup_file_open(struct inode *ip, struct file *fp)
 {
 	if (!synth)
 		return -ENODEV;
-	if (xchg32(&dev_opened, 1))
+	if (xchg(&dev_opened, 1))
 		return -EBUSY;
 	return 0;
 }

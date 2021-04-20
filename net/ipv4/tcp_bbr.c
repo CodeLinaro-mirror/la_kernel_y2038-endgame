@@ -1072,7 +1072,7 @@ static void bbr_init(struct sock *sk)
 	bbr->extra_acked[0] = 0;
 	bbr->extra_acked[1] = 0;
 
-	cmpxchg32(&sk->sk_pacing_status, SK_PACING_NONE, SK_PACING_NEEDED);
+	cmpxchg(&sk->sk_pacing_status, SK_PACING_NONE, SK_PACING_NEEDED);
 }
 
 static u32 bbr_sndbuf_expand(struct sock *sk)

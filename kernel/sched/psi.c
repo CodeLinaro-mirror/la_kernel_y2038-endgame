@@ -547,7 +547,7 @@ static u64 update_triggers(struct psi_group *group, u64 now)
 			continue;
 
 		/* Generate an event */
-		if (cmpxchg32(&t->event, 0, 1) == 0)
+		if (cmpxchg(&t->event, 0, 1) == 0)
 			wake_up_interruptible(&t->event_wait);
 		t->last_event_time = now;
 	}
@@ -1277,7 +1277,7 @@ __poll_t psi_trigger_poll(void **trigger_ptr,
 
 	poll_wait(file, &t->event_wait, wait);
 
-	if (cmpxchg32(&t->event, 1, 0) == 1)
+	if (cmpxchg(&t->event, 1, 0) == 1)
 		ret |= EPOLLPRI;
 
 	kref_put(&t->refcount, psi_trigger_destroy);

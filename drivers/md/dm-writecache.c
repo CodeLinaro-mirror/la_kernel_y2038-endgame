@@ -434,7 +434,7 @@ static void write_original_sector_seq_count(struct dm_writecache *wc, struct wc_
 
 #define writecache_error(wc, err, msg, arg...)				\
 do {									\
-	if (!cmpxchg32(&(wc)->error, 0, err))				\
+	if (!cmpxchg(&(wc)->error, 0, err))				\
 		DMERR(msg, ##arg);					\
 	wake_up(&(wc)->freelist_wait);					\
 } while (0)

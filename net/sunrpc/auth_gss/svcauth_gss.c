@@ -1407,7 +1407,7 @@ static int set_gss_proxy(struct net *net, int type)
 	int ret;
 
 	WARN_ON_ONCE(type != 0 && type != 1);
-	ret = cmpxchg32(&sn->use_gss_proxy, -1, type);
+	ret = cmpxchg(&sn->use_gss_proxy, -1, type);
 	if (ret != -1 && ret != type)
 		return -EBUSY;
 	return 0;

@@ -1610,7 +1610,7 @@ static void task_numa_assign(struct task_numa_env *env,
 	struct rq *rq = cpu_rq(env->dst_cpu);
 
 	/* Check if run-queue part of active NUMA balance. */
-	if (env->best_cpu != env->dst_cpu && xchg32(&rq->numa_migrate_on, 1)) {
+	if (env->best_cpu != env->dst_cpu && xchg(&rq->numa_migrate_on, 1)) {
 		int cpu;
 		int start = env->dst_cpu;
 
@@ -1623,7 +1623,7 @@ static void task_numa_assign(struct task_numa_env *env,
 
 			env->dst_cpu = cpu;
 			rq = cpu_rq(env->dst_cpu);
-			if (!xchg32(&rq->numa_migrate_on, 1))
+			if (!xchg(&rq->numa_migrate_on, 1))
 				goto assign;
 		}
 

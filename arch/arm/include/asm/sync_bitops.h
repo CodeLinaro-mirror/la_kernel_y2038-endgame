@@ -21,8 +21,7 @@
 #define sync_test_and_clear_bit(nr, p)	_test_and_clear_bit(nr, p)
 #define sync_test_and_change_bit(nr, p)	_test_and_change_bit(nr, p)
 #define sync_test_bit(nr, addr)		test_bit(nr, addr)
-#define arch_sync_cmpxchg			cmpxchg
-#define arch_sync_cmpxchg16			cmpxchg16
-#define arch_sync_cmpxchg32			cmpxchg32
+#define arch_sync_cmpxchg		arch_cmpxchg
+
 
 #endif

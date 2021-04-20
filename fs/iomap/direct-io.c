@@ -147,7 +147,7 @@ static void iomap_dio_complete_work(struct work_struct *work)
  */
 static inline void iomap_dio_set_error(struct iomap_dio *dio, int ret)
 {
-	cmpxchg32(&dio->error, 0, ret);
+	cmpxchg(&dio->error, 0, ret);
 }
 
 static void iomap_dio_bio_end_io(struct bio *bio)

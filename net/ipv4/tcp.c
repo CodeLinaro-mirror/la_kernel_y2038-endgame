@@ -3163,7 +3163,7 @@ static void tcp_enable_tx_delay(void)
 	if (!static_branch_unlikely(&tcp_tx_delay_enabled)) {
 		static int __tcp_tx_delay_enabled = 0;
 
-		if (cmpxchg32(&__tcp_tx_delay_enabled, 0, 1) == 0) {
+		if (cmpxchg(&__tcp_tx_delay_enabled, 0, 1) == 0) {
 			static_branch_enable(&tcp_tx_delay_enabled);
 			pr_info("TCP_TX_DELAY enabled\n");
 		}

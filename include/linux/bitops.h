@@ -314,7 +314,7 @@ static __always_inline void __assign_bit(long nr, volatile unsigned long *addr,
 	do {							\
 		old__ = READ_ONCE(*(ptr));			\
 		new__ = (old__ & ~mask__) | bits__;		\
-	} while (cmpxchg(ptr, old__, new__) != old__);	\
+	} while (cmpxchg(ptr, old__, new__) != old__);		\
 								\
 	old__;							\
 })
@@ -330,7 +330,7 @@ static __always_inline void __assign_bit(long nr, volatile unsigned long *addr,
 		old__ = READ_ONCE(*(ptr));			\
 		new__ = old__ & ~clear__;			\
 	} while (!(old__ & test__) &&				\
-		 cmpxchg(ptr, old__, new__) != old__);	\
+		 cmpxchg(ptr, old__, new__) != old__);		\
 								\
 	!(old__ & test__);					\
 })

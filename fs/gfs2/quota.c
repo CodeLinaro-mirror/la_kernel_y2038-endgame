@@ -1485,7 +1485,7 @@ static void quotad_error(struct gfs2_sbd *sdp, const char *msg, int error)
 	if (error == 0 || error == -EROFS)
 		return;
 	if (!gfs2_withdrawn(sdp)) {
-		if (!cmpxchg32(&sdp->sd_log_error, 0, error))
+		if (!cmpxchg(&sdp->sd_log_error, 0, error))
 			fs_err(sdp, "gfs2_quotad: %s error %d\n", msg, error);
 		wake_up(&sdp->sd_logd_waitq);
 	}

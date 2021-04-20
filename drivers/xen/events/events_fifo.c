@@ -239,7 +239,7 @@ static bool clear_masked_cond(volatile event_word_t *word)
 
 		old = w & ~(1 << EVTCHN_FIFO_BUSY);
 		new = old & ~(1 << EVTCHN_FIFO_MASKED);
-		w = sync_cmpxchg32(word, old, new);
+		w = sync_cmpxchg(word, old, new);
 	} while (w != old);
 
 	return true;
@@ -267,7 +267,7 @@ static uint32_t clear_linked(volatile event_word_t *word)
 		old = w;
 		new = (w & ~((1 << EVTCHN_FIFO_LINKED)
 			     | EVTCHN_FIFO_LINK_MASK));
-	} while ((w = sync_cmpxchg32(word, old, new)) != old);
+	} while ((w = sync_cmpxchg(word, old, new)) != old);
 
 	return w & EVTCHN_FIFO_LINK_MASK;
 }
@@ -325,12 +325,12 @@ static void __evtchn_fifo_handle_events(unsigned cpu,
 
 	control_block = per_cpu(cpu_control_block, cpu);
 
-	ready = xchg32(&control_block->ready, 0);
+	ready = xchg(&control_block->ready, 0);
 
 	while (ready) {
 		q = find_first_bit(&ready, EVTCHN_FIFO_MAX_QUEUES);
 		consume_one_event(cpu, ctrl, control_block, q, &ready);
-		ready |= xchg32(&control_block->ready, 0);
+		ready |= xchg(&control_block->ready, 0);
 	}
 }
 

@@ -298,7 +298,7 @@ static int enqueue_ddcb(struct genwqe_dev *cd, struct ddcb_queue *queue,
 		new = (old | DDCB_NEXT_BE32);
 
 		wmb();		/* need to ensure write ordering */
-		icrc_hsi_shi = cmpxchg32(&prev_ddcb->icrc_hsi_shi_32, old, new);
+		icrc_hsi_shi = cmpxchg(&prev_ddcb->icrc_hsi_shi_32, old, new);
 
 		if (icrc_hsi_shi == old)
 			return RET_DDCB_APPENDED; /* appended to queue */
@@ -650,8 +650,8 @@ int __genwqe_purge_ddcb(struct genwqe_dev *cd, struct ddcb_requ *req)
 		if ((old & DDCB_FETCHED_BE32) == 0x00000000) {
 
 			new = (old | DDCB_PURGE_BE32);
-			icrc_hsi_shi = cmpxchg32(&pddcb->icrc_hsi_shi_32,
-						 old, new);
+			icrc_hsi_shi = cmpxchg(&pddcb->icrc_hsi_shi_32,
+					       old, new);
 			if (icrc_hsi_shi == old)
 				goto finish_ddcb;
 		}

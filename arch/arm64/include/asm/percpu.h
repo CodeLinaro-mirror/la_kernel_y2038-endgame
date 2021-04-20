@@ -222,20 +222,20 @@ PERCPU_RET_OP(add, add, ldadd)
 	_pcp_protect(__percpu_or_case_64, pcp, val)
 
 #define this_cpu_xchg_1(pcp, val)	\
-	_pcp_protect_return(xchg8_relaxed, pcp, val)
+	_pcp_protect_return(xchg_relaxed, pcp, val)
 #define this_cpu_xchg_2(pcp, val)	\
-	_pcp_protect_return(xchg16_relaxed, pcp, val)
+	_pcp_protect_return(xchg_relaxed, pcp, val)
 #define this_cpu_xchg_4(pcp, val)	\
-	_pcp_protect_return(xchg32_relaxed, pcp, val)
+	_pcp_protect_return(xchg_relaxed, pcp, val)
 #define this_cpu_xchg_8(pcp, val)	\
 	_pcp_protect_return(xchg_relaxed, pcp, val)
 
 #define this_cpu_cmpxchg_1(pcp, o, n)	\
-	_pcp_protect_return(cmpxchg8_relaxed, pcp, o, n)
+	_pcp_protect_return(cmpxchg_relaxed, pcp, o, n)
 #define this_cpu_cmpxchg_2(pcp, o, n)	\
-	_pcp_protect_return(cmpxchg16_relaxed, pcp, o, n)
+	_pcp_protect_return(cmpxchg_relaxed, pcp, o, n)
 #define this_cpu_cmpxchg_4(pcp, o, n)	\
-	_pcp_protect_return(cmpxchg32_relaxed, pcp, o, n)
+	_pcp_protect_return(cmpxchg_relaxed, pcp, o, n)
 #define this_cpu_cmpxchg_8(pcp, o, n)	\
 	_pcp_protect_return(cmpxchg_relaxed, pcp, o, n)
 
