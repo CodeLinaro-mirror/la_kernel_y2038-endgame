@@ -600,7 +600,7 @@ static int graph_count_noml(struct asoc_simple_priv *priv,
 {
 	struct device *dev = simple_priv_to_dev(priv);
 
-	if (li->link >= SNDRV_MAX_LINKS) {
+	if (li->link >= SNDRV_MINOR_DEVICES) {
 		dev_err(dev, "too many links\n");
 		return -EINVAL;
 	}
@@ -622,7 +622,7 @@ static int graph_count_dpcm(struct asoc_simple_priv *priv,
 {
 	struct device *dev = simple_priv_to_dev(priv);
 
-	if (li->link >= SNDRV_MAX_LINKS) {
+	if (li->link >= SNDRV_MINOR_DEVICES) {
 		dev_err(dev, "too many links\n");
 		return -EINVAL;
 	}

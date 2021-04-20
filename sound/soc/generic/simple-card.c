@@ -481,7 +481,7 @@ static int simple_count_noml(struct asoc_simple_priv *priv,
 			     struct device_node *codec,
 			     struct link_info *li, bool is_top)
 {
-	if (li->link >= SNDRV_MAX_LINKS) {
+	if (li->link >= SNDRV_MINOR_DEVICES) {
 		struct device *dev = simple_priv_to_dev(priv);
 
 		dev_err(dev, "too many links\n");
@@ -502,7 +502,7 @@ static int simple_count_dpcm(struct asoc_simple_priv *priv,
 			     struct device_node *codec,
 			     struct link_info *li, bool is_top)
 {
-	if (li->link >= SNDRV_MAX_LINKS) {
+	if (li->link >= SNDRV_MINOR_DEVICES) {
 		struct device *dev = simple_priv_to_dev(priv);
 
 		dev_err(dev, "too many links\n");
