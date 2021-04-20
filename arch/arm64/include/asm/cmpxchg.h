@@ -19,7 +19,7 @@
  * acquire+release for the latter.
  */
 #define __XCHG_CASE(w, sfx, name, sz, mb, nop_lse, acq, acq_lse, rel, cl)	\
-static inline u##sz arch_xchg ## sz ## name(volatile u##sz *ptr, u##sz x)	\
+static inline u##sz __xchg_case_##name##sz(u##sz x, volatile void *ptr)		\
 {										\
 	u##sz ret;								\
 	unsigned long tmp;							\
@@ -42,22 +42,22 @@ static inline u##sz arch_xchg ## sz ## name(volatile u##sz *ptr, u##sz x)	\
 	return ret;								\
 }
 
-__XCHG_CASE(w, b, _relaxed,  8,        ,    ,  ,  ,  ,         )
-__XCHG_CASE(w, h, _relaxed, 16,        ,    ,  ,  ,  ,         )
-__XCHG_CASE(w,  , _relaxed, 32,        ,    ,  ,  ,  ,         )
-__XCHG_CASE( ,  , _relaxed, 64,        ,    ,  ,  ,  ,         )
-__XCHG_CASE(w, b, _acquire,  8,        ,    , a, a,  , "memory")
-__XCHG_CASE(w, h, _acquire, 16,        ,    , a, a,  , "memory")
-__XCHG_CASE(w,  , _acquire, 32,        ,    , a, a,  , "memory")
-__XCHG_CASE( ,  , _acquire, 64,        ,    , a, a,  , "memory")
-__XCHG_CASE(w, b, _release,  8,        ,    ,  ,  , l, "memory")
-__XCHG_CASE(w, h, _release, 16,        ,    ,  ,  , l, "memory")
-__XCHG_CASE(w,  , _release, 32,        ,    ,  ,  , l, "memory")
-__XCHG_CASE( ,  , _release, 64,        ,    ,  ,  , l, "memory")
-__XCHG_CASE(w, b,         ,  8, dmb ish, nop,  , a, l, "memory")
-__XCHG_CASE(w, h,         , 16, dmb ish, nop,  , a, l, "memory")
-__XCHG_CASE(w,  ,         , 32, dmb ish, nop,  , a, l, "memory")
-__XCHG_CASE( ,  ,         , 64, dmb ish, nop,  , a, l, "memory")
+__XCHG_CASE(w, b,     ,  8,        ,    ,  ,  ,  ,         )
+__XCHG_CASE(w, h,     , 16,        ,    ,  ,  ,  ,         )
+__XCHG_CASE(w,  ,     , 32,        ,    ,  ,  ,  ,         )
+__XCHG_CASE( ,  ,     , 64,        ,    ,  ,  ,  ,         )
+__XCHG_CASE(w, b, acq_,  8,        ,    , a, a,  , "memory")
+__XCHG_CASE(w, h, acq_, 16,        ,    , a, a,  , "memory")
+__XCHG_CASE(w,  , acq_, 32,        ,    , a, a,  , "memory")
+__XCHG_CASE( ,  , acq_, 64,        ,    , a, a,  , "memory")
+__XCHG_CASE(w, b, rel_,  8,        ,    ,  ,  , l, "memory")
+__XCHG_CASE(w, h, rel_, 16,        ,    ,  ,  , l, "memory")
+__XCHG_CASE(w,  , rel_, 32,        ,    ,  ,  , l, "memory")
+__XCHG_CASE( ,  , rel_, 64,        ,    ,  ,  , l, "memory")
+__XCHG_CASE(w, b,  mb_,  8, dmb ish, nop,  , a, l, "memory")
+__XCHG_CASE(w, h,  mb_, 16, dmb ish, nop,  , a, l, "memory")
+__XCHG_CASE(w,  ,  mb_, 32, dmb ish, nop,  , a, l, "memory")
+__XCHG_CASE( ,  ,  mb_, 64, dmb ish, nop,  , a, l, "memory")
 
 #undef __XCHG_CASE
 
@@ -76,40 +76,151 @@ static __always_inline  unsigned long __xchg##sfx(unsigned long x,	\
 	unreachable();							\
 }
 
-//__XCHG_GEN()
-//__XCHG_GEN(_acq)
-//__XCHG_GEN(_rel)
-//__XCHG_GEN(_mb)
+__XCHG_GEN()
+__XCHG_GEN(_acq)
+__XCHG_GEN(_rel)
+__XCHG_GEN(_mb)
 
 #undef __XCHG_GEN
 
+#define __XCHG32_GEN(sfx)						\
+static __always_inline  unsigned long __xchg32##sfx(unsigned long x,	\
+					volatile void *ptr,		\
+					int size)			\
+{									\
+	switch (size) {							\
+	case 4:								\
+		return __xchg_case##sfx##_32(x, ptr);			\
+	default:							\
+		BUILD_BUG();						\
+	}								\
+									\
+	unreachable();							\
+}
+
+__XCHG32_GEN()
+__XCHG32_GEN(_acq)
+__XCHG32_GEN(_rel)
+__XCHG32_GEN(_mb)
+
+#undef __XCHG_GEN32
+
+#define __XCHG16_GEN(sfx)						\
+static __always_inline  unsigned long __xchg16##sfx(unsigned long x,	\
+					volatile void *ptr,		\
+					int size)			\
+{									\
+	switch (size) {							\
+	case 2:								\
+		return __xchg_case##sfx##_16(x, ptr);			\
+	default:							\
+		BUILD_BUG();						\
+	}								\
+									\
+	unreachable();							\
+}
+
+__XCHG16_GEN()
+__XCHG16_GEN(_acq)
+__XCHG16_GEN(_rel)
+__XCHG16_GEN(_mb)
+
+#undef __XCHG_GEN16
+
+#define __XCHG8_GEN(sfx)						\
+static __always_inline  unsigned long __xchg8##sfx(unsigned long x,	\
+					volatile void *ptr,		\
+					int size)			\
+{									\
+	switch (size) {							\
+	case 1:								\
+		return __xchg_case##sfx##_8(x, ptr);			\
+	default:							\
+		BUILD_BUG();						\
+	}								\
+									\
+	unreachable();							\
+}
+
+__XCHG8_GEN()
+__XCHG8_GEN(_acq)
+__XCHG8_GEN(_rel)
+__XCHG8_GEN(_mb)
+
+#undef __XCHG_GEN8
+
 #define __xchg_wrapper(sfx, ptr, x)					\
 ({									\
- 	__auto_type __ptr = (ptr);					\
-	BUILD_BUG_ON(sizeof(*__ptr) != 8);				\
-	(typeof(*__ptr))arch_xchg64 ## sfx((void *)(__ptr), (unsigned long)(x));\
+	__typeof__(*(ptr)) __ret;					\
+	__ret = (__typeof__(*(ptr)))					\
+		__xchg##sfx((unsigned long)(x), (ptr), sizeof(*(ptr))); \
+	__ret;								\
+})
+
+#define __xchg32_wrapper(sfx, ptr, x)					\
+({									\
+	__typeof__(*(ptr)) __ret;					\
+	__ret = (__typeof__(*(ptr)))					\
+		__xchg32##sfx((unsigned long)(x), (ptr), sizeof(*(ptr))); \
+	__ret;								\
+})
+
+#define __xchg16_wrapper(sfx, ptr, x)					\
+({									\
+	__typeof__(*(ptr)) __ret;					\
+	__ret = (__typeof__(*(ptr)))					\
+		__xchg16##sfx((unsigned long)(x), (ptr), sizeof(*(ptr))); \
+	__ret;								\
+})
+
+#define __xchg8_wrapper(sfx, ptr, x)					\
+({									\
+	__typeof__(*(ptr)) __ret;					\
+	__ret = (__typeof__(*(ptr)))					\
+		__xchg8##sfx((unsigned long)(x), (ptr), sizeof(*(ptr))); \
+	__ret;								\
 })
 
 /* xchg */
-#define arch_xchg_relaxed(...)	 __xchg_wrapper(_relaxed, __VA_ARGS__)
-#define arch_xchg_acquire(...)	 __xchg_wrapper(_acquire, __VA_ARGS__)
-#define arch_xchg_release(...)	 __xchg_wrapper(_release, __VA_ARGS__)
-#define arch_xchg(...)		 __xchg_wrapper(        , __VA_ARGS__)
+#define arch_xchg_relaxed(...)	 __xchg_wrapper(    , __VA_ARGS__)
+#define arch_xchg_acquire(...)	 __xchg_wrapper(_acq, __VA_ARGS__)
+#define arch_xchg_release(...)	 __xchg_wrapper(_rel, __VA_ARGS__)
+#define arch_xchg(...)		 __xchg_wrapper( _mb, __VA_ARGS__)
 
-#define xchg32_relaxed(...) arch_xchg32_relaxed(__VA_ARGS__)
-#define xchg32_acquire(...) arch_xchg32_acquire( __VA_ARGS__)
-#define xchg32_release(...) arch_xchg32_release( __VA_ARGS__)
-#define xchg32(...)	    arch_xchg32( __VA_ARGS__)
+#define arch_xchg64_relaxed(...) __xchg_wrapper(    , __VA_ARGS__)
+#define arch_xchg64_acquire(...) __xchg_wrapper(_acq, __VA_ARGS__)
+#define arch_xchg64_release(...) __xchg_wrapper(_rel, __VA_ARGS__)
+#define arch_xchg64(...)	 __xchg_wrapper( _mb, __VA_ARGS__)
 
-#define xchg16_relaxed(...) arch_xchg16_relaxed(__VA_ARGS__)
-#define xchg16_acquire(...) arch_xchg16_acquire( __VA_ARGS__)
-#define xchg16_release(...) arch_xchg16_release( __VA_ARGS__)
-#define xchg16(...)	    arch_xchg16( __VA_ARGS__)
+#define arch_xchg32_relaxed(...) __xchg32_wrapper(    , __VA_ARGS__)
+#define arch_xchg32_acquire(...) __xchg32_wrapper(_acq, __VA_ARGS__)
+#define arch_xchg32_release(...) __xchg32_wrapper(_rel, __VA_ARGS__)
+#define arch_xchg32(...)	 __xchg32_wrapper( _mb, __VA_ARGS__)
 
-#define xchg8_relaxed(...)  arch_xchg8_relaxed(__VA_ARGS__)
-#define xchg8_acquire(...)  arch_xchg8_acquire( __VA_ARGS__)
-#define xchg8_release(...)  arch_xchg8_release( __VA_ARGS__)
-#define xchg8(...)	    arch_xchg8( __VA_ARGS__)
+#define xchg32_relaxed(...) __xchg32_wrapper(    , __VA_ARGS__)
+#define xchg32_acquire(...) __xchg32_wrapper(_acq, __VA_ARGS__)
+#define xchg32_release(...) __xchg32_wrapper(_rel, __VA_ARGS__)
+#define xchg32(...)	    __xchg32_wrapper( _mb, __VA_ARGS__)
+
+#define arch_xchg16_relaxed(...) __xchg16_wrapper(    , __VA_ARGS__)
+#define arch_xchg16_acquire(...) __xchg16_wrapper(_acq, __VA_ARGS__)
+#define arch_xchg16_release(...) __xchg16_wrapper(_rel, __VA_ARGS__)
+#define arch_xchg16(...)	 __xchg16_wrapper( _mb, __VA_ARGS__)
+
+#define xchg16_relaxed(...) __xchg16_wrapper(    , __VA_ARGS__)
+#define xchg16_acquire(...) __xchg16_wrapper(_acq, __VA_ARGS__)
+#define xchg16_release(...) __xchg16_wrapper(_rel, __VA_ARGS__)
+#define xchg16(...)	    __xchg16_wrapper( _mb, __VA_ARGS__)
+
+#define arch_xchg8_relaxed(...) __xchg8_wrapper(    , __VA_ARGS__)
+#define arch_xchg8_acquire(...) __xchg8_wrapper(_acq, __VA_ARGS__)
+#define arch_xchg8_release(...) __xchg8_wrapper(_rel, __VA_ARGS__)
+#define arch_xchg8(...)	 	__xchg8_wrapper( _mb, __VA_ARGS__)
+
+#define xchg8_relaxed(...) __xchg8_wrapper(    , __VA_ARGS__)
+#define xchg8_acquire(...) __xchg8_wrapper(_acq, __VA_ARGS__)
+#define xchg8_release(...) __xchg8_wrapper(_rel, __VA_ARGS__)
+#define xchg8(...)	   __xchg8_wrapper( _mb, __VA_ARGS__)
 
 #define __CMPXCHG_CASE(name, sz)			\
 static inline u##sz __cmpxchg_case_##name##sz(volatile void *ptr,	\
