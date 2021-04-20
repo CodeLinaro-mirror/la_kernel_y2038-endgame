@@ -339,7 +339,7 @@ static inline s64 __lse_atomic64_dec_if_positive(atomic64_t *v)
 
 #define __CMPXCHG_CASE(w, sfx, name, sz, mb, cl...)			\
 static __always_inline u##sz						\
-__lse__cmpxchg ## sz ## name(volatile void *ptr,			\
+__lse__cmpxchg_case_##name##sz(volatile void *ptr,			\
 					      u##sz old,		\
 					      u##sz new)		\
 {									\
@@ -361,22 +361,22 @@ __lse__cmpxchg ## sz ## name(volatile void *ptr,			\
 	return x0;							\
 }
 
-__CMPXCHG_CASE(w, b, _relaxed,  8,   )
-__CMPXCHG_CASE(w, h, _relaxed, 16,   )
-__CMPXCHG_CASE(w,  , _relaxed, 32,   )
-__CMPXCHG_CASE(x,  , _relaxed, 64,   )
-__CMPXCHG_CASE(w, b, _acquire,  8,  a, "memory")
-__CMPXCHG_CASE(w, h, _acquire, 16,  a, "memory")
-__CMPXCHG_CASE(w,  , _acquire, 32,  a, "memory")
-__CMPXCHG_CASE(x,  , _acquire, 64,  a, "memory")
-__CMPXCHG_CASE(w, b, _release,  8,  l, "memory")
-__CMPXCHG_CASE(w, h, _release, 16,  l, "memory")
-__CMPXCHG_CASE(w,  , _release, 32,  l, "memory")
-__CMPXCHG_CASE(x,  , _release, 64,  l, "memory")
-__CMPXCHG_CASE(w, b,         ,  8, al, "memory")
-__CMPXCHG_CASE(w, h,         , 16, al, "memory")
-__CMPXCHG_CASE(w,  ,         , 32, al, "memory")
-__CMPXCHG_CASE(x,  ,         , 64, al, "memory")
+__CMPXCHG_CASE(w, b,     ,  8,   )
+__CMPXCHG_CASE(w, h,     , 16,   )
+__CMPXCHG_CASE(w,  ,     , 32,   )
+__CMPXCHG_CASE(x,  ,     , 64,   )
+__CMPXCHG_CASE(w, b, acq_,  8,  a, "memory")
+__CMPXCHG_CASE(w, h, acq_, 16,  a, "memory")
+__CMPXCHG_CASE(w,  , acq_, 32,  a, "memory")
+__CMPXCHG_CASE(x,  , acq_, 64,  a, "memory")
+__CMPXCHG_CASE(w, b, rel_,  8,  l, "memory")
+__CMPXCHG_CASE(w, h, rel_, 16,  l, "memory")
+__CMPXCHG_CASE(w,  , rel_, 32,  l, "memory")
+__CMPXCHG_CASE(x,  , rel_, 64,  l, "memory")
+__CMPXCHG_CASE(w, b,  mb_,  8, al, "memory")
+__CMPXCHG_CASE(w, h,  mb_, 16, al, "memory")
+__CMPXCHG_CASE(w,  ,  mb_, 32, al, "memory")
+__CMPXCHG_CASE(x,  ,  mb_, 64, al, "memory")
 
 #undef __CMPXCHG_CASE
 

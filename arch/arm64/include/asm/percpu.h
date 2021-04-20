@@ -239,8 +239,6 @@ PERCPU_RET_OP(add, add, ldadd)
 #define this_cpu_cmpxchg_4(pcp, o, n)	\
 	_pcp_protect_return(cmpxchg32_relaxed, pcp, o, n)
 #define this_cpu_cmpxchg_8(pcp, o, n)	\
-	_pcp_protect_return(cmpxchg64_relaxed, pcp, o, n)
-#define this_cpu_cmpxchg_long(pcp, o, n)	\
 	_pcp_protect_return(cmpxchg_relaxed, pcp, o, n)
 
 #ifdef __KVM_NVHE_HYPERVISOR__

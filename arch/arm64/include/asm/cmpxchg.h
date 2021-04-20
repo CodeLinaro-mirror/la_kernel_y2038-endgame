@@ -61,6 +61,28 @@ __XCHG_CASE( ,  ,         , 64, dmb ish, nop,  , a, l, "memory")
 
 #undef __XCHG_CASE
 
+#define __XCHG_GEN(sfx)							\
+static __always_inline  unsigned long __xchg##sfx(unsigned long x,	\
+					volatile void *ptr,		\
+					int size)			\
+{									\
+	switch (size) {							\
+	case 8:								\
+		return __xchg_case##sfx##_64(x, ptr);			\
+	default:							\
+		BUILD_BUG();						\
+	}								\
+									\
+	unreachable();							\
+}
+
+//__XCHG_GEN()
+//__XCHG_GEN(_acq)
+//__XCHG_GEN(_rel)
+//__XCHG_GEN(_mb)
+
+#undef __XCHG_GEN
+
 #define __xchg_wrapper(sfx, ptr, x)					\
 ({									\
  	__auto_type __ptr = (ptr);					\
@@ -90,30 +112,30 @@ __XCHG_CASE( ,  ,         , 64, dmb ish, nop,  , a, l, "memory")
 #define xchg8(...)	    arch_xchg8( __VA_ARGS__)
 
 #define __CMPXCHG_CASE(name, sz)			\
-static inline u##sz arch_cmpxchg ##sz ##name(volatile u##sz *ptr,	\
+static inline u##sz __cmpxchg_case_##name##sz(volatile void *ptr,	\
 					      u##sz old,		\
 					      u##sz new)		\
 {									\
-	return __lse_ll_sc_body(_cmpxchg ## sz ##name,			\
+	return __lse_ll_sc_body(_cmpxchg_case_##name##sz,		\
 				ptr, old, new);				\
 }
 
-__CMPXCHG_CASE(_relaxed,  8)
-__CMPXCHG_CASE(_relaxed, 16)
-__CMPXCHG_CASE(_relaxed, 32)
-__CMPXCHG_CASE(_relaxed, 64)
-__CMPXCHG_CASE(_acquire,  8)
-__CMPXCHG_CASE(_acquire, 16)
-__CMPXCHG_CASE(_acquire, 32)
-__CMPXCHG_CASE(_acquire, 64)
-__CMPXCHG_CASE(_release,  8)
-__CMPXCHG_CASE(_release, 16)
-__CMPXCHG_CASE(_release, 32)
-__CMPXCHG_CASE(_release, 64)
-__CMPXCHG_CASE(        ,  8)
-__CMPXCHG_CASE(        , 16)
-__CMPXCHG_CASE(        , 32)
-__CMPXCHG_CASE(        , 64)
+__CMPXCHG_CASE(    ,  8)
+__CMPXCHG_CASE(    , 16)
+__CMPXCHG_CASE(    , 32)
+__CMPXCHG_CASE(    , 64)
+__CMPXCHG_CASE(acq_,  8)
+__CMPXCHG_CASE(acq_, 16)
+__CMPXCHG_CASE(acq_, 32)
+__CMPXCHG_CASE(acq_, 64)
+__CMPXCHG_CASE(rel_,  8)
+__CMPXCHG_CASE(rel_, 16)
+__CMPXCHG_CASE(rel_, 32)
+__CMPXCHG_CASE(rel_, 64)
+__CMPXCHG_CASE(mb_,  8)
+__CMPXCHG_CASE(mb_, 16)
+__CMPXCHG_CASE(mb_, 32)
+__CMPXCHG_CASE(mb_, 64)
 
 #undef __CMPXCHG_CASE
 
@@ -133,50 +155,184 @@ __CMPXCHG_DBL(_mb)
 
 #undef __CMPXCHG_DBL
 
+#define __CMPXCHG_GEN(sfx)						\
+static __always_inline unsigned long __cmpxchg##sfx(volatile void *ptr,	\
+					   unsigned long old,		\
+					   unsigned long new,		\
+					   int size)			\
+{									\
+	switch (size) {							\
+	case 8:								\
+		return __cmpxchg_case##sfx##_64(ptr, old, new);		\
+	default:							\
+		BUILD_BUG();						\
+	}								\
+									\
+	unreachable();							\
+}
+
+__CMPXCHG_GEN()
+__CMPXCHG_GEN(_acq)
+__CMPXCHG_GEN(_rel)
+__CMPXCHG_GEN(_mb)
+
+#define __CMPXCHG32_GEN(sfx)						\
+static __always_inline unsigned long __cmpxchg32##sfx(volatile void *ptr,	\
+					   unsigned long old,		\
+					   unsigned long new,		\
+					   int size)			\
+{									\
+	switch (size) {							\
+	case 4:								\
+		return __cmpxchg_case##sfx##_32(ptr, old, new);		\
+	default:							\
+		BUILD_BUG();						\
+	}								\
+									\
+	unreachable();							\
+}
+
+__CMPXCHG32_GEN()
+__CMPXCHG32_GEN(_acq)
+__CMPXCHG32_GEN(_rel)
+__CMPXCHG32_GEN(_mb)
+
+#undef __CMPXCHG32_GEN
+
+#define __CMPXCHG16_GEN(sfx)						\
+static __always_inline unsigned long __cmpxchg16##sfx(volatile void *ptr,	\
+					   unsigned long old,		\
+					   unsigned long new,		\
+					   int size)			\
+{									\
+	switch (size) {							\
+	case 2:								\
+		return __cmpxchg_case##sfx##_16(ptr, old, new);		\
+	default:							\
+		BUILD_BUG();						\
+	}								\
+									\
+	unreachable();							\
+}
+
+__CMPXCHG16_GEN()
+__CMPXCHG16_GEN(_acq)
+__CMPXCHG16_GEN(_rel)
+__CMPXCHG16_GEN(_mb)
+
+#undef __CMPXCHG16_GEN
+
+#define __CMPXCHG8_GEN(sfx)						\
+static __always_inline unsigned long __cmpxchg8##sfx(volatile void *ptr,	\
+					   unsigned long old,		\
+					   unsigned long new,		\
+					   int size)			\
+{									\
+	switch (size) {							\
+	case 1:								\
+		return __cmpxchg_case##sfx##_8(ptr, old, new);		\
+	default:							\
+		BUILD_BUG();						\
+	}								\
+									\
+	unreachable();							\
+}
+
+__CMPXCHG8_GEN()
+__CMPXCHG8_GEN(_acq)
+__CMPXCHG8_GEN(_rel)
+__CMPXCHG8_GEN(_mb)
+
+#undef __CMPXCHG8_GEN
+
 #define __cmpxchg_wrapper(sfx, ptr, o, n)				\
 ({									\
- 	__auto_type __ptr = (ptr);					\
-	BUILD_BUG_ON(sizeof(*__ptr) != 8);				\
-	(__typeof__(*(__ptr)))						\
-		arch_cmpxchg64##sfx((volatile void *)__ptr,		\
-				(unsigned long)(o),			\
-				(unsigned long)(n));			\
+	__typeof__(*(ptr)) __ret;					\
+	__ret = (__typeof__(*(ptr)))					\
+		__cmpxchg##sfx((ptr), (unsigned long)(o),		\
+				(unsigned long)(n), sizeof(*(ptr)));	\
+	__ret;								\
+})
+
+#define __cmpxchg32_wrapper(sfx, ptr, o, n)				\
+({									\
+	__typeof__(*(ptr)) __ret;					\
+	__ret = (__typeof__(*(ptr)))					\
+		__cmpxchg32##sfx((ptr), (unsigned long)(o),		\
+				(unsigned long)(n), sizeof(*(ptr)));	\
+	__ret;								\
+})
+
+#define __cmpxchg16_wrapper(sfx, ptr, o, n)				\
+({									\
+	__typeof__(*(ptr)) __ret;					\
+	__ret = (__typeof__(*(ptr)))					\
+		__cmpxchg16##sfx((ptr), (unsigned long)(o),		\
+				(unsigned long)(n), sizeof(*(ptr)));	\
+	__ret;								\
+})
+
+#define __cmpxchg8_wrapper(sfx, ptr, o, n)				\
+({									\
+	__typeof__(*(ptr)) __ret;					\
+	__ret = (__typeof__(*(ptr)))					\
+		__cmpxchg8##sfx((ptr), (unsigned long)(o),		\
+				(unsigned long)(n), sizeof(*(ptr)));	\
+	__ret;								\
 })
 
 /* cmpxchg */
-#define arch_cmpxchg_relaxed(...)	__cmpxchg_wrapper(_relaxed, __VA_ARGS__)
-#define arch_cmpxchg_acquire(...)	__cmpxchg_wrapper(_acquire, __VA_ARGS__)
-#define arch_cmpxchg_release(...)	__cmpxchg_wrapper(_release, __VA_ARGS__)
-#define arch_cmpxchg(...)		__cmpxchg_wrapper(        , __VA_ARGS__)
+#define arch_cmpxchg_relaxed(...)	__cmpxchg_wrapper(    , __VA_ARGS__)
+#define arch_cmpxchg_acquire(...)	__cmpxchg_wrapper(_acq, __VA_ARGS__)
+#define arch_cmpxchg_release(...)	__cmpxchg_wrapper(_rel, __VA_ARGS__)
+#define arch_cmpxchg(...)		__cmpxchg_wrapper( _mb, __VA_ARGS__)
 #define arch_cmpxchg_local		arch_cmpxchg_relaxed
 
-/* cmpxchg64 */
-#define arch_cmpxchg64_relaxed	arch_cmpxchg64_relaxed
-#define arch_cmpxchg64_acquire	arch_cmpxchg64_acquire
-#define arch_cmpxchg64_release	arch_cmpxchg64_release
-#define arch_cmpxchg64		arch_cmpxchg64
-#define arch_cmpxchg64_local	arch_cmpxchg64_local
-
 /* cmpxchg32 */
-#define cmpxchg32_relaxed(...)	arch_cmpxchg32_relaxed(__VA_ARGS__)
-#define cmpxchg32_acquire(...)	arch_cmpxchg32_acquire(__VA_ARGS__)
-#define cmpxchg32_release(...)	arch_cmpxchg32_release(__VA_ARGS__)
-#define cmpxchg32(...)		arch_cmpxchg32(__VA_ARGS__)
-#define cmpxchg32_local(...)	arch_cmpxchg32_relaxed(__VA_ARGS__)
+#define arch_cmpxchg32_relaxed(...)	__cmpxchg32_wrapper(    , __VA_ARGS__)
+#define arch_cmpxchg32_acquire(...)	__cmpxchg32_wrapper(_acq, __VA_ARGS__)
+#define arch_cmpxchg32_release(...)	__cmpxchg32_wrapper(_rel, __VA_ARGS__)
+#define arch_cmpxchg32(...)		__cmpxchg32_wrapper( _mb, __VA_ARGS__)
+#define arch_cmpxchg32_local		arch_cmpxchg32_relaxed
+
+#define cmpxchg32_relaxed(...)	__cmpxchg32_wrapper(    , __VA_ARGS__)
+#define cmpxchg32_acquire(...)	__cmpxchg32_wrapper(_acq, __VA_ARGS__)
+#define cmpxchg32_release(...)	__cmpxchg32_wrapper(_rel, __VA_ARGS__)
+#define cmpxchg32(...)		__cmpxchg32_wrapper( _mb, __VA_ARGS__)
+#define cmpxchg32_local		arch_cmpxchg32_relaxed
 
 /* cmpxchg16 */
-#define cmpxchg16_relaxed(...)	arch_cmpxchg16_relaxed(__VA_ARGS__)
-#define cmpxchg16_acquire(...)	arch_cmpxchg16_acquire(__VA_ARGS__)
-#define cmpxchg16_release(...)	arch_cmpxchg16_release(__VA_ARGS__)
-#define cmpxchg16(...)		arch_cmpxchg16(__VA_ARGS__)
-#define cmpxchg16_local(...)	arch_cmpxchg16_relaxed(__VA_ARGS__)
+#define arch_cmpxchg16_relaxed(...)	__cmpxchg16_wrapper(    , __VA_ARGS__)
+#define arch_cmpxchg16_acquire(...)	__cmpxchg16_wrapper(_acq, __VA_ARGS__)
+#define arch_cmpxchg16_release(...)	__cmpxchg16_wrapper(_rel, __VA_ARGS__)
+#define arch_cmpxchg16(...)		__cmpxchg16_wrapper( _mb, __VA_ARGS__)
+#define arch_cmpxchg16_local		arch_cmpxchg16_relaxed
+
+#define cmpxchg16_relaxed(...)	__cmpxchg16_wrapper(    , __VA_ARGS__)
+#define cmpxchg16_acquire(...)	__cmpxchg16_wrapper(_acq, __VA_ARGS__)
+#define cmpxchg16_release(...)	__cmpxchg16_wrapper(_rel, __VA_ARGS__)
+#define cmpxchg16(...)		__cmpxchg16_wrapper( _mb, __VA_ARGS__)
+#define cmpxchg16_local		arch_cmpxchg16_relaxed
 
 /* cmpxchg8 */
-#define cmpxchg8_relaxed(...)	arch_cmpxchg8_relaxed(__VA_ARGS__)
-#define cmpxchg8_acquire(...)	arch_cmpxchg8_acquire(__VA_ARGS__)
-#define cmpxchg8_release(...)	arch_cmpxchg8_release(__VA_ARGS__)
-#define cmpxchg8(...)		arch_cmpxchg8(__VA_ARGS__)
+#define arch_cmpxchg8_relaxed(...)	__cmpxchg8_wrapper(    , __VA_ARGS__)
+#define arch_cmpxchg8_acquire(...)	__cmpxchg8_wrapper(_acq, __VA_ARGS__)
+#define arch_cmpxchg8_release(...)	__cmpxchg8_wrapper(_rel, __VA_ARGS__)
+#define arch_cmpxchg8(...)		__cmpxchg8_wrapper( _mb, __VA_ARGS__)
+#define arch_cmpxchg8_local		arch_cmpxchg8_relaxed
+
+#define cmpxchg8_relaxed(...)	__cmpxchg8_wrapper(    , __VA_ARGS__)
+#define cmpxchg8_acquire(...)	__cmpxchg8_wrapper(_acq, __VA_ARGS__)
+#define cmpxchg8_release(...)	__cmpxchg8_wrapper(_rel, __VA_ARGS__)
+#define cmpxchg8(...)		__cmpxchg8_wrapper( _mb, __VA_ARGS__)
 #define cmpxchg8_local		arch_cmpxchg8_relaxed
+
+/* cmpxchg64 */
+#define arch_cmpxchg64_relaxed		arch_cmpxchg_relaxed
+#define arch_cmpxchg64_acquire		arch_cmpxchg_acquire
+#define arch_cmpxchg64_release		arch_cmpxchg_release
+#define arch_cmpxchg64			arch_cmpxchg
+#define arch_cmpxchg64_local		arch_cmpxchg_local
 
 /* cmpxchg_double */
 #define system_has_cmpxchg_double()     1
