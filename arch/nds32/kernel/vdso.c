@@ -91,7 +91,7 @@ static int __init vdso_init(void)
 
 arch_initcall(vdso_init);
 
-unsigned long inline vdso_random_addr(unsigned long vdso_mapping_len)
+static inline unsigned long vdso_random_addr(unsigned long vdso_mapping_len)
 {
 	unsigned long start = current->mm->mmap_base, end, offset, addr;
 	start = PAGE_ALIGN(start);
