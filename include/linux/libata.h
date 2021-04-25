@@ -54,8 +54,8 @@
 #define VPRINTK(fmt, args...)
 #endif	/* ATA_VERBOSE_DEBUG */
 #else
-#define DPRINTK(fmt, args...)
-#define VPRINTK(fmt, args...)
+#define DPRINTK(fmt, args...) no_printk(fmt, ## args)
+#define VPRINTK(fmt, args...) no_printk(fmt, ## args)
 #endif	/* ATA_DEBUG */
 
 #define ata_print_version_once(dev, version)			\
