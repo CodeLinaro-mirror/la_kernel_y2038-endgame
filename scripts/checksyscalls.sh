@@ -255,6 +255,10 @@ cat << EOF
 #define __IGNORE_getpmsg
 #define __IGNORE_putpmsg
 #define __IGNORE_vserver
+
+/* statx */
+#define __IGNORE_fstat64
+#define __IGNORE_fstatat64
 EOF
 }
 
