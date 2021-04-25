@@ -189,7 +189,7 @@
 
 /* Host-dependent types and defines for user-space ACPICA */
 
-#define ACPI_FLUSH_CPU_CACHE()
+#define ACPI_FLUSH_CPU_CACHE() do { } while (0)
 #define ACPI_CAST_PTHREAD_T(pthread) ((acpi_thread_id) (pthread))
 
 #if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
