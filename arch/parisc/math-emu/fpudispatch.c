@@ -689,9 +689,7 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 }
 
 static u_int
-decode_0e(ir,class,subop,fpregs)
-u_int ir,class,subop;
-u_int fpregs[];
+decode_0e(u_int ir, u_int class, u_int subop,u_int fpregs[])
 {
 	u_int r1,r2,t;		/* operand register offsets */
 	u_int fmt;		/* also sf for class 1 conversions */
@@ -1101,9 +1099,7 @@ u_int fpregs[];
  * routine to decode the 06 (FMPYADD and FMPYCFXT) instruction
  */
 static u_int
-decode_06(ir,fpregs)
-u_int ir;
-u_int fpregs[];
+decode_06(u_int ir, u_int fpregs[])
 {
 	u_int rm1, rm2, tm, ra, ta; /* operands */
 	u_int fmt;
@@ -1241,9 +1237,7 @@ u_int fpregs[];
  * routine to decode the 26 (FMPYSUB) instruction
  */
 static u_int
-decode_26(ir,fpregs)
-u_int ir;
-u_int fpregs[];
+decode_26(u_int ir, u_int fpregs[])
 {
 	u_int rm1, rm2, tm, ra, ta; /* operands */
 	u_int fmt;
@@ -1332,9 +1326,7 @@ u_int fpregs[];
  * routine to decode the 2E (FMPYFADD,FMPYNFADD) instructions
  */
 static u_int
-decode_2e(ir,fpregs)
-u_int ir;
-u_int fpregs[];
+decode_2e(u_int ir, u_int fpregs[])
 {
 	u_int rm1, rm2, ra, t; /* operands */
 	u_int fmt;
@@ -1398,10 +1390,7 @@ u_int fpregs[];
  *	of FCMP is being emulated.
  */
 static void
-update_status_cbit(status, new_status, fpu_type, y_field)
-u_int *status, new_status;
-u_int fpu_type;
-u_int y_field;
+update_status_cbit(u_int *status, u_int new_status, u_int fpu_type, u_int y_field)
 {
 	/*
 	 * For PA89 FPU's which implement the Compare Queue and
