@@ -57,20 +57,20 @@
 
 #ifdef UNW_DEBUG
   static unsigned int unw_debug_level = UNW_DEBUG;
-#  define UNW_DEBUG_ON(n)	unw_debug_level >= n
+#  define UNW_DEBUG_ON(n)	(unw_debug_level >= n)
    /* Do not code a printk level, not all debug lines end in newline */
-#  define UNW_DPRINT(n, ...)  if (UNW_DEBUG_ON(n)) printk(__VA_ARGS__)
+#  define UNW_DPRINT(n, ...)  do { if (UNW_DEBUG_ON(n)) printk(__VA_ARGS__); } while (0)
 #  undef inline
 #  define inline
 #else /* !UNW_DEBUG */
 #  define UNW_DEBUG_ON(n)  0
-#  define UNW_DPRINT(n, ...)
+#  define UNW_DPRINT(n, ...)	do { } while (0)
 #endif /* UNW_DEBUG */
 
 #if UNW_STATS
 # define STAT(x...)	x
 #else
-# define STAT(x...)
+# define STAT(x...)	do { } while (0)
 #endif
 
 #define alloc_reg_state()	kmalloc(sizeof(struct unw_reg_state), GFP_ATOMIC)
@@ -1537,7 +1537,7 @@ build_script (struct unw_frame_info *info)
 	u8 *dp, *desc_end;
 	u64 hdr;
 	int i;
-	STAT(unsigned long start, parse_start;)
+	STAT(unsigned long start, parse_start);
 
 	STAT(++unw.stat.script.builds; start = ia64_get_itc());
 
@@ -1722,7 +1722,7 @@ run_script (struct unw_script *script, struct unw_frame_info *state)
 	struct unw_insn *ip, *limit, next_insn;
 	unsigned long opc, dst, val, off;
 	unsigned long *s = (unsigned long *) state;
-	STAT(unsigned long start;)
+	STAT(unsigned long start);
 
 	STAT(++unw.stat.script.runs; start = ia64_get_itc());
 	state->flags = script->flags;
@@ -1884,8 +1884,8 @@ unw_unwind (struct unw_frame_info *info)
 {
 	unsigned long prev_ip, prev_sp, prev_bsp;
 	unsigned long ip, pr, num_regs;
-	STAT(unsigned long start, flags;)
 	int retval;
+	STAT(unsigned long start, flags);
 
 	STAT(local_irq_save(flags); ++unw.stat.api.unwinds; start = ia64_get_itc());
 
@@ -2002,7 +2002,7 @@ init_frame_info (struct unw_frame_info *info, struct task_struct *t,
 		 struct switch_stack *sw, unsigned long stktop)
 {
 	unsigned long rbslimit, rbstop, stklimit;
-	STAT(unsigned long start, flags;)
+	STAT(unsigned long start, flags);
 
 	STAT(local_irq_save(flags); ++unw.stat.api.inits; start = ia64_get_itc());
 
