@@ -68,7 +68,7 @@ static void notrace walk_stackframe(struct task_struct *task,
 		sp = user_stack_pointer(regs);
 		pc = instruction_pointer(regs);
 	} else if (task == NULL || task == current) {
-		const register unsigned long current_sp __asm__ ("sp");
+		register const unsigned long current_sp __asm__ ("sp");
 		sp = current_sp;
 		pc = (unsigned long)walk_stackframe;
 	} else {
