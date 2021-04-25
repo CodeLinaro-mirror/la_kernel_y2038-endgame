@@ -173,8 +173,9 @@ static __inline__ void set_dma_count(unsigned int dmanr, unsigned int count)
 {
 }
 
-
-#define free_dma(dmanr)
+static inline void free_dma(unsigned int dmanr)
+{
+}
 
 #ifdef CONFIG_PCI
 extern int isa_dma_bridge_buggy;
