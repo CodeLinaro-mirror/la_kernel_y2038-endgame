@@ -703,10 +703,9 @@ dbl_fmpyfadd(
  *  Double Floating-point Multiply Negate Fused Add
  */
 
-dbl_fmpynfadd(src1ptr,src2ptr,src3ptr,status,dstptr)
-
-dbl_floating_point *src1ptr, *src2ptr, *src3ptr, *dstptr;
-unsigned int *status;
+int dbl_fmpynfadd(dbl_floating_point *src1ptr, dbl_floating_point* src2ptr,
+		  dbl_floating_point *src3ptr, unsigned int *status,
+		  dbl_floating_point *dstptr)
 {
 	unsigned int opnd1p1, opnd1p2, opnd2p1, opnd2p2, opnd3p1, opnd3p2;
 	register unsigned int tmpresp1, tmpresp2, tmpresp3, tmpresp4;
@@ -1361,10 +1360,9 @@ unsigned int *status;
  *  Single Floating-point Multiply Fused Add
  */
 
-sgl_fmpyfadd(src1ptr,src2ptr,src3ptr,status,dstptr)
-
-sgl_floating_point *src1ptr, *src2ptr, *src3ptr, *dstptr;
-unsigned int *status;
+int sgl_fmpyfadd(sgl_floating_point *src1ptr, sgl_floating_point *src2ptr,
+		 sgl_floating_point *src3ptr, unsigned int *status,
+		 sgl_floating_point *dstptr)
 {
 	unsigned int opnd1, opnd2, opnd3;
 	register unsigned int tmpresp1, tmpresp2;
@@ -2002,10 +2000,9 @@ unsigned int *status;
  *  Single Floating-point Multiply Negate Fused Add
  */
 
-sgl_fmpynfadd(src1ptr,src2ptr,src3ptr,status,dstptr)
-
-sgl_floating_point *src1ptr, *src2ptr, *src3ptr, *dstptr;
-unsigned int *status;
+int sgl_fmpynfadd(sgl_floating_point *src1ptr, sgl_floating_point *src2ptr,
+	      sgl_floating_point *src3ptr, unsigned int *status,
+	      sgl_floating_point *dstptr)
 {
 	unsigned int opnd1, opnd2, opnd3;
 	register unsigned int tmpresp1, tmpresp2;
