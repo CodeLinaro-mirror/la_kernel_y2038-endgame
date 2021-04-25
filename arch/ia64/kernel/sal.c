@@ -34,10 +34,9 @@ static struct {
 	void *gpval;	/* gp value to use */
 } pdesc;
 
-static long
-default_handler (void)
+static struct ia64_sal_retval default_handler(u64 v, ...)
 {
-	return -1;
+	return (struct ia64_sal_retval){};
 }
 
 ia64_sal_handler ia64_sal = (ia64_sal_handler) default_handler;
