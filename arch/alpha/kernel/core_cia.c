@@ -561,7 +561,7 @@ failed:
 
 #if defined(ALPHA_RESTORE_SRM_SETUP)
 /* Save CIA configuration data as the console had it set up.  */
-struct 
+static struct
 {
     unsigned int hae_mem;
     unsigned int hae_io;
@@ -574,7 +574,7 @@ struct
 	unsigned int w_mask;
 	unsigned int t_base;
     } window[4];
-} saved_config __attribute((common));
+} saved_config;
 
 void
 cia_save_srm_settings(int is_pyxis)

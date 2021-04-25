@@ -28,12 +28,12 @@
 
 /* Save Tsunami configuration data as the console had it set up.  */
 
-struct 
+static struct
 {
 	unsigned long wsba[4];
 	unsigned long wsm[4];
 	unsigned long tba[4];
-} saved_config[2] __attribute__((common));
+} saved_config[2];
 
 /*
  * NOTE: Herein lie back-to-back mb instructions.  They are magic. 
