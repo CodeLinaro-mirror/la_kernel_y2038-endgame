@@ -171,7 +171,8 @@ static int bcd2int (unsigned char b)
 
 int mvme147_hwclk(int op, struct rtc_time *t)
 {
-#warning check me!
+	pr_warn("check mvme16x_hwclk implementation\n");
+
 	if (!op) {
 		m147_rtc->ctrl = RTC_READ;
 		t->tm_year = bcd2int (m147_rtc->bcd_year);
