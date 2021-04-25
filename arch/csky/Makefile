@@ -48,7 +48,7 @@ KBUILD_CFLAGS += -mno-stack-size
 endif
 
 ifdef CONFIG_FRAME_POINTER
-KBUILD_CFLAGS += $(call cc-option,-fbacktrace)
+KBUILD_CFLAGS += -mbacktrace
 endif
 
 abidirs := $(patsubst %,arch/csky/%/,$(CSKYABI))
