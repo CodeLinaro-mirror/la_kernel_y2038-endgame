@@ -37,10 +37,10 @@
 
 #if defined(ALPHA_RESTORE_SRM_SETUP)
 /* Save LCA configuration data as the console had it set up.  */
-struct 
+static struct
 {
 	unsigned int orig_route_tab; /* for SAVE/RESTORE */
-} saved_config __attribute((common));
+} saved_config;
 #endif
 
 
