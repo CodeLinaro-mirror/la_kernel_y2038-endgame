@@ -256,7 +256,7 @@
 /* Flush CPU cache - used when going to sleep. Wbinvd or similar. */
 
 #ifndef ACPI_FLUSH_CPU_CACHE
-#define ACPI_FLUSH_CPU_CACHE()
+#define ACPI_FLUSH_CPU_CACHE() do { } while (0)
 #endif
 
 /* "inline" keywords - configurable since inline is not standardized */
