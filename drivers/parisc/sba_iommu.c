@@ -89,8 +89,6 @@
 #define DBG_RES(x...)
 #endif
 
-#define SBA_INLINE	__inline__
-
 #define DEFAULT_DMA_HINT_REG	0
 
 struct sba_device *sba_list;
@@ -332,7 +330,7 @@ static unsigned long ptr_to_pide(struct ioc *ioc, unsigned long *res_ptr,
  * Each bit represents one entry in the IO Pdir.
  * Cool perf optimization: search for log2(size) bits at a time.
  */
-static SBA_INLINE unsigned long
+static unsigned long
 sba_search_bitmap(struct ioc *ioc, struct device *dev,
 		  unsigned long bits_wanted)
 {
@@ -484,7 +482,7 @@ sba_alloc_range(struct ioc *ioc, struct device *dev, size_t size)
  *
  * clear bits in the ioc's resource map
  */
-static SBA_INLINE void
+static void
 sba_free_range(struct ioc *ioc, dma_addr_t iova, size_t size)
 {
 	unsigned long iovp = SBA_IOVP(ioc, iova);
@@ -562,7 +560,7 @@ typedef unsigned long space_t;
  * IOMMU uses little endian for the pdir.
  */
 
-static void SBA_INLINE
+static void
 sba_io_pdir_entry(u64 *pdir_ptr, space_t sid, unsigned long vba,
 		  unsigned long hint)
 {
@@ -603,7 +601,7 @@ sba_io_pdir_entry(u64 *pdir_ptr, space_t sid, unsigned long vba,
  * must be a power of 2. The "Cool perf optimization" in the
  * allocation routine helps keep that true.
  */
-static SBA_INLINE void
+static void
 sba_mark_invalid(struct ioc *ioc, dma_addr_t iova, size_t byte_cnt)
 {
 	u32 iovp = (u32) SBA_IOVP(ioc,iova);

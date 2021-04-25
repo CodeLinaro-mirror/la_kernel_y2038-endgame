@@ -97,7 +97,6 @@
 #define DBG_RUN_SG(x...)
 #endif
 
-#define CCIO_INLINE	inline
 #define WRITE_U32(value, addr) __raw_writel(value, addr)
 #define READ_U32(addr) __raw_readl(addr)
 
@@ -552,7 +551,7 @@ static u32 hint_lookup[] = {
  * (Load Coherence Index) instruction.  The 8 bits used for the virtual
  * index are bits 12:19 of the value returned by LCI.
  */ 
-static void CCIO_INLINE
+static void
 ccio_io_pdir_entry(u64 *pdir_ptr, space_t sid, unsigned long vba,
 		   unsigned long hints)
 {
@@ -623,7 +622,7 @@ ccio_io_pdir_entry(u64 *pdir_ptr, space_t sid, unsigned long vba,
  *
  * FIXME: Can we change the byte_cnt to pages_mapped?
  */
-static CCIO_INLINE void
+static void
 ccio_clear_io_tlb(struct ioc *ioc, dma_addr_t iovp, size_t byte_cnt)
 {
 	u32 chain_size = 1 << ioc->chainid_shift;
@@ -656,7 +655,7 @@ ccio_clear_io_tlb(struct ioc *ioc, dma_addr_t iovp, size_t byte_cnt)
  *
  * FIXME: Can we change byte_cnt to pages_mapped?
  */ 
-static CCIO_INLINE void
+static void
 ccio_mark_invalid(struct ioc *ioc, dma_addr_t iova, size_t byte_cnt)
 {
 	u32 iovp = (u32)CCIO_IOVP(iova);
