@@ -741,8 +741,7 @@ parse_tree_node(struct device *parent, int index, struct hardware_path *modpath)
 		.fn	= check_parent,
 	};
 
-	if (device_for_each_child(parent, &recurse_data, descend_children))
-		/* nothing */;
+	device_for_each_child(parent, &recurse_data, descend_children);
 
 	return d.dev;
 }
