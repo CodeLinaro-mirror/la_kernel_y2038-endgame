@@ -118,7 +118,7 @@ long real32_call(unsigned long function, ...);
  * This function is used to convert PDC addresses into kernel addresses
  * when the PDC address size and kernel address size are different.
  */
-static unsigned long f_extend(unsigned long address)
+static __maybe_unused unsigned long f_extend(unsigned long address)
 {
 #ifdef CONFIG_64BIT
 	if(unlikely(parisc_narrow_firmware)) {
@@ -140,7 +140,7 @@ static unsigned long f_extend(unsigned long address)
  * into kernel addresses when the PDC address size and kernel address size are
  * different.
  */
-static void convert_to_wide(unsigned long *addr)
+static __maybe_unused void convert_to_wide(unsigned long *addr)
 {
 #ifdef CONFIG_64BIT
 	int i;
