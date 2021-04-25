@@ -271,8 +271,13 @@ static inline void __iomem *ioremap_prot(phys_addr_t offset, unsigned long size,
 #endif /* CONFIG_HAVE_IOREMAP_PROT */
 
 #else /* CONFIG_MMU */
-#define iounmap(addr)		do { } while (0)
-#define ioremap(offset, size)	((void __iomem *)(unsigned long)(offset))
+static inline void iounmap(void __iomem *p)
+{
+}
+static inline void __iomem *ioremap(phys_addr_t offset, unsigned long size)
+{
+	return (void __iomem *)(unsigned long)offset;
+}
 #endif /* CONFIG_MMU */
 
 #define ioremap_uc	ioremap
