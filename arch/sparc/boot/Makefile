@@ -24,16 +24,16 @@ ifeq ($(CONFIG_SPARC64),y)
 
 $(obj)/zImage: $(obj)/image
 	$(call if_changed,gzip)
-	@echo '  kernel: $@ is ready'
+	@$(kecho) '  kernel: $@ is ready'
 
 $(obj)/vmlinux.aout: vmlinux FORCE
 	$(call if_changed,elftoaout)
-	@echo '  kernel: $@ is ready'
+	@$(kecho) '  kernel: $@ is ready'
 else
 
 $(obj)/zImage: $(obj)/image
 	$(call if_changed,strip)
-	@echo '  kernel: $@ is ready'
+	@$(kecho) '  kernel: $@ is ready'
 
 # The following lines make a readable image for U-Boot.
 #  uImage   - Binary file read by U-boot
@@ -59,13 +59,13 @@ targets += uImage
 $(obj)/uImage: $(obj)/image.gz
 	$(call if_changed,uimage)
 	$(call if_changed,uimage.o)
-	@echo '  Image $@ is ready'
+	@$(kecho) '  Image $@ is ready'
 
 endif
 
 $(obj)/image: vmlinux FORCE
 	$(call if_changed,strip)
-	@echo '  kernel: $@ is ready'
+	@$(kecho) '  kernel: $@ is ready'
 
 $(obj)/tftpboot.img: $(obj)/image $(obj)/piggyback System.map $(ROOT_IMG) FORCE
 	$(call if_changed,elftoaout)
