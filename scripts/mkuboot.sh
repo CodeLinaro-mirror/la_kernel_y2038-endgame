@@ -17,4 +17,8 @@ if [ -z "${MKIMAGE}" ]; then
 fi
 
 # Call "mkimage" to create U-Boot image
-${MKIMAGE} "$@"
+if [ "${quiet}" != "silent_" ]; then
+${MKIMAGE} "$@" ${REDIRECT}
+else
+${MKIMAGE} "$@" ${REDIRECT} > /dev/null
+fi
