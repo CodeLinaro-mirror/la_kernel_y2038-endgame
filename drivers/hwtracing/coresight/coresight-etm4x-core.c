@@ -775,13 +775,13 @@ static void etm4_disable_hw(void *info)
 		write_sysreg_s(trfcr, SYS_TRFCR_EL1);
 
 	/* read the status of the single shot comparators */
-	for (i = 0; i < min_t(u32, drvdata->nr_ss_cmp, ETM_MAX_SS_CMP); i++) {
+	for (i = 0; i < drvdata->nr_ss_cmp; i++) {
 		config->ss_status[i] =
 			etm4x_relaxed_read32(csa, TRCSSCSRn(i));
 	}
 
 	/* read back the current counter values */
-	for (i = 0; i < min_t(u32, drvdata->nr_cntr, ETMv4_MAX_CNTR); i++) {
+	for (i = 0; i < drvdata->nr_cntr; i++) {
 		config->cntr_val[i] =
 			etm4x_relaxed_read32(csa, TRCCNTVRn(i));
 	}
