@@ -3642,7 +3642,7 @@ static double TruncToValidBPP(
 }
 
 __diag_push()
-__diag_ignore(CLANG, 8, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(CLANG, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
