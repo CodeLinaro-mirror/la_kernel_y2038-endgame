@@ -7,7 +7,6 @@ config ARCH_CATS
 	bool "CATS"
 	select CLKEVT_I8253
 	select CLKSRC_I8253
-	select FOOTBRIDGE_HOST
 	select ISA
 	select ISA_DMA
 	select FORCE_PCI
@@ -16,22 +15,9 @@ config ARCH_CATS
 
 	  Saying N will reduce the size of the Footbridge kernel.
 
-config ARCH_EBSA285_ADDIN
-	bool "EBSA285 (addin mode)"
-	select ARCH_EBSA285
-	select FOOTBRIDGE_ADDIN
-	help
-	  Say Y here if you intend to run this kernel on the EBSA285 card
-	  in addin mode.
-
-	  Saying N will reduce the size of the Footbridge kernel.
-
 config ARCH_EBSA285_HOST
 	bool "EBSA285 (host mode)"
 	select ARCH_EBSA285
-	select FOOTBRIDGE_HOST
-	select ISA
-	select ISA_DMA
 	select ARCH_MAY_HAVE_PC_FDC
 	select FORCE_PCI
 	help
@@ -44,9 +30,6 @@ config ARCH_NETWINDER
 	bool "NetWinder"
 	select CLKEVT_I8253
 	select CLKSRC_I8253
-	select FOOTBRIDGE_HOST
-	select ISA
-	select ISA_DMA
 	select FORCE_PCI
 	help
 	  Say Y here if you intend to run this kernel on the Rebel.COM
@@ -60,19 +43,12 @@ endmenu
 
 # Footbridge support
 config FOOTBRIDGE
-	bool
+	def_bool y
 	select ARCH_CATS if !(ARCH_PERSONAL_SERVER || ARCH_EBSA285_ADDIN || ARCH_EBSA285_HOST || ARCH_NETWINDER)
-
-# Footbridge in host mode
-config FOOTBRIDGE_HOST
-	bool
 	select ARCH_MIGHT_HAVE_PC_SERIO
+	select ISA
+	select ISA_DMA
 
-# Footbridge in addin mode
-config FOOTBRIDGE_ADDIN
-	bool
-
-# EBSA285 board in either host or addin mode
 config ARCH_EBSA285
 	bool
 
