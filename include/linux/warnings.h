@@ -467,6 +467,7 @@ KBUILD_WARN(0, CLANG_8, "-Wunused-result")
 KBUILD_WARN(0, CLANG_8, "-Wunused-variable")
 KBUILD_WARN(2, CLANG_8, "-Wunused-const-variable") /* medium */
 KBUILD_WARN(4, CLANG_8, "-Wunused-parameter") /* harmful */
+KBUILD_WARN(3, CLANG_12, "-Wunused-but-set-variable") /* medium */
 
 KBUILD_WARN(0, GCC_4_6, "-Wframe-larger-than=" __stringify(CONFIG_FRAME_WARN)) /* FIXME */
 KBUILD_WARN(4, GCC_4_6, "-Wlarger-than=16384") /* huge */
@@ -797,4 +798,4 @@ KBUILD_WARN(3, CLANG_8, "-Wunused-argument")
 KBUILD_WARN(3, CLANG_8, "-Wtype-limits") /* medium */
 
 
-KBUILD_WARN(1, CLANG_11, "-Wframe-address") /* TBD */
+KBUILD_WARN(2, CLANG_11, "-Wframe-address") /* TBD */
