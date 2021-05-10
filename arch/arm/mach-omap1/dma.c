@@ -307,6 +307,35 @@ static struct omap_system_dma_plat_info dma_plat_info __initdata = {
 	.dma_read	= dma_read,
 };
 
+void omap_set_dma_priority(int lch, int dst_port, int priority)
+{
+	unsigned long reg;
+	u32 l;
+
+	switch (dst_port) {
+	case OMAP_DMA_PORT_OCP_T1:	/* FFFECC00 */
+		reg = OMAP_TC_OCPT1_PRIOR;
+		break;
+	case OMAP_DMA_PORT_OCP_T2:	/* FFFECCD0 */
+		reg = OMAP_TC_OCPT2_PRIOR;
+		break;
+	case OMAP_DMA_PORT_EMIFF:	/* FFFECC08 */
+		reg = OMAP_TC_EMIFF_PRIOR;
+		break;
+	case OMAP_DMA_PORT_EMIFS:	/* FFFECC04 */
+		reg = OMAP_TC_EMIFS_PRIOR;
+		break;
+	default:
+		BUG();
+		return;
+	}
+	l = omap_readl(reg);
+	l &= ~(0xf << 8);
+	l |= (priority & 0xf) << 8;
+	omap_writel(l, reg);
+}
+EXPORT_SYMBOL(omap_set_dma_priority);
+
 static int __init omap1_system_dma_init(void)
 {
 	struct omap_system_dma_plat_info	p;

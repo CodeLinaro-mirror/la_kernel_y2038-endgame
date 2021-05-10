@@ -19,8 +19,8 @@
 
 #include <asm/mach-types.h>
 
-#include <mach/mux.h>
-
+#include "serial.h"
+#include "mux.h"
 #include "pm.h"
 #include "soc.h"
 

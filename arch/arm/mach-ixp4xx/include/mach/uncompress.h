@@ -9,11 +9,14 @@
 #ifndef _ARCH_UNCOMPRESS_H_
 #define _ARCH_UNCOMPRESS_H_
 
-#include "ixp4xx-regs.h"
 #include <asm/mach-types.h>
 #include <linux/serial_reg.h>
 
 #define TX_DONE (UART_LSR_TEMT|UART_LSR_THRE)
+
+#define IXP4XX_PERIPHERAL_BASE_PHYS	0xC8000000
+#define IXP4XX_UART1_BASE_PHYS		(IXP4XX_PERIPHERAL_BASE_PHYS + 0x0000)
+#define IXP4XX_UART2_BASE_PHYS		(IXP4XX_PERIPHERAL_BASE_PHYS + 0x1000)
 
 volatile u32* uart_base;
 

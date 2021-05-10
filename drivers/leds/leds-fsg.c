@@ -16,7 +16,6 @@
 #include <linux/leds.h>
 #include <linux/module.h>
 #include <linux/io.h>
-#include <mach/hardware.h>
 
 #define FSG_LED_WLAN_BIT	0
 #define FSG_LED_WAN_BIT		1
@@ -144,8 +143,7 @@ static int fsg_led_probe(struct platform_device *pdev)
 	int ret;
 
 	/* Map the LED chip select address space */
-	latch_address = (unsigned short *) devm_ioremap(&pdev->dev,
-						IXP4XX_EXP_BUS_BASE(2), 512);
+	latch_address = devm_platform_ioremap_resource(pdev, 0);
 	if (!latch_address)
 		return -ENOMEM;
 

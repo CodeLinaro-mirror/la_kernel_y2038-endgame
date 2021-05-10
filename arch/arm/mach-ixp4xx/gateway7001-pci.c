@@ -19,11 +19,11 @@
 #include <linux/irq.h>
 
 #include <asm/mach-types.h>
-#include <mach/hardware.h>
-
 #include <asm/mach/pci.h>
 
 #include "irqs.h"
+#include "platform.h"
+
 
 void __init gateway7001_pci_preinit(void)
 {

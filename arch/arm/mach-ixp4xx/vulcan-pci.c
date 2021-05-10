@@ -17,6 +17,7 @@
 #include <asm/mach/pci.h>
 #include <asm/mach-types.h>
 
+#include "platform.h"
 #include "irqs.h"
 
 /* PCI controller GPIO to IRQ pin mappings */

@@ -28,14 +28,14 @@
 #include <linux/i2c.h>
 #include <linux/gpio/machine.h>
 
-#include <mach/hardware.h>
-
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/flash.h>
 #include <asm/mach/time.h>
 
 #include "irqs.h"
+#include "ixp4xx-regs.h"
+#include "platform.h"
 
 #define DSMG600_SDA_PIN		5
 #define DSMG600_SCL_PIN		4

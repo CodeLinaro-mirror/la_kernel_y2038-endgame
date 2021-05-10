@@ -18,10 +18,11 @@
 #include <linux/irq.h>
 #include <asm/mach/pci.h>
 #include <asm/irq.h>
-#include <mach/hardware.h>
+
 #include <asm/mach-types.h>
 
 #include "irqs.h"
+#include "platform.h"
 
 #define MAX_DEV		4
 #define IRQ_LINES	4

@@ -290,7 +290,7 @@ config LEDS_NET48XX
 config LEDS_FSG
 	tristate "LED Support for the Freecom FSG-3"
 	depends on LEDS_CLASS
-	depends on MACH_FSG
+	depends on MACH_FSG || COMPILE_TEST
 	help
 	  This option enables support for the LEDs on the Freecom FSG-3.
 

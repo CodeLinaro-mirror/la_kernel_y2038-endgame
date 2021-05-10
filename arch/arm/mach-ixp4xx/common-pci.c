@@ -23,14 +23,22 @@
 #include <linux/device.h>
 #include <linux/io.h>
 #include <linux/export.h>
+#include <linux/soc/ixp4xx/cpu.h>
+
 #include <asm/dma-mapping.h>
 
 #include <asm/cputype.h>
 #include <asm/irq.h>
 #include <linux/sizes.h>
 #include <asm/mach/pci.h>
-#include <mach/hardware.h>
 
+#include "platform.h"
+
+#ifdef CONFIG_IXP4XX_INDIRECT_PCI
+#define PCIBIOS_MAX_MEM		0x4FFFFFFF
+#else
+#define PCIBIOS_MAX_MEM		0x4BFFFFFF
+#endif
 
 /*
  * IXP4xx PCI read function is dependent on whether we are 

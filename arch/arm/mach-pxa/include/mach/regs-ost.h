@@ -2,11 +2,13 @@
 #ifndef __ASM_MACH_REGS_OST_H
 #define __ASM_MACH_REGS_OST_H
 
-#include <mach/hardware.h>
+#include "pxa-regs.h"
 
 /*
  * OS Timer & Match Registers
  */
+#define OST_PHYS	0x40A00000
+#define OST_LEN		0x00000020
 
 #define OSMR0		io_p2v(0x40A00000)  /* */
 #define OSMR1		io_p2v(0x40A00004)  /* */
