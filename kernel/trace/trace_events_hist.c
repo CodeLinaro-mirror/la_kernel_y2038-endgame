@@ -4597,14 +4597,11 @@ static void hist_trigger_print_key(struct seq_file *m,
 				   struct tracing_map_elt *elt)
 {
 	struct hist_field *key_field;
-	static char str[KSYM_SYMBOL_LEN];
+	char str[KSYM_SYMBOL_LEN];
 	bool multiline = false;
 	const char *field_name;
 	unsigned int i;
 	u64 uval;
-
-	/* To protect the static str variable */
-	lockdep_assert_held(&event_mutex);
 
 	seq_puts(m, "{ ");
 
