@@ -1580,7 +1580,7 @@ ip6_tnl_parm_to_user(struct ip6_tnl_parm *u, const struct __ip6_tnl_parm *p)
 }
 
 /**
- * ip6_tnl_ioctl - configure ipv6 tunnels from userspace
+ * ip6_tnl_siocdevprivate - configure ipv6 tunnels from userspace
  *   @dev: virtual device associated with tunnel
  *   @ifr: parameters passed from userspace
  *   @cmd: command to be performed
