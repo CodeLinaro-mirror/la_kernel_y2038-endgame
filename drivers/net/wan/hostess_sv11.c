@@ -149,13 +149,6 @@ static int hostess_close(struct net_device *d)
 	return 0;
 }
 
-static int hostess_ioctl(struct net_device *d, struct ifreq *ifr, int cmd)
-{
-	/* struct z8530_dev *sv11=dev_to_sv(d);
-	   z8530_ioctl(d,&sv11->chanA,ifr,cmd) */
-	return hdlc_ioctl(d, ifr, cmd);
-}
-
 /*
  *	Passed network frames, fire them downwind.
  */
@@ -182,7 +175,7 @@ static const struct net_device_ops hostess_ops = {
 	.ndo_open       = hostess_open,
 	.ndo_stop       = hostess_close,
 	.ndo_start_xmit = hdlc_start_xmit,
-	.ndo_do_ioctl   = hostess_ioctl,
+	.ndo_siocwandev = hdlc_ioctl,
 };
 
 static struct z8530_dev *sv11_init(int iobase, int irq)

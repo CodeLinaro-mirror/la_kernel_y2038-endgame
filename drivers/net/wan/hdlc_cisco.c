@@ -60,7 +60,7 @@ struct cisco_state {
 };
 
 
-static int cisco_ioctl(struct net_device *dev, struct ifreq *ifr);
+static int cisco_ioctl(struct net_device *dev, struct if_settings *ifs);
 
 
 static inline struct cisco_state* state(hdlc_device *hdlc)
@@ -324,21 +324,21 @@ static const struct header_ops cisco_header_ops = {
 	.create = cisco_hard_header,
 };
 
-static int cisco_ioctl(struct net_device *dev, struct ifreq *ifr)
+static int cisco_ioctl(struct net_device *dev, struct if_settings *ifs)
 {
-	cisco_proto __user *cisco_s = ifr->ifr_settings.ifs_ifsu.cisco;
+	cisco_proto __user *cisco_s = ifs->ifs_ifsu.cisco;
 	const size_t size = sizeof(cisco_proto);
 	cisco_proto new_settings;
 	hdlc_device *hdlc = dev_to_hdlc(dev);
 	int result;
 
-	switch (ifr->ifr_settings.type) {
+	switch (ifs->type) {
 	case IF_GET_PROTO:
 		if (dev_to_hdlc(dev)->proto != &proto)
 			return -EINVAL;
-		ifr->ifr_settings.type = IF_PROTO_CISCO;
-		if (ifr->ifr_settings.size < size) {
-			ifr->ifr_settings.size = size; /* data size wanted */
+		ifs->type = IF_PROTO_CISCO;
+		if (ifs->size < size) {
+			ifs->size = size; /* data size wanted */
 			return -ENOBUFS;
 		}
 		if (copy_to_user(cisco_s, &state(hdlc)->settings, size))
