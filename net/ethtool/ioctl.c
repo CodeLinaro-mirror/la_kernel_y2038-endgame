@@ -901,7 +901,7 @@ static int ethtool_rxnfc_copy_to_user(void __user *useraddr,
 {
 	int ret;
 
-	if (ethtool_translate_compat()) {
+	if (compat_need_64bit_alignment_fixup()) {
 		ret = ethtool_rxnfc_copy_to_compat(useraddr, rxnfc, size,
 						   rule_buf);
 		useraddr += offsetof(struct compat_ethtool_rxnfc, rule_locs);
