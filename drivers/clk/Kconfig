@@ -22,6 +22,7 @@ menuconfig COMMON_CLK
 	bool "Common Clock Framework"
 	depends on !HAVE_LEGACY_CLK
 	select HAVE_CLK_PREPARE
+	select HAVE_CLK
 	select SRCU
 	select RATIONAL
 	help
