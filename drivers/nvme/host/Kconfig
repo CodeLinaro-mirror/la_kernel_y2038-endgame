@@ -24,7 +24,6 @@ config BLK_DEV_NVME
 
 config BLK_DEV_NVME_PLATFORM
 	tristate "NVM Express block device integrated on SoC"
-	depends on PCI
 	depends on OF && BLOCK && HAS_DMA
 	select NVME_MMIO
 	help
