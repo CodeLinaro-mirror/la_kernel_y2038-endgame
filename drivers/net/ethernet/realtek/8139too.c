@@ -2127,43 +2127,21 @@ static int rtl8139_poll(struct napi_struct *napi, int budget)
 	struct rtl8139_private *tp = container_of(napi, struct rtl8139_private, napi);
 	struct net_device *dev = tp->dev;
 	void __iomem *ioaddr = tp->mmio_addr;
-	int link_changed = 0; /* avoid bogus "uninit" warning */
-	unsigned long flags;
-	u32 status;
 	int work_done;
 
 	spin_lock(&tp->rx_lock);
-	spin_lock_irqsave(&tp->lock, flags);
 	work_done = 0;
-	status = RTL_R16(IntrStatus);
-
-	/* Acknowledge all of the current interrupt sources ASAP, but
-	   an first get an additional status bit from CSCR. */
-	if (unlikely(status & RxUnderrun)) {
-		link_changed = RTL_R16 (CSCR) & CSCR_LinkChangeBit;
-
-	/* Check uncommon events with one test. */
-	if (unlikely(status & (PCIErr | PCSTimeout | RxUnderrun | RxErr))) {
-		RTL_W16_F(IntrMask,
-			  status & (PCIErr | PCSTimeout | RxUnderrun | RxErr));
-		rtl8139_weird_interrupt (dev, tp, ioaddr,
-					 status, link_changed);
-	}
-
-	if (status & (TxOK | TxErr)) {
-		RTL_W16 (IntrStatus, status & (TxOK | TxErr));
-		rtl8139_tx_interrupt (dev, tp, ioaddr);
-	}
-
-	if (likely(status & RxAckBits))
+	if (likely(RTL_R16(IntrStatus) & RxAckBits))
 		work_done += rtl8139_rx(dev, tp, budget);
 
-	/* All handled events are acked now, unmask them */
 	if (work_done < budget) {
+		unsigned long flags;
+
+		spin_lock_irqsave(&tp->lock, flags);
 		if (napi_complete_done(napi, work_done))
 			RTL_W16_F(IntrMask, rtl8139_intr_mask);
+		spin_unlock_irqrestore(&tp->lock, flags);
 	}
-	spin_unlock_irqrestore(&tp->lock, flags);
 	spin_unlock(&tp->rx_lock);
 
 	return work_done;
@@ -2176,7 +2154,7 @@ static irqreturn_t rtl8139_interrupt (int irq, void *dev_instance)
 	struct net_device *dev = (struct net_device *) dev_instance;
 	struct rtl8139_private *tp = netdev_priv(dev);
 	void __iomem *ioaddr = tp->mmio_addr;
-	u16 status;
+	u16 status, ackstat;
 	int link_changed = 0; /* avoid bogus "uninit" warning */
 	int handled = 0;
 
@@ -2199,15 +2177,34 @@ static irqreturn_t rtl8139_interrupt (int irq, void *dev_instance)
 		goto out;
 	}
 
-	/* Process interrupts in poll routine.
+	/* Acknowledge all of the current interrupt sources ASAP, but
+	   an first get an additional status bit from CSCR. */
+	if (unlikely(status & RxUnderrun))
+		link_changed = RTL_R16 (CSCR) & CSCR_LinkChangeBit;
+
+	ackstat = status & ~(RxAckBits | TxErr);
+	if (ackstat)
+		RTL_W16 (IntrStatus, ackstat);
+
+	/* Receive packets are processed by poll routine.
 	   If not running start it now. */
-	if (status) {
+	if (status & RxAckBits){
 		if (napi_schedule_prep(&tp->napi)) {
-			RTL_W16_F (IntrMask, 0);
+			RTL_W16_F (IntrMask, rtl8139_norx_intr_mask);
 			__napi_schedule(&tp->napi);
 		}
 	}
 
+	/* Check uncommon events with one test. */
+	if (unlikely(status & (PCIErr | PCSTimeout | RxUnderrun | RxErr)))
+		rtl8139_weird_interrupt (dev, tp, ioaddr,
+					 status, link_changed);
+
+	if (status & (TxOK | TxErr)) {
+		rtl8139_tx_interrupt (dev, tp, ioaddr);
+		if (status & TxErr)
+			RTL_W16 (IntrStatus, TxErr);
+	}
  out:
 	spin_unlock (&tp->lock);
 
