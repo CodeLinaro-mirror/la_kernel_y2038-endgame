@@ -978,6 +978,9 @@ enum {
 #define PCI_IRQ_MSIX		(1 << 2) /* Allow MSI-X interrupts */
 #define PCI_IRQ_AFFINITY	(1 << 3) /* Auto-assign affinity */
 
+#define PCI_IRQ_ALL_TYPES \
+	(PCI_IRQ_LEGACY | PCI_IRQ_MSI | PCI_IRQ_MSIX)
+
 /* These external functions are only available when PCI support is enabled */
 #ifdef CONFIG_PCI
 
@@ -1457,9 +1460,6 @@ int pci_set_vga_state(struct pci_dev *pdev, bool decode,
  */
 #define PCI_IRQ_VIRTUAL		(1 << 4)
 
-#define PCI_IRQ_ALL_TYPES \
-	(PCI_IRQ_LEGACY | PCI_IRQ_MSI | PCI_IRQ_MSIX)
-
 /* kmem_cache style wrapper around pci_alloc_consistent() */
 
 #include <linux/dmapool.h>
@@ -1477,75 +1477,6 @@ struct msix_entry {
 	u32	vector;	/* Kernel uses to write allocated vector */
 	u16	entry;	/* Driver uses to specify entry, OS writes */
 };
-
-#ifdef CONFIG_PCI_MSI
-int pci_msi_vec_count(struct pci_dev *dev);
-void pci_disable_msi(struct pci_dev *dev);
-int pci_msix_vec_count(struct pci_dev *dev);
-void pci_disable_msix(struct pci_dev *dev);
-void pci_restore_msi_state(struct pci_dev *dev);
-int pci_msi_enabled(void);
-int pci_enable_msi(struct pci_dev *dev);
-int pci_enable_msix_range(struct pci_dev *dev, struct msix_entry *entries,
-			  int minvec, int maxvec);
-static inline int pci_enable_msix_exact(struct pci_dev *dev,
-					struct msix_entry *entries, int nvec)
-{
-	int rc = pci_enable_msix_range(dev, entries, nvec, nvec);
-	if (rc < 0)
-		return rc;
-	return 0;
-}
-int pci_alloc_irq_vectors_affinity(struct pci_dev *dev, unsigned int min_vecs,
-				   unsigned int max_vecs, unsigned int flags,
-				   struct irq_affinity *affd);
-
-void pci_free_irq_vectors(struct pci_dev *dev);
-int pci_irq_vector(struct pci_dev *dev, unsigned int nr);
-const struct cpumask *pci_irq_get_affinity(struct pci_dev *pdev, int vec);
-
-#else
-static inline int pci_msi_vec_count(struct pci_dev *dev) { return -ENOSYS; }
-static inline void pci_disable_msi(struct pci_dev *dev) { }
-static inline int pci_msix_vec_count(struct pci_dev *dev) { return -ENOSYS; }
-static inline void pci_disable_msix(struct pci_dev *dev) { }
-static inline void pci_restore_msi_state(struct pci_dev *dev) { }
-static inline int pci_msi_enabled(void) { return 0; }
-static inline int pci_enable_msi(struct pci_dev *dev)
-{ return -ENOSYS; }
-static inline int pci_enable_msix_range(struct pci_dev *dev,
-			struct msix_entry *entries, int minvec, int maxvec)
-{ return -ENOSYS; }
-static inline int pci_enable_msix_exact(struct pci_dev *dev,
-			struct msix_entry *entries, int nvec)
-{ return -ENOSYS; }
-
-static inline int
-pci_alloc_irq_vectors_affinity(struct pci_dev *dev, unsigned int min_vecs,
-			       unsigned int max_vecs, unsigned int flags,
-			       struct irq_affinity *aff_desc)
-{
-	if ((flags & PCI_IRQ_LEGACY) && min_vecs == 1 && dev->irq)
-		return 1;
-	return -ENOSPC;
-}
-
-static inline void pci_free_irq_vectors(struct pci_dev *dev)
-{
-}
-
-static inline int pci_irq_vector(struct pci_dev *dev, unsigned int nr)
-{
-	if (WARN_ON_ONCE(nr > 0))
-		return -EINVAL;
-	return dev->irq;
-}
-static inline const struct cpumask *pci_irq_get_affinity(struct pci_dev *pdev,
-		int vec)
-{
-	return cpu_possible_mask;
-}
-#endif
 
 /**
  * pci_irqd_intx_xlate() - Translate PCI INTx value to an IRQ domain hwirq
@@ -1734,9 +1665,17 @@ static inline struct pci_dev *pci_get_class(unsigned int class,
 #define pci_dev_put(dev)	do { } while (0)
 
 static inline void pci_set_master(struct pci_dev *dev) { }
-static inline int pci_enable_device(struct pci_dev *dev) { return -EIO; }
+static inline int __must_check pci_enable_device(struct pci_dev *dev) { return -EIO; }
 static inline void pci_disable_device(struct pci_dev *dev) { }
-static inline int pcim_enable_device(struct pci_dev *pdev) { return -EIO; }
+static inline int __must_check pcim_enable_device(struct pci_dev *pdev) { return -EIO; }
+static inline int __must_check pci_enable_device_io(struct pci_dev *dev) { return -EIO; }
+static inline int __must_check pci_enable_device_mem(struct pci_dev *dev) { return -EIO; }
+static inline int __must_check pci_reenable_device(struct pci_dev *) { return -EIO; }
+static inline void pcim_pin_device(struct pci_dev *pdev) { }
+static inline bool pci_intx_mask_supported(struct pci_dev *pdev) { return false; }
+static inline int pci_is_enabled(struct pci_dev *pdev) { return false; }
+static inline int pci_is_managed(struct pci_dev *pdev) { return false; }
+
 static inline int pci_assign_resource(struct pci_dev *dev, int i)
 { return -EBUSY; }
 static inline int __pci_register_driver(struct pci_driver *drv,
@@ -1783,6 +1722,8 @@ static inline int pci_register_io_range(struct fwnode_handle *fwnode,
 
 static inline unsigned long pci_address_to_pio(phys_addr_t addr) { return -1; }
 
+static inline pci_bus_addr_t pci_bus_address(struct pci_dev *pdev, int bar) { return 0; }
+
 static inline struct pci_bus *pci_find_next_bus(const struct pci_bus *from)
 { return NULL; }
 static inline struct pci_dev *pci_get_slot(struct pci_bus *bus,
@@ -1824,7 +1765,89 @@ pci_alloc_irq_vectors_affinity(struct pci_dev *dev, unsigned int min_vecs,
 {
 	return -ENOSPC;
 }
+
+static inline int __printf(6, 7) pci_request_irq(struct pci_dev *dev, unsigned int nr,
+		irq_handler_t handler, irq_handler_t thread_fn, void *dev_id,
+		const char *fmt, ...)
+{
+	return -EINVAL;
+}
+static inline void pci_free_irq(struct pci_dev *dev, unsigned int nr, void *dev_id) { }
+
 #endif /* CONFIG_PCI */
+
+#ifdef CONFIG_PCI_MSI
+int pci_msi_vec_count(struct pci_dev *dev);
+void pci_disable_msi(struct pci_dev *dev);
+int pci_msix_vec_count(struct pci_dev *dev);
+void pci_disable_msix(struct pci_dev *dev);
+void pci_restore_msi_state(struct pci_dev *dev);
+int pci_msi_enabled(void);
+int pci_enable_msi(struct pci_dev *dev);
+int pci_enable_msix_range(struct pci_dev *dev, struct msix_entry *entries,
+			  int minvec, int maxvec);
+static inline int pci_enable_msix_exact(struct pci_dev *dev,
+					struct msix_entry *entries, int nvec)
+{
+	int rc = pci_enable_msix_range(dev, entries, nvec, nvec);
+	if (rc < 0)
+		return rc;
+	return 0;
+}
+int pci_alloc_irq_vectors_affinity(struct pci_dev *dev, unsigned int min_vecs,
+				   unsigned int max_vecs, unsigned int flags,
+				   struct irq_affinity *affd);
+
+void pci_free_irq_vectors(struct pci_dev *dev);
+int pci_irq_vector(struct pci_dev *dev, unsigned int nr);
+const struct cpumask *pci_irq_get_affinity(struct pci_dev *pdev, int vec);
+
+#else
+static inline int pci_msi_vec_count(struct pci_dev *dev) { return -ENOSYS; }
+static inline void pci_disable_msi(struct pci_dev *dev) { }
+static inline int pci_msix_vec_count(struct pci_dev *dev) { return -ENOSYS; }
+static inline void pci_disable_msix(struct pci_dev *dev) { }
+static inline void pci_restore_msi_state(struct pci_dev *dev) { }
+static inline int pci_msi_enabled(void) { return 0; }
+static inline int pci_enable_msi(struct pci_dev *dev)
+{ return -ENOSYS; }
+struct msix_entry;
+static inline int pci_enable_msix_range(struct pci_dev *dev,
+			struct msix_entry *entries, int minvec, int maxvec)
+{ return -ENOSYS; }
+static inline int pci_enable_msix_exact(struct pci_dev *dev,
+			struct msix_entry *entries, int nvec)
+{ return -ENOSYS; }
+
+#ifdef CONFIG_PCI
+static inline int
+pci_alloc_irq_vectors_affinity(struct pci_dev *dev, unsigned int min_vecs,
+			       unsigned int max_vecs, unsigned int flags,
+			       struct irq_affinity *aff_desc)
+{
+	if ((flags & PCI_IRQ_LEGACY) && min_vecs == 1 && dev->irq)
+		return 1;
+	return -ENOSPC;
+}
+
+static inline int pci_irq_vector(struct pci_dev *dev, unsigned int nr)
+{
+	if (WARN_ON_ONCE(nr > 0))
+		return -EINVAL;
+	return dev->irq;
+}
+#endif
+
+static inline void pci_free_irq_vectors(struct pci_dev *dev)
+{
+}
+
+static inline const struct cpumask *pci_irq_get_affinity(struct pci_dev *pdev,
+		int vec)
+{
+	return cpu_possible_mask;
+}
+#endif
 
 static inline int
 pci_alloc_irq_vectors(struct pci_dev *dev, unsigned int min_vecs,
