@@ -104,6 +104,9 @@ setup_port(struct serial_private *priv, struct uart_8250_port *port,
 		port->port.membase = pcim_iomap_table(dev)[bar] + offset;
 		port->port.regshift = regshift;
 	} else {
+		if (!IS_ENABLED(CONFIG_HAS_IOPORT))
+			return -ENXIO;
+
 		port->port.iotype = UPIO_PORT;
 		port->port.iobase = pci_resource_start(dev, bar) + offset;
 		port->port.mapbase = 0;
@@ -869,6 +872,7 @@ static int pci_netmos_init(struct pci_dev *dev)
 	return num_serial;
 }
 
+#ifdef CONFIG_HAS_IOPORT
 /*
  * These chips are available with optionally one parallel port and up to
  * two serial ports. Unfortunately they all have the same product id.
@@ -999,6 +1003,7 @@ static void pci_ite887x_exit(struct pci_dev *dev)
 	ioport &= 0xffff;
 	release_region(ioport, ITE_887x_IOSIZE);
 }
+#endif
 
 /*
  * EndRun Technologies.
@@ -1096,7 +1101,7 @@ struct quatech_feature {
 #define QOPR_CLOCK_X8		0x0003
 #define QOPR_CLOCK_RATE_MASK	0x0003
 
-
+#ifdef CONFIG_HAS_IOPORT
 static struct quatech_feature quatech_cards[] = {
 	{ PCI_DEVICE_ID_QUATECH_QSC100,   1 },
 	{ PCI_DEVICE_ID_QUATECH_DSC100,   1 },
@@ -1322,6 +1327,7 @@ static int pci_quatech_setup(struct serial_private *priv,
 static void pci_quatech_exit(struct pci_dev *dev)
 {
 }
+#endif
 
 static int pci_default_setup(struct serial_private *priv,
 		  const struct pciserial_board *board,
@@ -1697,6 +1703,7 @@ static int skip_tx_en_setup(struct serial_private *priv,
 	return pci_default_setup(priv, board, port, idx);
 }
 
+#ifdef CONFIG_HAS_IOPORT
 static void kt_handle_break(struct uart_port *p)
 {
 	struct uart_8250_port *up = up_to_u8250p(p);
@@ -1740,6 +1747,7 @@ static int kt_serial_setup(struct serial_private *priv,
 	port->port.handle_break = kt_handle_break;
 	return skip_tx_en_setup(priv, board, port, idx);
 }
+#endif
 
 static int pci_eg20t_init(struct pci_dev *dev)
 {
@@ -1770,6 +1778,7 @@ pci_wch_ch355_setup(struct serial_private *priv,
 	return pci_default_setup(priv, board, port, idx);
 }
 
+#ifdef CONFIG_HAS_IOPORT
 static int
 pci_wch_ch38x_setup(struct serial_private *priv,
 		    const struct pciserial_board *board,
@@ -1811,7 +1820,7 @@ static void pci_wch_ch38x_exit(struct pci_dev *dev)
 	iobase = pci_resource_start(dev, 0);
 	outb(0x0, iobase + CH384_XINT_ENABLE_REG);
 }
-
+#endif
 
 static int
 pci_sunix_setup(struct serial_private *priv,
@@ -2050,6 +2059,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.setup		= ce4100_serial_setup,
 	},
+#ifdef CONFIG_HAS_IOPORT
 	{
 		.vendor		= PCI_VENDOR_ID_INTEL,
 		.device		= PCI_DEVICE_ID_INTEL_PATSBURG_KT,
@@ -2069,6 +2079,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.setup		= pci_default_setup,
 		.exit		= pci_ite887x_exit,
 	},
+#endif
 	/*
 	 * National Instruments
 	 */
@@ -2189,6 +2200,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.setup		= pci_ni8430_setup,
 		.exit		= pci_ni8430_exit,
 	},
+#ifdef CONFIG_HAS_IOPORT
 	/* Quatech */
 	{
 		.vendor		= PCI_VENDOR_ID_QUATECH,
@@ -2199,6 +2211,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.setup		= pci_quatech_setup,
 		.exit		= pci_quatech_exit,
 	},
+#endif
 	/*
 	 * Panacom
 	 */
@@ -2666,6 +2679,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.subdevice	= PCI_ANY_ID,
 		.setup		= pci_wch_ch355_setup,
 	},
+#ifdef CONFIG_HAS_IOPORT
 	/* WCH CH382 2S card (16850 clone) */
 	{
 		.vendor         = PCIE_VENDOR_ID_WCH,
@@ -2700,6 +2714,7 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
 		.exit		= pci_wch_ch38x_exit,
 		.setup          = pci_wch_ch38x_setup,
 	},
+#endif
 	/*
 	 * ASIX devices with FIFO bug
 	 */

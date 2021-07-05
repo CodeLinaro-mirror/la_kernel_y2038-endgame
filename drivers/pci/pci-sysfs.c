@@ -1076,6 +1076,7 @@ static int pci_mmap_resource_wc(struct file *filp, struct kobject *kobj,
 	return pci_mmap_resource(kobj, attr, vma, 1);
 }
 
+#ifdef CONFIG_HAS_IOPORT
 static ssize_t pci_resource_io(struct file *filp, struct kobject *kobj,
 			       struct bin_attribute *attr, char *buf,
 			       loff_t off, size_t count, bool write)
@@ -1134,6 +1135,21 @@ static ssize_t pci_write_resource_io(struct file *filp, struct kobject *kobj,
 
 	return pci_resource_io(filp, kobj, attr, buf, off, count, true);
 }
+#else
+static ssize_t pci_read_resource_io(struct file *filp, struct kobject *kobj,
+				    struct bin_attribute *attr, char *buf,
+				    loff_t off, size_t count)
+{
+	return -ENXIO;
+}
+
+static ssize_t pci_write_resource_io(struct file *filp, struct kobject *kobj,
+				     struct bin_attribute *attr, char *buf,
+				     loff_t off, size_t count)
+{
+	return -ENXIO;
+}
+#endif
 
 /**
  * pci_remove_resource_files - cleanup resource files

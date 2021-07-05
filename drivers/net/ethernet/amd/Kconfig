@@ -56,7 +56,7 @@ config LANCE
 
 config PCNET32
 	tristate "AMD PCnet32 PCI support"
-	depends on PCI
+	depends on LEGACY_PCI
 	select CRC32
 	select MII
 	help

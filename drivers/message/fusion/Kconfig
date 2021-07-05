@@ -2,7 +2,7 @@
 
 menuconfig FUSION
 	bool "Fusion MPT device support"
-	depends on PCI
+	depends on LEGACY_PCI
 	help
 	Say Y here to get to see options for Fusion Message
 	Passing Technology (MPT) drivers.
@@ -14,7 +14,7 @@ if FUSION
 
 config FUSION_SPI
 	tristate "Fusion MPT ScsiHost drivers for SPI"
-	depends on PCI && SCSI
+	depends on LEGACY_PCI && SCSI
 	select SCSI_SPI_ATTRS
 	help
 	  SCSI HOST support for a parallel SCSI host adapters.
@@ -29,7 +29,7 @@ config FUSION_SPI
 
 config FUSION_FC
 	tristate "Fusion MPT ScsiHost drivers for FC"
-	depends on PCI && SCSI
+	depends on LEGACY_PCI && SCSI
 	depends on SCSI_FC_ATTRS
 	help
 	  SCSI HOST support for a Fiber Channel host adapters.
@@ -48,7 +48,7 @@ config FUSION_FC
 
 config FUSION_SAS
 	tristate "Fusion MPT ScsiHost drivers for SAS"
-	depends on PCI && SCSI
+	depends on LEGACY_PCI && SCSI
 	select SCSI_SAS_ATTRS
 	help
 	  SCSI HOST support for a SAS host adapters.

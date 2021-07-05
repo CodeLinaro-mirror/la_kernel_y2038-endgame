@@ -204,6 +204,7 @@ config SPI_BITBANG
 config SPI_BUTTERFLY
 	tristate "Parallel port adapter for AVR Butterfly (DEVELOPMENT)"
 	depends on PARPORT
+	depends on HAS_IOPORT
 	select SPI_BITBANG
 	help
 	  This uses a custom parallel port cable to connect to an AVR

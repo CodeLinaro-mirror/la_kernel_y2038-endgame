@@ -197,7 +197,8 @@ static int ata_generic_init_one(struct pci_dev *dev, const struct pci_device_id 
 	if (!(command & PCI_COMMAND_IO))
 		return -ENODEV;
 
-	if (dev->vendor == PCI_VENDOR_ID_AL)
+	if (IS_ENABLED(CONFIG_LEGACY_PCI) &&
+	    dev->vendor == PCI_VENDOR_ID_AL)
 		ata_pci_bmdma_clear_simplex(dev);
 
 	if (dev->vendor == PCI_VENDOR_ID_ATI) {

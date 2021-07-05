@@ -18,7 +18,7 @@ if NET_VENDOR_INTEL
 
 config E100
 	tristate "Intel(R) PRO/100+ support"
-	depends on PCI
+	depends on LEGACY_PCI
 	select MII
 	help
 	  This driver supports Intel(R) PRO/100 family of adapters.
@@ -41,7 +41,7 @@ config E100
 
 config E1000
 	tristate "Intel(R) PRO/1000 Gigabit Ethernet support"
-	depends on PCI
+	depends on LEGACY_PCI
 	help
 	  This driver supports Intel(R) PRO/1000 gigabit ethernet family of
 	  adapters.  For more information on how to identify your adapter, go

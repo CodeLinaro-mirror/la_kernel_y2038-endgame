@@ -73,6 +73,7 @@ config SERIAL_8250_16550A_VARIANTS
 config SERIAL_8250_FINTEK
 	bool "Support for Fintek F81216A LPC to 4 UART RS485 API"
 	depends on SERIAL_8250
+	depends on HAS_IOPORT
 	help
 	  Selecting this option will add support for the RS485 capabilities
 	  of the Fintek F81216A LPC to 4 UART.

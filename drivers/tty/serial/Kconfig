@@ -907,7 +907,7 @@ config SERIAL_VR41XX_CONSOLE
 
 config SERIAL_JSM
 	tristate "Digi International NEO and Classic PCI Support"
-	depends on PCI
+	depends on LEGACY_PCI
 	select SERIAL_CORE
 	help
 	  This is a driver for Digi International's Neo and Classic series

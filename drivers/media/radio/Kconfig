@@ -67,7 +67,7 @@ config USB_DSBR
 
 config RADIO_MAXIRADIO
 	tristate "Guillemot MAXI Radio FM 2000 radio"
-	depends on VIDEO_V4L2 && PCI
+	depends on VIDEO_V4L2 && LEGACY_PCI
 	select RADIO_TEA575X
 	help
 	  Choose Y here if you have this radio card.  This card may also be
@@ -233,6 +233,7 @@ source "drivers/media/radio/wl128x/Kconfig"
 menuconfig V4L_RADIO_ISA_DRIVERS
 	bool "ISA radio devices"
 	depends on ISA || COMPILE_TEST
+	depends on HAS_IOPORT
 	help
 	  Say Y here to enable support for these ISA drivers.
 
@@ -240,11 +241,13 @@ if V4L_RADIO_ISA_DRIVERS
 
 config RADIO_ISA
 	depends on ISA || COMPILE_TEST
+	depends on HAS_IOPORT
 	tristate
 
 config RADIO_CADET
 	tristate "ADS Cadet AM/FM Tuner"
 	depends on ISA || COMPILE_TEST
+	depends on HAS_IOPORT
 	depends on VIDEO_V4L2
 	help
 	  Choose Y here if you have one of these AM/FM radio cards, and then
@@ -256,6 +259,7 @@ config RADIO_CADET
 config RADIO_RTRACK
 	tristate "AIMSlab RadioTrack (aka RadioReveal) support"
 	depends on ISA || COMPILE_TEST
+	depends on HAS_IOPORT
 	depends on VIDEO_V4L2
 	select RADIO_ISA
 	help
@@ -288,6 +292,7 @@ config RADIO_RTRACK_PORT
 config RADIO_RTRACK2
 	tristate "AIMSlab RadioTrack II support"
 	depends on ISA || COMPILE_TEST
+	depends on HAS_IOPORT
 	depends on VIDEO_V4L2
 	select RADIO_ISA
 	help
@@ -312,6 +317,7 @@ config RADIO_RTRACK2_PORT
 config RADIO_AZTECH
 	tristate "Aztech/Packard Bell Radio"
 	depends on ISA || COMPILE_TEST
+	depends on HAS_IOPORT
 	depends on VIDEO_V4L2
 	select RADIO_ISA
 	help
@@ -333,6 +339,7 @@ config RADIO_AZTECH_PORT
 config RADIO_GEMTEK
 	tristate "GemTek Radio card (or compatible) support"
 	depends on ISA || COMPILE_TEST
+	depends on HAS_IOPORT
 	depends on VIDEO_V4L2
 	select RADIO_ISA
 	help
@@ -389,6 +396,7 @@ config RADIO_MIROPCM20
 config RADIO_SF16FMI
 	tristate "SF16-FMI/SF16-FMP/SF16-FMD Radio"
 	depends on ISA || COMPILE_TEST
+	depends on HAS_IOPORT
 	depends on VIDEO_V4L2
 	help
 	  Choose Y here if you have one of these FM radio cards.
@@ -399,6 +407,7 @@ config RADIO_SF16FMI
 config RADIO_SF16FMR2
 	tristate "SF16-FMR2/SF16-FMD2 Radio"
 	depends on ISA || COMPILE_TEST
+	depends on HAS_IOPORT
 	depends on VIDEO_V4L2
 	select RADIO_TEA575X
 	help
@@ -410,6 +419,7 @@ config RADIO_SF16FMR2
 config RADIO_TERRATEC
 	tristate "TerraTec ActiveRadio ISA Standalone"
 	depends on ISA || COMPILE_TEST
+	depends on HAS_IOPORT
 	depends on VIDEO_V4L2
 	select RADIO_ISA
 	help
@@ -425,6 +435,7 @@ config RADIO_TERRATEC
 config RADIO_TRUST
 	tristate "Trust FM radio card"
 	depends on ISA || COMPILE_TEST
+	depends on HAS_IOPORT
 	depends on VIDEO_V4L2
 	select RADIO_ISA
 	help
@@ -449,6 +460,7 @@ config RADIO_TRUST_PORT
 config RADIO_TYPHOON
 	tristate "Typhoon Radio (a.k.a. EcoRadio)"
 	depends on ISA || COMPILE_TEST
+	depends on HAS_IOPORT
 	depends on VIDEO_V4L2
 	select RADIO_ISA
 	help
@@ -484,6 +496,7 @@ config RADIO_TYPHOON_MUTEFREQ
 config RADIO_ZOLTRIX
 	tristate "Zoltrix Radio"
 	depends on ISA || COMPILE_TEST
+	depends on HAS_IOPORT
 	depends on VIDEO_V4L2
 	select RADIO_ISA
 	help

@@ -121,6 +121,7 @@ config KDB_DEFAULT_ENABLE
 
 config KDB_KEYBOARD
 	bool "KGDB_KDB: keyboard as input device"
+	depends on HAS_IOPORT
 	depends on VT && KGDB_KDB
 	default n
 	help

@@ -93,57 +93,65 @@ struct bochs_device {
 
 static void bochs_vga_writeb(struct bochs_device *bochs, u16 ioport, u8 val)
 {
+	int offset = ioport - 0x3c0 + 0x400;
+
 	if (WARN_ON(ioport < 0x3c0 || ioport > 0x3df))
 		return;
 
-	if (bochs->mmio) {
-		int offset = ioport - 0x3c0 + 0x400;
-
-		writeb(val, bochs->mmio + offset);
-	} else {
+#ifdef CONFIG_HAS_IOPORT
+	if (!bochs->mmio) {
 		outb(val, ioport);
+		return;
 	}
+#endif
+	writeb(val, bochs->mmio + offset);
+	if (WARN_ON(ioport < 0x3c0 || ioport > 0x3df))
+		return;
 }
 
 static u8 bochs_vga_readb(struct bochs_device *bochs, u16 ioport)
 {
+	int offset = ioport - 0x3c0 + 0x400;
+
 	if (WARN_ON(ioport < 0x3c0 || ioport > 0x3df))
 		return 0xff;
 
-	if (bochs->mmio) {
-		int offset = ioport - 0x3c0 + 0x400;
-
-		return readb(bochs->mmio + offset);
-	} else {
+#ifdef CONFIG_HAS_IOPORT
+	if (!bochs->mmio)
 		return inb(ioport);
-	}
+#endif
+
+	return readb(bochs->mmio + offset);
 }
 
 static u16 bochs_dispi_read(struct bochs_device *bochs, u16 reg)
 {
-	u16 ret = 0;
+	int offset = 0x500 + (reg << 1);
 
-	if (bochs->mmio) {
-		int offset = 0x500 + (reg << 1);
-
-		ret = readw(bochs->mmio + offset);
-	} else {
+#ifdef CONFIG_HAS_IOPORT
+	if (!bochs->mmio) {
 		outw(reg, VBE_DISPI_IOPORT_INDEX);
-		ret = inw(VBE_DISPI_IOPORT_DATA);
+
+		return inw(VBE_DISPI_IOPORT_DATA);
 	}
-	return ret;
+#endif
+	return readw(bochs->mmio + offset);
 }
 
 static void bochs_dispi_write(struct bochs_device *bochs, u16 reg, u16 val)
 {
-	if (bochs->mmio) {
-		int offset = 0x500 + (reg << 1);
+	int offset = 0x500 + (reg << 1);
 
-		writew(val, bochs->mmio + offset);
-	} else {
+#ifdef CONFIG_HAS_IOPORT
+	if (!bochs->mmio) {
 		outw(reg, VBE_DISPI_IOPORT_INDEX);
 		outw(val, VBE_DISPI_IOPORT_DATA);
+
+		return;
 	}
+#endif
+
+	writew(val, bochs->mmio + offset);
 }
 
 static void bochs_hw_set_big_endian(struct bochs_device *bochs)

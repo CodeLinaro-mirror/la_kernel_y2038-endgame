@@ -56,7 +56,7 @@ config HOSTAP_FIRMWARE_NVRAM
 
 config HOSTAP_PLX
 	tristate "Host AP driver for Prism2/2.5/3 in PLX9052 PCI adaptors"
-	depends on PCI && HOSTAP
+	depends on LEGACY_PCI && HOSTAP
 	help
 	Host AP driver's version for Prism2/2.5/3 PC Cards in PLX9052 based
 	PCI adaptors.
@@ -70,7 +70,7 @@ config HOSTAP_PLX
 
 config HOSTAP_PCI
 	tristate "Host AP driver for Prism2.5 PCI adaptors"
-	depends on PCI && HOSTAP
+	depends on LEGACY_PCI && HOSTAP
 	help
 	Host AP driver's version for Prism2.5 PCI adaptors.
 

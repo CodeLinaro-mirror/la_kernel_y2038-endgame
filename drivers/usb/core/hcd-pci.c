@@ -20,7 +20,6 @@
 
 #include "usb.h"
 
-
 /* PCI-based HCs are common, but plenty of non-PCI HCs are used too */
 
 /*
@@ -212,7 +211,8 @@ int usb_hcd_pci_probe(struct pci_dev *dev, const struct pci_device_id *id,
 		goto free_irq_vectors;
 	}
 
-	hcd->amd_resume_bug = (usb_hcd_amd_remote_wakeup_quirk(dev) &&
+	hcd->amd_resume_bug = (IS_ENABLED(CONFIG_USB_PCI_AMD) &&
+			usb_hcd_amd_remote_wakeup_quirk(dev) &&
 			driver->flags & (HCD_USB11 | HCD_USB3)) ? 1 : 0;
 
 	if (driver->flags & HCD_MEMORY) {
