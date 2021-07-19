@@ -1104,7 +1104,7 @@ config PATA_PALMLD
 
 config PATA_PCMCIA
 	tristate "PCMCIA PATA support"
-	depends on PCMCIA
+	depends on PCMCIA || COMPACTFLASH
 	help
 	  This option enables support for PCMCIA ATA interfaces, including
 	  compact flash card adapters via the new ATA layer.

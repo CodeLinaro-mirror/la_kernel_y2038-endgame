@@ -50,6 +50,14 @@ config PCMCIA_LOAD_CIS
 
 	  If unsure, say Y.
 
+config COMPACTFLASH
+	tristate "CompactFlash card support"
+	select CRC32
+	default y
+	help
+	  CompactFlash cards are storage devices based on the PCMCIA standard
+	  but using a smaller form factor.
+
 config CARDBUS
 	bool "32-bit CardBus support"
 	depends on PCI
@@ -151,7 +159,7 @@ config TCIC
 
 config PCMCIA_ALCHEMY_DEVBOARD
 	tristate "Alchemy Db/Pb1xxx PCMCIA socket services"
-	depends on MIPS_ALCHEMY && PCMCIA
+	depends on MIPS_ALCHEMY && (COMPACTFLASH || PCMCIA)
 	help
 	  Enable this driver of you want PCMCIA support on your Alchemy
 	  Db1000, Db/Pb1100, Db/Pb1500, Db/Pb1550, Db/Pb1200, DB1300
@@ -161,7 +169,7 @@ config PCMCIA_ALCHEMY_DEVBOARD
 
 config PCMCIA_XXS1500
 	tristate "MyCable XXS1500 PCMCIA socket support"
-	depends on PCMCIA && MIPS_XXS1500
+	depends on COMPACTFLASH && MIPS_XXS1500
 	help
 	  Support for the PCMCIA/CF socket interface on MyCable XXS1500
 	  systems.
@@ -170,7 +178,7 @@ config PCMCIA_XXS1500
 
 config PCMCIA_BCM63XX
 	tristate "bcm63xx pcmcia support"
-	depends on BCM63XX && PCMCIA
+	depends on BCM63XX && (PCMCIA || COMPACTFLASH)
 
 config PCMCIA_SOC_COMMON
 	tristate
@@ -192,7 +200,7 @@ config PCMCIA_SA1100
 
 config PCMCIA_SA1111
 	tristate "SA1111 support"
-	depends on ARM && SA1111 && PCMCIA
+	depends on ARM && SA1111 && (PCMCIA || COMPACTFLASH)
 	select PCMCIA_SOC_COMMON
 	select PCMCIA_SA11XX_BASE if ARCH_SA1100
 	select PCMCIA_PXA2XX if ARCH_LUBBOCK && SA1111
@@ -207,7 +215,7 @@ config PCMCIA_SA1111
 
 config PCMCIA_PXA2XX
 	tristate "PXA2xx support"
-	depends on ARM && ARCH_PXA && PCMCIA
+	depends on ARM && ARCH_PXA && (PCMCIA || COMPACTFLASH)
 	depends on (ARCH_LUBBOCK || MACH_MAINSTONE || PXA_SHARPSL \
 		    || MACH_ARMCORE || ARCH_PXA_PALM || TRIZEPS_PCMCIA \
 		    || ARCOM_PCMCIA || ARCH_PXA_ESERIES || MACH_STARGATE2 \
@@ -246,7 +254,7 @@ config PCMCIA_VRC4171
 
 config OMAP_CF
 	tristate "OMAP CompactFlash Controller"
-	depends on PCMCIA
+	depends on COMPACTFLASH && ARCH_OMAP16XX
 	depends on ARCH_OMAP16XX || (ARM && COMPILE_TEST)
 	help
 	  Say Y here to support the CompactFlash controller on OMAP.
@@ -256,14 +264,14 @@ config AT91_CF
 	tristate "AT91 CompactFlash Controller"
 	depends on PCI
 	depends on OF
-	depends on PCMCIA && ARCH_AT91
+	depends on COMPACTFLASH && ARCH_AT91
 	help
 	  Say Y here to support the CompactFlash controller on AT91 chips.
 	  Or choose M to compile the driver as a module named "at91_cf".
 
 config ELECTRA_CF
 	tristate "Electra CompactFlash Controller"
-	depends on PCMCIA && PPC_PASEMI
+	depends on COMPACTFLASH && PPC_PASEMI
 	help
 	  Say Y here to support the CompactFlash controller on the
 	  PA Semi Electra eval board.

@@ -197,7 +197,7 @@ struct pcmcia_socket {
 	/* pcmcia (16-bit) */
 	struct pcmcia_callback		*callback;
 
-#if defined(CONFIG_PCMCIA) || defined(CONFIG_PCMCIA_MODULE)
+#if IS_ENABLED(CONFIG_PCMCIA) || IS_ENABLED(CONFIG_COMPACTFLASH)
 	/* The following elements refer to 16-bit PCMCIA devices inserted
 	 * into the socket */
 	struct list_head		devices_list;
@@ -215,7 +215,7 @@ struct pcmcia_socket {
 	/* IRQ to be used by PCMCIA devices. May not be IRQ 0. */
 	unsigned int			pcmcia_irq;
 
-#endif /* CONFIG_PCMCIA */
+#endif /* CONFIG_PCMCIA || CONFIG_COMPACTFLASH */
 
 	/* socket device */
 	struct device			dev;
