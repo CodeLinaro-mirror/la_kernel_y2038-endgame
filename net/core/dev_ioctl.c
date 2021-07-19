@@ -290,6 +290,20 @@ static int dev_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 	return dev_do_ioctl(dev, ifr, cmd);
 }
 
+static int dev_siocwandev(struct net_device *dev, struct if_settings *ifs)
+{
+	const struct net_device_ops *ops = dev->netdev_ops;
+
+	if (ops->ndo_siocwandev) {
+		if (netif_device_present(dev))
+			return ops->ndo_siocwandev(dev, ifs);
+		else
+			return -ENODEV;
+	}
+
+	return -EOPNOTSUPP;
+}
+
 /*
  *	Perform the SIOCxIFxxx calls, inside rtnl_lock()
  */
@@ -358,6 +372,9 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, void __user *data,
 		ifr->ifr_newname[IFNAMSIZ-1] = '\0';
 		return dev_change_name(dev, ifr->ifr_newname);
 
+	case SIOCWANDEV:
+		return dev_siocwandev(dev, &ifr->ifr_settings);
+
 	case SIOCSHWTSTAMP:
 		err = net_hwtstamp_validate(ifr);
 		if (err)
@@ -385,8 +402,7 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, void __user *data,
 		    cmd == SIOCBONDINFOQUERY ||
 		    cmd == SIOCBONDCHANGEACTIVE ||
 		    cmd == SIOCBRADDIF ||
-		    cmd == SIOCBRDELIF ||
-		    cmd == SIOCWANDEV) {
+		    cmd == SIOCBRDELIF) {
 			err = dev_do_ioctl(dev, ifr, cmd);
 		} else
 			err = -EINVAL;
