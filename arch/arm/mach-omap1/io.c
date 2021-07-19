@@ -9,17 +9,15 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/io.h>
+#include <linux/omap-dma.h>
 
 #include <asm/tlb.h>
 #include <asm/mach/map.h>
 
-#include <mach/mux.h>
 #include <mach/tc.h>
-#include <linux/omap-dma.h>
-
+#include "mux.h"
 #include "iomap.h"
 #include "common.h"
-#include "clock.h"
 
 /*
  * The machine specific code may provide the extra mapping besides the
@@ -127,9 +125,6 @@ void __init omap1_init_early(void)
 	omap_writew(0x0, MPU_PUBLIC_TIPB_CNTL);
 	omap_writew(0x0, MPU_PRIVATE_TIPB_CNTL);
 
-	/* Must init clocks early to assure that timer interrupt works
-	 */
-	omap1_clk_init();
 	omap1_mux_init();
 }
 
