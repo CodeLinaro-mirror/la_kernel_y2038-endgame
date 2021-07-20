@@ -875,7 +875,7 @@ ifdef CONFIG_CC_IS_CLANG
 # source of a reference will be _MergedGlobals and not on of the whitelisted names.
 # See modpost pattern 2
 KBUILD_CFLAGS += $(call cc-option,-mno-global-merge)
-endif
+else
 
 # Warn about unmarked fall-throughs in switch statement.
 # Disabled for clang while comment to attribute conversion happens and
