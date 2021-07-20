@@ -583,21 +583,16 @@ static int ima_calc_field_array_hash_tfm(struct ima_field_data *field_data,
 					 struct ima_template_entry *entry,
 					 int tfm_idx)
 {
-	struct shash_desc *shash;
+	SHASH_DESC_ON_STACK(shash, ima_algo_array[tfm_idx].tfm);
 	struct ima_template_desc *td = entry->template_desc;
 	int num_fields = entry->template_desc->num_fields;
 	int rc, i;
-
-	shash = kmalloc(sizeof(struct shash_desc) + crypto_shash_descsize(ima_algo_array[tfm_idx].tfm),
-			GFP_KERNEL);
-	if (!shash)
-		return -ENOMEM;
 
 	shash->tfm = ima_algo_array[tfm_idx].tfm;
 
 	rc = crypto_shash_init(shash);
 	if (rc != 0)
-		goto out;
+		return rc;
 
 	for (i = 0; i < num_fields; i++) {
 		u8 buffer[IMA_EVENT_NAME_LEN_MAX + 1] = { 0 };
@@ -625,8 +620,6 @@ static int ima_calc_field_array_hash_tfm(struct ima_field_data *field_data,
 	if (!rc)
 		rc = crypto_shash_final(shash, entry->digests[tfm_idx].digest);
 
-out:
-	kfree(shash);
 	return rc;
 }
 

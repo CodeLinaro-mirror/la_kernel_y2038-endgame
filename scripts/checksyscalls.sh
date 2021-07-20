@@ -15,8 +15,6 @@ cat << EOF
 #include <asm/types.h>
 #include <asm/unistd.h>
 
-#define __IGNORE_clone3
-
 /* *at */
 #define __IGNORE_open		/* openat */
 #define __IGNORE_link		/* linkat */
