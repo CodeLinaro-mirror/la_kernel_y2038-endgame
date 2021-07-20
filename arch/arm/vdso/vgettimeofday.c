@@ -7,11 +7,16 @@
 #include <linux/time.h>
 #include <linux/types.h>
 
-#ifdef CONFIG_COMPAT_32BIT_TIME
 int __vdso_clock_gettime(clockid_t clock,
 			 struct old_timespec32 *ts)
 {
 	return __cvdso_clock_gettime32(clock, ts);
+}
+
+int __vdso_clock_gettime64(clockid_t clock,
+			   struct __kernel_timespec *ts)
+{
+	return __cvdso_clock_gettime(clock, ts);
 }
 
 int __vdso_gettimeofday(struct __kernel_old_timeval *tv,
@@ -24,13 +29,6 @@ int __vdso_clock_getres(clockid_t clock_id,
 			struct old_timespec32 *res)
 {
 	return __cvdso_clock_getres_time32(clock_id, res);
-}
-#endif
-
-int __vdso_clock_gettime64(clockid_t clock,
-			   struct __kernel_timespec *ts)
-{
-	return __cvdso_clock_gettime(clock, ts);
 }
 
 /* Avoid unresolved references emitted by GCC */

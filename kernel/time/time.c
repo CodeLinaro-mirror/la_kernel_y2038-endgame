@@ -138,7 +138,6 @@ SYSCALL_DEFINE1(stime32, old_time32_t __user *, tptr)
 #endif /* __ARCH_WANT_SYS_TIME32 */
 #endif
 
-#if defined(CONFIG_COMPAT_32BIT_TIME) || defined(CONFIG_64BIT)
 SYSCALL_DEFINE2(gettimeofday, struct __kernel_old_timeval __user *, tv,
 		struct timezone __user *, tz)
 {
@@ -156,7 +155,6 @@ SYSCALL_DEFINE2(gettimeofday, struct __kernel_old_timeval __user *, tv,
 	}
 	return 0;
 }
-#endif
 
 /*
  * In case for some reason the CMOS clock has not already been running
@@ -199,7 +197,6 @@ int do_sys_settimeofday64(const struct timespec64 *tv, const struct timezone *tz
 	return 0;
 }
 
-#if defined(CONFIG_COMPAT_32BIT_TIME) || defined(CONFIG_64BIT)
 SYSCALL_DEFINE2(settimeofday, struct __kernel_old_timeval __user *, tv,
 		struct timezone __user *, tz)
 {
@@ -223,9 +220,8 @@ SYSCALL_DEFINE2(settimeofday, struct __kernel_old_timeval __user *, tv,
 
 	return do_sys_settimeofday64(tv ? &new_ts : NULL, tz ? &new_tz : NULL);
 }
-#endif
 
-#if defined(CONFIG_COMPAT) && defined(CONFIG_COMPAT_32BIT_TIME)
+#ifdef CONFIG_COMPAT
 COMPAT_SYSCALL_DEFINE2(gettimeofday, struct old_timeval32 __user *, tv,
 		       struct timezone __user *, tz)
 {
@@ -818,7 +814,6 @@ int put_timespec64(const struct timespec64 *ts,
 }
 EXPORT_SYMBOL_GPL(put_timespec64);
 
-#ifdef CONFIG_COMPAT_32BIT_TIME
 static int __get_old_timespec32(struct timespec64 *ts64,
 				   const struct old_timespec32 __user *cts)
 {
@@ -862,7 +857,6 @@ int put_old_timespec32(const struct timespec64 *ts, void __user *uts)
 		return __put_old_timespec32(ts, uts);
 }
 EXPORT_SYMBOL_GPL(put_old_timespec32);
-#endif
 
 int get_itimerspec64(struct itimerspec64 *it,
 			const struct __kernel_itimerspec __user *uit)
@@ -894,7 +888,6 @@ int put_itimerspec64(const struct itimerspec64 *it,
 }
 EXPORT_SYMBOL_GPL(put_itimerspec64);
 
-#ifdef CONFIG_COMPAT_32BIT_TIME
 int get_old_itimerspec32(struct itimerspec64 *its,
 			const struct old_itimerspec32 __user *uits)
 {
@@ -915,4 +908,3 @@ int put_old_itimerspec32(const struct itimerspec64 *its,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(put_old_itimerspec32);
-#endif

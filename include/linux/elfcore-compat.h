@@ -18,11 +18,6 @@ struct compat_elf_siginfo
 	compat_int_t			si_errno;
 };
 
-struct compat_elf_timeval {
-	compat_long_t			tv_sec;
-	compat_long_t			tv_usec;
-};
-
 struct compat_elf_prstatus_common
 {
 	struct compat_elf_siginfo	pr_info;
@@ -33,10 +28,10 @@ struct compat_elf_prstatus_common
 	compat_pid_t			pr_ppid;
 	compat_pid_t			pr_pgrp;
 	compat_pid_t			pr_sid;
-	struct compat_elf_timeval	pr_utime;
-	struct compat_elf_timeval	pr_stime;
-	struct compat_elf_timeval	pr_cutime;
-	struct compat_elf_timeval	pr_cstime;
+	struct old_timeval32		pr_utime;
+	struct old_timeval32		pr_stime;
+	struct old_timeval32		pr_cutime;
+	struct old_timeval32		pr_cstime;
 };
 
 struct compat_elf_prpsinfo

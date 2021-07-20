@@ -11,12 +11,8 @@
 
 #include <linux/time64.h>
 #include <linux/timex.h>
-#ifndef __VDSO32__
-//#include <linux/compat.h>
-#endif
 
 #include <vdso/time32.h>
-#ifdef CONFIG_COMPAT_32BIT_TIME
 
 struct old_itimerspec32 {
 	struct old_timespec32 it_interval;
@@ -55,6 +51,16 @@ struct old_timex32 {
 	s32:32; s32:32; s32:32;
 };
 
+extern int get_old_timespec32(struct timespec64 *, const void __user *);
+extern int put_old_timespec32(const struct timespec64 *, void __user *);
+extern int get_old_itimerspec32(struct itimerspec64 *its,
+			const struct old_itimerspec32 __user *uits);
+extern int put_old_itimerspec32(const struct itimerspec64 *its,
+			struct old_itimerspec32 __user *uits);
+struct __kernel_timex;
+int get_old_timex32(struct __kernel_timex *, const struct old_timex32 __user *);
+int put_old_timex32(struct old_timex32 __user *, const struct __kernel_timex *);
+
 /**
  * ns_to_old_timeval32 - Compat version of ns_to_timeval
  * @nsec:	the nanoseconds value to be converted
@@ -72,32 +78,5 @@ static inline struct old_timeval32 ns_to_old_timeval32(s64 nsec)
 
 	return ctv;
 }
-
-static inline bool have_time32(void)
-{
-	return true;
-}
-#else
-
-struct old_timex32;
-struct old_itimerspec32;
-
-static inline bool have_time32(void)
-{
-//	return IS_ENABLED(CONFIG_64BIT) && !in_compat_syscall();
-	return false;
-}
-
-#endif /* CONFIG_COMPAT_32BIT_TIME */
-
-extern int get_old_timespec32(struct timespec64 *, const void __user *);
-extern int put_old_timespec32(const struct timespec64 *, void __user *);
-extern int get_old_itimerspec32(struct itimerspec64 *its,
-			const struct old_itimerspec32 __user *uits);
-extern int put_old_itimerspec32(const struct itimerspec64 *its,
-			struct old_itimerspec32 __user *uits);
-struct __kernel_timex;
-int get_old_timex32(struct __kernel_timex *, const struct old_timex32 __user *);
-int put_old_timex32(struct old_timex32 __user *, const struct __kernel_timex *);
 
 #endif

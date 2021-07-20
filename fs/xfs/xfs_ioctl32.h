@@ -29,7 +29,6 @@
 #define __compat_packed
 #endif
 
-#ifdef CONFIG_COMPAT_32BIT_TIME
 typedef struct compat_xfs_bstime {
 	old_time32_t	tv_sec;		/* seconds		*/
 	__s32		tv_nsec;	/* and nanoseconds	*/
@@ -61,7 +60,6 @@ struct compat_xfs_bstat {
 	__u16		bs_dmstate;	/* DMIG state info		*/
 	__u16		bs_aextents;	/* attribute number of extents	*/
 } __compat_packed;
-#endif
 
 struct compat_xfs_fsop_bulkreq {
 	compat_uptr_t	lastip;		/* last inode # pointer		*/
@@ -98,7 +96,6 @@ typedef struct compat_xfs_fsop_handlereq {
 #define XFS_IOC_READLINK_BY_HANDLE_32 \
 	_IOWR('X', 108, struct compat_xfs_fsop_handlereq)
 
-#ifdef CONFIG_COMPAT_32BIT_TIME
 /* The bstat field in the swapext struct needs translation */
 struct compat_xfs_swapext {
 	int64_t			sx_version;	/* version */
@@ -109,7 +106,6 @@ struct compat_xfs_swapext {
 	char			sx_pad[16];	/* pad space, unused */
 	struct compat_xfs_bstat	sx_stat;	/* stat of target b4 copy */
 } __compat_packed;
-#endif
 
 #define XFS_IOC_SWAPEXT_32	_IOWR('X', 109, struct compat_xfs_swapext)
 

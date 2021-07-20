@@ -367,15 +367,11 @@ asmlinkage long sys_oabi_semtimedop(int semid,
 	}
 
 	if (timeout) {
-#ifdef CONFIG_COMPAT_32BIT_TIME
 		struct timespec64 ts;
 		err = get_old_timespec32(&ts, timeout);
 		if (err)
 			goto out;
 		err = __do_semtimedop(semid, sops, nsops, &ts, ns);
-#else
-		err = -EINVAL;
-#endif
 		goto out;
 	}
 	err = __do_semtimedop(semid, sops, nsops, NULL, ns);
@@ -398,13 +394,11 @@ asmlinkage int sys_oabi_ipc(uint call, int first, int second, int third,
 		return  sys_oabi_semtimedop(first,
 					    (struct oabi_sembuf __user *)ptr,
 					    second, NULL);
-#ifdef CONFIG_COMPAT_32BIT_TIME
 	case SEMTIMEDOP:
 		return  sys_oabi_semtimedop(first,
 					    (struct oabi_sembuf __user *)ptr,
 					    second,
 					    (const struct old_timespec32 __user *)fifth);
-#endif
 	default:
 		return sys_ipc(call, first, second, third, ptr, fifth);
 	}

@@ -54,8 +54,8 @@
 #define elf_prstatus_common	compat_elf_prstatus_common
 #define elf_prpsinfo	compat_elf_prpsinfo
 
-#undef __kernel_old_timeval
-#define __kernel_old_timeval compat_elf_timeval
+#undef ns_to_kernel_old_timeval
+#define ns_to_kernel_old_timeval ns_to_old_timeval32
 
 /*
  * To use this file, asm/elf.h must define compat_elf_check_arch.

@@ -14,11 +14,9 @@
 
 #include "../../../../lib/vdso/gettimeofday.c"
 
-#ifdef CONFIG_COMPAT_32BIT_TIME
 extern int __vdso_gettimeofday(struct __kernel_old_timeval *tv, struct timezone *tz);
 extern __kernel_old_time_t __vdso_time(__kernel_old_time_t *t);
 
-#ifdef BUILD_VDSO32
 int __vdso_gettimeofday(struct __kernel_old_timeval *tv, struct timezone *tz)
 {
 	return __cvdso_gettimeofday(tv, tz);
@@ -26,7 +24,6 @@ int __vdso_gettimeofday(struct __kernel_old_timeval *tv, struct timezone *tz)
 
 int gettimeofday(struct __kernel_old_timeval *, struct timezone *)
 	__attribute__((weak, alias("__vdso_gettimeofday")));
-#endif
 
 __kernel_old_time_t __vdso_time(__kernel_old_time_t *t)
 {
@@ -34,7 +31,6 @@ __kernel_old_time_t __vdso_time(__kernel_old_time_t *t)
 }
 
 __kernel_old_time_t time(__kernel_old_time_t *t)	__attribute__((weak, alias("__vdso_time")));
-#endif
 
 
 #if defined(CONFIG_X86_64) && !defined(BUILD_VDSO32_64)
@@ -59,7 +55,6 @@ int clock_getres(clockid_t, struct __kernel_timespec *)
 	__attribute__((weak, alias("__vdso_clock_getres")));
 
 #else
-#ifdef CONFIG_COMPAT_32BIT_TIME
 /* i386 only */
 extern int __vdso_clock_gettime(clockid_t clock, struct old_timespec32 *ts);
 extern int __vdso_clock_getres(clockid_t clock, struct old_timespec32 *res);
@@ -72,15 +67,6 @@ int __vdso_clock_gettime(clockid_t clock, struct old_timespec32 *ts)
 int clock_gettime(clockid_t, struct old_timespec32 *)
 	__attribute__((weak, alias("__vdso_clock_gettime")));
 
-int __vdso_clock_getres(clockid_t clock, struct old_timespec32 *res)
-{
-	return __cvdso_clock_getres_time32(clock, res);
-}
-
-int clock_getres(clockid_t, struct old_timespec32 *)
-	__attribute__((weak, alias("__vdso_clock_getres")));
-#endif
-
 int __vdso_clock_gettime64(clockid_t clock, struct __kernel_timespec *ts)
 {
 	return __cvdso_clock_gettime(clock, ts);
@@ -89,4 +75,11 @@ int __vdso_clock_gettime64(clockid_t clock, struct __kernel_timespec *ts)
 int clock_gettime64(clockid_t, struct __kernel_timespec *)
 	__attribute__((weak, alias("__vdso_clock_gettime64")));
 
+int __vdso_clock_getres(clockid_t clock, struct old_timespec32 *res)
+{
+	return __cvdso_clock_getres_time32(clock, res);
+}
+
+int clock_getres(clockid_t, struct old_timespec32 *)
+	__attribute__((weak, alias("__vdso_clock_getres")));
 #endif

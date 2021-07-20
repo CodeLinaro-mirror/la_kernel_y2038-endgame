@@ -2,7 +2,6 @@
 #ifndef __VDSO_TIME32_H
 #define __VDSO_TIME32_H
 
-#ifdef CONFIG_COMPAT_32BIT_TIME
 typedef s32		old_time32_t;
 
 struct old_timespec32 {
@@ -14,6 +13,5 @@ struct old_timeval32 {
 	old_time32_t	tv_sec;
 	s32		tv_usec;
 };
-#endif
 
 #endif /* __VDSO_TIME32_H */

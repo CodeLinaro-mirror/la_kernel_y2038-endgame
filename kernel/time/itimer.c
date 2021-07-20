@@ -123,10 +123,8 @@ SYSCALL_DEFINE2(getitimer, int, which, struct __kernel_old_itimerval __user *, v
 
 #if defined(CONFIG_COMPAT) || defined(CONFIG_ALPHA)
 struct old_itimerval32 {
-	__s32 it_interval_sec;
-	__s32 it_interval_usec;
-	__s32 it_value_sec;
-	__s32 it_value_usec;
+	struct old_timeval32	it_interval;
+	struct old_timeval32	it_value;
 };
 
 static int put_old_itimerval32(struct old_itimerval32 __user *o,
@@ -134,10 +132,10 @@ static int put_old_itimerval32(struct old_itimerval32 __user *o,
 {
 	struct old_itimerval32 v32;
 
-	v32.it_interval_sec = i->it_interval.tv_sec;
-	v32.it_interval_usec = i->it_interval.tv_nsec / NSEC_PER_USEC;
-	v32.it_value_sec = i->it_value.tv_sec;
-	v32.it_value_usec = i->it_value.tv_nsec / NSEC_PER_USEC;
+	v32.it_interval.tv_sec = i->it_interval.tv_sec;
+	v32.it_interval.tv_usec = i->it_interval.tv_nsec / NSEC_PER_USEC;
+	v32.it_value.tv_sec = i->it_value.tv_sec;
+	v32.it_value.tv_usec = i->it_value.tv_nsec / NSEC_PER_USEC;
 	return copy_to_user(o, &v32, sizeof(struct old_itimerval32)) ? -EFAULT : 0;
 }
 
@@ -320,7 +318,7 @@ static int get_itimerval(struct itimerspec64 *o, const struct __kernel_old_itime
 	if (copy_from_user(&v, i, sizeof(struct __kernel_old_itimerval)))
 		return -EFAULT;
 
-	/* Validate the timevals in value.  */
+	/* Validate the timevals in value. */
 	if (!timeval_valid(&v.it_value) ||
 	    !timeval_valid(&v.it_interval))
 		return -EINVAL;
@@ -366,15 +364,15 @@ static int get_old_itimerval32(struct itimerspec64 *o, const struct old_itimerva
 	if (copy_from_user(&v32, i, sizeof(struct old_itimerval32)))
 		return -EFAULT;
 
-	/* Validate the timevals in value. */
-	if (v32.it_value_sec < 0 || v32.it_value_usec >= USEC_PER_SEC ||
-	    v32.it_interval_sec < 0 || v32.it_interval_usec >= USEC_PER_SEC)
+	/* Validate the timevals in value.  */
+	if (!timeval_valid(&v32.it_value) ||
+	    !timeval_valid(&v32.it_interval))
 		return -EINVAL;
 
-	o->it_interval.tv_sec = v32.it_interval_sec;
-	o->it_interval.tv_nsec = v32.it_interval_usec * NSEC_PER_USEC;
-	o->it_value.tv_sec = v32.it_value_sec;
-	o->it_value.tv_nsec = v32.it_value_usec * NSEC_PER_USEC;
+	o->it_interval.tv_sec = v32.it_interval.tv_sec;
+	o->it_interval.tv_nsec = v32.it_interval.tv_usec * NSEC_PER_USEC;
+	o->it_value.tv_sec = v32.it_value.tv_sec;
+	o->it_value.tv_nsec = v32.it_value.tv_usec * NSEC_PER_USEC;
 	return 0;
 }
 
