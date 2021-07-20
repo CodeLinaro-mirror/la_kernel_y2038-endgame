@@ -72,7 +72,7 @@ static inline unsigned long load_unaligned_zeropad(const void *addr)
 	asm(
 	"1:	ldr	%0, [%2]\n"
 	"2:\n"
-		__stringify(__enter_fixup_section) "\n"
+	"	.pushsection .text.fixup,\"ax\"\n"
 	"	.align 2\n"
 	"3:	and	%1, %2, #0x3\n"
 	"	bic	%2, %2, #0x3\n"
@@ -84,7 +84,7 @@ static inline unsigned long load_unaligned_zeropad(const void *addr)
 	"	lsl	%0, %0, %1\n"
 #endif
 	"	b	2b\n"
-		__stringify(__exit_fixup_section) "\n"
+	"	.popsection\n"
 	"	.pushsection __ex_table,\"a\"\n"
 	"	.align	3\n"
 	"	.long	1b, 3b\n"

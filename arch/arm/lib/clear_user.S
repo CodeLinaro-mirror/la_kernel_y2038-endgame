@@ -48,8 +48,8 @@ UNWIND(.fnend)
 ENDPROC(arm_clear_user)
 ENDPROC(__clear_user_std)
 
-		__enter_fixup_section
+		.pushsection .text.fixup,"ax"
 		.align	0
 9001:		ldmfd	sp!, {r0, pc}
-		__exit_fixup_section
+		.popsection
 

@@ -8,14 +8,6 @@
 #include <asm/memory.h>
 #include <asm/thread_info.h>
 
-#ifdef CONFIG_MMU
-#define __enter_fixup_section	.subsection	1
-#define __exit_fixup_section	.previous
-#else
-#define __enter_fixup_section	.pushsection .text.fixup,"ax"
-#define __exit_fixup_section	.popsection
-#endif
-
 	.macro	csdb
 #ifdef CONFIG_THUMB2_KERNEL
 	.inst.w	0xf3af8014

@@ -118,11 +118,11 @@ WEAK(arm_copy_to_user)
 ENDPROC(arm_copy_to_user)
 ENDPROC(__copy_to_user_std)
 
-	__enter_fixup_section
+	.pushsection .text.fixup,"ax"
 	.align 0
 	copy_abort_preamble
 	ldmfd	sp!, {r1, r2, r3}
 	sub	r0, r0, r1
 	rsb	r0, r0, r2
 	copy_abort_end
-	__exit_fixup_section
+	.popsection

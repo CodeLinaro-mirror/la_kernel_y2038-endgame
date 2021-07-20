@@ -107,7 +107,7 @@ next:
 .Lfix:	ret	r9			@ let the user eat segfaults
 	.popsection
 
-	__enter_fixup_section
+	.pushsection __ex_table,"a"
 	.align	3
 	.long	.Lx1, .Lfix
-	__exit_fixup_section
+	.popsection

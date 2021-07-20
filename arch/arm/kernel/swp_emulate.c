@@ -40,11 +40,11 @@
 	"	moveq		%1, %2\n"			\
 	"	movne		%0, %4\n"			\
 	"2:\n"							\
-		__stringify(__enter_fixup_section) "\n"		\
+	"	.section	 .text.fixup,\"ax\"\n"		\
 	"	.align		2\n"				\
 	"3:	mov		%0, %5\n"			\
 	"	b		2b\n"				\
-		__stringify(__exit_fixup_section) "\n"		\
+	"	.previous\n"					\
 	"	.section	 __ex_table,\"a\"\n"		\
 	"	.align		3\n"				\
 	"	.long		0b, 3b\n"			\
