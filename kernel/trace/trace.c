@@ -1709,7 +1709,7 @@ static void latency_fsnotify_workfn_irq(struct irq_work *iwork)
 	queue_work(fsnotify_wq, &tr->fsnotify_work);
 }
 
-static void trace_create_maxlat_file(struct trace_array *tr,
+static __maybe_unused void trace_create_maxlat_file(struct trace_array *tr,
 				     struct dentry *d_tracer)
 {
 	INIT_WORK(&tr->fsnotify_work, latency_fsnotify_workfn);
