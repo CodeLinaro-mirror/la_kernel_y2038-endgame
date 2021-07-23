@@ -553,8 +553,6 @@ __clear_user(void __user *addr, __kernel_size_t size)
 	__cl_size;							\
 })
 
-extern long __strncpy_from_user_asm(char *__to, const char __user *__from, long __len);
-
 /*
  * strncpy_from_user: - Copy a NUL terminated string from userspace.
  * @dst:   Destination address, in kernel space.  This buffer must be at
@@ -573,29 +571,8 @@ extern long __strncpy_from_user_asm(char *__to, const char __user *__from, long 
  * If @count is smaller than the length of the string, copies @count bytes
  * and returns @count.
  */
-static inline long
-strncpy_from_user(char *__to, const char __user *__from, long __len)
-{
-	long res;
-
-	if (!access_ok(__from, __len))
-		return -EFAULT;
-
-	might_fault();
-	__asm__ __volatile__(
-		"move\t$4, %1\n\t"
-		"move\t$5, %2\n\t"
-		"move\t$6, %3\n\t"
-		__MODULE_JAL(__strncpy_from_user_asm)
-		"move\t%0, $2"
-		: "=r" (res)
-		: "r" (__to), "r" (__from), "r" (__len)
-		: "$2", "$3", "$4", "$5", "$6", __UA_t0, "$31", "memory");
-
-	return res;
-}
-
-extern long __strnlen_user_asm(const char __user *s, long n);
+__must_check long
+strncpy_from_user(char *__to, const char __user *__from, long __len);
 
 /*
  * strnlen_user: - Get the size of a string in user space.
@@ -610,24 +587,6 @@ extern long __strnlen_user_asm(const char __user *s, long n);
  * On exception, returns 0.
  * If the string is too long, returns a value greater than @n.
  */
-static inline long strnlen_user(const char __user *s, long n)
-{
-	long res;
-
-	if (!access_ok(s, 1))
-		return 0;
-
-	might_fault();
-	__asm__ __volatile__(
-		"move\t$4, %1\n\t"
-		"move\t$5, %2\n\t"
-		__MODULE_JAL(__strnlen_user_asm)
-		"move\t%0, $2"
-		: "=r" (res)
-		: "r" (s), "r" (n)
-		: "$2", "$4", "$5", __UA_t0, "$31");
-
-	return res;
-}
+__must_check long strnlen_user(const char __user *s, long n);
 
 #endif /* _ASM_UACCESS_H */
