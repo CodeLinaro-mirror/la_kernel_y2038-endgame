@@ -10,17 +10,25 @@
 #include <asm/byteorder.h>
 
 #define __get_unaligned_t(type, ptr) ({						\
-	const struct { type x; } __packed *__pptr = (typeof(__pptr))(ptr);	\
+	const struct { type x; } __packed *__pptr =				\
+				container_of(ptr, typeof(*__pptr), x);		\
 	__pptr->x;								\
 })
 
 #define __put_unaligned_t(type, val, ptr) do {					\
-	struct { type x; } __packed *__pptr = (typeof(__pptr))(ptr);		\
+	struct { type x; } __packed *__pptr =					\
+				container_of(ptr, typeof(*__pptr), x);		\
 	__pptr->x = (val);							\
 } while (0)
 
-#define get_unaligned(ptr)	__get_unaligned_t(typeof(*(ptr)), (ptr))
-#define put_unaligned(val, ptr) __put_unaligned_t(typeof(*(ptr)), (val), (ptr))
+#define get_unaligned(ptr)	({						\
+	__auto_type _ptr = (ptr);						\
+	__get_unaligned_t(typeof(*(_ptr)), (_ptr));				\
+})
+#define put_unaligned(val, ptr)	({						\
+	__auto_type _ptr = (ptr);						\
+	__put_unaligned_t(typeof(*(_ptr)), (val), (_ptr));			\
+})
 
 static inline u16 get_unaligned_le16(const void *p)
 {
