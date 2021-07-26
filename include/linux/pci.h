@@ -1670,7 +1670,7 @@ static inline void pci_disable_device(struct pci_dev *dev) { }
 static inline int __must_check pcim_enable_device(struct pci_dev *pdev) { return -EIO; }
 static inline int __must_check pci_enable_device_io(struct pci_dev *dev) { return -EIO; }
 static inline int __must_check pci_enable_device_mem(struct pci_dev *dev) { return -EIO; }
-static inline int __must_check pci_reenable_device(struct pci_dev *) { return -EIO; }
+static inline int __must_check pci_reenable_device(struct pci_dev *dev) { return -EIO; }
 static inline void pcim_pin_device(struct pci_dev *pdev) { }
 static inline bool pci_intx_mask_supported(struct pci_dev *pdev) { return false; }
 static inline int pci_is_enabled(struct pci_dev *pdev) { return false; }
