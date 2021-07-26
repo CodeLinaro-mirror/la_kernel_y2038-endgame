@@ -215,7 +215,7 @@ static inline long scaled_ppm_to_ppb(long ppm)
 	return (long)ppb;
 }
 
-#if IS_REACHABLE(CONFIG_PTP_1588_CLOCK)
+#if IS_ENABLED(CONFIG_PTP_1588_CLOCK)
 
 /**
  * ptp_clock_register() - register a PTP hardware clock driver
