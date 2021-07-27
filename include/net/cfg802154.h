@@ -323,6 +323,12 @@ struct wpan_dev_header_ops {
 			  unsigned int len);
 };
 
+struct sockaddr_ieee802154;
+struct wpan_dev_ops {
+	int	(*ifaddr)(struct wpan_dev *wpan_dev,
+			  struct sockaddr_ieee802154 *sa, int cmd);
+};
+
 struct wpan_dev {
 	struct wpan_phy *wpan_phy;
 	int iftype;
@@ -332,6 +338,7 @@ struct wpan_dev {
 	struct net_device *netdev;
 
 	const struct wpan_dev_header_ops *header_ops;
+	const struct wpan_dev_ops *dev_ops;
 
 	/* lowpan interface, set when the wpan_dev belongs to one lowpan_dev */
 	struct net_device *lowpan_dev;

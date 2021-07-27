@@ -122,12 +122,13 @@ static int ieee802154_sock_connect(struct socket *sock, struct sockaddr *uaddr,
 	return sk->sk_prot->connect(sk, uaddr, addr_len);
 }
 
-static int ieee802154_dev_ioctl(struct sock *sk, struct ifreq __user *arg,
+static int ieee802154_dev_ifaddr(struct sock *sk, struct ifreq __user *arg,
 				unsigned int cmd)
 {
 	struct ifreq ifr;
 	int ret = -ENOIOCTLCMD;
 	struct net_device *dev;
+	struct wpan_dev *wpan_dev;
 
 	if (get_user_ifreq(&ifr, NULL, arg))
 		return -EFAULT;
@@ -140,11 +141,18 @@ static int ieee802154_dev_ioctl(struct sock *sk, struct ifreq __user *arg,
 	if (!dev)
 		return -ENODEV;
 
-	if (dev->type == ARPHRD_IEEE802154 && dev->netdev_ops->ndo_do_ioctl)
-		ret = dev->netdev_ops->ndo_do_ioctl(dev, &ifr, cmd);
+	wpan_dev = dev->ieee802154_ptr;
+	if (dev->type != ARPHRD_IEEE802154 || !wpan_dev ||
+	    !wpan_dev->dev_ops || !wpan_dev->dev_ops->ifaddr) {
+		ret = -ENOIOCTLCMD;
+		goto out;
+	}
+
+	ret = wpan_dev->dev_ops->ifaddr(wpan_dev, (void *)&ifr.ifr_addr, cmd);
 
 	if (!ret && put_user_ifreq(&ifr, arg))
 		ret = -EFAULT;
+out:
 	dev_put(dev);
 
 	return ret;
@@ -158,7 +166,7 @@ static int ieee802154_sock_ioctl(struct socket *sock, unsigned int cmd,
 	switch (cmd) {
 	case SIOCGIFADDR:
 	case SIOCSIFADDR:
-		return ieee802154_dev_ioctl(sk, (struct ifreq __user *)arg,
+		return ieee802154_dev_ifaddr(sk, (struct ifreq __user *)arg,
 				cmd);
 	default:
 		if (!sk->sk_prot->ioctl)

@@ -46,12 +46,9 @@ int mac802154_wpan_update_llsec(struct net_device *dev)
 }
 
 static int
-mac802154_wpan_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+mac802154_wpan_ifaddr(struct wpan_dev *wpan_dev, struct sockaddr_ieee802154 *sa, int cmd)
 {
-	struct ieee802154_sub_if_data *sdata = IEEE802154_DEV_TO_SUB_IF(dev);
-	struct wpan_dev *wpan_dev = &sdata->wpan_dev;
-	struct sockaddr_ieee802154 *sa =
-		(struct sockaddr_ieee802154 *)&ifr->ifr_addr;
+	struct net_device *dev = wpan_dev->netdev;
 	int err = -ENOIOCTLCMD;
 
 	if (cmd != SIOCGIFADDR && cmd != SIOCSIFADDR)
@@ -418,6 +415,10 @@ static const struct wpan_dev_header_ops ieee802154_header_ops = {
 	.create		= ieee802154_header_create,
 };
 
+static const struct wpan_dev_ops ieee802154_dev_ops = {
+	.ifaddr		= mac802154_wpan_ifaddr,
+};
+
 /* This header create functionality assumes a 8 byte array for
  * source and destination pointer at maximum. To adapt this for
  * the 802.15.4 dataframe header we use extended address handling
@@ -503,7 +504,6 @@ static const struct net_device_ops mac802154_wpan_ops = {
 	.ndo_open		= mac802154_wpan_open,
 	.ndo_stop		= mac802154_slave_close,
 	.ndo_start_xmit		= ieee802154_subif_start_xmit,
-	.ndo_do_ioctl		= mac802154_wpan_ioctl,
 	.ndo_set_mac_address	= mac802154_wpan_mac_addr,
 };
 
@@ -589,6 +589,7 @@ ieee802154_setup_sdata(struct ieee802154_sub_if_data *sdata,
 		sdata->dev->ml_priv = &mac802154_mlme_wpan;
 		wpan_dev->promiscuous_mode = false;
 		wpan_dev->header_ops = &ieee802154_header_ops;
+		wpan_dev->dev_ops = &ieee802154_dev_ops;
 
 		mutex_init(&sdata->sec_mtx);
 
