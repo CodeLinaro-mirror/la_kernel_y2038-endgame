@@ -456,7 +456,7 @@ config GOLDFISH
 
 config RETPOLINE
 	bool "Avoid speculative indirect branches in kernel"
-	default y
+	depends on GCC_VERSION > 80000 || CC_IS_CLANG
 	help
 	  Compile kernel with the retpoline compiler options to guard against
 	  kernel-to-user data leaks by avoiding speculative indirect
