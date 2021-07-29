@@ -82,7 +82,7 @@ KBUILD_WARN(2, GCC_4_6, "-Wpsabi") /* rare */
 KBUILD_WARN(0, GCC_4_6, "-Wreturn-type")
 KBUILD_WARN(0, GCC_4_6, "-Wsync-nand")
 KBUILD_WARN(0, GCC_4_6, "-Wtrigraphs") /* never */
-KBUILD_WARN(0, GCC_4_6, "-Wnormalized=nfc")
+KBUILD_WARN(0, GCC_6, "-Wnormalized=nfc")
 KBUILD_WARN(0, GCC_4_7, "-Wfree-nonheap-object")
 KBUILD_WARN(0, GCC_4_7, "-Winvalid-memory-model")
 KBUILD_WARN(0, GCC_4_7, "-Wnarrowing")
@@ -278,10 +278,10 @@ KBUILD_WARN(0, CLANG_8, "-Wdeprecated-writable-strings")
 KBUILD_WARN(0, GCC_4_6, "-Wall")
 KBUILD_WARN(0, GCC_4_6, "-Waddress")
 KBUILD_WARN(0, GCC_4_6, "-Warray-bounds")
-KBUILD_WARN(1, GCC_4_6, "-Warray-bounds=1")
+KBUILD_WARN(1, GCC_9, "-Warray-bounds=1")
 KBUILD_WARN(2, GCC_9, "-Warray-bounds") /* false-positives in gcc-9.2 */
 KBUILD_WARN(2, GCC_11, "-Warray-bounds=1")
-KBUILD_WARN(3, GCC_4_6, "-Warray-bounds=2") /* never */
+KBUILD_WARN(3, GCC_9, "-Warray-bounds=2") /* never */
 KBUILD_WARN(0, GCC_4_6, "-Wchar-subscripts")
 KBUILD_WARN(0, GCC_4_6, "-Wcomment")
 KBUILD_WARN(0, GCC_4_6, "-Wimplicit")
@@ -292,21 +292,12 @@ KBUILD_WARN(2, GCC_4_6, "-Wpointer-sign") /* lots, but valuable */
 KBUILD_WARN(4, GCC_4_6, "-Wpointer-sign") /* lots, but valuable */
 KBUILD_WARN(0, GCC_4_6, "-Wsequence-point")
 KBUILD_WARN(0, GCC_4_6, "-Wswitch")
-KBUILD_WARN(0, GCC_4_6, "-Wstrict-aliasing=3")
-KBUILD_WARN(0, GCC_4_6, "-Wstrict-overflow=1")
-KBUILD_WARN(3, GCC_4_6, "-Wstrict-overflow=5") /* rare */
+KBUILD_WARN(0, GCC_6, "-Wstrict-aliasing=3")
+KBUILD_WARN(0, GCC_6, "-Wstrict-overflow=1")
+KBUILD_WARN(3, GCC_6, "-Wstrict-overflow=5") /* rare */
 KBUILD_WARN(0, GCC_4_6, "-Wuninitialized") /* medium */
 KBUILD_WARN(0, GCC_4_6, "-Wunknown-pragmas")
 KBUILD_WARN(0, GCC_4_6, "-Wvolatile-register-var")
-
-#if defined(CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3) || \
-    defined(CONFIG_CC_OPTIMIZE_FOR_SIZE) || \
-    defined(CONFIG_PROFILE_ALL_BRANCHES) || \
-    defined(CONFIG_GCOV_PROFILE_ALL)
-KBUILD_WARN(2, GCC_4_7, "-Wmaybe-uninitialized")
-#else
-KBUILD_WARN(2, GCC_4_7, "-Wmaybe-uninitialized") /* medium */
-#endif
 
 KBUILD_WARN(0, GCC_4_8, "-Wsizeof-pointer-memaccess")
 KBUILD_WARN(0, GCC_4_9, "-Wopenmp-simd")
@@ -383,7 +374,7 @@ KBUILD_WARN(0, CLANG_8, "-Wswitch")
 KBUILD_WARN(0, CLANG_8, "-Wswitch-bool")
 
 /* printf format strings */
-KBUILD_WARN(0, GCC_4_6, "-Wformat=1")
+KBUILD_WARN(0, GCC_6, "-Wformat=1")
 KBUILD_WARN(0, GCC_4_6, "-Wformat-contains-nul")
 KBUILD_WARN(0, GCC_4_6, "-Wformat-extra-args")
 KBUILD_WARN(2, GCC_4_6, "-Wformat-zero-length")
@@ -419,7 +410,8 @@ KBUILD_WARN(2, GCC_4_6, "-Wmissing-field-initializers") /* huge */
 KBUILD_WARN(4, GCC_4_6, "-Wmissing-field-initializers") /* huge */
 KBUILD_WARN(1, GCC_4_6, "-Wmissing-parameter-type") /* never */
 KBUILD_WARN(1, GCC_4_6, "-Wold-style-declaration") /* rare */
-KBUILD_WARN(1, GCC_4_6, "-Woverride-init") /* medium */
+KBUILD_WARN(2, GCC_4_6, "-Woverride-init") /* medium */
+KBUILD_WARN(1, GCC_8, "-Woverride-init") /* medium */
 KBUILD_WARN(2, GCC_4_6, "-Wtype-limits") /* medium */
 KBUILD_WARN(1, GCC_7, "-Wexpansion-to-defined") /* never */
 KBUILD_WARN(1, GCC_8, "-Wcast-function-type") /* never */
@@ -469,9 +461,9 @@ KBUILD_WARN(2, CLANG_8, "-Wunused-const-variable") /* medium */
 KBUILD_WARN(4, CLANG_8, "-Wunused-parameter") /* harmful */
 KBUILD_WARN(3, CLANG_12, "-Wunused-but-set-variable") /* medium */
 
-KBUILD_WARN(0, GCC_4_6, "-Wframe-larger-than=" __stringify(CONFIG_FRAME_WARN)) /* FIXME */
-KBUILD_WARN(4, GCC_4_6, "-Wlarger-than=16384") /* huge */
-KBUILD_WARN(3, GCC_4_7, "-Wstack-usage=1024") /* medium */
+KBUILD_WARN(0, GCC_6, "-Wframe-larger-than=" __stringify(CONFIG_FRAME_WARN)) /* FIXME */
+KBUILD_WARN(4, GCC_6, "-Wlarger-than=16384") /* huge */
+KBUILD_WARN(3, GCC_6, "-Wstack-usage=1024") /* medium */
 KBUILD_WARN(3, GCC_7, "-Walloc-size-larger-than=4096")
 KBUILD_WARN(0, GCC_4_6, "-Wvla")
 KBUILD_WARN(3, GCC_7, "-Wvla-larger-than=1") /* rare but useless */
@@ -799,3 +791,14 @@ KBUILD_WARN(3, CLANG_8, "-Wtype-limits") /* medium */
 
 
 KBUILD_WARN(2, CLANG_11, "-Wframe-address") /* TBD */
+
+#if defined(CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3) || \
+    defined(CONFIG_CC_OPTIMIZE_FOR_SIZE) || \
+    defined(CONFIG_PROFILE_ALL_BRANCHES) || \
+    defined(CONFIG_GCOV_PROFILE_ALL)
+KBUILD_WARN(2, GCC_4_7, "-Wmaybe-uninitialized")
+#else
+KBUILD_WARN(2, GCC_4_7, "-Wmaybe-uninitialized") /* medium */
+#endif
+
+

@@ -157,6 +157,10 @@ void btrfs_set_##bits(const struct extent_buffer *eb, void *ptr,	\
 	memcpy(kaddr, lebytes + part, size - part);			\
 }
 
+#if defined(CONFIG_CC_IS_GCC) && (GCC_VERSION < 90100)
+__diag_ignore(GCC, 4, "-Warray-bounds", "warning on 64KB pages")
+#endif
+
 DEFINE_BTRFS_SETGET_BITS(8)
 DEFINE_BTRFS_SETGET_BITS(16)
 DEFINE_BTRFS_SETGET_BITS(32)

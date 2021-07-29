@@ -221,10 +221,17 @@ static void csum_tree_block(struct extent_buffer *buf, u8 *result)
 	crypto_shash_update(shash, kaddr + BTRFS_CSUM_SIZE,
 			    first_page_part - BTRFS_CSUM_SIZE);
 
+__diag_push()
+#if defined(CONFIG_CC_IS_GCC) && (GCC_VERSION < 90100)
+__diag_ignore(GCC, 4, "-Warray-bounds", "warning on 64KB pages")
+#endif
+
 	for (i = 1; i < num_pages; i++) {
 		kaddr = page_address(buf->pages[i]);
 		crypto_shash_update(shash, kaddr, PAGE_SIZE);
 	}
+__diag_pop()
+
 	memset(result, 0, BTRFS_CSUM_SIZE);
 	crypto_shash_final(shash, result);
 }
