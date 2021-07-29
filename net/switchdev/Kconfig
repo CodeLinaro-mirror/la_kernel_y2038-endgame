@@ -12,3 +12,8 @@ config NET_SWITCHDEV
 	  meaning of the word "switch". This include devices supporting L2/L3 but
 	  also various flow offloading chips, including switches embedded into
 	  SR-IOV NICs.
+
+config NET_MAY_USE_SWITCHDEV
+	def_tristate y
+	depends on NET_SWITCHDEV || NET_SWITCHDEV=n
+	depends on BRIDGE || NET_SWITCHDEV=n
