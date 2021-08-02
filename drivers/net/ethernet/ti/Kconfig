@@ -93,7 +93,6 @@ config TI_CPTS
 config TI_K3_AM65_CPSW_NUSS
 	tristate "TI K3 AM654x/J721E CPSW Ethernet driver"
 	depends on OF && TI_K3_UDMA_GLUE_LAYER
-	depends on NET_MAY_USE_SWITCHDEV
 	select NET_DEVLINK
 	select TI_DAVINCI_MDIO
 	imply PHY_TI_GMII_SEL

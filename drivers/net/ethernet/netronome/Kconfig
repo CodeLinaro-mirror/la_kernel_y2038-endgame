@@ -21,7 +21,6 @@ config NFP
 	depends on PCI && PCI_MSI
 	depends on VXLAN || VXLAN=n
 	depends on TLS && TLS_DEVICE || TLS_DEVICE=n
-	depends on NET_MAY_USE_SWITCHDEV
 	select NET_DEVLINK
 	select CRC32
 	help
