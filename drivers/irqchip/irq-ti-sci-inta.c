@@ -21,6 +21,7 @@
 #include <linux/irqchip/chained_irq.h>
 #include <linux/soc/ti/ti_sci_inta_msi.h>
 #include <linux/soc/ti/ti_sci_protocol.h>
+#include <linux/io-64-nonatomic-hi-lo.h>
 #include <asm-generic/msi.h>
 
 #define TI_SCI_DEV_ID_MASK	0xffff
