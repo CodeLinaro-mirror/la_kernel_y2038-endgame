@@ -20,7 +20,7 @@ static void ifh_encode_bitfield(void *ifh, u64 value, u32 pos, u32 width)
 	u32 byte = (35 - (pos / 8));
 	/* Calculate the Start bit position in the Start IFH byte */
 	u32 bit  = (pos % 8);
-	u64 encode = GENMASK(bit + width - 1, bit) & (value << bit);
+	u64 encode = GENMASK_ULL(bit + width - 1, bit) & (value << bit);
 
 	/* Max width is 5 bytes - 40 bits. In worst case this will
 	 * spread over 6 bytes - 48 bits
