@@ -749,6 +749,25 @@ emulate_load_updates (update_t type, load_store_t ld, struct pt_regs *regs, unsi
 	}
 }
 
+static int emulate_put_unaligned_user(unsigned long ifa, void *val, int len)
+{
+	return copy_to_user((void __user *)ifa, val, len);
+}
+
+static int emulate_put_unaligned_kernel(unsigned long ifa, void *val, int len)
+{
+	return copy_to_kernel_nofault((void *)ifa, val, len);
+}
+
+static int emulate_get_unaligned_user(void *val, unsigned long ifa, int len)
+{
+	return copy_from_user(val, (void __user *)ifa, len);
+}
+
+static int emulate_get_unaligned_kernel(void *val, unsigned long ifa, int len)
+{
+	return copy_from_kernel_nofault(val, (void *)ifa, len);
+}
 
 static int
 emulate_load_int (unsigned long ifa, load_store_t ld, struct pt_regs *regs)
@@ -1296,6 +1315,7 @@ ia64_handle_unaligned (unsigned long ifa, struct pt_regs *regs)
 {
 	struct ia64_psr *ipsr = ia64_psr(regs);
 	mm_segment_t old_fs = get_fs();
+	int (*emulate_get_unaligned_user)(void *val, unsigned long ifa, int len)
 	unsigned long bundle[2];
 	unsigned long opcode;
 	const struct exception_table_entry *eh = NULL;
@@ -1360,6 +1380,9 @@ ia64_handle_unaligned (unsigned long ifa, struct pt_regs *regs)
 				       current->comm, task_pid_nr(current));
 			}
 		}
+		if (__copy_from_user(bundle, (void __user *)regs->cr_iip, 16))
+			goto failure;
+
 	} else {
 		if (__ratelimit(&logging_rate_limit)) {
 			printk(KERN_WARNING "kernel unaligned access to 0x%016lx, ip=0x%016lx\n",
@@ -1367,14 +1390,15 @@ ia64_handle_unaligned (unsigned long ifa, struct pt_regs *regs)
 			if (unaligned_dump_stack)
 				dump_stack();
 		}
+
+		if (copy_from_kernel_nofault(bundle, (void *)regs->cr_iip, 16))
+			goto failure;
+
 		set_fs(KERNEL_DS);
 	}
 
 	DPRINT("iip=%lx ifa=%lx isr=%lx (ei=%d, sp=%d)\n",
 	       regs->cr_iip, ifa, regs->cr_ipsr, ipsr->ri, ipsr->it);
-
-	if (__copy_from_user(bundle, (void __user *) regs->cr_iip, 16))
-		goto failure;
 
 	/*
 	 * extract the instruction from the bundle given the slot number

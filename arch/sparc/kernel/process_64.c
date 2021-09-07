@@ -113,14 +113,13 @@ static void show_regwindow32(struct pt_regs *regs)
 	
 	__asm__ __volatile__ ("flushw");
 	rw = compat_ptr((unsigned int)regs->u_regs[14]);
-	old_fs = get_fs();
-	set_fs (USER_DS);
+	old_fs = force_uaccess_begin();
 	if (copy_from_user (&r_w, rw, sizeof(r_w))) {
-		set_fs (old_fs);
+		force_uaccess_end(old_fs);
 		return;
 	}
 
-	set_fs (old_fs);			
+	force_uaccess_end(old_fs);
 	printk("l0: %08x l1: %08x l2: %08x l3: %08x "
 	       "l4: %08x l5: %08x l6: %08x l7: %08x\n",
 	       r_w.locals[0], r_w.locals[1], r_w.locals[2], r_w.locals[3],
@@ -148,14 +147,13 @@ static void show_regwindow(struct pt_regs *regs)
 		rwk = (struct reg_window *)
 			(regs->u_regs[14] + STACK_BIAS);
 		if (!(regs->tstate & TSTATE_PRIV)) {
-			old_fs = get_fs();
-			set_fs (USER_DS);
+			old_fs = force_uaccess_begin();
 			if (copy_from_user (&r_w, rw, sizeof(r_w))) {
-				set_fs (old_fs);
+				force_uaccess_end(old_fs);
 				return;
 			}
 			rwk = &r_w;
-			set_fs (old_fs);			
+			force_uaccess_end(old_fs);			
 		}
 	} else {
 		show_regwindow32(regs);
