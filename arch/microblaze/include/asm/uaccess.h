@@ -16,45 +16,20 @@
 #include <asm/extable.h>
 #include <linux/string.h>
 
-/*
- * On Microblaze the fs value is actually the top of the corresponding
- * address space.
- *
- * The fs value determines whether argument validity checking should be
- * performed or not. If get_fs() == USER_DS, checking is performed, with
- * get_fs() == KERNEL_DS, checking is bypassed.
- *
- * For historical reasons, these macros are grossly misnamed.
- *
- * For non-MMU arch like Microblaze, KERNEL_DS and USER_DS is equal.
- */
-# define MAKE_MM_SEG(s)       ((mm_segment_t) { (s) })
-
-#  define KERNEL_DS	MAKE_MM_SEG(0xFFFFFFFF)
-#  define USER_DS	MAKE_MM_SEG(TASK_SIZE - 1)
-
-# define get_fs()	(current_thread_info()->addr_limit)
-# define set_fs(val)	(current_thread_info()->addr_limit = (val))
-# define user_addr_max() get_fs().seg
-
-# define uaccess_kernel()	(get_fs().seg == KERNEL_DS.seg)
-
 static inline int access_ok(const void __user *addr, unsigned long size)
 {
 	if (!size)
 		goto ok;
 
-	if ((get_fs().seg < ((unsigned long)addr)) ||
-			(get_fs().seg < ((unsigned long)addr + size - 1))) {
-		pr_devel("ACCESS fail at 0x%08x (size 0x%x), seg 0x%08x\n",
-			(__force u32)addr, (u32)size,
-			(u32)get_fs().seg);
+	if ((((unsigned long)addr) > TASK_SIZE) ||
+	    (((unsigned long)addr + size - 1) > TASK_SIZE)) {
+		pr_devel("ACCESS fail at 0x%08x (size 0x%x)",
+			(__force u32)addr, (u32)size);
 		return 0;
 	}
 ok:
-	pr_devel("ACCESS OK at 0x%08x (size 0x%x), seg 0x%08x\n",
-			(__force u32)addr, (u32)size,
-			(u32)get_fs().seg);
+	pr_devel("ACCESS OK at 0x%08x (size 0x%x)\n",
+			(__force u32)addr, (u32)size);
 	return 1;
 }
 
@@ -279,6 +254,25 @@ extern long __user_bad(void);
 	}								\
 	__gu_err;							\
 })
+
+#define __get_kernel_nofault(dst, src, type, label)	\
+{							\
+	type __user *p = (type __force __user *)(src);	\
+	type data;					\
+	if (__get_user(data, p))			\
+		goto label;				\
+	*(type *)dst = data;				\
+}
+
+#define __put_kernel_nofault(dst, src, type, label)	\
+{							\
+	type __user *p = (type __force __user *)(dst);	\
+	type data = *(type *)src;			\
+	if (__put_user(data, p))			\
+		goto label;				\
+}
+
+#define HAVE_GET_KERNEL_NOFAULT
 
 static inline unsigned long
 raw_copy_from_user(void *to, const void __user *from, unsigned long n)
