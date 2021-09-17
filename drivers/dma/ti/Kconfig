@@ -35,11 +35,11 @@ config DMA_OMAP
 	  DMA engine is found on OMAP and DRA7xx parts.
 
 config TI_K3_UDMA
-	tristate "Texas Instruments UDMA support"
+	bool "Texas Instruments UDMA support"
 	depends on ARCH_K3 || COMPILE_TEST
-	depends on TI_SCI_PROTOCOL
-	depends on TI_SCI_INTA_IRQCHIP
-	depends on TI_K3_RINGACC
+	depends on TI_SCI_PROTOCOL=y
+	depends on TI_SCI_INTA_IRQCHIP=y
+	depends on TI_K3_RINGACC=y
 	select DMA_ENGINE
 	select DMA_VIRTUAL_CHANNELS
 	select TI_K3_PSIL
