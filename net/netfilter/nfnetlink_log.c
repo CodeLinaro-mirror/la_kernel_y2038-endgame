@@ -43,9 +43,7 @@
 #include "../bridge/br_private.h"
 #endif
 
-#if IS_ENABLED(CONFIG_NF_CONNTRACK)
 #include <net/netfilter/nf_conntrack.h>
-#endif
 
 #define NFULNL_COPY_DISABLED	0xff
 #define NFULNL_NLBUFSIZ_DEFAULT	NLMSG_GOODSIZE
@@ -441,7 +439,7 @@ nla_put_failure:
 
 /* This is an inline function, we don't really care about a long
  * list of arguments */
-static inline int
+static __always_inline int
 __build_packet_message(struct nfnl_log_net *log,
 			struct nfulnl_instance *inst,
 			const struct sk_buff *skb,
@@ -625,7 +623,8 @@ __build_packet_message(struct nfnl_log_net *log,
 			 htonl(atomic_inc_return(&log->global_seq))))
 		goto nla_put_failure;
 
-	if (ct && nfnl_ct->build(inst->skb, ct, ctinfo,
+	if (IS_ENABLED(CONFIG_NF_CONNTRACK) &&
+	    ct && nfnl_ct->build(inst->skb, ct, ctinfo,
 				 NFULA_CT, NFULA_CT_INFO) < 0)
 		goto nla_put_failure;
 
@@ -732,16 +731,18 @@ nfulnl_log_packet(struct net *net,
 		size += nla_total_size(sizeof(u_int32_t));
 	if (inst->flags & NFULNL_CFG_F_SEQ_GLOBAL)
 		size += nla_total_size(sizeof(u_int32_t));
-#if IS_ENABLED(CONFIG_NF_CONNTRACK)
-	if (inst->flags & NFULNL_CFG_F_CONNTRACK) {
+	if (IS_ENABLED(CONFIG_NF_CONNTRACK) &&
+	    inst->flags & NFULNL_CFG_F_CONNTRACK) {
 		nfnl_ct = rcu_dereference(nfnl_ct_hook);
 		if (nfnl_ct != NULL) {
 			ct = nf_ct_get(skb, &ctinfo);
 			if (ct != NULL)
 				size += nfnl_ct->build_size(ct);
 		}
+	} else {
+		ctinfo = IP_CT_NEW;
 	}
-#endif
+
 	if (pf == NFPROTO_NETDEV || pf == NFPROTO_BRIDGE)
 		size += nfulnl_get_bridge_size(skb);
 
