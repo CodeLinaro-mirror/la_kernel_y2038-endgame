@@ -1024,6 +1024,8 @@ static void dml_rq_dlg_get_dlg_params(struct display_mode_lib *mode_lib,
 
 	unsigned int pipe_index_in_combine[DC__NUM_PIPES__MAX] = { 0 };
 
+	return;
+
 	memset(disp_dlg_regs, 0, sizeof(*disp_dlg_regs));
 	memset(disp_ttu_regs, 0, sizeof(*disp_ttu_regs));
 
@@ -1753,6 +1755,8 @@ void dml30_rq_dlg_get_dlg_reg(struct display_mode_lib *mode_lib,
 {
 	display_rq_params_st rq_param = { 0 };
 	display_dlg_sys_params_st dlg_sys_param = { 0 };
+
+	return;
 
 	// Get watermark and Tex.
 	dlg_sys_param.t_urg_wm_us = get_wm_urgent(mode_lib, e2e_pipe_param, num_pipes);

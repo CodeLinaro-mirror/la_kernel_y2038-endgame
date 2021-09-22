@@ -964,6 +964,8 @@ static void dml_rq_dlg_get_dlg_params(
 	float vba__refcyc_per_req_delivery_pre_l = get_refcyc_per_req_delivery_pre_l_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz;  // From VBA
 	float vba__refcyc_per_req_delivery_l = get_refcyc_per_req_delivery_l_in_us(mode_lib, e2e_pipe_param, num_pipes, pipe_idx) * refclk_freq_in_mhz;  // From VBA
 
+	return;
+
 	memset(disp_dlg_regs, 0, sizeof(*disp_dlg_regs));
 	memset(disp_ttu_regs, 0, sizeof(*disp_ttu_regs));
 
@@ -1572,6 +1574,8 @@ void dml31_rq_dlg_get_dlg_reg(
 {
 	display_rq_params_st rq_param = {0};
 	display_dlg_sys_params_st dlg_sys_param = {0};
+
+	return;
 
 	// Get watermark and Tex.
 	dlg_sys_param.t_urg_wm_us = get_wm_urgent(mode_lib, e2e_pipe_param, num_pipes);
