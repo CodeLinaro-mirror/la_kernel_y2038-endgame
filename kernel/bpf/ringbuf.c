@@ -159,7 +159,7 @@ static struct bpf_map *ringbuf_map_alloc(union bpf_attr *attr)
 
 #ifdef CONFIG_64BIT
 	/* on 32-bit arch, it's impossible to overflow record's hdr->pgoff */
-	if (attr->max_entries > RINGBUF_MAX_DATA_SZ)
+	if ((u64)attr->max_entries > RINGBUF_MAX_DATA_SZ)
 		return ERR_PTR(-E2BIG);
 #endif
 
