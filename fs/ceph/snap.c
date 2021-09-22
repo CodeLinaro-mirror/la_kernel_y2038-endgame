@@ -359,7 +359,7 @@ static int build_snap_context(struct ceph_snap_realm *realm,
 
 	/* alloc new snap context */
 	err = -ENOMEM;
-	if (num > (SIZE_MAX - sizeof(*snapc)) / sizeof(u64))
+	if ((size_t)num > (SIZE_MAX - sizeof(*snapc)) / sizeof(u64))
 		goto fail;
 	snapc = ceph_create_snap_context(num, GFP_NOFS);
 	if (!snapc)
