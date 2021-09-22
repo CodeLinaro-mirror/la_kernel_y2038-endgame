@@ -49,14 +49,6 @@ KBUILD_CFLAGS += -Wvla
 # disable pointer signed / unsigned warnings in gcc 4.0
 KBUILD_CFLAGS += -Wno-pointer-sign
 
-# These warnings generated too much noise in a regular build.
-# Use make W=1 to enable them (see scripts/Makefile.extrawarn)
-KBUILD_CFLAGS += $(call cc-disable-warning, unused-but-set-variable)
-KBUILD_CFLAGS += $(call cc-disable-warning, unused-const-variable)
-
-# disable stringop warnings in gcc 8+
-KBUILD_CFLAGS += $(call cc-disable-warning, stringop-truncation)
-
 # We'll want to enable this eventually, but it's not going away for 5.7 at least
 KBUILD_CFLAGS += $(call cc-disable-warning, zero-length-bounds)
 KBUILD_CFLAGS += -Wno-array-bounds
@@ -65,10 +57,6 @@ KBUILD_CFLAGS += $(call cc-disable-warning, stringop-overflow)
 # Another good warning that we'll want to enable eventually
 KBUILD_CFLAGS += $(call cc-disable-warning, restrict)
 
-# Enabled with W=2, disabled by default as noisy
-ifdef CONFIG_CC_IS_GCC
-KBUILD_CFLAGS += -Wno-maybe-uninitialized
-endif
 #
 # Prohibit date/time macros, which would make the build non-deterministic
 KBUILD_CFLAGS += -Werror=date-time
@@ -78,8 +66,6 @@ KBUILD_CFLAGS += $(call cc-option,-Werror=incompatible-pointer-types)
 
 # Require designated initializers for all marked structures
 KBUILD_CFLAGS += $(call cc-option,-Werror=designated-init)
-
-KBUILD_CFLAGS += $(call cc-disable-warning, packed-not-aligned)
 
 # backward compatibility
 KBUILD_EXTRA_WARN ?= $(KBUILD_ENABLE_EXTRA_GCC_CHECKS)
@@ -105,10 +91,6 @@ KBUILD_CFLAGS += $(call cc-option, -Wunused-but-set-variable)
 KBUILD_CFLAGS += $(call cc-option, -Wunused-const-variable)
 KBUILD_CFLAGS += $(call cc-option, -Wpacked-not-aligned)
 KBUILD_CFLAGS += $(call cc-option, -Wstringop-truncation)
-# The following turn off the warnings enabled by -Wextra
-KBUILD_CFLAGS += -Wno-missing-field-initializers
-KBUILD_CFLAGS += -Wno-sign-compare
-KBUILD_CFLAGS += -Wno-type-limits
 
 KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN1
 
@@ -116,11 +98,13 @@ else
 
 # Some diagnostics enabled by default are noisy.
 # Suppress them by using -Wno... except for W=1.
+KBUILD_CFLAGS += $(call cc-disable-warning, unused-but-set-variable)
+KBUILD_CFLAGS += $(call cc-disable-warning, unused-const-variable)
+KBUILD_CFLAGS += $(call cc-disable-warning, packed-not-aligned)
+KBUILD_CFLAGS += $(call cc-disable-warning, stringop-truncation)
 
 ifdef CONFIG_CC_IS_CLANG
-KBUILD_CFLAGS += -Wno-initializer-overrides
 KBUILD_CFLAGS += -Wno-format
-KBUILD_CFLAGS += -Wno-sign-compare
 KBUILD_CFLAGS += -Wno-format-zero-length
 KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-enum-cast)
 KBUILD_CFLAGS += -Wno-tautological-constant-out-of-range-compare
@@ -141,7 +125,23 @@ KBUILD_CFLAGS += -Wtype-limits
 KBUILD_CFLAGS += $(call cc-option, -Wmaybe-uninitialized)
 KBUILD_CFLAGS += $(call cc-option, -Wunused-macros)
 
+ifdef CONFIG_CC_IS_CLANG
+KBUILD_CFLAGS += -Winitializer-overrides
+endif
+
 KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN2
+
+else
+
+# The following turn off the warnings enabled by -Wextra
+KBUILD_CFLAGS += -Wno-missing-field-initializers
+KBUILD_CFLAGS += -Wno-type-limits
+
+ifdef CONFIG_CC_IS_CLANG
+KBUILD_CFLAGS += -Wno-initializer-overrides
+else
+KBUILD_CFLAGS += -Wno-maybe-uninitialized
+endif
 
 endif
 
@@ -163,5 +163,10 @@ KBUILD_CFLAGS += -Wswitch-default
 KBUILD_CFLAGS += $(call cc-option, -Wpacked-bitfield-compat)
 
 KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN3
+
+else
+
+# The following turn off the warnings enabled by -Wextra
+KBUILD_CFLAGS += -Wno-sign-compare
 
 endif
