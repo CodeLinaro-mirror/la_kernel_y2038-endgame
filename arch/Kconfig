@@ -739,6 +739,7 @@ config HAS_LTO_CLANG
 	depends on (!KASAN || KASAN_HW_TAGS || CLANG_VERSION >= 170000) || !DEBUG_INFO
 	depends on (!KCOV || CLANG_VERSION >= 170000) || !DEBUG_INFO
 	depends on !GCOV_KERNEL
+	depends on !COMPILE_TEST
 	help
 	  The compiler and Kconfig options support building with Clang's
 	  LTO.
