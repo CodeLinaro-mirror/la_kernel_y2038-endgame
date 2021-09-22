@@ -1131,6 +1131,8 @@ void dml1_rq_dlg_get_dlg_params(
 	double cur0_req_per_width;
 	double hactive_cur0;
 
+	return;
+
 	memset(disp_dlg_regs, 0, sizeof(*disp_dlg_regs));
 	memset(disp_ttu_regs, 0, sizeof(*disp_ttu_regs));
 
