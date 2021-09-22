@@ -90,7 +90,7 @@ void uapi_compute_bundle_size(struct uverbs_api_ioctl_method *method_elm,
 		ALIGN(bundle_size + 256, sizeof(*pbundle->internal_buffer));
 
 	/* Do not want order-2 allocations for this. */
-	WARN_ON_ONCE(method_elm->bundle_size > PAGE_SIZE);
+	WARN_ON_ONCE((u32)method_elm->bundle_size > PAGE_SIZE);
 }
 
 /**
@@ -636,7 +636,7 @@ long ib_uverbs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	if (err)
 		return -EFAULT;
 
-	if (hdr.length > PAGE_SIZE ||
+	if ((u32)hdr.length > PAGE_SIZE ||
 	    hdr.length != struct_size(&hdr, attrs, hdr.num_attrs))
 		return -EINVAL;
 
