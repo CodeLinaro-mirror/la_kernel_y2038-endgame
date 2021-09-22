@@ -11,7 +11,7 @@ genksyms-objs	:= genksyms.o parse.tab.o lex.lex.o
 #
 # Just in case, run "$(YACC) --version" without suppressing stderr
 # so that 'bison: not found' will be displayed if it is missing.
-ifeq ($(findstring 1,$(KBUILD_EXTRA_WARN)),)
+ifeq ($(findstring 2,$(KBUILD_EXTRA_WARN)),)
 
 quiet_cmd_bison_no_warn = $(quiet_cmd_bison)
       cmd_bison_no_warn = $(YACC) --version >/dev/null; \
