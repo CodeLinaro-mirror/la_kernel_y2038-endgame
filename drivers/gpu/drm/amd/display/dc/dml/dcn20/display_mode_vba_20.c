@@ -1085,6 +1085,8 @@ static void dml20_DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPer
 {
 	unsigned int j, k;
 
+	return;
+
 	mode_lib->vba.WritebackDISPCLK = 0.0;
 	mode_lib->vba.DISPCLKWithRamping = 0;
 	mode_lib->vba.DISPCLKWithoutRamping = 0;
@@ -3288,6 +3290,8 @@ void dml20_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 
 	int idx;
 	unsigned int i, j, k, m;
+
+	return;
 
 	/*MODE SUPPORT, VOLTAGE STATE AND SOC CONFIGURATION*/
 
