@@ -107,9 +107,9 @@ else ifeq ($(KBUILD_CHECKSRC),2)
         cmd_force_checksrc = $(CHECK) $(CHECKFLAGS) $(c_flags) $<
 endif
 
-ifneq ($(KBUILD_EXTRA_WARN),)
-  cmd_checkdoc = $(srctree)/scripts/kernel-doc -none $<
-endif
+#ifneq ($(KBUILD_EXTRA_WARN),)
+#  cmd_checkdoc = $(srctree)/scripts/kernel-doc -none $<
+#endif
 
 # Compile C sources (.c)
 # ---------------------------------------------------------------------------
