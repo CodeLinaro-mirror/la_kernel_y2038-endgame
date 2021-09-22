@@ -6,6 +6,79 @@
 # They are independent, and can be combined like W=12 or W=123.
 # ==========================================================================
 
+#
+# Default set of warnings, always enabled
+#
+KBUILD_CFLAGS += -Wall
+KBUILD_CFLAGS += -Wundef
+KBUILD_CFLAGS += -Werror=strict-prototypes
+KBUILD_CFLAGS += -Wno-trigraphs
+KBUILD_CFLAGS += -Werror=implicit-function-declaration
+KBUILD_CFLAGS += -Werror=implicit-int
+KBUILD_CFLAGS += -Werror=return-type
+KBUILD_CFLAGS += -Wno-format-security
+KBUILD_CFLAGS += $(call cc-disable-warning,frame-address,)
+KBUILD_CFLAGS += $(call cc-disable-warning, format-truncation)
+KBUILD_CFLAGS += $(call cc-disable-warning, format-overflow)
+KBUILD_CFLAGS += $(call cc-disable-warning, address-of-packed-member)
+
+ifneq ($(CONFIG_FRAME_WARN),0)
+KBUILD_CFLAGS += -Wframe-larger-than=$(CONFIG_FRAME_WARN)
+endif
+
+KBUILD_CFLAGS-$(CONFIG_WERROR) += -Werror
+KBUILD_CFLAGS += $(KBUILD_CFLAGS-y)
+
+ifdef CONFIG_CC_IS_CLANG
+KBUILD_CPPFLAGS += -Qunused-arguments
+# The kernel builds with '-std=gnu89' so use of GNU extensions is acceptable.
+KBUILD_CFLAGS += -Wno-gnu
+else
+# Warn about unmarked fall-throughs in switch statement.
+# Disabled for clang while comment to attribute conversion happens and
+# https://github.com/ClangBuiltLinux/linux/issues/636 is discussed.
+KBUILD_CFLAGS += $(call cc-option,-Wimplicit-fallthrough=5,)
+# gcc inanely warns about local variables called 'main'
+KBUILD_CFLAGS += -Wno-main
+endif
+
+# warn about C99 declaration after statement
+KBUILD_CFLAGS += -Wdeclaration-after-statement
+# Variable Length Arrays (VLAs) should not be used anywhere in the kernel
+KBUILD_CFLAGS += -Wvla
+# disable pointer signed / unsigned warnings in gcc 4.0
+KBUILD_CFLAGS += -Wno-pointer-sign
+
+# These warnings generated too much noise in a regular build.
+# Use make W=1 to enable them (see scripts/Makefile.extrawarn)
+KBUILD_CFLAGS += $(call cc-disable-warning, unused-but-set-variable)
+KBUILD_CFLAGS += $(call cc-disable-warning, unused-const-variable)
+
+# disable stringop warnings in gcc 8+
+KBUILD_CFLAGS += $(call cc-disable-warning, stringop-truncation)
+
+# We'll want to enable this eventually, but it's not going away for 5.7 at least
+KBUILD_CFLAGS += $(call cc-disable-warning, zero-length-bounds)
+KBUILD_CFLAGS += -Wno-array-bounds
+KBUILD_CFLAGS += $(call cc-disable-warning, stringop-overflow)
+
+# Another good warning that we'll want to enable eventually
+KBUILD_CFLAGS += $(call cc-disable-warning, restrict)
+
+# Enabled with W=2, disabled by default as noisy
+ifdef CONFIG_CC_IS_GCC
+KBUILD_CFLAGS += -Wno-maybe-uninitialized
+endif
+#
+# Prohibit date/time macros, which would make the build non-deterministic
+KBUILD_CFLAGS += -Werror=date-time
+
+# enforce correct pointer usage
+KBUILD_CFLAGS += $(call cc-option,-Werror=incompatible-pointer-types)
+
+# Require designated initializers for all marked structures
+KBUILD_CFLAGS += $(call cc-option,-Werror=designated-init)
+
 KBUILD_CFLAGS += $(call cc-disable-warning, packed-not-aligned)
 
 # backward compatibility
