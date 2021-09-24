@@ -6055,7 +6055,7 @@ static int rbd_dev_v2_snap_context(struct rbd_device *rbd_dev,
 	void *p;
 	void *end;
 	u64 seq;
-	u32 snap_count;
+	size_t snap_count;
 	struct ceph_snap_context *snapc;
 	u32 i;
 
