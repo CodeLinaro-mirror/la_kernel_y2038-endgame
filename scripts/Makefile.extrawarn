@@ -73,11 +73,7 @@ export KBUILD_EXTRA_WARN
 #
 ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
 
-KBUILD_CFLAGS += $(call cc-option, -Wformat-truncation)
-KBUILD_CFLAGS += $(call cc-option, -Wformat-overflow)
 KBUILD_CFLAGS += $(call cc-option, -Wzero-length-bounds)
-KBUILD_CFLAGS += $(call cc-option, -Wstringop-truncation)
-KBUILD_CFLAGS += $(call cc-option, -Wstringop-overflow)
 KBUILD_CFLAGS += $(call cc-option, -Wrestrict)
 KBUILD_CFLAGS += -Wmissing-format-attribute
 
@@ -85,11 +81,7 @@ KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN1
 
 else
 
-KBUILD_CFLAGS += $(call cc-disable-warning, format-truncation)
-KBUILD_CFLAGS += $(call cc-disable-warning, format-overflow)
 KBUILD_CFLAGS += $(call cc-disable-warning, zero-length-bounds)
-KBUILD_CFLAGS += $(call cc-disable-warning, stringop-truncation)
-KBUILD_CFLAGS += $(call cc-disable-warning, stringop-overflow)
 KBUILD_CFLAGS += $(call cc-disable-warning, restrict)
 KBUILD_CFLAGS += $(call cc-disable-warning, missing-format-attribute)
 
@@ -125,6 +117,10 @@ KBUILD_CFLAGS += $(call cc-option, -Wframe-address)
 KBUILD_CFLAGS += -Wformat-security
 KBUILD_CFLAGS += -Warray-bounds
 KBUILD_CFLAGS += -Wsuggest-attribute=format
+KBUILD_CFLAGS += $(call cc-option, -Wformat-truncation)
+KBUILD_CFLAGS += $(call cc-option, -Wformat-overflow)
+KBUILD_CFLAGS += $(call cc-option, -Wstringop-truncation)
+KBUILD_CFLAGS += $(call cc-option, -Wstringop-overflow)
 
 ifdef CONFIG_CC_IS_CLANG
 KBUILD_CFLAGS += -Wformat
@@ -149,6 +145,10 @@ KBUILD_CFLAGS += $(call cc-disable-warning, frame-address)
 KBUILD_CFLAGS += -Wno-format-security
 KBUILD_CFLAGS += -Wno-array-bounds
 KBUILD_CFLAGS += $(call cc-disable-warning, suggest-attribute=format)
+KBUILD_CFLAGS += $(call cc-disable-warning, format-truncation)
+KBUILD_CFLAGS += $(call cc-disable-warning, format-overflow)
+KBUILD_CFLAGS += $(call cc-disable-warning, stringop-truncation)
+KBUILD_CFLAGS += $(call cc-disable-warning, stringop-overflow)
 
 ifdef CONFIG_CC_IS_CLANG
 KBUILD_CFLAGS += -Wno-format
