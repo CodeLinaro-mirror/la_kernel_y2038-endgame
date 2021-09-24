@@ -63,8 +63,8 @@ static struct mm_struct *damon_get_mm(struct damon_target *t)
  *
  * Returns 0 on success, or negative error code otherwise.
  */
-static int damon_va_evenly_split_region(struct damon_target *t,
-		struct damon_region *r, unsigned int nr_pieces)
+int damon_va_evenly_split_region(struct damon_target *t, struct damon_region *r,
+				 unsigned int nr_pieces)
 {
 	unsigned long sz_orig, sz_piece, orig_end;
 	struct damon_region *n = NULL, *next;
@@ -125,8 +125,8 @@ static void swap_ranges(struct damon_addr_range *r1,
  *
  * Returns 0 if success, or negative error code otherwise.
  */
-static int __damon_va_three_regions(struct vm_area_struct *vma,
-				       struct damon_addr_range regions[3])
+int __damon_va_three_regions(struct vm_area_struct *vma,
+			     struct damon_addr_range regions[3])
 {
 	struct damon_addr_range gap = {0}, first_gap = {0}, second_gap = {0};
 	struct vm_area_struct *last_vma = NULL;
@@ -181,8 +181,8 @@ next:
  *
  * Returns 0 on success, negative error code otherwise.
  */
-static int damon_va_three_regions(struct damon_target *t,
-				struct damon_addr_range regions[3])
+int damon_va_three_regions(struct damon_target *t,
+			   struct damon_addr_range regions[3])
 {
 	struct mm_struct *mm;
 	int rc;
@@ -307,8 +307,8 @@ static bool damon_intersect(struct damon_region *r, struct damon_addr_range *re)
  * t		the given target
  * bregions	the three big regions of the target
  */
-static void damon_va_apply_three_regions(struct damon_target *t,
-		struct damon_addr_range bregions[3])
+void damon_va_apply_three_regions(struct damon_target *t,
+				  struct damon_addr_range bregions[3])
 {
 	struct damon_region *r, *next;
 	unsigned int i = 0;
@@ -668,5 +668,3 @@ void damon_va_set_primitives(struct damon_ctx *ctx)
 	ctx->primitive.target_valid = damon_va_target_valid;
 	ctx->primitive.cleanup = NULL;
 }
-
-#include "vaddr-test.h"

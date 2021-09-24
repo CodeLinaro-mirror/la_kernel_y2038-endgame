@@ -12,6 +12,7 @@
 #ifndef _DAMON_VADDR_TEST_H
 #define _DAMON_VADDR_TEST_H
 
+#include <linux/damon.h>
 #include <kunit/test.h>
 
 static void __link_vmas(struct vm_area_struct *vmas, ssize_t nr_vmas)

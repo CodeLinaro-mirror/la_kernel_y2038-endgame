@@ -249,6 +249,15 @@ int damon_nr_running_ctxs(void);
 
 int damon_start(struct damon_ctx **ctxs, int nr_ctxs);
 int damon_stop(struct damon_ctx **ctxs, int nr_ctxs);
+int damon_va_three_regions(struct damon_target *t,
+			   struct damon_addr_range regions[3]);
+struct vm_area_struct;
+int __damon_va_three_regions(struct vm_area_struct *vma,
+			     struct damon_addr_range regions[3]);
+void damon_va_apply_three_regions(struct damon_target *t,
+				  struct damon_addr_range bregions[3]);
+int damon_va_evenly_split_region(struct damon_target *t, struct damon_region *r,
+				 unsigned int nr_pieces);
 
 #endif	/* CONFIG_DAMON */
 
