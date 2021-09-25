@@ -21,10 +21,10 @@
 
 #define VBOXSF_SUPER_MAGIC 0x786f4256 /* 'VBox' little endian */
 
-#define VBSF_MOUNT_SIGNATURE_BYTE_0 ('\000')
-#define VBSF_MOUNT_SIGNATURE_BYTE_1 ('\377')
-#define VBSF_MOUNT_SIGNATURE_BYTE_2 ('\376')
-#define VBSF_MOUNT_SIGNATURE_BYTE_3 ('\375')
+#define VBSF_MOUNT_SIGNATURE_BYTE_0 (u8)('\000')
+#define VBSF_MOUNT_SIGNATURE_BYTE_1 (u8)('\377')
+#define VBSF_MOUNT_SIGNATURE_BYTE_2 (u8)('\376')
+#define VBSF_MOUNT_SIGNATURE_BYTE_3 (u8)('\375')
 
 static int follow_symlinks;
 module_param(follow_symlinks, int, 0444);
