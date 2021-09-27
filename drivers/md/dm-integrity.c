@@ -415,7 +415,7 @@ static commit_id_t dm_integrity_commit_id(struct dm_integrity_c *ic, unsigned i,
 	return ic->commit_ids[seq] ^ cpu_to_le64(((__u64)i << 32) ^ j);
 }
 
-static inline void get_area_and_offset(struct dm_integrity_c *ic, sector_t data_sector,
+static void get_area_and_offset(struct dm_integrity_c *ic, sector_t data_sector,
 				sector_t *area, sector_t *offset)
 {
 	if (!ic->meta_dev) {
@@ -2423,38 +2423,6 @@ static void restore_last_bytes(struct dm_integrity_c *ic, struct journal_sector 
 	} while (++s < ic->sectors_per_block);
 }
 
-static void journal_verify_range(struct dm_integrity_c *ic, unsigned i, unsigned j, unsigned k,
-				 sector_t *metadata_block, unsigned *metadata_offset,
-				 sector_t sec, bool from_replay)
-{
-	unsigned l;
-
-	for (l = j; l < k; l++) {
-		int r;
-		struct journal_entry *je2 = access_journal_entry(ic, i, l);
-
-		if (
-#ifndef INTERNAL_VERIFY
-		    unlikely(from_replay) &&
-#endif
-		    ic->internal_hash) {
-			char test_tag[max_t(size_t, HASH_MAX_DIGESTSIZE, MAX_TAG_SIZE)];
-
-			integrity_sector_checksum(ic, sec + ((l - j) << ic->sb->log2_sectors_per_block),
-						  (char *)access_journal_data(ic, i, l), test_tag);
-			if (unlikely(memcmp(test_tag, journal_entry_tag(ic, je2), ic->tag_size)))
-				dm_integrity_io_error(ic, "tag mismatch when replaying journal", -EILSEQ);
-		}
-
-		journal_entry_set_unused(je2);
-		r = dm_integrity_rw_tag(ic, journal_entry_tag(ic, je2), metadata_block, metadata_offset,
-					ic->tag_size, TAG_WRITE);
-		if (unlikely(r)) {
-			dm_integrity_io_error(ic, "reading tags", r);
-		}
-	}
-}
-
 static void do_journal_write(struct dm_integrity_c *ic, unsigned write_start,
 			     unsigned write_sections, bool from_replay)
 {
@@ -2553,8 +2521,30 @@ static void do_journal_write(struct dm_integrity_c *ic, unsigned write_start,
 			spin_unlock_irq(&ic->endio_wait.lock);
 
 			metadata_block = get_metadata_sector_and_offset(ic, area, offset, &metadata_offset);
+			for (l = j; l < k; l++) {
+				int r;
+				struct journal_entry *je2 = access_journal_entry(ic, i, l);
 
-			journal_verify_range(ic, i, j, k, &metadata_block, &metadata_offset, sec, from_replay);
+				if (
+#ifndef INTERNAL_VERIFY
+				    unlikely(from_replay) &&
+#endif
+				    ic->internal_hash) {
+					char test_tag[max_t(size_t, HASH_MAX_DIGESTSIZE, MAX_TAG_SIZE)];
+
+					integrity_sector_checksum(ic, sec + ((l - j) << ic->sb->log2_sectors_per_block),
+								  (char *)access_journal_data(ic, i, l), test_tag);
+					if (unlikely(memcmp(test_tag, journal_entry_tag(ic, je2), ic->tag_size)))
+						dm_integrity_io_error(ic, "tag mismatch when replaying journal", -EILSEQ);
+				}
+
+				journal_entry_set_unused(je2);
+				r = dm_integrity_rw_tag(ic, journal_entry_tag(ic, je2), &metadata_block, &metadata_offset,
+							ic->tag_size, TAG_WRITE);
+				if (unlikely(r)) {
+					dm_integrity_io_error(ic, "reading tags", r);
+				}
+			}
 
 			atomic_inc(&comp.in_flight);
 			copy_from_journal(ic, i, j << ic->sb->log2_sectors_per_block,
