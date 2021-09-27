@@ -7,8 +7,6 @@
 #ifndef _ASM_S390_SYSCALL_WRAPPER_H
 #define _ASM_S390_SYSCALL_WRAPPER_H
 
-#define __SC_TYPE(t, a) t
-
 #define SYSCALL_PT_ARG6(regs, m, t1, t2, t3, t4, t5, t6)\
 	SYSCALL_PT_ARG5(regs, m, t1, t2, t3, t4, t5),	\
 		m(t6, (regs->gprs[7]))
