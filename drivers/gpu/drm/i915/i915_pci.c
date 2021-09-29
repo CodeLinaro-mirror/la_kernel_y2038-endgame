@@ -31,7 +31,7 @@
 #include "i915_pci.h"
 
 
-__diag_ignore(GCC, 8, "-Woverride-init", "features all override one another")
+__diag_ignore(GCC, 5, "-Woverride-init", "features all override one another")
 __diag_ignore(CLANG, 9, "-Winitializer-overrides", "features all override one another")
 
 #define PLATFORM(x) .platform = (x)
