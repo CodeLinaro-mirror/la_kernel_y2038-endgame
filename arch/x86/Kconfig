@@ -461,6 +461,7 @@ config GOLDFISH
 
 config RETPOLINE
 	bool "Avoid speculative indirect branches in kernel"
+	depends on GCC_VERSION >= 70100 || !COMPILE_TEST
 	default y
 	help
 	  Compile kernel with the retpoline compiler options to guard against
