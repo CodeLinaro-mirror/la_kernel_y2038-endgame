@@ -12,7 +12,7 @@
 #define sys_rt_sigreturn sys_rt_sigreturn_wrapper
 #define sys_fadvise64_64 sys_fadvise64_64_wrapper
 
-__diag_ignore(GCC, 8, "-Woverride-init", "default to sys_ni_syscall")
+__diag_ignore(GCC, 5, "-Woverride-init", "default to sys_ni_syscall")
 __diag_ignore(CLANG, 9, "-Winitializer-overrides", "default to sys_ni_syscall")
 
 void *sys_call_table[__NR_syscalls] __aligned(8192) = {

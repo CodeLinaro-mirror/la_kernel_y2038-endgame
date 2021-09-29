@@ -159,7 +159,7 @@ static int kvm_handle_ptrauth(struct kvm_vcpu *vcpu)
 }
 
 __diag_push()
-__diag_ignore(GCC, 8, "-Woverride-init", "for ESR_ELx_EC_MAX")
+__diag_ignore(GCC, 5, "-Woverride-init", "for ESR_ELx_EC_MAX")
 __diag_ignore(CLANG, 9, "-Winitializer-overrides", "for ESR_ELx_EC_MAX")
 
 static exit_handle_fn arm_exit_handlers[] = {

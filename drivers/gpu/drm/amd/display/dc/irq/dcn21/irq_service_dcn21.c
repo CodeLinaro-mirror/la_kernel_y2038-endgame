@@ -237,7 +237,7 @@ static const struct irq_source_info_funcs vline0_irq_info_funcs = {
 #define SRI_DMUB(reg_name)\
 	BASE(mm ## reg_name ## _BASE_IDX) + \
 			mm ## reg_name
-__diag_ignore(GCC, 8, "-Woverride-init", "override IRQ_REG_ENTRY")
+__diag_ignore(GCC, 5, "-Woverride-init", "override IRQ_REG_ENTRY")
 __diag_ignore(CLANG, 9, "-Winitializer-overrides", "override IRQ_REG_ENTRY")
 
 #define IRQ_REG_ENTRY(block, reg_num, reg1, mask1, reg2, mask2)\

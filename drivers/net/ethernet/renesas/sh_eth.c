@@ -52,7 +52,7 @@
  * the macros available to do this only define GCC 8.
  */
 __diag_push();
-__diag_ignore(GCC, 8, "-Woverride-init",
+__diag_ignore(GCC, 5, "-Woverride-init",
 	      "logic to initialize all and then override some is OK");
 __diag_ignore(CLANG, 9, "-Winitializer-overrides",
 	      "logic to initialize all and then override some is OK");
