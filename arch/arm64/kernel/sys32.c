@@ -129,7 +129,7 @@ COMPAT_SYSCALL_DEFINE6(aarch32_fallocate, int, fd, int, mode,
 #undef __SYSCALL
 #define __SYSCALL(nr, sym)	[nr] = __arm64_##sym,
 
-__diag_ignore(GCC, 8, "-Woverride-init", "for __arm64_sys_ni_syscall")
+__diag_ignore(GCC, 5, "-Woverride-init", "for __arm64_sys_ni_syscall")
 __diag_ignore(CLANG, 9, "-Winitializer-overrides", "for __arm64_sys_ni_syscall")
 
 const syscall_fn_t compat_sys_call_table[__NR_compat_syscalls] = {
