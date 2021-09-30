@@ -427,13 +427,6 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
 {
 	const struct device_node *np = smmu->dev->of_node;
 
-	/*
-	 * QCOM_SCM is selected when we need it, but in randconfig
-	 * compile tests, it may be a loadable module with SMMU=y
-	 */
-	if (!IS_REACHABLE(CONFIG_QCOM_SCM))
-		return ERR_PTR(-ENXIO);
-
 #ifdef CONFIG_ACPI
 	if (np == NULL) {
 		/* Match platform for ACPI boot */
