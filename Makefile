@@ -804,6 +804,7 @@ else ifdef CONFIG_CPU_32v4T
 # "warning: lld uses blx instruction, no object with architecture supporting feature detected"
 LD		= $(CROSS_COMPILE)ld
 endif
+endif
 
 ifdef CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
 KBUILD_CFLAGS += -O2
