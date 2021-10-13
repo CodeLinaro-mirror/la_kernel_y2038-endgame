@@ -214,8 +214,6 @@ config DELL_WMI
 	  To compile this driver as a module, choose M here: the module will
 	  be called dell-wmi.
 
-if DELL_WMI
-
 config DELL_WMI_PRIVACY
 	bool "Dell WMI Hardware Privacy Support"
 	depends on DELL_WMI
@@ -277,7 +275,5 @@ config DELL_WMI_SYSMAN
 
 	  To compile this driver as a module, choose M here: the module will
 	  be called dell-wmi-sysman.
-
-endif # DELL_WMI
 
 endif # X86_PLATFORM_DRIVERS_DELL
