@@ -478,7 +478,7 @@ void klp_try_complete_transition(void)
 	cpus_read_lock();
 	for_each_possible_cpu(cpu) {
 		task = idle_task(cpu);
-		if (cpu_online(cpu)) {
+		if (IS_ENABLED(CONFIG_SMP) && cpu_online(cpu)) {
 			if (!klp_try_switch_task(task)) {
 				complete = false;
 				/* Make idle task go through the main loop. */
