@@ -153,7 +153,11 @@ else
         cflags-$(CONFIG_MK8)		+= -march=k8
         cflags-$(CONFIG_MPSC)		+= -march=nocona
         cflags-$(CONFIG_MCORE2)		+= -march=core2
+ifdef CONFIG_CC_IS_CLANG
+        cflags-$(CONFIG_MATOM)		+= -march=atom -mtune=generic
+else
         cflags-$(CONFIG_MATOM)		+= -march=atom
+endif
         cflags-$(CONFIG_GENERIC_CPU)	+= -mtune=generic
         KBUILD_CFLAGS += $(cflags-y)
 
