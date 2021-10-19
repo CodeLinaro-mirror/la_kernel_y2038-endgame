@@ -26,7 +26,12 @@ cflags-$(CONFIG_MEFFICEON)	+= -march=i686 $(call tune,pentium3) $(align)
 cflags-$(CONFIG_MCYRIXIII)	+= -march=i586 $(call tune,i486) $(align)
 cflags-$(CONFIG_MVIAC3_2)	+= -march=i686
 cflags-$(CONFIG_MVIAC7)		+= -march=i686
+ifdef CONFIG_CC_IS_CLANG
+# clang produces build failures for -mtune=atom
+cflags-$(CONFIG_MATOM)		+= -march=i686
+else
 cflags-$(CONFIG_MATOM)		+= -march=i686 $(call tune,atom)
+endif
 
 # Geode GX1 support
 cflags-$(CONFIG_MGEODEGX1)	+= -march=i586 $(call tune,geode)
