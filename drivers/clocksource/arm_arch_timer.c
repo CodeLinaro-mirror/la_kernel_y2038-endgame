@@ -174,6 +174,7 @@ u32 arch_timer_reg_read(int access, enum arch_timer_reg reg,
 			break;
 		default:
 			BUILD_BUG();
+			unreachable();
 		}
 	} else if (access == ARCH_TIMER_MEM_VIRT_ACCESS) {
 		struct arch_timer *timer = to_arch_timer(clk);
@@ -183,6 +184,7 @@ u32 arch_timer_reg_read(int access, enum arch_timer_reg reg,
 			break;
 		default:
 			BUILD_BUG();
+			unreachable();
 		}
 	} else {
 		val = arch_timer_reg_read_cp15(access, reg);
