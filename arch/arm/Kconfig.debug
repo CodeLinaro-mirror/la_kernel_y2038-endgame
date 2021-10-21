@@ -1843,6 +1843,7 @@ config ARM_KPROBES_TEST
 config PID_IN_CONTEXTIDR
 	bool "Write the current PID to the CONTEXTIDR register"
 	depends on CPU_COPY_V6
+	depends on !THREAD_INFO_IN_TASK
 	help
 	  Enabling this option causes the kernel to write the current PID to
 	  the PROCID field of the CONTEXTIDR register, at the expense of some
