@@ -653,6 +653,7 @@ static int amd_pmc_get_os_hint(struct amd_pmc_dev *dev)
 	return -EINVAL;
 }
 
+#ifdef CONFIG_RTC_SYSTOHC
 static int amd_pmc_verify_czn_rtc(struct amd_pmc_dev *pdev, u32 *arg)
 {
 	struct rtc_device *rtc_device;
@@ -704,6 +705,7 @@ static int amd_pmc_verify_czn_rtc(struct amd_pmc_dev *pdev, u32 *arg)
 
 	return rc;
 }
+#endif
 
 static void amd_pmc_s2idle_prepare(void)
 {
@@ -715,6 +717,7 @@ static void amd_pmc_s2idle_prepare(void)
 	/* Reset and Start SMU logging - to monitor the s0i3 stats */
 	amd_pmc_setup_smu_logging(pdev);
 
+#ifdef CONFIG_RTC_SYSTOHC
 	/* Activate CZN specific RTC functionality */
 	if (pdev->cpu_id == AMD_CPU_ID_CZN) {
 		rc = amd_pmc_verify_czn_rtc(pdev, &arg);
@@ -723,6 +726,7 @@ static void amd_pmc_s2idle_prepare(void)
 			return;
 		}
 	}
+#endif
 
 	msg = amd_pmc_get_os_hint(pdev);
 	rc = amd_pmc_send_cmd(pdev, arg, NULL, msg, 0);
