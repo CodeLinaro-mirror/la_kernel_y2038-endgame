@@ -17,7 +17,7 @@
 #include <linux/reset-controller.h>
 #include <linux/arm-smccc.h>
 
-#if defined(CONFIG_ARM) || defined(CONFIG_ARM64)
+#if defined(CONFIG_SMP) && (defined(CONFIG_ARM) || defined(CONFIG_ARM64))
 #include <asm/smp_plat.h>
 #endif
 
@@ -264,7 +264,7 @@ static bool __qcom_scm_is_call_available(struct device *dev, u32 svc_id,
 	return ret ? false : !!res.result[0];
 }
 
-#if defined(CONFIG_ARM) || defined(CONFIG_ARM64)
+#if defined(CONFIG_SMP) && (defined(CONFIG_ARM) || defined(CONFIG_ARM64))
 static int __qcom_scm_set_boot_addr_mc(void *entry, const cpumask_t *cpus,
 				       unsigned int flags)
 {
