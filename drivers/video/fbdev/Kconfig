@@ -100,14 +100,6 @@ menuconfig FB
 	  (e.g. an accelerated X server) and that are not frame buffer
 	  device-aware may cause unexpected results. If unsure, say N.
 
-config FBDEV
-	bool "User space access to framebuffer" if FRAMEBUFFER_CONSOLE
-	depends on FB
-	default y
-	help
-	  This allows interacting with the framebuffer using the /dev/fb*
-	  device nodes and sysfs.
-
 config FIRMWARE_EDID
 	bool "Enable firmware EDID"
 	depends on FB
