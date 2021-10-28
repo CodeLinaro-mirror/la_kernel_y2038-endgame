@@ -57,7 +57,7 @@ bool fb_center_logo __read_mostly;
 
 int fb_logo_count __read_mostly = -1;
 
-#if IS_ENABLED(CONFIG_FB)
+#if IS_ENABLED(CONFIG_FBDEV)
 static struct fb_info *get_fb_info(unsigned int idx)
 {
 	struct fb_info *fb_info;
@@ -708,7 +708,7 @@ int fb_show_logo(struct fb_info *info, int rotate) { return 0; }
 EXPORT_SYMBOL(fb_prepare_logo);
 EXPORT_SYMBOL(fb_show_logo);
 
-#if IS_ENABLED(CONFIG_FB)
+#if IS_ENABLED(CONFIG_FBDEV)
 static void *fb_seq_start(struct seq_file *m, loff_t *pos)
 {
 	mutex_lock(&registration_lock);
@@ -1091,7 +1091,7 @@ fb_blank(struct fb_info *info, int blank)
 }
 EXPORT_SYMBOL(fb_blank);
 
-#if IS_ENABLED(CONFIG_FB)
+#if IS_ENABLED(CONFIG_FBDEV)
 static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
 			unsigned long arg)
 {
@@ -1612,7 +1612,7 @@ static int do_register_framebuffer(struct fb_info *fb_info)
 	mutex_init(&fb_info->lock);
 	mutex_init(&fb_info->mm_lock);
 
-#if IS_ENABLED(CONFIG_FB)
+#if IS_ENABLED(CONFIG_FBDEV)
 	fb_info->dev = device_create(fb_class, fb_info->device,
 				     MKDEV(FB_MAJOR, i), NULL, "fb%d", i);
 	if (IS_ERR(fb_info->dev)) {
@@ -1705,7 +1705,7 @@ static void unlink_framebuffer(struct fb_info *fb_info)
 	if (!fb_info->dev)
 		return;
 
-#if IS_ENABLED(CONFIG_FB)
+#if IS_ENABLED(CONFIG_FBDEV)
 	device_destroy(fb_class, MKDEV(FB_MAJOR, i));
 #endif
 
@@ -1730,7 +1730,7 @@ static void do_unregister_framebuffer(struct fb_info *fb_info)
 #endif
 	registered_fb[fb_info->node] = NULL;
 	num_registered_fb--;
-#if IS_ENABLED(CONFIG_FB)
+#if IS_ENABLED(CONFIG_FBDEV)
 	fb_cleanup_device(fb_info);
 #endif
 #ifdef CONFIG_GUMSTIX_AM200EPD
@@ -1969,7 +1969,7 @@ void fb_set_suspend(struct fb_info *info, int state)
 }
 EXPORT_SYMBOL(fb_set_suspend);
 
-#if IS_ENABLED(CONFIG_FB)
+#if IS_ENABLED(CONFIG_FBDEV)
 /**
  *	fbmem_init - init frame buffer subsystem
  *
