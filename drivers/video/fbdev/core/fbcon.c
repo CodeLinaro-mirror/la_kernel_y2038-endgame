@@ -180,8 +180,11 @@ static void fbcon_set_palette(struct vc_data *vc, const unsigned char *table);
 /*
  *  Internal routines
  */
+
+#if IS_ENABLED(CONFIG_FB)
 static void fbcon_set_disp(struct fb_info *info, struct fb_var_screeninfo *var,
 			   int unit);
+#endif
 static void fbcon_modechanged(struct fb_info *info);
 static void fbcon_set_all_vcs(struct fb_info *info);
 static void fbcon_start(void);
@@ -795,7 +798,9 @@ static void con2fb_init_display(struct vc_data *vc, struct fb_info *info,
 
 	ops->flags |= FBCON_FLAGS_INIT;
 	ops->graphics = 0;
+#if IS_ENABLED(CONFIG_FB)
 	fbcon_set_disp(info, &info->var, unit);
+#endif
 
 	if (show_logo) {
 		struct vc_data *fg_vc = vc_cons[fg_console].d;
@@ -896,17 +901,21 @@ static int var_to_display(struct fbcon_display *disp,
 	disp->blue = var->blue;
 	disp->transp = var->transp;
 	disp->rotate = var->rotate;
+#if IS_ENABLED(CONFIG_FB)
 	disp->mode = fb_match_mode(var, &info->modelist);
 	if (disp->mode == NULL)
 		/* This should not happen */
 		return -EINVAL;
+#endif
 	return 0;
 }
 
 static void display_to_var(struct fb_var_screeninfo *var,
 			   struct fbcon_display *disp)
 {
+#if IS_ENABLED(CONFIG_FB)
 	fb_videomode_to_var(var, disp->mode);
+#endif
 	var->xres_virtual = disp->xres_virtual;
 	var->yres_virtual = disp->yres_virtual;
 	var->bits_per_pixel = disp->bits_per_pixel;
@@ -1325,6 +1334,7 @@ static int scrollback_phys_max = 0;
 static int scrollback_max = 0;
 static int scrollback_current = 0;
 
+#if IS_ENABLED(CONFIG_FB)
 static void fbcon_set_disp(struct fb_info *info, struct fb_var_screeninfo *var,
 			   int unit)
 {
@@ -1389,6 +1399,7 @@ static void fbcon_set_disp(struct fb_info *info, struct fb_var_screeninfo *var,
 		update_screen(vc);
 	}
 }
+#endif
 
 static void fbcon_redraw(struct vc_data *vc, struct fbcon_display *p,
 			 int line, int count, int offset)
@@ -1512,6 +1523,7 @@ static void updatescrollmode(struct fbcon_display *p,
 #define PITCH(w) (((w) + 7) >> 3)
 #define CALC_FONTSZ(h, p, c) ((h) * (p) * (c)) /* size = height * pitch * charcount */
 
+#if IS_ENABLED(CONFIG_FB)
 static int fbcon_resize(struct vc_data *vc, unsigned int width, 
 			unsigned int height, unsigned int user)
 {
@@ -1575,6 +1587,7 @@ static int fbcon_resize(struct vc_data *vc, unsigned int width,
 	updatescrollmode(p, info, vc);
 	return 0;
 }
+#endif
 
 static int fbcon_switch(struct vc_data *vc)
 {
@@ -1624,7 +1637,9 @@ static int fbcon_switch(struct vc_data *vc)
 	 */
 	info->var.activate = var.activate;
 	var.vmode |= info->var.vmode & ~FB_VMODE_MASK;
+#if IS_ENABLED(CONFIG_FB)
 	fb_set_var(info, &var);
+#endif
 	ops->var = info->var;
 
 	if (old_info != NULL && (old_info != info ||
@@ -1709,7 +1724,7 @@ static int fbcon_blank(struct vc_data *vc, int blank, int mode_switch)
 {
 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
 	struct fbcon_ops *ops = info->fbcon_par;
-
+#if IS_ENABLED(CONFIG_FB)
 	if (mode_switch) {
 		struct fb_var_screeninfo var = info->var;
 
@@ -1723,7 +1738,7 @@ static int fbcon_blank(struct vc_data *vc, int blank, int mode_switch)
 			ops->var = info->var;
 		}
 	}
-
+#endif
  	if (!fbcon_is_inactive(vc, info)) {
 		if (ops->blank_state != blank) {
 			ops->blank_state = blank;
@@ -2183,7 +2198,7 @@ static void fbcon_modechanged(struct fb_info *info)
 	}
 }
 
-static void fbcon_set_all_vcs(struct fb_info *info)
+static __maybe_unused void fbcon_set_all_vcs(struct fb_info *info)
 {
 	struct fbcon_ops *ops = info->fbcon_par;
 	struct vc_data *vc;
@@ -2219,6 +2234,7 @@ static void fbcon_set_all_vcs(struct fb_info *info)
 }
 
 
+#if IS_ENABLED(CONFIG_FB)
 void fbcon_update_vcs(struct fb_info *info, bool all)
 {
 	if (all)
@@ -2253,6 +2269,7 @@ int fbcon_mode_deleted(struct fb_info *info,
 	}
 	return found;
 }
+#endif
 
 #ifdef CONFIG_VT_HW_CONSOLE_BINDING
 static void fbcon_unbind(void)
@@ -2471,6 +2488,7 @@ void fbcon_fb_blanked(struct fb_info *info, int blank)
 	ops->blank_state = blank;
 }
 
+#if IS_ENABLED(CONFIG_FB)
 void fbcon_new_modelist(struct fb_info *info)
 {
 	int i;
@@ -2491,6 +2509,7 @@ void fbcon_new_modelist(struct fb_info *info)
 		fbcon_set_disp(info, &var, vc->vc_num);
 	}
 }
+#endif
 
 void fbcon_get_requirement(struct fb_info *info,
 			   struct fb_blit_caps *caps)
@@ -2587,7 +2606,9 @@ static const struct consw fb_con = {
 	.con_invert_region 	= fbcon_invert_region,
 	.con_screen_pos 	= fbcon_screen_pos,
 	.con_getxy 		= fbcon_getxy,
+#if IS_ENABLED(CONFIG_FB)
 	.con_resize             = fbcon_resize,
+#endif
 	.con_debug_enter	= fbcon_debug_enter,
 	.con_debug_leave	= fbcon_debug_leave,
 };
