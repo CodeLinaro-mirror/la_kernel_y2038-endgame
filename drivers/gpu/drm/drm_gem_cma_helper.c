@@ -13,6 +13,7 @@
 #include <linux/dma-mapping.h>
 #include <linux/export.h>
 #include <linux/mm.h>
+#include <linux/module.h>
 #include <linux/mutex.h>
 #include <linux/slab.h>
 
@@ -21,6 +22,8 @@
 #include <drm/drm_drv.h>
 #include <drm/drm_gem_cma_helper.h>
 #include <drm/drm_vma_manager.h>
+
+MODULE_IMPORT_NS(DMA_BUF);
 
 /**
  * DOC: cma helpers
