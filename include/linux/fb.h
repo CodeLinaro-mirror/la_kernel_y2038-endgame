@@ -453,9 +453,7 @@ struct fb_info {
 	struct fb_pixmap pixmap;	/* Image hardware mapper */
 	struct fb_pixmap sprite;	/* Cursor hardware mapper */
 	struct fb_cmap cmap;		/* Current cmap */
-#if IS_ENABLED(CONFIG_FB)
 	struct list_head modelist;      /* mode list */
-#endif
 	struct fb_videomode *mode;	/* current mode */
 
 #if IS_ENABLED(CONFIG_FB_BACKLIGHT)
