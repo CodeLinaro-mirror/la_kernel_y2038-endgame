@@ -694,8 +694,18 @@ static inline bool fb_be_math(struct fb_info *info)
 /* drivers/video/fbsysfs.c */
 extern struct fb_info *framebuffer_alloc(size_t size, struct device *dev);
 extern void framebuffer_release(struct fb_info *info);
+#ifdef CONFIG_FB_DEVICE
 extern int fb_init_device(struct fb_info *fb_info);
 extern void fb_cleanup_device(struct fb_info *head);
+#else
+static inline int fb_init_device(struct fb_info *fb_info)
+{
+	return 0;
+}
+static inline void fb_cleanup_device(struct fb_info *head)
+{
+}
+#endif
 extern void fb_bl_default_curve(struct fb_info *fb_info, u8 off, u8 min, u8 max);
 
 /* drivers/video/fbmon.c */
