@@ -57,7 +57,6 @@ bool fb_center_logo __read_mostly;
 
 int fb_logo_count __read_mostly = -1;
 
-#if IS_ENABLED(CONFIG_FB)
 static struct fb_info *get_fb_info(unsigned int idx)
 {
 	struct fb_info *fb_info;
@@ -73,7 +72,6 @@ static struct fb_info *get_fb_info(unsigned int idx)
 
 	return fb_info;
 }
-#endif
 
 static void put_fb_info(struct fb_info *fb_info)
 {
@@ -708,7 +706,6 @@ int fb_show_logo(struct fb_info *info, int rotate) { return 0; }
 EXPORT_SYMBOL(fb_prepare_logo);
 EXPORT_SYMBOL(fb_show_logo);
 
-#if IS_ENABLED(CONFIG_FB)
 static void *fb_seq_start(struct seq_file *m, loff_t *pos)
 {
 	mutex_lock(&registration_lock);
@@ -898,7 +895,6 @@ fb_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
 
 	return (cnt) ? cnt : err;
 }
-#endif
 
 int
 fb_pan_display(struct fb_info *info, struct fb_var_screeninfo *var)
@@ -938,7 +934,6 @@ fb_pan_display(struct fb_info *info, struct fb_var_screeninfo *var)
 }
 EXPORT_SYMBOL(fb_pan_display);
 
-#if IS_ENABLED(CONFIG_FB)
 static int fb_check_caps(struct fb_info *info, struct fb_var_screeninfo *var,
 			 u32 activate)
 {
@@ -1067,7 +1062,6 @@ fb_set_var(struct fb_info *info, struct fb_var_screeninfo *var)
 	return 0;
 }
 EXPORT_SYMBOL(fb_set_var);
-#endif
 
 int
 fb_blank(struct fb_info *info, int blank)
@@ -1091,7 +1085,6 @@ fb_blank(struct fb_info *info, int blank)
 }
 EXPORT_SYMBOL(fb_blank);
 
-#if IS_ENABLED(CONFIG_FB)
 static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
 			unsigned long arg)
 {
@@ -1492,7 +1485,6 @@ static const struct file_operations fb_fops = {
 
 struct class *fb_class;
 EXPORT_SYMBOL(fb_class);
-#endif
 
 static int fb_check_foreignness(struct fb_info *fi)
 {
@@ -1589,9 +1581,7 @@ MODULE_PARM_DESC(lockless_register_fb,
 static int do_register_framebuffer(struct fb_info *fb_info)
 {
 	int i, ret;
-#if IS_ENABLED(CONFIG_FB)
 	struct fb_videomode mode;
-#endif
 
 	if (fb_check_foreignness(fb_info))
 		return -ENOSYS;
@@ -1612,7 +1602,6 @@ static int do_register_framebuffer(struct fb_info *fb_info)
 	mutex_init(&fb_info->lock);
 	mutex_init(&fb_info->mm_lock);
 
-#if IS_ENABLED(CONFIG_FB)
 	fb_info->dev = device_create(fb_class, fb_info->device,
 				     MKDEV(FB_MAJOR, i), NULL, "fb%d", i);
 	if (IS_ERR(fb_info->dev)) {
@@ -1621,7 +1610,6 @@ static int do_register_framebuffer(struct fb_info *fb_info)
 		fb_info->dev = NULL;
 	} else
 		fb_init_device(fb_info);
-#endif
 
 	if (fb_info->pixmap.addr == NULL) {
 		fb_info->pixmap.addr = kmalloc(FBPIXMAPSIZE, GFP_KERNEL);
@@ -1641,20 +1629,16 @@ static int do_register_framebuffer(struct fb_info *fb_info)
 	if (!fb_info->pixmap.blit_y)
 		fb_info->pixmap.blit_y = ~(u32)0;
 
-#if IS_ENABLED(CONFIG_FB)
 	if (!fb_info->modelist.prev || !fb_info->modelist.next)
 		INIT_LIST_HEAD(&fb_info->modelist);
-#endif
 
 	if (fb_info->skip_vt_switch)
 		pm_vt_switch_required(fb_info->dev, false);
 	else
 		pm_vt_switch_required(fb_info->dev, true);
 
-#if IS_ENABLED(CONFIG_FB)
 	fb_var_to_videomode(&mode, &fb_info->var);
 	fb_add_videomode(&mode, &fb_info->modelist);
-#endif
 	registered_fb[i] = fb_info;
 
 #ifdef CONFIG_GUMSTIX_AM200EPD
@@ -1705,9 +1689,7 @@ static void unlink_framebuffer(struct fb_info *fb_info)
 	if (!fb_info->dev)
 		return;
 
-#if IS_ENABLED(CONFIG_FB)
 	device_destroy(fb_class, MKDEV(FB_MAJOR, i));
-#endif
 
 	pm_vt_switch_unregister(fb_info->dev);
 
@@ -1725,14 +1707,10 @@ static void do_unregister_framebuffer(struct fb_info *fb_info)
 		fb_info->pixmap.addr = NULL;
 	}
 
-#if IS_ENABLED(CONFIG_FB)
 	fb_destroy_modelist(&fb_info->modelist);
-#endif
 	registered_fb[fb_info->node] = NULL;
 	num_registered_fb--;
-#if IS_ENABLED(CONFIG_FB)
 	fb_cleanup_device(fb_info);
-#endif
 #ifdef CONFIG_GUMSTIX_AM200EPD
 	{
 		struct fb_event event;
@@ -1833,73 +1811,6 @@ int remove_conflicting_pci_framebuffers(struct pci_dev *pdev, const char *name)
 EXPORT_SYMBOL(remove_conflicting_pci_framebuffers);
 
 /**
- * framebuffer_alloc - creates a new frame buffer info structure
- *
- * @size: size of driver private data, can be zero
- * @dev: pointer to the device for this fb, this can be NULL
- *
- * Creates a new frame buffer info structure. Also reserves @size bytes
- * for driver private data (info->par). info->par (if any) will be
- * aligned to sizeof(long).
- *
- * Returns the new structure, or NULL if an error occurred.
- *
- */
-struct fb_info *framebuffer_alloc(size_t size, struct device *dev)
-{
-#define BYTES_PER_LONG (BITS_PER_LONG/8)
-#define PADDING (BYTES_PER_LONG - (sizeof(struct fb_info) % BYTES_PER_LONG))
-	int fb_info_size = sizeof(struct fb_info);
-	struct fb_info *info;
-	char *p;
-
-	if (size)
-		fb_info_size += PADDING;
-
-	p = kzalloc(fb_info_size + size, GFP_KERNEL);
-
-	if (!p)
-		return NULL;
-
-	info = (struct fb_info *) p;
-
-	if (size)
-		info->par = p + fb_info_size;
-
-	info->device = dev;
-	info->fbcon_rotate_hint = -1;
-
-#if IS_ENABLED(CONFIG_FB_BACKLIGHT)
-	mutex_init(&info->bl_curve_mutex);
-#endif
-
-	return info;
-#undef PADDING
-#undef BYTES_PER_LONG
-}
-EXPORT_SYMBOL(framebuffer_alloc);
-
-/**
- * framebuffer_release - marks the structure available for freeing
- *
- * @info: frame buffer info structure
- *
- * Drop the reference count of the device embedded in the
- * framebuffer info structure.
- *
- */
-void framebuffer_release(struct fb_info *info)
-{
-	if (!info)
-		return;
-	kfree(info->apertures);
-	kfree(info);
-}
-EXPORT_SYMBOL(framebuffer_release);
-
-
-
-/**
  *	register_framebuffer - registers a frame buffer device
  *	@fb_info: frame buffer info structure
  *
@@ -1969,7 +1880,6 @@ void fb_set_suspend(struct fb_info *info, int state)
 }
 EXPORT_SYMBOL(fb_set_suspend);
 
-#if IS_ENABLED(CONFIG_FB)
 /**
  *	fbmem_init - init frame buffer subsystem
  *
@@ -2059,6 +1969,5 @@ int fb_new_modelist(struct fb_info *info)
 
 	return 0;
 }
-#endif
 
 MODULE_LICENSE("GPL");
