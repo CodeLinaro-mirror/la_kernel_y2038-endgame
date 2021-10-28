@@ -5,8 +5,7 @@ obj-$(CONFIG_FB)                  += fb.o
 obj-$(CONFIG_DRM_FBDEV_EMULATION) += fb.o
 
 fb-y				  += fbmem.o fbcmap.o 
-fb-$(CONFIG_FB)			  += fbmon.o fbcvt.o modedb.o
-fb-$(CONFIG_FBDEV)		  += fbsysfs.o
+fb-$(CONFIG_FB)			  += fbmon.o fbcvt.o fbsysfs.o modedb.o
 
 fb-$(CONFIG_FB_DEFERRED_IO)	  += fb_defio.o
 
