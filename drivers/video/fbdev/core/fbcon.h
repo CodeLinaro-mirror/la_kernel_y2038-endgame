@@ -47,7 +47,9 @@ struct fbcon_display {
     struct fb_bitfield green;
     struct fb_bitfield blue;
     struct fb_bitfield transp;
+#if IS_ENABLED(CONFIG_FB)
     const struct fb_videomode *mode;
+#endif
 };
 
 struct fbcon_ops {
