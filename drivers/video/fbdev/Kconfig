@@ -20,6 +20,14 @@ menuconfig FB
 	  a well-defined interface, so the software doesn't need to know
 	  anything about the low-level (hardware register) stuff.
 
+	  To use the framebuffer, select at least one of CONFIG_FB_DEVICE or
+	  CONFIG_FRAMEBUFFER_CONSOLE.
+
+config FB_DEVICE
+	bool "Support for user space access to framebuffer"
+	depends on FB
+	default y
+	help
 	  Frame buffer devices work identically across the different
 	  architectures supported by Linux and make the implementation of
 	  application programs easier and more portable; at this point, an X
