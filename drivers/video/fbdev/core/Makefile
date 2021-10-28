@@ -6,6 +6,7 @@ fb-y                              := fbmem.o fbmon.o fbcmap.o fbsysfs.o \
                                      modedb.o fbcvt.o
 fb-$(CONFIG_FB_DEFERRED_IO)       += fb_defio.o
 fb-$(CONFIG_LOGO)		  += fb_logo.o
+fb-y				  += fb_device.o
 
 ifeq ($(CONFIG_FRAMEBUFFER_CONSOLE),y)
 fb-y				  += fbcon.o bitblit.o softcursor.o
