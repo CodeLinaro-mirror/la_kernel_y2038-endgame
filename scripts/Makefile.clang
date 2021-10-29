@@ -37,4 +37,6 @@ CLANG_FLAGS	+= -Werror=unknown-warning-option
 CLANG_FLAGS	+= -Werror=ignored-optimization-argument
 KBUILD_CFLAGS	+= $(CLANG_FLAGS)
 KBUILD_AFLAGS	+= $(CLANG_FLAGS)
+KBUILD_USERCFLAGS += $(CLANG_FLAGS)
+KBUILD_USERLDFLAGS += $(CLANG_FLAGS)
 export CLANG_FLAGS
