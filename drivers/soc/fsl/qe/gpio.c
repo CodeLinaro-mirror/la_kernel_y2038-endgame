@@ -154,7 +154,7 @@ struct qe_pin {
  * This function return qe_pin so that you could use it with the rest of
  * the QE Pin Multiplexing API.
  */
-struct qe_pin *qe_pin_request(struct device_node *np, int index)
+struct qe_pin *qe_pin_request(struct gpio_desc *desc)
 {
 	struct qe_pin *qe_pin;
 	struct gpio_chip *gc;
@@ -168,10 +168,7 @@ struct qe_pin *qe_pin_request(struct device_node *np, int index)
 		return ERR_PTR(-ENOMEM);
 	}
 
-	err = of_get_gpio(np, index);
-	if (err < 0)
-		goto err0;
-	gc = gpiod_to_chip(gpio_to_desc(err));
+	gc = gpiod_to_chip(desc);
 	if (WARN_ON(!gc)) {
 		err = -ENODEV;
 		goto err0;

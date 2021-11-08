@@ -19,7 +19,7 @@
 #include <linux/i2c.h>
 #include <linux/mutex.h>
 #include <linux/delay.h>
-#include <linux/gpio.h>
+#include <linux/gpio/consumer.h>
 #include <linux/input/auo-pixcir-ts.h>
 #include <linux/of.h>
 #include <linux/of_gpio.h>
@@ -182,7 +182,7 @@ static irqreturn_t auo_pixcir_interrupt(int irq, void *dev_id)
 
 		/* check for up event in touch touch_ind_mode */
 		if (ts->touch_ind_mode) {
-			if (gpio_get_value(pdata->gpio_int) == 0) {
+			if (gpiod_get_value(pdata->gpio_int) == 0) {
 				input_mt_sync(ts->input);
 				input_report_key(ts->input, BTN_TOUCH, 0);
 				input_sync(ts->input);
@@ -478,14 +478,14 @@ static struct auo_pixcir_ts_platdata *auo_pixcir_parse_dt(struct device *dev)
 	if (!pdata)
 		return ERR_PTR(-ENOMEM);
 
-	pdata->gpio_int = of_get_gpio(np, 0);
-	if (!gpio_is_valid(pdata->gpio_int)) {
+	pdata->gpio_int = devm_gpiod_get_index(dev, NULL, 0, GPIOD_IN);
+	if (IS_ERR(pdata->gpio_int)) {
 		dev_err(dev, "failed to get interrupt gpio\n");
-		return ERR_PTR(-EINVAL);
+		return ERR_CAST(pdata->gpio_int);
 	}
 
-	pdata->gpio_rst = of_get_gpio(np, 1);
-	if (!gpio_is_valid(pdata->gpio_rst)) {
+	pdata->gpio_rst = devm_gpiod_get_index(dev, NULL, 0, GPIOD_OUT_HIGH);
+	if (IS_ERR(pdata->gpio_rst)) {
 		dev_err(dev, "failed to get reset gpio\n");
 		return ERR_PTR(-EINVAL);
 	}
@@ -516,7 +516,7 @@ static void auo_pixcir_reset(void *data)
 {
 	struct auo_pixcir_ts *ts = data;
 
-	gpio_set_value(ts->pdata->gpio_rst, 0);
+	gpiod_set_value(ts->pdata->gpio_rst, 0);
 }
 
 static int auo_pixcir_probe(struct i2c_client *client,
@@ -584,23 +584,6 @@ static int auo_pixcir_probe(struct i2c_client *client,
 	input_set_abs_params(input_dev, ABS_MT_ORIENTATION, 0, 1, 0, 0);
 
 	input_set_drvdata(ts->input, ts);
-
-	error = devm_gpio_request_one(&client->dev, pdata->gpio_int,
-				      GPIOF_DIR_IN, "auo_pixcir_ts_int");
-	if (error) {
-		dev_err(&client->dev, "request of gpio %d failed, %d\n",
-			pdata->gpio_int, error);
-		return error;
-	}
-
-	error = devm_gpio_request_one(&client->dev, pdata->gpio_rst,
-				      GPIOF_DIR_OUT | GPIOF_INIT_HIGH,
-				      "auo_pixcir_ts_rst");
-	if (error) {
-		dev_err(&client->dev, "request of gpio %d failed, %d\n",
-			pdata->gpio_rst, error);
-		return error;
-	}
 
 	error = devm_add_action_or_reset(&client->dev, auo_pixcir_reset, ts);
 	if (error) {

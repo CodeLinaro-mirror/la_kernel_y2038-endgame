@@ -16,14 +16,13 @@
 #include <linux/io.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
-#include <linux/of_gpio.h>
+#include <linux/gpio/consumer.h>
 #include <linux/slab.h>
 #include "common.h"
 
 #define ARMADA_PIC_NR_GPIOS 3
 
 static void __iomem *gpio_ctrl;
-static int pic_gpios[ARMADA_PIC_NR_GPIOS];
 static int pic_raw_gpios[ARMADA_PIC_NR_GPIOS];
 
 static void mvebu_armada_pm_enter(void __iomem *sdram_reg, u32 srcmd)
@@ -92,12 +91,7 @@ static int __init mvebu_armada_pm_init(void)
 	for (i = 0; i < ARMADA_PIC_NR_GPIOS; i++) {
 		char *name;
 		struct of_phandle_args args;
-
-		pic_gpios[i] = of_get_named_gpio(np, "ctrl-gpios", i);
-		if (pic_gpios[i] < 0) {
-			ret = -ENODEV;
-			goto out;
-		}
+		struct gpio_desc *desc;
 
 		name = kasprintf(GFP_KERNEL, "pic-pin%d", i);
 		if (!name) {
@@ -105,23 +99,19 @@ static int __init mvebu_armada_pm_init(void)
 			goto out;
 		}
 
-		ret = gpio_request(pic_gpios[i], name);
-		if (ret < 0) {
+		desc = fwnode_gpiod_get_index(&np->fwnode,
+					      "ctrl-gpios", i,
+					      GPIOD_OUT_LOW, name);
+		if (IS_ERR(desc)) {
 			kfree(name);
-			goto out;
-		}
-
-		ret = gpio_direction_output(pic_gpios[i], 0);
-		if (ret < 0) {
-			gpio_free(pic_gpios[i]);
-			kfree(name);
+			ret = PTR_ERR(desc);
 			goto out;
 		}
 
 		ret = of_parse_phandle_with_fixed_args(np, "ctrl-gpios", 2,
 						       i, &args);
 		if (ret < 0) {
-			gpio_free(pic_gpios[i]);
+			gpiod_put(desc);
 			kfree(name);
 			goto out;
 		}

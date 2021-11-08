@@ -173,9 +173,9 @@ static int pika_setup_leds(void)
 
 	for_each_child_of_node(np, child)
 		if (of_node_name_eq(child, "green"))
-			green_led = of_get_gpio(child, 0);
+			green_led = of_get_named_gpio(child, 0, NULL);
 		else if (of_node_name_eq(child, "red"))
-			red_led = of_get_gpio(child, 0);
+			red_led = of_get_named_gpio(child, 0, NULL);
 
 	of_node_put(np);
 

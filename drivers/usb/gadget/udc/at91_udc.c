@@ -1618,9 +1618,6 @@ static int at91rm9200_udc_init(struct at91_udc *udc)
 		return -ENODEV;
 	}
 
-	gpiod_direction_output(udc->board.pullup_pin,
-			       gpiod_is_active_low(udc->board.pullup_pin));
-
 	return 0;
 }
 
@@ -1768,26 +1765,24 @@ static const struct of_device_id at91_udc_dt_ids[] = {
 };
 MODULE_DEVICE_TABLE(of, at91_udc_dt_ids);
 
-static void at91udc_of_init(struct at91_udc *udc, struct device_node *np)
+static void at91udc_of_init(struct at91_udc *udc, struct device *dev)
 {
 	struct at91_udc_data *board = &udc->board;
 	const struct of_device_id *match;
 	u32 val;
 
-	if (of_property_read_u32(np, "atmel,vbus-polled", &val) == 0)
+	if (of_property_read_u32(dev->of_node, "atmel,vbus-polled", &val) == 0)
 		board->vbus_polled = 1;
 
-	board->vbus_pin = gpiod_get_from_of_node(np, "atmel,vbus-gpio", 0,
-						 GPIOD_IN, "udc_vbus");
+	board->vbus_pin = devm_gpiod_get_optional(dev, "atmel,vbus-gpio", GPIOD_IN);
 	if (IS_ERR(board->vbus_pin))
 		board->vbus_pin = NULL;
 
-	board->pullup_pin = gpiod_get_from_of_node(np, "atmel,pullup-gpio", 0,
-						   GPIOD_ASIS, "udc_pullup");
+	board->pullup_pin = devm_gpiod_get_optional(dev, "atmel,pullup-gpio", GPIOD_ASIS);
 	if (IS_ERR(board->pullup_pin))
 		board->pullup_pin = NULL;
 
-	match = of_match_node(at91_udc_dt_ids, np);
+	match = of_match_node(at91_udc_dt_ids, dev->of_node);
 	if (match)
 		udc->caps = match->data;
 }
@@ -1806,7 +1801,7 @@ static int at91udc_probe(struct platform_device *pdev)
 
 	/* init software state */
 	udc->gadget.dev.parent = dev;
-	at91udc_of_init(udc, pdev->dev.of_node);
+	at91udc_of_init(udc, dev);
 	udc->pdev = pdev;
 	udc->enabled = 0;
 	spin_lock_init(&udc->lock);
@@ -1876,8 +1871,6 @@ static int at91udc_probe(struct platform_device *pdev)
 	}
 
 	if (udc->board.vbus_pin) {
-		gpiod_direction_input(udc->board.vbus_pin);
-
 		/*
 		 * Get the initial state of VBUS - we cannot expect
 		 * a pending interrupt.
@@ -1895,7 +1888,7 @@ static int at91udc_probe(struct platform_device *pdev)
 					at91_vbus_irq, 0, driver_name, udc);
 			if (retval) {
 				DBG("request vbus irq %d failed\n",
-				    udc->board.vbus_pin);
+				    gpiod_to_irq(udc->board.vbus_pin));
 				goto err_unprepare_iclk;
 			}
 		}

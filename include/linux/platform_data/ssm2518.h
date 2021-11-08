@@ -15,7 +15,6 @@
  *            hardwired.
  */
 struct ssm2518_platform_data {
-	int enable_gpio;
 };
 
 #endif

@@ -150,15 +150,15 @@ int fhci_ioports_check_bus_state(struct fhci_hcd *fhci)
 	u8 bits = 0;
 
 	/* check USBOE,if transmitting,exit */
-	if (!gpio_get_value(fhci->gpios[GPIO_USBOE]))
+	if (!gpiod_get_value(fhci->gpios[GPIO_USBOE]))
 		return -1;
 
 	/* check USBRP */
-	if (gpio_get_value(fhci->gpios[GPIO_USBRP]))
+	if (gpiod_get_value(fhci->gpios[GPIO_USBRP]))
 		bits |= 0x2;
 
 	/* check USBRN */
-	if (gpio_get_value(fhci->gpios[GPIO_USBRN]))
+	if (gpiod_get_value(fhci->gpios[GPIO_USBRN]))
 		bits |= 0x1;
 
 	return bits;
@@ -630,46 +630,31 @@ static int of_fhci_probe(struct platform_device *ofdev)
 	fhci->pram = cpm_muram_addr(pram_addr);
 
 	/* GPIOs and pins */
-	for (i = 0; i < NUM_GPIOS; i++) {
-		int gpio;
-		enum of_gpio_flags flags;
-
-		gpio = of_get_gpio_flags(node, i, &flags);
-		fhci->gpios[i] = gpio;
-		fhci->alow_gpios[i] = flags & OF_GPIO_ACTIVE_LOW;
-
-		if (!gpio_is_valid(gpio)) {
-			if (i < GPIO_SPEED) {
-				dev_err(dev, "incorrect GPIO%d: %d\n",
-					i, gpio);
-				goto err_gpios;
-			} else {
-				dev_info(dev, "assuming board doesn't have "
-					"%s gpio\n", i == GPIO_SPEED ?
-					"speed" : "power");
-				continue;
-			}
-		}
-
-		ret = gpio_request(gpio, dev_name(dev));
-		if (ret) {
-			dev_err(dev, "failed to request gpio %d", i);
+	for (i = 0; i < GPIO_SPEED; i++) {
+		fhci->gpios[i] = gpiod_get_index(dev, NULL, i, 0);
+		if (IS_ERR(fhci->gpios[i])) {
+			dev_err(dev, "incorrect GPIO%d: %d\n", i, gpio);
 			goto err_gpios;
 		}
+	}
 
-		if (i >= GPIO_SPEED) {
-			ret = gpio_direction_output(gpio, 0);
-			if (ret) {
-				dev_err(dev, "failed to set gpio %d as "
-					"an output\n", i);
-				i++;
-				goto err_gpios;
-			}
+	for (i = GPIO_SPEED; i < NUM_GPIOS; i++) {
+		fhci->gpios[i] = gpiod_get_index_optional(dev, NULL, i,
+							  GPIOD_OUT_LOW);
+		if (IS_ERR(fhci->gpios[i])) {
+			dev_err(dev, "incorrect GPIO%d: %d\n", i, gpio);
+			goto err_gpios;
+		}
+		if (!fhci->gpios[i]) {
+			dev_info(dev, "assuming board doesn't have "
+				"%s gpio\n", i == GPIO_SPEED ?
+				"speed" : "power");
+			continue;
 		}
 	}
 
 	for (j = 0; j < NUM_PINS; j++) {
-		fhci->pins[j] = qe_pin_request(node, j);
+		fhci->pins[j] = qe_pin_request(fhci->gpios[i]);
 		if (IS_ERR(fhci->pins[j])) {
 			ret = PTR_ERR(fhci->pins[j]);
 			dev_err(dev, "can't get pin %d: %d\n", j, ret);
@@ -768,8 +753,7 @@ err_pins:
 		qe_pin_free(fhci->pins[j]);
 err_gpios:
 	while (--i >= 0) {
-		if (gpio_is_valid(fhci->gpios[i]))
-			gpio_free(fhci->gpios[i]);
+		gpiod_put(fhci->gpios[i]);
 	}
 	cpm_muram_free(pram_addr);
 err_pram:
@@ -790,11 +774,9 @@ static int fhci_remove(struct device *dev)
 	free_irq(fhci->timer->irq, hcd);
 	gtm_put_timer16(fhci->timer);
 	cpm_muram_free(cpm_muram_offset(fhci->pram));
-	for (i = 0; i < NUM_GPIOS; i++) {
-		if (!gpio_is_valid(fhci->gpios[i]))
-			continue;
-		gpio_free(fhci->gpios[i]);
-	}
+	for (i = 0; i < NUM_GPIOS; i++)
+		gpiod_put(fhci->gpios[i]);
+
 	for (j = 0; j < NUM_PINS; j++)
 		qe_pin_free(fhci->pins[j]);
 	fhci_dfs_destroy(fhci);

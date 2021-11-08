@@ -27,21 +27,22 @@ static int vmmc_probe(struct platform_device *pdev)
 #define CP1_SIZE       (1 << 20)
 	int gpio_count;
 	dma_addr_t dma;
+	struct gpio_desc *gpio;
 
 	cp1_base =
 		(void *) CPHYSADDR(dma_alloc_coherent(&pdev->dev, CP1_SIZE,
 						    &dma, GFP_KERNEL));
 
+
 	gpio_count = of_gpio_count(pdev->dev.of_node);
 	while (gpio_count > 0) {
 		enum of_gpio_flags flags;
-		int gpio = of_get_gpio_flags(pdev->dev.of_node,
-					     --gpio_count, &flags);
-		if (gpio_request(gpio, "vmmc-relay"))
-			continue;
-		dev_info(&pdev->dev, "requested GPIO %d\n", gpio);
-		gpio_direction_output(gpio,
-				      (flags & OF_GPIO_ACTIVE_LOW) ? (0) : (1));
+		gpio = gpiod_get_index(&pdev->dev, NULL, --gpio_count,
+					GPIOD_OUT_HIGH);
+		if (IS_ERR(gpio))
+			dev_err(&pdev->dev, "gpio_get failed\n", gpio_count);
+		else
+			dev_info(&pdev->dev, "requested GPIO %s\n", gpio->name);
 	}
 
 	dev_info(&pdev->dev, "reserved %dMB at 0x%p", CP1_SIZE >> 20, cp1_base);
