@@ -1334,9 +1334,8 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
 		goto err;
 	}
 
-	port->reset_gpio = devm_fwnode_gpiod_get(dev, of_fwnode_handle(child),
-						 "reset", GPIOD_OUT_HIGH,
-						 port->name);
+	port->reset_gpio = gpiod_get_from_of_node(child, "reset-gpios", 0,
+					  GPIOD_OUT_HIGH, port->reset_name);
 	ret = PTR_ERR_OR_ZERO(port->reset_gpio);
 	if (ret) {
 		if (ret != -ENOENT)
