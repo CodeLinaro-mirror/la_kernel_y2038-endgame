@@ -17,7 +17,7 @@
 #include <linux/i2c.h>
 #include <linux/media.h>
 #include <linux/module.h>
-#include <linux/of_gpio.h>
+#include <linux/gpio/consumer.h>
 #include <linux/of_graph.h>
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
@@ -228,11 +228,6 @@ static const char * const s5k5baf_supply_names[] = {
 };
 #define S5K5BAF_NUM_SUPPLIES ARRAY_SIZE(s5k5baf_supply_names)
 
-struct s5k5baf_gpio {
-	int gpio;
-	int level;
-};
-
 enum s5k5baf_gpio_id {
 	STBY,
 	RSET,
@@ -284,7 +279,7 @@ struct s5k5baf_fw {
 };
 
 struct s5k5baf {
-	struct s5k5baf_gpio gpios[NUM_GPIOS];
+	struct gpio_desc *gpios[NUM_GPIOS];
 	enum v4l2_mbus_type bus_type;
 	u8 nlanes;
 	struct regulator_bulk_data supplies[S5K5BAF_NUM_SUPPLIES];
@@ -934,20 +929,6 @@ static void s5k5baf_hw_set_test_pattern(struct s5k5baf *state, int id)
 	s5k5baf_i2c_write(state, REG_PATTERN_SET, id);
 }
 
-static void s5k5baf_gpio_assert(struct s5k5baf *state, int id)
-{
-	struct s5k5baf_gpio *gpio = &state->gpios[id];
-
-	gpio_set_value(gpio->gpio, gpio->level);
-}
-
-static void s5k5baf_gpio_deassert(struct s5k5baf *state, int id)
-{
-	struct s5k5baf_gpio *gpio = &state->gpios[id];
-
-	gpio_set_value(gpio->gpio, !gpio->level);
-}
-
 static int s5k5baf_power_on(struct s5k5baf *state)
 {
 	int ret;
@@ -967,9 +948,9 @@ static int s5k5baf_power_on(struct s5k5baf *state)
 	v4l2_dbg(1, debug, &state->sd, "clock frequency: %ld\n",
 		 clk_get_rate(state->clock));
 
-	s5k5baf_gpio_deassert(state, STBY);
+	gpiod_set_value(state->gpios[STBY], 1);
 	usleep_range(50, 100);
-	s5k5baf_gpio_deassert(state, RSET);
+	gpiod_set_value(state->gpios[RSET], 1);
 	return 0;
 
 err_reg_dis:
@@ -987,8 +968,8 @@ static int s5k5baf_power_off(struct s5k5baf *state)
 	state->apply_cfg = 0;
 	state->apply_crop = 0;
 
-	s5k5baf_gpio_assert(state, RSET);
-	s5k5baf_gpio_assert(state, STBY);
+	gpiod_set_value(state->gpios[RSET], 1);
+	gpiod_set_value(state->gpios[STBY], 1);
 
 	if (!IS_ERR(state->clock))
 		clk_disable_unprepare(state->clock);
@@ -1797,44 +1778,20 @@ static const struct v4l2_subdev_ops s5k5baf_subdev_ops = {
 	.video = &s5k5baf_video_ops,
 };
 
-static int s5k5baf_configure_gpios(struct s5k5baf *state)
-{
-	static const char * const name[] = { "S5K5BAF_STBY", "S5K5BAF_RST" };
-	struct i2c_client *c = v4l2_get_subdevdata(&state->sd);
-	struct s5k5baf_gpio *g = state->gpios;
-	int ret, i;
-
-	for (i = 0; i < NUM_GPIOS; ++i) {
-		int flags = GPIOF_DIR_OUT;
-		if (g[i].level)
-			flags |= GPIOF_INIT_HIGH;
-		ret = devm_gpio_request_one(&c->dev, g[i].gpio, flags, name[i]);
-		if (ret < 0) {
-			v4l2_err(c, "failed to request gpio %s\n", name[i]);
-			return ret;
-		}
-	}
-	return 0;
-}
-
-static int s5k5baf_parse_gpios(struct s5k5baf_gpio *gpios, struct device *dev)
+static int s5k5baf_parse_gpios(struct gpio_desc *gpios[], struct device *dev)
 {
 	static const char * const names[] = {
 		"stbyn-gpios",
 		"rstn-gpios",
 	};
-	struct device_node *node = dev->of_node;
-	enum of_gpio_flags flags;
-	int ret, i;
+	int i;
 
 	for (i = 0; i < NUM_GPIOS; ++i) {
-		ret = of_get_named_gpio_flags(node, names[i], 0, &flags);
-		if (ret < 0) {
+		gpios[i] = devm_gpiod_get(dev, names[i], GPIOD_OUT_HIGH);
+		if (IS_ERR(gpios[i])) {
 			dev_err(dev, "no %s GPIO pin provided\n", names[i]);
-			return ret;
+			return PTR_ERR(gpios[i]);
 		}
-		gpios[i].gpio = ret;
-		gpios[i].level = !(flags & OF_GPIO_ACTIVE_LOW);
 	}
 
 	return 0;
@@ -1973,10 +1930,6 @@ static int s5k5baf_probe(struct i2c_client *c)
 	ret = s5k5baf_configure_subdevs(state, c);
 	if (ret < 0)
 		return ret;
-
-	ret = s5k5baf_configure_gpios(state);
-	if (ret < 0)
-		goto err_me;
 
 	ret = s5k5baf_configure_regulators(state);
 	if (ret < 0)

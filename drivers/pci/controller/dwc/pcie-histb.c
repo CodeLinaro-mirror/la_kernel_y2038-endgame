@@ -60,7 +60,7 @@ struct histb_pcie {
 	struct reset_control *sys_reset;
 	struct reset_control *bus_reset;
 	void __iomem *ctrl;
-	int reset_gpio;
+	struct gpio_desc *reset_gpio;
 	struct regulator *vpcie;
 };
 
@@ -214,8 +214,8 @@ static void histb_pcie_host_disable(struct histb_pcie *hipcie)
 	clk_disable_unprepare(hipcie->sys_clk);
 	clk_disable_unprepare(hipcie->bus_clk);
 
-	if (gpio_is_valid(hipcie->reset_gpio))
-		gpio_set_value_cansleep(hipcie->reset_gpio, 0);
+	if (hipcie->reset_gpio)
+		gpiod_set_value_cansleep(hipcie->reset_gpio, 0);
 
 	if (hipcie->vpcie)
 		regulator_disable(hipcie->vpcie);
@@ -237,8 +237,8 @@ static int histb_pcie_host_enable(struct pcie_port *pp)
 		}
 	}
 
-	if (gpio_is_valid(hipcie->reset_gpio))
-		gpio_set_value_cansleep(hipcie->reset_gpio, 1);
+	if (hipcie->reset_gpio)
+		gpiod_set_value_cansleep(hipcie->reset_gpio, 1);
 
 	ret = clk_prepare_enable(hipcie->bus_clk);
 	if (ret) {
@@ -300,10 +300,7 @@ static int histb_pcie_probe(struct platform_device *pdev)
 	struct histb_pcie *hipcie;
 	struct dw_pcie *pci;
 	struct pcie_port *pp;
-	struct device_node *np = pdev->dev.of_node;
 	struct device *dev = &pdev->dev;
-	enum of_gpio_flags of_flags;
-	unsigned long flag = GPIOF_DIR_OUT;
 	int ret;
 
 	hipcie = devm_kzalloc(dev, sizeof(*hipcie), GFP_KERNEL);
@@ -338,17 +335,11 @@ static int histb_pcie_probe(struct platform_device *pdev)
 		hipcie->vpcie = NULL;
 	}
 
-	hipcie->reset_gpio = of_get_named_gpio_flags(np,
-				"reset-gpios", 0, &of_flags);
-	if (of_flags & OF_GPIO_ACTIVE_LOW)
-		flag |= GPIOF_ACTIVE_LOW;
-	if (gpio_is_valid(hipcie->reset_gpio)) {
-		ret = devm_gpio_request_one(dev, hipcie->reset_gpio,
-				flag, "PCIe device power control");
-		if (ret) {
-			dev_err(dev, "unable to request gpio\n");
-			return ret;
-		}
+	hipcie->reset_gpio = devm_gpiod_get_optional(dev, "reset-gpios",
+						     GPIOD_OUT_HIGH);
+	if (IS_ERR(hipcie->reset_gpio)) {
+		dev_err(dev, "unable to request gpio\n");
+		return PTR_ERR(hipcie->reset_gpio);
 	}
 
 	hipcie->aux_clk = devm_clk_get(dev, "aux");

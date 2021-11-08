@@ -814,8 +814,7 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
 	struct mvebu_pcie_port *port, struct device_node *child)
 {
 	struct device *dev = &pcie->pdev->dev;
-	enum of_gpio_flags flags;
-	int reset_gpio, ret;
+	int ret;
 
 	port->pcie = pcie;
 
@@ -855,40 +854,24 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
 		port->io_attr = -1;
 	}
 
-	reset_gpio = of_get_named_gpio_flags(child, "reset-gpios", 0, &flags);
-	if (reset_gpio == -EPROBE_DEFER) {
-		ret = reset_gpio;
+	port->reset_name = devm_kasprintf(dev, GFP_KERNEL, "%s-reset",
+					  port->name);
+	if (!port->reset_name) {
+		ret = -ENOMEM;
 		goto err;
 	}
 
-	if (gpio_is_valid(reset_gpio)) {
-		unsigned long gpio_flags;
+	port->reset_gpio = fwnode_get_named_gpiod(of_node_to_fwnode(child),
+						  "reset-gpios", 0,
+						  GPIOD_OUT_HIGH,
+						  port->reset_name);
+	if (port->reset_gpio == ERR_PTR(-EPROBE_DEFER)) {
+		ret = -EPROBE_DEFER;
+		goto err;
+	}
 
-		port->reset_name = devm_kasprintf(dev, GFP_KERNEL, "%s-reset",
-						  port->name);
-		if (!port->reset_name) {
-			ret = -ENOMEM;
-			goto err;
-		}
-
-		if (flags & OF_GPIO_ACTIVE_LOW) {
-			dev_info(dev, "%pOF: reset gpio is active low\n",
-				 child);
-			gpio_flags = GPIOF_ACTIVE_LOW |
-				     GPIOF_OUT_INIT_LOW;
-		} else {
-			gpio_flags = GPIOF_OUT_INIT_HIGH;
-		}
-
-		ret = devm_gpio_request_one(dev, reset_gpio, gpio_flags,
-					    port->reset_name);
-		if (ret) {
-			if (ret == -EPROBE_DEFER)
-				goto err;
-			goto skip;
-		}
-
-		port->reset_gpio = gpio_to_desc(reset_gpio);
+	if (IS_ERR(port->reset_gpio)) {
+		port->reset_gpio = NULL;
 	}
 
 	port->clk = of_clk_get_by_name(child, NULL);

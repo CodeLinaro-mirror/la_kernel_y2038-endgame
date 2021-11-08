@@ -18,7 +18,7 @@
 
 #include <asm/machdep.h>
 
-static struct device_node *halt_node;
+struct gpio_desc *halt_gpio;
 
 static const struct of_device_id child_match[] = {
 	{
@@ -36,23 +36,13 @@ static DECLARE_WORK(gpio_halt_wq, gpio_halt_wfn);
 
 static void __noreturn gpio_halt_cb(void)
 {
-	enum of_gpio_flags flags;
-	int trigger, gpio;
-
-	if (!halt_node)
+	if (!halt_gpio)
 		panic("No reset GPIO information was provided in DT\n");
-
-	gpio = of_get_gpio_flags(halt_node, 0, &flags);
-
-	if (!gpio_is_valid(gpio))
-		panic("Provided GPIO is invalid\n");
-
-	trigger = (flags == OF_GPIO_ACTIVE_LOW);
 
 	printk(KERN_INFO "gpio-halt: triggering GPIO.\n");
 
 	/* Probably wont return */
-	gpio_set_value(gpio, trigger);
+	gpiod_set_value(halt_gpio, 0);
 
 	panic("Halt failed\n");
 }
@@ -71,6 +61,7 @@ static int gpio_halt_probe(struct platform_device *pdev)
 {
 	enum of_gpio_flags flags;
 	struct device_node *node = pdev->dev.of_node;
+	struct device_node *halt_node;
 	int gpio, err, irq;
 	int trigger;
 
@@ -82,37 +73,24 @@ static int gpio_halt_probe(struct platform_device *pdev)
 	if (!halt_node)
 		return 0;
 
-	/* Technically we could just read the first one, but punish
-	 * DT writers for invalid form. */
-	if (of_gpio_count(halt_node) != 1)
-		return -EINVAL;
-
-	/* Get the gpio number relative to the dynamic base. */
-	gpio = of_get_gpio_flags(halt_node, 0, &flags);
-	if (!gpio_is_valid(gpio))
-		return -EINVAL;
-
-	err = gpio_request(gpio, "gpio-halt");
-	if (err) {
-		printk(KERN_ERR "gpio-halt: error requesting GPIO %d.\n",
-		       gpio);
-		halt_node = NULL;
-		return err;
+	halt_gpio = devm_fwnode_gpiod_get_index(&pdev->dev,
+						of_node_to_fwnode(halt_node),
+						NULL, 0, GPIOD_OUT_HIGH,
+						"gpio-halt");
+	if (IS_ERR(halt_gpio)) {
+		printk(KERN_ERR "gpio-halt: error requesting GPIO\n");
+		halt_gpio = NULL;
+		return PTR_ERR(halt_gpio);
 	}
-
-	trigger = (flags == OF_GPIO_ACTIVE_LOW);
-
-	gpio_direction_output(gpio, !trigger);
 
 	/* Now get the IRQ which tells us when the power button is hit */
 	irq = irq_of_parse_and_map(halt_node, 0);
-	err = request_irq(irq, gpio_halt_irq, IRQF_TRIGGER_RISING |
+	err = devm_request_irq(irq, gpio_halt_irq, IRQF_TRIGGER_RISING |
 			  IRQF_TRIGGER_FALLING, "gpio-halt", halt_node);
 	if (err) {
 		printk(KERN_ERR "gpio-halt: error requesting IRQ %d for "
 		       "GPIO %d.\n", irq, gpio);
-		gpio_free(gpio);
-		halt_node = NULL;
+		halt_gpio = NULL;
 		return err;
 	}
 
@@ -120,27 +98,16 @@ static int gpio_halt_probe(struct platform_device *pdev)
 	ppc_md.halt = gpio_halt_cb;
 	pm_power_off = gpio_halt_cb;
 
-	printk(KERN_INFO "gpio-halt: registered GPIO %d (%d trigger, %d"
-	       " irq).\n", gpio, trigger, irq);
+	printk(KERN_INFO "gpio-halt: registered GPIO, %d irq).\n", irq);
 
 	return 0;
 }
 
 static int gpio_halt_remove(struct platform_device *pdev)
 {
-	if (halt_node) {
-		int gpio = of_get_gpio(halt_node, 0);
-		int irq = irq_of_parse_and_map(halt_node, 0);
-
-		free_irq(irq, halt_node);
-
-		ppc_md.halt = NULL;
-		pm_power_off = NULL;
-
-		gpio_free(gpio);
-
-		halt_node = NULL;
-	}
+	ppc_md.halt = NULL;
+	pm_power_off = NULL;
+	halt_gpio = NULL;
 
 	return 0;
 }

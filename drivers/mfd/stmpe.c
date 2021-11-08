@@ -15,7 +15,7 @@
 #include <linux/irq.h>
 #include <linux/irqdomain.h>
 #include <linux/of.h>
-#include <linux/of_gpio.h>
+#include <linux/gpio/consumer.h>
 #include <linux/pm.h>
 #include <linux/slab.h>
 #include <linux/mfd/core.h>
@@ -40,7 +40,7 @@ struct stmpe_platform_data {
 	unsigned int irq_trigger;
 	bool autosleep;
 	bool irq_over_gpio;
-	int irq_gpio;
+	struct gpio_desc *irq_gpio;
 	int autosleep_timeout;
 };
 
@@ -1341,17 +1341,18 @@ static int stmpe_devices_init(struct stmpe *stmpe)
 }
 
 static void stmpe_of_probe(struct stmpe_platform_data *pdata,
-			   struct device_node *np)
+			   struct device *dev)
 {
 	struct device_node *child;
+	struct device_node *np = dev->of_node;
 
 	pdata->id = of_alias_get_id(np, "stmpe-i2c");
 	if (pdata->id < 0)
 		pdata->id = -1;
 
-	pdata->irq_gpio = of_get_named_gpio_flags(np, "irq-gpio", 0,
-				&pdata->irq_trigger);
-	if (gpio_is_valid(pdata->irq_gpio))
+
+	pdata->irq_gpio = gpiod_get(dev, "irq-gpio", GPIOD_IN);
+	if (!IS_ERR(pdata->irq_gpio))
 		pdata->irq_over_gpio = 1;
 	else
 		pdata->irq_trigger = IRQF_TRIGGER_NONE;
@@ -1391,7 +1392,7 @@ int stmpe_probe(struct stmpe_client_info *ci, enum stmpe_partnum partnum)
 	if (!pdata)
 		return -ENOMEM;
 
-	stmpe_of_probe(pdata, np);
+	stmpe_of_probe(pdata, ci->dev);
 
 	if (of_find_property(np, "interrupts", NULL) == NULL)
 		ci->irq = -1;
@@ -1438,15 +1439,7 @@ int stmpe_probe(struct stmpe_client_info *ci, enum stmpe_partnum partnum)
 		ci->init(stmpe);
 
 	if (pdata->irq_over_gpio) {
-		ret = devm_gpio_request_one(ci->dev, pdata->irq_gpio,
-				GPIOF_DIR_IN, "stmpe");
-		if (ret) {
-			dev_err(stmpe->dev, "failed to request IRQ GPIO: %d\n",
-					ret);
-			return ret;
-		}
-
-		stmpe->irq = gpio_to_irq(pdata->irq_gpio);
+		stmpe->irq = gpiod_to_irq(pdata->irq_gpio);
 	} else {
 		stmpe->irq = ci->irq;
 	}

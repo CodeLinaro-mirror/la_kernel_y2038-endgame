@@ -32,8 +32,8 @@
  * @y_max		y-resolution
  */
 struct auo_pixcir_ts_platdata {
-	int gpio_int;
-	int gpio_rst;
+	struct gpio_desc *gpio_int;
+	struct gpio_desc *gpio_rst;
 
 	int int_setting;
 

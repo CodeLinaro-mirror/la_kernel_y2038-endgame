@@ -20,11 +20,6 @@
 #include <linux/videodev2.h>
 #include <media/v4l2-mediabus.h>
 
-/**
- * struct s5c73m3_gpio - data structure describing a GPIO
- * @gpio:  GPIO number
- * @level: indicates active state of the @gpio
- */
 struct s5c73m3_gpio {
 	int gpio;
 	int level;

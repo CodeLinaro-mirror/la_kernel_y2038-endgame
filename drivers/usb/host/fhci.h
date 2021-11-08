@@ -242,8 +242,7 @@ struct fhci_hcd {
 	enum qe_clock fullspeed_clk;
 	enum qe_clock lowspeed_clk;
 	struct qe_pin *pins[NUM_PINS];
-	int gpios[NUM_GPIOS];
-	bool alow_gpios[NUM_GPIOS];
+	struct gpio_desc gpios[NUM_GPIOS];
 
 	struct qe_usb_ctlr __iomem *regs; /* I/O memory used to communicate */
 	struct fhci_pram __iomem *pram;	/* Parameter RAM */

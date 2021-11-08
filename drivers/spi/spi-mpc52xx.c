@@ -86,7 +86,7 @@ struct mpc52xx_spi {
 	const u8 *tx_buf;
 	int cs_change;
 	int gpio_cs_count;
-	unsigned int *gpio_cs;
+	struct gpio_desc *gpio_cs[];
 };
 
 /*
@@ -98,7 +98,7 @@ static void mpc52xx_spi_chipsel(struct mpc52xx_spi *ms, int value)
 
 	if (ms->gpio_cs_count > 0) {
 		cs = ms->message->spi->chip_select;
-		gpio_set_value(ms->gpio_cs[cs], value ? 0 : 1);
+		gpiod_set_value(ms->gpio_cs[cs], value ? 0 : 1);
 	} else
 		out_8(ms->regs + SPI_PORTDATA, value ? 0 : 0x08);
 }
@@ -385,7 +385,7 @@ static int mpc52xx_spi_probe(struct platform_device *op)
 	void __iomem *regs;
 	u8 ctrl1;
 	int rc, i = 0;
-	int gpio_cs;
+	struct gpio_desc *gpio_cs;
 
 	/* MMIO registers */
 	dev_dbg(&op->dev, "probing mpc5200 SPI device\n");
@@ -447,23 +447,13 @@ static int mpc52xx_spi_probe(struct platform_device *op)
 		}
 
 		for (i = 0; i < ms->gpio_cs_count; i++) {
-			gpio_cs = of_get_gpio(op->dev.of_node, i);
-			if (!gpio_is_valid(gpio_cs)) {
+			gpio_cs = gpiod_get_index(&op->dev, NULL, i, GPIOD_OUT_LOW);
+			if (IS_ERR(gpio_cs)) {
 				dev_err(&op->dev,
-					"could not parse the gpio field in oftree\n");
-				rc = -ENODEV;
+					"can't request spi cs gpio #%d on gpio line\n", i);
 				goto err_gpio;
 			}
 
-			rc = gpio_request(gpio_cs, dev_name(&op->dev));
-			if (rc) {
-				dev_err(&op->dev,
-					"can't request spi cs gpio #%d on gpio line %d\n",
-					i, gpio_cs);
-				goto err_gpio;
-			}
-
-			gpio_direction_output(gpio_cs, 1);
 			ms->gpio_cs[i] = gpio_cs;
 		}
 	}
@@ -504,7 +494,7 @@ static int mpc52xx_spi_probe(struct platform_device *op)
 	dev_err(&ms->master->dev, "initialization failed\n");
  err_gpio:
 	while (i-- > 0)
-		gpio_free(ms->gpio_cs[i]);
+		gpio_put(ms->gpio_cs[i]);
 
 	kfree(ms->gpio_cs);
  err_alloc_gpio:
@@ -525,7 +515,7 @@ static int mpc52xx_spi_remove(struct platform_device *op)
 	free_irq(ms->irq1, ms);
 
 	for (i = 0; i < ms->gpio_cs_count; i++)
-		gpio_free(ms->gpio_cs[i]);
+		gpio_put(ms->gpio_cs[i]);
 
 	kfree(ms->gpio_cs);
 	spi_unregister_master(master);

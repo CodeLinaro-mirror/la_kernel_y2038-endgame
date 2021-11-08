@@ -62,7 +62,7 @@ struct keystone_rproc {
 	u32 boot_offset;
 	int irq_ring;
 	int irq_fault;
-	int kick_gpio;
+	struct gpio_desc *kick_gpio;
 	struct work_struct workqueue;
 };
 
@@ -232,10 +232,10 @@ static void keystone_rproc_kick(struct rproc *rproc, int vqid)
 {
 	struct keystone_rproc *ksproc = rproc->priv;
 
-	if (WARN_ON(ksproc->kick_gpio < 0))
+	if (WARN_ON(IS_ERR(ksproc->kick_gpio)))
 		return;
 
-	gpio_set_value(ksproc->kick_gpio, 1);
+	gpiod_set_value(ksproc->kick_gpio, 1);
 }
 
 /*
@@ -433,9 +433,9 @@ static int keystone_rproc_probe(struct platform_device *pdev)
 		goto disable_clk;
 	}
 
-	ksproc->kick_gpio = of_get_named_gpio_flags(np, "kick-gpios", 0, NULL);
-	if (ksproc->kick_gpio < 0) {
-		ret = ksproc->kick_gpio;
+	ksproc->kick_gpio = gpiod_get(dev, "kick-gpios", 0);
+	if (IS_ERR(ksproc->kick_gpio)) {
+		ret = PTR_ERR(ksproc->kick_gpio);
 		dev_err(dev, "failed to get gpio for virtio kicks, status = %d\n",
 			ret);
 		goto disable_clk;
