@@ -13,6 +13,7 @@
 #include <linux/of_device.h>
 #include <linux/slab.h>
 #include <linux/gpio/driver.h>
+#include <linux/gpio/legacy-of-mm-gpiochip.h>
 
 /*
  * Memory layout:
