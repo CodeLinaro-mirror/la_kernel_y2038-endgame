@@ -11,9 +11,9 @@
 #include <linux/bitops.h>
 #include <linux/io.h>
 #include <linux/of_device.h>
-#include <linux/of_gpio.h>
 #include <linux/slab.h>
 #include <linux/gpio/driver.h>
+#include <linux/gpio/legacy-of-mm-gpiochip.h>
 
 /*
  * Memory layout:

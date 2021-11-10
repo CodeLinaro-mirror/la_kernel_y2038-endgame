@@ -823,6 +823,8 @@ static int of_gpio_simple_xlate(struct gpio_chip *gc,
 	return gpiospec->args[0];
 }
 
+#if IS_ENABLED(CONFIG_OF_GPIO_MM_GPIOCHIP)
+#include <linux/gpio/legacy-of-mm-gpiochip.h>
 /**
  * of_mm_gpiochip_add_data - Add memory mapped GPIO chip (bank)
  * @np:		device node of the GPIO chip
@@ -896,6 +898,7 @@ void of_mm_gpiochip_remove(struct of_mm_gpio_chip *mm_gc)
 	kfree(gc->label);
 }
 EXPORT_SYMBOL_GPL(of_mm_gpiochip_remove);
+#endif
 
 static void of_gpiochip_init_valid_mask(struct gpio_chip *chip)
 {
