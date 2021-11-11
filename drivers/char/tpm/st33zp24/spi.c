@@ -6,16 +6,15 @@
 
 #include <linux/module.h>
 #include <linux/spi/spi.h>
-#include <linux/gpio.h>
 #include <linux/gpio/consumer.h>
 #include <linux/of_irq.h>
-#include <linux/of_gpio.h>
 #include <linux/acpi.h>
 #include <linux/tpm.h>
-#include <linux/platform_data/st33zp24.h>
 
 #include "../tpm.h"
 #include "st33zp24.h"
+
+#define TPM_ST33_SPI		"st33zp24-spi"
 
 #define TPM_DATA_FIFO           0x24
 #define TPM_INTF_CAPABILITY     0x14
@@ -61,7 +60,7 @@ struct st33zp24_spi_phy {
 	u8 tx_buf[ST33ZP24_SPI_BUFFER_SIZE];
 	u8 rx_buf[ST33ZP24_SPI_BUFFER_SIZE];
 
-	int io_lpcpd;
+	struct gpio_desc *io_lpcpd;
 	int latency;
 };
 
@@ -239,10 +238,10 @@ static int st33zp24_spi_acpi_request_resources(struct spi_device *spi_dev)
 		return ret;
 
 	/* Get LPCPD GPIO from ACPI */
-	gpiod_lpcpd = devm_gpiod_get(dev, "lpcpd", GPIOD_OUT_HIGH);
+	gpiod_lpcpd = devm_gpiod_get_optional(dev, "lpcpd", GPIOD_OUT_HIGH);
 	if (IS_ERR(gpiod_lpcpd)) {
 		dev_err(dev, "Failed to retrieve lpcpd-gpios from acpi.\n");
-		phy->io_lpcpd = -1;
+		phy->io_lpcpd = NULL;
 		/*
 		 * lpcpd pin is not specified. This is not an issue as
 		 * power management can be also managed by TPM specific
@@ -251,7 +250,7 @@ static int st33zp24_spi_acpi_request_resources(struct spi_device *spi_dev)
 		return 0;
 	}
 
-	phy->io_lpcpd = desc_to_gpio(gpiod_lpcpd);
+	phy->io_lpcpd = gpiod_lpcpd;
 
 	return 0;
 }
@@ -261,22 +260,13 @@ static int st33zp24_spi_of_request_resources(struct spi_device *spi_dev)
 	struct tpm_chip *chip = spi_get_drvdata(spi_dev);
 	struct st33zp24_dev *tpm_dev = dev_get_drvdata(&chip->dev);
 	struct st33zp24_spi_phy *phy = tpm_dev->phy_id;
-	struct device_node *pp;
-	int gpio;
-	int ret;
-
-	pp = spi_dev->dev.of_node;
-	if (!pp) {
-		dev_err(&spi_dev->dev, "No platform data\n");
-		return -ENODEV;
-	}
 
 	/* Get GPIO from device tree */
-	gpio = of_get_named_gpio(pp, "lpcpd-gpios", 0);
-	if (gpio < 0) {
+	phy->io_lpcpd = devm_gpiod_get_optional(&spi_dev->dev, "lpcpd", GPIOD_OUT_HIGH);
+	if (IS_ERR(phy->io_lpcpd)) {
 		dev_err(&spi_dev->dev,
 			"Failed to retrieve lpcpd-gpios from dts.\n");
-		phy->io_lpcpd = -1;
+		phy->io_lpcpd = NULL;
 		/*
 		 * lpcpd pin is not specified. This is not an issue as
 		 * power management can be also managed by TPM specific
@@ -284,47 +274,8 @@ static int st33zp24_spi_of_request_resources(struct spi_device *spi_dev)
 		 */
 		return 0;
 	}
-	/* GPIO request and configuration */
-	ret = devm_gpio_request_one(&spi_dev->dev, gpio,
-			GPIOF_OUT_INIT_HIGH, "TPM IO LPCPD");
-	if (ret) {
-		dev_err(&spi_dev->dev, "Failed to request lpcpd pin\n");
-		return -ENODEV;
-	}
-	phy->io_lpcpd = gpio;
 
-	return 0;
-}
-
-static int st33zp24_spi_request_resources(struct spi_device *dev)
-{
-	struct tpm_chip *chip = spi_get_drvdata(dev);
-	struct st33zp24_dev *tpm_dev = dev_get_drvdata(&chip->dev);
-	struct st33zp24_spi_phy *phy = tpm_dev->phy_id;
-	struct st33zp24_platform_data *pdata;
-	int ret;
-
-	pdata = dev->dev.platform_data;
-	if (!pdata) {
-		dev_err(&dev->dev, "No platform data\n");
-		return -ENODEV;
-	}
-
-	/* store for late use */
-	phy->io_lpcpd = pdata->io_lpcpd;
-
-	if (gpio_is_valid(pdata->io_lpcpd)) {
-		ret = devm_gpio_request_one(&dev->dev,
-				pdata->io_lpcpd, GPIOF_OUT_INIT_HIGH,
-				"TPM IO_LPCPD");
-		if (ret) {
-			dev_err(&dev->dev, "%s : reset gpio_request failed\n",
-				__FILE__);
-			return ret;
-		}
-	}
-
-	return 0;
+	return PTR_ERR_OR_ZERO(phy->io_lpcpd);
 }
 
 /*
@@ -336,7 +287,6 @@ static int st33zp24_spi_request_resources(struct spi_device *dev)
 static int st33zp24_spi_probe(struct spi_device *dev)
 {
 	int ret;
-	struct st33zp24_platform_data *pdata;
 	struct st33zp24_spi_phy *phy;
 
 	/* Check SPI platform functionnalities */
@@ -353,13 +303,8 @@ static int st33zp24_spi_probe(struct spi_device *dev)
 
 	phy->spi_device = dev;
 
-	pdata = dev->dev.platform_data;
-	if (!pdata && dev->dev.of_node) {
+	if (dev->dev.of_node) {
 		ret = st33zp24_spi_of_request_resources(dev);
-		if (ret)
-			return ret;
-	} else if (pdata) {
-		ret = st33zp24_spi_request_resources(dev);
 		if (ret)
 			return ret;
 	} else if (ACPI_HANDLE(&dev->dev)) {
@@ -372,8 +317,7 @@ static int st33zp24_spi_probe(struct spi_device *dev)
 	if (phy->latency <= 0)
 		return -ENODEV;
 
-	return st33zp24_probe(phy, &spi_phy_ops, &dev->dev, dev->irq,
-			      phy->io_lpcpd);
+	return st33zp24_probe(phy, &spi_phy_ops, &dev->dev, dev->irq);
 }
 
 /*
