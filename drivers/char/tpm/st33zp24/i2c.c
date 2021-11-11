@@ -6,23 +6,22 @@
 
 #include <linux/module.h>
 #include <linux/i2c.h>
-#include <linux/gpio.h>
 #include <linux/gpio/consumer.h>
 #include <linux/of_irq.h>
-#include <linux/of_gpio.h>
 #include <linux/acpi.h>
 #include <linux/tpm.h>
-#include <linux/platform_data/st33zp24.h>
 
 #include "../tpm.h"
 #include "st33zp24.h"
+
+#define TPM_ST33_I2C			"st33zp24-i2c"
 
 #define TPM_DUMMY_BYTE			0xAA
 
 struct st33zp24_i2c_phy {
 	struct i2c_client *client;
 	u8 buf[ST33ZP24_BUFSIZE + 1];
-	int io_lpcpd;
+	struct gpio_desc *io_lpcpd;
 };
 
 /*
@@ -120,11 +119,11 @@ static int st33zp24_i2c_acpi_request_resources(struct i2c_client *client)
 		return ret;
 
 	/* Get LPCPD GPIO from ACPI */
-	gpiod_lpcpd = devm_gpiod_get(dev, "lpcpd", GPIOD_OUT_HIGH);
+	phy->io_lpcpd = devm_gpiod_get_optional(dev, "lpcpd", GPIOD_OUT_HIGH);
 	if (IS_ERR(gpiod_lpcpd)) {
 		dev_err(&client->dev,
 			"Failed to retrieve lpcpd-gpios from acpi.\n");
-		phy->io_lpcpd = -1;
+		phy->io_lpcpd = NULL;
 		/*
 		 * lpcpd pin is not specified. This is not an issue as
 		 * power management can be also managed by TPM specific
@@ -132,8 +131,6 @@ static int st33zp24_i2c_acpi_request_resources(struct i2c_client *client)
 		 */
 		return 0;
 	}
-
-	phy->io_lpcpd = desc_to_gpio(gpiod_lpcpd);
 
 	return 0;
 }
@@ -143,22 +140,14 @@ static int st33zp24_i2c_of_request_resources(struct i2c_client *client)
 	struct tpm_chip *chip = i2c_get_clientdata(client);
 	struct st33zp24_dev *tpm_dev = dev_get_drvdata(&chip->dev);
 	struct st33zp24_i2c_phy *phy = tpm_dev->phy_id;
-	struct device_node *pp;
-	int gpio;
-	int ret;
-
-	pp = client->dev.of_node;
-	if (!pp) {
-		dev_err(&client->dev, "No platform data\n");
-		return -ENODEV;
-	}
+	struct device *dev = &client->dev;
 
 	/* Get GPIO from device tree */
-	gpio = of_get_named_gpio(pp, "lpcpd-gpios", 0);
-	if (gpio < 0) {
+	phy->io_lpcpd = devm_gpiod_get_optional(dev, "lpcpd", GPIOD_OUT_HIGH);
+	if (IS_ERR(phy->io_lpcpd)) {
 		dev_err(&client->dev,
 			"Failed to retrieve lpcpd-gpios from dts.\n");
-		phy->io_lpcpd = -1;
+		phy->io_lpcpd = NULL;
 		/*
 		 * lpcpd pin is not specified. This is not an issue as
 		 * power management can be also managed by TPM specific
@@ -166,46 +155,8 @@ static int st33zp24_i2c_of_request_resources(struct i2c_client *client)
 		 */
 		return 0;
 	}
-	/* GPIO request and configuration */
-	ret = devm_gpio_request_one(&client->dev, gpio,
-			GPIOF_OUT_INIT_HIGH, "TPM IO LPCPD");
-	if (ret) {
-		dev_err(&client->dev, "Failed to request lpcpd pin\n");
-		return -ENODEV;
-	}
-	phy->io_lpcpd = gpio;
 
-	return 0;
-}
-
-static int st33zp24_i2c_request_resources(struct i2c_client *client)
-{
-	struct tpm_chip *chip = i2c_get_clientdata(client);
-	struct st33zp24_dev *tpm_dev = dev_get_drvdata(&chip->dev);
-	struct st33zp24_i2c_phy *phy = tpm_dev->phy_id;
-	struct st33zp24_platform_data *pdata;
-	int ret;
-
-	pdata = client->dev.platform_data;
-	if (!pdata) {
-		dev_err(&client->dev, "No platform data\n");
-		return -ENODEV;
-	}
-
-	/* store for late use */
-	phy->io_lpcpd = pdata->io_lpcpd;
-
-	if (gpio_is_valid(pdata->io_lpcpd)) {
-		ret = devm_gpio_request_one(&client->dev,
-				pdata->io_lpcpd, GPIOF_OUT_INIT_HIGH,
-				"TPM IO_LPCPD");
-		if (ret) {
-			dev_err(&client->dev, "Failed to request lpcpd pin\n");
-			return ret;
-		}
-	}
-
-	return 0;
+	return PTR_ERR_OR_ZERO(phy->io_lpcpd);
 }
 
 /*
@@ -219,7 +170,6 @@ static int st33zp24_i2c_probe(struct i2c_client *client,
 			      const struct i2c_device_id *id)
 {
 	int ret;
-	struct st33zp24_platform_data *pdata;
 	struct st33zp24_i2c_phy *phy;
 
 	if (!client) {
@@ -240,13 +190,8 @@ static int st33zp24_i2c_probe(struct i2c_client *client,
 
 	phy->client = client;
 
-	pdata = client->dev.platform_data;
-	if (!pdata && client->dev.of_node) {
+	if (client->dev.of_node) {
 		ret = st33zp24_i2c_of_request_resources(client);
-		if (ret)
-			return ret;
-	} else if (pdata) {
-		ret = st33zp24_i2c_request_resources(client);
 		if (ret)
 			return ret;
 	} else if (ACPI_HANDLE(&client->dev)) {
@@ -255,8 +200,7 @@ static int st33zp24_i2c_probe(struct i2c_client *client,
 			return ret;
 	}
 
-	return st33zp24_probe(phy, &i2c_phy_ops, &client->dev, client->irq,
-			      phy->io_lpcpd);
+	return st33zp24_probe(phy, &i2c_phy_ops, &client->dev, client->irq);
 }
 
 /*
