@@ -422,14 +422,7 @@ static int w5100_spi_probe(struct spi_device *spi)
 {
 	const struct w5100_ops *ops;
 	kernel_ulong_t driver_data;
-	const void *mac = NULL;
-	u8 tmpmac[ETH_ALEN];
 	int priv_size;
-	int ret;
-
-	ret = of_get_mac_address(spi->dev.of_node, tmpmac);
-	if (!ret)
-		mac = tmpmac;
 
 	driver_data = (uintptr_t)spi_get_device_match_data(spi);
 
@@ -450,7 +443,7 @@ static int w5100_spi_probe(struct spi_device *spi)
 		return -EINVAL;
 	}
 
-	return w5100_probe(&spi->dev, ops, priv_size, mac, spi->irq, -EINVAL);
+	return w5100_probe(&spi->dev, ops, priv_size, spi->irq);
 }
 
 static void w5100_spi_remove(struct spi_device *spi)
