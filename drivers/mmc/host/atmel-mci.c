@@ -30,7 +30,6 @@
 #include <linux/mmc/host.h>
 #include <linux/mmc/sdio.h>
 
-#include <linux/atmel-mci.h>
 #include <linux/atmel_pdc.h>
 #include <linux/pm.h>
 #include <linux/pm_runtime.h>
@@ -39,6 +38,30 @@
 #include <asm/cacheflush.h>
 #include <asm/io.h>
 #include <asm/unaligned.h>
+
+#define ATMCI_MAX_NR_SLOTS	2
+
+/**
+ * struct mci_slot_pdata - board-specific per-slot configuration
+ * @bus_width: Number of data lines wired up the slot
+ * @wp_pin: GPIO pin wired to the write protect sensor
+ * @detect_is_active_high: The state of the detect pin when it is active
+ * @non_removable: The slot is not removable, only detect once
+ *
+ * If a given slot is not present on the board, @bus_width should be
+ * set to 0. The other fields are ignored in this case.
+ *
+ * Any pins that aren't available should be set to a negative value.
+ *
+ * Note that support for multiple slots is experimental -- some cards
+ * might get upset if we don't get the clock management exactly right.
+ * But in most cases, it should work just fine.
+ */
+struct mci_slot_pdata {
+	unsigned int		bus_width;
+	bool			detect_is_active_high;
+	bool			non_removable;
+};
 
 /*
  * Superset of MCI IP registers integrated in Atmel AT91 Processor
@@ -388,8 +411,8 @@ struct atmel_mci_slot {
 #define ATMCI_CARD_NEED_INIT	1
 #define ATMCI_SHUTDOWN		2
 
-	int			detect_pin;
-	int			wp_pin;
+	struct gpio_desc	*detect_pin;
+	struct gpio_desc	*wp_pin;
 	bool			detect_is_active_high;
 
 	struct timer_list	detect_timer;
@@ -593,7 +616,6 @@ static void atmci_init_debugfs(struct atmel_mci_slot *slot)
 			   &host->completed_events);
 }
 
-#if defined(CONFIG_OF)
 static const struct of_device_id atmci_dt_ids[] = {
 	{ .compatible = "atmel,hsmci" },
 	{ /* sentinel */ }
@@ -601,22 +623,12 @@ static const struct of_device_id atmci_dt_ids[] = {
 
 MODULE_DEVICE_TABLE(of, atmci_dt_ids);
 
-static struct mci_platform_data*
-atmci_of_init(struct platform_device *pdev)
+static int
+atmci_of_init(struct platform_device *pdev, struct mci_slot_pdata *pdata)
 {
 	struct device_node *np = pdev->dev.of_node;
 	struct device_node *cnp;
-	struct mci_platform_data *pdata;
 	u32 slot_id;
-
-	if (!np) {
-		dev_err(&pdev->dev, "device node not found\n");
-		return ERR_PTR(-EINVAL);
-	}
-
-	pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
-	if (!pdata)
-		return ERR_PTR(-ENOMEM);
 
 	for_each_child_of_node(np, cnp) {
 		if (of_property_read_u32(cnp, "reg", &slot_id)) {
@@ -633,31 +645,18 @@ atmci_of_init(struct platform_device *pdev)
 		}
 
 		if (of_property_read_u32(cnp, "bus-width",
-		                         &pdata->slot[slot_id].bus_width))
-			pdata->slot[slot_id].bus_width = 1;
+		                         &pdata[slot_id].bus_width))
+			pdata[slot_id].bus_width = 1;
 
-		pdata->slot[slot_id].detect_pin =
-			of_get_named_gpio(cnp, "cd-gpios", 0);
-
-		pdata->slot[slot_id].detect_is_active_high =
+		pdata[slot_id].detect_is_active_high =
 			of_property_read_bool(cnp, "cd-inverted");
 
-		pdata->slot[slot_id].non_removable =
+		pdata[slot_id].non_removable =
 			of_property_read_bool(cnp, "non-removable");
-
-		pdata->slot[slot_id].wp_pin =
-			of_get_named_gpio(cnp, "wp-gpios", 0);
 	}
 
-	return pdata;
+	return 0;
 }
-#else /* CONFIG_OF */
-static inline struct mci_platform_data*
-atmci_of_init(struct platform_device *dev)
-{
-	return ERR_PTR(-EINVAL);
-}
-#endif
 
 static inline unsigned int atmci_get_version(struct atmel_mci *host)
 {
@@ -1509,8 +1508,8 @@ static int atmci_get_ro(struct mmc_host *mmc)
 	int			read_only = -ENOSYS;
 	struct atmel_mci_slot	*slot = mmc_priv(mmc);
 
-	if (gpio_is_valid(slot->wp_pin)) {
-		read_only = gpio_get_value(slot->wp_pin);
+	if (slot->wp_pin) {
+		read_only = gpiod_get_value(slot->wp_pin);
 		dev_dbg(&mmc->class_dev, "card is %s\n",
 				read_only ? "read-only" : "read-write");
 	}
@@ -1523,8 +1522,8 @@ static int atmci_get_cd(struct mmc_host *mmc)
 	int			present = -ENOSYS;
 	struct atmel_mci_slot	*slot = mmc_priv(mmc);
 
-	if (gpio_is_valid(slot->detect_pin)) {
-		present = !(gpio_get_value(slot->detect_pin) ^
+	if (slot->detect_pin) {
+		present = !(gpiod_get_value(slot->detect_pin) ^
 			    slot->detect_is_active_high);
 		dev_dbg(&mmc->class_dev, "card is %spresent\n",
 				present ? "" : "not ");
@@ -1637,8 +1636,8 @@ static void atmci_detect_change(struct timer_list *t)
 	if (test_bit(ATMCI_SHUTDOWN, &slot->flags))
 		return;
 
-	enable_irq(gpio_to_irq(slot->detect_pin));
-	present = !(gpio_get_value(slot->detect_pin) ^
+	enable_irq(gpiod_to_irq(slot->detect_pin));
+	present = !(gpiod_get_value(slot->detect_pin) ^
 		    slot->detect_is_active_high);
 	present_old = test_bit(ATMCI_CARD_PRESENT, &slot->flags);
 
@@ -2231,18 +2230,15 @@ static int atmci_init_slot(struct atmel_mci *host,
 	slot = mmc_priv(mmc);
 	slot->mmc = mmc;
 	slot->host = host;
-	slot->detect_pin = slot_data->detect_pin;
-	slot->wp_pin = slot_data->wp_pin;
 	slot->detect_is_active_high = slot_data->detect_is_active_high;
 	slot->sdc_reg = sdc_reg;
 	slot->sdio_irq = sdio_irq;
 
 	dev_dbg(&mmc->class_dev,
-	        "slot[%u]: bus_width=%u, detect_pin=%d, "
-		"detect_is_active_high=%s, wp_pin=%d\n",
-		id, slot_data->bus_width, slot_data->detect_pin,
-		slot_data->detect_is_active_high ? "true" : "false",
-		slot_data->wp_pin);
+	        "slot[%u]: bus_width=%u, "
+		"detect_is_active_high=%s\n",
+		id, slot_data->bus_width,
+		slot_data->detect_is_active_high ? "true" : "false");
 
 	mmc->ops = &atmci_ops;
 	mmc->f_min = DIV_ROUND_UP(host->bus_hz, 512);
@@ -2278,30 +2274,29 @@ static int atmci_init_slot(struct atmel_mci *host,
 
 	/* Assume card is present initially */
 	set_bit(ATMCI_CARD_PRESENT, &slot->flags);
-	if (gpio_is_valid(slot->detect_pin)) {
-		if (devm_gpio_request(&host->pdev->dev, slot->detect_pin,
-				      "mmc_detect")) {
-			dev_dbg(&mmc->class_dev, "no detect pin available\n");
-			slot->detect_pin = -EBUSY;
-		} else if (gpio_get_value(slot->detect_pin) ^
-				slot->detect_is_active_high) {
+
+	slot->detect_pin = devm_gpiod_get_optional(&host->pdev->dev, "cd", GPIOD_IN);
+	if (!IS_ERR(slot->detect_pin)) {
+		dev_dbg(&mmc->class_dev, "no detect pin available\n");
+		slot->detect_pin = NULL;
+	} else if (slot->detect_pin) {
+		if (gpiod_get_value(slot->detect_pin) ^
+		    slot->detect_is_active_high) {
 			clear_bit(ATMCI_CARD_PRESENT, &slot->flags);
 		}
 	}
 
-	if (!gpio_is_valid(slot->detect_pin)) {
+	if (!slot->detect_pin) {
 		if (slot_data->non_removable)
 			mmc->caps |= MMC_CAP_NONREMOVABLE;
 		else
 			mmc->caps |= MMC_CAP_NEEDS_POLL;
 	}
 
-	if (gpio_is_valid(slot->wp_pin)) {
-		if (devm_gpio_request(&host->pdev->dev, slot->wp_pin,
-				      "mmc_wp")) {
-			dev_dbg(&mmc->class_dev, "no WP pin available\n");
-			slot->wp_pin = -EBUSY;
-		}
+	slot->wp_pin = devm_gpiod_get_optional(&host->pdev->dev, "wp", GPIOD_IN);
+	if (IS_ERR(slot->wp_pin)) {
+		dev_dbg(&mmc->class_dev, "no WP pin available\n");
+		slot->wp_pin = NULL;
 	}
 
 	host->slot[id] = slot;
@@ -2312,18 +2307,18 @@ static int atmci_init_slot(struct atmel_mci *host,
 		return ret;
 	}
 
-	if (gpio_is_valid(slot->detect_pin)) {
+	if (slot->detect_pin) {
 		timer_setup(&slot->detect_timer, atmci_detect_change, 0);
 
-		ret = request_irq(gpio_to_irq(slot->detect_pin),
+		ret = request_irq(gpiod_to_irq(slot->detect_pin),
 				atmci_detect_interrupt,
 				IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING,
 				"mmc-detect", slot);
 		if (ret) {
 			dev_dbg(&mmc->class_dev,
 				"could not request IRQ %d for detect pin\n",
-				gpio_to_irq(slot->detect_pin));
-			slot->detect_pin = -EBUSY;
+				gpiod_to_irq(slot->detect_pin));
+			slot->detect_pin = NULL;
 		}
 	}
 
@@ -2342,10 +2337,8 @@ static void atmci_cleanup_slot(struct atmel_mci_slot *slot,
 
 	mmc_remove_host(slot->mmc);
 
-	if (gpio_is_valid(slot->detect_pin)) {
-		int pin = slot->detect_pin;
-
-		free_irq(gpio_to_irq(pin), slot);
+	if (slot->detect_pin) {
+		free_irq(gpiod_to_irq(slot->detect_pin), slot);
 		del_timer_sync(&slot->detect_timer);
 	}
 
@@ -2356,22 +2349,6 @@ static void atmci_cleanup_slot(struct atmel_mci_slot *slot,
 static int atmci_configure_dma(struct atmel_mci *host)
 {
 	host->dma.chan = dma_request_chan(&host->pdev->dev, "rxtx");
-
-	if (PTR_ERR(host->dma.chan) == -ENODEV) {
-		struct mci_platform_data *pdata = host->pdev->dev.platform_data;
-		dma_cap_mask_t mask;
-
-		if (!pdata || !pdata->dma_filter)
-			return -ENODEV;
-
-		dma_cap_zero(mask);
-		dma_cap_set(DMA_SLAVE, mask);
-
-		host->dma.chan = dma_request_channel(mask, pdata->dma_filter,
-						     pdata->dma_slave);
-		if (!host->dma.chan)
-			host->dma.chan = ERR_PTR(-ENODEV);
-	}
 
 	if (IS_ERR(host->dma.chan))
 		return PTR_ERR(host->dma.chan);
@@ -2450,7 +2427,7 @@ static void atmci_get_cap(struct atmel_mci *host)
 
 static int atmci_probe(struct platform_device *pdev)
 {
-	struct mci_platform_data	*pdata;
+	struct mci_slot_pdata		pdata[ATMCI_MAX_NR_SLOTS];
 	struct atmel_mci		*host;
 	struct resource			*regs;
 	unsigned int			nr_slots;
@@ -2460,22 +2437,20 @@ static int atmci_probe(struct platform_device *pdev)
 	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!regs)
 		return -ENXIO;
-	pdata = pdev->dev.platform_data;
-	if (!pdata) {
-		pdata = atmci_of_init(pdev);
-		if (IS_ERR(pdata)) {
-			dev_err(&pdev->dev, "platform data not available\n");
-			return PTR_ERR(pdata);
-		}
+
+	host = devm_kzalloc(&pdev->dev, sizeof(*host), GFP_KERNEL);
+	if (!host)
+		return -ENOMEM;
+
+	ret = atmci_of_init(pdev, pdata);
+	if (ret) {
+		dev_err(&pdev->dev, "error parsing DT\n");
+		return ret;
 	}
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
-
-	host = devm_kzalloc(&pdev->dev, sizeof(*host), GFP_KERNEL);
-	if (!host)
-		return -ENOMEM;
 
 	host->pdev = pdev;
 	spin_lock_init(&host->lock);
@@ -2540,16 +2515,16 @@ static int atmci_probe(struct platform_device *pdev)
 	/* We need at least one slot to succeed */
 	nr_slots = 0;
 	ret = -ENODEV;
-	if (pdata->slot[0].bus_width) {
-		ret = atmci_init_slot(host, &pdata->slot[0],
+	if (pdata[0].bus_width) {
+		ret = atmci_init_slot(host, &pdata[0],
 				0, ATMCI_SDCSEL_SLOT_A, ATMCI_SDIOIRQA);
 		if (!ret) {
 			nr_slots++;
 			host->buf_size = host->slot[0]->mmc->max_req_size;
 		}
 	}
-	if (pdata->slot[1].bus_width) {
-		ret = atmci_init_slot(host, &pdata->slot[1],
+	if (pdata[1].bus_width) {
+		ret = atmci_init_slot(host, &pdata[1],
 				1, ATMCI_SDCSEL_SLOT_B, ATMCI_SDIOIRQB);
 		if (!ret) {
 			nr_slots++;
@@ -2671,7 +2646,7 @@ static struct platform_driver atmci_driver = {
 	.driver		= {
 		.name		= "atmel_mci",
 		.probe_type	= PROBE_PREFER_ASYNCHRONOUS,
-		.of_match_table	= of_match_ptr(atmci_dt_ids),
+		.of_match_table	= atmci_dt_ids,
 		.pm		= &atmci_dev_pm_ops,
 	},
 };
