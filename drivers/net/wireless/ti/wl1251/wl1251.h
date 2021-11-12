@@ -262,7 +262,7 @@ struct wl1251 {
 	void *if_priv;
 	const struct wl1251_if_operations *if_ops;
 
-	int power_gpio;
+	struct gpio_desc *power_gpio;
 	int irq;
 	bool use_eeprom;
 
