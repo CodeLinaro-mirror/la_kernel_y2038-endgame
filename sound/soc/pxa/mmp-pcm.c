@@ -113,8 +113,10 @@ static int mmp_pcm_open(struct snd_soc_component *component,
 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
 	struct platform_device *pdev = to_platform_device(component->dev);
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
+	struct dma_chan *dma_chan;
 	struct mmp_dma_data dma_data;
 	struct resource *r;
+	dma_cap_mask_t mask;
 
 	r = platform_get_resource(pdev, IORESOURCE_DMA, substream->stream);
 	if (!r)
@@ -126,8 +128,12 @@ static int mmp_pcm_open(struct snd_soc_component *component,
 	dma_data.dma_res = r;
 	dma_data.ssp_id = cpu_dai->id;
 
-	return snd_dmaengine_pcm_open_request_chan(substream, filter,
-		    &dma_data);
+	dma_cap_zero(mask);
+	dma_cap_set(DMA_SLAVE, mask);
+	dma_cap_set(DMA_CYCLIC, mask);
+	dma_chan = dma_request_channel(mask, filter, &dma_data);
+
+	return snd_dmaengine_pcm_open(substream, dma_chan);
 }
 
 static int mmp_pcm_close(struct snd_soc_component *component,
