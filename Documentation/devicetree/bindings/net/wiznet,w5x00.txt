@@ -1,6 +1,6 @@
 * Wiznet w5x00
 
-This is a standalone 10/100 MBit Ethernet controller with SPI interface.
+This is a standalone 10/100 MBit Ethernet controller with SPI or MMIO interface.
 
 For each device connected to a SPI bus, define a child node within
 the SPI master node.
@@ -9,6 +9,7 @@ Required properties:
 - compatible: Should be one of the following strings:
 	      "wiznet,w5100"
 	      "wiznet,w5200"
+	      "wiznet,w5300"
 	      "wiznet,w5500"
 - reg: Specify the SPI chip select the chip is wired to.
 - interrupts: Specify the interrupt index within the interrupt controller (referred
@@ -25,6 +26,7 @@ Optional properties:
   According to the w5500 datasheet, the chip allows a maximum of 80 MHz, however,
   board designs may need to limit this value.
 - local-mac-address: See ethernet.txt in the same directory.
+- link-gpios: a GPIO line used for the link detection interrupt
 
 
 Example (for Raspberry Pi with pin control stuff for GPIO irq):
