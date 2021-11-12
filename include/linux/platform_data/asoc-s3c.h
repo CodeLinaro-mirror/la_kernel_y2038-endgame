@@ -30,7 +30,6 @@ struct samsung_i2s_type {
 #define QUIRK_SUPPORTS_IDMA	(1 << 5)
 	/* Quirks of the I2S controller */
 	u32 quirks;
-	dma_addr_t idma_addr;
 };
 
 /**
@@ -39,10 +38,5 @@ struct samsung_i2s_type {
  */
 struct s3c_audio_platform_data {
 	int (*cfg_gpio)(struct platform_device *);
-	dma_filter_fn dma_filter;
-	void *dma_playback;
-	void *dma_capture;
-	void *dma_play_sec;
-	void *dma_capture_mic;
 	struct samsung_i2s_type type;
 };

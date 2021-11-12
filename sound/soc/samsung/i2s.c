@@ -81,7 +81,6 @@ struct i2s_dai {
 	struct snd_dmaengine_dai_dma_data dma_playback;
 	struct snd_dmaengine_dai_dma_data dma_capture;
 	struct snd_dmaengine_dai_dma_data idma_playback;
-	dma_filter_fn filter;
 
 	struct samsung_i2s_priv *priv;
 };
@@ -1445,13 +1444,7 @@ static int samsung_i2s_probe(struct platform_device *pdev)
 	spin_lock_init(&priv->lock);
 	spin_lock_init(&priv->pcm_lock);
 
-	if (!np) {
-		pri_dai->dma_playback.filter_data = i2s_pdata->dma_playback;
-		pri_dai->dma_capture.filter_data = i2s_pdata->dma_capture;
-		pri_dai->filter = i2s_pdata->dma_filter;
-
-		idma_addr = i2s_pdata->type.idma_addr;
-	} else {
+	if (np) {
 		if (of_property_read_u32(np, "samsung,idma-addr",
 					 &idma_addr)) {
 			if (priv->quirks & QUIRK_SUPPORTS_IDMA) {
@@ -1489,8 +1482,7 @@ static int samsung_i2s_probe(struct platform_device *pdev)
 	if (priv->quirks & QUIRK_PRI_6CHAN)
 		pri_dai->drv->playback.channels_max = 6;
 
-	ret = samsung_asoc_dma_platform_register(&pdev->dev, pri_dai->filter,
-						 "tx", "rx", NULL);
+	ret = samsung_asoc_dma_platform_register(&pdev->dev, "tx", "rx", NULL);
 	if (ret < 0)
 		goto err_disable_clk;
 
@@ -1499,12 +1491,6 @@ static int samsung_i2s_probe(struct platform_device *pdev)
 
 		sec_dai->dma_playback.addr = regs_base + I2STXDS;
 		sec_dai->dma_playback.chan_name = "tx-sec";
-
-		if (!np) {
-			sec_dai->dma_playback.filter_data = i2s_pdata->dma_play_sec;
-			sec_dai->filter = i2s_pdata->dma_filter;
-		}
-
 		sec_dai->dma_playback.addr_width = 4;
 		sec_dai->idma_playback.addr = idma_addr;
 		sec_dai->pri_dai = pri_dai;
@@ -1516,8 +1502,7 @@ static int samsung_i2s_probe(struct platform_device *pdev)
 			goto err_disable_clk;
 
 		ret = samsung_asoc_dma_platform_register(&priv->pdev_sec->dev,
-						sec_dai->filter, "tx-sec", NULL,
-						&pdev->dev);
+						"tx-sec", NULL, &pdev->dev);
 		if (ret < 0)
 			goto err_del_sec;
 
