@@ -11,7 +11,6 @@
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/platform_device.h>
-#include <linux/platform_data/wiznet.h>
 #include <linux/ethtool.h>
 #include <linux/skbuff.h>
 #include <linux/types.h>
@@ -24,6 +23,7 @@
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/gpio.h>
+#include <linux/of_net.h>
 
 #include "w5100.h"
 
@@ -139,6 +139,12 @@ MODULE_LICENSE("GPL");
 #define W5500_RX_MEM_START	0x30000
 #define W5500_RX_MEM_SIZE	0x04000
 
+#ifndef CONFIG_WIZNET_BUS_SHIFT
+#define CONFIG_WIZNET_BUS_SHIFT 0
+#endif
+
+#define W5100_BUS_DIRECT_SIZE  (0x8000 << CONFIG_WIZNET_BUS_SHIFT)
+
 /*
  * Device driver private data structure
  */
@@ -157,7 +163,7 @@ struct w5100_priv {
 
 	int irq;
 	int link_irq;
-	int link_gpio;
+	struct gpio_desc *link_gpio;
 
 	struct napi_struct napi;
 	struct net_device *ndev;
@@ -729,8 +735,8 @@ static u32 w5100_get_link(struct net_device *ndev)
 {
 	struct w5100_priv *priv = netdev_priv(ndev);
 
-	if (gpio_is_valid(priv->link_gpio))
-		return !!gpio_get_value(priv->link_gpio);
+	if (priv->link_gpio)
+		return !!gpiod_get_value(priv->link_gpio);
 
 	return 1;
 }
@@ -943,7 +949,7 @@ static irqreturn_t w5100_detect_link(int irq, void *ndev_instance)
 	struct w5100_priv *priv = netdev_priv(ndev);
 
 	if (netif_running(ndev)) {
-		if (gpio_get_value(priv->link_gpio) != 0) {
+		if (gpiod_get_value(priv->link_gpio) != 0) {
 			netif_info(priv, link, ndev, "link is up\n");
 			netif_carrier_on(ndev);
 		} else {
@@ -998,8 +1004,8 @@ static int w5100_open(struct net_device *ndev)
 	w5100_hw_start(priv);
 	napi_enable(&priv->napi);
 	netif_start_queue(ndev);
-	if (!gpio_is_valid(priv->link_gpio) ||
-	    gpio_get_value(priv->link_gpio) != 0)
+	if (!priv->link_gpio ||
+	    gpiod_get_value(priv->link_gpio) != 0)
 		netif_carrier_on(ndev);
 	return 0;
 }
@@ -1037,14 +1043,9 @@ static const struct net_device_ops w5100_netdev_ops = {
 
 static int w5100_mmio_probe(struct platform_device *pdev)
 {
-	struct wiznet_platform_data *data = dev_get_platdata(&pdev->dev);
-	const void *mac_addr = NULL;
 	struct resource *mem;
 	const struct w5100_ops *ops;
 	int irq;
-
-	if (data && is_valid_ether_addr(data->mac_addr))
-		mac_addr = data->mac_addr;
 
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!mem)
@@ -1058,8 +1059,7 @@ static int w5100_mmio_probe(struct platform_device *pdev)
 	if (irq < 0)
 		return irq;
 
-	return w5100_probe(&pdev->dev, ops, sizeof(struct w5100_mmio_priv),
-			   mac_addr, irq, data ? data->link_gpio : -EINVAL);
+	return w5100_probe(&pdev->dev, ops, sizeof(struct w5100_mmio_priv), irq);
 }
 
 static int w5100_mmio_remove(struct platform_device *pdev)
@@ -1077,13 +1077,13 @@ void *w5100_ops_priv(const struct net_device *ndev)
 EXPORT_SYMBOL_GPL(w5100_ops_priv);
 
 int w5100_probe(struct device *dev, const struct w5100_ops *ops,
-		int sizeof_ops_priv, const void *mac_addr, int irq,
-		int link_gpio)
+		int sizeof_ops_priv, int irq)
 {
 	struct w5100_priv *priv;
 	struct net_device *ndev;
 	int err;
 	size_t alloc_size;
+	u8 tmpmac[ETH_ALEN];
 
 	alloc_size = sizeof(*priv);
 	if (sizeof_ops_priv) {
@@ -1129,7 +1129,9 @@ int w5100_probe(struct device *dev, const struct w5100_ops *ops,
 	priv->ndev = ndev;
 	priv->ops = ops;
 	priv->irq = irq;
-	priv->link_gpio = link_gpio;
+	priv->link_gpio = gpiod_get_optional(dev, "link", GPIOD_IN);
+	if (IS_ERR(priv->link_gpio))
+		return PTR_ERR(priv->link_gpio);
 
 	ndev->netdev_ops = &w5100_netdev_ops;
 	ndev->ethtool_ops = &w5100_ethtool_ops;
@@ -1156,8 +1158,9 @@ int w5100_probe(struct device *dev, const struct w5100_ops *ops,
 	INIT_WORK(&priv->setrx_work, w5100_setrx_work);
 	INIT_WORK(&priv->restart_work, w5100_restart_work);
 
-	if (mac_addr)
-		eth_hw_addr_set(ndev, mac_addr);
+	err = of_get_mac_address(dev->of_node, tmpmac);
+	if (!err)
+		eth_hw_addr_set(ndev, tmpmac);
 	else
 		eth_hw_addr_random(ndev);
 
@@ -1182,7 +1185,7 @@ int w5100_probe(struct device *dev, const struct w5100_ops *ops,
 	if (err)
 		goto err_hw;
 
-	if (gpio_is_valid(priv->link_gpio)) {
+	if (priv->link_gpio) {
 		char *link_name = devm_kzalloc(dev, 16, GFP_KERNEL);
 
 		if (!link_name) {
@@ -1190,12 +1193,14 @@ int w5100_probe(struct device *dev, const struct w5100_ops *ops,
 			goto err_gpio;
 		}
 		snprintf(link_name, 16, "%s-link", netdev_name(ndev));
-		priv->link_irq = gpio_to_irq(priv->link_gpio);
+		priv->link_irq = gpiod_to_irq(priv->link_gpio);
 		if (request_any_context_irq(priv->link_irq, w5100_detect_link,
 					    IRQF_TRIGGER_RISING |
 					    IRQF_TRIGGER_FALLING,
-					    link_name, priv->ndev) < 0)
-			priv->link_gpio = -EINVAL;
+					    link_name, priv->ndev) < 0) {
+			gpiod_put(priv->link_gpio);
+			priv->link_gpio = NULL;
+		}
 	}
 
 	return 0;
@@ -1219,7 +1224,7 @@ void w5100_remove(struct device *dev)
 
 	w5100_hw_reset(priv);
 	free_irq(priv->irq, ndev);
-	if (gpio_is_valid(priv->link_gpio))
+	if (priv->link_gpio)
 		free_irq(priv->link_irq, ndev);
 
 	flush_work(&priv->setrx_work);
@@ -1256,8 +1261,8 @@ static int w5100_resume(struct device *dev)
 		w5100_hw_start(priv);
 
 		netif_device_attach(ndev);
-		if (!gpio_is_valid(priv->link_gpio) ||
-		    gpio_get_value(priv->link_gpio) != 0)
+		if (!priv->link_gpio ||
+		    gpiod_get_value(priv->link_gpio) != 0)
 			netif_carrier_on(ndev);
 	}
 	return 0;
