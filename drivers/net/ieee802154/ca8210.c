@@ -52,13 +52,11 @@
 #include <linux/debugfs.h>
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
-#include <linux/gpio.h>
 #include <linux/ieee802154.h>
 #include <linux/io.h>
 #include <linux/kfifo.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
-#include <linux/of_gpio.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
 #include <linux/poll.h>
@@ -312,6 +310,9 @@ struct ca8210_test {
  * @promiscuous:            whether the ca8210 is in promiscuous mode or not
  * @retries:                records how many times the current pending spi
  *                          transfer has been retried
+ * @gpio_reset:     	    gpio of ca8210 reset line
+ * @gpio_irq:       	    gpio number of ca8210 interrupt line
+ * @irq_id:        	    identifier for the ca8210 irq
  */
 struct ca8210_priv {
 	struct spi_device *spi;
@@ -332,6 +333,9 @@ struct ca8210_priv {
 	struct completion spi_transfer_complete, sync_exchange_complete;
 	bool promiscuous;
 	int retries;
+	struct gpio_desc *gpio_reset;
+	struct gpio_desc *gpio_irq;
+	int irq_id;
 };
 
 /**
@@ -351,18 +355,12 @@ struct work_priv_container {
  * @extclockenable: true if the external clock is to be enabled
  * @extclockfreq:   frequency of the external clock
  * @extclockgpio:   ca8210 output gpio of the external clock
- * @gpio_reset:     gpio number of ca8210 reset line
- * @gpio_irq:       gpio number of ca8210 interrupt line
- * @irq_id:         identifier for the ca8210 irq
  *
  */
 struct ca8210_platform_data {
 	bool extclockenable;
 	unsigned int extclockfreq;
 	unsigned int extclockgpio;
-	int gpio_reset;
-	int gpio_irq;
-	int irq_id;
 };
 
 /**
@@ -628,14 +626,13 @@ static int ca8210_spi_transfer(
  */
 static void ca8210_reset_send(struct spi_device *spi, unsigned int ms)
 {
-	struct ca8210_platform_data *pdata = spi->dev.platform_data;
 	struct ca8210_priv *priv = spi_get_drvdata(spi);
 	long status;
 
-	gpio_set_value(pdata->gpio_reset, 0);
+	gpiod_set_value(priv->gpio_reset, 0);
 	reinit_completion(&priv->ca8210_is_awake);
 	msleep(ms);
-	gpio_set_value(pdata->gpio_reset, 1);
+	gpiod_set_value(priv->gpio_reset, 1);
 	priv->promiscuous = false;
 
 	/* Wait until wakeup indication seen */
@@ -2789,73 +2786,33 @@ static void ca8210_unregister_ext_clock(struct spi_device *spi)
 }
 
 /**
- * ca8210_reset_init() - Initialise the reset input to the ca8210
- * @spi:  Pointer to target ca8210 spi device
- *
- * Return: 0 or linux error code
- */
-static int ca8210_reset_init(struct spi_device *spi)
-{
-	int ret;
-	struct ca8210_platform_data *pdata = spi->dev.platform_data;
-
-	pdata->gpio_reset = of_get_named_gpio(
-		spi->dev.of_node,
-		"reset-gpio",
-		0
-	);
-
-	ret = gpio_direction_output(pdata->gpio_reset, 1);
-	if (ret < 0) {
-		dev_crit(
-			&spi->dev,
-			"Reset GPIO %d did not set to output mode\n",
-			pdata->gpio_reset
-		);
-	}
-
-	return ret;
-}
-
-/**
  * ca8210_interrupt_init() - Initialise the irq output from the ca8210
  * @spi:  Pointer to target ca8210 spi device
  *
  * Return: 0 or linux error code
  */
-static int ca8210_interrupt_init(struct spi_device *spi)
+static int ca8210_interrupt_init(struct spi_device *spi, struct ca8210_priv *priv)
 {
 	int ret;
-	struct ca8210_platform_data *pdata = spi->dev.platform_data;
 
-	pdata->gpio_irq = of_get_named_gpio(
-		spi->dev.of_node,
-		"irq-gpio",
-		0
-	);
-
-	pdata->irq_id = gpio_to_irq(pdata->gpio_irq);
-	if (pdata->irq_id < 0) {
-		dev_crit(
-			&spi->dev,
-			"Could not get irq for gpio pin %d\n",
-			pdata->gpio_irq
-		);
-		gpio_free(pdata->gpio_irq);
-		return pdata->irq_id;
+	priv->gpio_irq = gpiod_get(&spi->dev, "irq", GPIOD_IN);
+	priv->irq_id = gpiod_to_irq(priv->gpio_irq);
+	if (priv->irq_id < 0) {
+		dev_crit(&spi->dev, "Could not get irq for gpio pin\n");
+		gpiod_put(priv->gpio_irq);
+		return priv->irq_id;
 	}
 
 	ret = request_irq(
-		pdata->irq_id,
+		priv->irq_id,
 		ca8210_interrupt_handler,
 		IRQF_TRIGGER_FALLING,
 		"ca8210-irq",
 		spi_get_drvdata(spi)
 	);
 	if (ret) {
-		dev_crit(&spi->dev, "request_irq %d failed\n", pdata->irq_id);
-		gpiod_unexport(gpio_to_desc(pdata->gpio_irq));
-		gpio_free(pdata->gpio_irq);
+		dev_crit(&spi->dev, "request_irq %d failed\n", priv->irq_id);
+		gpiod_put(priv->gpio_irq);
 	}
 
 	return ret;
@@ -3009,7 +2966,7 @@ static void ca8210_test_interface_clear(struct ca8210_priv *priv)
  */
 static void ca8210_remove(struct spi_device *spi_device)
 {
-	struct ca8210_priv *priv;
+	struct ca8210_priv *priv = spi_get_drvdata(spi_device);
 	struct ca8210_platform_data *pdata;
 
 	dev_info(&spi_device->dev, "Removing ca8210\n");
@@ -3020,12 +2977,10 @@ static void ca8210_remove(struct spi_device *spi_device)
 			ca8210_unregister_ext_clock(spi_device);
 			ca8210_config_extern_clk(pdata, spi_device, 0);
 		}
-		free_irq(pdata->irq_id, spi_device->dev.driver_data);
+		free_irq(priv->irq_id, spi_device->dev.driver_data);
 		kfree(pdata);
 		spi_device->dev.platform_data = NULL;
 	}
-	/* get spi_device private data */
-	priv = spi_get_drvdata(spi_device);
 	if (priv) {
 		dev_info(
 			&spi_device->dev,
@@ -3114,13 +3069,13 @@ static int ca8210_probe(struct spi_device *spi_device)
 		dev_crit(&spi_device->dev, "ca8210_dev_com_init failed\n");
 		goto error;
 	}
-	ret = ca8210_reset_init(priv->spi);
-	if (ret) {
-		dev_crit(&spi_device->dev, "ca8210_reset_init failed\n");
+	priv->gpio_reset = gpiod_get(&spi_device->dev, "reset", GPIOD_OUT_HIGH);
+	if (IS_ERR(priv->gpio_reset)) {
+		dev_crit(&spi_device->dev, "ca8210 reset init failed\n");
 		goto error;
 	}
 
-	ret = ca8210_interrupt_init(priv->spi);
+	ret = ca8210_interrupt_init(priv->spi, priv);
 	if (ret) {
 		dev_crit(&spi_device->dev, "ca8210_interrupt_init failed\n");
 		goto error;
