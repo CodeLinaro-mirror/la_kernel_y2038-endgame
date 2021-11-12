@@ -12,7 +12,6 @@
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/platform_device.h>
-#include <linux/platform_data/wiznet.h>
 #include <linux/ethtool.h>
 #include <linux/skbuff.h>
 #include <linux/types.h>
@@ -24,7 +23,8 @@
 #include <linux/ioport.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
-#include <linux/gpio.h>
+#include <linux/gpio/consumer.h>
+#include <linux/of_net.h>
 
 #define DRV_NAME	"w5300"
 #define DRV_VERSION	"2012-04-04"
@@ -80,6 +80,10 @@ MODULE_LICENSE("GPL");
 #define W5300_S0_RX_FIFO	0x0230	/* S0 Receive FIFO */
 #define W5300_REGS_LEN		0x0400
 
+#define WIZNET_BUS_SHIFT 0
+
+#define W5300_BUS_DIRECT_SIZE  (0x0400 << WIZNET_BUS_SHIFT)
+
 /*
  * Device driver private data structure
  */
@@ -91,7 +95,7 @@ struct w5300_priv {
 	void (*write)(struct w5300_priv *priv, u16 addr, u16 data);
 	int irq;
 	int link_irq;
-	int link_gpio;
+	struct gpio_desc *link_gpio;
 
 	struct napi_struct napi;
 	struct net_device *ndev;
@@ -113,13 +117,13 @@ struct w5300_priv {
  */
 static inline u16 w5300_read_direct(struct w5300_priv *priv, u16 addr)
 {
-	return ioread16(priv->base + (addr << CONFIG_WIZNET_BUS_SHIFT));
+	return ioread16(priv->base + (addr << WIZNET_BUS_SHIFT));
 }
 
 static inline void w5300_write_direct(struct w5300_priv *priv,
 				      u16 addr, u16 data)
 {
-	iowrite16(data, priv->base + (addr << CONFIG_WIZNET_BUS_SHIFT));
+	iowrite16(data, priv->base + (addr << WIZNET_BUS_SHIFT));
 }
 
 /*
@@ -292,8 +296,8 @@ static u32 w5300_get_link(struct net_device *ndev)
 {
 	struct w5300_priv *priv = netdev_priv(ndev);
 
-	if (gpio_is_valid(priv->link_gpio))
-		return !!gpio_get_value(priv->link_gpio);
+	if (priv->link_gpio)
+		return !!gpiod_get_value(priv->link_gpio);
 
 	return 1;
 }
@@ -442,7 +446,7 @@ static irqreturn_t w5300_detect_link(int irq, void *ndev_instance)
 	struct w5300_priv *priv = netdev_priv(ndev);
 
 	if (netif_running(ndev)) {
-		if (gpio_get_value(priv->link_gpio) != 0) {
+		if (gpiod_get_value(priv->link_gpio) != 0) {
 			netif_info(priv, link, ndev, "link is up\n");
 			netif_carrier_on(ndev);
 		} else {
@@ -485,8 +489,8 @@ static int w5300_open(struct net_device *ndev)
 	w5300_hw_start(priv);
 	napi_enable(&priv->napi);
 	netif_start_queue(ndev);
-	if (!gpio_is_valid(priv->link_gpio) ||
-	    gpio_get_value(priv->link_gpio) != 0)
+	if (!priv->link_gpio ||
+	    gpiod_get_value(priv->link_gpio) != 0)
 		netif_carrier_on(ndev);
 	return 0;
 }
@@ -524,7 +528,6 @@ static const struct net_device_ops w5300_netdev_ops = {
 
 static int w5300_hw_probe(struct platform_device *pdev)
 {
-	struct wiznet_platform_data *data = dev_get_platdata(&pdev->dev);
 	struct net_device *ndev = platform_get_drvdata(pdev);
 	struct w5300_priv *priv = netdev_priv(ndev);
 	const char *name = netdev_name(ndev);
@@ -533,11 +536,9 @@ static int w5300_hw_probe(struct platform_device *pdev)
 	int irq;
 	int ret;
 
-	if (data && is_valid_ether_addr(data->mac_addr)) {
-		eth_hw_addr_set(ndev, data->mac_addr);
-	} else {
-		eth_hw_addr_random(ndev);
-	}
+        ret = of_get_ethdev_address(pdev->dev.of_node, ndev);
+        if (ret)
+                eth_hw_addr_random(ndev);
 
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	priv->base = devm_ioremap_resource(&pdev->dev, mem);
@@ -569,17 +570,22 @@ static int w5300_hw_probe(struct platform_device *pdev)
 		return ret;
 	priv->irq = irq;
 
-	priv->link_gpio = data ? data->link_gpio : -EINVAL;
-	if (gpio_is_valid(priv->link_gpio)) {
+	priv->link_gpio = gpiod_get_optional(&pdev->dev, "link", GPIOD_IN);
+	if (IS_ERR(priv->link_gpio))
+		return PTR_ERR(priv->link_gpio);
+
+	if (priv->link_gpio) {
 		char *link_name = devm_kzalloc(&pdev->dev, 16, GFP_KERNEL);
 		if (!link_name)
 			return -ENOMEM;
 		snprintf(link_name, 16, "%s-link", name);
-		priv->link_irq = gpio_to_irq(priv->link_gpio);
+		priv->link_irq = gpiod_to_irq(priv->link_gpio);
 		if (request_any_context_irq(priv->link_irq, w5300_detect_link,
 				IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-				link_name, priv->ndev) < 0)
-			priv->link_gpio = -EINVAL;
+				link_name, priv->ndev) < 0) {
+			priv->link_gpio = NULL;
+			gpiod_put(priv->link_gpio);
+		}
 	}
 
 	netdev_info(ndev, "at 0x%llx irq %d\n", (u64)mem->start, irq);
@@ -634,7 +640,7 @@ static void w5300_remove(struct platform_device *pdev)
 
 	w5300_hw_reset(priv);
 	free_irq(priv->irq, ndev);
-	if (gpio_is_valid(priv->link_gpio))
+	if (priv->link_gpio)
 		free_irq(priv->link_irq, ndev);
 
 	unregister_netdev(ndev);
@@ -666,8 +672,8 @@ static int w5300_resume(struct device *dev)
 		w5300_hw_start(priv);
 
 		netif_device_attach(ndev);
-		if (!gpio_is_valid(priv->link_gpio) ||
-		    gpio_get_value(priv->link_gpio) != 0)
+		if (!priv->link_gpio ||
+		    gpiod_get_value(priv->link_gpio) != 0)
 			netif_carrier_on(ndev);
 	}
 	return 0;
