@@ -12,10 +12,9 @@
 #include <linux/swab.h>
 #include <linux/crc7.h>
 #include <linux/spi/spi.h>
-#include <linux/wl12xx.h>
 #include <linux/gpio.h>
 #include <linux/of.h>
-#include <linux/of_gpio.h>
+#include <linux/gpio/consumer.h>
 #include <linux/regulator/consumer.h>
 
 #include "wl1251.h"
@@ -209,8 +208,7 @@ static void wl1251_spi_disable_irq(struct wl1251 *wl)
 
 static int wl1251_spi_set_power(struct wl1251 *wl, bool enable)
 {
-	if (gpio_is_valid(wl->power_gpio))
-		gpio_set_value(wl->power_gpio, enable);
+	gpiod_set_value(wl->power_gpio, enable);
 
 	return 0;
 }
@@ -226,16 +224,9 @@ static const struct wl1251_if_operations wl1251_spi_ops = {
 
 static int wl1251_spi_probe(struct spi_device *spi)
 {
-	struct wl1251_platform_data *pdata = dev_get_platdata(&spi->dev);
-	struct device_node *np = spi->dev.of_node;
 	struct ieee80211_hw *hw;
 	struct wl1251 *wl;
 	int ret;
-
-	if (!np && !pdata) {
-		wl1251_error("no platform data");
-		return -ENODEV;
-	}
 
 	hw = wl1251_alloc_hw();
 	if (IS_ERR(hw))
@@ -259,29 +250,13 @@ static int wl1251_spi_probe(struct spi_device *spi)
 		goto out_free;
 	}
 
-	if (np) {
-		wl->use_eeprom = of_property_read_bool(np, "ti,wl1251-has-eeprom");
-		wl->power_gpio = of_get_named_gpio(np, "ti,power-gpio", 0);
-	} else if (pdata) {
-		wl->power_gpio = pdata->power_gpio;
-		wl->use_eeprom = pdata->use_eeprom;
-	}
-
-	if (wl->power_gpio == -EPROBE_DEFER) {
-		ret = -EPROBE_DEFER;
-		goto out_free;
-	}
-
-	if (gpio_is_valid(wl->power_gpio)) {
-		ret = devm_gpio_request_one(&spi->dev, wl->power_gpio,
-					GPIOF_OUT_INIT_LOW, "wl1251 power");
-		if (ret) {
-			wl1251_error("Failed to request gpio: %d\n", ret);
-			goto out_free;
-		}
-	} else {
-		wl1251_error("set power gpio missing in platform data");
-		ret = -ENODEV;
+	wl->use_eeprom = device_property_read_bool(&spi->dev,
+						   "ti,wl1251-has-eeprom");
+	wl->power_gpio = devm_gpiod_get(&spi->dev, "ti,power", GPIOD_OUT_LOW);
+	if (IS_ERR(wl->power_gpio)) {
+		ret = PTR_ERR(wl->power_gpio);
+		if (ret != -EPROBE_DEFER)
+			wl1251_error("set power gpio missing in platform data");
 		goto out_free;
 	}
 
