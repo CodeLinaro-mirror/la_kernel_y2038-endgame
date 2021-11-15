@@ -19,7 +19,7 @@
 #include <linux/i2c.h>
 #include <linux/mutex.h>
 #include <linux/delay.h>
-#include <linux/gpio.h>
+#include <linux/gpio/consumer.h>
 #include <linux/input/auo-pixcir-ts.h>
 #include <linux/of.h>
 #include <linux/of_gpio.h>
