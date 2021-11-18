@@ -57,6 +57,10 @@
 
 	.text
 	.arm
+#ifdef CONFIG_CC_IS_GCC
+	/* needed for tmrc/tmcr on gcc, but not supported by clang */
+	.arch_extension iwmmxt
+#endif
 
 /*
  * Lazy switching of Concan coprocessor context
