@@ -45,6 +45,10 @@
 
 	.text
 	.arm
+#ifdef CONFIG_CC_IS_GCC
+	/* needed for tmrc/tmcr on gcc, but not supported by clang */
+	.arch_extension iwmmxt
+#endif
 
 ENTRY(iwmmxt_undef_handler)
 	push		{r9, r10, lr}
