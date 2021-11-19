@@ -1245,6 +1245,8 @@ static void *nixge_get_nvmem_address(struct device *dev)
 
 	mac = nvmem_cell_read(cell, &cell_size);
 	nvmem_cell_put(cell);
+	if (IS_ERR(mac))
+		return NULL;
 
 	return mac;
 }
