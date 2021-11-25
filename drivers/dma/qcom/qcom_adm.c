@@ -709,8 +709,8 @@ static void adm_channel_init(struct adm_device *adev, struct adm_chan *achan,
  *
  * Returns pointer to appropriate dma channel on success or NULL on error.
  */
-struct dma_chan *adm_dma_xlate(struct of_phandle_args *dma_spec,
-			       struct of_dma *ofdma)
+static struct dma_chan *adm_dma_xlate(struct of_phandle_args *dma_spec,
+				      struct of_dma *ofdma)
 {
 	struct dma_device *dev = ofdma->of_dma_data;
 	struct dma_chan *chan, *candidate = NULL;
