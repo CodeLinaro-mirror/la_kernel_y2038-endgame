@@ -19,9 +19,6 @@
 #include <asm/glue-df.h>
 #include <asm/glue-pf.h>
 #include <asm/vfpmacros.h>
-#ifndef CONFIG_GENERIC_IRQ_MULTI_HANDLER
-#include <mach/entry-macro.S>
-#endif
 #include <asm/thread_notify.h>
 #include <asm/unwind.h>
 #include <asm/unistd.h>
@@ -30,20 +27,7 @@
 #include <asm/uaccess-asm.h>
 
 #include "entry-header.S"
-#include <asm/entry-macro-multi.S>
 #include <asm/probes.h>
-
-/*
- * Interrupt handling.
- */
-	.macro	irq_handler
-#ifdef CONFIG_GENERIC_IRQ_MULTI_HANDLER
-	mov	r0, sp
-	bl	generic_handle_arch_irq
-#else
-	arch_irq_handler_default
-#endif
-	.endm
 
 	.macro	pabt_helper
 	@ PABORT handler takes pt_regs in r2, fault address in r4 and psr in r5
@@ -199,7 +183,8 @@ ENDPROC(__dabt_svc)
 	.align	5
 __irq_svc:
 	svc_entry
-	irq_handler
+	mov	r0, sp
+	bl	generic_handle_arch_irq
 
 #ifdef CONFIG_PREEMPTION
 	ldr	r8, [tsk, #TI_PREEMPT]		@ get preempt count
@@ -426,7 +411,8 @@ ENDPROC(__dabt_usr)
 __irq_usr:
 	usr_entry
 	kuser_cmpxchg_check
-	irq_handler
+	mov	r0, sp
+	bl	generic_handle_arch_irq
 	get_thread_info tsk
 	mov	why, #0
 	b	ret_to_user_from_irq
