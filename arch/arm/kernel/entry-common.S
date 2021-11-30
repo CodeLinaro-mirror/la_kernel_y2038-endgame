@@ -16,12 +16,14 @@
 
 	.equ	NR_syscalls, __NR_syscalls
 
-#ifdef CONFIG_NEED_RET_TO_USER
-#include <mach/entry-macro.S>
-#else
 	.macro  arch_ret_to_user, tmp1, tmp2
-	.endm
+#ifdef CONFIG_ARCH_IOP32X
+	mrc	p15, 0, \tmp1, c15, c1, 0
+	ands	\tmp2, \tmp1, #(1 << 6)
+	bicne	\tmp1, \tmp1, #(1 << 6)
+	mcrne	p15, 0, \tmp1, c15, c1, 0	@ Disable cp6 access
 #endif
+	.endm
 
 #include "entry-header.S"
 
