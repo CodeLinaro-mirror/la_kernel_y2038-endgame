@@ -31,8 +31,7 @@ __exception_irq_entry orion5x_legacy_handle_irq(struct pt_regs *regs)
 	stat = readl_relaxed(MAIN_IRQ_CAUSE);
 	stat &= readl_relaxed(MAIN_IRQ_MASK);
 	if (stat) {
-		unsigned int hwirq = 1 + __fls(stat);
-		handle_IRQ(hwirq, regs);
+		generic_handle_irq(1 + __fls(stat));
 		return;
 	}
 }

@@ -101,7 +101,7 @@ asmlinkage void __exception_irq_entry icip_handle_irq(struct pt_regs *regs)
 		if (mask == 0)
 			break;
 
-		handle_IRQ(PXA_IRQ(fls(mask) - 1), regs);
+		generic_handle_irq(PXA_IRQ(fls(mask) - 1));
 	} while (1);
 }
 
@@ -115,7 +115,7 @@ asmlinkage void __exception_irq_entry ichp_handle_irq(struct pt_regs *regs)
 		if ((ichp & ICHP_VAL_IRQ) == 0)
 			break;
 
-		handle_IRQ(PXA_IRQ(ICHP_IRQ(ichp)), regs);
+		generic_handle_irq(PXA_IRQ(ICHP_IRQ(ichp)));
 	} while (1);
 }
 
