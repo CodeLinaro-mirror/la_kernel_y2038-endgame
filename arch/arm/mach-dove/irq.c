@@ -47,15 +47,13 @@ __exception_irq_entry dove_legacy_handle_irq(struct pt_regs *regs)
 	stat = readl_relaxed(dove_irq_base + IRQ_CAUSE_LOW_OFF);
 	stat &= readl_relaxed(dove_irq_base + IRQ_MASK_LOW_OFF);
 	if (stat) {
-		unsigned int hwirq = 1 + __fls(stat);
-		handle_IRQ(hwirq, regs);
+		generic_handle_irq(1 + __fls(stat));
 		return;
 	}
 	stat = readl_relaxed(dove_irq_base + IRQ_CAUSE_HIGH_OFF);
 	stat &= readl_relaxed(dove_irq_base + IRQ_MASK_HIGH_OFF);
 	if (stat) {
-		unsigned int hwirq = 33 + __fls(stat);
-		handle_IRQ(hwirq, regs);
+		generic_handle_irq(33 + __fls(stat));
 		return;
 	}
 }
