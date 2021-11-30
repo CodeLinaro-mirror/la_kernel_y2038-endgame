@@ -96,31 +96,6 @@ int arch_show_interrupts(struct seq_file *p, int prec)
 	return 0;
 }
 
-/*
- * handle_IRQ handles all hardware IRQ's.  Decoded IRQs should
- * not come via this function.  Instead, they should provide their
- * own 'handler'.  Used by platform code implementing C-based 1st
- * level decoding.
- */
-void handle_IRQ(unsigned int irq, struct pt_regs *regs)
-{
-	struct irq_desc *desc;
-
-	/*
-	 * Some hardware gives randomly wrong interrupts.  Rather
-	 * than crashing, do something sensible.
-	 */
-	if (unlikely(!irq || irq >= nr_irqs))
-		desc = NULL;
-	else
-		desc = irq_to_desc(irq);
-
-	if (likely(desc))
-		handle_irq_desc(desc);
-	else
-		ack_bad_irq(irq);
-}
-
 void __init init_IRQ(void)
 {
 	int ret;
