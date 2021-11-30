@@ -31,22 +31,19 @@ __exception_irq_entry mv78xx0_legacy_handle_irq(struct pt_regs *regs)
 	stat = readl_relaxed(mv78xx0_irq_base + IRQ_CAUSE_LOW_OFF);
 	stat &= readl_relaxed(mv78xx0_irq_base + IRQ_MASK_LOW_OFF);
 	if (stat) {
-		unsigned int hwirq = __fls(stat);
-		handle_IRQ(hwirq, regs);
+		generic_handle_irq(__fls(stat));
 		return;
 	}
 	stat = readl_relaxed(mv78xx0_irq_base + IRQ_CAUSE_HIGH_OFF);
 	stat &= readl_relaxed(mv78xx0_irq_base + IRQ_MASK_HIGH_OFF);
 	if (stat) {
-		unsigned int hwirq = 32 + __fls(stat);
-		handle_IRQ(hwirq, regs);
+		generic_handle_irq(32 + __fls(stat));
 		return;
 	}
 	stat = readl_relaxed(mv78xx0_irq_base + IRQ_CAUSE_ERR_OFF);
 	stat &= readl_relaxed(mv78xx0_irq_base + IRQ_MASK_ERR_OFF);
 	if (stat) {
-		unsigned int hwirq = 64 + __fls(stat);
-		handle_IRQ(hwirq, regs);
+		generic_handle_irq(64 + __fls(stat));
 		return;
 	}
 }
