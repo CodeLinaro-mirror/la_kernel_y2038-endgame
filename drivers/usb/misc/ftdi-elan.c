@@ -2762,7 +2762,7 @@ static int __init ftdi_elan_init(void)
 
 }
 
-static void __exit ftdi_elan_exit(void)
+static void ftdi_elan_exit(void)
 {
 	struct usb_ftdi *ftdi;
 	struct usb_ftdi *temp;
