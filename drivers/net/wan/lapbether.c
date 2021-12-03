@@ -502,7 +502,7 @@ static int __init lapbeth_init_driver(void)
 }
 module_init(lapbeth_init_driver);
 
-static void __exit lapbeth_cleanup_driver(void)
+static void lapbeth_cleanup_driver(void)
 {
 	struct lapbethdev *lapbeth;
 	struct list_head *entry, *tmp;

@@ -108,7 +108,7 @@ fs_initcall(fscache_init);
 /*
  * clean up on module removal
  */
-static void __exit fscache_exit(void)
+static void fscache_exit(void)
 {
 	_enter("");
 

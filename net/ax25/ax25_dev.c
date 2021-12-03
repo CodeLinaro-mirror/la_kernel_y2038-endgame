@@ -198,7 +198,7 @@ struct net_device *ax25_fwd_dev(struct net_device *dev)
 /*
  *	Free all memory associated with device structures.
  */
-void __exit ax25_dev_free(void)
+void ax25_dev_free(void)
 {
 	ax25_dev *s, *ax25_dev;
 

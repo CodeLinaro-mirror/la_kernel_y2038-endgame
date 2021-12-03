@@ -368,7 +368,7 @@ err_text:
 	return rc;
 }
 
-static void __exit mon_exit(void)
+static void mon_exit(void)
 {
 	struct mon_bus *mbus;
 	struct list_head *p;
