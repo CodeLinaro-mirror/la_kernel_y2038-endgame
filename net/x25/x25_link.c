@@ -402,7 +402,7 @@ out_dev_put:
 /*
  *	Release all memory associated with X.25 neighbour structures.
  */
-void __exit x25_link_free(void)
+void x25_link_free(void)
 {
 	struct x25_neigh *nb;
 	struct list_head *entry, *tmp;

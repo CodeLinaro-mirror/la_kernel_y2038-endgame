@@ -97,7 +97,7 @@ error_wq:
 /*
  * clean up on module removal
  */
-void __exit fscache_exit(void)
+void fscache_exit(void)
 {
 	_enter("");
 

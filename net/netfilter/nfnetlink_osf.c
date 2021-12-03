@@ -424,7 +424,7 @@ err_out_exit:
 	return err;
 }
 
-static void __exit nfnl_osf_fini(void)
+static void nfnl_osf_fini(void)
 {
 	struct nf_osf_finger *f;
 	int i;

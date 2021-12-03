@@ -10800,7 +10800,7 @@ void md_autostart_arrays(int part)
 
 #endif /* !MODULE */
 
-static __exit void md_exit(void)
+static void md_exit(void)
 {
 	struct mddev *mddev;
 	int delay = 1;
