@@ -408,6 +408,7 @@ void __naked __kprobes __kretprobe_trampoline(void)
 #else
 		"mov	pc, lr			\n\t"
 #endif
+		".ltorg				\n\t"
 		: : : "memory");
 }
 
