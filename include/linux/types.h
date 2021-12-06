@@ -46,6 +46,14 @@ typedef __kernel_old_gid_t	old_gid_t;
 typedef __kernel_loff_t		loff_t;
 #endif
 
+typedef struct {
+	uid_t val;
+} kuid_t;
+
+typedef struct {
+	gid_t val;
+} kgid_t;
+
 /*
  * The following typedefs are also protected by individual ifdefs for
  * historical reasons:
@@ -169,10 +177,14 @@ typedef struct {
 
 #define ATOMIC_INIT(i) { (i) }
 
-#ifdef CONFIG_64BIT
 typedef struct {
-	s64 counter;
+	s64 __aligned(8) counter;
 } atomic64_t;
+
+#ifdef CONFIG_64BIT
+typedef atomic64_t atomic_long_t;
+#else
+typedef atomic_t atomic_long_t;
 #endif
 
 struct list_head {
@@ -185,6 +197,47 @@ struct hlist_head {
 
 struct hlist_node {
 	struct hlist_node *next, **pprev;
+};
+
+struct hlist_bl_head {
+	struct hlist_bl_node *first;
+};
+
+struct hlist_bl_node {
+	struct hlist_bl_node *next, **pprev;
+};
+
+struct llist_head {
+	struct llist_node *first;
+};
+
+struct llist_node {
+	struct llist_node *next;
+};
+
+struct list_lru_one {
+	struct list_head	list;
+	/* may become negative during memcg reparenting */
+	long			nr_items;
+};
+
+struct list_lru {
+	struct list_lru_node	*node;
+#ifdef CONFIG_MEMCG_KMEM
+	struct list_head	list;
+	int			shrinker_id;
+	bool			memcg_aware;
+#endif
+};
+
+struct plist_head {
+	struct list_head node_list;
+};
+
+struct plist_node {
+	int			prio;
+	struct list_head	prio_list;
+	struct list_head	node_list;
 };
 
 struct ustat {
@@ -230,6 +283,39 @@ typedef void (*swap_func_t)(void *a, void *b, int size);
 
 typedef int (*cmp_r_func_t)(const void *a, const void *b, const void *priv);
 typedef int (*cmp_func_t)(const void *a, const void *b);
+
+#define UUID_SIZE 16
+typedef struct {
+	__u8 b[UUID_SIZE];
+} uuid_t;
+
+/* LRU Isolation modes. */
+typedef unsigned __bitwise isolate_mode_t;
+
+enum pid_type
+{
+	PIDTYPE_PID,
+	PIDTYPE_TGID,
+	PIDTYPE_PGID,
+	PIDTYPE_SID,
+	PIDTYPE_MAX,
+};
+
+typedef __s64 time64_t;
+typedef __u64 timeu64_t;
+
+struct timespec64 {
+	time64_t	tv_sec;			/* seconds */
+	long		tv_nsec;		/* nanoseconds */
+};
+
+struct itimerspec64 {
+	struct timespec64 it_interval;
+	struct timespec64 it_value;
+};
+
+/* Nanosecond scalar representation for kernel time values */
+typedef s64	ktime_t;
 
 #endif /*  __ASSEMBLY__ */
 #endif /* _LINUX_TYPES_H */

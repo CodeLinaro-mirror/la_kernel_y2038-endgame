@@ -8,10 +8,6 @@
 #ifndef _ASM_ARC_ATOMIC64_ARCV2_H
 #define _ASM_ARC_ATOMIC64_ARCV2_H
 
-typedef struct {
-	s64 __aligned(8) counter;
-} atomic64_t;
-
 #define ATOMIC64_INIT(a) { (a) }
 
 static inline s64 arch_atomic64_read(const atomic64_t *v)
