@@ -18,7 +18,6 @@
 struct workqueue_struct;
 
 struct work_struct;
-typedef void (*work_func_t)(struct work_struct *work);
 void delayed_work_timer_fn(struct timer_list *t);
 
 /*
@@ -94,35 +93,9 @@ enum {
 	WORKER_DESC_LEN		= 24,
 };
 
-struct work_struct {
-	atomic_long_t data;
-	struct list_head entry;
-	work_func_t func;
-#ifdef CONFIG_LOCKDEP
-	struct lockdep_map lockdep_map;
-#endif
-};
-
 #define WORK_DATA_INIT()	ATOMIC_LONG_INIT((unsigned long)WORK_STRUCT_NO_POOL)
 #define WORK_DATA_STATIC_INIT()	\
 	ATOMIC_LONG_INIT((unsigned long)(WORK_STRUCT_NO_POOL | WORK_STRUCT_STATIC))
-
-struct delayed_work {
-	struct work_struct work;
-	struct timer_list timer;
-
-	/* target workqueue and CPU ->timer uses to queue ->work */
-	struct workqueue_struct *wq;
-	int cpu;
-};
-
-struct rcu_work {
-	struct work_struct work;
-	struct rcu_head rcu;
-
-	/* target workqueue ->rcu uses to queue ->work */
-	struct workqueue_struct *wq;
-};
 
 /**
  * struct workqueue_attrs - A struct for workqueue attributes.

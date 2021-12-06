@@ -15,16 +15,10 @@
 
 #include <linux/compiler.h>
 #include <linux/linkage.h>
-#include <linux/rbtree_types.h>
+#include <linux/struct_types.h>
 #include <linux/spinlock_types_raw.h>
 
 extern int max_lock_depth; /* for sysctl */
-
-struct rt_mutex_base {
-	raw_spinlock_t		wait_lock;
-	struct rb_root_cached   waiters;
-	struct task_struct	*owner;
-};
 
 #define __RT_MUTEX_BASE_INITIALIZER(rtbasename)				\
 {									\

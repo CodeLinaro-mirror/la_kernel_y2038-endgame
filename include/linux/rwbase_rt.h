@@ -8,11 +8,6 @@
 #define READER_BIAS		(1U << 31)
 #define WRITER_BIAS		(1U << 30)
 
-struct rwbase_rt {
-	atomic_t		readers;
-	struct rt_mutex_base	rtmutex;
-};
-
 #define __RWBASE_INITIALIZER(name)				\
 {								\
 	.readers = ATOMIC_INIT(READER_BIAS),			\

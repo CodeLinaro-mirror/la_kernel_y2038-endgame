@@ -13,15 +13,6 @@
 #include <linux/wait.h>
 #include <linux/rcupdate.h>
 
-/* Structure to mediate between updaters and fastpath-using readers.  */
-struct rcu_sync {
-	int			gp_state;
-	int			gp_count;
-	wait_queue_head_t	gp_wait;
-
-	struct rcu_head		cb_head;
-};
-
 /**
  * rcu_sync_is_idle() - Are readers permitted to use their fastpaths?
  * @rsp: Pointer to rcu_sync structure to use for synchronization
