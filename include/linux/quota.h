@@ -62,9 +62,6 @@ enum quota_type {
 #define QTYPE_MASK_GRP (1 << GRPQUOTA)
 #define QTYPE_MASK_PRJ (1 << PRJQUOTA)
 
-typedef __kernel_uid32_t qid_t; /* Type in which we store ids in memory */
-typedef long long qsize_t;	/* Type in which we store sizes */
-
 struct kqid {			/* Type in which we store the quota identifier */
 	union {
 		kuid_t uid;
@@ -212,24 +209,6 @@ struct mem_dqblk {
 	qsize_t dqb_curinodes;	/* current # allocated inodes */
 	time64_t dqb_btime;	/* time limit for excessive disk use */
 	time64_t dqb_itime;	/* time limit for excessive inode use */
-};
-
-/*
- * Data for one quotafile kept in memory
- */
-struct quota_format_type;
-
-struct mem_dqinfo {
-	struct quota_format_type *dqi_format;
-	int dqi_fmt_id;		/* Id of the dqi_format - used when turning
-				 * quotas on after remount RW */
-	struct list_head dqi_dirty_list;	/* List of dirty dquots [dq_list_lock] */
-	unsigned long dqi_flags;	/* DFQ_ flags [dq_data_lock] */
-	unsigned int dqi_bgrace;	/* Space grace time [dq_data_lock] */
-	unsigned int dqi_igrace;	/* Inode grace time [dq_data_lock] */
-	qsize_t dqi_max_spc_limit;	/* Maximum space limit [static] */
-	qsize_t dqi_max_ino_limit;	/* Maximum inode limit [static] */
-	void *dqi_priv;
 };
 
 struct super_block;
@@ -515,14 +494,6 @@ static inline void quota_send_warning(struct kqid qid, dev_t dev,
 	return;
 }
 #endif /* CONFIG_QUOTA_NETLINK_INTERFACE */
-
-struct quota_info {
-	unsigned int flags;			/* Flags for diskquotas on this device */
-	struct rw_semaphore dqio_sem;		/* Lock quota file while I/O in progress */
-	struct inode *files[MAXQUOTAS];		/* inodes of quotafiles */
-	struct mem_dqinfo info[MAXQUOTAS];	/* Information for each quota type */
-	const struct quota_format_ops *ops[MAXQUOTAS];	/* Operations for each type */
-};
 
 int register_quota_format(struct quota_format_type *fmt);
 void unregister_quota_format(struct quota_format_type *fmt);
