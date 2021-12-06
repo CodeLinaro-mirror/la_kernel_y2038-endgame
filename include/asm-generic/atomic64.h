@@ -9,10 +9,6 @@
 #define _ASM_GENERIC_ATOMIC64_H
 #include <linux/types.h>
 
-typedef struct {
-	s64 counter;
-} atomic64_t;
-
 #define ATOMIC64_INIT(i)	{ (i) }
 
 extern s64 generic_atomic64_read(const atomic64_t *v);

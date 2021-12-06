@@ -243,10 +243,6 @@ ATOMIC_OPS(xor, ^=, eor)
 #define arch_atomic_xchg(v, new) (arch_xchg(&((v)->counter), new))
 
 #ifndef CONFIG_GENERIC_ATOMIC64
-typedef struct {
-	s64 counter;
-} atomic64_t;
-
 #define ATOMIC64_INIT(i) { (i) }
 
 #ifdef CONFIG_ARM_LPAE

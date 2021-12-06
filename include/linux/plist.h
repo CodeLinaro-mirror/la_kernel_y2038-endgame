@@ -79,16 +79,6 @@
 
 #include <asm/bug.h>
 
-struct plist_head {
-	struct list_head node_list;
-};
-
-struct plist_node {
-	int			prio;
-	struct list_head	prio_list;
-	struct list_head	node_list;
-};
-
 /**
  * PLIST_HEAD_INIT - static struct plist_head initializer
  * @head:	struct plist_head variable name

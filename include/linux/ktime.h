@@ -25,9 +25,6 @@
 #include <linux/jiffies.h>
 #include <asm/bug.h>
 
-/* Nanosecond scalar representation for kernel time values */
-typedef s64	ktime_t;
-
 /**
  * ktime_set - Set a ktime_t variable from a seconds/nanoseconds value
  * @secs:	seconds to set

@@ -25,12 +25,6 @@ enum lru_status {
 				   internally, but has to return locked. */
 };
 
-struct list_lru_one {
-	struct list_head	list;
-	/* may become negative during memcg reparenting */
-	long			nr_items;
-};
-
 struct list_lru_memcg {
 	struct rcu_head		rcu;
 	/* array of per cgroup lists, indexed by memcg_cache_id */
@@ -48,15 +42,6 @@ struct list_lru_node {
 #endif
 	long nr_items;
 } ____cacheline_aligned_in_smp;
-
-struct list_lru {
-	struct list_lru_node	*node;
-#ifdef CONFIG_MEMCG_KMEM
-	struct list_head	list;
-	int			shrinker_id;
-	bool			memcg_aware;
-#endif
-};
 
 void list_lru_destroy(struct list_lru *lru);
 int __list_lru_init(struct list_lru *lru, bool memcg_aware,

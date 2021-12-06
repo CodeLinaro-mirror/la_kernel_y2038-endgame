@@ -8,10 +8,6 @@
 
 /* An 64bit atomic type */
 
-typedef struct {
-	s64 __aligned(8) counter;
-} atomic64_t;
-
 #define ATOMIC64_INIT(val)	{ (val) }
 
 #define __ATOMIC64_DECL(sym) void atomic64_##sym(atomic64_t *, ...)
