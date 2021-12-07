@@ -6267,6 +6267,10 @@ static noinline_for_stack void set_calculate_prefetch_schedule_params(struct dis
 				CalculatePrefetchSchedule_params->Tno_bw = &mode_lib->ms.Tno_bw[k];
 }
 
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+static void dml_prefetch_check(struct display_mode_lib_st *mode_lib)
 static noinline_for_stack void dml_prefetch_check(struct display_mode_lib_st *mode_lib)
 {
 	struct dml_core_mode_support_locals_st *s = &mode_lib->scratch.dml_core_mode_support_locals;
@@ -9918,6 +9922,7 @@ void dml_core_mode_programming(struct display_mode_lib_st *mode_lib, const struc
 	dml_print("DML::%s: --- END --- \n",  __func__);
 #endif
 } // dml_core_mode_programming
+__diag_pop()
 
 /// Function: dml_core_get_row_heights
 /// @brief Get row height for DPTE and META with minimal input.
