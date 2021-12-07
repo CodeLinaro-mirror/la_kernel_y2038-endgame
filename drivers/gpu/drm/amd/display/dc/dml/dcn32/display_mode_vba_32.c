@@ -1721,6 +1721,9 @@ static void mode_support_configuration(struct vba_vars_st *v,
 	}
 }
 
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 void dml32_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
@@ -3760,3 +3763,4 @@ void dml32_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 
 	/* VBA has Error type to Error Msg output here, but not necessary for DML-C */
 } // ModeSupportAndSystemConfigurationFull
+__diag_pop()
