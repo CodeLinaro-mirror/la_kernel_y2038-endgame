@@ -6262,6 +6262,9 @@ static void set_calculate_prefetch_schedule_params(struct display_mode_lib_st *m
 				CalculatePrefetchSchedule_params->Tno_bw = &mode_lib->ms.Tno_bw[k];
 }
 
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static void dml_prefetch_check(struct display_mode_lib_st *mode_lib)
 {
 	struct dml_core_mode_support_locals_st *s = &mode_lib->scratch.dml_core_mode_support_locals;
@@ -6705,6 +6708,7 @@ static void dml_prefetch_check(struct display_mode_lib_st *mode_lib)
 
 	} // for j
 }
+__diag_pop()
 
 /// @brief The Mode Support function.
 dml_bool_t dml_core_mode_support(struct display_mode_lib_st *mode_lib)
