@@ -4,20 +4,7 @@
 
 #include <linux/rtmutex.h>
 #include <linux/atomic.h>
-
-#define READER_BIAS		(1U << 31)
-#define WRITER_BIAS		(1U << 30)
-
-struct rwbase_rt {
-	atomic_t		readers;
-	struct rt_mutex_base	rtmutex;
-};
-
-#define __RWBASE_INITIALIZER(name)				\
-{								\
-	.readers = ATOMIC_INIT(READER_BIAS),			\
-	.rtmutex = __RT_MUTEX_BASE_INITIALIZER(name.rtmutex),	\
-}
+#include <linux/rwsem_types.h>
 
 #define init_rwbase_rt(rwbase)					\
 	do {							\
