@@ -13,6 +13,7 @@
  * - Sequence counters with associated locks, (C) 2020 Linutronix GmbH
  */
 
+#include <linux/seqlock_types.h>
 #include <linux/compiler.h>
 #include <linux/kcsan-checks.h>
 #include <linux/lockdep.h>
@@ -38,37 +39,6 @@
  */
 #define KCSAN_SEQLOCK_REGION_MAX 1000
 
-/*
- * Sequence counters (seqcount_t)
- *
- * This is the raw counting mechanism, without any writer protection.
- *
- * Write side critical sections must be serialized and non-preemptible.
- *
- * If readers can be invoked from hardirq or softirq contexts,
- * interrupts or bottom halves must also be respectively disabled before
- * entering the write section.
- *
- * This mechanism can't be used if the protected data contains pointers,
- * as the writer can invalidate a pointer that a reader is following.
- *
- * If the write serialization mechanism is one of the common kernel
- * locking primitives, use a sequence counter with associated lock
- * (seqcount_LOCKNAME_t) instead.
- *
- * If it's desired to automatically handle the sequence counter writer
- * serialization and non-preemptibility requirements, use a sequential
- * lock (seqlock_t) instead.
- *
- * See Documentation/locking/seqlock.rst
- */
-typedef struct seqcount {
-	unsigned sequence;
-#ifdef CONFIG_DEBUG_LOCK_ALLOC
-	struct lockdep_map dep_map;
-#endif
-} seqcount_t;
-
 static inline void __seqcount_init(seqcount_t *s, const char *name,
 					  struct lock_class_key *key)
 {
@@ -80,9 +50,6 @@ static inline void __seqcount_init(seqcount_t *s, const char *name,
 }
 
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
-
-# define SEQCOUNT_DEP_MAP_INIT(lockname)				\
-		.dep_map = { .name = #lockname }
 
 /**
  * seqcount_init() - runtime initializer for seqcount_t
@@ -106,16 +73,9 @@ static inline void seqcount_lockdep_reader_access(const seqcount_t *s)
 }
 
 #else
-# define SEQCOUNT_DEP_MAP_INIT(lockname)
 # define seqcount_init(s) __seqcount_init(s, NULL, NULL)
 # define seqcount_lockdep_reader_access(x)
 #endif
-
-/**
- * SEQCNT_ZERO() - static initializer for seqcount_t
- * @name: Name of the seqcount_t instance
- */
-#define SEQCNT_ZERO(name) { .sequence = 0, SEQCOUNT_DEP_MAP_INIT(name) }
 
 /*
  * Sequence counters with associated locks (seqcount_LOCKNAME_t)
@@ -131,28 +91,6 @@ static inline void seqcount_lockdep_reader_access(const seqcount_t *s)
  *
  * See Documentation/locking/seqlock.rst
  */
-
-/*
- * For PREEMPT_RT, seqcount_LOCKNAME_t write side critical sections cannot
- * disable preemption. It can lead to higher latencies, and the write side
- * sections will not be able to acquire locks which become sleeping locks
- * (e.g. spinlock_t).
- *
- * To remain preemptible while avoiding a possible livelock caused by the
- * reader preempting the writer, use a different technique: let the reader
- * detect if a seqcount_LOCKNAME_t writer is in progress. If that is the
- * case, acquire then release the associated LOCKNAME writer serialization
- * lock. This will allow any possibly-preempted writer to make progress
- * until the end of its writer serialization lock critical section.
- *
- * This lock-unlock technique must be implemented for all of PREEMPT_RT
- * sleeping locks.  See Documentation/locking/locktypes.rst
- */
-#if defined(CONFIG_LOCKDEP) || defined(CONFIG_PREEMPT_RT)
-#define __SEQ_LOCK(expr)	expr
-#else
-#define __SEQ_LOCK(expr)
-#endif
 
 /*
  * typedef seqcount_LOCKNAME_t - sequence counter with LOCKNAME associated
@@ -198,11 +136,6 @@ static inline void seqcount_lockdep_reader_access(const seqcount_t *s)
  * @lock_acquire:	associated lock acquisition function (full call)
  */
 #define SEQCOUNT_LOCKNAME(lockname, locktype, preemptible, lockmember, lockbase, lock_acquire) \
-typedef struct seqcount_##lockname {					\
-	seqcount_t		seqcount;				\
-	__SEQ_LOCK(locktype	*lock);					\
-} seqcount_##lockname##_t;						\
-									\
 static __always_inline seqcount_t *					\
 __seqprop_##lockname##_ptr(seqcount_##lockname##_t *s)			\
 {									\
@@ -787,31 +720,6 @@ static inline void raw_write_seqcount_latch(seqcount_latch_t *s)
 	smp_wmb();      /* increment "sequence" before following stores */
 }
 
-/*
- * Sequential locks (seqlock_t)
- *
- * Sequence counters with an embedded spinlock for writer serialization
- * and non-preemptibility.
- *
- * For more info, see:
- *    - Comments on top of seqcount_t
- *    - Documentation/locking/seqlock.rst
- */
-typedef struct {
-	/*
-	 * Make sure that readers don't starve writers on PREEMPT_RT: use
-	 * seqcount_spinlock_t instead of seqcount_t. Check __SEQ_LOCK().
-	 */
-	seqcount_spinlock_t seqcount;
-	spinlock_t lock;
-} seqlock_t;
-
-#define __SEQLOCK_UNLOCKED(lockname)					\
-	{								\
-		.seqcount = SEQCNT_SPINLOCK_ZERO(lockname, &(lockname).lock), \
-		.lock =	__SPIN_LOCK_UNLOCKED(lockname)			\
-	}
-
 /**
  * seqlock_init() - dynamic initializer for seqlock_t
  * @sl: Pointer to the seqlock_t instance
@@ -821,13 +729,6 @@ typedef struct {
 		spin_lock_init(&(sl)->lock);				\
 		seqcount_spinlock_init(&(sl)->seqcount, &(sl)->lock);	\
 	} while (0)
-
-/**
- * DEFINE_SEQLOCK(sl) - Define a statically allocated seqlock_t
- * @sl: Name of the seqlock_t instance
- */
-#define DEFINE_SEQLOCK(sl) \
-		seqlock_t sl = __SEQLOCK_UNLOCKED(sl)
 
 /**
  * read_seqbegin() - start a seqlock_t read side critical section
