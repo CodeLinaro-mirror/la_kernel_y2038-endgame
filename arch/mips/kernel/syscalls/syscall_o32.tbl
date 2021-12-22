@@ -221,7 +221,7 @@
 207	o32	sendfile			sys_sendfile			compat_sys_sendfile
 208	o32	getpmsg				sys_ni_syscall
 209	o32	putpmsg				sys_ni_syscall
-210	o32	mmap2				sys_mips_mmap2
+210	o32	mmap2				sys_mmap2
 211	o32	truncate64			sys_truncate64			sys_32_truncate64
 212	o32	ftruncate64			sys_ftruncate64			sys_32_ftruncate64
 213	o32	stat64				sys_stat64			sys_newstat

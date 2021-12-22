@@ -52,10 +52,10 @@ long compat_sys_ppc64_personality(unsigned long personality);
 
 long sys_swapcontext(struct ucontext __user *old_ctx,
 		     struct ucontext __user *new_ctx, long ctx_size);
-long sys_mmap(unsigned long addr, size_t len,
+long sys_ppc_mmap(unsigned long addr, size_t len,
 	      unsigned long prot, unsigned long flags,
 	      unsigned long fd, off_t offset);
-long sys_mmap2(unsigned long addr, size_t len,
+long sys_ppc32_mmap2(unsigned long addr, size_t len,
 	       unsigned long prot, unsigned long flags,
 	       unsigned long fd, unsigned long pgoff);
 long sys_switch_endian(void);
@@ -113,9 +113,6 @@ long sys_ppc_fallocate(int fd, int mode, u32 offset1, u32 offset2,
 		       u32 len1, u32 len2);
 #endif
 #ifdef CONFIG_COMPAT
-long compat_sys_mmap2(unsigned long addr, size_t len,
-		      unsigned long prot, unsigned long flags,
-		      unsigned long fd, unsigned long pgoff);
 long compat_sys_ppc_pread64(unsigned int fd,
 			    char __user *ubuf, compat_size_t count,
 			    u32 reg6, u32 pos1, u32 pos2);

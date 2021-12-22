@@ -204,7 +204,7 @@
 190	common	vfork			sys_vfork
 # SuS compliant getrlimit
 191	common	ugetrlimit		sys_getrlimit		compat_sys_getrlimit
-192	common	mmap2			sys_mmap2		compat_sys_aarch32_mmap2
+192	common	mmap2			sys_mmap2
 193	common	truncate64		sys_truncate64		compat_sys_aarch32_truncate64
 194	common	ftruncate64		sys_ftruncate64		compat_sys_aarch32_ftruncate64
 195	common	stat64			sys_stat64
