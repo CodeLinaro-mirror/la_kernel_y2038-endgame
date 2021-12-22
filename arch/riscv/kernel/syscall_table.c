@@ -11,6 +11,9 @@
 
 #define __SYSCALL_WITH_COMPAT(nr, native, compat) __SYSCALL(nr, native)
 
+#define __riscv_sys_mmap  __riscv_sys_riscv_mmap
+#define __riscv_sys_mmap2 __riscv_sys_riscv_mmap2
+
 #undef __SYSCALL
 #define __SYSCALL(nr, call)	asmlinkage long __riscv_##call(const struct pt_regs *);
 #include <asm/syscall_table.h>

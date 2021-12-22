@@ -5,6 +5,9 @@
 #include <linux/compiler_types.h>
 #include <linux/linkage.h>
 
+asmlinkage long sys_mmap_pgoff(unsigned long addr, unsigned long len,
+	unsigned long prot, unsigned long flags,
+	unsigned long fd, unsigned long pgoff);
 asmlinkage int sys_cacheflush(unsigned long addr, int scope, int cache,
 			      unsigned long len);
 asmlinkage int sys_atomic_cmpxchg_32(unsigned long newval, int oldval, int d3,
