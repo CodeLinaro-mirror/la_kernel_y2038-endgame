@@ -124,7 +124,7 @@
 89	32	readdir				sys_old_readdir			compat_sys_old_readdir
 89	64	readdir				sys_ni_syscall
 89	spu	readdir				sys_ni_syscall
-90	common	mmap				sys_mmap
+90	common	mmap				sys_ppc_mmap
 91	common	munmap				sys_munmap
 92	common	truncate			sys_truncate			compat_sys_truncate
 93	common	ftruncate			sys_ftruncate			compat_sys_ftruncate
@@ -246,7 +246,7 @@
 190	common	ugetrlimit			sys_getrlimit			compat_sys_getrlimit
 191	32	readahead			sys_ppc_readahead		compat_sys_ppc_readahead
 191	64	readahead			sys_readahead
-192	32	mmap2				sys_mmap2			compat_sys_mmap2
+192	32	mmap2				sys_ppc32_mmap2
 193	32	truncate64			sys_ppc_truncate64		compat_sys_ppc_truncate64
 194	32	ftruncate64			sys_ppc_ftruncate64		compat_sys_ppc_ftruncate64
 195	32	stat64				sys_stat64

@@ -29,8 +29,9 @@ static long riscv_sys_mmap(unsigned long addr, unsigned long len,
 			       offset >> (PAGE_SHIFT - page_shift_offset));
 }
 
+/* same as the generic version, but checks the prot argument */
 #ifdef CONFIG_64BIT
-SYSCALL_DEFINE6(mmap, unsigned long, addr, unsigned long, len,
+SYSCALL_DEFINE6(riscv_mmap, unsigned long, addr, unsigned long, len,
 	unsigned long, prot, unsigned long, flags,
 	unsigned long, fd, off_t, offset)
 {
@@ -39,7 +40,7 @@ SYSCALL_DEFINE6(mmap, unsigned long, addr, unsigned long, len,
 #endif
 
 #if defined(CONFIG_32BIT) || defined(CONFIG_COMPAT)
-SYSCALL_DEFINE6(mmap2, unsigned long, addr, unsigned long, len,
+SYSCALL_DEFINE6(riscv_mmap2, unsigned long, addr, unsigned long, len,
 	unsigned long, prot, unsigned long, flags,
 	unsigned long, fd, off_t, offset)
 {

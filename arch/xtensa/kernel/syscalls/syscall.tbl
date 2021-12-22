@@ -89,7 +89,7 @@
 78	common	flistxattr			sys_flistxattr
 79	common	fremovexattr			sys_fremovexattr
 # File Map / Shared Memory Operations
-80	common	mmap2				sys_mmap_pgoff
+80	common	mmap2				sys_mmap2
 81	common	munmap				sys_munmap
 82	common	mprotect			sys_mprotect
 83	common	brk				sys_brk

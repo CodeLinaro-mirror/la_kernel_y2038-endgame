@@ -37,15 +37,14 @@
 
 #include "../mm/fault.h"
 
-asmlinkage long sys_mmap2(unsigned long addr, unsigned long len,
+/*
+ * m68k user space expects to pass units of PAGE_SIZE rather than 4KB,
+ * so provide a custom wrapper around ksys_mmap_pgoff()
+ */
+asmlinkage long sys_mmap_pgoff(unsigned long addr, unsigned long len,
 	unsigned long prot, unsigned long flags,
 	unsigned long fd, unsigned long pgoff)
 {
-	/*
-	 * This is wrong for sun3 - there PAGE_SIZE is 8Kb,
-	 * so we need to shift the argument down by 1; m68k mmap64(3)
-	 * (in libc) expects the last argument of mmap2 in 4Kb units.
-	 */
 	return ksys_mmap_pgoff(addr, len, prot, flags, fd, pgoff);
 }
 

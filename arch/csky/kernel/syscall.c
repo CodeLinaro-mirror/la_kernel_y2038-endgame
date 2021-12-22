@@ -14,21 +14,6 @@ SYSCALL_DEFINE1(set_thread_area, unsigned long, addr)
 	return 0;
 }
 
-SYSCALL_DEFINE6(mmap2,
-	unsigned long, addr,
-	unsigned long, len,
-	unsigned long, prot,
-	unsigned long, flags,
-	unsigned long, fd,
-	off_t, offset)
-{
-	if (unlikely(offset & (~PAGE_MASK >> 12)))
-		return -EINVAL;
-
-	return ksys_mmap_pgoff(addr, len, prot, flags, fd,
-			       offset >> (PAGE_SHIFT - 12));
-}
-
 /*
  * for abiv1 the 64bits args should be even th, So we need mov the advice
  * forward.
