@@ -11,6 +11,7 @@
 #include <linux/io.h>
 #include <linux/personality.h>
 #include <linux/random.h>
+#include <linux/syscalls.h>
 #include <asm/cachetype.h>
 
 #define COLOUR_ALIGN(addr,pgoff)		\
@@ -164,4 +165,12 @@ int valid_phys_addr_range(phys_addr_t addr, size_t size)
 int valid_mmap_phys_addr_range(unsigned long pfn, size_t size)
 {
 	return (pfn + (size >> PAGE_SHIFT)) <= (1 + (PHYS_MASK >> PAGE_SHIFT));
+}
+
+/* arc glibc passes PAGE_SIZE units rather than the usual 4K */
+SYSCALL_DEFINE6(mmap_pgoff, unsigned long, addr, unsigned long, len,
+		long, prot, unsigned long, flags,
+		long, fd, unsigned long, pgoff)
+{
+      return ksys_mmap_pgoff(addr, len, prot, flags, fd, pgoff);
 }

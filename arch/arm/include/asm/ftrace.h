@@ -62,9 +62,7 @@ static inline void *return_address(unsigned int level)
 static inline bool arch_syscall_match_sym_name(const char *sym,
 					       const char *name)
 {
-	if (!strcmp(sym, "sys_mmap2"))
-		sym = "sys_mmap_pgoff";
-	else if (!strcmp(sym, "sys_statfs64_wrapper"))
+	if (!strcmp(sym, "sys_statfs64_wrapper"))
 		sym = "sys_statfs64";
 	else if (!strcmp(sym, "sys_fstatfs64_wrapper"))
 		sym = "sys_fstatfs64";
