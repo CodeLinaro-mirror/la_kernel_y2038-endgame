@@ -49,24 +49,17 @@ static long do_mmap2(unsigned long addr, size_t len,
 	return ksys_mmap_pgoff(addr, len, prot, flags, fd, off >> shift);
 }
 
-SYSCALL_DEFINE6(mmap2, unsigned long, addr, size_t, len,
+/*
+ * like the normal mmap2(), but checks the prot argument
+ */
+SYSCALL_DEFINE6(ppc32_mmap2, unsigned long, addr, size_t, len,
 		unsigned long, prot, unsigned long, flags,
 		unsigned long, fd, unsigned long, pgoff)
 {
 	return do_mmap2(addr, len, prot, flags, fd, pgoff, PAGE_SHIFT-12);
 }
 
-#ifdef CONFIG_COMPAT
-COMPAT_SYSCALL_DEFINE6(mmap2,
-		       unsigned long, addr, size_t, len,
-		       unsigned long, prot, unsigned long, flags,
-		       unsigned long, fd, unsigned long, off_4k)
-{
-	return do_mmap2(addr, len, prot, flags, fd, off_4k, PAGE_SHIFT-12);
-}
-#endif
-
-SYSCALL_DEFINE6(mmap, unsigned long, addr, size_t, len,
+SYSCALL_DEFINE6(ppc_mmap, unsigned long, addr, size_t, len,
 		unsigned long, prot, unsigned long, flags,
 		unsigned long, fd, off_t, offset)
 {

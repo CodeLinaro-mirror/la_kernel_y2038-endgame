@@ -11,6 +11,10 @@
 
 #undef __SYSCALL
 #define __SYSCALL(nr, call)	asmlinkage long __riscv_##call(const struct pt_regs *);
+
+#define __riscv_sys_mmap  __riscv_sys_riscv_mmap
+#define __riscv_sys_mmap2 __riscv_sys_riscv_mmap2
+
 #include <asm/unistd.h>
 
 #undef __SYSCALL
@@ -21,5 +25,6 @@ __diag_ignore(clang, 9, "-Winitializer-overrides", "default to sys_ni_syscall")
 
 void * const sys_call_table[__NR_syscalls] = {
 	[0 ... __NR_syscalls - 1] = __riscv_sys_ni_syscall,
+
 #include <asm/unistd.h>
 };

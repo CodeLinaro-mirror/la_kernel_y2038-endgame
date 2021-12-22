@@ -1429,11 +1429,16 @@ out_fput:
 	return retval;
 }
 
-SYSCALL_DEFINE6(mmap_pgoff, unsigned long, addr, unsigned long, len,
+SYSCALL_DEFINE6(mmap2, unsigned long, addr, unsigned long, len,
 		unsigned long, prot, unsigned long, flags,
-		unsigned long, fd, unsigned long, pgoff)
+		unsigned long, fd, unsigned long, off_4k)
 {
-	return ksys_mmap_pgoff(addr, len, prot, flags, fd, pgoff);
+	if (off_4k & (~PAGE_MASK >> 12))
+		return -EINVAL;
+
+	off_4k >>= (PAGE_SHIFT - 12);
+
+	return ksys_mmap_pgoff(addr, len, prot, flags, fd, off_4k);
 }
 
 #ifdef __ARCH_WANT_SYS_OLD_MMAP

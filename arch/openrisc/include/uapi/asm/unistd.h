@@ -17,8 +17,6 @@
  * (at your option) any later version.
  */
 
-#define sys_mmap2 sys_mmap_pgoff
-
 #define __ARCH_WANT_RENAMEAT
 #define __ARCH_WANT_STAT64
 #define __ARCH_WANT_SET_GET_RLIMIT
