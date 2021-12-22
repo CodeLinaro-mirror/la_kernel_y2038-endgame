@@ -48,22 +48,6 @@ COMPAT_SYSCALL_DEFINE3(aarch32_fstatfs64, unsigned int, fd, compat_size_t, sz,
 	return kcompat_sys_fstatfs64(fd, sz, buf);
 }
 
-/*
- * Note: off_4k is always in units of 4K. If we can't do the
- * requested offset because it is not page-aligned, we return -EINVAL.
- */
-COMPAT_SYSCALL_DEFINE6(aarch32_mmap2, unsigned long, addr, unsigned long, len,
-		       unsigned long, prot, unsigned long, flags,
-		       unsigned long, fd, unsigned long, off_4k)
-{
-	if (off_4k & (~PAGE_MASK >> 12))
-		return -EINVAL;
-
-	off_4k >>= (PAGE_SHIFT - 12);
-
-	return ksys_mmap_pgoff(addr, len, prot, flags, fd, off_4k);
-}
-
 #ifdef CONFIG_CPU_BIG_ENDIAN
 #define arg_u32p(name)	u32, name##_hi, u32, name##_lo
 #else

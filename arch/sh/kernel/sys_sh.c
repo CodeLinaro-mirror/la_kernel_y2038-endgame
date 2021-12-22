@@ -38,22 +38,6 @@ asmlinkage int old_mmap(unsigned long addr, unsigned long len,
 	return ksys_mmap_pgoff(addr, len, prot, flags, fd, off>>PAGE_SHIFT);
 }
 
-asmlinkage long sys_mmap2(unsigned long addr, unsigned long len,
-	unsigned long prot, unsigned long flags,
-	unsigned long fd, unsigned long pgoff)
-{
-	/*
-	 * The shift for mmap2 is constant, regardless of PAGE_SIZE
-	 * setting.
-	 */
-	if (pgoff & ((1 << (PAGE_SHIFT - 12)) - 1))
-		return -EINVAL;
-
-	pgoff >>= PAGE_SHIFT - 12;
-
-	return ksys_mmap_pgoff(addr, len, prot, flags, fd, pgoff);
-}
-
 /* sys_cacheflush -- flush (part of) the processor cache.  */
 asmlinkage int sys_cacheflush(unsigned long addr, unsigned long len, int op)
 {

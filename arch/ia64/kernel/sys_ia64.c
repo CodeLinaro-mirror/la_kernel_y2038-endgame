@@ -137,7 +137,7 @@ int ia64_mmap_check(unsigned long addr, unsigned long len,
  * of) files that are larger than the address space of the CPU.
  */
 asmlinkage unsigned long
-sys_mmap2 (unsigned long addr, unsigned long len, int prot, int flags, int fd, long pgoff)
+sys_ia64_mmap2 (unsigned long addr, unsigned long len, int prot, int flags, int fd, long pgoff)
 {
 	addr = ksys_mmap_pgoff(addr, len, prot, flags, fd, pgoff);
 	if (!IS_ERR_VALUE(addr))

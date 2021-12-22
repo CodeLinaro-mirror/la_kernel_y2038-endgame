@@ -203,7 +203,7 @@
 189	i386	putpmsg
 190	i386	vfork			sys_vfork
 191	i386	ugetrlimit		sys_getrlimit			compat_sys_getrlimit
-192	i386	mmap2			sys_mmap_pgoff
+192	i386	mmap2			sys_mmap2
 193	i386	truncate64		sys_ia32_truncate64
 194	i386	ftruncate64		sys_ia32_ftruncate64
 195	i386	stat64			sys_stat64			compat_sys_ia32_stat64

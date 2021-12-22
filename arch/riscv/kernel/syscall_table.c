@@ -17,5 +17,9 @@ __diag_ignore(clang, 9, "-Winitializer-overrides", "default to sys_ni_syscall")
 
 void * const sys_call_table[__NR_syscalls] = {
 	[0 ... __NR_syscalls - 1] = sys_ni_syscall,
+
+#define sys_mmap sys_riscv_mmap
+#define sys_mmap2 sys_riscv_mmap2
+
 #include <asm/unistd.h>
 };
