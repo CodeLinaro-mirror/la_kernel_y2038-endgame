@@ -27,7 +27,7 @@ asmlinkage unsigned long sys_mmap(
 				unsigned long addr, unsigned long len,
 				int prot, int flags,
 				int fd, long off);
-asmlinkage unsigned long sys_mmap2(
+asmlinkage unsigned long sys_ia64_mmap2(
 				unsigned long addr, unsigned long len,
 				int prot, int flags,
 				int fd, long pgoff);
