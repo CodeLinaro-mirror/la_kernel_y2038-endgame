@@ -13,36 +13,12 @@
 
 #include <asm/processor.h>
 
-/*
- * Sparc64 is segmented, though more like the M68K than the I386.
- * We use the secondary ASI to address user memory, which references a
- * completely different VM map, thus there is zero chance of the user
- * doing something queer and tricking us into poking kernel memory.
- *
- * What is left here is basically what is needed for the other parts of
- * the kernel that expect to be able to manipulate, erum, "segments".
- * Or perhaps more properly, permissions.
- *
- * "For historical reasons, these macros are grossly misnamed." -Linus
- */
-
-#define KERNEL_DS   ((mm_segment_t) { ASI_P })
-#define USER_DS     ((mm_segment_t) { ASI_AIUS })	/* har har har */
-
-#define get_fs() ((mm_segment_t){(current_thread_info()->current_ds)})
-
 static inline int __access_ok(const void __user *addr, unsigned long size)
 {
 	return 1;
 }
 #define __access_ok __access_ok
 #include <asm-generic/access_ok.h>
-
-#define set_fs(val)								\
-do {										\
-	current_thread_info()->current_ds = (val).seg;				\
-	__asm__ __volatile__ ("wr %%g0, %0, %%asi" : : "r" ((val).seg));	\
-} while(0)
 
 /*
  * Test whether a block of memory is a valid user space address.
