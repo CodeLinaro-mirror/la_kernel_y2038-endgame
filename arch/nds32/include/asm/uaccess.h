@@ -96,6 +96,18 @@ static inline void set_fs(mm_segment_t fs)
 	}								\
 })
 
+#define __get_kernel_nofault(dst, src, type, label)			\
+do {									\
+	type __user *p = (type __force __user *)(src);			\
+	type data;							\
+	int err;							\
+	__get_user_err(data, p, err);					\
+	if (err)							\
+		goto label;						\
+	*(type *)dst = data;						\
+} while (0)
+#define HAVE_GET_KERNEL_NOFAULT
+
 #define __get_user_err(x, ptr, err)					\
 do {									\
 	unsigned long __gu_val;						\
@@ -190,6 +202,16 @@ do {									\
 		(err) = -EFAULT;					\
 	}								\
 })
+
+#define __put_kernel_nofault(dst, src, type, label)			\
+do {									\
+	type __user *p = (type __force __user *)(dst);			\
+	type data = *(type *)src;					\
+	int err;							\
+	__put_user_err(data, p, err);					\
+	if (err)							\
+		goto label;						\
+} while (0)
 
 #define __put_user_err(x, ptr, err)					\
 do {									\
