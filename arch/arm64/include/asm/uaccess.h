@@ -35,7 +35,7 @@
  * This is equivalent to the following test:
  * (u65)addr + (u65)size <= (u65)TASK_SIZE_MAX
  */
-static inline unsigned long __range_ok(const void __user *addr, unsigned long size)
+static inline unsigned long __access_ok(const void __user *addr, unsigned long size)
 {
 	unsigned long ret, limit = TASK_SIZE_MAX - 1;
 
@@ -68,8 +68,9 @@ static inline unsigned long __range_ok(const void __user *addr, unsigned long si
 
 	return ret;
 }
+#define __access_ok __access_ok
 
-#define access_ok(addr, size)	__range_ok(addr, size)
+#include <asm-generic/access_ok.h>
 
 /*
  * User access enabling/disabling.

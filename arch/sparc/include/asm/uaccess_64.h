@@ -31,7 +31,12 @@
 
 #define get_fs() ((mm_segment_t){(current_thread_info()->current_ds)})
 
-#define uaccess_kernel() (get_fs().seg == KERNEL_DS.seg)
+static inline int __access_ok(const void __user *addr, unsigned long size)
+{
+	return 1;
+}
+#define __access_ok __access_ok
+#include <asm-generic/access_ok.h>
 
 #define set_fs(val)								\
 do {										\
@@ -43,33 +48,7 @@ do {										\
  * Test whether a block of memory is a valid user space address.
  * Returns 0 if the range is valid, nonzero otherwise.
  */
-static inline bool __chk_range_not_ok(unsigned long addr, unsigned long size, unsigned long limit)
-{
-	if (__builtin_constant_p(size))
-		return addr > limit - size;
-
-	addr += size;
-	if (addr < size)
-		return true;
-
-	return addr > limit;
-}
-
-#define __range_not_ok(addr, size, limit)                               \
-({                                                                      \
-	__chk_user_ptr(addr);                                           \
-	__chk_range_not_ok((unsigned long __force)(addr), size, limit); \
-})
-
-static inline int __access_ok(const void __user * addr, unsigned long size)
-{
-	return 1;
-}
-
-static inline int access_ok(const void __user * addr, unsigned long size)
-{
-	return 1;
-}
+#define __range_not_ok(addr, size, limit) (!__access_ok(addr, size))
 
 void __retl_efault(void);
 

@@ -42,50 +42,10 @@ extern u64 __ua_limit;
 
 #endif /* CONFIG_64BIT */
 
-/*
- * Is a address valid? This does a straightforward calculation rather
- * than tests.
- *
- * Address valid if:
- *  - "addr" doesn't have any high-bits set
- *  - AND "size" doesn't have any high-bits set
- *  - AND "addr+size" doesn't have any high-bits set
- *  - OR we are in kernel mode.
- *
- * __ua_size() is a trick to avoid runtime checking of positive constant
- * sizes; for those we already know at compile time that the size is ok.
- */
-#define __ua_size(size)							\
-	((__builtin_constant_p(size) && (signed long) (size) > 0) ? 0 : (size))
+#define TASK_SIZE_MAX __UA_LIMIT
+#define user_addr_max() __UA_LIMIT
 
-/*
- * access_ok: - Checks if a user space pointer is valid
- * @addr: User space pointer to start of block to check
- * @size: Size of block to check
- *
- * Context: User context only. This function may sleep if pagefaults are
- *          enabled.
- *
- * Checks if a pointer to a block of memory in user space is valid.
- *
- * Returns true (nonzero) if the memory block may be valid, false (zero)
- * if it is definitely invalid.
- *
- * Note that, depending on architecture, this function probably just
- * checks that the pointer is in the user space range - after calling
- * this function, memory access functions may still return -EFAULT.
- */
-
-static inline int __access_ok(const void __user *p, unsigned long size)
-{
-	unsigned long addr = (unsigned long)p;
-	unsigned long end = addr + size - !!size;
-
-	return (__UA_LIMIT & (addr | end | __ua_size(size))) == 0;
-}
-
-#define access_ok(addr, size)					\
-	likely(__access_ok((addr), (size)))
+#include <asm-generic/access_ok.h>
 
 /*
  * put_user: - Write a simple value into user space.
