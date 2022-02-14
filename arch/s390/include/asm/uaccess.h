@@ -20,18 +20,13 @@
 
 void debug_user_asce(int exit);
 
-static inline int __range_ok(unsigned long addr, unsigned long size)
+static inline int __access_ok(const void __user *addr, unsigned long size)
 {
 	return 1;
 }
+#define __access_ok __access_ok
 
-#define __access_ok(addr, size)				\
-({							\
-	__chk_user_ptr(addr);				\
-	__range_ok((unsigned long)(addr), (size));	\
-})
-
-#define access_ok(addr, size) __access_ok(addr, size)
+#include <asm-generic/access_ok.h>
 
 unsigned long __must_check
 raw_copy_from_user(void *to, const void __user *from, unsigned long n);

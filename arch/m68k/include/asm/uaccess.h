@@ -12,15 +12,18 @@
 #include <asm/extable.h>
 
 /* We let the MMU do all checking */
-static inline int access_ok(const void __user *addr,
+static inline int __access_ok(const void __user *addr,
 			    unsigned long size)
 {
 	/*
 	 * XXX: for !CONFIG_CPU_HAS_ADDRESS_SPACES this really needs to check
 	 * for TASK_SIZE!
+	 * Removing this helper is probably sufficient.
 	 */
 	return 1;
 }
+#define __access_ok __access_ok
+#include <asm-generic/access_ok.h>
 
 /*
  * Not all varients of the 68k family support the notion of address spaces.
