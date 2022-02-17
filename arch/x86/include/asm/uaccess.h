@@ -76,6 +76,33 @@ extern int __get_user_bad(void);
 #define __typefits(x,type,not) \
 	__builtin_choose_expr(sizeof(x)<=sizeof(type),(unsigned type)0,not)
 
+#define __put_user_asm_1(x, ptr, err, label)			\
+	__put_user_goto(x, ptr, "b", "iq", label)
+
+#define __put_user_asm_2(x, ptr, err, label)			\
+	__put_user_goto(x, ptr, "w", "ir", label)
+
+#define __put_user_asm_4(x, ptr, err, label)			\
+	__put_user_goto(x, ptr, "l", "ir", label)
+
+#ifdef CONFIG_X86_32
+#define __put_user_asm_8(x, addr, err, label)			\
+	asm_volatile_goto("\n"					\
+		     "1:	movl %%eax,0(%1)\n"		\
+		     "2:	movl %%edx,4(%1)\n"		\
+		     _ASM_EXTABLE_UA(1b, %l2)			\
+		     _ASM_EXTABLE_UA(2b, %l2)			\
+		     : : "A" (x), "r" (addr)			\
+		     : : label)
+
+#else
+#define __put_user_asm_8(x, ptr, err, label)			\
+	__put_user_goto(x, ptr, "q", "er", label)
+#endif
+
+extern void __put_user_bad(void);
+
+#ifndef CONFIG_INLINE_GETPUT_USER
 /*
  * This is used for both get_user() and __get_user() to expand to
  * the proper special function call that has odd calling conventions
@@ -149,24 +176,6 @@ extern int __get_user_bad(void);
  * On error, the variable @x is set to zero.
  */
 #define __get_user(x,ptr) do_get_user_call(get_user_nocheck,x,ptr)
-
-
-#ifdef CONFIG_X86_32
-#define __put_user_goto_u64(x, addr, label)			\
-	asm_volatile_goto("\n"					\
-		     "1:	movl %%eax,0(%1)\n"		\
-		     "2:	movl %%edx,4(%1)\n"		\
-		     _ASM_EXTABLE_UA(1b, %l2)			\
-		     _ASM_EXTABLE_UA(2b, %l2)			\
-		     : : "A" (x), "r" (addr)			\
-		     : : label)
-
-#else
-#define __put_user_goto_u64(x, ptr, label) \
-	__put_user_goto(x, ptr, "q", "er", label)
-#endif
-
-extern void __put_user_bad(void);
 
 /*
  * Strange magic calling convention: pointer in %ecx,
@@ -245,80 +254,78 @@ extern void __put_user_nocheck_8(void);
  * Return: zero on success, or -EFAULT on error.
  */
 #define __put_user(x, ptr) do_put_user_call(put_user_nocheck,x,ptr)
+#endif
 
 #define __put_user_size(x, ptr, size, label)				\
 do {									\
+	int __pu_err = 0;						\
 	__chk_user_ptr(ptr);						\
 	switch (size) {							\
 	case 1:								\
-		__put_user_goto(x, ptr, "b", "iq", label);		\
+		__put_user_asm_1(x, ptr, __pu_err, label);		\
 		break;							\
 	case 2:								\
-		__put_user_goto(x, ptr, "w", "ir", label);		\
+		__put_user_asm_2(x, ptr, __pu_err, label);		\
 		break;							\
 	case 4:								\
-		__put_user_goto(x, ptr, "l", "ir", label);		\
+		__put_user_asm_4(x, ptr, __pu_err, label);		\
 		break;							\
 	case 8:								\
-		__put_user_goto_u64(x, ptr, label);			\
+		__put_user_asm_8(x, ptr, __pu_err, label);		\
 		break;							\
 	default:							\
 		__put_user_bad();					\
 	}								\
+	if (__pu_err)							\
+		goto label;						\
 } while (0)
 
 #ifdef CONFIG_CC_HAS_ASM_GOTO_OUTPUT
 
+#define __get_user_asm_1(x, ptr, retval, label)				\
+	__get_user_asm(x, ptr, "b", "=q", u8, label)
+#define __get_user_asm_2(x, ptr, retval, label)				\
+	__get_user_asm(x, ptr, "w", "=r", u16, label)
+#define __get_user_asm_4(x, ptr, retval, label)				\
+	__get_user_asm(x, ptr, "l", "=r", u32, label)
+
 #ifdef CONFIG_X86_32
-#define __get_user_asm_u64(x, ptr, label) do {				\
+#define __get_user_asm_8(x, ptr, retval, label) do {			\
 	unsigned int __gu_low, __gu_high;				\
 	const unsigned int __user *__gu_ptr;				\
 	__gu_ptr = (const void __user *)(ptr);				\
-	__get_user_asm(__gu_low, __gu_ptr, "l", "=r", label);		\
-	__get_user_asm(__gu_high, __gu_ptr+1, "l", "=r", label);	\
+	__get_user_asm(__gu_low, __gu_ptr, "l", "=r", u32, label);	\
+	__get_user_asm(__gu_high, __gu_ptr+1, "l", "=r", u32, label);	\
 	(x) = ((unsigned long long)__gu_high << 32) | __gu_low;		\
 } while (0)
 #else
-#define __get_user_asm_u64(x, ptr, label)				\
-	__get_user_asm(x, ptr, "q", "=r", label)
+#define __get_user_asm_8(x, ptr, retval, label)				\
+	__get_user_asm(x, ptr, "q", "=r", u64, label)
 #endif
 
-#define __get_user_size(x, ptr, size, label)				\
+#define __get_user_asm(x, addr, itype, ltype, type, label)		\
 do {									\
-	__chk_user_ptr(ptr);						\
-	switch (size) {							\
-	case 1:	{							\
-		unsigned char x_u8__;					\
-		__get_user_asm(x_u8__, ptr, "b", "=q", label);		\
-		(x) = x_u8__;						\
-		break;							\
-	}								\
-	case 2:								\
-		__get_user_asm(x, ptr, "w", "=r", label);		\
-		break;							\
-	case 4:								\
-		__get_user_asm(x, ptr, "l", "=r", label);		\
-		break;							\
-	case 8:								\
-		__get_user_asm_u64(x, ptr, label);			\
-		break;							\
-	default:							\
-		(x) = __get_user_bad();					\
-	}								\
-} while (0)
-
-#define __get_user_asm(x, addr, itype, ltype, label)			\
+	type __x;							\
 	asm_volatile_goto("\n"						\
 		     "1:	mov"itype" %[umem],%[output]\n"		\
 		     _ASM_EXTABLE_UA(1b, %l2)				\
-		     : [output] ltype(x)				\
+		     : [output] ltype(__x)				\
 		     : [umem] "m" (__m(addr))				\
-		     : : label)
+		     : : label);					\
+	(x) = __x;							\
+} while (0);
 
 #else // !CONFIG_CC_HAS_ASM_GOTO_OUTPUT
 
+#define __get_user_asm_1(x, ptr, retval, label)				\
+	__get_user_asm(x, ptr, retval, u8, "b")
+#define __get_user_asm_2(x, ptr, retval, label)				\
+	__get_user_asm(x, ptr, retval, u16, "w")
+#define __get_user_asm_4(x, ptr, retval, label)				\
+	__get_user_asm(x, ptr, retval, u32, "l")
+
 #ifdef CONFIG_X86_32
-#define __get_user_asm_u64(x, ptr, retval)				\
+#define __get_user_asm_8(x, ptr, retval, label)				\
 ({									\
 	__typeof__(ptr) __ptr = (ptr);					\
 	asm volatile("\n"						\
@@ -339,36 +346,13 @@ do {									\
 })
 
 #else
-#define __get_user_asm_u64(x, ptr, retval) \
-	 __get_user_asm(x, ptr, retval, "q")
+#define __get_user_asm_8(x, ptr, retval, label)			\
+	 __get_user_asm(x, ptr, retval, u64, "q")
 #endif
 
-#define __get_user_size(x, ptr, size, retval)				\
+#define __get_user_asm(x, addr, err, type, itype)			\
 do {									\
-	unsigned char x_u8__;						\
-									\
-	retval = 0;							\
-	__chk_user_ptr(ptr);						\
-	switch (size) {							\
-	case 1:								\
-		__get_user_asm(x_u8__, ptr, retval, "b");		\
-		(x) = x_u8__;						\
-		break;							\
-	case 2:								\
-		__get_user_asm(x, ptr, retval, "w");			\
-		break;							\
-	case 4:								\
-		__get_user_asm(x, ptr, retval, "l");			\
-		break;							\
-	case 8:								\
-		__get_user_asm_u64(x, ptr, retval);			\
-		break;							\
-	default:							\
-		(x) = __get_user_bad();					\
-	}								\
-} while (0)
-
-#define __get_user_asm(x, addr, err, itype)				\
+	type __x;							\
 	asm volatile("\n"						\
 		     "1:	mov"itype" %[umem],%[output]\n"		\
 		     "2:\n"						\
@@ -376,27 +360,41 @@ do {									\
 					   EX_FLAG_CLEAR_AX,		\
 					   %[errout])			\
 		     : [errout] "=r" (err),				\
-		       [output] "=a" (x)				\
+		       [output] "=a" (__x)				\
 		     : [umem] "m" (__m(addr)),				\
-		       "0" (err))
+		       "0" (err));					\
+	(x) = __x;							\
+} while (0)
 
 #endif // CONFIG_CC_HAS_ASM_GOTO_OUTPUT
+
+#define __get_user_size(x, ptr, size, retval, label)			\
+do {									\
+	retval = 0;							\
+	__chk_user_ptr(ptr);						\
+	switch (size) {							\
+	case 1:								\
+		__get_user_asm_1(x, ptr, retval, label);		\
+		break;							\
+	case 2:								\
+		__get_user_asm_2(x, ptr, retval, label);		\
+		break;							\
+	case 4:								\
+		__get_user_asm_4(x, ptr, retval, label);		\
+		break;							\
+	case 8:								\
+		__get_user_asm_8(x, ptr, retval, label);		\
+		break;							\
+	default:							\
+		(x) = __get_user_bad();					\
+	if (retval)							\
+		goto label;						\
+	}								\
+} while (0)
 
 /* FIXME: this hack is definitely wrong -AK */
 struct __large_struct { unsigned long buf[100]; };
 #define __m(x) (*(struct __large_struct __user *)(x))
-
-/*
- * Tell gcc we read from memory instead of writing: this is because
- * we do not write to any memory gcc knows about, so there are no
- * aliasing issues.
- */
-#define __put_user_goto(x, addr, itype, ltype, label)			\
-	asm_volatile_goto("\n"						\
-		"1:	mov"itype" %0,%1\n"				\
-		_ASM_EXTABLE_UA(1b, %l2)				\
-		: : ltype(x), "m" (__m(addr))				\
-		: : label)
 
 extern unsigned long
 copy_from_user_nmi(void *to, const void __user *from, unsigned long n);
@@ -456,23 +454,14 @@ static __must_check __always_inline bool user_access_begin(const void __user *pt
 #define unsafe_put_user(x, ptr, label)	\
 	__put_user_size((__typeof__(*(ptr)))(x), (ptr), sizeof(*(ptr)), label)
 
-#ifdef CONFIG_CC_HAS_ASM_GOTO_OUTPUT
-#define unsafe_get_user(x, ptr, err_label)					\
-do {										\
-	__inttype(*(ptr)) __gu_val;						\
-	__get_user_size(__gu_val, (ptr), sizeof(*(ptr)), err_label);		\
-	(x) = (__force __typeof__(*(ptr)))__gu_val;				\
-} while (0)
-#else // !CONFIG_CC_HAS_ASM_GOTO_OUTPUT
 #define unsafe_get_user(x, ptr, err_label)					\
 do {										\
 	int __gu_err;								\
 	__inttype(*(ptr)) __gu_val;						\
-	__get_user_size(__gu_val, (ptr), sizeof(*(ptr)), __gu_err);		\
+	__get_user_size(__gu_val, (ptr), sizeof(*(ptr)), __gu_err, err_label);	\
 	(x) = (__force __typeof__(*(ptr)))__gu_val;				\
 	if (unlikely(__gu_err)) goto err_label;					\
 } while (0)
-#endif // CONFIG_CC_HAS_ASM_GOTO_OUTPUT
 
 /*
  * We want the unsafe accessors to always be inlined and use
@@ -497,25 +486,31 @@ do {									\
 	unsafe_copy_loop(__ucu_dst, __ucu_src, __ucu_len, u8, label);	\
 } while (0)
 
-#ifdef CONFIG_CC_HAS_ASM_GOTO_OUTPUT
-#define __get_kernel_nofault(dst, src, type, err_label)			\
-	__get_user_size(*((type *)(dst)), (__force type __user *)(src),	\
-			sizeof(type), err_label)
-#else // !CONFIG_CC_HAS_ASM_GOTO_OUTPUT
 #define __get_kernel_nofault(dst, src, type, err_label)			\
 do {									\
-	int __kr_err;							\
+	int __kr_err = 0;						\
 									\
 	__get_user_size(*((type *)(dst)), (__force type __user *)(src),	\
-			sizeof(type), __kr_err);			\
+			sizeof(type), __kr_err, err_label);		\
 	if (unlikely(__kr_err))						\
 		goto err_label;						\
 } while (0)
-#endif // CONFIG_CC_HAS_ASM_GOTO_OUTPUT
 
 #define __put_kernel_nofault(dst, src, type, err_label)			\
 	__put_user_size(*((type *)(src)), (__force type __user *)(dst),	\
 			sizeof(type), err_label)
+
+/*
+ * Tell gcc we read from memory instead of writing: this is because
+ * we do not write to any memory gcc knows about, so there are no
+ * aliasing issues.
+ */
+#define __put_user_goto(x, addr, itype, ltype, label)			\
+	asm_volatile_goto("\n"						\
+		"1:	mov"itype" %0,%1\n"				\
+		_ASM_EXTABLE_UA(1b, %l2)				\
+		: : ltype(x), "m" (__m(addr))				\
+		: : label)
 
 #endif /* _ASM_X86_UACCESS_H */
 

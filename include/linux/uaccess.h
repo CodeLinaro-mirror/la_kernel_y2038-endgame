@@ -379,6 +379,216 @@ static inline void user_access_restore(unsigned long flags) { }
 #define user_read_access_end user_access_end
 #endif
 
+/*
+ * generic get_user/put_user
+ *
+ * An architecture can leave out __put_user/__get_user and
+ * just define the simpler __{get,put}_user_asm_{1,2,4,8}
+ * versions.
+ *
+ * The provided helpers can either use the 'err' argument
+ * to store the return code, or use asm-goto with the
+ * label.
+ */
+#ifndef __get_user
+static __always_inline unsigned long
+raw_get_user_word(const void __user *from, size_t size, int *err, bool check)
+{
+	unsigned long val;
+
+	if (check) {
+		if (!access_ok(from, size))
+			return -EFAULT;
+		might_fault();
+	}
+
+	__uaccess_begin_nospec();
+
+	*err = 0;
+	switch (size) {
+	case 1:
+		__get_user_asm_1(val, from, *err, out);
+		break;
+	case 2:
+		__get_user_asm_2(val, from, *err, out);
+		break;
+	case 4:
+		__get_user_asm_4(val, from, *err, out);
+		break;
+#ifdef CONFIG_64BIT
+	case 8:
+		__get_user_asm_8(val, from, *err, out);
+		break;
+#endif
+	default:
+		BUILD_BUG();
+		goto out;
+
+	}
+
+	__uaccess_end();
+	return val;
+
+out:
+	__uaccess_end();
+	*err = -EFAULT;
+	return 0;
+}
+
+#ifndef CONFIG_64BIT
+static __always_inline u64
+raw_get_user_u64(const u64 __user *from, size_t size, int *errp, bool check)
+{
+	union {
+		u64 v64;
+		u32 v32[2];
+	} val;
+	int err;
+
+	if (check) {
+		if (!access_ok(from, size))
+			return -EFAULT;
+		might_fault();
+	}
+	if (0) /* avoid unused label warning */
+		goto out;
+
+	__uaccess_begin_nospec();
+
+	err = 0;
+#ifdef __get_user_asm_8
+	__get_user_asm_8(val.v64, from, err, out);
+#else
+	__get_user_asm_4(val.v32[0], (u32 __user*)from, err, out);
+	if (!err)
+		__get_user_asm_4(val.v32[1], (u32 __user*)from + 1, err, out);
+#endif
+	__uaccess_end();
+	*errp = err;
+
+	return val.v64;
+out:
+	__uaccess_end();
+	*errp = -EFAULT;
+	return 0;
+}
+#define raw_get_user_word(from, val, err, out)				\
+	__builtin_choose_expr(sizeof(*from) == 8,			\
+		raw_get_user_u64, raw_get_user_word)(from, val, err, out)
+#endif
+
+#define __get_user(x, ptr) ({						\
+	__auto_type __p = (ptr);					\
+	int err;							\
+	(x) = (typeof(*__p))(typeof(*__p-*__p))				\
+		raw_get_user_word(__p, sizeof(*__p), &err, false);	\
+	err;								\
+})
+
+#define get_user(x, ptr) ({						\
+	__auto_type __p = (ptr);					\
+	int err;							\
+	(x) = (typeof(*__p))(typeof(*__p-*__p))				\
+		raw_get_user_word(__p, sizeof(*__p), &err, true);	\
+	err;								\
+})
+#endif
+
+#ifndef __put_user
+static __always_inline int
+raw_put_user_word(const void __user *to, unsigned long val, size_t size, bool check)
+{
+	int err = 0;
+
+	if (check) {
+		if (!access_ok(to, size))
+			return -EFAULT;
+		might_fault();
+	}
+
+	__uaccess_begin_nospec();
+
+	switch (size) {
+	case 1:
+		__put_user_asm_1((u8)val, to, err, out);
+		break;
+	case 2:
+		__put_user_asm_2((u16)val, to, err, out);
+		break;
+	case 4:
+		__put_user_asm_4((u32)val, to, err, out);
+		break;
+#ifdef CONFIG_64BIT
+	case 8:
+		__put_user_asm_8((u64)val, to, err, out);
+		break;
+#endif
+	default:
+		BUILD_BUG();
+		goto out;
+
+	}
+	__uaccess_end();
+	return err;
+
+out:
+	__uaccess_end();
+	return -EFAULT;
+}
+
+#ifndef CONFIG_64BIT
+static __always_inline int
+raw_put_user_u64(u64 __user *to, u64 val, size_t size, bool check)
+{
+	union {
+		u64 v64;
+		u32 v32[2];
+	} v;
+	int err;
+
+	if (check) {
+		if (!access_ok(to, size))
+			return -EFAULT;
+		might_fault();
+	}
+	if (0)
+		goto out;
+
+	__uaccess_begin_nospec();
+
+	v.v64 = val;
+	err = 0;
+#ifdef __put_user_asm_8
+	__put_user_asm_8(val, to, err, out);
+#else
+	__put_user_asm_4(v.v32[0], (u32 __user*)to, err, out);
+	if (!err)
+		__put_user_asm_4(v.v32[1], (u32 __user*)to + 1, err, out);
+#endif
+	__uaccess_end();
+	return err;
+out:
+	__uaccess_end();
+	return -EFAULT;
+}
+#define raw_put_user_word(to, val, err, out)				\
+	__builtin_choose_expr(sizeof(*to) == 8,				\
+		raw_put_user_u64, raw_put_user_word)(to, val, err, out)
+#endif
+
+#define __put_user(x, ptr) ({						\
+	__auto_type __p = (ptr);					\
+	raw_put_user_word(__p, (typeof(__p - __p))(x),			\
+			sizeof(*__p), false);				\
+})
+
+#define put_user(x, ptr) ({						\
+	__auto_type __p = (ptr);					\
+	raw_put_user_word(__p, (typeof(__p - __p))(x),			\
+			sizeof(*__p), true);				\
+})
+#endif
+
 #ifdef CONFIG_HARDENED_USERCOPY
 void usercopy_warn(const char *name, const char *detail, bool to_user,
 		   unsigned long offset, unsigned long len);

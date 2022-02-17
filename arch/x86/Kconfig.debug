@@ -225,6 +225,12 @@ config PUNIT_ATOM_DEBUG
 	  The current power state can be read from
 	  /sys/kernel/debug/punit_atom/dev_power_state
 
+config INLINE_GETPUT_USER
+	bool "inline all get_user/put_user calls"
+	help
+	  Instead of the traditional out-of-line implementation, use
+	  an asm-goto based version if supported by the toolchain.
+
 choice
 	prompt "Choose kernel unwinder"
 	default UNWINDER_ORC if X86_64
