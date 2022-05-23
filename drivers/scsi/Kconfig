@@ -511,30 +511,6 @@ config SCSI_HPTIOP
 	  To compile this driver as a module, choose M here; the module
 	  will be called hptiop. If unsure, say N.
 
-config SCSI_BUSLOGIC
-	tristate "BusLogic SCSI support"
-	depends on PCI && SCSI && VIRT_TO_BUS
-	help
-	  This is support for BusLogic MultiMaster and FlashPoint SCSI Host
-	  Adapters. Consult the SCSI-HOWTO, available from
-	  <http://www.tldp.org/docs.html#howto>, and the files
-	  <file:Documentation/scsi/BusLogic.rst> and
-	  <file:Documentation/scsi/FlashPoint.rst> for more information.
-	  Note that support for FlashPoint is only available for 32-bit
-	  x86 configurations.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called BusLogic.
-
-config SCSI_FLASHPOINT
-	bool "FlashPoint support"
-	depends on SCSI_BUSLOGIC && PCI
-	help
-	  This option allows you to add FlashPoint support to the
-	  BusLogic SCSI driver. The FlashPoint SCCB Manager code is
-	  substantial, so users of MultiMaster Host Adapters may not
-	  wish to include it.
-
 config SCSI_MYRB
 	tristate "Mylex DAC960/DAC1100 PCI RAID Controller (Block Interface)"
 	depends on PCI

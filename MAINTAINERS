@@ -4270,13 +4270,6 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git
 F:	Documentation/devicetree/bindings/devfreq/exynos-bus.txt
 F:	drivers/devfreq/exynos-bus.c
 
-BUSLOGIC SCSI DRIVER
-M:	Khalid Aziz <khalid@gonehiking.org>
-L:	linux-scsi@vger.kernel.org
-S:	Maintained
-F:	drivers/scsi/BusLogic.*
-F:	drivers/scsi/FlashPoint.*
-
 C-MEDIA CMI8788 DRIVER
 M:	Clemens Ladisch <clemens@ladisch.de>
 L:	alsa-devel@alsa-project.org (moderated for non-subscribers)
