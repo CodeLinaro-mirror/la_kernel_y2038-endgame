@@ -239,15 +239,6 @@ static void __init db88f5281_pci_preinit(void)
 static int __init db88f5281_pci_map_irq(const struct pci_dev *dev, u8 slot,
 	u8 pin)
 {
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
 	/*
 	 * PCI IRQs are connected via GPIOs.
 	 */
@@ -266,6 +257,7 @@ static int __init db88f5281_pci_init(void)
 {
 	if (machine_is_db88f5281()) {
 		db88f5281_pci_preinit();
+		orion5x_pcie_init();
 		orion5x_pci_init(db88f5281_pci_map_irq);
 	}
 

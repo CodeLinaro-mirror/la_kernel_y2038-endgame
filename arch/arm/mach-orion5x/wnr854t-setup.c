@@ -132,15 +132,6 @@ static void __init wnr854t_init(void)
 static int __init wnr854t_pci_map_irq(const struct pci_dev *dev, u8 slot,
 	u8 pin)
 {
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
 	/*
 	 * Mini-PCI slot.
 	 */
@@ -152,8 +143,10 @@ static int __init wnr854t_pci_map_irq(const struct pci_dev *dev, u8 slot,
 
 static int __init wnr854t_pci_init(void)
 {
-	if (machine_is_wnr854t())
+	if (machine_is_wnr854t()) {
+		orion5x_pcie_init();
 		orion5x_pci_init(&wnr854t_pci_map_irq);
+	}
 
 	return 0;
 }

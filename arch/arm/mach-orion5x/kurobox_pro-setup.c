@@ -119,10 +119,8 @@ static struct platform_device kurobox_pro_nor_flash = {
  ****************************************************************************/
 static int __init kurobox_pro_pci_init(void)
 {
-	if (machine_is_kurobox_pro()) {
-		orion5x_pci_disable();
-		orion5x_pci_init(&orion5x_pci_map_irq);
-	}
+	if (machine_is_kurobox_pro())
+		orion5x_pcie_init();
 
 	return 0;
 }

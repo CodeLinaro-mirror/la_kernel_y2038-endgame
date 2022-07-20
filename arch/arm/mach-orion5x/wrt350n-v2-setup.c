@@ -220,15 +220,6 @@ static void __init wrt350n_v2_init(void)
 static int __init wrt350n_v2_pci_map_irq(const struct pci_dev *dev, u8 slot,
 	u8 pin)
 {
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
 	/*
 	 * Mini-PCI slot.
 	 */
@@ -240,8 +231,10 @@ static int __init wrt350n_v2_pci_map_irq(const struct pci_dev *dev, u8 slot,
 
 static int __init wrt350n_v2_pci_init(void)
 {
-	if (machine_is_wrt350n_v2())
+	if (machine_is_wrt350n_v2()) {
+		orion5x_pcie_init();
 		orion5x_pci_init(wrt350n_v2_pci_map_irq);
+	}
 
 	return 0;
 }

@@ -128,15 +128,6 @@ static void __init rd88f5181l_fxo_init(void)
 static int __init
 rd88f5181l_fxo_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
 	/*
 	 * Mini-PCI / Cardbus slot.
 	 */
@@ -146,6 +137,7 @@ rd88f5181l_fxo_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 static int __init rd88f5181l_fxo_pci_init(void)
 {
 	if (machine_is_rd88f5181l_fxo()) {
+		orion5x_pcie_init();
 		orion5x_pci_set_cardbus_mode();
 		orion5x_pci_init(rd88f5181l_fxo_pci_map_irq);
 	}

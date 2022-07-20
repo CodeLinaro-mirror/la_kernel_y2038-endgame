@@ -77,7 +77,7 @@ static int __init dns323_pci_init(void)
 	 * gets in the way of initialising the SATA controller.
 	 */
 	if (machine_is_dns323() && system_rev == DNS323_REV_A1)
-		orion5x_pci_init(orion5x_pci_map_irq);
+		orion5x_pcie_init();
 
 	return 0;
 }

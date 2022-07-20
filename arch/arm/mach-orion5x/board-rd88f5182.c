@@ -74,15 +74,6 @@ static void __init rd88f5182_pci_preinit(void)
 static int __init rd88f5182_pci_map_irq(const struct pci_dev *dev, u8 slot,
 	u8 pin)
 {
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
 	/*
 	 * PCI IRQs are connected via GPIOs
 	 */
@@ -101,6 +92,7 @@ static int __init rd88f5182_pci_init(void)
 {
 	if (of_machine_is_compatible("marvell,rd-88f5182-nas")) {
 		rd88f5182_pci_preinit();
+		orion5x_pcie_init();
 		orion5x_pci_init(rd88f5182_pci_map_irq);
 	}
 

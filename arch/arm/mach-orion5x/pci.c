@@ -139,11 +139,15 @@ static struct pci_ops pcie_ops = {
 };
 
 
-static int __init pcie_setup(int nr, struct pci_host_bridge *bridge)
+static int __init orion5x_pcie_setup(int nr, struct pci_host_bridge *bridge)
 {
 	struct resource *res;
 	struct resource realio;
 	int dev;
+
+	vga_base = ORION5X_PCIE_MEM_PHYS_BASE;
+
+	orion_pcie_set_local_bus_nr(PCIE_BASE, bridge->busnr);
 
 	bridge->ops = &pcie_ops;
 
@@ -190,6 +194,16 @@ static int __init pcie_setup(int nr, struct pci_host_bridge *bridge)
 	pci_add_resource(&bridge->windows, res);
 
 	return 1;
+}
+
+static int orion5x_pcie_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+{
+	return IRQ_ORION5X_PCIE0_INT;
+}
+
+void __init orion5x_pcie_init(void)
+{
+	orion_pci_probe(1, orion5x_pcie_setup, orion5x_pcie_map_irq);
 }
 
 /*****************************************************************************
@@ -468,12 +482,33 @@ static void __init orion5x_setup_pci_wins(void)
 	orion5x_setbits(PCI_ADDR_DECODE_CTRL, 1);
 }
 
-static int __init pci_setup(int nr, struct pci_host_bridge *bridge)
+struct orion5x_pci_sys_data {
+	struct resource mem_res;
+	struct resource io_res;
+};
+
+int __init orion5x_pci_init(int (*map_irq)(const struct pci_dev *dev, u8 slot, u8 pin))
 {
-	struct resource *res;
-	struct resource realio;
+	struct pci_host_bridge *bridge;
+	struct orion5x_pci_sys_data *sys;
+	int nr = 1;
+	int ret;
+
+	pci_add_flags(PCI_REASSIGN_ALL_BUS);
+
+	bridge = pci_alloc_host_bridge(sizeof(struct orion5x_pci_sys_data));
+	if (!bridge) {
+		pr_err("PCI: unable to allocate bridge!");
+		return -ENOMEM;
+	}
+
+	sys = pci_host_bridge_priv(bridge);
 
 	bridge->ops = &pci_ops;
+	bridge->map_irq = map_irq;
+	bridge->swizzle_irq = pci_common_swizzle;
+
+	orion5x_pci_set_bus_nr(bridge->busnr);
 
 	/*
 	 * Point PCI unit MBUS decode windows to DRAM space.
@@ -490,29 +525,40 @@ static int __init pci_setup(int nr, struct pci_host_bridge *bridge)
 	 */
 	orion5x_setbits(PCI_CMD, PCI_CMD_HOST_REORDER);
 
-	realio.start = nr * SZ_64K;
-	realio.end = realio.start + SZ_64K - 1;
-	pci_remap_iospace(&realio, ORION5X_PCI_IO_PHYS_BASE);
-
-	/*
-	 * Request resources
-	 */
-	res = kzalloc(sizeof(struct resource), GFP_KERNEL);
-	if (!res)
-		panic("pci_setup unable to alloc resources");
-
 	/*
 	 * IORESOURCE_MEM
 	 */
-	res->name = "PCI Memory Space";
-	res->flags = IORESOURCE_MEM;
-	res->start = ORION5X_PCI_MEM_PHYS_BASE;
-	res->end = res->start + ORION5X_PCI_MEM_SIZE - 1;
-	if (request_resource(&iomem_resource, res))
-		panic("Request PCI Memory resource failed\n");
-	pci_add_resource(&bridge->windows, res);
+	sys->mem_res.name = "PCI Memory Space";
+	sys->mem_res.flags = IORESOURCE_MEM;
+	sys->mem_res.start = ORION5X_PCI_MEM_PHYS_BASE;
+	sys->mem_res.end = sys->mem_res.start + ORION5X_PCI_MEM_SIZE - 1;
+	if (request_resource(&iomem_resource, &sys->mem_res)) {
+		pr_err("PCI: unable to allocate I/O port region (%d)\n", ret);
+		return ret;
+	}
+	pci_add_resource(&bridge->windows, &sys->mem_res);
 
-	return 1;
+	/*
+	 * IORESOURCE_IO
+	 */
+	sys->io_res.start = (nr * SZ_64K) ?  : pcibios_min_io;
+	sys->io_res.end = (nr + 1) * SZ_64K - 1;
+	sys->io_res.flags = IORESOURCE_IO;
+	sys->io_res.name = "PCI I/O";
+	ret = request_resource(&ioport_resource, &sys->io_res);
+	if (ret) {
+		pr_err("PCI: unable to allocate I/O port region (%d)\n", ret);
+		return ret;
+	}
+	pci_remap_iospace(&sys->io_res, ORION5X_PCI_IO_PHYS_BASE);
+	pci_add_resource(&bridge->windows, &sys->io_res);
+
+	ret = pci_host_probe(bridge);
+
+	if (WARN(ret < 0, "PCI: unable to scan bus!"))
+		pci_free_host_bridge(bridge);
+
+	return ret;
 }
 
 
@@ -536,49 +582,8 @@ static void rc_pci_fixup(struct pci_dev *dev)
 }
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL, PCI_ANY_ID, rc_pci_fixup);
 
-static int orion5x_pci_disabled __initdata;
-
-void __init orion5x_pci_disable(void)
-{
-	orion5x_pci_disabled = 1;
-}
-
 void __init orion5x_pci_set_cardbus_mode(void)
 {
 	orion5x_pci_cardbus_mode = 1;
 }
 
-static int __init orion5x_pci_setup(int nr, struct pci_host_bridge *bridge)
-{
-	vga_base = ORION5X_PCIE_MEM_PHYS_BASE;
-
-	if (nr == 0) {
-		orion_pcie_set_local_bus_nr(PCIE_BASE, bridge->busnr);
-		return pcie_setup(nr, bridge);
-	}
-
-	if (nr == 1 && !orion5x_pci_disabled) {
-		orion5x_pci_set_bus_nr(bridge->busnr);
-		return pci_setup(nr, bridge);
-	}
-
-	return 0;
-}
-
-int __init orion5x_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-{
-	int bus = dev->bus->number;
-
-	/*
-	 * PCIe endpoint?
-	 */
-	if (orion5x_pci_disabled || bus < orion5x_pci_local_bus_nr())
-		return IRQ_ORION5X_PCIE0_INT;
-
-	return -1;
-}
-
-void __init orion5x_pci_init(int (*map_irq)(const struct pci_dev *dev, u8 slot, u8 pin))
-{
-	return orion_pci_probe(2, orion5x_pci_setup, map_irq);
-}

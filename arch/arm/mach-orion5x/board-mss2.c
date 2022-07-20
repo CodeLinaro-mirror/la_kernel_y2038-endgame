@@ -27,7 +27,7 @@
 static int __init mss2_pci_init(void)
 {
 	if (machine_is_mss2())
-		orion5x_pci_init(orion5x_pci_map_irq);
+		orion5x_pcie_init();
 
 	return 0;
 }

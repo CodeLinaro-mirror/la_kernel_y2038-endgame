@@ -141,15 +141,6 @@ static void __init qnap_ts209_pci_preinit(void)
 static int __init qnap_ts209_pci_map_irq(const struct pci_dev *dev, u8 slot,
 	u8 pin)
 {
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
 	/*
 	 * PCI IRQs are connected via GPIOs.
 	 */
@@ -167,6 +158,7 @@ static int __init qnap_ts209_pci_init(void)
 {
 	if (machine_is_ts209()) {
 		qnap_ts209_pci_preinit();
+		orion5x_pcie_init();
 		orion5x_pci_init(&qnap_ts209_pci_map_irq);
 	}
 

@@ -93,10 +93,8 @@ static void __init rd88f6183ap_ge_init(void)
 
 static int __init rd88f6183ap_ge_pci_init(void)
 {
-	if (machine_is_rd88f6183ap_ge()) {
-		orion5x_pci_disable();
-		orion5x_pci_init(orion5x_pci_map_irq);
-	}
+	if (machine_is_rd88f6183ap_ge())
+		orion5x_pcie_init();
 
 	return 0;
 }

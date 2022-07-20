@@ -97,15 +97,6 @@ static void __init tsp2_pci_preinit(void)
 
 static int __init tsp2_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
-	int irq;
-
-	/*
-	 * Check for devices with hard-wired IRQs.
-	 */
-	irq = orion5x_pci_map_irq(dev, slot, pin);
-	if (irq != -1)
-		return irq;
-
 	/*
 	 * PCI IRQs are connected via GPIOs.
 	 */
@@ -119,6 +110,7 @@ static int __init tsp2_pci_init(void)
 {
 	if (machine_is_terastation_pro2()) {
 		tsp2_pci_preinit();
+		orion5x_pcie_init();
 		orion5x_pci_init(tsp2_pci_map_irq);
 	}
 
