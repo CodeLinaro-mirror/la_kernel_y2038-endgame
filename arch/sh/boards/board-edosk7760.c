@@ -50,7 +50,7 @@ static struct mtd_partition edosk7760_nor_flash_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data edosk7760_nor_flash_data = {
+static struct physmap_flash_platform_data edosk7760_nor_flash_data = {
 	.width		= 4,
 	.parts		= edosk7760_nor_flash_partitions,
 	.nr_parts	= ARRAY_SIZE(edosk7760_nor_flash_partitions),
@@ -75,7 +75,7 @@ static struct platform_device edosk7760_nor_flash_device = {
 };
 
 /* i2c initialization functions */
-static struct sh7760_i2c_platdata i2c_pd = {
+static struct sh7760_i2c_platform_data i2c_pd = {
 	.speed_khz	= 400,
 };
 
@@ -125,7 +125,7 @@ static struct platform_device sh7760_i2c0_dev = {
 };
 
 /* eth initialization functions */
-static struct smc91x_platdata smc91x_info = {
+static struct smc91x_platform_data smc91x_info = {
 	.flags = SMC91X_USE_16BIT | SMC91X_IO_SHIFT_1 | IORESOURCE_IRQ_LOWLEVEL,
 };
 

@@ -178,7 +178,7 @@ static void ep93xx_uart_set_mctrl(struct amba_device *dev,
 	__raw_writel(mcr, base + EP93XX_UART_MCR_OFFSET);
 }
 
-static struct amba_pl010_data ep93xx_uart_data = {
+static struct amba_pl010_platform_data ep93xx_uart_data = {
 	.set_mctrl	= ep93xx_uart_set_mctrl,
 };
 
@@ -224,7 +224,7 @@ static void ep93xx_ohci_power_off(struct platform_device *pdev)
 	clk_disable(ep93xx_ohci_host_clock);
 }
 
-static struct usb_ohci_pdata ep93xx_ohci_pdata = {
+static struct usb_ohci_platform_data ep93xx_ohci_platform_data = {
 	.power_on	= ep93xx_ohci_power_on,
 	.power_off	= ep93xx_ohci_power_off,
 	.power_suspend	= ep93xx_ohci_power_off,
@@ -245,14 +245,14 @@ static struct platform_device ep93xx_ohci_device = {
 	.dev		= {
 		.dma_mask		= &ep93xx_ohci_dma_mask,
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
-		.platform_data		= &ep93xx_ohci_pdata,
+		.platform_data		= &ep93xx_ohci_platform_data,
 	},
 };
 
 /*************************************************************************
  * EP93xx physmap'ed flash
  *************************************************************************/
-static struct physmap_flash_data ep93xx_flash_data;
+static struct physmap_flash_platform_data ep93xx_flash_data;
 
 static struct resource ep93xx_flash_resource = {
 	.flags		= IORESOURCE_MEM,
@@ -289,7 +289,7 @@ void __init ep93xx_register_flash(unsigned int width,
 /*************************************************************************
  * EP93xx ethernet peripheral handling
  *************************************************************************/
-static struct ep93xx_eth_data ep93xx_eth_data;
+static struct ep93xx_eth_platform_data ep93xx_eth_platform_data;
 
 static struct resource ep93xx_eth_resource[] = {
 	DEFINE_RES_MEM(EP93XX_ETHERNET_PHYS_BASE, 0x10000),
@@ -302,7 +302,7 @@ static struct platform_device ep93xx_eth_device = {
 	.name		= "ep93xx-eth",
 	.id		= -1,
 	.dev		= {
-		.platform_data		= &ep93xx_eth_data,
+		.platform_data		= &ep93xx_eth_platform_data,
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
 		.dma_mask		= &ep93xx_eth_dma_mask,
 	},
@@ -316,12 +316,12 @@ static struct platform_device ep93xx_eth_device = {
  * @copy_addr:	flag indicating that the MAC address should be copied
  *		from the IndAd registers (as programmed by the bootloader)
  */
-void __init ep93xx_register_eth(struct ep93xx_eth_data *data, int copy_addr)
+void __init ep93xx_register_eth(struct ep93xx_eth_platform_data *data, int copy_addr)
 {
 	if (copy_addr)
 		memcpy_fromio(data->dev_addr, EP93XX_ETHERNET_BASE + 0x50, 6);
 
-	ep93xx_eth_data = *data;
+	ep93xx_eth_platform_data = *data;
 	platform_device_register(&ep93xx_eth_device);
 }
 
@@ -376,7 +376,7 @@ void __init ep93xx_register_i2c(struct i2c_board_info *devices, int num)
 /*************************************************************************
  * EP93xx SPI peripheral handling
  *************************************************************************/
-static struct ep93xx_spi_info ep93xx_spi_master_data;
+static struct ep93xx_spi_platform_data ep93xx_spi_master_data;
 
 static struct resource ep93xx_spi_resources[] = {
 	DEFINE_RES_MEM(EP93XX_SPI_PHYS_BASE, 0x18),
@@ -406,7 +406,7 @@ static struct platform_device ep93xx_spi_device = {
  * This function registers platform device for the EP93xx SPI controller and
  * also makes sure that SPI pins are muxed so that I2S is not using those pins.
  */
-void __init ep93xx_register_spi(struct ep93xx_spi_info *info,
+void __init ep93xx_register_spi(struct ep93xx_spi_platform_data *info,
 				struct spi_board_info *devices, int num)
 {
 	/*
@@ -526,7 +526,7 @@ EXPORT_SYMBOL(ep93xx_pwm_release_gpio);
 /*************************************************************************
  * EP93xx video peripheral handling
  *************************************************************************/
-static struct ep93xxfb_mach_info ep93xxfb_data;
+static struct ep93xxfb_platform_data ep93xxfb_data;
 
 static struct resource ep93xx_fb_resource[] = {
 	DEFINE_RES_MEM(EP93XX_RASTER_PHYS_BASE, 0x800),
@@ -563,7 +563,7 @@ static struct platform_device ep93xx_bl_device = {
  * ep93xx_register_fb - Register the framebuffer platform device.
  * @data:	platform specific framebuffer configuration (__initdata)
  */
-void __init ep93xx_register_fb(struct ep93xxfb_mach_info *data)
+void __init ep93xx_register_fb(struct ep93xxfb_platform_data *data)
 {
 	ep93xxfb_data = *data;
 	platform_device_register(&ep93xx_fb_device);

@@ -76,7 +76,7 @@ static inline void sni_pcimt_detect(void)
 		.flags		= UPF_BOOT_AUTOCONF,	\
 	}
 
-static struct plat_serial8250_port pcimt_data[] = {
+static struct serial8250_platform_data pcimt_data[] = {
 	PORT(0x3f8, 4),
 	PORT(0x2f8, 3),
 	{ },

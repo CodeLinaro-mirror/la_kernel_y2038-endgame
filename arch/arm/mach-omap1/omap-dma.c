@@ -54,7 +54,7 @@
 
 #define OMAP_FUNC_MUX_ARM_BASE		(0xfffe1000 + 0xec)
 
-static struct omap_system_dma_plat_info *p;
+static struct omap_system_dma_platform_data *p;
 static struct omap_dma_dev_attr *d;
 static int enable_1510_mode;
 static u32 errata;
@@ -752,7 +752,7 @@ static irqreturn_t omap1_dma_irq_handler(int irq, void *dev_id)
 	return handled ? IRQ_HANDLED : IRQ_NONE;
 }
 
-struct omap_system_dma_plat_info *omap_get_plat_info(void)
+struct omap_system_dma_platform_data *omap_get_plat_info(void)
 {
 	return p;
 }

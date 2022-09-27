@@ -92,7 +92,7 @@
 /* DCL */
 #define AR7_WDT_HW_ENA	0x10
 
-struct plat_cpmac_data {
+struct cpmac_platform_data {
 	int reset_bit;
 	int power_bit;
 	u32 phy_mask;

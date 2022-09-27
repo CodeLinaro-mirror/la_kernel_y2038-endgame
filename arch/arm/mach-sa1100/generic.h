@@ -30,12 +30,12 @@ struct resource;
 void sa11x0_register_mtd(struct flash_platform_data *flash,
 			 struct resource *res, int nr);
 
-struct mcp_plat_data;
+struct mcp_platform_data;
 void sa11x0_ppc_configure_mcp(void);
-void sa11x0_register_mcp(struct mcp_plat_data *data);
+void sa11x0_register_mcp(struct mcp_platform_data *data);
 
-struct sa1100fb_mach_info;
-void sa11x0_register_lcd(struct sa1100fb_mach_info *inf);
+struct sa1100fb_platform_data;
+void sa11x0_register_lcd(struct sa1100fb_platform_data *inf);
 
 #ifdef CONFIG_PM
 int sa11x0_pm_init(void);
@@ -48,8 +48,8 @@ int sa11xx_clk_init(void);
 struct gpiod_lookup_table;
 void sa11x0_register_pcmcia(int socket, struct gpiod_lookup_table *);
 
-struct fixed_voltage_config;
+struct fixed_voltage_platform_data;
 struct regulator_consumer_supply;
-int sa11x0_register_fixed_regulator(int n, struct fixed_voltage_config *cfg,
+int sa11x0_register_fixed_regulator(int n, struct fixed_voltage_platform_data *cfg,
 	struct regulator_consumer_supply *supplies, unsigned num_supplies,
 	bool uses_gpio);

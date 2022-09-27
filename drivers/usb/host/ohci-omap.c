@@ -90,7 +90,7 @@ static void start_hnp(struct ohci_hcd *ohci)
 static int ohci_omap_reset(struct usb_hcd *hcd)
 {
 	struct ohci_hcd		*ohci = hcd_to_ohci(hcd);
-	struct omap_usb_config	*config = dev_get_platdata(hcd->self.controller);
+	struct omap_usb_platform_data	*config = dev_get_platdata(hcd->self.controller);
 	struct ohci_omap_priv	*priv = hcd_to_ohci_omap_priv(hcd);
 	int			need_transceiver = (config->otg != 0);
 	int			ret;

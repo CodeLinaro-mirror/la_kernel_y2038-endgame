@@ -15,7 +15,7 @@
 #include <linux/pxa2xx_ssp.h>
 
 struct gpio_desc;
-struct pxa2xx_spi_controller;
+struct pxa_spi_platform_data;
 struct spi_controller;
 struct spi_device;
 struct spi_transfer;
@@ -29,7 +29,7 @@ struct driver_data {
 	struct spi_controller *controller;
 
 	/* PXA hookup */
-	struct pxa2xx_spi_controller *controller_info;
+	struct pxa_spi_platform_data *controller_info;
 
 	/* SSP masks*/
 	u32 dma_cr1;

@@ -69,7 +69,7 @@ static struct mtd_partition nor_flash_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data nor_flash_data = {
+static struct physmap_flash_platform_data nor_flash_data = {
 	.width		= 4,
 	.parts		= nor_flash_partitions,
 	.nr_parts	= ARRAY_SIZE(nor_flash_partitions),
@@ -92,7 +92,7 @@ static struct platform_device nor_flash_device = {
 	.resource	= nor_flash_resources,
 };
 
-static struct r8a66597_platdata r8a66597_data = {
+static struct r8a66597_platform_data r8a66597_data = {
 	.xtal = R8A66597_PLATDATA_XTAL_12MHZ,
 	.vif = 1,
 };
@@ -165,7 +165,7 @@ static struct fb_videomode sm501_default_mode_pnl = {
 	.sync		= 0,
 };
 
-static struct sm501_platdata_fbsub sm501_pdata_fbsub_pnl = {
+static struct sm501_fbsub_platform_data sm501_pdata_fbsub_pnl = {
 	.def_bpp	= 16,
 	.def_mode	= &sm501_default_mode_pnl,
 	.flags		= SM501FB_FLAG_USE_INIT_MODE |
@@ -175,7 +175,7 @@ static struct sm501_platdata_fbsub sm501_pdata_fbsub_pnl = {
 			  SM501FB_FLAG_PANEL_NO_VBIASEN,
 };
 
-static struct sm501_platdata_fbsub sm501_pdata_fbsub_crt = {
+static struct sm501_fbsub_platform_data sm501_pdata_fbsub_crt = {
 	.def_bpp	= 16,
 	.def_mode	= &sm501_default_mode_crt,
 	.flags		= SM501FB_FLAG_USE_INIT_MODE |
@@ -184,7 +184,7 @@ static struct sm501_platdata_fbsub sm501_pdata_fbsub_crt = {
 			  SM501FB_FLAG_DISABLE_AT_EXIT,
 };
 
-static struct sm501_platdata_fb sm501_fb_pdata = {
+static struct sm501_fb_platform_data sm501_fb_pdata = {
 	.fb_route	= SM501_FB_OWN,
 	.fb_crt		= &sm501_pdata_fbsub_crt,
 	.fb_pnl		= &sm501_pdata_fbsub_pnl,
@@ -200,7 +200,7 @@ static struct sm501_initdata sm501_initdata = {
 	.m1xclk		= 112 * 1000000,
 };
 
-static struct sm501_platdata sm501_platform_data = {
+static struct sm501_platform_data sm501_platform_data = {
 	.init		= &sm501_initdata,
 	.fb		= &sm501_fb_pdata,
 };

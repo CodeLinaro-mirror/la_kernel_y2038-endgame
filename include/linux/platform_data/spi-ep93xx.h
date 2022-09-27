@@ -5,10 +5,10 @@
 struct spi_device;
 
 /**
- * struct ep93xx_spi_info - EP93xx specific SPI descriptor
+ * struct ep93xx_spi_platform_data - EP93xx specific SPI descriptor
  * @use_dma: use DMA for the transfers
  */
-struct ep93xx_spi_info {
+struct ep93xx_spi_platform_data {
 	bool	use_dma;
 };
 

@@ -794,7 +794,7 @@ enum alchemy_usb_block {
 int alchemy_usb_control(int block, int enable);
 
 /* PCI controller platform data */
-struct alchemy_pci_platdata {
+struct alchemy_pci_platform_data {
 	int (*board_map_irq)(const struct pci_dev *d, u8 slot, u8 pin);
 	int (*board_pci_idsel)(unsigned int devsel, int assert);
 	/* bits to set/clear in PCI_CONFIG register */

@@ -26,7 +26,7 @@ static struct resource cobalt_uart_resource[] __initdata = {
 	},
 };
 
-static struct plat_serial8250_port cobalt_serial8250_port[] = {
+static struct serial8250_platform_data cobalt_serial8250_port[] = {
 	{
 		.irq		= SERIAL_IRQ,
 		.uartclk	= 18432000,

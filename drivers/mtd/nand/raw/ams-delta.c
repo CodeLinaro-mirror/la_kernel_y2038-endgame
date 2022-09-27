@@ -235,7 +235,7 @@ static const struct nand_controller_ops gpio_nand_ops = {
  */
 static int gpio_nand_probe(struct platform_device *pdev)
 {
-	struct gpio_nand_platdata *pdata = dev_get_platdata(&pdev->dev);
+	struct gpio_nand_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	const struct mtd_partition *partitions = NULL;
 	int num_partitions = 0;
 	struct gpio_nand *priv;

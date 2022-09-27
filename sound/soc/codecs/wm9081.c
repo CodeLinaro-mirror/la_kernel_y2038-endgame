@@ -153,7 +153,7 @@ struct wm9081_priv {
 	int fll_fref;
 	int fll_fout;
 	int tdm_width;
-	struct wm9081_pdata pdata;
+	struct wm9081_platform_data pdata;
 };
 
 static bool wm9081_volatile_register(struct device *dev, unsigned int reg)
@@ -1107,7 +1107,7 @@ static int wm9081_hw_params(struct snd_pcm_substream *substream,
 
 	/* Apply a ReTune Mobile configuration if it's in use */
 	if (wm9081->pdata.num_retune_configs) {
-		struct wm9081_pdata *pdata = &wm9081->pdata;
+		struct wm9081_platform_data *pdata = &wm9081->pdata;
 		struct wm9081_retune_mobile_setting *s;
 		int eq1;
 

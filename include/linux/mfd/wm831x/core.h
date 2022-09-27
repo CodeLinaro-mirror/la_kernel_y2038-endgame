@@ -364,7 +364,7 @@ struct wm831x {
 
 	struct regmap *regmap;
 
-	struct wm831x_pdata pdata;
+	struct wm831x_platform_data pdata;
 	enum wm831x_parent type;
 
 	int irq;  /* Our chip IRQ */

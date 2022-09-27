@@ -50,7 +50,7 @@ static struct resource s3c64xx_iis0_resource[] = {
 	[0] = DEFINE_RES_MEM(S3C64XX_PA_IIS0, SZ_256),
 };
 
-static struct s3c_audio_pdata i2s0_pdata = {
+static struct s3c_audio_platform_data i2s0_pdata = {
 	.cfg_gpio = s3c64xx_i2s_cfg_gpio,
 };
 
@@ -69,7 +69,7 @@ static struct resource s3c64xx_iis1_resource[] = {
 	[0] = DEFINE_RES_MEM(S3C64XX_PA_IIS1, SZ_256),
 };
 
-static struct s3c_audio_pdata i2s1_pdata = {
+static struct s3c_audio_platform_data i2s1_pdata = {
 	.cfg_gpio = s3c64xx_i2s_cfg_gpio,
 };
 

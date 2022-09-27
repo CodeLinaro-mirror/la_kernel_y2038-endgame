@@ -122,7 +122,7 @@ struct wm8958_micd_rate {
 	int rate;
 };
 
-struct wm8994_pdata {
+struct wm8994_platform_data {
 	int gpio_base;
 
 	/**

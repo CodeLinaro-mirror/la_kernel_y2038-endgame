@@ -11,9 +11,9 @@
 #include <clocksource/samsung_pwm.h>
 
 #ifdef CONFIG_SAMSUNG_DEV_PWM
-extern void samsung_pwm_set_platdata(struct samsung_pwm_variant *pd);
+extern void samsung_pwm_set_platdata(struct samsung_pwm_platform_data *pd);
 #else
-static inline void samsung_pwm_set_platdata(struct samsung_pwm_variant *pd) { }
+static inline void samsung_pwm_set_platdata(struct samsung_pwm_platform_data *pd) { }
 #endif
 
 #endif /* __ASM_ARCH_PWM_CORE_H */

@@ -319,7 +319,7 @@ void __init tx4938_ethaddr_init(unsigned char *addr0, unsigned char *addr1)
 
 void __init tx4938_mtd_init(int ch)
 {
-	struct physmap_flash_data pdata = {
+	struct physmap_flash_platform_data pdata = {
 		.width = TX4938_EBUSC_WIDTH(ch) / 8,
 	};
 	unsigned long start = txx9_ce_res[ch].start;
@@ -342,7 +342,7 @@ void __init tx4938_ata_init(unsigned int irq, unsigned int shift, int tune)
 			.flags = IORESOURCE_IRQ,
 		},
 	};
-	struct tx4938ide_platform_info pdata = {
+	struct tx4938ide_platform_data pdata = {
 		.ioport_shift = shift,
 		/*
 		 * The IDE driver should not change bus timings if other ISA

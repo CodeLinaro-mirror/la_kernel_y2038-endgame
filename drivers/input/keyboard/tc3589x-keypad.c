@@ -81,7 +81,7 @@
  * @no_autorepeat:      flag for auto repetition
  */
 struct tc3589x_keypad_platform_data {
-	const struct matrix_keymap_data *keymap_data;
+	const struct matrix_keymap_platform_data *keymap_data;
 	u8                      krow;
 	u8                      kcol;
 	u8                      debounce_period;

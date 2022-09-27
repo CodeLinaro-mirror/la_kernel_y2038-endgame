@@ -346,7 +346,7 @@ static int pxa27x_keypad_build_keycode(struct pxa27x_keypad *keypad)
 	int i;
 	int error;
 
-	error = matrix_keypad_build_keymap(pdata->matrix_keymap_data, NULL,
+	error = matrix_keypad_build_keymap(pdata->matrix_keymap_platform_data, NULL,
 					   pdata->matrix_key_rows,
 					   pdata->matrix_key_cols,
 					   keypad->keycodes, input_dev);

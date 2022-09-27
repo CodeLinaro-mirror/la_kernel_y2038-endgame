@@ -319,7 +319,7 @@ static struct mtd_partition mpr2_partitions[] = {
 	}
 };
 
-static struct physmap_flash_data flash_data = {
+static struct physmap_flash_platform_data flash_data = {
 	.parts		= mpr2_partitions,
 	.nr_parts	= ARRAY_SIZE(mpr2_partitions),
 	.width		= 2,

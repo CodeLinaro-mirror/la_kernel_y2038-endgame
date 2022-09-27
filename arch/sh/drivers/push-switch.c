@@ -18,7 +18,7 @@ static ssize_t switch_show(struct device *dev,
 			   struct device_attribute *attr,
 			   char *buf)
 {
-	struct push_switch_platform_info *psw_info = dev->platform_data;
+	struct push_switch_platform_data *psw_info = dev->platform_data;
 	return sprintf(buf, "%s\n", psw_info->name);
 }
 static DEVICE_ATTR_RO(switch);
@@ -42,7 +42,7 @@ static void switch_work_handler(struct work_struct *work)
 
 static int switch_drv_probe(struct platform_device *pdev)
 {
-	struct push_switch_platform_info *psw_info;
+	struct push_switch_platform_data *psw_info;
 	struct push_switch *psw;
 	int ret, irq;
 
@@ -94,7 +94,7 @@ err:
 static int switch_drv_remove(struct platform_device *pdev)
 {
 	struct push_switch *psw = platform_get_drvdata(pdev);
-	struct push_switch_platform_info *psw_info = pdev->dev.platform_data;
+	struct push_switch_platform_data *psw_info = pdev->dev.platform_data;
 	int irq = platform_get_irq(pdev, 0);
 
 	if (psw_info->name)
