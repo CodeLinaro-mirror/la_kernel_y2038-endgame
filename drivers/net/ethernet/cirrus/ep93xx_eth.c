@@ -738,7 +738,7 @@ static const struct net_device_ops ep93xx_netdev_ops = {
 	.ndo_set_mac_address	= eth_mac_addr,
 };
 
-static struct net_device *ep93xx_dev_alloc(struct ep93xx_eth_data *data)
+static struct net_device *ep93xx_dev_alloc(struct ep93xx_eth_platform_data *data)
 {
 	struct net_device *dev;
 
@@ -788,7 +788,7 @@ static int ep93xx_eth_remove(struct platform_device *pdev)
 
 static int ep93xx_eth_probe(struct platform_device *pdev)
 {
-	struct ep93xx_eth_data *data;
+	struct ep93xx_eth_platform_data *data;
 	struct net_device *dev;
 	struct ep93xx_priv *ep;
 	struct resource *mem;

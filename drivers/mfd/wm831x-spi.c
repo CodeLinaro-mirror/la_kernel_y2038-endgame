@@ -20,7 +20,7 @@
 
 static int wm831x_spi_probe(struct spi_device *spi)
 {
-	struct wm831x_pdata *pdata = dev_get_platdata(&spi->dev);
+	struct wm831x_platform_data *pdata = dev_get_platdata(&spi->dev);
 	const struct spi_device_id *id = spi_get_device_id(spi);
 	const struct of_device_id *of_id;
 	struct wm831x *wm831x;

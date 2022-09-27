@@ -23,16 +23,16 @@ Typically, for a legacy platform, an SPI master is defined in the
 arch/.../mach-*/board-*.c as a "platform device". The master configuration
 is passed to the driver via a table found in include/linux/spi/pxa2xx_spi.h::
 
-  struct pxa2xx_spi_controller {
+  struct pxa_spi_platform_data {
 	u16 num_chipselect;
 	u8 enable_dma;
 	...
   };
 
-The "pxa2xx_spi_controller.num_chipselect" field is used to determine the number of
+The "pxa_spi_platform_data.num_chipselect" field is used to determine the number of
 slave device (chips) attached to this SPI master.
 
-The "pxa2xx_spi_controller.enable_dma" field informs the driver that SSP DMA should
+The "pxa_spi_platform_data.enable_dma" field informs the driver that SSP DMA should
 be used. This caused the driver to acquire two DMA channels: Rx channel and
 Tx channel. The Rx channel has a higher DMA service priority than the Tx channel.
 See the "PXA2xx Developer Manual" section "DMA Controller".
@@ -57,7 +57,7 @@ Below is a sample configuration using the PXA255 NSSP for a legacy platform::
 	},
   };
 
-  static struct pxa2xx_spi_controller pxa_nssp_master_info = {
+  static struct pxa_spi_platform_data pxa_nssp_master_info = {
 	.num_chipselect = 1, /* Matches the number of chips attached to NSSP */
 	.enable_dma = 1, /* Enables NSSP DMA */
   };
@@ -185,7 +185,7 @@ DMA and PIO I/O Support
 -----------------------
 The pxa2xx_spi driver supports both DMA and interrupt driven PIO message
 transfers.  The driver defaults to PIO mode and DMA transfers must be enabled
-by setting the "enable_dma" flag in the "pxa2xx_spi_controller" structure.
+by setting the "enable_dma" flag in the "pxa_spi_platform_data" structure.
 For the newer platforms, that are known to support DMA, the driver will enable
 it automatically and try it first with a possible fallback to PIO. The DMA
 mode supports both coherent and stream based DMA mappings.

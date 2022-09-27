@@ -73,7 +73,7 @@ sh_vou_buffer *to_sh_vou_buffer(struct vb2_v4l2_buffer *vb2)
 struct sh_vou_device {
 	struct v4l2_device v4l2_dev;
 	struct video_device vdev;
-	struct sh_vou_pdata *pdata;
+	struct sh_vou_platform_data *pdata;
 	spinlock_t lock;
 	void __iomem *base;
 	/* State information */
@@ -1083,7 +1083,7 @@ static irqreturn_t sh_vou_isr(int irq, void *dev_id)
 
 static int sh_vou_hw_init(struct sh_vou_device *vou_dev)
 {
-	struct sh_vou_pdata *pdata = vou_dev->pdata;
+	struct sh_vou_platform_data *pdata = vou_dev->pdata;
 	u32 voucr = sh_vou_ntsc_mode(pdata->bus_fmt) << 29;
 	int i = 100;
 
@@ -1217,7 +1217,7 @@ static const struct video_device sh_vou_video_template = {
 
 static int sh_vou_probe(struct platform_device *pdev)
 {
-	struct sh_vou_pdata *vou_pdata = pdev->dev.platform_data;
+	struct sh_vou_platform_data *vou_pdata = pdev->dev.platform_data;
 	struct v4l2_rect *rect;
 	struct v4l2_pix_format *pix;
 	struct i2c_adapter *i2c_adap;

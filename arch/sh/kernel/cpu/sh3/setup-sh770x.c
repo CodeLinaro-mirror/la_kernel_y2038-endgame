@@ -106,7 +106,7 @@ static struct platform_device rtc_device = {
 	.resource	= rtc_resources,
 };
 
-static struct plat_sci_port scif0_platform_data = {
+static struct scif_platform_data scif0_platform_data = {
 	.type		= PORT_SCI,
 	.ops		= &sh770x_sci_port_ops,
 };
@@ -128,7 +128,7 @@ static struct platform_device scif0_device = {
 #if defined(CONFIG_CPU_SUBTYPE_SH7706) || \
     defined(CONFIG_CPU_SUBTYPE_SH7707) || \
     defined(CONFIG_CPU_SUBTYPE_SH7709)
-static struct plat_sci_port scif1_platform_data = {
+static struct scif_platform_data scif1_platform_data = {
 	.type		= PORT_SCIF,
 	.ops		= &sh770x_sci_port_ops,
 	.regtype	= SCIx_SH3_SCIF_REGTYPE,
@@ -151,7 +151,7 @@ static struct platform_device scif1_device = {
 #endif
 #if defined(CONFIG_CPU_SUBTYPE_SH7707) || \
     defined(CONFIG_CPU_SUBTYPE_SH7709)
-static struct plat_sci_port scif2_platform_data = {
+static struct scif_platform_data scif2_platform_data = {
 	.type		= PORT_IRDA,
 	.ops		= &sh770x_sci_port_ops,
 };
@@ -172,7 +172,7 @@ static struct platform_device scif2_device = {
 };
 #endif
 
-static struct sh_timer_config tmu0_platform_data = {
+static struct sh_timer_platform_data tmu0_platform_data = {
 	.channels_mask = 7,
 };
 

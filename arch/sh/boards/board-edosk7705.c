@@ -30,7 +30,7 @@ static void __init sh_edosk7705_init_irq(void)
 }
 
 /* eth initialization functions */
-static struct smc91x_platdata smc91x_info = {
+static struct smc91x_platform_data smc91x_info = {
 	.flags = SMC91X_USE_16BIT | SMC91X_IO_SHIFT_1 | IORESOURCE_IRQ_LOWLEVEL,
 };
 

@@ -324,7 +324,7 @@ static void wm8994_set_drc(struct snd_soc_component *component, int drc)
 {
 	struct wm8994_priv *wm8994 = snd_soc_component_get_drvdata(component);
 	struct wm8994 *control = wm8994->wm8994;
-	struct wm8994_pdata *pdata = &control->pdata;
+	struct wm8994_platform_data *pdata = &control->pdata;
 	int base = wm8994_drc_base[drc];
 	int cfg = wm8994->drc_cfg[drc];
 	int save, i;
@@ -361,7 +361,7 @@ static int wm8994_put_drc_enum(struct snd_kcontrol *kcontrol,
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct wm8994_priv *wm8994 = snd_soc_component_get_drvdata(component);
 	struct wm8994 *control = wm8994->wm8994;
-	struct wm8994_pdata *pdata = &control->pdata;
+	struct wm8994_platform_data *pdata = &control->pdata;
 	int drc = wm8994_get_drc(kcontrol->id.name);
 	int value = ucontrol->value.enumerated.item[0];
 
@@ -396,7 +396,7 @@ static void wm8994_set_retune_mobile(struct snd_soc_component *component, int bl
 {
 	struct wm8994_priv *wm8994 = snd_soc_component_get_drvdata(component);
 	struct wm8994 *control = wm8994->wm8994;
-	struct wm8994_pdata *pdata = &control->pdata;
+	struct wm8994_platform_data *pdata = &control->pdata;
 	int base = wm8994_retune_mobile_base[block];
 	int iface, best, best_val, save, i, cfg;
 
@@ -468,7 +468,7 @@ static int wm8994_put_retune_mobile_enum(struct snd_kcontrol *kcontrol,
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct wm8994_priv *wm8994 = snd_soc_component_get_drvdata(component);
 	struct wm8994 *control = wm8994->wm8994;
-	struct wm8994_pdata *pdata = &control->pdata;
+	struct wm8994_platform_data *pdata = &control->pdata;
 	int block = wm8994_get_retune_mobile_block(kcontrol->id.name);
 	int value = ucontrol->value.enumerated.item[0];
 
@@ -2913,7 +2913,7 @@ static int wm8994_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_component *component = dai->component;
 	struct wm8994_priv *wm8994 = snd_soc_component_get_drvdata(component);
 	struct wm8994 *control = wm8994->wm8994;
-	struct wm8994_pdata *pdata = &control->pdata;
+	struct wm8994_platform_data *pdata = &control->pdata;
 	int aif1_reg;
 	int aif2_reg;
 	int bclk_reg;
@@ -3344,7 +3344,7 @@ static void wm8994_handle_retune_mobile_pdata(struct wm8994_priv *wm8994)
 {
 	struct snd_soc_component *component = wm8994->hubs.component;
 	struct wm8994 *control = wm8994->wm8994;
-	struct wm8994_pdata *pdata = &control->pdata;
+	struct wm8994_platform_data *pdata = &control->pdata;
 	struct snd_kcontrol_new controls[] = {
 		SOC_ENUM_EXT("AIF1.1 EQ Mode",
 			     wm8994->retune_mobile_enum,
@@ -3412,7 +3412,7 @@ static void wm8994_handle_pdata(struct wm8994_priv *wm8994)
 {
 	struct snd_soc_component *component = wm8994->hubs.component;
 	struct wm8994 *control = wm8994->wm8994;
-	struct wm8994_pdata *pdata = &control->pdata;
+	struct wm8994_platform_data *pdata = &control->pdata;
 	int ret, i;
 
 	if (!pdata)

@@ -129,7 +129,7 @@
 #define LDICKR_CLKDIV(x) \
        ((x) & 0x1f)
 
-struct sh7760fb_platdata {
+struct sh7760fb_platform_data {
 
 	/* Set this member to a valid fb_videmode for the display you
 	 * wish to use.  The following members must be initialized:

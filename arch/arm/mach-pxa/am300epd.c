@@ -39,7 +39,7 @@
 
 static unsigned int panel_type = 6;
 static struct platform_device *am300_device;
-static struct broadsheet_board am300_board;
+static struct broadsheet_platform_data am300_board;
 
 static unsigned long am300_pin_config[] __initdata = {
 	GPIO16_GPIO,
@@ -249,7 +249,7 @@ static int am300_setup_irq(struct fb_info *info)
 	return ret;
 }
 
-static struct broadsheet_board am300_board = {
+static struct broadsheet_platform_data am300_board = {
 	.owner			= THIS_MODULE,
 	.init			= am300_init_board,
 	.cleanup		= am300_cleanup,

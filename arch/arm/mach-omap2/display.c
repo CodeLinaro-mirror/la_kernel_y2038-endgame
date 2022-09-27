@@ -157,7 +157,7 @@ static enum omapdss_version __init omap_display_get_version(void)
 
 static int __init omapdss_init_fbdev(void)
 {
-	static struct omap_dss_board_info board_data = {
+	static struct omap_dss_platform_data board_data = {
 		.dsi_enable_pads = omap_dsi_enable_pads,
 		.dsi_disable_pads = omap_dsi_disable_pads,
 	};

@@ -27,7 +27,7 @@
 /*
  *	All current ColdFire parts contain from 2, 3, 4 or 10 UARTS.
  */
-static struct mcf_platform_uart mcf_uart_platform_data[] = {
+static struct mcf_uart_platform_data mcf_uart_platform_data[] = {
 	{
 		.mapbase	= MCFUART_BASE0,
 		.irq		= MCF_IRQ_UART0,

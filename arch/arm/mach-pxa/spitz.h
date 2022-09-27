@@ -182,4 +182,4 @@
  * Shared data structures
  */
 extern struct platform_device spitzssp_device;
-extern struct sharpsl_charger_machinfo spitz_pm_machinfo;
+extern struct sharpsl_charger_platform_data spitz_pm_machinfo;

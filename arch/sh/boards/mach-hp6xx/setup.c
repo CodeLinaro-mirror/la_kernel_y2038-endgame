@@ -51,7 +51,7 @@ static struct platform_device jornadakbd_device = {
 	.id		= -1,
 };
 
-static void dac_audio_start(struct dac_audio_pdata *pdata)
+static void dac_audio_start(struct dac_audio_platform_data *pdata)
 {
 	u16 v;
 	u8 v8;
@@ -69,7 +69,7 @@ static void dac_audio_start(struct dac_audio_pdata *pdata)
 	sh_dac_enable(pdata->channel);
 }
 
-static void dac_audio_stop(struct dac_audio_pdata *pdata)
+static void dac_audio_stop(struct dac_audio_platform_data *pdata)
 {
 	u16 v;
 	u8 v8;
@@ -88,7 +88,7 @@ static void dac_audio_stop(struct dac_audio_pdata *pdata)
 	sh_dac_disable(pdata->channel);
 }
 
-static struct dac_audio_pdata dac_audio_platform_data = {
+static struct dac_audio_platform_data dac_audio_platform_data = {
 	.buffer_size		= 64000,
 	.channel		= 1,
 	.start			= dac_audio_start,

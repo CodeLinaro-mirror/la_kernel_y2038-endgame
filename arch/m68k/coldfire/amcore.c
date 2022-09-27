@@ -55,7 +55,7 @@ static struct resource dm9000_resources[] = {
 	},
 };
 
-static struct dm9000_plat_data dm9000_platdata = {
+static struct dm9000_platform_data dm9000_platdata = {
 	.flags		= DM9000_PLATF_32BITONLY,
 };
 
@@ -97,7 +97,7 @@ static struct mtd_partition amcore_partitions[] = {
 	}
 };
 
-static struct physmap_flash_data flash_data = {
+static struct physmap_flash_platform_data flash_data = {
 	.parts		= amcore_partitions,
 	.nr_parts	= ARRAY_SIZE(amcore_partitions),
 	.width		= 2,

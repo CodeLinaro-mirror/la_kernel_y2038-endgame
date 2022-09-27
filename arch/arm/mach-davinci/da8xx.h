@@ -120,9 +120,9 @@ void __iomem *da8xx_get_mem_ctlr(void);
 int da850_register_sata(unsigned long refclkpn);
 int da850_register_vpif(void);
 int da850_register_vpif_display
-			(struct vpif_display_config *display_config);
+			(struct vpif_display_platform_data *display_config);
 int da850_register_vpif_capture
-			(struct vpif_capture_config *capture_config);
+			(struct vpif_capture_platform_data *capture_config);
 void da8xx_rproc_reserve_cma(void);
 int da8xx_register_rproc(void);
 int da850_register_gpio(void);

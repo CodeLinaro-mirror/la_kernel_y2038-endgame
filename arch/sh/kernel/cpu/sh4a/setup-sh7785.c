@@ -17,7 +17,7 @@
 #include <asm/platform_early.h>
 #include <cpu/dma-register.h>
 
-static struct plat_sci_port scif0_platform_data = {
+static struct scif_platform_data scif0_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_CKE1,
 	.type		= PORT_SCIF,
 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
@@ -38,7 +38,7 @@ static struct platform_device scif0_device = {
 	},
 };
 
-static struct plat_sci_port scif1_platform_data = {
+static struct scif_platform_data scif1_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_CKE1,
 	.type		= PORT_SCIF,
 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
@@ -59,7 +59,7 @@ static struct platform_device scif1_device = {
 	},
 };
 
-static struct plat_sci_port scif2_platform_data = {
+static struct scif_platform_data scif2_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_CKE1,
 	.type		= PORT_SCIF,
 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
@@ -80,7 +80,7 @@ static struct platform_device scif2_device = {
 	},
 };
 
-static struct plat_sci_port scif3_platform_data = {
+static struct scif_platform_data scif3_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_CKE1,
 	.type		= PORT_SCIF,
 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
@@ -101,7 +101,7 @@ static struct platform_device scif3_device = {
 	},
 };
 
-static struct plat_sci_port scif4_platform_data = {
+static struct scif_platform_data scif4_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_CKE1,
 	.type		= PORT_SCIF,
 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
@@ -122,7 +122,7 @@ static struct platform_device scif4_device = {
 	},
 };
 
-static struct plat_sci_port scif5_platform_data = {
+static struct scif_platform_data scif5_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_CKE1,
 	.type		= PORT_SCIF,
 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
@@ -143,7 +143,7 @@ static struct platform_device scif5_device = {
 	},
 };
 
-static struct sh_timer_config tmu0_platform_data = {
+static struct sh_timer_platform_data tmu0_platform_data = {
 	.channels_mask = 7,
 };
 
@@ -164,7 +164,7 @@ static struct platform_device tmu0_device = {
 	.num_resources	= ARRAY_SIZE(tmu0_resources),
 };
 
-static struct sh_timer_config tmu1_platform_data = {
+static struct sh_timer_platform_data tmu1_platform_data = {
 	.channels_mask = 7,
 };
 
@@ -232,7 +232,7 @@ static const struct sh_dmae_channel sh7785_dmae1_channels[] = {
 
 static const unsigned int ts_shift[] = TS_SHIFT;
 
-static struct sh_dmae_pdata dma0_platform_data = {
+static struct sh_dmae_platform_data dma0_platform_data = {
 	.channel	= sh7785_dmae0_channels,
 	.channel_num	= ARRAY_SIZE(sh7785_dmae0_channels),
 	.ts_low_shift	= CHCR_TS_LOW_SHIFT,
@@ -244,7 +244,7 @@ static struct sh_dmae_pdata dma0_platform_data = {
 	.dmaor_init	= DMAOR_INIT,
 };
 
-static struct sh_dmae_pdata dma1_platform_data = {
+static struct sh_dmae_platform_data dma1_platform_data = {
 	.channel	= sh7785_dmae1_channels,
 	.channel_num	= ARRAY_SIZE(sh7785_dmae1_channels),
 	.ts_low_shift	= CHCR_TS_LOW_SHIFT,

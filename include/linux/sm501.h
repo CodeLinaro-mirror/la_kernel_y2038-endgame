@@ -46,7 +46,7 @@ extern unsigned long sm501_modify_reg(struct device *dev,
 #define SM501FB_FLAG_PANEL_INV_FPEN	(1<<6)
 #define SM501FB_FLAG_PANEL_INV_VBIASEN	(1<<7)
 
-struct sm501_platdata_fbsub {
+struct sm501_fbsub_platform_data {
 	struct fb_videomode	*def_mode;
 	unsigned int		 def_bpp;
 	unsigned long		 max_mem;
@@ -58,20 +58,20 @@ enum sm501_fb_routing {
 	SM501_FB_CRT_PANEL	= 1,	/* Panel=>CRT, Panel=>Panel */
 };
 
-/* sm501_platdata_fb flag field bit definitions */
+/* sm501_fb_platform_data flag field bit definitions */
 
 #define SM501_FBPD_SWAP_FB_ENDIAN	(1<<0)	/* need to endian swap */
 
-/* sm501_platdata_fb
+/* sm501_fb_platform_data
  *
  * configuration data for the framebuffer driver
 */
 
-struct sm501_platdata_fb {
+struct sm501_fb_platform_data {
 	enum sm501_fb_routing		 fb_route;
 	unsigned int			 flags;
-	struct sm501_platdata_fbsub	*fb_crt;
-	struct sm501_platdata_fbsub	*fb_pnl;
+	struct sm501_fbsub_platform_data	*fb_crt;
+	struct sm501_fbsub_platform_data	*fb_pnl;
 };
 
 /* gpio i2c
@@ -138,7 +138,7 @@ struct sm501_init_gpio {
 
 #define SM501_FLAG_SUSPEND_OFF		(1<<4)
 
-/* sm501_platdata
+/* sm501_platform_data
  *
  * This is passed with the platform device to allow the board
  * to control the behaviour of the SM501 driver(s) which attach
@@ -146,10 +146,10 @@ struct sm501_init_gpio {
  *
 */
 
-struct sm501_platdata {
+struct sm501_platform_data {
 	struct sm501_initdata		*init;
 	struct sm501_init_gpio		*init_gpiop;
-	struct sm501_platdata_fb	*fb;
+	struct sm501_fb_platform_data	*fb;
 
 	int				 flags;
 	int				 gpio_base;

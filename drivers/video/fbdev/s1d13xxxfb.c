@@ -761,7 +761,7 @@ static int s1d13xxxfb_probe(struct platform_device *pdev)
 {
 	struct s1d13xxxfb_par *default_par;
 	struct fb_info *info;
-	struct s1d13xxxfb_pdata *pdata = NULL;
+	struct s1d13xxxfb_platform_data *pdata = NULL;
 	int ret = 0;
 	int i;
 	u8 revision, prod_id;
@@ -910,7 +910,7 @@ static int s1d13xxxfb_suspend(struct platform_device *dev, pm_message_t state)
 {
 	struct fb_info *info = platform_get_drvdata(dev);
 	struct s1d13xxxfb_par *s1dfb = info->par;
-	struct s1d13xxxfb_pdata *pdata = NULL;
+	struct s1d13xxxfb_platform_data *pdata = NULL;
 
 	/* disable display */
 	lcd_enable(s1dfb, 0);
@@ -957,7 +957,7 @@ static int s1d13xxxfb_resume(struct platform_device *dev)
 {
 	struct fb_info *info = platform_get_drvdata(dev);
 	struct s1d13xxxfb_par *s1dfb = info->par;
-	struct s1d13xxxfb_pdata *pdata = NULL;
+	struct s1d13xxxfb_platform_data *pdata = NULL;
 
 	/* awaken the chip */
 	s1d13xxxfb_writereg(s1dfb, S1DREG_PS_CNF, 0x10);

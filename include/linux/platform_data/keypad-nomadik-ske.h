@@ -40,7 +40,7 @@
 struct ske_keypad_platform_data {
 	int (*init)(void);
 	int (*exit)(void);
-	const struct matrix_keymap_data *keymap_data;
+	const struct matrix_keymap_platform_data *keymap_data;
 	u8 krow;
 	u8 kcol;
 	u8 debounce_ms;

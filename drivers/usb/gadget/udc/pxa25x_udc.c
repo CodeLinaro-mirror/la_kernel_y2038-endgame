@@ -261,7 +261,7 @@ static void nuke (struct pxa25x_ep *, int status);
 /* one GPIO should control a D+ pullup, so host sees this device (or not) */
 static void pullup_off(void)
 {
-	struct pxa2xx_udc_mach_info		*mach = the_controller->mach;
+	struct pxa2xx_udc_platform_data		*mach = the_controller->mach;
 	int off_level = mach->gpio_pullup_inverted;
 
 	if (gpio_is_valid(mach->gpio_pullup))
@@ -272,7 +272,7 @@ static void pullup_off(void)
 
 static void pullup_on(void)
 {
-	struct pxa2xx_udc_mach_info		*mach = the_controller->mach;
+	struct pxa2xx_udc_platform_data		*mach = the_controller->mach;
 	int on_level = !mach->gpio_pullup_inverted;
 
 	if (gpio_is_valid(mach->gpio_pullup))

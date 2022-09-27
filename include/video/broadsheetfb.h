@@ -45,7 +45,7 @@
 /* struct used by broadsheet. board specific stuff comes from *board */
 struct broadsheetfb_par {
 	struct fb_info *info;
-	struct broadsheet_board *board;
+	struct broadsheet_platform_data *board;
 	void (*write_reg)(struct broadsheetfb_par *, u16 reg, u16 val);
 	u16 (*read_reg)(struct broadsheetfb_par *, u16 reg);
 	wait_queue_head_t waitq;
@@ -54,7 +54,7 @@ struct broadsheetfb_par {
 };
 
 /* board specific routines */
-struct broadsheet_board {
+struct broadsheet_platform_data {
 	struct module *owner;
 	int (*init)(struct broadsheetfb_par *);
 	int (*wait_for_rdy)(struct broadsheetfb_par *);

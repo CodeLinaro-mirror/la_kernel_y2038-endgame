@@ -48,7 +48,7 @@
 #ifdef	CONFIG_ARCH_OMAP_OTG
 
 static void __init
-omap_otg_init(struct omap_usb_config *config)
+omap_otg_init(struct omap_usb_platform_data *config)
 {
 	u32		syscon;
 	int		alt_pingroup = 0;
@@ -152,7 +152,7 @@ omap_otg_init(struct omap_usb_config *config)
 }
 
 #else
-static void omap_otg_init(struct omap_usb_config *config) {}
+static void omap_otg_init(struct omap_usb_platform_data *config) {}
 #endif
 
 #if IS_ENABLED(CONFIG_USB_OMAP)
@@ -188,7 +188,7 @@ static struct platform_device udc_device = {
 	.resource	= udc_resources,
 };
 
-static inline void udc_device_init(struct omap_usb_config *pdata)
+static inline void udc_device_init(struct omap_usb_platform_data *pdata)
 {
 	/* IRQ numbers for omap7xx */
 	if(cpu_is_omap7xx()) {
@@ -201,7 +201,7 @@ static inline void udc_device_init(struct omap_usb_config *pdata)
 
 #else
 
-static inline void udc_device_init(struct omap_usb_config *pdata)
+static inline void udc_device_init(struct omap_usb_platform_data *pdata)
 {
 }
 
@@ -233,7 +233,7 @@ static struct platform_device ohci_device = {
 	.resource		= ohci_resources,
 };
 
-static inline void ohci_device_init(struct omap_usb_config *pdata)
+static inline void ohci_device_init(struct omap_usb_platform_data *pdata)
 {
 	if (!IS_ENABLED(CONFIG_USB_OHCI_HCD))
 		return;
@@ -265,7 +265,7 @@ static struct platform_device otg_device = {
 	.resource	= otg_resources,
 };
 
-static inline void otg_device_init(struct omap_usb_config *pdata)
+static inline void otg_device_init(struct omap_usb_platform_data *pdata)
 {
 	if (cpu_is_omap7xx())
 		otg_resources[1].start = INT_7XX_USB_OTG;
@@ -274,7 +274,7 @@ static inline void otg_device_init(struct omap_usb_config *pdata)
 
 #else
 
-static inline void otg_device_init(struct omap_usb_config *pdata)
+static inline void otg_device_init(struct omap_usb_platform_data *pdata)
 {
 }
 
@@ -610,7 +610,7 @@ static void omap_1510_local_bus_reset(void)
 /* ULPD_APLL_CTRL */
 #define APLL_NDPLL_SWITCH	(1 << 0)
 
-static void __init omap_1510_usb_init(struct omap_usb_config *config)
+static void __init omap_1510_usb_init(struct omap_usb_platform_data *config)
 {
 	unsigned int val;
 	u16 w;
@@ -680,12 +680,12 @@ static void __init omap_1510_usb_init(struct omap_usb_config *config)
 }
 
 #else
-static inline void omap_1510_usb_init(struct omap_usb_config *config) {}
+static inline void omap_1510_usb_init(struct omap_usb_platform_data *config) {}
 #endif
 
-void __init omap1_usb_init(struct omap_usb_config *_pdata)
+void __init omap1_usb_init(struct omap_usb_platform_data *_pdata)
 {
-	struct omap_usb_config *pdata;
+	struct omap_usb_platform_data *pdata;
 
 	pdata = kmemdup(_pdata, sizeof(*pdata), GFP_KERNEL);
 	if (!pdata)

@@ -147,7 +147,7 @@ static struct s1d13xxxfb_regval s1d13806_initregs[] = {
 	{ S1DREG_COM_DISP_MODE,		0x02 },
 };
 
-static struct s1d13xxxfb_pdata s1d13806_platform_data = {
+static struct s1d13xxxfb_platform_data s1d13806_platform_data = {
 	.initregs	= s1d13806_initregs,
 	.initregssize	= ARRAY_SIZE(s1d13806_initregs),
 };

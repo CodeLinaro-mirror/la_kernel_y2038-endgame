@@ -163,7 +163,7 @@ static void vpif_buffer_queue(struct vb2_buffer *vb)
  */
 static int vpif_start_streaming(struct vb2_queue *vq, unsigned int count)
 {
-	struct vpif_display_config *vpif_config_data =
+	struct vpif_display_platform_data *vpif_config_data =
 					vpif_dev->platform_data;
 	struct channel_obj *ch = vb2_get_drv_priv(vq);
 	struct common_obj *common = &ch->common[VPIF_VIDEO_INDEX];
@@ -582,7 +582,7 @@ static void vpif_config_addr(struct channel_obj *ch, int muxmode)
 static int vpif_querycap(struct file *file, void  *priv,
 				struct v4l2_capability *cap)
 {
-	struct vpif_display_config *config = vpif_dev->platform_data;
+	struct vpif_display_platform_data *config = vpif_dev->platform_data;
 
 	strscpy(cap->driver, VPIF_DRIVER_NAME, sizeof(cap->driver));
 	strscpy(cap->card, config->card_name, sizeof(cap->card));
@@ -672,7 +672,7 @@ static int vpif_s_fmt_vid_out(struct file *file, void *priv,
 
 static int vpif_s_std(struct file *file, void *priv, v4l2_std_id std_id)
 {
-	struct vpif_display_config *config = vpif_dev->platform_data;
+	struct vpif_display_platform_data *config = vpif_dev->platform_data;
 	struct video_device *vdev = video_devdata(file);
 	struct channel_obj *ch = video_get_drvdata(vdev);
 	struct common_obj *common = &ch->common[VPIF_VIDEO_INDEX];
@@ -720,7 +720,7 @@ static int vpif_s_std(struct file *file, void *priv, v4l2_std_id std_id)
 
 static int vpif_g_std(struct file *file, void *priv, v4l2_std_id *std)
 {
-	struct vpif_display_config *config = vpif_dev->platform_data;
+	struct vpif_display_platform_data *config = vpif_dev->platform_data;
 	struct video_device *vdev = video_devdata(file);
 	struct channel_obj *ch = video_get_drvdata(vdev);
 	struct vpif_display_chan_config *chan_cfg;
@@ -742,7 +742,7 @@ static int vpif_enum_output(struct file *file, void *fh,
 				struct v4l2_output *output)
 {
 
-	struct vpif_display_config *config = vpif_dev->platform_data;
+	struct vpif_display_platform_data *config = vpif_dev->platform_data;
 	struct video_device *vdev = video_devdata(file);
 	struct channel_obj *ch = video_get_drvdata(vdev);
 	struct vpif_display_chan_config *chan_cfg;
@@ -768,7 +768,7 @@ static int vpif_enum_output(struct file *file, void *fh,
  * has sub device name for the each output
  */
 static int
-vpif_output_to_subdev(struct vpif_display_config *vpif_cfg,
+vpif_output_to_subdev(struct vpif_display_platform_data *vpif_cfg,
 		      struct vpif_display_chan_config *chan_cfg, int index)
 {
 	struct vpif_subdev_info *subdev_info;
@@ -801,7 +801,7 @@ vpif_output_to_subdev(struct vpif_display_config *vpif_cfg,
  *
  * Select the given output.
  */
-static int vpif_set_output(struct vpif_display_config *vpif_cfg,
+static int vpif_set_output(struct vpif_display_platform_data *vpif_cfg,
 		      struct channel_obj *ch, int index)
 {
 	struct vpif_display_chan_config *chan_cfg =
@@ -835,7 +835,7 @@ static int vpif_set_output(struct vpif_display_config *vpif_cfg,
 
 static int vpif_s_output(struct file *file, void *priv, unsigned int i)
 {
-	struct vpif_display_config *config = vpif_dev->platform_data;
+	struct vpif_display_platform_data *config = vpif_dev->platform_data;
 	struct video_device *vdev = video_devdata(file);
 	struct channel_obj *ch = video_get_drvdata(vdev);
 	struct vpif_display_chan_config *chan_cfg;
@@ -872,7 +872,7 @@ static int
 vpif_enum_dv_timings(struct file *file, void *priv,
 		     struct v4l2_enum_dv_timings *timings)
 {
-	struct vpif_display_config *config = vpif_dev->platform_data;
+	struct vpif_display_platform_data *config = vpif_dev->platform_data;
 	struct video_device *vdev = video_devdata(file);
 	struct channel_obj *ch = video_get_drvdata(vdev);
 	struct vpif_display_chan_config *chan_cfg;
@@ -904,7 +904,7 @@ vpif_enum_dv_timings(struct file *file, void *priv,
 static int vpif_s_dv_timings(struct file *file, void *priv,
 		struct v4l2_dv_timings *timings)
 {
-	struct vpif_display_config *config = vpif_dev->platform_data;
+	struct vpif_display_platform_data *config = vpif_dev->platform_data;
 	struct video_device *vdev = video_devdata(file);
 	struct channel_obj *ch = video_get_drvdata(vdev);
 	struct vpif_params *vpifparams = &ch->vpifparams;
@@ -1003,7 +1003,7 @@ static int vpif_s_dv_timings(struct file *file, void *priv,
 static int vpif_g_dv_timings(struct file *file, void *priv,
 		struct v4l2_dv_timings *timings)
 {
-	struct vpif_display_config *config = vpif_dev->platform_data;
+	struct vpif_display_platform_data *config = vpif_dev->platform_data;
 	struct video_device *vdev = video_devdata(file);
 	struct channel_obj *ch = video_get_drvdata(vdev);
 	struct vpif_display_chan_config *chan_cfg;

@@ -127,7 +127,7 @@ struct sccnxp_port {
 	bool			poll;
 	struct timer_list	timer;
 
-	struct sccnxp_pdata	pdata;
+	struct sccnxp_platform_data	pdata;
 
 	struct regulator	*regulator;
 };
@@ -881,7 +881,7 @@ MODULE_DEVICE_TABLE(platform, sccnxp_id_table);
 static int sccnxp_probe(struct platform_device *pdev)
 {
 	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	struct sccnxp_pdata *pdata = dev_get_platdata(&pdev->dev);
+	struct sccnxp_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	int i, ret, uartclk;
 	struct sccnxp_port *s;
 	void __iomem *membase;
@@ -946,7 +946,7 @@ static int sccnxp_probe(struct platform_device *pdev)
 	}
 
 	if (pdata)
-		memcpy(&s->pdata, pdata, sizeof(struct sccnxp_pdata));
+		memcpy(&s->pdata, pdata, sizeof(struct sccnxp_platform_data));
 
 	if (s->pdata.poll_time_us) {
 		dev_info(&pdev->dev, "Using poll mode, resolution %u usecs\n",

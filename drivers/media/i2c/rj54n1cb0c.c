@@ -1261,7 +1261,7 @@ static const struct v4l2_subdev_ops rj54n1_subdev_ops = {
  * this wasn't our capture interface, so, we wait for the right one
  */
 static int rj54n1_video_probe(struct i2c_client *client,
-			      struct rj54n1_pdata *priv)
+			      struct rj54n1_platform_data *priv)
 {
 	struct rj54n1 *rj54n1 = to_rj54n1(client);
 	int data1, data2;
@@ -1301,7 +1301,7 @@ static int rj54n1_probe(struct i2c_client *client)
 {
 	struct rj54n1 *rj54n1;
 	struct i2c_adapter *adapter = client->adapter;
-	struct rj54n1_pdata *rj54n1_priv;
+	struct rj54n1_platform_data *rj54n1_priv;
 	int ret;
 
 	if (!client->dev.platform_data) {

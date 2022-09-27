@@ -45,7 +45,7 @@
 #define M48T59RTC_TYPE_M48T02	1
 #define M48T59RTC_TYPE_M48T08	2
 
-struct m48t59_plat_data {
+struct m48t59_platform_data {
 	/* The method to access M48T59 registers */
 	void (*write_byte)(struct device *dev, u32 ofs, u8 val);
 	unsigned char (*read_byte)(struct device *dev, u32 ofs);

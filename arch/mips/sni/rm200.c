@@ -33,7 +33,7 @@
 		.flags		= UPF_BOOT_AUTOCONF|UPF_IOREMAP, \
 	}
 
-static struct plat_serial8250_port rm200_data[] = {
+static struct serial8250_platform_data rm200_data[] = {
 	MEMPORT(0x160003f8, RM200_I8259A_IRQ_BASE + 4),
 	MEMPORT(0x160002f8, RM200_I8259A_IRQ_BASE + 3),
 	{ },

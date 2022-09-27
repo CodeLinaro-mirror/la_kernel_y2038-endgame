@@ -77,7 +77,7 @@ struct wm2200_priv {
 	struct regmap *regmap;
 	struct device *dev;
 	struct snd_soc_component *component;
-	struct wm2200_pdata pdata;
+	struct wm2200_platform_data pdata;
 	struct regulator_bulk_data core_supplies[WM2200_NUM_CORE_SUPPLIES];
 
 	struct completion fll_lock;
@@ -2177,7 +2177,7 @@ static const unsigned int wm2200_mic_ctrl_reg[] = {
 
 static int wm2200_i2c_probe(struct i2c_client *i2c)
 {
-	struct wm2200_pdata *pdata = dev_get_platdata(&i2c->dev);
+	struct wm2200_platform_data *pdata = dev_get_platdata(&i2c->dev);
 	struct wm2200_priv *wm2200;
 	unsigned int reg;
 	int ret, i;

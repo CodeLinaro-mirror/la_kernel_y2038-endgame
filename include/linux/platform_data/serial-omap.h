@@ -26,7 +26,7 @@
  */
 #define OMAP_SERIAL_NAME	"ttyO"
 
-struct omap_uart_port_info {
+struct omap_uart_platform_data {
 	bool			dma_enabled;	/* To specify DMA Mode */
 	unsigned int		uartclk;	/* UART clock rate */
 	upf_t			flags;		/* UPF_* flags */

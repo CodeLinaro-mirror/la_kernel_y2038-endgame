@@ -28,7 +28,7 @@
 		.flags		= UPF_BOOT_AUTOCONF,	\
 	}
 
-static struct plat_serial8250_port pcit_data[] = {
+static struct serial8250_platform_data pcit_data[] = {
 	PORT(0x3f8, 0),
 	PORT(0x2f8, 3),
 	{ },
@@ -42,7 +42,7 @@ static struct platform_device pcit_serial8250_device = {
 	},
 };
 
-static struct plat_serial8250_port pcit_cplus_data[] = {
+static struct serial8250_platform_data pcit_cplus_data[] = {
 	PORT(0x3f8, 0),
 	PORT(0x2f8, 3),
 	PORT(0x3e8, 4),

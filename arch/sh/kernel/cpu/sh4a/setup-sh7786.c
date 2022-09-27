@@ -25,7 +25,7 @@
 #include <asm/mmzone.h>
 #include <asm/platform_early.h>
 
-static struct plat_sci_port scif0_platform_data = {
+static struct scif_platform_data scif0_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_CKE1,
 	.type		= PORT_SCIF,
 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
@@ -52,7 +52,7 @@ static struct platform_device scif0_device = {
 /*
  * The rest of these all have multiplexed IRQs
  */
-static struct plat_sci_port scif1_platform_data = {
+static struct scif_platform_data scif1_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_CKE1,
 	.type		= PORT_SCIF,
 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
@@ -82,7 +82,7 @@ static struct platform_device scif1_device = {
 	},
 };
 
-static struct plat_sci_port scif2_platform_data = {
+static struct scif_platform_data scif2_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_CKE1,
 	.type		= PORT_SCIF,
 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
@@ -103,7 +103,7 @@ static struct platform_device scif2_device = {
 	},
 };
 
-static struct plat_sci_port scif3_platform_data = {
+static struct scif_platform_data scif3_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_CKE1,
 	.type		= PORT_SCIF,
 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
@@ -124,7 +124,7 @@ static struct platform_device scif3_device = {
 	},
 };
 
-static struct plat_sci_port scif4_platform_data = {
+static struct scif_platform_data scif4_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_CKE1,
 	.type		= PORT_SCIF,
 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
@@ -145,7 +145,7 @@ static struct platform_device scif4_device = {
 	},
 };
 
-static struct plat_sci_port scif5_platform_data = {
+static struct scif_platform_data scif5_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_CKE1,
 	.type		= PORT_SCIF,
 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
@@ -166,7 +166,7 @@ static struct platform_device scif5_device = {
 	},
 };
 
-static struct sh_timer_config tmu0_platform_data = {
+static struct sh_timer_platform_data tmu0_platform_data = {
 	.channels_mask = 7,
 };
 
@@ -187,7 +187,7 @@ static struct platform_device tmu0_device = {
 	.num_resources	= ARRAY_SIZE(tmu0_resources),
 };
 
-static struct sh_timer_config tmu1_platform_data = {
+static struct sh_timer_platform_data tmu1_platform_data = {
 	.channels_mask = 7,
 };
 
@@ -208,7 +208,7 @@ static struct platform_device tmu1_device = {
 	.num_resources	= ARRAY_SIZE(tmu1_resources),
 };
 
-static struct sh_timer_config tmu2_platform_data = {
+static struct sh_timer_platform_data tmu2_platform_data = {
 	.channels_mask = 7,
 };
 
@@ -229,7 +229,7 @@ static struct platform_device tmu2_device = {
 	.num_resources	= ARRAY_SIZE(tmu2_resources),
 };
 
-static struct sh_timer_config tmu3_platform_data = {
+static struct sh_timer_platform_data tmu3_platform_data = {
 	.channels_mask = 7,
 };
 
@@ -280,7 +280,7 @@ static const struct sh_dmae_channel dmac0_channels[] = {
 
 static const unsigned int ts_shift[] = TS_SHIFT;
 
-static struct sh_dmae_pdata dma0_platform_data = {
+static struct sh_dmae_platform_data dma0_platform_data = {
 	.channel	= dmac0_channels,
 	.channel_num	= ARRAY_SIZE(dmac0_channels),
 	.ts_low_shift	= CHCR_TS_LOW_SHIFT,
@@ -367,7 +367,7 @@ static struct resource usb_ohci_resources[] = {
 	},
 };
 
-static struct usb_ohci_pdata usb_ohci_pdata;
+static struct usb_ohci_platform_data usb_ohci_platform_data;
 
 static struct platform_device usb_ohci_device = {
 	.name		= "ohci-platform",
@@ -375,7 +375,7 @@ static struct platform_device usb_ohci_device = {
 	.dev = {
 		.dma_mask		= &usb_ohci_device.dev.coherent_dma_mask,
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
-		.platform_data		= &usb_ohci_pdata,
+		.platform_data		= &usb_ohci_platform_data,
 	},
 	.num_resources	= ARRAY_SIZE(usb_ohci_resources),
 	.resource	= usb_ohci_resources,

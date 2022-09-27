@@ -85,7 +85,7 @@ static int omap_otg_vbus_notifier(struct notifier_block *nb,
 
 static int omap_otg_probe(struct platform_device *pdev)
 {
-	const struct omap_usb_config *config = pdev->dev.platform_data;
+	const struct omap_usb_platform_data *config = pdev->dev.platform_data;
 	struct otg_device *otg_dev;
 	struct extcon_dev *extcon;
 	int ret;

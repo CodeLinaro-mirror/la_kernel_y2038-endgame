@@ -291,10 +291,10 @@ static void bcma_hci_platform_power_gpio(struct bcma_device *dev, bool val)
 	gpiod_set_value(usb_dev->gpio_desc, val);
 }
 
-static const struct usb_ehci_pdata ehci_pdata = {
+static const struct usb_ehci_platform_data ehci_pdata = {
 };
 
-static const struct usb_ohci_pdata ohci_pdata = {
+static const struct usb_ohci_platform_data ohci_pdata = {
 };
 
 static struct platform_device *bcma_hcd_create_pdev(struct bcma_device *dev,

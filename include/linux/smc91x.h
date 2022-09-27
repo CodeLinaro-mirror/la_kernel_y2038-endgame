@@ -36,7 +36,7 @@
 #define RPC_LED_TX	(0x06)	/* LED = TX packet occurred */
 #define RPC_LED_RX	(0x07)	/* LED = RX packet occurred */
 
-struct smc91x_platdata {
+struct smc91x_platform_data {
 	unsigned long flags;
 	unsigned char leda;
 	unsigned char ledb;
