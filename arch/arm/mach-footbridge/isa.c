@@ -45,7 +45,7 @@ static struct resource serial_resources[] = {
 	},
 };
 
-static struct plat_serial8250_port serial_platform_data[] = {
+static struct serial8250_platform_data serial_platform_data[] = {
 	{
 		.iobase		= 0x3f8,
 		.irq		= IRQ_ISA_UART,

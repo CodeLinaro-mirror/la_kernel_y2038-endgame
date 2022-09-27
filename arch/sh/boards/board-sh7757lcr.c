@@ -71,7 +71,7 @@ static struct resource sh_eth0_resources[] = {
 	},
 };
 
-static struct sh_eth_plat_data sh7757_eth0_pdata = {
+static struct sh_eth_platform_data sh7757_eth0_pdata = {
 	.phy = 1,
 	.set_mdio_gate = sh7757_eth_set_mdio_gate,
 };
@@ -98,7 +98,7 @@ static struct resource sh_eth1_resources[] = {
 	},
 };
 
-static struct sh_eth_plat_data sh7757_eth1_pdata = {
+static struct sh_eth_platform_data sh7757_eth1_pdata = {
 	.phy = 1,
 	.set_mdio_gate = sh7757_eth_set_mdio_gate,
 };
@@ -141,7 +141,7 @@ static struct resource sh_eth_giga0_resources[] = {
 	},
 };
 
-static struct sh_eth_plat_data sh7757_eth_giga0_pdata = {
+static struct sh_eth_platform_data sh7757_eth_giga0_pdata = {
 	.phy = 18,
 	.set_mdio_gate = sh7757_eth_giga_set_mdio_gate,
 	.phy_interface = PHY_INTERFACE_MODE_RGMII_ID,
@@ -174,7 +174,7 @@ static struct resource sh_eth_giga1_resources[] = {
 	},
 };
 
-static struct sh_eth_plat_data sh7757_eth_giga1_pdata = {
+static struct sh_eth_platform_data sh7757_eth_giga1_pdata = {
 	.phy = 19,
 	.set_mdio_gate = sh7757_eth_giga_set_mdio_gate,
 	.phy_interface = PHY_INTERFACE_MODE_RGMII_ID,
@@ -216,7 +216,7 @@ static struct resource sh_mmcif_resources[] = {
 	},
 };
 
-static struct sh_mmcif_plat_data sh_mmcif_plat = {
+static struct sh_mmcif_platform_data sh_mmcif_plat = {
 	.sup_pclk	= 0x0f,
 	.caps		= MMC_CAP_4_BIT_DATA | MMC_CAP_8_BIT_DATA |
 			  MMC_CAP_NONREMOVABLE,

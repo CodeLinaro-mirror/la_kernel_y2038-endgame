@@ -24,7 +24,7 @@ struct omap_backlight {
 	int current_intensity;
 
 	struct device *dev;
-	struct omap_backlight_config *pdata;
+	struct omap_backlight_platform_data *pdata;
 };
 
 static inline void omapbl_send_intensity(int intensity)
@@ -121,7 +121,7 @@ static int omapbl_probe(struct platform_device *pdev)
 	struct backlight_properties props;
 	struct backlight_device *dev;
 	struct omap_backlight *bl;
-	struct omap_backlight_config *pdata = dev_get_platdata(&pdev->dev);
+	struct omap_backlight_platform_data *pdata = dev_get_platdata(&pdev->dev);
 
 	if (!pdata)
 		return -ENXIO;

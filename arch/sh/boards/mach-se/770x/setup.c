@@ -116,7 +116,7 @@ static struct platform_device heartbeat_device = {
 #if defined(CONFIG_CPU_SUBTYPE_SH7710) ||\
 	defined(CONFIG_CPU_SUBTYPE_SH7712)
 /* SH771X Ethernet driver */
-static struct sh_eth_plat_data sh_eth_plat = {
+static struct sh_eth_platform_data sh_eth_plat = {
 	.phy = PHY_ID,
 	.phy_interface = PHY_INTERFACE_MODE_MII,
 };

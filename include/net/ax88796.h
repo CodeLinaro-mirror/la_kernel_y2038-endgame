@@ -19,7 +19,7 @@ struct platform_device;
 #define AXFLG_HAS_93CX6			(1<<2)	/* use eeprom_93cx6 driver */
 #define AXFLG_MAC_FROMPLATFORM		(1<<3)	/* MAC given by platform data */
 
-struct ax_plat_data {
+struct ax_platform_data {
 	unsigned int	 flags;
 	unsigned char	 wordlength;	/* 1 or 2 */
 	unsigned char	 dcr_val;	/* default value for DCR */

@@ -2237,7 +2237,7 @@ static int try_toggle_control_gpio(struct device *dev,
  */
 static int smc_drv_probe(struct platform_device *pdev)
 {
-	struct smc91x_platdata *pd = dev_get_platdata(&pdev->dev);
+	struct smc91x_platform_data *pd = dev_get_platdata(&pdev->dev);
 	const struct of_device_id *match = NULL;
 	struct smc_local *lp;
 	struct net_device *ndev;

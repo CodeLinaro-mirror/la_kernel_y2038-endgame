@@ -527,7 +527,7 @@ EXPORT_SYMBOL(__swizzle_addr_b);
 
 void __init txx9_physmap_flash_init(int no, unsigned long addr,
 				    unsigned long size,
-				    const struct physmap_flash_data *pdata)
+				    const struct physmap_flash_platform_data *pdata)
 {
 #if IS_ENABLED(CONFIG_MTD_PHYSMAP)
 	struct resource res = {
@@ -537,7 +537,7 @@ void __init txx9_physmap_flash_init(int no, unsigned long addr,
 	};
 	struct platform_device *pdev;
 	static struct mtd_partition parts[2];
-	struct physmap_flash_data pdata_part;
+	struct physmap_flash_platform_data pdata_part;
 
 	/* If this area contained boot area, make separate partition */
 	if (pdata->nr_parts == 0 && !pdata->parts &&

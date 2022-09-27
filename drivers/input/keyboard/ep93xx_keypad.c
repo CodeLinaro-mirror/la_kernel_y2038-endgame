@@ -230,7 +230,7 @@ static void ep93xx_keypad_release_gpio_action(void *_pdev)
 static int ep93xx_keypad_probe(struct platform_device *pdev)
 {
 	struct ep93xx_keypad *keypad;
-	const struct matrix_keymap_data *keymap_data;
+	const struct matrix_keymap_platform_data *keymap_data;
 	struct input_dev *input_dev;
 	int err;
 

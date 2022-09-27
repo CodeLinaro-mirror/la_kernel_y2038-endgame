@@ -14,7 +14,7 @@
 #include <linux/io.h>
 #include <asm/platform_early.h>
 
-static struct plat_sci_port scif0_platform_data = {
+static struct scif_platform_data scif0_platform_data = {
 	.scscr		= SCSCR_REIE,
 	.type		= PORT_SCIF,
 };
@@ -37,7 +37,7 @@ static struct platform_device scif0_device = {
 	},
 };
 
-static struct sh_timer_config tmu0_platform_data = {
+static struct sh_timer_platform_data tmu0_platform_data = {
 	.channels_mask = 7,
 };
 

@@ -463,7 +463,7 @@ struct m66592 {
 	spinlock_t		lock;
 	void __iomem		*reg;
 	struct clk *clk;
-	struct m66592_platdata	*pdata;
+	struct m66592_platform_data	*pdata;
 	unsigned long		irq_trigger;
 
 	struct usb_gadget		gadget;

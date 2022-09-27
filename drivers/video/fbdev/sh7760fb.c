@@ -31,7 +31,7 @@ struct sh7760fb_par {
 	void __iomem *base;
 	int irq;
 
-	struct sh7760fb_platdata *pd;	/* display information */
+	struct sh7760fb_platform_data *pd;	/* display information */
 
 	dma_addr_t fbdma;	/* physical address */
 
@@ -70,7 +70,7 @@ static int wait_for_lps(struct sh7760fb_par *par, int val)
 static int sh7760fb_blank(int blank, struct fb_info *info)
 {
 	struct sh7760fb_par *par = info->par;
-	struct sh7760fb_platdata *pd = par->pd;
+	struct sh7760fb_platform_data *pd = par->pd;
 	unsigned short cntr = ioread16(par->base + LDCNTR);
 	unsigned short intr = ioread16(par->base + LDINTR);
 	int lps;

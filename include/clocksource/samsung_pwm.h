@@ -18,7 +18,7 @@
 extern spinlock_t samsung_pwm_lock;
 #endif
 
-struct samsung_pwm_variant {
+struct samsung_pwm_platform_data {
 	u8 bits;
 	u8 div_base;
 	u8 tclk_mask;
@@ -28,6 +28,6 @@ struct samsung_pwm_variant {
 
 void samsung_pwm_clocksource_init(void __iomem *base,
 				  unsigned int *irqs,
-				  const struct samsung_pwm_variant *variant);
+				  const struct samsung_pwm_platform_data *variant);
 
 #endif /* __CLOCKSOURCE_SAMSUNG_PWM_H */

@@ -49,7 +49,7 @@ static const char *wm8962_supply_names[WM8962_NUM_SUPPLIES] = {
 
 /* codec private data */
 struct wm8962_priv {
-	struct wm8962_pdata pdata;
+	struct wm8962_platform_data pdata;
 	struct regmap *regmap;
 	struct snd_soc_component *component;
 
@@ -2412,7 +2412,7 @@ static const struct snd_soc_dapm_route wm8962_spk_stereo_intercon[] = {
 static int wm8962_add_widgets(struct snd_soc_component *component)
 {
 	struct wm8962_priv *wm8962 = snd_soc_component_get_drvdata(component);
-	struct wm8962_pdata *pdata = &wm8962->pdata;
+	struct wm8962_platform_data *pdata = &wm8962->pdata;
 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
 
 	snd_soc_add_component_controls(component, wm8962_snd_controls,
@@ -3437,7 +3437,7 @@ static const struct gpio_chip wm8962_template_chip = {
 static void wm8962_init_gpio(struct snd_soc_component *component)
 {
 	struct wm8962_priv *wm8962 = snd_soc_component_get_drvdata(component);
-	struct wm8962_pdata *pdata = &wm8962->pdata;
+	struct wm8962_platform_data *pdata = &wm8962->pdata;
 	int ret;
 
 	wm8962->gpio_chip = wm8962_template_chip;
@@ -3577,7 +3577,7 @@ static const struct regmap_config wm8962_regmap = {
 };
 
 static int wm8962_set_pdata_from_of(struct i2c_client *i2c,
-				    struct wm8962_pdata *pdata)
+				    struct wm8962_platform_data *pdata)
 {
 	const struct device_node *np = i2c->dev.of_node;
 	u32 val32;
@@ -3607,7 +3607,7 @@ static int wm8962_set_pdata_from_of(struct i2c_client *i2c,
 
 static int wm8962_i2c_probe(struct i2c_client *i2c)
 {
-	struct wm8962_pdata *pdata = dev_get_platdata(&i2c->dev);
+	struct wm8962_platform_data *pdata = dev_get_platdata(&i2c->dev);
 	struct wm8962_priv *wm8962;
 	unsigned int reg;
 	int ret, i, irq_pol, trigger;
@@ -3626,7 +3626,7 @@ static int wm8962_i2c_probe(struct i2c_client *i2c)
 
 	/* If platform data was supplied, update the default data in priv */
 	if (pdata) {
-		memcpy(&wm8962->pdata, pdata, sizeof(struct wm8962_pdata));
+		memcpy(&wm8962->pdata, pdata, sizeof(struct wm8962_platform_data));
 	} else if (i2c->dev.of_node) {
 		ret = wm8962_set_pdata_from_of(i2c, &wm8962->pdata);
 		if (ret != 0)

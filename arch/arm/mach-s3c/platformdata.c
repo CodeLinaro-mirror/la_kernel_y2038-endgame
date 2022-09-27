@@ -31,8 +31,8 @@ void __init *s3c_set_platdata(void *pd, size_t pdsize,
 	return npd;
 }
 
-void s3c_sdhci_set_platdata(struct s3c_sdhci_platdata *pd,
-			     struct s3c_sdhci_platdata *set)
+void s3c_sdhci_set_platdata(struct s3c_sdhci_platform_data *pd,
+			     struct s3c_sdhci_platform_data *set)
 {
 	set->cd_type = pd->cd_type;
 	set->ext_cd_init = pd->ext_cd_init;

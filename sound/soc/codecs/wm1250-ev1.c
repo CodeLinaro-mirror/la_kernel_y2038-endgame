@@ -146,9 +146,9 @@ static const struct snd_soc_component_driver soc_component_dev_wm1250_ev1 = {
 	.endianness		= 1,
 };
 
-static int wm1250_ev1_pdata(struct i2c_client *i2c)
+static int wm1250_ev1_platform_data(struct i2c_client *i2c)
 {
-	struct wm1250_ev1_pdata *pdata = dev_get_platdata(&i2c->dev);
+	struct wm1250_ev1_platform_data *pdata = dev_get_platdata(&i2c->dev);
 	struct wm1250_priv *wm1250;
 	int i, ret;
 
@@ -213,7 +213,7 @@ static int wm1250_ev1_probe(struct i2c_client *i2c)
 
 	dev_info(&i2c->dev, "revision %d\n", rev + 1);
 
-	ret = wm1250_ev1_pdata(i2c);
+	ret = wm1250_ev1_platform_data(i2c);
 	if (ret != 0)
 		return ret;
 

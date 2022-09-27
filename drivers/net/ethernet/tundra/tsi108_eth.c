@@ -1539,7 +1539,7 @@ tsi108_init_one(struct platform_device *pdev)
 {
 	struct net_device *dev = NULL;
 	struct tsi108_prv_data *data = NULL;
-	hw_info *einfo;
+	tsi_eth_platform_data *einfo;
 	int err = 0;
 
 	einfo = dev_get_platdata(&pdev->dev);

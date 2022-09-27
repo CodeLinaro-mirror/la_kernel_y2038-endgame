@@ -10,7 +10,7 @@
 /*
  * Device bus NAND private data
  */
-struct orion_nand_data {
+struct orion_nand_platform_data {
 	struct mtd_partition *parts;
 	u32 nr_parts;
 	u8 ale;		/* address line number connected to ALE */

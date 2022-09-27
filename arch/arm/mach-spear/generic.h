@@ -21,7 +21,7 @@ extern volatile int spear_pen_release;
 
 extern void spear13xx_timer_init(void);
 extern void spear3xx_timer_init(void);
-extern struct pl022_ssp_controller pl022_plat_data;
+extern struct pl022_ssp_platform_data pl022_plat_data;
 extern struct pl08x_platform_data pl080_plat_data;
 
 void __init spear_setup_of_timer(void);

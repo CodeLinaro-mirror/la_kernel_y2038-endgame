@@ -18,7 +18,7 @@ static irqreturn_t psw_irq_handler(int irq, void *arg)
 {
 	struct platform_device *pdev = arg;
 	struct push_switch *psw = platform_get_drvdata(pdev);
-	struct push_switch_platform_info *psw_info = pdev->dev.platform_data;
+	struct push_switch_platform_data *psw_info = pdev->dev.platform_data;
 	unsigned int sw_value;
 	int ret = 0;
 
@@ -58,28 +58,28 @@ static struct resource psw_usl5p_resources[] = {
 	},
 };
 
-static struct push_switch_platform_info psw_power_platform_data = {
+static struct push_switch_platform_data psw_power_platform_data = {
 	.name		= "psw_power",
 	.bit		= 4,
 	.irq_flags	= IRQF_SHARED,
 	.irq_handler	= psw_irq_handler,
 };
 
-static struct push_switch_platform_info psw1_platform_data = {
+static struct push_switch_platform_data psw1_platform_data = {
 	.name		= "psw1",
 	.bit		= 0,
 	.irq_flags	= IRQF_SHARED,
 	.irq_handler	= psw_irq_handler,
 };
 
-static struct push_switch_platform_info psw2_platform_data = {
+static struct push_switch_platform_data psw2_platform_data = {
 	.name		= "psw2",
 	.bit		= 2,
 	.irq_flags	= IRQF_SHARED,
 	.irq_handler	= psw_irq_handler,
 };
 
-static struct push_switch_platform_info psw3_platform_data = {
+static struct push_switch_platform_data psw3_platform_data = {
 	.name		= "psw3",
 	.bit		= 1,
 	.irq_flags	= IRQF_SHARED,

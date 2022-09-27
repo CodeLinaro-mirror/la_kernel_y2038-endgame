@@ -7,7 +7,7 @@
 
 #include <linux/types.h>
 
-struct mcp_plat_data {
+struct mcp_platform_data {
 	u32 mccr0;
 	u32 mccr1;
 	unsigned int sclk_rate;

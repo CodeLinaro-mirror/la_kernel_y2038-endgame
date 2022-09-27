@@ -28,7 +28,7 @@ extern void ip32_prepare_poweroff(void);
 	.regshift	= 8,						\
 }
 
-static struct plat_serial8250_port uart8250_data[] = {
+static struct serial8250_platform_data uart8250_data[] = {
 	MACE_PORT(MACEISA_SERIAL1_OFFS, MACEISA_SERIAL1_IRQ),
 	MACE_PORT(MACEISA_SERIAL2_OFFS, MACEISA_SERIAL2_IRQ),
 	{ },

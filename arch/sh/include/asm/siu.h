@@ -10,7 +10,7 @@
 
 struct device;
 
-struct siu_platform {
+struct siu_platform_data {
 	unsigned int dma_slave_tx_a;
 	unsigned int dma_slave_rx_a;
 	unsigned int dma_slave_tx_b;

@@ -361,7 +361,7 @@ static struct syscore_ops alchemy_pci_pmops = {
 
 static int alchemy_pci_probe(struct platform_device *pdev)
 {
-	struct alchemy_pci_platdata *pd = pdev->dev.platform_data;
+	struct alchemy_pci_platform_data *pd = pdev->dev.platform_data;
 	struct alchemy_pci_context *ctx;
 	void __iomem *virt_io;
 	unsigned long val;

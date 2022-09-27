@@ -159,7 +159,7 @@ void __init ar5312_arch_init_irq(void)
 	ar5312_misc_irq_domain = domain;
 }
 
-static struct physmap_flash_data ar5312_flash_data = {
+static struct physmap_flash_platform_data ar5312_flash_data = {
 	.width = 2,
 };
 

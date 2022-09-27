@@ -428,7 +428,7 @@ static void sh_mmcif_request_dma(struct sh_mmcif_host *host)
 
 	/* We can only either use DMA for both Tx and Rx or not use it at all */
 	if (IS_ENABLED(CONFIG_SUPERH) && dev->platform_data) {
-		struct sh_mmcif_plat_data *pdata = dev->platform_data;
+		struct sh_mmcif_platform_data *pdata = dev->platform_data;
 
 		host->chan_tx = sh_mmcif_request_dma_pdata(host,
 							pdata->slave_id_tx);
@@ -481,7 +481,7 @@ static void sh_mmcif_release_dma(struct sh_mmcif_host *host)
 static void sh_mmcif_clock_control(struct sh_mmcif_host *host, unsigned int clk)
 {
 	struct device *dev = sh_mmcif_host_to_dev(host);
-	struct sh_mmcif_plat_data *p = dev->platform_data;
+	struct sh_mmcif_platform_data *p = dev->platform_data;
 	bool sup_pclk = p ? p->sup_pclk : false;
 	unsigned int current_clk = clk_get_rate(host->clk);
 	unsigned int clkdiv;
@@ -1373,7 +1373,7 @@ static void sh_mmcif_timeout_work(struct work_struct *work)
 static void sh_mmcif_init_ocr(struct sh_mmcif_host *host)
 {
 	struct device *dev = sh_mmcif_host_to_dev(host);
-	struct sh_mmcif_plat_data *pd = dev->platform_data;
+	struct sh_mmcif_platform_data *pd = dev->platform_data;
 	struct mmc_host *mmc = host->mmc;
 
 	mmc_regulator_get_supply(mmc);
@@ -1393,7 +1393,7 @@ static int sh_mmcif_probe(struct platform_device *pdev)
 	struct mmc_host *mmc;
 	struct sh_mmcif_host *host;
 	struct device *dev = &pdev->dev;
-	struct sh_mmcif_plat_data *pd = dev->platform_data;
+	struct sh_mmcif_platform_data *pd = dev->platform_data;
 	void __iomem *reg;
 	const char *name;
 

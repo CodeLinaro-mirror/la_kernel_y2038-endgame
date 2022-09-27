@@ -12,7 +12,7 @@
 #define M66592_PLATDATA_XTAL_24MHZ	0x02
 #define M66592_PLATDATA_XTAL_48MHZ	0x03
 
-struct m66592_platdata {
+struct m66592_platform_data {
 	/* one = on chip controller, zero = external controller */
 	unsigned	on_chip:1;
 

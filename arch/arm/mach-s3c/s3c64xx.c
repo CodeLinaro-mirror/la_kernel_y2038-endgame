@@ -65,7 +65,7 @@ void __init s3c64xx_set_xusbxti_freq(unsigned long freq)
 
 /* uart registration process */
 
-static void __init s3c64xx_init_uarts(struct s3c2410_uartcfg *cfg, int no)
+static void __init s3c64xx_init_uarts(struct s3c2410_uart_platform_data *cfg, int no)
 {
 	s3c24xx_init_uartdevs("s3c6400-uart", s3c64xx_uart_resources, cfg, no);
 }
@@ -158,7 +158,7 @@ static struct device s3c64xx_dev = {
 	.bus	= &s3c64xx_subsys,
 };
 
-static struct samsung_pwm_variant s3c64xx_pwm_variant = {
+static struct samsung_pwm_platform_data s3c64xx_pwm_variant = {
 	.bits		= 32,
 	.div_base	= 0,
 	.has_tint_cstat	= true,

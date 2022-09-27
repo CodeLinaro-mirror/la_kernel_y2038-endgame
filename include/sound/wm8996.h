@@ -30,7 +30,7 @@ struct wm8996_retune_mobile_config {
 
 #define WM8996_SET_DEFAULT 0x10000
 
-struct wm8996_pdata {
+struct wm8996_platform_data {
 	int irq_flags;  /** Set IRQ trigger flags; default active low */
 
 	int ldo_ena;  /** GPIO for LDO1; -1 for none */

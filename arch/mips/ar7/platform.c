@@ -30,7 +30,7 @@
 /*****************************************************************************
  * VLYNQ Bus
  ****************************************************************************/
-struct plat_vlynq_data {
+struct vlynq_platform_data {
 	struct plat_vlynq_ops ops;
 	int gpio_bit;
 	int reset_bit;
@@ -39,7 +39,7 @@ struct plat_vlynq_data {
 static int vlynq_on(struct vlynq_device *dev)
 {
 	int ret;
-	struct plat_vlynq_data *pdata = dev->dev.platform_data;
+	struct vlynq_platform_data *pdata = dev->dev.platform_data;
 
 	ret = gpio_request(pdata->gpio_bit, "vlynq");
 	if (ret)
@@ -78,7 +78,7 @@ out:
 
 static void vlynq_off(struct vlynq_device *dev)
 {
-	struct plat_vlynq_data *pdata = dev->dev.platform_data;
+	struct vlynq_platform_data *pdata = dev->dev.platform_data;
 
 	ar7_gpio_disable(pdata->gpio_bit);
 	gpio_free(pdata->gpio_bit);
@@ -139,7 +139,7 @@ static struct resource vlynq_high_res[] = {
 	},
 };
 
-static struct plat_vlynq_data vlynq_low_data = {
+static struct vlynq_platform_data vlynq_low_data = {
 	.ops = {
 		.on	= vlynq_on,
 		.off	= vlynq_off,
@@ -148,7 +148,7 @@ static struct plat_vlynq_data vlynq_low_data = {
 	.gpio_bit	= 18,
 };
 
-static struct plat_vlynq_data vlynq_high_data = {
+static struct vlynq_platform_data vlynq_high_data = {
 	.ops = {
 		.on	= vlynq_on,
 		.off	= vlynq_off,
@@ -189,7 +189,7 @@ static struct resource physmap_flash_resource = {
 
 static const char *ar7_probe_types[] = { "ar7part", NULL };
 
-static struct physmap_flash_data physmap_flash_data = {
+static struct physmap_flash_platform_data physmap_flash_platform_data = {
 	.width	= 2,
 	.part_probe_types = ar7_probe_types,
 };
@@ -197,7 +197,7 @@ static struct physmap_flash_data physmap_flash_data = {
 static struct platform_device physmap_flash = {
 	.name		= "physmap-flash",
 	.dev = {
-		.platform_data	= &physmap_flash_data,
+		.platform_data	= &physmap_flash_platform_data,
 	},
 	.resource	= &physmap_flash_resource,
 	.num_resources	= 1,
@@ -242,13 +242,13 @@ static struct fixed_phy_status fixed_phy_status __initdata = {
 	.duplex		= 1,
 };
 
-static struct plat_cpmac_data cpmac_low_data = {
+static struct cpmac_platform_data cpmac_low_data = {
 	.reset_bit	= 17,
 	.power_bit	= 20,
 	.phy_mask	= 0x80000000,
 };
 
-static struct plat_cpmac_data cpmac_high_data = {
+static struct cpmac_platform_data cpmac_high_data = {
 	.reset_bit	= 21,
 	.power_bit	= 22,
 	.phy_mask	= 0x7fffffff,

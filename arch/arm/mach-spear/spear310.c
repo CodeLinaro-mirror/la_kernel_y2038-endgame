@@ -185,7 +185,7 @@ struct pl08x_channel_data spear310_dma_info[] = {
 };
 
 /* uart devices plat data */
-static struct amba_pl011_data spear310_uart_data[] = {
+static struct amba_pl011_platform_data spear310_uart_data[] = {
 	{
 		.dma_filter = pl08x_filter_id,
 		.dma_tx_param = "uart1_tx",

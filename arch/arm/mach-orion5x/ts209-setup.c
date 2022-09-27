@@ -72,7 +72,7 @@ static struct mtd_partition qnap_ts209_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data qnap_ts209_nor_flash_data = {
+static struct physmap_flash_platform_data qnap_ts209_nor_flash_data = {
 	.width		= 1,
 	.parts		= qnap_ts209_partitions,
 	.nr_parts	= ARRAY_SIZE(qnap_ts209_partitions)

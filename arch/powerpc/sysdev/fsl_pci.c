@@ -1315,7 +1315,7 @@ void fsl_pcibios_fixup_phb(struct pci_controller *phb)
 static int add_err_dev(struct platform_device *pdev)
 {
 	struct platform_device *errdev;
-	struct mpc85xx_edac_pci_plat_data pd = {
+	struct mpc85xx_edac_pci_platform_data pd = {
 		.of_node = pdev->dev.of_node
 	};
 

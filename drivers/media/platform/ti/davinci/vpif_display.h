@@ -110,7 +110,7 @@ struct vpif_device {
 	struct v4l2_device v4l2_dev;
 	struct channel_obj *dev[VPIF_DISPLAY_NUM_CHANNELS];
 	struct v4l2_subdev **sd;
-	struct vpif_display_config *config;
+	struct vpif_display_platform_data *config;
 };
 
 #endif				/* VPIF_DISPLAY_H */

@@ -168,7 +168,7 @@ static struct mtd_partition db1550_nand_parts[] = {
 	},
 };
 
-struct platform_nand_data db1550_nand_platdata = {
+struct nand_platform_data db1550_nand_platdata = {
 	.chip = {
 		.nr_chips	= 1,
 		.chip_offset	= 0,
@@ -200,7 +200,7 @@ static struct platform_device db1550_nand_dev = {
 	}
 };
 
-static struct au1550nd_platdata pb1550_nand_pd = {
+static struct au1550nd_platform_data pb1550_nand_pd = {
 	.parts		= db1550_nand_parts,
 	.num_parts	= ARRAY_SIZE(db1550_nand_parts),
 	.devwidth	= 0,	/* x8 NAND default, needs fixing up */
@@ -471,7 +471,7 @@ static struct resource alchemy_pci_host_res[] = {
 	},
 };
 
-static struct alchemy_pci_platdata db1550_pci_pd = {
+static struct alchemy_pci_platform_data db1550_pci_pd = {
 	.board_map_irq	= db1550_map_pci_irq,
 };
 

@@ -470,7 +470,7 @@ static struct mcf_uart mcf_ports[4];
 #if defined(CONFIG_SERIAL_MCF_CONSOLE)
 /****************************************************************************/
 
-int __init early_mcf_setup(struct mcf_platform_uart *platp)
+int __init early_mcf_setup(struct mcf_uart_platform_data *platp)
 {
 	struct uart_port *port;
 	int i;
@@ -597,7 +597,7 @@ static struct uart_driver mcf_driver = {
 
 static int mcf_probe(struct platform_device *pdev)
 {
-	struct mcf_platform_uart *platp = dev_get_platdata(&pdev->dev);
+	struct mcf_uart_platform_data *platp = dev_get_platdata(&pdev->dev);
 	struct uart_port *port;
 	int i;
 

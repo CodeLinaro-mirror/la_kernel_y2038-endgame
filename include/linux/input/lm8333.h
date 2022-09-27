@@ -10,7 +10,7 @@ struct lm8333;
 
 struct lm8333_platform_data {
 	/* Keymap data */
-	const struct matrix_keymap_data *matrix_data;
+	const struct matrix_keymap_platform_data *matrix_data;
 	/* Active timeout before enter HALT mode in microseconds */
 	unsigned active_time;
 	/* Debounce interval in microseconds */

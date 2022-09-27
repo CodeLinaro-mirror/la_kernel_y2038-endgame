@@ -255,17 +255,17 @@ static void wm831x_battery_apply_config(struct wm831x *wm831x,
 
 static void wm831x_config_battery(struct wm831x *wm831x)
 {
-	struct wm831x_pdata *wm831x_pdata = wm831x->dev->platform_data;
-	struct wm831x_battery_pdata *pdata;
+	struct wm831x_platform_data *wm831x_platform_data = wm831x->dev->platform_data;
+	struct wm831x_battery_platform_data *pdata;
 	int ret, reg1, reg2;
 
-	if (!wm831x_pdata || !wm831x_pdata->battery) {
+	if (!wm831x_platform_data || !wm831x_platform_data->battery) {
 		dev_warn(wm831x->dev,
 			 "No battery charger configuration\n");
 		return;
 	}
 
-	pdata = wm831x_pdata->battery;
+	pdata = wm831x_platform_data->battery;
 
 	reg1 = 0;
 	reg2 = 0;
@@ -532,7 +532,7 @@ static irqreturn_t wm831x_pwr_src_irq(int irq, void *data)
 static int wm831x_power_probe(struct platform_device *pdev)
 {
 	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
-	struct wm831x_pdata *wm831x_pdata = wm831x->dev->platform_data;
+	struct wm831x_platform_data *wm831x_platform_data = wm831x->dev->platform_data;
 	struct wm831x_power *power;
 	int ret, irq, i;
 
@@ -544,13 +544,13 @@ static int wm831x_power_probe(struct platform_device *pdev)
 	power->wm831x = wm831x;
 	platform_set_drvdata(pdev, power);
 
-	if (wm831x_pdata && wm831x_pdata->wm831x_num) {
+	if (wm831x_platform_data && wm831x_platform_data->wm831x_num) {
 		snprintf(power->wall_name, sizeof(power->wall_name),
-			 "wm831x-wall.%d", wm831x_pdata->wm831x_num);
+			 "wm831x-wall.%d", wm831x_platform_data->wm831x_num);
 		snprintf(power->battery_name, sizeof(power->wall_name),
-			 "wm831x-battery.%d", wm831x_pdata->wm831x_num);
+			 "wm831x-battery.%d", wm831x_platform_data->wm831x_num);
 		snprintf(power->usb_name, sizeof(power->wall_name),
-			 "wm831x-usb.%d", wm831x_pdata->wm831x_num);
+			 "wm831x-usb.%d", wm831x_platform_data->wm831x_num);
 	} else {
 		snprintf(power->wall_name, sizeof(power->wall_name),
 			 "wm831x-wall");

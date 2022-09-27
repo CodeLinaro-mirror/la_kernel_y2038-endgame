@@ -1021,7 +1021,7 @@ static int mmp_pdma_probe(struct platform_device *op)
 {
 	struct mmp_pdma_device *pdev;
 	const struct of_device_id *of_id;
-	struct mmp_dma_platdata *pdata = dev_get_platdata(&op->dev);
+	struct mmp_dma_platform_data *pdata = dev_get_platdata(&op->dev);
 	struct resource *iores;
 	int i, ret, irq = 0;
 	int dma_channels = 0, irq_num = 0;

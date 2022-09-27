@@ -137,7 +137,7 @@ static struct mtd_partition gpr_mtd_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data gpr_flash_data = {
+static struct physmap_flash_platform_data gpr_flash_data = {
 	.width		= 4,
 	.nr_parts	= ARRAY_SIZE(gpr_mtd_partitions),
 	.parts		= gpr_mtd_partitions,
@@ -248,7 +248,7 @@ static int gpr_map_pci_irq(const struct pci_dev *d, u8 slot, u8 pin)
 	return 0xff;
 }
 
-static struct alchemy_pci_platdata gpr_pci_pd = {
+static struct alchemy_pci_platform_data gpr_pci_pd = {
 	.board_map_irq	= gpr_map_pci_irq,
 	.pci_cfg_set	= PCI_CONFIG_AEN | PCI_CONFIG_R2H | PCI_CONFIG_R1H |
 			  PCI_CONFIG_CH |

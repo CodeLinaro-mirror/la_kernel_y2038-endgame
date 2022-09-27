@@ -240,7 +240,7 @@ void __init tx4927_sio_init(unsigned int sclk, unsigned int cts_mask)
 
 void __init tx4927_mtd_init(int ch)
 {
-	struct physmap_flash_data pdata = {
+	struct physmap_flash_platform_data pdata = {
 		.width = TX4927_EBUSC_WIDTH(ch) / 8,
 	};
 	unsigned long start = txx9_ce_res[ch].start;

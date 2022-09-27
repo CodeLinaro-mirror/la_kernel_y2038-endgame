@@ -73,9 +73,9 @@ void da830_init(void);
 void da850_init(void);
 
 int da850_register_vpif_display
-			(struct vpif_display_config *display_config);
+			(struct vpif_display_platform_data *display_config);
 int da850_register_vpif_capture
-			(struct vpif_capture_config *capture_config);
+			(struct vpif_capture_platform_data *capture_config);
 struct regmap *da8xx_get_cfgchip(void);
 void __iomem *da8xx_get_mem_ctlr(void);
 

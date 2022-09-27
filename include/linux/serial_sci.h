@@ -41,14 +41,14 @@ enum {
 	SCIx_NR_REGTYPES,
 };
 
-struct plat_sci_port_ops {
+struct scif_platform_data_ops {
 	void (*init_pins)(struct uart_port *, unsigned int cflag);
 };
 
 /*
  * Platform device specific platform_data struct
  */
-struct plat_sci_port {
+struct scif_platform_data {
 	unsigned int	type;			/* SCI / SCIF / IRDA / HSCIF */
 	upf_t		flags;			/* UPF_* flags */
 
@@ -60,7 +60,7 @@ struct plat_sci_port {
 	 */
 	unsigned char	regtype;
 
-	struct plat_sci_port_ops	*ops;
+	struct scif_platform_data_ops	*ops;
 };
 
 #endif /* __LINUX_SERIAL_SCI_H */
