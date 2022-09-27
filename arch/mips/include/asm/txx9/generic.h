@@ -58,9 +58,9 @@ static inline void txx9_sio_putchar_init(unsigned long baseaddr)
 }
 #endif
 
-struct physmap_flash_data;
+struct physmap_flash_platform_data;
 void txx9_physmap_flash_init(int no, unsigned long addr, unsigned long size,
-			     const struct physmap_flash_data *pdata);
+			     const struct physmap_flash_platform_data *pdata);
 
 /* 8 bit version of __fls(): find first bit set (returns 0..7) */
 static inline unsigned int __fls8(unsigned char x)

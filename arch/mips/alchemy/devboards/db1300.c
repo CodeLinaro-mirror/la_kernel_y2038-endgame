@@ -190,7 +190,7 @@ static struct mtd_partition db1300_nand_parts[] = {
 	},
 };
 
-struct platform_nand_data db1300_nand_platdata = {
+struct nand_platform_data db1300_nand_platdata = {
 	.chip = {
 		.nr_chips	= 1,
 		.chip_offset	= 0,
@@ -415,7 +415,7 @@ static struct platform_device db1300_5waysw_dev = {
 
 /**********************************************************************/
 
-static struct pata_platform_info db1300_ide_info = {
+static struct pata_platform_data db1300_ide_info = {
 	.ioport_shift	= DB1300_IDE_REG_SHIFT,
 };
 
@@ -697,7 +697,7 @@ static int db1300fb_panel_shutdown(void)
 	return 0;
 }
 
-static struct au1200fb_platdata db1300fb_pd = {
+static struct au1200fb_platform_data db1300fb_pd = {
 	.panel_index	= db1300fb_panel_index,
 	.panel_init	= db1300fb_panel_init,
 	.panel_shutdown = db1300fb_panel_shutdown,

@@ -103,7 +103,7 @@ struct pxafb_mode_info {
 	unsigned	op_hold_time;	/* Output Hold time from L_FCLK_RD negation */
 };
 
-struct pxafb_mach_info {
+struct pxafb_platform_data {
 	struct pxafb_mode_info *modes;
 	unsigned int num_modes;
 
@@ -149,7 +149,7 @@ struct pxafb_mach_info {
 	void (*smart_update)(struct fb_info *);
 };
 
-void pxa_set_fb_info(struct device *, struct pxafb_mach_info *);
+void pxa_set_fb_info(struct device *, struct pxafb_platform_data *);
 unsigned long pxafb_get_hsync_time(struct device *dev);
 
 /* smartpanel related */

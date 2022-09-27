@@ -488,7 +488,7 @@ static int s3c_pcm_dev_probe(struct platform_device *pdev)
 {
 	struct s3c_pcm_info *pcm;
 	struct resource *mem_res;
-	struct s3c_audio_pdata *pcm_pdata;
+	struct s3c_audio_platform_data *pcm_pdata;
 	dma_filter_fn filter;
 	int ret;
 

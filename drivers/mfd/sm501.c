@@ -69,7 +69,7 @@ struct sm501_devdata {
 	struct resource			*io_res;
 	struct resource			*mem_res;
 	struct resource			*regs_claim;
-	struct sm501_platdata		*platdata;
+	struct sm501_platform_data		*platdata;
 
 
 	unsigned int			 in_suspend;
@@ -818,7 +818,7 @@ static int sm501_register_usbhost(struct sm501_devdata *sm,
 }
 
 static void sm501_setup_uart_data(struct sm501_devdata *sm,
-				  struct plat_serial8250_port *uart_data,
+				  struct serial8250_platform_data *uart_data,
 				  unsigned int offset)
 {
 	uart_data->membase = sm->regs + offset;
@@ -833,10 +833,10 @@ static void sm501_setup_uart_data(struct sm501_devdata *sm,
 static int sm501_register_uart(struct sm501_devdata *sm, int devices)
 {
 	struct platform_device *pdev;
-	struct plat_serial8250_port *uart_data;
+	struct serial8250_platform_data *uart_data;
 
 	pdev = sm501_create_subdev(sm, "serial8250", 0,
-				   sizeof(struct plat_serial8250_port) * 3);
+				   sizeof(struct serial8250_platform_data) * 3);
 	if (!pdev)
 		return -ENOMEM;
 
@@ -1013,7 +1013,7 @@ static int sm501_gpio_register_chip(struct sm501_devdata *sm,
 					      struct sm501_gpio *gpio,
 					      struct sm501_gpio_chip *chip)
 {
-	struct sm501_platdata *pdata = sm->platdata;
+	struct sm501_platform_data *pdata = sm->platdata;
 	struct gpio_chip *gchip = &chip->gpio;
 	int base = pdata->gpio_base;
 
@@ -1175,7 +1175,7 @@ static int sm501_register_gpio_i2c_instance(struct sm501_devdata *sm,
 }
 
 static int sm501_register_gpio_i2c(struct sm501_devdata *sm,
-				   struct sm501_platdata *pdata)
+				   struct sm501_platform_data *pdata)
 {
 	struct sm501_platdata_gpio_i2c *iic = pdata->gpio_i2c;
 	int index;
@@ -1297,7 +1297,7 @@ static unsigned int sm501_mem_local[] = {
 static int sm501_init_dev(struct sm501_devdata *sm)
 {
 	struct sm501_initdata *idata;
-	struct sm501_platdata *pdata;
+	struct sm501_platform_data *pdata;
 	resource_size_t mem_avail;
 	unsigned long dramctrl;
 	unsigned long devid;
@@ -1436,7 +1436,7 @@ static int sm501_plat_probe(struct platform_device *dev)
 
 static void sm501_set_power(struct sm501_devdata *sm, int on)
 {
-	struct sm501_platdata *pd = sm->platdata;
+	struct sm501_platform_data *pd = sm->platdata;
 
 	if (!pd)
 		return;
@@ -1533,20 +1533,20 @@ static struct sm501_initdata sm501_pci_initdata = {
 	.m1xclk		= 144 * MHZ,
 };
 
-static struct sm501_platdata_fbsub sm501_pdata_fbsub = {
+static struct sm501_fbsub_platform_data sm501_pdata_fbsub = {
 	.flags		= (SM501FB_FLAG_USE_INIT_MODE |
 			   SM501FB_FLAG_USE_HWCURSOR |
 			   SM501FB_FLAG_USE_HWACCEL |
 			   SM501FB_FLAG_DISABLE_AT_EXIT),
 };
 
-static struct sm501_platdata_fb sm501_fb_pdata = {
+static struct sm501_fb_platform_data sm501_fb_pdata = {
 	.fb_route	= SM501_FB_OWN,
 	.fb_crt		= &sm501_pdata_fbsub,
 	.fb_pnl		= &sm501_pdata_fbsub,
 };
 
-static struct sm501_platdata sm501_pci_platdata = {
+static struct sm501_platform_data sm501_pci_platdata = {
 	.init		= &sm501_pci_initdata,
 	.fb		= &sm501_fb_pdata,
 	.gpio_base	= -1,

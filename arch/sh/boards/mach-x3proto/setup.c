@@ -37,7 +37,7 @@ static struct platform_device heartbeat_device = {
 	.resource	= heartbeat_resources,
 };
 
-static struct smc91x_platdata smc91x_info = {
+static struct smc91x_platform_data smc91x_info = {
 	.flags	= SMC91X_USE_16BIT | SMC91X_NOWAIT,
 };
 
@@ -63,7 +63,7 @@ static struct platform_device smc91x_device = {
 	},
 };
 
-static struct r8a66597_platdata r8a66597_data = {
+static struct r8a66597_platform_data r8a66597_data = {
 	.xtal = R8A66597_PLATDATA_XTAL_12MHZ,
 	.vif = 1,
 };
@@ -92,7 +92,7 @@ static struct platform_device r8a66597_usb_host_device = {
 	.resource	= r8a66597_usb_host_resources,
 };
 
-static struct m66592_platdata usbf_platdata = {
+static struct m66592_platform_data usbf_platdata = {
 	.xtal = M66592_PLATDATA_XTAL_24MHZ,
 	.vif = 1,
 };

@@ -78,7 +78,7 @@ void __init pxa_set_mci_info(struct pxamci_platform_data *info)
 	pxa_register_device(&pxa_device_mci, info);
 }
 
-static struct pxa2xx_udc_mach_info pxa_udc_info = {
+static struct pxa2xx_udc_platform_data pxa_udc_info = {
 	.gpio_pullup = -1,
 };
 
@@ -145,7 +145,7 @@ struct platform_device pxa_device_fb = {
 	.resource	= pxafb_resources,
 };
 
-void __init pxa_set_fb_info(struct device *parent, struct pxafb_mach_info *info)
+void __init pxa_set_fb_info(struct device *parent, struct pxafb_platform_data *info)
 {
 	pxa_device_fb.dev.parent = parent;
 	pxa_register_device(&pxa_device_fb, info);
@@ -667,7 +667,7 @@ struct platform_device pxa27x_device_gpio = {
 
 /* pxa2xx-spi platform-device ID equals respective SSP platform-device ID + 1.
  * See comment in arch/arm/mach-pxa/ssp.c::ssp_probe() */
-void __init pxa2xx_set_spi_info(unsigned id, struct pxa2xx_spi_controller *info)
+void __init pxa2xx_set_spi_info(unsigned id, struct pxa_spi_platform_data *info)
 {
 	struct platform_device *pd;
 
@@ -708,7 +708,7 @@ static struct platform_device pxa2xx_pxa_dma = {
 	.resource	= pxa_dma_resource,
 };
 
-void __init pxa2xx_set_dmac_info(struct mmp_dma_platdata *dma_pdata)
+void __init pxa2xx_set_dmac_info(struct mmp_dma_platform_data *dma_pdata)
 {
 	pxa_register_device(&pxa2xx_pxa_dma, dma_pdata);
 }

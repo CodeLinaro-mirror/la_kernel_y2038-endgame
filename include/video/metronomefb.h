@@ -28,7 +28,7 @@ struct metronomefb_par {
 	u16 *csum_table;
 	dma_addr_t metromem_dma;
 	struct fb_info *info;
-	struct metronome_board *board;
+	struct metronome_platform_data *board;
 	wait_queue_head_t waitq;
 	u8 frame_count;
 	int extra_size;
@@ -36,7 +36,7 @@ struct metronomefb_par {
 };
 
 /* board specific routines and data */
-struct metronome_board {
+struct metronome_platform_data {
 	struct module *owner; /* the platform device */
 	void (*set_rst)(struct metronomefb_par *, int);
 	void (*set_stdby)(struct metronomefb_par *, int);

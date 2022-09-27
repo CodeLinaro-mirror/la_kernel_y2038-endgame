@@ -187,7 +187,7 @@ struct sh_mobile_lcdc_chan_cfg {
 	struct platform_device *tx_dev;	/* HDMI/DSI transmitter device */
 };
 
-struct sh_mobile_lcdc_info {
+struct sh_mobile_lcdc_platform_data {
 	int clock_source;
 	struct sh_mobile_lcdc_chan_cfg ch[2];
 	struct sh_mobile_lcdc_overlay_cfg overlays[4];

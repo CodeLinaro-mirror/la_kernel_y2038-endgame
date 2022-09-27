@@ -16,7 +16,7 @@
 struct regulator_init_data;
 
 /**
- * struct fixed_voltage_config - fixed_voltage_config structure
+ * struct fixed_voltage_platform_data - fixed_voltage_platform_data structure
  * @supply_name:	Name of the regulator supply
  * @input_supply:	Name of the input regulator supply
  * @microvolts:		Output voltage of regulator
@@ -31,7 +31,7 @@ struct regulator_init_data;
  * information that must be passed by platform code to the fixed
  * voltage regulator driver.
  */
-struct fixed_voltage_config {
+struct fixed_voltage_platform_data {
 	const char *supply_name;
 	const char *input_supply;
 	int microvolts;

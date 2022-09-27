@@ -34,10 +34,10 @@ struct samsung_i2s_type {
 };
 
 /**
- * struct s3c_audio_pdata - common platform data for audio device drivers
+ * struct s3c_audio_platform_data - common platform data for audio device drivers
  * @cfg_gpio: Callback function to setup mux'ed pins in I2S/PCM/AC97 mode
  */
-struct s3c_audio_pdata {
+struct s3c_audio_platform_data {
 	int (*cfg_gpio)(struct platform_device *);
 	dma_filter_fn dma_filter;
 	void *dma_playback;

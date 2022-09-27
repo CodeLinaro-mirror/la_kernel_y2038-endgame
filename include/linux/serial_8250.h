@@ -14,7 +14,7 @@
 /*
  * This is the platform device platform_data structure
  */
-struct plat_serial8250_port {
+struct serial8250_platform_data {
 	unsigned long	iobase;		/* io base address */
 	void __iomem	*membase;	/* ioremap cookie or NULL */
 	resource_size_t	mapbase;	/* resource base */

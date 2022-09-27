@@ -14,7 +14,7 @@
 struct platform_device;
 
 /**
- *	struct s3c2410_platform_i2c - Platform data for s3c I2C.
+ *	struct s3c_i2c_platform_data - Platform data for s3c I2C.
  *	@bus_num: The bus number to use (if possible).
  *	@flags: Any flags for the I2C bus (E.g. S3C_IICFLK_FILTER).
  *	@slave_addr: The I2C address for the slave device (if enabled).
@@ -25,7 +25,7 @@ struct platform_device;
  *	@sda_delay: The delay (in ns) applied to SDA edges.
  *	@cfg_gpio: A callback to configure the pins for I2C operation.
  */
-struct s3c2410_platform_i2c {
+struct s3c_i2c_platform_data {
 	int		bus_num;
 	unsigned int	flags;
 	unsigned int	slave_addr;
@@ -50,15 +50,15 @@ struct s3c2410_platform_i2c {
  * NULL to ensure that the device is given the default platform data
  * as the driver will no longer carry defaults.
  */
-extern void s3c_i2c0_set_platdata(struct s3c2410_platform_i2c *i2c);
-extern void s3c_i2c1_set_platdata(struct s3c2410_platform_i2c *i2c);
-extern void s3c_i2c2_set_platdata(struct s3c2410_platform_i2c *i2c);
-extern void s3c_i2c3_set_platdata(struct s3c2410_platform_i2c *i2c);
-extern void s3c_i2c4_set_platdata(struct s3c2410_platform_i2c *i2c);
-extern void s3c_i2c5_set_platdata(struct s3c2410_platform_i2c *i2c);
-extern void s3c_i2c6_set_platdata(struct s3c2410_platform_i2c *i2c);
-extern void s3c_i2c7_set_platdata(struct s3c2410_platform_i2c *i2c);
-extern void s5p_i2c_hdmiphy_set_platdata(struct s3c2410_platform_i2c *i2c);
+extern void s3c_i2c0_set_platdata(struct s3c_i2c_platform_data *i2c);
+extern void s3c_i2c1_set_platdata(struct s3c_i2c_platform_data *i2c);
+extern void s3c_i2c2_set_platdata(struct s3c_i2c_platform_data *i2c);
+extern void s3c_i2c3_set_platdata(struct s3c_i2c_platform_data *i2c);
+extern void s3c_i2c4_set_platdata(struct s3c_i2c_platform_data *i2c);
+extern void s3c_i2c5_set_platdata(struct s3c_i2c_platform_data *i2c);
+extern void s3c_i2c6_set_platdata(struct s3c_i2c_platform_data *i2c);
+extern void s3c_i2c7_set_platdata(struct s3c_i2c_platform_data *i2c);
+extern void s5p_i2c_hdmiphy_set_platdata(struct s3c_i2c_platform_data *i2c);
 
 /* defined by architecture to configure gpio */
 extern void s3c_i2c0_cfg_gpio(struct platform_device *dev);
@@ -70,6 +70,6 @@ extern void s3c_i2c5_cfg_gpio(struct platform_device *dev);
 extern void s3c_i2c6_cfg_gpio(struct platform_device *dev);
 extern void s3c_i2c7_cfg_gpio(struct platform_device *dev);
 
-extern struct s3c2410_platform_i2c default_i2c_data;
+extern struct s3c_i2c_platform_data default_i2c_data;
 
 #endif /* __I2C_S3C2410_H */

@@ -65,7 +65,7 @@ static const struct sa1100fb_rgb h3600_rgb_16 = {
 	.transp	= { .offset = 0,  .length = 0, },
 };
 
-static struct sa1100fb_mach_info h3600_lcd_info = {
+static struct sa1100fb_platform_data h3600_lcd_info = {
 	.pixclock	= 174757, 	.bpp		= 16,
 	.xres		= 320,		.yres		= 240,
 

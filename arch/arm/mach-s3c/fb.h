@@ -19,7 +19,7 @@
  *      so the machine data can mark the data __initdata so that any unused
  *      machines will end up dumping their data at runtime.
  */
-extern void s3c_fb_set_platdata(struct s3c_fb_platdata *pd);
+extern void s3c_fb_set_platdata(struct s3c_fb_platform_data *pd);
 
 /**
  * s3c64xx_fb_gpio_setup_24bpp() - S3C64XX setup function for 24bpp LCD

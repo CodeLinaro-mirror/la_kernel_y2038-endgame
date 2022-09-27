@@ -158,7 +158,7 @@ static struct resource nand_slot0_res[] = {
 	}
 };
 
-static struct platform_nand_data rb532_nand_data = {
+static struct nand_platform_data rb532_nand_data = {
 	.ctrl.dev_ready = rb532_dev_ready,
 	.ctrl.cmd_ctrl	= rb532_cmd_ctrl,
 };
@@ -209,7 +209,7 @@ static struct platform_device rb532_wdt = {
 	.num_resources	= ARRAY_SIZE(rb532_wdt_res),
 };
 
-static struct plat_serial8250_port rb532_uart_res[] = {
+static struct serial8250_platform_data rb532_uart_res[] = {
 	{
 		.type           = PORT_16550A,
 		.membase	= (char *)KSEG1ADDR(REGBASE + UART0BASE),

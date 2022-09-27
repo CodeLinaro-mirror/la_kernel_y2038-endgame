@@ -539,7 +539,7 @@ static int __init sh_rtc_probe(struct platform_device *pdev)
 
 #ifdef CONFIG_SUPERH
 	if (dev_get_platdata(&pdev->dev)) {
-		struct sh_rtc_platform_info *pinfo =
+		struct sh_rtc_platform_data *pinfo =
 			dev_get_platdata(&pdev->dev);
 
 		/*

@@ -6,7 +6,7 @@ The EP93xx LCD controller can drive both standard desktop monitors and
 embedded LCD displays. If you have a standard desktop monitor then you
 can use the standard Linux video mode database. In your board file::
 
-	static struct ep93xxfb_mach_info some_board_fb_info = {
+	static struct ep93xxfb_platform_data some_board_fb_info = {
 		.num_modes	= EP93XXFB_USE_MODEDB,
 		.bpp		= 16,
 	};
@@ -26,10 +26,10 @@ KHZ2PICOS macro to convert the pixel clock value. Most other values
 are in pixel clocks. See Documentation/fb/framebuffer.rst for further
 details.
 
-The ep93xxfb_mach_info structure for your board should look like the
+The ep93xxfb_platform_data structure for your board should look like the
 following::
 
-	static struct ep93xxfb_mach_info some_board_fb_info = {
+	static struct ep93xxfb_platform_data some_board_fb_info = {
 		.num_modes	= ARRAY_SIZE(some_board_video_modes),
 		.modes		= some_board_video_modes,
 		.default_mode	= &some_board_video_modes[0],
@@ -45,7 +45,7 @@ your board initialisation function::
 Video Attribute Flags
 =====================
 
-The ep93xxfb_mach_info structure has a flags field which can be used
+The ep93xxfb_platform_data structure has a flags field which can be used
 to configure the controller. The video attributes flags are fully
 documented in section 7 of the EP93xx users' guide. The following
 flags are available:
@@ -90,12 +90,12 @@ respectively. The blank function is called whenever the display is
 blanked or unblanked.
 
 The setup and teardown devices pass the platform_device structure as
-an argument. The fb_info and ep93xxfb_mach_info structures can be
+an argument. The fb_info and ep93xxfb_platform_data structures can be
 obtained as follows::
 
 	static int some_board_fb_setup(struct platform_device *pdev)
 	{
-		struct ep93xxfb_mach_info *mach_info = pdev->dev.platform_data;
+		struct ep93xxfb_platform_data *mach_info = pdev->dev.platform_data;
 		struct fb_info *fb_info = platform_get_drvdata(pdev);
 
 		/* Board specific framebuffer setup */

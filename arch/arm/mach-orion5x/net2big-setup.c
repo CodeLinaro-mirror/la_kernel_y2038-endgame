@@ -54,7 +54,7 @@ static struct mtd_partition net2big_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data net2big_nor_flash_data = {
+static struct physmap_flash_platform_data net2big_nor_flash_data = {
 	.width		= 1,
 	.parts		= net2big_partitions,
 	.nr_parts	= ARRAY_SIZE(net2big_partitions),

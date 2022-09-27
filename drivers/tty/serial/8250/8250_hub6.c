@@ -17,7 +17,7 @@
 		.hub6		= (card) << 6 | (port) << 3 | 1,	\
 	}
 
-static struct plat_serial8250_port hub6_data[] = {
+static struct serial8250_platform_data hub6_data[] = {
 	HUB6(0, 0),
 	HUB6(0, 1),
 	HUB6(0, 2),

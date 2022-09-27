@@ -360,7 +360,7 @@ static const struct snd_soc_component_driver samsung_spdif_component = {
 
 static int spdif_probe(struct platform_device *pdev)
 {
-	struct s3c_audio_pdata *spdif_pdata;
+	struct s3c_audio_platform_data *spdif_pdata;
 	struct resource *mem_res;
 	struct samsung_spdif_info *spdif;
 	dma_filter_fn filter;

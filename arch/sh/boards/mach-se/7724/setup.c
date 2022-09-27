@@ -88,7 +88,7 @@ static struct platform_device heartbeat_device = {
 };
 
 /* LAN91C111 */
-static struct smc91x_platdata smc91x_info = {
+static struct smc91x_platform_data smc91x_info = {
 	.flags = SMC91X_USE_16BIT | SMC91X_NOWAIT,
 };
 
@@ -132,7 +132,7 @@ static struct mtd_partition nor_flash_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data nor_flash_data = {
+static struct physmap_flash_platform_data nor_flash_data = {
 	.width		= 2,
 	.parts		= nor_flash_partitions,
 	.nr_parts	= ARRAY_SIZE(nor_flash_partitions),
@@ -187,7 +187,7 @@ static const struct fb_videomode lcdc_vga_modes[] = {
 	},
 };
 
-static struct sh_mobile_lcdc_info lcdc_info = {
+static struct sh_mobile_lcdc_platform_data lcdc_info = {
 	.clock_source = LCDC_CLK_EXTERNAL,
 	.ch[0] = {
 		.chan = LCDC_CHAN_MAINLCD,
@@ -373,7 +373,7 @@ static struct resource sh_eth_resources[] = {
 	},
 };
 
-static struct sh_eth_plat_data sh_eth_plat = {
+static struct sh_eth_platform_data sh_eth_plat = {
 	.phy = 0x1f, /* SMSC LAN8187 */
 	.phy_interface = PHY_INTERFACE_MODE_MII,
 };
@@ -388,7 +388,7 @@ static struct platform_device sh_eth_device = {
 	.resource = sh_eth_resources,
 };
 
-static struct r8a66597_platdata sh7724_usb0_host_data = {
+static struct r8a66597_platform_data sh7724_usb0_host_data = {
 	.on_chip = 1,
 };
 
@@ -417,7 +417,7 @@ static struct platform_device sh7724_usb0_host_device = {
 	.resource	= sh7724_usb0_host_resources,
 };
 
-static struct r8a66597_platdata sh7724_usb1_gadget_data = {
+static struct r8a66597_platform_data sh7724_usb1_gadget_data = {
 	.on_chip = 1,
 };
 
@@ -536,17 +536,17 @@ static struct platform_device irda_device = {
 #include <media/i2c/ak881x.h>
 #include <media/drv-intf/sh_vou.h>
 
-static struct ak881x_pdata ak881x_pdata = {
+static struct ak881x_platform_data ak881x_platform_data = {
 	.flags = AK881X_IF_MODE_SLAVE,
 };
 
 static struct i2c_board_info ak8813 = {
 	/* With open J18 jumper address is 0x21 */
 	I2C_BOARD_INFO("ak8813", 0x20),
-	.platform_data = &ak881x_pdata,
+	.platform_data = &ak881x_platform_data,
 };
 
-static struct sh_vou_pdata sh_vou_pdata = {
+static struct sh_vou_platform_data sh_vou_platform_data = {
 	.bus_fmt	= SH_VOU_BUS_8BIT,
 	.flags		= SH_VOU_HSYNC_LOW | SH_VOU_VSYNC_LOW,
 	.board_info	= &ak8813,
@@ -571,7 +571,7 @@ static struct platform_device vou_device = {
 	.num_resources  = ARRAY_SIZE(sh_vou_resources),
 	.resource       = sh_vou_resources,
 	.dev		= {
-		.platform_data	= &sh_vou_pdata,
+		.platform_data	= &sh_vou_platform_data,
 	},
 };
 

@@ -63,7 +63,7 @@ struct samsung_pwm_clocksource {
 	void __iomem *base;
 	const void __iomem *source_reg;
 	unsigned int irq[SAMSUNG_PWM_NUM];
-	struct samsung_pwm_variant variant;
+	struct samsung_pwm_platform_data variant;
 
 	struct clk *timerclk;
 
@@ -401,7 +401,7 @@ static int __init _samsung_pwm_clocksource_init(void)
 
 void __init samsung_pwm_clocksource_init(void __iomem *base,
 					 unsigned int *irqs,
-					 const struct samsung_pwm_variant *variant)
+					 const struct samsung_pwm_platform_data *variant)
 {
 	pwm.base = base;
 	memcpy(&pwm.variant, variant, sizeof(pwm.variant));
@@ -416,7 +416,7 @@ void __init samsung_pwm_clocksource_init(void __iomem *base,
 
 #ifdef CONFIG_TIMER_OF
 static int __init samsung_pwm_alloc(struct device_node *np,
-				    const struct samsung_pwm_variant *variant)
+				    const struct samsung_pwm_platform_data *variant)
 {
 	struct property *prop;
 	const __be32 *cur;
@@ -464,7 +464,7 @@ err_clk:
 	return ret;
 }
 
-static const struct samsung_pwm_variant s3c24xx_variant = {
+static const struct samsung_pwm_platform_data s3c24xx_variant = {
 	.bits		= 16,
 	.div_base	= 1,
 	.has_tint_cstat	= false,
@@ -477,7 +477,7 @@ static int __init s3c2410_pwm_clocksource_init(struct device_node *np)
 }
 TIMER_OF_DECLARE(s3c2410_pwm, "samsung,s3c2410-pwm", s3c2410_pwm_clocksource_init);
 
-static const struct samsung_pwm_variant s3c64xx_variant = {
+static const struct samsung_pwm_platform_data s3c64xx_variant = {
 	.bits		= 32,
 	.div_base	= 0,
 	.has_tint_cstat	= true,
@@ -490,7 +490,7 @@ static int __init s3c64xx_pwm_clocksource_init(struct device_node *np)
 }
 TIMER_OF_DECLARE(s3c6400_pwm, "samsung,s3c6400-pwm", s3c64xx_pwm_clocksource_init);
 
-static const struct samsung_pwm_variant s5p64x0_variant = {
+static const struct samsung_pwm_platform_data s5p64x0_variant = {
 	.bits		= 32,
 	.div_base	= 0,
 	.has_tint_cstat	= true,
@@ -503,7 +503,7 @@ static int __init s5p64x0_pwm_clocksource_init(struct device_node *np)
 }
 TIMER_OF_DECLARE(s5p6440_pwm, "samsung,s5p6440-pwm", s5p64x0_pwm_clocksource_init);
 
-static const struct samsung_pwm_variant s5p_variant = {
+static const struct samsung_pwm_platform_data s5p_variant = {
 	.bits		= 32,
 	.div_base	= 0,
 	.has_tint_cstat	= true,
