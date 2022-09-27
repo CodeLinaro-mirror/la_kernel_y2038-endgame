@@ -97,7 +97,7 @@ static void xt2000_heartbeat(struct timer_list *unused)
 	.regshift	= 2,						\
 }
 
-static struct plat_serial8250_port xt2000_serial_data[] = {
+static struct serial8250_platform_data xt2000_serial_data[] = {
 #if XCHAL_HAVE_BE
 	_SERIAL_PORT(DUART16552_1_ADDR + 3, DUART16552_1_INTNUM),
 	_SERIAL_PORT(DUART16552_2_ADDR + 3, DUART16552_2_INTNUM),

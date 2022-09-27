@@ -48,7 +48,7 @@
 #define CEU_BUFFER_MEMORY_SIZE		(4 << 20)
 static phys_addr_t ceu_dma_membase;
 
-static struct smc91x_platdata smc91x_info = {
+static struct smc91x_platform_data smc91x_info = {
 	.flags = SMC91X_USE_16BIT | SMC91X_NOWAIT,
 };
 
@@ -129,7 +129,7 @@ static struct mtd_partition migor_nor_flash_partitions[] =
 	},
 };
 
-static struct physmap_flash_data migor_nor_flash_data = {
+static struct physmap_flash_platform_data migor_nor_flash_data = {
 	.width		= 2,
 	.parts		= migor_nor_flash_partitions,
 	.nr_parts	= ARRAY_SIZE(migor_nor_flash_partitions),
@@ -185,7 +185,7 @@ static int migor_nand_flash_ready(struct nand_chip *chip)
 	return gpio_get_value(GPIO_PTA1); /* NAND_RBn */
 }
 
-static struct platform_nand_data migor_nand_flash_data = {
+static struct nand_platform_data migor_nand_flash_data = {
 	.chip = {
 		.nr_chips = 1,
 		.partitions = migor_nand_flash_partitions,
@@ -241,7 +241,7 @@ static const struct fb_videomode migor_lcd_modes[] = {
 	},
 };
 
-static struct sh_mobile_lcdc_info sh_mobile_lcdc_info = {
+static struct sh_mobile_lcdc_platform_data sh_mobile_lcdc_info = {
 #if defined(CONFIG_SH_MIGOR_RTA_WVGA)
 	.clock_source = LCDC_CLK_BUS,
 	.ch[0] = {
@@ -298,7 +298,7 @@ static struct platform_device migor_lcdc_device = {
 	.num_resources	= ARRAY_SIZE(migor_lcdc_resources),
 	.resource	= migor_lcdc_resources,
 	.dev	= {
-		.platform_data	= &sh_mobile_lcdc_info,
+		.platform_data	= &sh_mobile_lcdc_platform_data,
 	},
 };
 

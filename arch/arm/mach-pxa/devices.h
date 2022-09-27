@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 #define PDMA_FILTER_PARAM(_prio, _requestor) (&(struct pxad_param) { \
 	.prio = PXAD_PRIO_##_prio, .drcmr = _requestor })
-struct mmp_dma_platdata;
+struct mmp_dma_platform_data;
 
 extern struct platform_device pxa_device_pmu;
 extern struct platform_device pxa_device_mci;
@@ -57,7 +57,7 @@ extern struct platform_device pxa3xx_device_gpio;
 extern struct platform_device pxa93x_device_gpio;
 
 void __init pxa_register_device(struct platform_device *dev, void *data);
-void __init pxa2xx_set_dmac_info(struct mmp_dma_platdata *dma_pdata);
+void __init pxa2xx_set_dmac_info(struct mmp_dma_platform_data *dma_pdata);
 
 struct i2c_pxa_platform_data;
 extern void pxa_set_i2c_info(struct i2c_pxa_platform_data *info);

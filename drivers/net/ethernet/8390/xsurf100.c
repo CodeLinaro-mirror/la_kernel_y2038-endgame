@@ -48,7 +48,7 @@
 #define NE_DATAPORT	EI_SHIFT(0x10)
 
 struct xsurf100_ax_plat_data {
-	struct ax_plat_data ax;
+	struct ax_platform_data ax;
 	void __iomem *base_regs;
 	void __iomem *data_area;
 };

@@ -80,7 +80,7 @@ static const struct ohci_driver_overrides platform_overrides __initconst = {
 	.extra_priv_size =	sizeof(struct ohci_platform_priv),
 };
 
-static struct usb_ohci_pdata ohci_platform_defaults = {
+static struct usb_ohci_platform_data ohci_platform_defaults = {
 	.power_on =		ohci_platform_power_on,
 	.power_suspend =	ohci_platform_power_off,
 	.power_off =		ohci_platform_power_off,
@@ -90,7 +90,7 @@ static int ohci_platform_probe(struct platform_device *dev)
 {
 	struct usb_hcd *hcd;
 	struct resource *res_mem;
-	struct usb_ohci_pdata *pdata = dev_get_platdata(&dev->dev);
+	struct usb_ohci_platform_data *pdata = dev_get_platdata(&dev->dev);
 	struct ohci_platform_priv *priv;
 	struct ohci_hcd *ohci;
 	int err, irq, clk = 0;
@@ -241,7 +241,7 @@ err_put_clks:
 static void ohci_platform_remove(struct platform_device *dev)
 {
 	struct usb_hcd *hcd = platform_get_drvdata(dev);
-	struct usb_ohci_pdata *pdata = dev_get_platdata(&dev->dev);
+	struct usb_ohci_platform_data *pdata = dev_get_platdata(&dev->dev);
 	struct ohci_platform_priv *priv = hcd_to_ohci_priv(hcd);
 	int clk;
 
@@ -269,7 +269,7 @@ static void ohci_platform_remove(struct platform_device *dev)
 static int ohci_platform_suspend(struct device *dev)
 {
 	struct usb_hcd *hcd = dev_get_drvdata(dev);
-	struct usb_ohci_pdata *pdata = dev->platform_data;
+	struct usb_ohci_platform_data *pdata = dev->platform_data;
 	struct platform_device *pdev = to_platform_device(dev);
 	bool do_wakeup = device_may_wakeup(dev);
 	int ret;
@@ -287,7 +287,7 @@ static int ohci_platform_suspend(struct device *dev)
 static int ohci_platform_resume_common(struct device *dev, bool hibernated)
 {
 	struct usb_hcd *hcd = dev_get_drvdata(dev);
-	struct usb_ohci_pdata *pdata = dev_get_platdata(dev);
+	struct usb_ohci_platform_data *pdata = dev_get_platdata(dev);
 	struct platform_device *pdev = to_platform_device(dev);
 
 	if (pdata->power_on) {

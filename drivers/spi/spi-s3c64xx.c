@@ -187,7 +187,7 @@ struct s3c64xx_spi_driver_data {
 	struct clk                      *ioclk;
 	struct platform_device          *pdev;
 	struct spi_controller           *host;
-	struct s3c64xx_spi_info         *cntrlr_info;
+	struct s3c64xx_spi_platform_data         *cntrlr_info;
 	spinlock_t                      lock;
 	unsigned long                   sfr_start;
 	struct completion               xfer_completion;
@@ -1061,7 +1061,7 @@ static irqreturn_t s3c64xx_spi_irq(int irq, void *data)
 
 static void s3c64xx_spi_hwinit(struct s3c64xx_spi_driver_data *sdd)
 {
-	struct s3c64xx_spi_info *sci = sdd->cntrlr_info;
+	struct s3c64xx_spi_platform_data *sci = sdd->cntrlr_info;
 	void __iomem *regs = sdd->regs;
 	unsigned int val;
 
@@ -1101,9 +1101,9 @@ static void s3c64xx_spi_hwinit(struct s3c64xx_spi_driver_data *sdd)
 }
 
 #ifdef CONFIG_OF
-static struct s3c64xx_spi_info *s3c64xx_spi_parse_dt(struct device *dev)
+static struct s3c64xx_spi_platform_data *s3c64xx_spi_parse_dt(struct device *dev)
 {
-	struct s3c64xx_spi_info *sci;
+	struct s3c64xx_spi_platform_data *sci;
 	u32 temp;
 
 	sci = devm_kzalloc(dev, sizeof(*sci), GFP_KERNEL);
@@ -1130,7 +1130,7 @@ static struct s3c64xx_spi_info *s3c64xx_spi_parse_dt(struct device *dev)
 	return sci;
 }
 #else
-static struct s3c64xx_spi_info *s3c64xx_spi_parse_dt(struct device *dev)
+static struct s3c64xx_spi_platform_data *s3c64xx_spi_parse_dt(struct device *dev)
 {
 	return dev_get_platdata(dev);
 }
@@ -1150,8 +1150,13 @@ static int s3c64xx_spi_probe(struct platform_device *pdev)
 {
 	struct resource	*mem_res;
 	struct s3c64xx_spi_driver_data *sdd;
+<<<<<<< HEAD
 	struct s3c64xx_spi_info *sci = dev_get_platdata(&pdev->dev);
 	struct spi_controller *host;
+=======
+	struct s3c64xx_spi_platform_data *sci = dev_get_platdata(&pdev->dev);
+	struct spi_master *master;
+>>>>>>> 8d76ab6b274f (platform_data rename)
 	int ret, irq;
 	char clk_name[16];
 
@@ -1335,9 +1340,15 @@ static int s3c64xx_spi_suspend(struct device *dev)
 
 static int s3c64xx_spi_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct spi_controller *host = dev_get_drvdata(dev);
 	struct s3c64xx_spi_driver_data *sdd = spi_controller_get_devdata(host);
 	struct s3c64xx_spi_info *sci = sdd->cntrlr_info;
+=======
+	struct spi_master *master = dev_get_drvdata(dev);
+	struct s3c64xx_spi_driver_data *sdd = spi_master_get_devdata(master);
+	struct s3c64xx_spi_platform_data *sci = sdd->cntrlr_info;
+>>>>>>> 8d76ab6b274f (platform_data rename)
 	int ret;
 
 	if (sci->cfg_gpio)

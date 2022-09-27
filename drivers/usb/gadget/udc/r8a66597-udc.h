@@ -87,7 +87,7 @@ struct r8a66597 {
 	void __iomem		*sudmac_reg;
 
 	struct clk *clk;
-	struct r8a66597_platdata	*pdata;
+	struct r8a66597_platform_data	*pdata;
 
 	struct usb_gadget		gadget;
 	struct usb_gadget_driver	*driver;
@@ -232,7 +232,7 @@ static inline void r8a66597_write_fifo(struct r8a66597 *r8a66597,
 		r8a66597_bclr(r8a66597, MBW_16, ep->fifosel);
 }
 
-static inline u16 get_xtal_from_pdata(struct r8a66597_platdata *pdata)
+static inline u16 get_xtal_from_pdata(struct r8a66597_platform_data *pdata)
 {
 	u16 clock = 0;
 

@@ -28,7 +28,7 @@
 #define PCI_DEVICE_ID_INTEL_LPT1_1		0x9ce6
 
 struct pxa_spi_info {
-	int (*setup)(struct pci_dev *pdev, struct pxa2xx_spi_controller *c);
+	int (*setup)(struct pci_dev *pdev, struct pxa_spi_platform_data *c);
 };
 
 static struct dw_dma_slave byt_tx_param = { .dst_id = 0 };
@@ -87,7 +87,7 @@ static void lpss_dma_put_device(void *dma_dev)
 	pci_dev_put(dma_dev);
 }
 
-static int lpss_spi_setup(struct pci_dev *dev, struct pxa2xx_spi_controller *c)
+static int lpss_spi_setup(struct pci_dev *dev, struct pxa_spi_platform_data *c)
 {
 	struct ssp_device *ssp = &c->ssp;
 	struct dw_dma_slave *tx, *rx;
@@ -168,7 +168,7 @@ static const struct pxa_spi_info lpss_info_config = {
 	.setup = lpss_spi_setup,
 };
 
-static int ce4100_spi_setup(struct pci_dev *dev, struct pxa2xx_spi_controller *c)
+static int ce4100_spi_setup(struct pci_dev *dev, struct pxa_spi_platform_data *c)
 {
 	struct ssp_device *ssp = &c->ssp;
 
@@ -183,7 +183,7 @@ static const struct pxa_spi_info ce4100_info_config = {
 	.setup = ce4100_spi_setup,
 };
 
-static int mrfld_spi_setup(struct pci_dev *dev, struct pxa2xx_spi_controller *c)
+static int mrfld_spi_setup(struct pci_dev *dev, struct pxa_spi_platform_data *c)
 {
 	struct ssp_device *ssp = &c->ssp;
 	struct dw_dma_slave *tx, *rx;
@@ -240,7 +240,7 @@ static const struct pxa_spi_info mrfld_info_config = {
 	.setup = mrfld_spi_setup,
 };
 
-static int qrk_spi_setup(struct pci_dev *dev, struct pxa2xx_spi_controller *c)
+static int qrk_spi_setup(struct pci_dev *dev, struct pxa_spi_platform_data *c)
 {
 	struct ssp_device *ssp = &c->ssp;
 
@@ -262,7 +262,7 @@ static int pxa2xx_spi_pci_probe(struct pci_dev *dev,
 	struct platform_device_info pi;
 	int ret;
 	struct platform_device *pdev;
-	struct pxa2xx_spi_controller spi_pdata;
+	struct pxa_spi_platform_data spi_pdata;
 	struct ssp_device *ssp;
 
 	ret = pcim_enable_device(dev);

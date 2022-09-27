@@ -327,7 +327,7 @@ static const struct regulator_ops wm831x_buckv_ops = {
  */
 static void wm831x_buckv_dvs_init(struct platform_device *pdev,
 				  struct wm831x_dcdc *dcdc,
-				  struct wm831x_buckv_pdata *pdata)
+				  struct wm831x_buckv_platform_data *pdata)
 {
 	struct wm831x *wm831x = dcdc->wm831x;
 	int ret;
@@ -387,7 +387,7 @@ static void wm831x_buckv_dvs_init(struct platform_device *pdev,
 static int wm831x_buckv_probe(struct platform_device *pdev)
 {
 	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
-	struct wm831x_pdata *pdata = dev_get_platdata(wm831x->dev);
+	struct wm831x_platform_data *pdata = dev_get_platdata(wm831x->dev);
 	struct regulator_config config = { };
 	int id;
 	struct wm831x_dcdc *dcdc;
@@ -546,7 +546,7 @@ static const struct regulator_ops wm831x_buckp_ops = {
 static int wm831x_buckp_probe(struct platform_device *pdev)
 {
 	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
-	struct wm831x_pdata *pdata = dev_get_platdata(wm831x->dev);
+	struct wm831x_platform_data *pdata = dev_get_platdata(wm831x->dev);
 	struct regulator_config config = { };
 	int id;
 	struct wm831x_dcdc *dcdc;
@@ -679,7 +679,7 @@ static const struct regulator_ops wm831x_boostp_ops = {
 static int wm831x_boostp_probe(struct platform_device *pdev)
 {
 	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
-	struct wm831x_pdata *pdata = dev_get_platdata(wm831x->dev);
+	struct wm831x_platform_data *pdata = dev_get_platdata(wm831x->dev);
 	struct regulator_config config = { };
 	int id = pdev->id % ARRAY_SIZE(pdata->dcdc);
 	struct wm831x_dcdc *dcdc;
@@ -772,7 +772,7 @@ static const struct regulator_ops wm831x_epe_ops = {
 static int wm831x_epe_probe(struct platform_device *pdev)
 {
 	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
-	struct wm831x_pdata *pdata = dev_get_platdata(wm831x->dev);
+	struct wm831x_platform_data *pdata = dev_get_platdata(wm831x->dev);
 	struct regulator_config config = { };
 	int id = pdev->id % ARRAY_SIZE(pdata->epe);
 	struct wm831x_dcdc *dcdc;

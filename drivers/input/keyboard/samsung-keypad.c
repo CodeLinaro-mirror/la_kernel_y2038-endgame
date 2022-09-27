@@ -238,11 +238,11 @@ static void samsung_keypad_close(struct input_dev *input_dev)
 }
 
 #ifdef CONFIG_OF
-static struct samsung_keypad_platdata *
+static struct samsung_keypad_platform_data *
 samsung_keypad_parse_dt(struct device *dev)
 {
-	struct samsung_keypad_platdata *pdata;
-	struct matrix_keymap_data *keymap_data;
+	struct samsung_keypad_platform_data *pdata;
+	struct matrix_keymap_platform_data *keymap_data;
 	uint32_t *keymap, num_rows = 0, num_cols = 0;
 	struct device_node *np = dev->of_node, *key_np;
 	unsigned int key_count;
@@ -301,7 +301,7 @@ samsung_keypad_parse_dt(struct device *dev)
 	return pdata;
 }
 #else
-static struct samsung_keypad_platdata *
+static struct samsung_keypad_platform_data *
 samsung_keypad_parse_dt(struct device *dev)
 {
 	dev_err(dev, "no platform data defined\n");
@@ -312,8 +312,8 @@ samsung_keypad_parse_dt(struct device *dev)
 
 static int samsung_keypad_probe(struct platform_device *pdev)
 {
-	const struct samsung_keypad_platdata *pdata;
-	const struct matrix_keymap_data *keymap_data;
+	const struct samsung_keypad_platform_data *pdata;
+	const struct matrix_keymap_platform_data *keymap_data;
 	struct samsung_keypad *keypad;
 	struct resource *res;
 	struct input_dev *input_dev;

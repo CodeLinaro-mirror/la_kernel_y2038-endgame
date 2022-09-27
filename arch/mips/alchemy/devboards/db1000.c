@@ -78,7 +78,7 @@ static struct resource alchemy_pci_host_res[] = {
 	},
 };
 
-static struct alchemy_pci_platdata db1500_pci_pd = {
+static struct alchemy_pci_platform_data db1500_pci_pd = {
 	.board_map_irq	= db1500_map_pci_irq,
 };
 

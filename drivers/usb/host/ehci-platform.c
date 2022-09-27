@@ -56,7 +56,7 @@ struct ehci_platform_priv {
 static int ehci_platform_reset(struct usb_hcd *hcd)
 {
 	struct platform_device *pdev = to_platform_device(hcd->self.controller);
-	struct usb_ehci_pdata *pdata = dev_get_platdata(&pdev->dev);
+	struct usb_ehci_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	struct ehci_hcd *ehci = hcd_to_ehci(hcd);
 	int retval;
 
@@ -122,7 +122,7 @@ static const struct ehci_driver_overrides platform_overrides __initconst = {
 	.extra_priv_size =	sizeof(struct ehci_platform_priv),
 };
 
-static struct usb_ehci_pdata ehci_platform_defaults = {
+static struct usb_ehci_platform_data ehci_platform_defaults = {
 	.power_on =		ehci_platform_power_on,
 	.power_suspend =	ehci_platform_power_off,
 	.power_off =		ehci_platform_power_off,
@@ -237,7 +237,7 @@ static int ehci_platform_probe(struct platform_device *dev)
 {
 	struct usb_hcd *hcd;
 	struct resource *res_mem;
-	struct usb_ehci_pdata *pdata = dev_get_platdata(&dev->dev);
+	struct usb_ehci_platform_data *pdata = dev_get_platdata(&dev->dev);
 	struct ehci_platform_priv *priv;
 	struct ehci_hcd *ehci;
 	int err, irq, clk = 0;
@@ -402,7 +402,7 @@ err_put_clks:
 static void ehci_platform_remove(struct platform_device *dev)
 {
 	struct usb_hcd *hcd = platform_get_drvdata(dev);
-	struct usb_ehci_pdata *pdata = dev_get_platdata(&dev->dev);
+	struct usb_ehci_platform_data *pdata = dev_get_platdata(&dev->dev);
 	struct ehci_platform_priv *priv = hcd_to_ehci_priv(hcd);
 	int clk;
 
@@ -428,7 +428,7 @@ static void ehci_platform_remove(struct platform_device *dev)
 static int __maybe_unused ehci_platform_suspend(struct device *dev)
 {
 	struct usb_hcd *hcd = dev_get_drvdata(dev);
-	struct usb_ehci_pdata *pdata = dev_get_platdata(dev);
+	struct usb_ehci_platform_data *pdata = dev_get_platdata(dev);
 	struct platform_device *pdev = to_platform_device(dev);
 	struct ehci_platform_priv *priv = hcd_to_ehci_priv(hcd);
 	bool do_wakeup = device_may_wakeup(dev);
@@ -450,7 +450,7 @@ static int __maybe_unused ehci_platform_suspend(struct device *dev)
 static int __maybe_unused ehci_platform_resume(struct device *dev)
 {
 	struct usb_hcd *hcd = dev_get_drvdata(dev);
-	struct usb_ehci_pdata *pdata = dev_get_platdata(dev);
+	struct usb_ehci_platform_data *pdata = dev_get_platdata(dev);
 	struct platform_device *pdev = to_platform_device(dev);
 	struct ehci_platform_priv *priv = hcd_to_ehci_priv(hcd);
 	struct device *companion_dev;

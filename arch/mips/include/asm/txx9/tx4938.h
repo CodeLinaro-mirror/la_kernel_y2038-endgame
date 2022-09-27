@@ -293,7 +293,7 @@ void tx4938_irq_init(void);
 void tx4938_mtd_init(int ch);
 void tx4938_ndfmc_init(unsigned int hold, unsigned int spw);
 
-struct tx4938ide_platform_info {
+struct tx4938ide_platform_data {
 	/*
 	 * I/O port shift, for platforms with ports that are
 	 * constantly spaced and need larger than the 1-byte

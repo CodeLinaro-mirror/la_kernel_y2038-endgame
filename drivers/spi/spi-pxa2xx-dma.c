@@ -181,7 +181,7 @@ void pxa2xx_spi_dma_stop(struct driver_data *drv_data)
 
 int pxa2xx_spi_dma_setup(struct driver_data *drv_data)
 {
-	struct pxa2xx_spi_controller *pdata = drv_data->controller_info;
+	struct pxa_spi_platform_data *pdata = drv_data->controller_info;
 	struct spi_controller *controller = drv_data->controller;
 	struct device *dev = drv_data->ssp->dev;
 	dma_cap_mask_t mask;

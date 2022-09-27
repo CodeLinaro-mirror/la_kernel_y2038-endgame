@@ -119,7 +119,7 @@ struct sci_port {
 
 	/* Platform configuration */
 	const struct sci_port_params *params;
-	const struct plat_sci_port *cfg;
+	const struct scif_platform_data *cfg;
 	unsigned int		sampling_rate_mask;
 	resource_size_t		reg_size;
 	struct mctrl_gpios	*gpios;
@@ -2859,7 +2859,7 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
 }
 
 static const struct sci_port_params *
-sci_probe_regmap(const struct plat_sci_port *cfg)
+sci_probe_regmap(const struct scif_platform_data *cfg)
 {
 	unsigned int regtype;
 
@@ -2901,7 +2901,7 @@ sci_probe_regmap(const struct plat_sci_port *cfg)
 
 static int sci_init_single(struct platform_device *dev,
 			   struct sci_port *sci_port, unsigned int index,
-			   const struct plat_sci_port *p, bool early)
+			   const struct scif_platform_data *p, bool early)
 {
 	struct uart_port *port = &sci_port->port;
 	const struct resource *res;
@@ -3148,7 +3148,7 @@ static struct console early_serial_console = {
 
 static int sci_probe_earlyprintk(struct platform_device *pdev)
 {
-	const struct plat_sci_port *cfg = dev_get_platdata(&pdev->dev);
+	const struct scif_platform_data *cfg = dev_get_platdata(&pdev->dev);
 
 	if (early_serial_console.data)
 		return -EEXIST;
@@ -3268,12 +3268,12 @@ static void sci_reset_control_assert(void *data)
 	reset_control_assert(data);
 }
 
-static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
+static struct scif_platform_data *sci_parse_dt(struct platform_device *pdev,
 					  unsigned int *dev_id)
 {
 	struct device_node *np = pdev->dev.of_node;
 	struct reset_control *rstc;
-	struct plat_sci_port *p;
+	struct scif_platform_data *p;
 	struct sci_port *sp;
 	const void *data;
 	int id, ret;
@@ -3301,7 +3301,7 @@ static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
 		return ERR_PTR(ret);
 	}
 
-	p = devm_kzalloc(&pdev->dev, sizeof(struct plat_sci_port), GFP_KERNEL);
+	p = devm_kzalloc(&pdev->dev, sizeof(struct scif_platform_data), GFP_KERNEL);
 	if (!p)
 		return ERR_PTR(-ENOMEM);
 
@@ -3331,7 +3331,7 @@ static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
 
 static int sci_probe_single(struct platform_device *dev,
 				      unsigned int index,
-				      struct plat_sci_port *p,
+				      struct scif_platform_data *p,
 				      struct sci_port *sciport)
 {
 	int ret;
@@ -3385,7 +3385,7 @@ static int sci_probe_single(struct platform_device *dev,
 
 static int sci_probe(struct platform_device *dev)
 {
-	struct plat_sci_port *p;
+	struct scif_platform_data *p;
 	struct sci_port *sp;
 	unsigned int dev_id;
 	int ret;
@@ -3498,7 +3498,7 @@ sh_early_platform_init_buffer("earlyprintk", &sci_driver,
 			   early_serial_buf, ARRAY_SIZE(early_serial_buf));
 #endif
 #ifdef CONFIG_SERIAL_SH_SCI_EARLYCON
-static struct plat_sci_port port_cfg __initdata;
+static struct scif_platform_data port_cfg __initdata;
 
 static int __init early_console_setup(struct earlycon_device *device,
 				      int type)

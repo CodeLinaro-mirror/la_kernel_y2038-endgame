@@ -165,7 +165,7 @@ static struct s1d13xxxfb_regval s1d13xxxfb_initregs[] = {
 	{0x01FC,0x01},	// Display Mode Register(0x01:LCD, 0x02:CRT, 0x03:LCD&CRT)
 };
 
-static struct s1d13xxxfb_pdata s1d13xxxfb_data = {
+static struct s1d13xxxfb_platform_data s1d13xxxfb_data = {
 	.initregs		= s1d13xxxfb_initregs,
 	.initregssize		= ARRAY_SIZE(s1d13xxxfb_initregs),
 	.platform_init_video	= NULL

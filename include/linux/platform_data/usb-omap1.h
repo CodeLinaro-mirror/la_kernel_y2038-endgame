@@ -10,7 +10,7 @@
 
 #include <linux/platform_device.h>
 
-struct omap_usb_config {
+struct omap_usb_platform_data {
 	/* Configure drivers according to the connectors on your board:
 	 *  - "A" connector (rectagular)
 	 *	... for host/OHCI use, set "register_host".

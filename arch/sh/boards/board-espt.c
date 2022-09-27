@@ -33,7 +33,7 @@ static struct mtd_partition espt_nor_flash_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data espt_nor_flash_data = {
+static struct physmap_flash_platform_data espt_nor_flash_data = {
 	.width = 2,
 	.parts = espt_nor_flash_partitions,
 	.nr_parts = ARRAY_SIZE(espt_nor_flash_partitions),
@@ -74,7 +74,7 @@ static struct resource sh_eth_resources[] = {
 	},
 };
 
-static struct sh_eth_plat_data sh7763_eth_pdata = {
+static struct sh_eth_platform_data sh7763_eth_pdata = {
 	.phy = 0,
 	.phy_interface = PHY_INTERFACE_MODE_MII,
 };

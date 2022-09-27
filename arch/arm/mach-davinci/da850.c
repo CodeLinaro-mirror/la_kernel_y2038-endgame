@@ -329,14 +329,14 @@ static struct platform_device da850_vpif_capture_dev = {
 	.num_resources  = ARRAY_SIZE(da850_vpif_capture_resource),
 };
 
-int __init da850_register_vpif_display(struct vpif_display_config
+int __init da850_register_vpif_display(struct vpif_display_platform_data
 						*display_config)
 {
 	da850_vpif_display_dev.dev.platform_data = display_config;
 	return platform_device_register(&da850_vpif_display_dev);
 }
 
-int __init da850_register_vpif_capture(struct vpif_capture_config
+int __init da850_register_vpif_capture(struct vpif_capture_platform_data
 							*capture_config)
 {
 	da850_vpif_capture_dev.dev.platform_data = capture_config;

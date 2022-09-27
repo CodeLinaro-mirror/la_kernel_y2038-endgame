@@ -814,7 +814,7 @@ DEFINE_SIMPLE_ATTRIBUTE(pm_sr_fops, omap_sr_autocomp_show,
 static int omap_sr_probe(struct platform_device *pdev)
 {
 	struct omap_sr *sr_info;
-	struct omap_sr_data *pdata = pdev->dev.platform_data;
+	struct omap_sr_platform_data *pdata = pdev->dev.platform_data;
 	struct dentry *nvalue_dir;
 	int i, ret = 0;
 

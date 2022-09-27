@@ -13,9 +13,9 @@
 #endif
 
 #if IS_ENABLED(CONFIG_USB_SUPPORT)
-void omap1_usb_init(struct omap_usb_config *pdata);
+void omap1_usb_init(struct omap_usb_platform_data *pdata);
 #else
-static inline void omap1_usb_init(struct omap_usb_config *pdata)
+static inline void omap1_usb_init(struct omap_usb_platform_data *pdata)
 {
 }
 #endif

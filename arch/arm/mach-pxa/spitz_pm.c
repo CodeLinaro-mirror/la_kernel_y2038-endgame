@@ -188,7 +188,7 @@ static unsigned long spitzpm_read_devdata(int type)
 	}
 }
 
-struct sharpsl_charger_machinfo spitz_pm_machinfo = {
+struct sharpsl_charger_platform_data spitz_pm_machinfo = {
 	.init             = spitz_charger_init,
 	.exit             = NULL,
 	.gpio_batlock     = SPITZ_GPIO_BAT_COVER,

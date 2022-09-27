@@ -1455,7 +1455,7 @@ EXPORT_SYMBOL_GPL(wm831x_of_match);
  */
 int wm831x_device_init(struct wm831x *wm831x, int irq)
 {
-	struct wm831x_pdata *pdata = &wm831x->pdata;
+	struct wm831x_platform_data *pdata = &wm831x->pdata;
 	int rev, wm831x_num;
 	enum wm831x_parent parent;
 	int ret, i;

@@ -27,7 +27,7 @@
 
 #define MAX_LEGACY_SERIAL_PORTS	8
 
-static struct plat_serial8250_port
+static struct serial8250_platform_data
 legacy_serial_ports[MAX_LEGACY_SERIAL_PORTS+1];
 static struct legacy_serial_info {
 	struct device_node		*np;
@@ -128,7 +128,7 @@ static int __init add_legacy_port(struct device_node *np, int want_index,
 
 	/* Now fill the entry */
 	memset(&legacy_serial_ports[index], 0,
-	       sizeof(struct plat_serial8250_port));
+	       sizeof(struct serial8250_platform_data));
 	if (iotype == UPIO_PORT)
 		legacy_serial_ports[index].iobase = base;
 	else
@@ -326,7 +326,7 @@ static int __init add_legacy_pci_port(struct device_node *np,
 static void __init setup_legacy_serial_console(int console)
 {
 	struct legacy_serial_info *info = &legacy_serial_infos[console];
-	struct plat_serial8250_port *port = &legacy_serial_ports[console];
+	struct serial8250_platform_data *port = &legacy_serial_ports[console];
 	unsigned int stride;
 
 	stride = 1 << port->regshift;
@@ -356,7 +356,7 @@ static void __init setup_legacy_serial_console(int console)
 
 static int __init ioremap_legacy_serial_console(void)
 {
-	struct plat_serial8250_port *port;
+	struct serial8250_platform_data *port;
 	struct legacy_serial_info *info;
 	void __iomem *vaddr;
 
@@ -489,7 +489,7 @@ static struct platform_device serial_device = {
 
 static void __init fixup_port_irq(int index,
 				  struct device_node *np,
-				  struct plat_serial8250_port *port)
+				  struct serial8250_platform_data *port)
 {
 	unsigned int virq;
 
@@ -522,7 +522,7 @@ static void __init fixup_port_irq(int index,
 
 static void __init fixup_port_pio(int index,
 				  struct device_node *np,
-				  struct plat_serial8250_port *port)
+				  struct serial8250_platform_data *port)
 {
 #ifdef CONFIG_PCI
 	struct pci_controller *hose;
@@ -546,7 +546,7 @@ static void __init fixup_port_pio(int index,
 
 static void __init fixup_port_mmio(int index,
 				   struct device_node *np,
-				   struct plat_serial8250_port *port)
+				   struct serial8250_platform_data *port)
 {
 	DBG("fixup_port_mmio(%d)\n", index);
 
@@ -580,7 +580,7 @@ static int __init serial_dev_init(void)
 	DBG("Fixing serial ports interrupts and IO ports ...\n");
 
 	for (i = 0; i < legacy_serial_count; i++) {
-		struct plat_serial8250_port *port = &legacy_serial_ports[i];
+		struct serial8250_platform_data *port = &legacy_serial_ports[i];
 		struct device_node *np = legacy_serial_infos[i].np;
 
 		if (!port->irq)

@@ -32,7 +32,7 @@ static struct fb_videomode lcdc0_mode = {
 	.sync		= 0,
 };
 
-static struct sh_mobile_lcdc_info lcdc0_info = {
+static struct sh_mobile_lcdc_platform_data lcdc0_info = {
 	.clock_source	= LCDC_CLK_BUS,
 	.ch[0] = {
 		.chan		= LCDC_CHAN_MAINLCD,

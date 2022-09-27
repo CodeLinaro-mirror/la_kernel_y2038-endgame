@@ -194,7 +194,7 @@ static inline void serial_omap_clear_fifos(struct uart_omap_port *up)
 #ifdef CONFIG_PM
 static int serial_omap_get_context_loss_count(struct uart_omap_port *up)
 {
-	struct omap_uart_port_info *pdata = dev_get_platdata(up->dev);
+	struct omap_uart_platform_data *pdata = dev_get_platdata(up->dev);
 
 	if (!pdata || !pdata->get_context_loss_count)
 		return -EINVAL;
@@ -205,7 +205,7 @@ static int serial_omap_get_context_loss_count(struct uart_omap_port *up)
 /* REVISIT: Remove this when omap3 boots in device tree only mode */
 static void serial_omap_enable_wakeup(struct uart_omap_port *up, bool enable)
 {
-	struct omap_uart_port_info *pdata = dev_get_platdata(up->dev);
+	struct omap_uart_platform_data *pdata = dev_get_platdata(up->dev);
 
 	if (!pdata || !pdata->enable_wakeup)
 		return;
@@ -1467,9 +1467,9 @@ static void omap_serial_fill_features_erratas(struct uart_omap_port *up)
 	}
 }
 
-static struct omap_uart_port_info *of_get_uart_port_info(struct device *dev)
+static struct omap_uart_platform_data *of_get_uart_port_info(struct device *dev)
 {
-	struct omap_uart_port_info *omap_up_info;
+	struct omap_uart_platform_data *omap_up_info;
 
 	omap_up_info = devm_kzalloc(dev, sizeof(*omap_up_info), GFP_KERNEL);
 	if (!omap_up_info)
@@ -1540,7 +1540,7 @@ static const struct serial_rs485 serial_omap_rs485_supported = {
 
 static int serial_omap_probe(struct platform_device *pdev)
 {
-	struct omap_uart_port_info *omap_up_info = dev_get_platdata(&pdev->dev);
+	struct omap_uart_platform_data *omap_up_info = dev_get_platdata(&pdev->dev);
 	struct uart_omap_port *up;
 	struct resource *mem;
 	void __iomem *base;

@@ -324,7 +324,7 @@ static const struct dma_slave_map pxa27x_slave_map[] = {
 	{ "pxa27x-camera.0", "CI_V", PDMA_FILTER_PARAM(HIGHEST, 70) },
 };
 
-static struct mmp_dma_platdata pxa27x_dma_pdata = {
+static struct mmp_dma_platform_data pxa27x_dma_pdata = {
 	.dma_channels	= 32,
 	.nb_requestors	= 75,
 	.slave_map	= pxa27x_slave_map,

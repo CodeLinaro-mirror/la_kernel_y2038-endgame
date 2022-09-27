@@ -516,7 +516,7 @@ static struct fb_deferred_io metronomefb_defio = {
 static int metronomefb_probe(struct platform_device *dev)
 {
 	struct fb_info *info;
-	struct metronome_board *board;
+	struct metronome_platform_data *board;
 	int retval = -ENOMEM;
 	int videomemorysize;
 	unsigned char *videomemory;

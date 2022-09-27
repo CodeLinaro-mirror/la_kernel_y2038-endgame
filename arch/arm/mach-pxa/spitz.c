@@ -142,7 +142,7 @@ static struct resource spitz_scoop_1_resources[] = {
 	},
 };
 
-static struct scoop_config spitz_scoop_1_setup = {
+static struct scoop_platform_data spitz_scoop_1_setup = {
 	.io_dir		= SPITZ_SCP_IO_DIR,
 	.io_out		= SPITZ_SCP_IO_OUT,
 	.suspend_clr	= SPITZ_SCP_SUS_CLR,
@@ -169,7 +169,7 @@ static struct resource spitz_scoop_2_resources[] = {
 	},
 };
 
-static struct scoop_config spitz_scoop_2_setup = {
+static struct scoop_platform_data spitz_scoop_2_setup = {
 	.io_dir		= SPITZ_SCP2_IO_DIR,
 	.io_out		= SPITZ_SCP2_IO_OUT,
 	.suspend_clr	= SPITZ_SCP2_SUS_CLR,
@@ -258,7 +258,7 @@ static struct scoop_pcmcia_dev spitz_pcmcia_scoop[] = {
 	},
 };
 
-static struct scoop_pcmcia_config spitz_pcmcia_config = {
+static struct scoop_pcmcia_platform_data spitz_pcmcia_config = {
 	.devs		= &spitz_pcmcia_scoop[0],
 	.num_devs	= 2,
 	.power_ctrl	= spitz_pcmcia_pwr,
@@ -363,7 +363,7 @@ static const uint32_t spitz_keymap[] = {
 	KEY(6, 8, KEY_RIGHT),
 };
 
-static const struct matrix_keymap_data spitz_keymap_data = {
+static const struct matrix_keymap_platform_data spitz_keymap_data = {
 	.keymap		= spitz_keymap,
 	.keymap_size	= ARRAY_SIZE(spitz_keymap),
 };
@@ -569,7 +569,7 @@ static struct spi_board_info spitz_spi_devices[] = {
 	},
 };
 
-static struct pxa2xx_spi_controller spitz_spi_info = {
+static struct pxa_spi_platform_data spitz_spi_info = {
 	.num_chipselect	= 3,
 };
 
@@ -716,7 +716,7 @@ static struct pxafb_mode_info spitz_pxafb_modes[] = {
 	},
 };
 
-static struct pxafb_mach_info spitz_pxafb_info = {
+static struct pxafb_platform_data spitz_pxafb_info = {
 	.modes          = spitz_pxafb_modes,
 	.num_modes      = ARRAY_SIZE(spitz_pxafb_modes),
 	.fixed_modes    = 1,
@@ -844,7 +844,7 @@ static struct mtd_partition spitz_rom_parts[] = {
 	},
 };
 
-static struct physmap_flash_data spitz_rom_data = {
+static struct physmap_flash_platform_data spitz_rom_data = {
 	.width		= 2,
 	.nr_parts	= ARRAY_SIZE(spitz_rom_parts),
 	.parts		= spitz_rom_parts,

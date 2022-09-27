@@ -15,7 +15,7 @@ struct dma_chan;
  * The platform data for SSP controller devices
  * (resides in device.platform_data).
  */
-struct pxa2xx_spi_controller {
+struct pxa_spi_platform_data {
 	u16 num_chipselect;
 	u8 enable_dma;
 	u8 dma_burst_size;
@@ -48,7 +48,7 @@ struct pxa2xx_spi_chip {
 
 #include <linux/clk.h>
 
-extern void pxa2xx_set_spi_info(unsigned id, struct pxa2xx_spi_controller *info);
+extern void pxa2xx_set_spi_info(unsigned id, struct pxa_spi_platform_data *info);
 
 #endif
 

@@ -365,7 +365,7 @@ static unsigned int pxafb_display_dma_period(struct fb_var_screeninfo *var)
  * Select the smallest mode that allows the desired resolution to be
  * displayed. If desired parameters can be rounded up.
  */
-static struct pxafb_mode_info *pxafb_getmode(struct pxafb_mach_info *mach,
+static struct pxafb_mode_info *pxafb_getmode(struct pxafb_platform_data *mach,
 					     struct fb_var_screeninfo *var)
 {
 	struct pxafb_mode_info *mode = NULL;
@@ -461,7 +461,7 @@ static int pxafb_adjust_timing(struct pxafb_info *fbi,
 static int pxafb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 {
 	struct pxafb_info *fbi = container_of(info, struct pxafb_info, fb);
-	struct pxafb_mach_info *inf = fbi->inf;
+	struct pxafb_platform_data *inf = fbi->inf;
 	int err;
 
 	if (inf->fixed_modes) {
@@ -1230,7 +1230,7 @@ static unsigned int __smart_timing(unsigned time_ns, unsigned long lcd_clk)
 static void setup_smart_timing(struct pxafb_info *fbi,
 				struct fb_var_screeninfo *var)
 {
-	struct pxafb_mach_info *inf = fbi->inf;
+	struct pxafb_platform_data *inf = fbi->inf;
 	struct pxafb_mode_info *mode = &inf->modes[0];
 	unsigned long lclk = clk_get_rate(fbi->clk);
 	unsigned t1, t2, t3, t4;
@@ -1258,7 +1258,7 @@ static void setup_smart_timing(struct pxafb_info *fbi,
 static int pxafb_smart_thread(void *arg)
 {
 	struct pxafb_info *fbi = arg;
-	struct pxafb_mach_info *inf = fbi->inf;
+	struct pxafb_platform_data *inf = fbi->inf;
 
 	if (!inf->smart_update) {
 		pr_err("%s: not properly initialized, thread terminated\n",
@@ -1723,7 +1723,7 @@ static int pxafb_init_video_memory(struct pxafb_info *fbi)
 }
 
 static void pxafb_decode_mach_info(struct pxafb_info *fbi,
-				   struct pxafb_mach_info *inf)
+				   struct pxafb_platform_data *inf)
 {
 	unsigned int lcd_conn = inf->lcd_conn;
 	struct pxafb_mode_info *m;
@@ -1788,7 +1788,7 @@ decode_mode:
 }
 
 static struct pxafb_info *pxafb_init_fbinfo(struct device *dev,
-					    struct pxafb_mach_info *inf)
+					    struct pxafb_platform_data *inf)
 {
 	struct pxafb_info *fbi;
 	void *addr;
@@ -1850,7 +1850,7 @@ static struct pxafb_info *pxafb_init_fbinfo(struct device *dev,
 
 #ifdef CONFIG_FB_PXA_PARAMETERS
 static int parse_opt_mode(struct device *dev, const char *this_opt,
-			  struct pxafb_mach_info *inf)
+			  struct pxafb_platform_data *inf)
 {
 	const char *name = this_opt+5;
 	unsigned int namelen = strlen(name);
@@ -1908,7 +1908,7 @@ done:
 }
 
 static int parse_opt(struct device *dev, char *this_opt,
-		     struct pxafb_mach_info *inf)
+		     struct pxafb_platform_data *inf)
 {
 	struct pxafb_mode_info *mode = &inf->modes[0];
 	char s[64];
@@ -2008,7 +2008,7 @@ static int parse_opt(struct device *dev, char *this_opt,
 }
 
 static int pxafb_parse_options(struct device *dev, char *options,
-			       struct pxafb_mach_info *inf)
+			       struct pxafb_platform_data *inf)
 {
 	char *this_opt;
 	int ret;
@@ -2057,7 +2057,7 @@ MODULE_PARM_DESC(options, "LCD parameters (see Documentation/fb/pxafb.rst)");
 #ifdef DEBUG_VAR
 /* Check for various illegal bit-combinations. Currently only
  * a warning is given. */
-static void pxafb_check_options(struct device *dev, struct pxafb_mach_info *inf)
+static void pxafb_check_options(struct device *dev, struct pxafb_platform_data *inf)
 {
 	if (inf->lcd_conn)
 		return;
@@ -2096,7 +2096,7 @@ static const char * const lcd_types[] = {
 };
 
 static int of_get_pxafb_display(struct device *dev, struct device_node *disp,
-				struct pxafb_mach_info *info, u32 bus_width)
+				struct pxafb_platform_data *info, u32 bus_width)
 {
 	struct display_timings *timings;
 	struct videomode vm;
@@ -2165,7 +2165,7 @@ out:
 }
 
 static int of_get_pxafb_mode_info(struct device *dev,
-				  struct pxafb_mach_info *info)
+				  struct pxafb_platform_data *info)
 {
 	struct device_node *display, *np;
 	u32 bus_width;
@@ -2201,10 +2201,10 @@ static int of_get_pxafb_mode_info(struct device *dev,
 	return 0;
 }
 
-static struct pxafb_mach_info *of_pxafb_of_mach_info(struct device *dev)
+static struct pxafb_platform_data *of_pxafb_of_mach_info(struct device *dev)
 {
 	int ret;
-	struct pxafb_mach_info *info;
+	struct pxafb_platform_data *info;
 
 	if (!dev->of_node)
 		return NULL;
@@ -2223,7 +2223,7 @@ static struct pxafb_mach_info *of_pxafb_of_mach_info(struct device *dev)
 	return info;
 }
 #else
-static struct pxafb_mach_info *of_pxafb_of_mach_info(struct device *dev)
+static struct pxafb_platform_data *of_pxafb_of_mach_info(struct device *dev)
 {
 	return NULL;
 }
@@ -2232,7 +2232,7 @@ static struct pxafb_mach_info *of_pxafb_of_mach_info(struct device *dev)
 static int pxafb_probe(struct platform_device *dev)
 {
 	struct pxafb_info *fbi;
-	struct pxafb_mach_info *inf, *pdata;
+	struct pxafb_platform_data *inf, *pdata;
 	int i, irq, ret;
 
 	dev_dbg(&dev->dev, "pxafb_probe\n");

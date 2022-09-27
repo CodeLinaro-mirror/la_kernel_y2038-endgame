@@ -86,7 +86,7 @@ static unsigned long __init uart_get_clk_rate(struct clk *clk)
 
 static void __init uart_complete(
 	struct platform_device *orion_uart,
-	struct plat_serial8250_port *data,
+	struct serial8250_platform_data *data,
 	struct resource *resources,
 	void __iomem *membase,
 	resource_size_t mapbase,
@@ -106,7 +106,7 @@ static void __init uart_complete(
 /*****************************************************************************
  * UART0
  ****************************************************************************/
-static struct plat_serial8250_port orion_uart0_data[] = {
+static struct serial8250_platform_data orion_uart0_data[] = {
 	{
 		.flags		= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF,
 		.iotype		= UPIO_MEM,
@@ -134,7 +134,7 @@ void __init orion_uart0_init(void __iomem *membase,
 /*****************************************************************************
  * UART1
  ****************************************************************************/
-static struct plat_serial8250_port orion_uart1_data[] = {
+static struct serial8250_platform_data orion_uart1_data[] = {
 	{
 		.flags		= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF,
 		.iotype		= UPIO_MEM,
@@ -162,7 +162,7 @@ void __init orion_uart1_init(void __iomem *membase,
 /*****************************************************************************
  * UART2
  ****************************************************************************/
-static struct plat_serial8250_port orion_uart2_data[] = {
+static struct serial8250_platform_data orion_uart2_data[] = {
 	{
 		.flags		= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF,
 		.iotype		= UPIO_MEM,
@@ -190,7 +190,7 @@ void __init orion_uart2_init(void __iomem *membase,
 /*****************************************************************************
  * UART3
  ****************************************************************************/
-static struct plat_serial8250_port orion_uart3_data[] = {
+static struct serial8250_platform_data orion_uart3_data[] = {
 	{
 		.flags		= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF,
 		.iotype		= UPIO_MEM,
@@ -470,7 +470,7 @@ void __init orion_ge11_init(struct mv643xx_eth_platform_data *eth_data,
 /*****************************************************************************
  * I2C
  ****************************************************************************/
-static struct mv64xxx_i2c_pdata orion_i2c_pdata = {
+static struct mv64xxx_i2c_platform_data orion_i2c_pdata = {
 	.freq_n		= 3,
 	.timeout	= 1000, /* Default timeout of 1 second */
 };
@@ -485,7 +485,7 @@ static struct platform_device orion_i2c = {
 	},
 };
 
-static struct mv64xxx_i2c_pdata orion_i2c_1_pdata = {
+static struct mv64xxx_i2c_platform_data orion_i2c_1_pdata = {
 	.freq_n		= 3,
 	.timeout	= 1000, /* Default timeout of 1 second */
 };
@@ -684,7 +684,7 @@ void __init orion_xor1_init(unsigned long mapbase_low,
 /*****************************************************************************
  * EHCI
  ****************************************************************************/
-static struct orion_ehci_data orion_ehci_data;
+static struct orion_ehci_platform_data orion_ehci_platform_data;
 static u64 ehci_dmamask = DMA_BIT_MASK(32);
 
 
@@ -699,7 +699,7 @@ static struct platform_device orion_ehci = {
 	.dev		= {
 		.dma_mask		= &ehci_dmamask,
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
-		.platform_data		= &orion_ehci_data,
+		.platform_data		= &orion_ehci_platform_data,
 	},
 };
 
@@ -707,7 +707,7 @@ void __init orion_ehci_init(unsigned long mapbase,
 			    unsigned long irq,
 			    enum orion_ehci_phy_ver phy_version)
 {
-	orion_ehci_data.phy_version = phy_version;
+	orion_ehci_platform_data.phy_version = phy_version;
 	fill_resources_irq(&orion_ehci, orion_ehci_resources, mapbase, SZ_4K - 1,
 		       irq);
 
@@ -725,7 +725,7 @@ static struct platform_device orion_ehci_1 = {
 	.dev		= {
 		.dma_mask		= &ehci_dmamask,
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
-		.platform_data		= &orion_ehci_data,
+		.platform_data		= &orion_ehci_platform_data,
 	},
 };
 
@@ -749,7 +749,7 @@ static struct platform_device orion_ehci_2 = {
 	.dev		= {
 		.dma_mask		= &ehci_dmamask,
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
-		.platform_data		= &orion_ehci_data,
+		.platform_data		= &orion_ehci_platform_data,
 	},
 };
 

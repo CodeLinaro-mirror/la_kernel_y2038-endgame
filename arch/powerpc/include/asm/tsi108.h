@@ -95,7 +95,7 @@ typedef struct {
 	u16 irq_num;		/* irq number */
 	u8 mac_addr[6];		/* phy mac address */
 	u16 phy_type;	/* type of phy on board */
-} hw_info;
+} tsi_eth_platform_data;
 
 extern u32 get_vir_csrbase(void);
 extern u32 tsi108_csr_vir_base;

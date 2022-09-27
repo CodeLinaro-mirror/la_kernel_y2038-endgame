@@ -44,7 +44,7 @@ struct omap_dmadev {
 	spinlock_t lock;
 	void __iomem *base;
 	const struct omap_dma_reg *reg_map;
-	struct omap_system_dma_plat_info *plat;
+	struct omap_system_dma_platform_data *plat;
 	const struct omap_dma_config *cfg;
 	struct notifier_block nb;
 	struct omap_dma_context context;
@@ -1673,7 +1673,7 @@ static int omap_dma_probe(struct platform_device *pdev)
 		od->cfg = conf;
 		od->plat = dev_get_platdata(&pdev->dev);
 		if (!od->plat) {
-			dev_err(&pdev->dev, "omap_system_dma_plat_info is missing");
+			dev_err(&pdev->dev, "omap_system_dma_platform_data is missing");
 			return -ENODEV;
 		}
 	} else if (IS_ENABLED(CONFIG_ARCH_OMAP1)) {

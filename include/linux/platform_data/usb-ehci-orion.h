@@ -16,7 +16,7 @@ enum orion_ehci_phy_ver {
 	EHCI_PHY_NA,
 };
 
-struct orion_ehci_data {
+struct orion_ehci_platform_data {
 	enum orion_ehci_phy_ver phy_version;
 };
 

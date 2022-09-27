@@ -12,7 +12,7 @@
 
 #include "8250.h"
 
-static struct plat_serial8250_port exar_data[] = {
+static struct serial8250_platform_data exar_data[] = {
 	SERIAL8250_PORT(0x100, 5),
 	SERIAL8250_PORT(0x108, 5),
 	SERIAL8250_PORT(0x110, 5),

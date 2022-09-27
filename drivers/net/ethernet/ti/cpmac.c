@@ -612,7 +612,7 @@ static void cpmac_hw_stop(struct net_device *dev)
 {
 	int i;
 	struct cpmac_priv *priv = netdev_priv(dev);
-	struct plat_cpmac_data *pdata = dev_get_platdata(&priv->pdev->dev);
+	struct cpmac_platform_data *pdata = dev_get_platdata(&priv->pdev->dev);
 
 	ar7_device_reset(pdata->reset_bit);
 	cpmac_write(priv->regs, CPMAC_RX_CONTROL,
@@ -635,7 +635,7 @@ static void cpmac_hw_start(struct net_device *dev)
 {
 	int i;
 	struct cpmac_priv *priv = netdev_priv(dev);
-	struct plat_cpmac_data *pdata = dev_get_platdata(&priv->pdev->dev);
+	struct cpmac_platform_data *pdata = dev_get_platdata(&priv->pdev->dev);
 
 	ar7_device_reset(pdata->reset_bit);
 	for (i = 0; i < 8; i++) {
@@ -1062,7 +1062,7 @@ static int cpmac_probe(struct platform_device *pdev)
 	struct resource *mem;
 	struct cpmac_priv *priv;
 	struct net_device *dev;
-	struct plat_cpmac_data *pdata;
+	struct cpmac_platform_data *pdata;
 	struct phy_device *phydev = NULL;
 
 	pdata = dev_get_platdata(&pdev->dev);

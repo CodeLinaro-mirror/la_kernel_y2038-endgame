@@ -47,7 +47,7 @@
  * 256KB NOR Flash on BOOT Device
  ****************************************************************************/
 
-static struct physmap_flash_data tsp2_nor_flash_data = {
+static struct physmap_flash_platform_data tsp2_nor_flash_data = {
 	.width    = 1,
 };
 

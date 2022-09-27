@@ -110,16 +110,16 @@ static const struct backlight_ops wm831x_backlight_ops = {
 static int wm831x_backlight_probe(struct platform_device *pdev)
 {
 	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
-	struct wm831x_pdata *wm831x_pdata = dev_get_platdata(pdev->dev.parent);
-	struct wm831x_backlight_pdata *pdata;
+	struct wm831x_platform_data *wm831x_platform_data = dev_get_platdata(pdev->dev.parent);
+	struct wm831x_backlight_platform_data *pdata;
 	struct wm831x_backlight_data *data;
 	struct backlight_device *bl;
 	struct backlight_properties props;
 	int ret, i, max_isel, isink_reg, dcdc_cfg;
 
 	/* We need platform data */
-	if (wm831x_pdata)
-		pdata = wm831x_pdata->backlight;
+	if (wm831x_platform_data)
+		pdata = wm831x_platform_data->backlight;
 	else
 		pdata = NULL;
 

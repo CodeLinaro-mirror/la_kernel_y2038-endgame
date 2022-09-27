@@ -160,7 +160,7 @@ struct s1d13xxxfb_par {
 #endif
 };
 
-struct s1d13xxxfb_pdata {
+struct s1d13xxxfb_platform_data {
 	const struct s1d13xxxfb_regval	*initregs;
 	const unsigned int		initregssize;
 	void				(*platform_init_video)(void);

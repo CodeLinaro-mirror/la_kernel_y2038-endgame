@@ -647,7 +647,7 @@ static void ep93xx_spi_release_dma(struct ep93xx_spi *espi)
 static int ep93xx_spi_probe(struct platform_device *pdev)
 {
 	struct spi_controller *host;
-	struct ep93xx_spi_info *info;
+	struct ep93xx_spi_platform_data *info;
 	struct ep93xx_spi *espi;
 	struct resource *res;
 	int irq;

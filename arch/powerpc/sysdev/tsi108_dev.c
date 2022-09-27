@@ -71,7 +71,7 @@ static int __init tsi108_eth_of_init(void)
 	for_each_compatible_node(np, "network", "tsi108-ethernet") {
 		struct resource r[2];
 		struct device_node *phy, *mdio;
-		hw_info tsi_eth_data;
+		tsi_eth_platform_data tsi_eth_data;
 		const unsigned int *phy_id;
 		const phandle *ph;
 
@@ -138,7 +138,7 @@ static int __init tsi108_eth_of_init(void)
 
 		ret =
 		    platform_device_add_data(tsi_eth_dev, &tsi_eth_data,
-					     sizeof(hw_info));
+					     sizeof(tsi_eth_platform_data));
 		if (ret)
 			goto unreg;
 	}

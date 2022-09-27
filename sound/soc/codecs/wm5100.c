@@ -75,7 +75,7 @@ struct wm5100_priv {
 
 	struct wm5100_fll fll[2];
 
-	struct wm5100_pdata pdata;
+	struct wm5100_platform_data pdata;
 
 #ifdef CONFIG_GPIOLIB
 	struct gpio_chip gpio_chip;
@@ -2412,7 +2412,7 @@ static const unsigned int wm5100_mic_ctrl_reg[] = {
 
 static int wm5100_i2c_probe(struct i2c_client *i2c)
 {
-	struct wm5100_pdata *pdata = dev_get_platdata(&i2c->dev);
+	struct wm5100_platform_data *pdata = dev_get_platdata(&i2c->dev);
 	struct wm5100_priv *wm5100;
 	unsigned int reg;
 	int ret, i, irq_flags;

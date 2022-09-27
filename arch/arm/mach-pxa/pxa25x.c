@@ -222,7 +222,7 @@ static const struct dma_slave_map pxa25x_slave_map[] = {
 	{ "pxa25x-nssp.2", "tx", PDMA_FILTER_PARAM(LOWEST, 24) },
 };
 
-static struct mmp_dma_platdata pxa25x_dma_pdata = {
+static struct mmp_dma_platform_data pxa25x_dma_pdata = {
 	.dma_channels	= 16,
 	.nb_requestors	= 40,
 	.slave_map	= pxa25x_slave_map,

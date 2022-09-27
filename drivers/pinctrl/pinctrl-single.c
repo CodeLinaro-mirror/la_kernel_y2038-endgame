@@ -1777,7 +1777,7 @@ static int pcs_quirk_missing_pinctrl_cells(struct pcs_device *pcs,
 static int pcs_probe(struct platform_device *pdev)
 {
 	struct device_node *np = pdev->dev.of_node;
-	struct pcs_pdata *pdata;
+	struct pcs_platform_data *pdata;
 	struct resource *res;
 	struct pcs_device *pcs;
 	const struct pcs_soc_data *soc;
