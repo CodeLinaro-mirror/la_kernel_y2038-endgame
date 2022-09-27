@@ -1326,10 +1326,10 @@ static bool pxa2xx_spi_idma_filter(struct dma_chan *chan, void *param)
 	return param == chan->device->dev;
 }
 
-static struct pxa2xx_spi_controller *
+static struct pxa_spi_platform_data *
 pxa2xx_spi_init_pdata(struct platform_device *pdev)
 {
-	struct pxa2xx_spi_controller *pdata;
+	struct pxa_spi_platform_data *pdata;
 	struct device *dev = &pdev->dev;
 	struct device *parent = dev->parent;
 	struct ssp_device *ssp;
@@ -1435,7 +1435,7 @@ static size_t pxa2xx_spi_max_dma_transfer_size(struct spi_device *spi)
 static int pxa2xx_spi_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
-	struct pxa2xx_spi_controller *platform_info;
+	struct pxa_spi_platform_data *platform_info;
 	struct spi_controller *controller;
 	struct driver_data *drv_data;
 	struct ssp_device *ssp;

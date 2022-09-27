@@ -35,7 +35,7 @@ struct nspire_keypad {
 	struct input_dev *input;
 	struct clk *clk;
 
-	struct matrix_keymap_data *keymap;
+	struct matrix_keymap_platform_data *keymap;
 	int row_shift;
 
 	/* Maximum delay estimated assuming 33MHz APB */

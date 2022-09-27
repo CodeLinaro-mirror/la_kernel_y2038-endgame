@@ -130,7 +130,7 @@ static int pismo_add_device(struct pismo_data *pismo, int i,
 static int pismo_add_nor(struct pismo_data *pismo, int i,
 			 struct pismo_mem *region)
 {
-	struct physmap_flash_data data = {
+	struct physmap_flash_platform_data data = {
 		.width = region->width,
 	};
 

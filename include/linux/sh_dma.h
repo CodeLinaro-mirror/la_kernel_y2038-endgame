@@ -47,7 +47,7 @@ struct sh_dmae_channel {
 };
 
 /**
- * struct sh_dmae_pdata - DMAC platform data
+ * struct sh_dmae_platform_data - DMAC platform data
  * @slave:		array of slaves
  * @slave_num:		number of slaves in the above array
  * @channel:		array of DMA channels
@@ -68,7 +68,7 @@ struct sh_dmae_channel {
  * @chclr_bitwise:	channel CHCLR registers are bitwise
  * @slave_only:		DMAC cannot be used for MEMCPY
  */
-struct sh_dmae_pdata {
+struct sh_dmae_platform_data {
 	const struct sh_dmae_slave_config *slave;
 	int slave_num;
 	const struct sh_dmae_channel *channel;

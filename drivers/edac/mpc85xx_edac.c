@@ -146,7 +146,7 @@ static int mpc85xx_pci_err_probe(struct platform_device *op)
 {
 	struct edac_pci_ctl_info *pci;
 	struct mpc85xx_pci_pdata *pdata;
-	struct mpc85xx_edac_pci_plat_data *plat_data;
+	struct mpc85xx_edac_pci_platform_data *plat_data;
 	struct device_node *of_node;
 	struct resource r;
 	int res = 0;

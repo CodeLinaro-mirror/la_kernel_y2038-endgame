@@ -57,7 +57,7 @@ static struct resource collie_scoop_resources[] = {
 	[0] = DEFINE_RES_MEM(0x40800000, SZ_4K),
 };
 
-static struct scoop_config collie_scoop_setup = {
+static struct scoop_platform_data collie_scoop_setup = {
 	.io_dir 	= COLLIE_SCOOP_IO_DIR,
 	.io_out		= COLLIE_SCOOP_IO_OUT,
 	.gpio_base	= COLLIE_SCOOP_GPIO_BASE,
@@ -82,16 +82,16 @@ static struct scoop_pcmcia_dev collie_pcmcia_scoop[] = {
 	},
 };
 
-static struct scoop_pcmcia_config collie_pcmcia_config = {
+static struct scoop_pcmcia_platform_data collie_pcmcia_config = {
 	.devs		= &collie_pcmcia_scoop[0],
 	.num_devs	= 1,
 };
 
-static struct ucb1x00_plat_data collie_ucb1x00_data = {
+static struct ucb1x00_platform_data collie_ucb1x00_data = {
 	.gpio_base	= COLLIE_TC35143_GPIO_BASE,
 };
 
-static struct mcp_plat_data collie_mcp_data = {
+static struct mcp_platform_data collie_mcp_data = {
 	.mccr0		= MCCR0_ADM | MCCR0_ExtClk,
 	.sclk_rate	= 9216000,
 	.codec_pdata	= &collie_ucb1x00_data,
@@ -325,7 +325,7 @@ static struct resource collie_flash_resources[] = {
 	DEFINE_RES_MEM(SA1100_CS0_PHYS, SZ_32M),
 };
 
-static struct sa1100fb_mach_info collie_lcd_info = {
+static struct sa1100fb_platform_data collie_lcd_info = {
 	.pixclock	= 171521,	.bpp		= 16,
 	.xres		= 320,		.yres		= 240,
 

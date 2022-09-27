@@ -146,7 +146,7 @@ struct au1200_lcd_iodata_t {
 /* Private, per-framebuffer management information (independent of the panel itself) */
 struct au1200fb_device {
 	struct fb_info *fb_info;		/* FB driver info record */
-	struct au1200fb_platdata *pd;
+	struct au1200fb_platform_data *pd;
 	struct device *dev;
 
 	int					plane;
@@ -770,7 +770,7 @@ static int au1200_setlocation (struct au1200fb_device *fbdev, int plane,
 }
 
 static void au1200_setpanel(struct panel_settings *newpanel,
-			    struct au1200fb_platdata *pd)
+			    struct au1200fb_platform_data *pd)
 {
 	/*
 	 * Perform global setup/init of LCD controller
@@ -1578,7 +1578,7 @@ static int au1200fb_init_fbinfo(struct au1200fb_device *fbdev)
 /*-------------------------------------------------------------------------*/
 
 
-static int au1200fb_setup(struct au1200fb_platdata *pd)
+static int au1200fb_setup(struct au1200fb_platform_data *pd)
 {
 	char *options = NULL;
 	char *this_opt, *endptr;
@@ -1647,7 +1647,7 @@ out:
 static int au1200fb_drv_probe(struct platform_device *dev)
 {
 	struct au1200fb_device *fbdev;
-	struct au1200fb_platdata *pd;
+	struct au1200fb_platform_data *pd;
 	struct fb_info *fbi = NULL;
 	int bpp, plane, ret, irq;
 
@@ -1761,7 +1761,7 @@ failed:
 
 static void au1200fb_drv_remove(struct platform_device *dev)
 {
-	struct au1200fb_platdata *pd = platform_get_drvdata(dev);
+	struct au1200fb_platform_data *pd = platform_get_drvdata(dev);
 	struct fb_info *fbi;
 	int plane;
 
@@ -1787,7 +1787,7 @@ static void au1200fb_drv_remove(struct platform_device *dev)
 #ifdef CONFIG_PM
 static int au1200fb_drv_suspend(struct device *dev)
 {
-	struct au1200fb_platdata *pd = dev_get_drvdata(dev);
+	struct au1200fb_platform_data *pd = dev_get_drvdata(dev);
 	au1200_setpanel(NULL, pd);
 
 	lcd->outmask = 0;
@@ -1798,7 +1798,7 @@ static int au1200fb_drv_suspend(struct device *dev)
 
 static int au1200fb_drv_resume(struct device *dev)
 {
-	struct au1200fb_platdata *pd = dev_get_drvdata(dev);
+	struct au1200fb_platform_data *pd = dev_get_drvdata(dev);
 	struct fb_info *fbi;
 	int i;
 

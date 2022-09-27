@@ -50,7 +50,7 @@ struct cros_ec_keyb {
 	unsigned int rows;
 	unsigned int cols;
 	int row_shift;
-	const struct matrix_keymap_data *keymap_data;
+	const struct matrix_keymap_platform_data *keymap_data;
 	bool ghost_filter;
 	uint8_t *valid_keys;
 	uint8_t *old_kb_state;

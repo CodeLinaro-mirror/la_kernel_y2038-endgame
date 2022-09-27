@@ -35,7 +35,7 @@ struct wm5100_jack_mode {
 
 #define WM5100_GPIO_SET 0x10000
 
-struct wm5100_pdata {
+struct wm5100_platform_data {
 	int reset;      /** GPIO controlling /RESET, if any */
 	int ldo_ena;    /** GPIO controlling LODENA, if any */
 	int hp_pol;     /** GPIO controlling headset polarity, if any */

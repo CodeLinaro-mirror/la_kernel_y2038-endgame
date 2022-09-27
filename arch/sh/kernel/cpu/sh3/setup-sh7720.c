@@ -35,7 +35,7 @@ static struct resource rtc_resources[] = {
 	},
 };
 
-static struct sh_rtc_platform_info rtc_info = {
+static struct sh_rtc_platform_data rtc_info = {
 	.capabilities	= RTC_CAP_4_DIGIT_YEAR,
 };
 
@@ -49,7 +49,7 @@ static struct platform_device rtc_device = {
 	},
 };
 
-static struct plat_sci_port scif0_platform_data = {
+static struct scif_platform_data scif0_platform_data = {
 	.type		= PORT_SCIF,
 	.ops		= &sh7720_sci_port_ops,
 	.regtype	= SCIx_SH7705_SCIF_REGTYPE,
@@ -70,7 +70,7 @@ static struct platform_device scif0_device = {
 	},
 };
 
-static struct plat_sci_port scif1_platform_data = {
+static struct scif_platform_data scif1_platform_data = {
 	.type		= PORT_SCIF,
 	.ops		= &sh7720_sci_port_ops,
 	.regtype	= SCIx_SH7705_SCIF_REGTYPE,
@@ -106,7 +106,7 @@ static struct resource usb_ohci_resources[] = {
 
 static u64 usb_ohci_dma_mask = 0xffffffffUL;
 
-static struct usb_ohci_pdata usb_ohci_pdata;
+static struct usb_ohci_platform_data usb_ohci_platform_data;
 
 static struct platform_device usb_ohci_device = {
 	.name		= "ohci-platform",
@@ -114,7 +114,7 @@ static struct platform_device usb_ohci_device = {
 	.dev = {
 		.dma_mask		= &usb_ohci_dma_mask,
 		.coherent_dma_mask	= 0xffffffff,
-		.platform_data		= &usb_ohci_pdata,
+		.platform_data		= &usb_ohci_platform_data,
 	},
 	.num_resources	= ARRAY_SIZE(usb_ohci_resources),
 	.resource	= usb_ohci_resources,
@@ -146,7 +146,7 @@ static struct platform_device usbf_device = {
 	.resource	= usbf_resources,
 };
 
-static struct sh_timer_config cmt_platform_data = {
+static struct sh_timer_platform_data cmt_platform_data = {
 	.channels_mask = 0x1f,
 };
 
@@ -165,7 +165,7 @@ static struct platform_device cmt_device = {
 	.num_resources	= ARRAY_SIZE(cmt_resources),
 };
 
-static struct sh_timer_config tmu0_platform_data = {
+static struct sh_timer_platform_data tmu0_platform_data = {
 	.channels_mask = 7,
 };
 

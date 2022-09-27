@@ -651,7 +651,7 @@ bool gpiochip_line_is_valid(const struct gpio_chip *gc, unsigned int offset);
 /* get driver data */
 void *gpiochip_get_data(struct gpio_chip *gc);
 
-struct bgpio_pdata {
+struct bgpio_platform_data {
 	const char *label;
 	int base;
 	int ngpio;

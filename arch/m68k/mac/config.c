@@ -946,7 +946,7 @@ static const struct resource mac_pata_baboon_rsrc[] __initconst = {
 	DEFINE_RES_IRQ(IRQ_BABOON_1),
 };
 
-static const struct pata_platform_info mac_pata_data __initconst = {
+static const struct pata_platform_data mac_pata_data __initconst = {
 	.ioport_shift = 2,
 };
 

@@ -177,7 +177,7 @@ extern int tps65010_config_vdcdc2(unsigned value);
 struct i2c_client;
 
 /**
- * struct tps65010_board - packages GPIO and LED lines
+ * struct tps65010_platform_data - packages GPIO and LED lines
  * @outmask: bit (N-1) is set to allow GPIO-N to be used as an
  *	(open drain) output
  * @setup: optional callback issued once the GPIOs are valid
@@ -192,7 +192,7 @@ struct i2c_client;
  * which hands the (now-valid) GPIOs to other drivers, or which puts
  * devices in their initial states using these GPIOs.
  */
-struct tps65010_board {
+struct tps65010_platform_data {
 	unsigned			outmask;
 	int		(*setup)(struct i2c_client *client, struct gpio_chip *gc);
 	void		(*teardown)(struct i2c_client *client, struct gpio_chip *gc);

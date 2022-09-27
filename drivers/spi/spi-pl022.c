@@ -371,7 +371,7 @@ struct pl022 {
 	void __iomem			*virtbase;
 	struct clk			*clk;
 	struct spi_controller		*host;
-	struct pl022_ssp_controller	*host_info;
+	struct pl022_ssp_platform_data	*master_info;
 	/* Message per-transfer pump */
 	struct tasklet_struct		pump_transfers;
 	struct spi_message		*cur_msg;
@@ -2075,18 +2075,18 @@ static void pl022_cleanup(struct spi_device *spi)
 	kfree(chip);
 }
 
-static struct pl022_ssp_controller *
+static struct pl022_ssp_platform_data *
 pl022_platform_data_dt_get(struct device *dev)
 {
 	struct device_node *np = dev->of_node;
-	struct pl022_ssp_controller *pd;
+	struct pl022_ssp_platform_data *pd;
 
 	if (!np) {
 		dev_err(dev, "no dt node defined\n");
 		return NULL;
 	}
 
-	pd = devm_kzalloc(dev, sizeof(struct pl022_ssp_controller), GFP_KERNEL);
+	pd = devm_kzalloc(dev, sizeof(struct pl022_ssp_platform_data), GFP_KERNEL);
 	if (!pd)
 		return NULL;
 
@@ -2101,7 +2101,7 @@ pl022_platform_data_dt_get(struct device *dev)
 static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 {
 	struct device *dev = &adev->dev;
-	struct pl022_ssp_controller *platform_info =
+	struct pl022_ssp_platform_data *platform_info =
 			dev_get_platdata(&adev->dev);
 	struct spi_controller *host;
 	struct pl022 *pl022 = NULL;	/*Data for this driver */

@@ -70,9 +70,9 @@ struct platform_device s3c_device_fb = {
 	},
 };
 
-void __init s3c_fb_set_platdata(struct s3c_fb_platdata *pd)
+void __init s3c_fb_set_platdata(struct s3c_fb_platform_data *pd)
 {
-	s3c_set_platdata(pd, sizeof(struct s3c_fb_platdata),
+	s3c_set_platdata(pd, sizeof(struct s3c_fb_platform_data),
 			 &s3c_device_fb);
 }
 #endif /* CONFIG_S3C_DEV_FB */
@@ -85,7 +85,7 @@ static struct resource s3c_hsmmc_resource[] = {
 	[1] = DEFINE_RES_IRQ(IRQ_HSMMC0),
 };
 
-struct s3c_sdhci_platdata s3c_hsmmc0_def_platdata = {
+struct s3c_sdhci_platform_data s3c_hsmmc0_def_platdata = {
 	.max_width	= 4,
 	.host_caps	= (MMC_CAP_4_BIT_DATA |
 			   MMC_CAP_MMC_HIGHSPEED | MMC_CAP_SD_HIGHSPEED),
@@ -103,7 +103,7 @@ struct platform_device s3c_device_hsmmc0 = {
 	},
 };
 
-void s3c_sdhci0_set_platdata(struct s3c_sdhci_platdata *pd)
+void s3c_sdhci0_set_platdata(struct s3c_sdhci_platform_data *pd)
 {
 	s3c_sdhci_set_platdata(pd, &s3c_hsmmc0_def_platdata);
 }
@@ -115,7 +115,7 @@ static struct resource s3c_hsmmc1_resource[] = {
 	[1] = DEFINE_RES_IRQ(IRQ_HSMMC1),
 };
 
-struct s3c_sdhci_platdata s3c_hsmmc1_def_platdata = {
+struct s3c_sdhci_platform_data s3c_hsmmc1_def_platdata = {
 	.max_width	= 4,
 	.host_caps	= (MMC_CAP_4_BIT_DATA |
 			   MMC_CAP_MMC_HIGHSPEED | MMC_CAP_SD_HIGHSPEED),
@@ -133,7 +133,7 @@ struct platform_device s3c_device_hsmmc1 = {
 	},
 };
 
-void s3c_sdhci1_set_platdata(struct s3c_sdhci_platdata *pd)
+void s3c_sdhci1_set_platdata(struct s3c_sdhci_platform_data *pd)
 {
 	s3c_sdhci_set_platdata(pd, &s3c_hsmmc1_def_platdata);
 }
@@ -147,7 +147,7 @@ static struct resource s3c_hsmmc2_resource[] = {
 	[1] = DEFINE_RES_IRQ(IRQ_HSMMC2),
 };
 
-struct s3c_sdhci_platdata s3c_hsmmc2_def_platdata = {
+struct s3c_sdhci_platform_data s3c_hsmmc2_def_platdata = {
 	.max_width	= 4,
 	.host_caps	= (MMC_CAP_4_BIT_DATA |
 			   MMC_CAP_MMC_HIGHSPEED | MMC_CAP_SD_HIGHSPEED),
@@ -165,7 +165,7 @@ struct platform_device s3c_device_hsmmc2 = {
 	},
 };
 
-void s3c_sdhci2_set_platdata(struct s3c_sdhci_platdata *pd)
+void s3c_sdhci2_set_platdata(struct s3c_sdhci_platform_data *pd)
 {
 	s3c_sdhci_set_platdata(pd, &s3c_hsmmc2_def_platdata);
 }
@@ -177,7 +177,7 @@ static struct resource s3c_hsmmc3_resource[] = {
 	[1] = DEFINE_RES_IRQ(IRQ_HSMMC3),
 };
 
-struct s3c_sdhci_platdata s3c_hsmmc3_def_platdata = {
+struct s3c_sdhci_platform_data s3c_hsmmc3_def_platdata = {
 	.max_width	= 4,
 	.host_caps	= (MMC_CAP_4_BIT_DATA |
 			   MMC_CAP_MMC_HIGHSPEED | MMC_CAP_SD_HIGHSPEED),
@@ -195,7 +195,7 @@ struct platform_device s3c_device_hsmmc3 = {
 	},
 };
 
-void s3c_sdhci3_set_platdata(struct s3c_sdhci_platdata *pd)
+void s3c_sdhci3_set_platdata(struct s3c_sdhci_platform_data *pd)
 {
 	s3c_sdhci_set_platdata(pd, &s3c_hsmmc3_def_platdata);
 }
@@ -215,16 +215,16 @@ struct platform_device s3c_device_i2c0 = {
 	.resource	= s3c_i2c0_resource,
 };
 
-struct s3c2410_platform_i2c default_i2c_data __initdata = {
+struct s3c_i2c_platform_data default_i2c_data __initdata = {
 	.flags		= 0,
 	.slave_addr	= 0x10,
 	.frequency	= 100*1000,
 	.sda_delay	= 100,
 };
 
-void __init s3c_i2c0_set_platdata(struct s3c2410_platform_i2c *pd)
+void __init s3c_i2c0_set_platdata(struct s3c_i2c_platform_data *pd)
 {
-	struct s3c2410_platform_i2c *npd;
+	struct s3c_i2c_platform_data *npd;
 
 	if (!pd) {
 		pd = &default_i2c_data;
@@ -250,9 +250,9 @@ struct platform_device s3c_device_i2c1 = {
 	.resource	= s3c_i2c1_resource,
 };
 
-void __init s3c_i2c1_set_platdata(struct s3c2410_platform_i2c *pd)
+void __init s3c_i2c1_set_platdata(struct s3c_i2c_platform_data *pd)
 {
-	struct s3c2410_platform_i2c *npd;
+	struct s3c_i2c_platform_data *npd;
 
 	if (!pd) {
 		pd = &default_i2c_data;
@@ -281,9 +281,9 @@ struct platform_device samsung_device_keypad = {
 	.resource	= samsung_keypad_resources,
 };
 
-void __init samsung_keypad_set_platdata(struct samsung_keypad_platdata *pd)
+void __init samsung_keypad_set_platdata(struct samsung_keypad_platform_data *pd)
 {
-	struct samsung_keypad_platdata *npd;
+	struct samsung_keypad_platform_data *npd;
 
 	npd = s3c_set_platdata(pd, sizeof(*npd), &samsung_device_keypad);
 
@@ -306,7 +306,7 @@ struct platform_device samsung_device_pwm = {
 	.resource	= samsung_pwm_resource,
 };
 
-void __init samsung_pwm_set_platdata(struct samsung_pwm_variant *pd)
+void __init samsung_pwm_set_platdata(struct samsung_pwm_platform_data *pd)
 {
 	samsung_device_pwm.dev.platform_data = pd;
 }
@@ -351,9 +351,9 @@ struct platform_device s3c_device_usb_hsotg = {
 	},
 };
 
-void __init dwc2_hsotg_set_platdata(struct dwc2_hsotg_plat *pd)
+void __init dwc2_hsotg_set_platdata(struct dwc2_hsotg_platform_data *pd)
 {
-	struct dwc2_hsotg_plat *npd;
+	struct dwc2_hsotg_platform_data *npd;
 
 	npd = s3c_set_platdata(pd, sizeof(*npd), &s3c_device_usb_hsotg);
 
@@ -383,7 +383,7 @@ struct platform_device s3c64xx_device_spi0 = {
 
 void __init s3c64xx_spi0_set_platdata(int src_clk_nr, int num_cs)
 {
-	struct s3c64xx_spi_info pd;
+	struct s3c64xx_spi_platform_data pd;
 
 	/* Reject invalid configuration */
 	if (!num_cs || src_clk_nr < 0) {

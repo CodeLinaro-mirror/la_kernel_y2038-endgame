@@ -99,7 +99,7 @@ static struct mtd_partition osk_partitions[] = {
 	}
 };
 
-static struct physmap_flash_data osk_flash_data = {
+static struct physmap_flash_platform_data osk_flash_data = {
 	.width		= 2,
 	.set_vpp	= omap1_set_vpp,
 	.parts		= osk_partitions,
@@ -121,7 +121,7 @@ static struct platform_device osk5912_flash_device = {
 	.resource	= &osk_flash_resource,
 };
 
-static struct smc91x_platdata osk5912_smc91x_info = {
+static struct smc91x_platform_data osk5912_smc91x_info = {
 	.flags	= SMC91X_USE_16BIT | SMC91X_NOWAIT,
 	.leda	= RPC_LED_100_10,
 	.ledb	= RPC_LED_TX_RX,
@@ -258,7 +258,7 @@ static void osk_tps_teardown(struct i2c_client *client, struct gpio_chip *gc)
 	gpiochip_free_own_desc(vdd_dsp);
 }
 
-static struct tps65010_board tps_board = {
+static struct tps65010_platform_data tps_board = {
 	.outmask	= 0x0f,
 	.setup		= osk_tps_setup,
 	.teardown	= osk_tps_teardown,
@@ -334,7 +334,7 @@ static struct gpiod_lookup_table osk_usb_gpio_table = {
 	},
 };
 
-static struct omap_usb_config osk_usb_config __initdata = {
+static struct omap_usb_platform_data osk_usb_config __initdata = {
 	/* has usb host connector (A) ... for development it can also
 	 * be used, with a NONSTANDARD gender-bending cable/dongle, as
 	 * a peripheral.

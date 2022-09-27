@@ -38,7 +38,7 @@
 	.regshift	= 0,					\
 }
 
-static struct plat_serial8250_port uart8250_data[MACH_LOONGSON_END + 1] = {
+static struct serial8250_platform_data uart8250_data[MACH_LOONGSON_END + 1] = {
 	[MACH_LOONGSON_UNKNOWN]	= {},
 	[MACH_LEMOTE_FL2E]	= PORT(4, 1843200),
 	[MACH_LEMOTE_FL2F]	= PORT(3, 1843200),
@@ -72,7 +72,7 @@ static int __init serial_init(void)
 			loongson_uart_base - LOONGSON_PCIIO_BASE;
 
 	memset(&uart8250_data[mips_machtype + 1], 0,
-			sizeof(struct plat_serial8250_port));
+			sizeof(struct serial8250_platform_data));
 	uart8250_device.dev.platform_data = &uart8250_data[mips_machtype];
 
 	return platform_device_register(&uart8250_device);

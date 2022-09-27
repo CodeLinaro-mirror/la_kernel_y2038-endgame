@@ -18,7 +18,7 @@ struct push_switch {
 	struct platform_device	*pdev;
 };
 
-struct push_switch_platform_info {
+struct push_switch_platform_data {
 	/* IRQ handler */
 	irqreturn_t		(*irq_handler)(int irq, void *data);
 	/* Special IRQ flags */

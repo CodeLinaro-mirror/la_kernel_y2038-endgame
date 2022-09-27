@@ -398,7 +398,7 @@ static void pl011_sgbuf_free(struct dma_chan *chan, struct pl011_sgbuf *sg,
 static void pl011_dma_probe(struct uart_amba_port *uap)
 {
 	/* DMA is the sole user of the platform data right now */
-	struct amba_pl011_data *plat = dev_get_platdata(uap->port.dev);
+	struct amba_pl011_platform_data *plat = dev_get_platdata(uap->port.dev);
 	struct device *dev = uap->port.dev;
 	struct dma_slave_config tx_conf = {
 		.dst_addr = uap->port.mapbase +
@@ -1756,7 +1756,7 @@ static int pl011_hwinit(struct uart_port *port)
 	pl011_write(UART011_RTIM | UART011_RXIM, uap, REG_IMSC);
 
 	if (dev_get_platdata(uap->port.dev)) {
-		struct amba_pl011_data *plat;
+		struct amba_pl011_platform_data *plat;
 
 		plat = dev_get_platdata(uap->port.dev);
 		if (plat->init)
@@ -1984,7 +1984,7 @@ static void pl011_shutdown(struct uart_port *port)
 	pinctrl_pm_select_sleep_state(port->dev);
 
 	if (dev_get_platdata(uap->port.dev)) {
-		struct amba_pl011_data *plat;
+		struct amba_pl011_platform_data *plat;
 
 		plat = dev_get_platdata(uap->port.dev);
 		if (plat->exit)
@@ -2432,7 +2432,7 @@ static int pl011_console_setup(struct console *co, char *options)
 		return ret;
 
 	if (dev_get_platdata(uap->port.dev)) {
-		struct amba_pl011_data *plat;
+		struct amba_pl011_platform_data *plat;
 
 		plat = dev_get_platdata(uap->port.dev);
 		if (plat->init)

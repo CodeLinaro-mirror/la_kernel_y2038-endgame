@@ -2503,7 +2503,7 @@ sh_mobile_lcdc_channel_init(struct sh_mobile_lcdc_chan *ch)
 
 static int sh_mobile_lcdc_probe(struct platform_device *pdev)
 {
-	struct sh_mobile_lcdc_info *pdata = pdev->dev.platform_data;
+	struct sh_mobile_lcdc_platform_data *pdata = pdev->dev.platform_data;
 	struct sh_mobile_lcdc_priv *priv;
 	struct resource *res;
 	int num_channels;

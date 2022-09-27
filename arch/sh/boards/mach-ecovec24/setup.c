@@ -124,7 +124,7 @@ static struct mtd_partition nor_flash_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data nor_flash_data = {
+static struct physmap_flash_platform_data nor_flash_data = {
 	.width		= 2,
 	.parts		= nor_flash_partitions,
 	.nr_parts	= ARRAY_SIZE(nor_flash_partitions),
@@ -162,7 +162,7 @@ static struct resource sh_eth_resources[] = {
 	},
 };
 
-static struct sh_eth_plat_data sh_eth_plat = {
+static struct sh_eth_platform_data sh_eth_plat = {
 	.phy = 0x1f, /* SMSC LAN8700 */
 	.phy_interface = PHY_INTERFACE_MODE_MII,
 	.ether_link_active_low = 1
@@ -184,7 +184,7 @@ static void usb0_port_power(int port, int power)
 	gpio_set_value(GPIO_PTB4, power);
 }
 
-static struct r8a66597_platdata usb0_host_data = {
+static struct r8a66597_platform_data usb0_host_data = {
 	.on_chip = 1,
 	.port_power = usb0_port_power,
 };
@@ -220,7 +220,7 @@ static void usb1_port_power(int port, int power)
 	gpio_set_value(GPIO_PTB5, power);
 }
 
-static struct r8a66597_platdata usb1_common_data = {
+static struct r8a66597_platform_data usb1_common_data = {
 	.on_chip = 1,
 	.port_power = usb1_port_power,
 };
@@ -338,7 +338,7 @@ static const struct fb_videomode ecovec_dvi_modes[] = {
 	},
 };
 
-static struct sh_mobile_lcdc_info lcdc_info = {
+static struct sh_mobile_lcdc_platform_data lcdc_info = {
 	.ch[0] = {
 		.interface_type = RGB18,
 		.chan = LCDC_CHAN_MAINLCD,
@@ -640,7 +640,7 @@ static struct regulator_init_data cn12_power_init_data = {
 	.consumer_supplies      = cn12_power_consumers,
 };
 
-static struct fixed_voltage_config cn12_power_info = {
+static struct fixed_voltage_platform_data cn12_power_info = {
 	.supply_name = "CN12 SD/MMC Vdd",
 	.microvolts = 3300000,
 	.init_data = &cn12_power_init_data,
@@ -680,7 +680,7 @@ static struct regulator_init_data sdhi0_power_init_data = {
 	.consumer_supplies      = sdhi0_power_consumers,
 };
 
-static struct fixed_voltage_config sdhi0_power_info = {
+static struct fixed_voltage_platform_data sdhi0_power_info = {
 	.supply_name = "CN11 SD/MMC Vdd",
 	.microvolts = 3300000,
 	.init_data = &sdhi0_power_init_data,
@@ -928,16 +928,16 @@ static struct platform_device irda_device = {
 #include <media/i2c/ak881x.h>
 #include <media/drv-intf/sh_vou.h>
 
-static struct ak881x_pdata ak881x_pdata = {
+static struct ak881x_platform_data ak881x_platform_data = {
 	.flags = AK881X_IF_MODE_SLAVE,
 };
 
 static struct i2c_board_info ak8813 = {
 	I2C_BOARD_INFO("ak8813", 0x20),
-	.platform_data = &ak881x_pdata,
+	.platform_data = &ak881x_platform_data,
 };
 
-static struct sh_vou_pdata sh_vou_pdata = {
+static struct sh_vou_platform_data sh_vou_platform_data = {
 	.bus_fmt	= SH_VOU_BUS_8BIT,
 	.flags		= SH_VOU_HSYNC_LOW | SH_VOU_VSYNC_LOW,
 	.board_info	= &ak8813,
@@ -962,7 +962,7 @@ static struct platform_device vou_device = {
 	.num_resources  = ARRAY_SIZE(sh_vou_resources),
 	.resource       = sh_vou_resources,
 	.dev		= {
-		.platform_data	= &sh_vou_pdata,
+		.platform_data	= &sh_vou_platform_data,
 	},
 };
 
@@ -987,7 +987,7 @@ static struct resource sh_mmcif_resources[] = {
 	},
 };
 
-static struct sh_mmcif_plat_data sh_mmcif_plat = {
+static struct sh_mmcif_platform_data sh_mmcif_plat = {
 	.sup_pclk	= 0, /* SH7724: Max Pclk/2 */
 	.caps		= MMC_CAP_4_BIT_DATA |
 			  MMC_CAP_8_BIT_DATA |
@@ -1066,7 +1066,7 @@ static u8 mac_read(struct i2c_adapter *a, u8 command)
 	return buf;
 }
 
-static void __init sh_eth_init(struct sh_eth_plat_data *pd)
+static void __init sh_eth_init(struct sh_eth_platform_data *pd)
 {
 	struct i2c_adapter *a = i2c_get_adapter(1);
 	int i;
@@ -1085,7 +1085,7 @@ static void __init sh_eth_init(struct sh_eth_plat_data *pd)
 	i2c_put_adapter(a);
 }
 #else
-static void __init sh_eth_init(struct sh_eth_plat_data *pd)
+static void __init sh_eth_init(struct sh_eth_platform_data *pd)
 {
 	pr_err("unable to read sh_eth MAC address\n");
 }

@@ -49,7 +49,7 @@ static void __init edb93xx_register_flash(void)
 	}
 }
 
-static struct ep93xx_eth_data __initdata edb93xx_eth_data = {
+static struct ep93xx_eth_platform_data __initdata edb93xx_eth_data = {
 	.phy_id		= 1,
 };
 
@@ -110,7 +110,7 @@ static struct gpiod_lookup_table edb93xx_spi_cs_gpio_table = {
 	},
 };
 
-static struct ep93xx_spi_info edb93xx_spi_info __initdata = {
+static struct ep93xx_spi_platform_data edb93xx_spi_info __initdata = {
 	/* Intentionally left blank */
 };
 
@@ -175,7 +175,7 @@ static void __init edb93xx_register_pwm(void)
 /*************************************************************************
  * EDB93xx framebuffer
  *************************************************************************/
-static struct ep93xxfb_mach_info __initdata edb93xxfb_info = {
+static struct ep93xxfb_platform_data __initdata edb93xxfb_info = {
 	.flags		= 0,
 };
 

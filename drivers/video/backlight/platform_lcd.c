@@ -19,7 +19,7 @@
 struct platform_lcd {
 	struct device		*us;
 	struct lcd_device	*lcd;
-	struct plat_lcd_data	*pdata;
+	struct plat_lcd_platform_data	*pdata;
 
 	unsigned int		 power;
 	unsigned int		 suspended:1;
@@ -54,7 +54,7 @@ static int platform_lcd_set_power(struct lcd_device *lcd, int power)
 static int platform_lcd_match(struct lcd_device *lcd, struct fb_info *info)
 {
 	struct platform_lcd *plcd = to_our_lcd(lcd);
-	struct plat_lcd_data *pdata = plcd->pdata;
+	struct plat_lcd_platform_data *pdata = plcd->pdata;
 
 	if (pdata->match_fb)
 		return pdata->match_fb(pdata, info);
@@ -70,7 +70,7 @@ static struct lcd_ops platform_lcd_ops = {
 
 static int platform_lcd_probe(struct platform_device *pdev)
 {
-	struct plat_lcd_data *pdata;
+	struct plat_lcd_platform_data *pdata;
 	struct platform_lcd *plcd;
 	struct device *dev = &pdev->dev;
 	int err;

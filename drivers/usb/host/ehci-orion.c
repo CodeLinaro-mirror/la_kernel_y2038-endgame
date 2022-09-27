@@ -202,7 +202,7 @@ static const struct ehci_driver_overrides orion_overrides __initconst = {
 
 static int ehci_orion_drv_probe(struct platform_device *pdev)
 {
-	struct orion_ehci_data *pd = dev_get_platdata(&pdev->dev);
+	struct orion_ehci_platform_data *pd = dev_get_platdata(&pdev->dev);
 	const struct mbus_dram_target_info *dram;
 	struct resource *res;
 	struct usb_hcd *hcd;

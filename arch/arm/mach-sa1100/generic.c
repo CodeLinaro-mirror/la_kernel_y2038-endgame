@@ -186,7 +186,7 @@ void __init sa11x0_ppc_configure_mcp(void)
 	PPSR &= ~(PPC_TXD4 | PPC_SCLK | PPC_SFRM);
 }
 
-void sa11x0_register_mcp(struct mcp_plat_data *data)
+void sa11x0_register_mcp(struct mcp_platform_data *data)
 {
 	sa11x0_register_device(&sa11x0mcp_device, data);
 }
@@ -224,7 +224,7 @@ static struct platform_device sa11x0fb_device = {
 	.resource	= sa11x0fb_resources,
 };
 
-void sa11x0_register_lcd(struct sa1100fb_mach_info *inf)
+void sa11x0_register_lcd(struct sa1100fb_platform_data *inf)
 {
 	sa11x0_register_device(&sa11x0fb_device, inf);
 }
@@ -315,7 +315,7 @@ void __init sa11x0_init_late(void)
 }
 
 int __init sa11x0_register_fixed_regulator(int n,
-	struct fixed_voltage_config *cfg,
+	struct fixed_voltage_platform_data *cfg,
 	struct regulator_consumer_supply *supplies, unsigned num_supplies,
 	bool uses_gpio)
 {

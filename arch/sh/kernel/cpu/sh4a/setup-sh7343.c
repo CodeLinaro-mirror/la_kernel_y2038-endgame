@@ -15,7 +15,7 @@
 #include <asm/platform_early.h>
 
 /* Serial */
-static struct plat_sci_port scif0_platform_data = {
+static struct scif_platform_data scif0_platform_data = {
 	.scscr		= SCSCR_CKE1,
 	.type           = PORT_SCIF,
 };
@@ -35,7 +35,7 @@ static struct platform_device scif0_device = {
 	},
 };
 
-static struct plat_sci_port scif1_platform_data = {
+static struct scif_platform_data scif1_platform_data = {
 	.scscr		= SCSCR_CKE1,
 	.type           = PORT_SCIF,
 };
@@ -55,7 +55,7 @@ static struct platform_device scif1_device = {
 	},
 };
 
-static struct plat_sci_port scif2_platform_data = {
+static struct scif_platform_data scif2_platform_data = {
 	.scscr		= SCSCR_CKE1,
 	.type           = PORT_SCIF,
 };
@@ -75,7 +75,7 @@ static struct platform_device scif2_device = {
 	},
 };
 
-static struct plat_sci_port scif3_platform_data = {
+static struct scif_platform_data scif3_platform_data = {
 	.scscr		= SCSCR_CKE1,
 	.type           = PORT_SCIF,
 };
@@ -221,7 +221,7 @@ static struct platform_device jpu_device = {
 	.num_resources	= ARRAY_SIZE(jpu_resources),
 };
 
-static struct sh_timer_config cmt_platform_data = {
+static struct sh_timer_platform_data cmt_platform_data = {
 	.channels_mask = 0x20,
 };
 
@@ -240,7 +240,7 @@ static struct platform_device cmt_device = {
 	.num_resources	= ARRAY_SIZE(cmt_resources),
 };
 
-static struct sh_timer_config tmu0_platform_data = {
+static struct sh_timer_platform_data tmu0_platform_data = {
 	.channels_mask = 7,
 };
 

@@ -156,7 +156,7 @@ static const struct omap_lcd_config ams_delta_lcd_config __initconst = {
 	.ctrl_name	= "internal",
 };
 
-static struct omap_usb_config ams_delta_usb_config __initdata = {
+static struct omap_usb_platform_data ams_delta_usb_config __initdata = {
 	.register_host	= 1,
 	.hmc_mode	= 16,
 	.pins[0]	= 2,
@@ -175,7 +175,7 @@ static struct resource latch1_resources[] = {
 
 #define LATCH1_LABEL	"latch1"
 
-static struct bgpio_pdata latch1_pdata = {
+static struct bgpio_platform_data latch1_pdata = {
 	.label	= LATCH1_LABEL,
 	.base	= -1,
 	.ngpio	= LATCH1_NGPIO,
@@ -213,7 +213,7 @@ static struct resource latch2_resources[] = {
 
 #define LATCH2_LABEL	"latch2"
 
-static struct bgpio_pdata latch2_pdata = {
+static struct bgpio_platform_data latch2_pdata = {
 	.label	= LATCH2_LABEL,
 	.base	= -1,
 	.ngpio	= LATCH2_NGPIO,
@@ -260,7 +260,7 @@ static struct regulator_init_data modem_nreset_data = {
 	.consumer_supplies	= modem_nreset_consumers,
 };
 
-static struct fixed_voltage_config modem_nreset_config = {
+static struct fixed_voltage_platform_data modem_nreset_config = {
 	.supply_name		= "modem_nreset",
 	.microvolts		= 3300000,
 	.startup_delay		= 25000,
@@ -316,7 +316,7 @@ static struct mtd_partition partition_info[] = {
 	  .size		=  3 * SZ_256K },
 };
 
-static struct gpio_nand_platdata nand_platdata = {
+static struct gpio_nand_platform_data nand_platdata = {
 	.parts		= partition_info,
 	.num_parts	= ARRAY_SIZE(partition_info),
 };
@@ -366,7 +366,7 @@ static struct resource ams_delta_kp_resources[] = {
 	},
 };
 
-static const struct matrix_keymap_data ams_delta_keymap_data = {
+static const struct matrix_keymap_platform_data ams_delta_keymap_data = {
 	.keymap		= ams_delta_keymap,
 	.keymap_size	= ARRAY_SIZE(ams_delta_keymap),
 };
@@ -519,7 +519,7 @@ static struct regulator_init_data keybrd_pwr_initdata = {
 	.consumer_supplies	= keybrd_pwr_consumers,
 };
 
-static struct fixed_voltage_config keybrd_pwr_config = {
+static struct fixed_voltage_platform_data keybrd_pwr_config = {
 	.supply_name		= "keybrd_pwr",
 	.microvolts		= 5000000,
 	.init_data		= &keybrd_pwr_initdata,
@@ -567,7 +567,7 @@ static struct gpiod_hog ams_delta_gpio_hogs[] = {
 	{},
 };
 
-static struct plat_serial8250_port ams_delta_modem_ports[];
+static struct serial8250_platform_data ams_delta_modem_ports[];
 
 /*
  * Obtain MODEM IRQ GPIO descriptor using its hardware pin
@@ -765,7 +765,7 @@ static void modem_pm(struct uart_port *port, unsigned int state, unsigned old)
 			 state ? "dis" : "en", ret);
 }
 
-static struct plat_serial8250_port ams_delta_modem_ports[] = {
+static struct serial8250_platform_data ams_delta_modem_ports[] = {
 	{
 		.membase	= IOMEM(MODEM_VIRT),
 		.mapbase	= MODEM_PHYS,

@@ -122,7 +122,7 @@ static struct mtd_partition ts72xx_nand_parts[] = {
 	},
 };
 
-static struct platform_nand_data ts72xx_nand_data = {
+static struct nand_platform_data ts72xx_nand_data = {
 	.chip = {
 		.nr_chips	= 1,
 		.chip_offset	= 0,
@@ -208,7 +208,7 @@ static struct platform_device ts72xx_wdt_device = {
 /*************************************************************************
  * ETH
  *************************************************************************/
-static struct ep93xx_eth_data __initdata ts72xx_eth_data = {
+static struct ep93xx_eth_platform_data __initdata ts72xx_eth_data = {
 	.phy_id		= 1,
 };
 
@@ -273,7 +273,7 @@ static struct gpiod_lookup_table bk3_spi_cs_gpio_table = {
 	},
 };
 
-static struct ep93xx_spi_info bk3_spi_master __initdata = {
+static struct ep93xx_spi_platform_data bk3_spi_master __initdata = {
 	.use_dma	= 1,
 };
 
@@ -323,7 +323,7 @@ static struct gpiod_lookup_table ts72xx_spi_cs_gpio_table = {
 	},
 };
 
-static struct ep93xx_spi_info ts72xx_spi_info __initdata = {
+static struct ep93xx_spi_platform_data ts72xx_spi_info __initdata = {
 	/* Intentionally left blank */
 };
 

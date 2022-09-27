@@ -51,7 +51,7 @@ IS_SAMSUNG_CPU(s3c6410, S3C6410_CPU_ID, S3C64XX_CPU_MASK)
 /* forward declaration */
 struct s3c24xx_uart_resources;
 struct platform_device;
-struct s3c2410_uartcfg;
+struct s3c2410_uart_platform_data;
 struct map_desc;
 
 /* per-cpu initialisation function table. */
@@ -60,7 +60,7 @@ struct cpu_table {
 	unsigned long	idcode;
 	unsigned long	idmask;
 	void		(*map_io)(void);
-	void		(*init_uarts)(struct s3c2410_uartcfg *cfg, int no);
+	void		(*init_uarts)(struct s3c2410_uart_platform_data *cfg, int no);
 	int		(*init)(void);
 	const char	*name;
 };
@@ -71,10 +71,10 @@ extern void s3c_init_cpu(unsigned long idcode,
 /* core initialisation functions */
 extern void s3c64xx_init_cpu(void);
 
-extern void s3c24xx_init_uarts(struct s3c2410_uartcfg *cfg, int no);
+extern void s3c24xx_init_uarts(struct s3c2410_uart_platform_data *cfg, int no);
 extern void s3c24xx_init_uartdevs(char *name,
 				  struct s3c24xx_uart_resources *res,
-				  struct s3c2410_uartcfg *cfg, int no);
+				  struct s3c2410_uart_platform_data *cfg, int no);
 
 extern struct bus_type s3c6410_subsys;
 

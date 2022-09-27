@@ -17,7 +17,7 @@ static struct mtd_partition cobalt_mtd_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data cobalt_flash_data = {
+static struct physmap_flash_platform_data cobalt_flash_data = {
 	.width		= 1,
 	.nr_parts	= 1,
 	.parts		= cobalt_mtd_partitions,

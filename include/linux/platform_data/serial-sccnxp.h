@@ -55,7 +55,7 @@
  *	DEFINE_RES_IRQ(IRQ_EXT2),
  * };
  *
- * static struct sccnxp_pdata sc2892_info = {
+ * static struct sccnxp_platform_data sc2892_info = {
  *	.mctrl_cfg[0]	= MCTRL_SIG(DIR_OP, LINE_OP0),
  *	.mctrl_cfg[1]	= MCTRL_SIG(DIR_OP, LINE_OP1),
  * };
@@ -72,7 +72,7 @@
  */
 
 /* SCCNXP platform data structure */
-struct sccnxp_pdata {
+struct sccnxp_platform_data {
 	/* Shift for A0 line */
 	const u8		reg_shift;
 	/* Modem control lines configuration */

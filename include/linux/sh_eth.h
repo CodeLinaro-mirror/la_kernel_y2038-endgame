@@ -5,7 +5,7 @@
 #include <linux/phy.h>
 #include <linux/if_ether.h>
 
-struct sh_eth_plat_data {
+struct sh_eth_platform_data {
 	int phy;
 	int phy_irq;
 	phy_interface_t phy_interface;

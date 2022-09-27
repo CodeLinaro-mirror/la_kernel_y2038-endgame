@@ -94,10 +94,10 @@ static u32 ssb_hcd_init_chip(struct ssb_device *dev)
 	return flags;
 }
 
-static const struct usb_ehci_pdata ehci_pdata = {
+static const struct usb_ehci_platform_data ehci_pdata = {
 };
 
-static const struct usb_ohci_pdata ohci_pdata = {
+static const struct usb_ohci_platform_data ohci_pdata = {
 };
 
 static struct platform_device *ssb_hcd_create_pdev(struct ssb_device *dev, bool ohci, u32 addr, u32 len)

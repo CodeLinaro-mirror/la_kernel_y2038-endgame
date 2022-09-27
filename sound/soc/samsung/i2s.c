@@ -1395,7 +1395,7 @@ static void i2s_delete_secondary_device(struct samsung_i2s_priv *priv)
 static int samsung_i2s_probe(struct platform_device *pdev)
 {
 	struct i2s_dai *pri_dai, *sec_dai = NULL;
-	struct s3c_audio_pdata *i2s_pdata = pdev->dev.platform_data;
+	struct s3c_audio_platform_data *i2s_pdata = pdev->dev.platform_data;
 	u32 regs_base, idma_addr = 0;
 	struct device_node *np = pdev->dev.of_node;
 	const struct samsung_i2s_dai_data *i2s_dai_data;

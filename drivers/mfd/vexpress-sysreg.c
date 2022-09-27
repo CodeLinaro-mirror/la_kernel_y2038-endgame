@@ -38,19 +38,19 @@
 
 /* The sysreg block is just a random collection of various functions... */
 
-static struct bgpio_pdata vexpress_sysreg_sys_led_pdata = {
+static struct bgpio_platform_data vexpress_sysreg_sys_led_pdata = {
 	.label = "sys_led",
 	.base = -1,
 	.ngpio = 8,
 };
 
-static struct bgpio_pdata vexpress_sysreg_sys_mci_pdata = {
+static struct bgpio_platform_data vexpress_sysreg_sys_mci_pdata = {
 	.label = "sys_mci",
 	.base = -1,
 	.ngpio = 2,
 };
 
-static struct bgpio_pdata vexpress_sysreg_sys_flash_pdata = {
+static struct bgpio_platform_data vexpress_sysreg_sys_flash_pdata = {
 	.label = "sys_flash",
 	.base = -1,
 	.ngpio = 1,

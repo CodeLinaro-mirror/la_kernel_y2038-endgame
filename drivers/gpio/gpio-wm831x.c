@@ -259,7 +259,7 @@ static const struct gpio_chip template_chip = {
 static int wm831x_gpio_probe(struct platform_device *pdev)
 {
 	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
-	struct wm831x_pdata *pdata = &wm831x->pdata;
+	struct wm831x_platform_data *pdata = &wm831x->pdata;
 	struct wm831x_gpio *wm831x_gpio;
 
 	device_set_node(&pdev->dev, dev_fwnode(pdev->dev.parent));

@@ -297,13 +297,13 @@ static struct resource assabet_flash_resources[] = {
 };
 
 
-static struct ucb1x00_plat_data assabet_ucb1x00_data = {
+static struct ucb1x00_platform_data assabet_ucb1x00_data = {
 	.reset		= assabet_ucb1x00_reset,
 	.gpio_base	= -1,
 	.can_wakeup	= 1,
 };
 
-static struct mcp_plat_data assabet_mcp_data = {
+static struct mcp_platform_data assabet_mcp_data = {
 	.mccr0		= MCCR0_ADM,
 	.sclk_rate	= 11981000,
 	.codec_pdata	= &assabet_ucb1x00_data,
@@ -357,7 +357,7 @@ static void assabet_lcd_power(int on)
  * takes an RGB666 signal, but we provide it with an RGB565 signal
  * instead (def_rgb_16).
  */
-static struct sa1100fb_mach_info lq039q2ds54_info = {
+static struct sa1100fb_platform_data lq039q2ds54_info = {
 	.pixclock	= 171521,	.bpp		= 16,
 	.xres		= 320,		.yres		= 240,
 
@@ -385,7 +385,7 @@ static void assabet_pal_power(int on)
 	ASSABET_BCR_clear(ASSABET_BCR_LCD_ON);
 }
 
-static struct sa1100fb_mach_info pal_info = {
+static struct sa1100fb_platform_data pal_info = {
 	.pixclock	= 67797,	.bpp		= 16,
 	.xres		= 640,		.yres		= 512,
 
@@ -428,7 +428,7 @@ static struct regulator_consumer_supply assabet_cf_vcc_consumers[] = {
 	REGULATOR_SUPPLY("vcc", "sa11x0-pcmcia.1"),
 };
 
-static struct fixed_voltage_config assabet_cf_vcc_pdata __initdata = {
+static struct fixed_voltage_platform_data assabet_cf_vcc_pdata __initdata = {
 	.supply_name = "cf-power",
 	.microvolts = 3300000,
 };

@@ -30,7 +30,7 @@ struct uart_8250_port;
  *
  *	Locking: Caller holds port's lock.
  */
-struct plat_serial8250_port {
+struct serial8250_platform_data {
 	unsigned long	iobase;		/* io base address */
 	void __iomem	*membase;	/* ioremap cookie or NULL */
 	resource_size_t	mapbase;	/* resource base */
@@ -212,10 +212,10 @@ void serial8250_set_isa_configurator(void (*v)(int port, struct uart_port *up,
 
 #ifdef CONFIG_SERIAL_8250_RT288X
 int rt288x_setup(struct uart_port *p);
-int au_platform_setup(struct plat_serial8250_port *p);
+int au_platform_setup(struct serial8250_platform_data *p);
 #else
 static inline int rt288x_setup(struct uart_port *p) { return -ENODEV; }
-static inline int au_platform_setup(struct plat_serial8250_port *p) { return -ENODEV; }
+static inline int au_platform_setup(struct serial8250_platform_data *p) { return -ENODEV; }
 #endif
 
 #endif

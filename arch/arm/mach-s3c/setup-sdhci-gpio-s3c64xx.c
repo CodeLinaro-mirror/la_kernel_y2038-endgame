@@ -19,7 +19,7 @@
 
 void s3c64xx_setup_sdhci0_cfg_gpio(struct platform_device *dev, int width)
 {
-	struct s3c_sdhci_platdata *pdata = dev->dev.platform_data;
+	struct s3c_sdhci_platform_data *pdata = dev->dev.platform_data;
 
 	/* Set all the necessary GPG pins to special-function 2 */
 	s3c_gpio_cfgrange_nopull(S3C64XX_GPG(0), 2 + width, S3C_GPIO_SFN(2));
@@ -32,7 +32,7 @@ void s3c64xx_setup_sdhci0_cfg_gpio(struct platform_device *dev, int width)
 
 void s3c64xx_setup_sdhci1_cfg_gpio(struct platform_device *dev, int width)
 {
-	struct s3c_sdhci_platdata *pdata = dev->dev.platform_data;
+	struct s3c_sdhci_platform_data *pdata = dev->dev.platform_data;
 
 	/* Set all the necessary GPH pins to special-function 2 */
 	s3c_gpio_cfgrange_nopull(S3C64XX_GPH(0), 2 + width, S3C_GPIO_SFN(2));

@@ -66,7 +66,7 @@ struct physmap_flash_info {
 static void physmap_flash_remove(struct platform_device *dev)
 {
 	struct physmap_flash_info *info;
-	struct physmap_flash_data *physmap_data;
+	struct physmap_flash_platform_data *physmap_data;
 	int i;
 
 	info = platform_get_drvdata(dev);
@@ -94,7 +94,7 @@ static void physmap_flash_remove(struct platform_device *dev)
 static void physmap_set_vpp(struct map_info *map, int state)
 {
 	struct platform_device *pdev;
-	struct physmap_flash_data *physmap_data;
+	struct physmap_flash_platform_data *physmap_data;
 	struct physmap_flash_info *info;
 	unsigned long flags;
 
@@ -415,7 +415,7 @@ static const char * const part_probe_types[] = {
 static int physmap_flash_pdata_init(struct platform_device *dev)
 {
 	struct physmap_flash_info *info = platform_get_drvdata(dev);
-	struct physmap_flash_data *physmap_data;
+	struct physmap_flash_platform_data *physmap_data;
 	unsigned int i;
 	int err;
 
@@ -630,7 +630,7 @@ static struct platform_driver physmap_flash_driver = {
 };
 
 #ifdef CONFIG_MTD_PHYSMAP_COMPAT
-static struct physmap_flash_data physmap_flash_data = {
+static struct physmap_flash_platform_data physmap_flash_platform_data = {
 	.width		= CONFIG_MTD_PHYSMAP_BANKWIDTH,
 };
 
@@ -644,7 +644,7 @@ static struct platform_device physmap_flash = {
 	.name		= "physmap-flash",
 	.id		= 0,
 	.dev		= {
-		.platform_data	= &physmap_flash_data,
+		.platform_data	= &physmap_flash_platform_data,
 	},
 	.num_resources	= 1,
 	.resource	= &physmap_flash_resource,

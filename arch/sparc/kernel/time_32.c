@@ -239,7 +239,7 @@ void register_percpu_ce(int cpu)
 static unsigned char mostek_read_byte(struct device *dev, u32 ofs)
 {
 	struct platform_device *pdev = to_platform_device(dev);
-	struct m48t59_plat_data *pdata = pdev->dev.platform_data;
+	struct m48t59_platform_data *pdata = pdev->dev.platform_data;
 
 	return readb(pdata->ioaddr + ofs);
 }
@@ -247,12 +247,12 @@ static unsigned char mostek_read_byte(struct device *dev, u32 ofs)
 static void mostek_write_byte(struct device *dev, u32 ofs, u8 val)
 {
 	struct platform_device *pdev = to_platform_device(dev);
-	struct m48t59_plat_data *pdata = pdev->dev.platform_data;
+	struct m48t59_platform_data *pdata = pdev->dev.platform_data;
 
 	writeb(val, pdata->ioaddr + ofs);
 }
 
-static struct m48t59_plat_data m48t59_data = {
+static struct m48t59_platform_data m48t59_data = {
 	.read_byte = mostek_read_byte,
 	.write_byte = mostek_write_byte,
 };

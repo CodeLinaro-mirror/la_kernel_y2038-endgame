@@ -153,23 +153,23 @@ static int reg_fixed_get_irqs(struct device *dev,
 }
 
 /**
- * of_get_fixed_voltage_config - extract fixed_voltage_config structure info
- * @dev: device requesting for fixed_voltage_config
+ * of_get_fixed_voltage_config - extract fixed_voltage_platform_data structure info
+ * @dev: device requesting for fixed_voltage_platform_data
  * @desc: regulator description
  *
- * Populates fixed_voltage_config structure by extracting data from device
+ * Populates fixed_voltage_platform_data structure by extracting data from device
  * tree node, returns a pointer to the populated structure of NULL if memory
  * alloc fails.
  */
-static struct fixed_voltage_config *
+static struct fixed_voltage_platform_data *
 of_get_fixed_voltage_config(struct device *dev,
 			    const struct regulator_desc *desc)
 {
-	struct fixed_voltage_config *config;
+	struct fixed_voltage_platform_data *config;
 	struct device_node *np = dev->of_node;
 	struct regulator_init_data *init_data;
 
-	config = devm_kzalloc(dev, sizeof(struct fixed_voltage_config),
+	config = devm_kzalloc(dev, sizeof(struct fixed_voltage_platform_data),
 								 GFP_KERNEL);
 	if (!config)
 		return ERR_PTR(-ENOMEM);
@@ -220,7 +220,7 @@ static const struct regulator_ops fixed_voltage_domain_ops = {
 static int reg_fixed_voltage_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
-	struct fixed_voltage_config *config;
+	struct fixed_voltage_platform_data *config;
 	struct fixed_voltage_data *drvdata;
 	const struct fixed_dev_type *drvtype = of_device_get_match_data(dev);
 	struct regulator_config cfg = { };

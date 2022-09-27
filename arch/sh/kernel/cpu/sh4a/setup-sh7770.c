@@ -13,7 +13,7 @@
 #include <linux/io.h>
 #include <asm/platform_early.h>
 
-static struct plat_sci_port scif0_platform_data = {
+static struct scif_platform_data scif0_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_TOIE,
 	.type		= PORT_SCIF,
 };
@@ -33,7 +33,7 @@ static struct platform_device scif0_device = {
 	},
 };
 
-static struct plat_sci_port scif1_platform_data = {
+static struct scif_platform_data scif1_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_TOIE,
 	.type		= PORT_SCIF,
 };
@@ -53,7 +53,7 @@ static struct platform_device scif1_device = {
 	},
 };
 
-static struct plat_sci_port scif2_platform_data = {
+static struct scif_platform_data scif2_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_TOIE,
 	.type		= PORT_SCIF,
 };
@@ -73,7 +73,7 @@ static struct platform_device scif2_device = {
 	},
 };
 
-static struct plat_sci_port scif3_platform_data = {
+static struct scif_platform_data scif3_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_TOIE,
 	.type		= PORT_SCIF,
 };
@@ -93,7 +93,7 @@ static struct platform_device scif3_device = {
 	},
 };
 
-static struct plat_sci_port scif4_platform_data = {
+static struct scif_platform_data scif4_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_TOIE,
 	.type		= PORT_SCIF,
 };
@@ -113,7 +113,7 @@ static struct platform_device scif4_device = {
 	},
 };
 
-static struct plat_sci_port scif5_platform_data = {
+static struct scif_platform_data scif5_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_TOIE,
 	.type		= PORT_SCIF,
 };
@@ -133,7 +133,7 @@ static struct platform_device scif5_device = {
 	},
 };
 
-static struct plat_sci_port scif6_platform_data = {
+static struct scif_platform_data scif6_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_TOIE,
 	.type		= PORT_SCIF,
 };
@@ -153,7 +153,7 @@ static struct platform_device scif6_device = {
 	},
 };
 
-static struct plat_sci_port scif7_platform_data = {
+static struct scif_platform_data scif7_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_TOIE,
 	.type		= PORT_SCIF,
 };
@@ -173,7 +173,7 @@ static struct platform_device scif7_device = {
 	},
 };
 
-static struct plat_sci_port scif8_platform_data = {
+static struct scif_platform_data scif8_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_TOIE,
 	.type		= PORT_SCIF,
 };
@@ -193,7 +193,7 @@ static struct platform_device scif8_device = {
 	},
 };
 
-static struct plat_sci_port scif9_platform_data = {
+static struct scif_platform_data scif9_platform_data = {
 	.scscr		= SCSCR_REIE | SCSCR_TOIE,
 	.type		= PORT_SCIF,
 };
@@ -213,7 +213,7 @@ static struct platform_device scif9_device = {
 	},
 };
 
-static struct sh_timer_config tmu0_platform_data = {
+static struct sh_timer_platform_data tmu0_platform_data = {
 	.channels_mask = 7,
 };
 
@@ -234,7 +234,7 @@ static struct platform_device tmu0_device = {
 	.num_resources	= ARRAY_SIZE(tmu0_resources),
 };
 
-static struct sh_timer_config tmu1_platform_data = {
+static struct sh_timer_platform_data tmu1_platform_data = {
 	.channels_mask = 7,
 };
 
@@ -255,7 +255,7 @@ static struct platform_device tmu1_device = {
 	.num_resources	= ARRAY_SIZE(tmu1_resources),
 };
 
-static struct sh_timer_config tmu2_platform_data = {
+static struct sh_timer_platform_data tmu2_platform_data = {
 	.channels_mask = 7,
 };
 

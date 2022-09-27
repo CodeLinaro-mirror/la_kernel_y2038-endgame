@@ -984,7 +984,7 @@ static int
 mv64xxx_i2c_probe(struct platform_device *pd)
 {
 	struct mv64xxx_i2c_data		*drv_data;
-	struct mv64xxx_i2c_pdata	*pdata = dev_get_platdata(&pd->dev);
+	struct mv64xxx_i2c_platform_data	*pdata = dev_get_platdata(&pd->dev);
 	int	rc;
 
 	if ((!pdata && !pd->dev.of_node))

@@ -69,7 +69,7 @@ static struct resource kurobox_pro_nand_resource = {
 	.end		= KUROBOX_PRO_NAND_BASE + KUROBOX_PRO_NAND_SIZE - 1,
 };
 
-static struct orion_nand_data kurobox_pro_nand_data = {
+static struct orion_nand_platform_data kurobox_pro_nand_data = {
 	.parts		= kurobox_pro_nand_parts,
 	.nr_parts	= ARRAY_SIZE(kurobox_pro_nand_parts),
 	.cle		= 0,
@@ -91,7 +91,7 @@ static struct platform_device kurobox_pro_nand_flash = {
  * 256KB NOR Flash on BOOT Device
  ****************************************************************************/
 
-static struct physmap_flash_data kurobox_pro_nor_flash_data = {
+static struct physmap_flash_platform_data kurobox_pro_nor_flash_data = {
 	.width		= 1,
 };
 

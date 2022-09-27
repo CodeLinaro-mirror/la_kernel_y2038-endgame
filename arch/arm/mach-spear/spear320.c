@@ -185,7 +185,7 @@ struct pl08x_channel_data spear320_dma_info[] = {
 	},
 };
 
-static struct pl022_ssp_controller spear320_ssp_data[] = {
+static struct pl022_ssp_platform_data spear320_ssp_data[] = {
 	{
 		.bus_id = 1,
 		.enable_dma = 1,
@@ -201,7 +201,7 @@ static struct pl022_ssp_controller spear320_ssp_data[] = {
 	}
 };
 
-static struct amba_pl011_data spear320_uart_data[] = {
+static struct amba_pl011_platform_data spear320_uart_data[] = {
 	{
 		.dma_filter = pl08x_filter_id,
 		.dma_tx_param = "uart1_tx",

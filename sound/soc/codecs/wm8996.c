@@ -72,7 +72,7 @@ struct wm8996_priv {
 	struct notifier_block disable_nb[WM8996_NUM_SUPPLIES];
 	int bg_ena;
 
-	struct wm8996_pdata pdata;
+	struct wm8996_platform_data pdata;
 
 	int rx_rate[WM8996_AIFS];
 	int bclk_rate[WM8996_AIFS];
@@ -334,7 +334,7 @@ static SOC_ENUM_SINGLE_DECL(dsp2tx_hpf_cutoff,
 static void wm8996_set_retune_mobile(struct snd_soc_component *component, int block)
 {
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
-	struct wm8996_pdata *pdata = &wm8996->pdata;
+	struct wm8996_platform_data *pdata = &wm8996->pdata;
 	int base, best, best_val, save, i, cfg, iface;
 
 	if (!wm8996->num_retune_mobile_texts)
@@ -411,7 +411,7 @@ static int wm8996_put_retune_mobile_enum(struct snd_kcontrol *kcontrol,
 {
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
-	struct wm8996_pdata *pdata = &wm8996->pdata;
+	struct wm8996_platform_data *pdata = &wm8996->pdata;
 	int block = wm8996_get_retune_mobile_block(kcontrol->id.name);
 	int value = ucontrol->value.enumerated.item[0];
 
@@ -2541,7 +2541,7 @@ static irqreturn_t wm8996_edge_irq(int irq, void *data)
 static void wm8996_retune_mobile_pdata(struct snd_soc_component *component)
 {
 	struct wm8996_priv *wm8996 = snd_soc_component_get_drvdata(component);
-	struct wm8996_pdata *pdata = &wm8996->pdata;
+	struct wm8996_platform_data *pdata = &wm8996->pdata;
 
 	struct snd_kcontrol_new controls[] = {
 		SOC_ENUM_EXT("DSP1 EQ Mode",

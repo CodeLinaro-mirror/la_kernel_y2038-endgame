@@ -25,7 +25,7 @@
    This file is never modular so this symbol is always
    accessile to the board support files.
 */
-struct scoop_pcmcia_config *platform_scoop_config;
+struct scoop_pcmcia_platform_data *platform_scoop_config;
 EXPORT_SYMBOL(platform_scoop_config);
 
 struct  scoop_dev {
@@ -175,7 +175,7 @@ static int scoop_resume(struct platform_device *dev)
 static int scoop_probe(struct platform_device *pdev)
 {
 	struct scoop_dev *devptr;
-	struct scoop_config *inf;
+	struct scoop_platform_data *inf;
 	struct resource *mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	int ret;
 

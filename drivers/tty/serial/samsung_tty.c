@@ -92,7 +92,7 @@ struct s3c24xx_uart_info {
 
 struct s3c24xx_serial_drv_data {
 	const struct s3c24xx_uart_info	info;
-	const struct s3c2410_uartcfg	def_cfg;
+	const struct s3c2410_uart_platform_data	def_cfg;
 	const unsigned int		fifosize[UART_NR];
 };
 
@@ -147,7 +147,7 @@ struct s3c24xx_uart_port {
 	const struct s3c24xx_serial_drv_data	*drv_data;
 
 	/* reference to platform data */
-	const struct s3c2410_uartcfg	*cfg;
+	const struct s3c2410_uart_platform_data	*cfg;
 
 	struct s3c24xx_uart_dma		*dma;
 };
@@ -575,7 +575,7 @@ static inline const struct s3c24xx_uart_info
 	return to_ourport(port)->info;
 }
 
-static inline const struct s3c2410_uartcfg
+static inline const struct s3c2410_uart_platform_data
 	*s3c24xx_port_to_cfg(const struct uart_port *port)
 {
 	const struct s3c24xx_uart_port *ourport;
@@ -1468,7 +1468,7 @@ static void s3c24xx_serial_set_termios(struct uart_port *port,
 				       struct ktermios *termios,
 				       const struct ktermios *old)
 {
-	const struct s3c2410_uartcfg *cfg = s3c24xx_port_to_cfg(port);
+	const struct s3c2410_uart_platform_data *cfg = s3c24xx_port_to_cfg(port);
 	struct s3c24xx_uart_port *ourport = to_ourport(port);
 	struct clk *clk = ERR_PTR(-EINVAL);
 	unsigned long flags;
@@ -1755,7 +1755,7 @@ static void s3c24xx_serial_init_port_default(int index) {
  */
 
 static void s3c24xx_serial_resetport(struct uart_port *port,
-				     const struct s3c2410_uartcfg *cfg)
+				     const struct s3c2410_uart_platform_data *cfg)
 {
 	const struct s3c24xx_uart_info *info = s3c24xx_port_to_info(port);
 	unsigned long ucon = rd_regl(port, S3C2410_UCON);
@@ -1816,7 +1816,7 @@ static int s3c24xx_serial_init_port(struct s3c24xx_uart_port *ourport,
 				    struct platform_device *platdev)
 {
 	struct uart_port *port = &ourport->port;
-	const struct s3c2410_uartcfg *cfg = ourport->cfg;
+	const struct s3c2410_uart_platform_data *cfg = ourport->cfg;
 	struct resource *res;
 	int ret;
 

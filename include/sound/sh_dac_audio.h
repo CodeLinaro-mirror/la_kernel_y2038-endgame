@@ -8,11 +8,11 @@
 #ifndef __INCLUDE_SH_DAC_AUDIO_H
 #define __INCLUDE_SH_DAC_AUDIO_H
 
-struct dac_audio_pdata {
+struct dac_audio_platform_data {
 	int buffer_size;
 	int channel;
-	void (*start)(struct dac_audio_pdata *pd);
-	void (*stop)(struct dac_audio_pdata *pd);
+	void (*start)(struct dac_audio_platform_data *pd);
+	void (*stop)(struct dac_audio_platform_data *pd);
 };
 
 #endif /* __INCLUDE_SH_DAC_AUDIO_H */

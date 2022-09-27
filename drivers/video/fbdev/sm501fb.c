@@ -84,7 +84,7 @@ struct sm501fb_info {
 	struct resource		*fbmem_res;	/* framebuffer resource */
 	struct resource		*regs_res;	/* registers resource */
 	struct resource		*regs2d_res;	/* 2d registers resource */
-	struct sm501_platdata_fb *pdata;	/* our platform data */
+	struct sm501_fb_platform_data *pdata;	/* our platform data */
 
 	unsigned long		 pm_crt_ctrl;	/* pm: crt ctrl save */
 
@@ -713,7 +713,7 @@ static void sm501fb_panel_power(struct sm501fb_info *fbi, int to)
 {
 	unsigned long control;
 	void __iomem *ctrl_reg = fbi->regs + SM501_DC_PANEL_CONTROL;
-	struct sm501_platdata_fbsub *pd = fbi->pdata->fb_pnl;
+	struct sm501_fbsub_platform_data *pd = fbi->pdata->fb_pnl;
 
 	control = smc501_readl(ctrl_reg);
 
@@ -1678,7 +1678,7 @@ static void sm501fb_stop(struct sm501fb_info *info)
 static int sm501fb_init_fb(struct fb_info *fb, enum sm501_controller head,
 			   const char *fbname)
 {
-	struct sm501_platdata_fbsub *pd;
+	struct sm501_fbsub_platform_data *pd;
 	struct sm501fb_par *par = fb->par;
 	struct sm501fb_info *info = par->info;
 	unsigned long ctrl;
@@ -1836,7 +1836,7 @@ static int sm501fb_init_fb(struct fb_info *fb, enum sm501_controller head,
 
 /* default platform data if none is supplied (ie, PCI device) */
 
-static struct sm501_platdata_fbsub sm501fb_pdata_crt = {
+static struct sm501_fbsub_platform_data sm501fb_pdata_crt = {
 	.flags		= (SM501FB_FLAG_USE_INIT_MODE |
 			   SM501FB_FLAG_USE_HWCURSOR |
 			   SM501FB_FLAG_USE_HWACCEL |
@@ -1844,14 +1844,14 @@ static struct sm501_platdata_fbsub sm501fb_pdata_crt = {
 
 };
 
-static struct sm501_platdata_fbsub sm501fb_pdata_pnl = {
+static struct sm501_fbsub_platform_data sm501fb_pdata_pnl = {
 	.flags		= (SM501FB_FLAG_USE_INIT_MODE |
 			   SM501FB_FLAG_USE_HWCURSOR |
 			   SM501FB_FLAG_USE_HWACCEL |
 			   SM501FB_FLAG_DISABLE_AT_EXIT),
 };
 
-static struct sm501_platdata_fb sm501fb_def_pdata = {
+static struct sm501_fb_platform_data sm501fb_def_pdata = {
 	.fb_route		= SM501_FB_OWN,
 	.fb_crt			= &sm501fb_pdata_crt,
 	.fb_pnl			= &sm501fb_pdata_pnl,
@@ -1864,7 +1864,7 @@ static int sm501fb_probe_one(struct sm501fb_info *info,
 			     enum sm501_controller head)
 {
 	unsigned char *name = (head == HEAD_CRT) ? "crt" : "panel";
-	struct sm501_platdata_fbsub *pd;
+	struct sm501_fbsub_platform_data *pd;
 	struct sm501fb_par *par;
 	struct fb_info *fbi;
 
@@ -1949,7 +1949,7 @@ static int sm501fb_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, info);
 
 	if (dev->parent->platform_data) {
-		struct sm501_platdata *pd = dev->parent->platform_data;
+		struct sm501_platform_data *pd = dev->parent->platform_data;
 		info->pdata = pd->fb;
 	}
 

@@ -224,7 +224,7 @@ static struct mtd_partition db1200_nand_parts[] = {
 	},
 };
 
-struct platform_nand_data db1200_nand_platdata = {
+struct nand_platform_data db1200_nand_platdata = {
 	.chip = {
 		.nr_chips	= 1,
 		.chip_offset	= 0,
@@ -258,7 +258,7 @@ static struct platform_device db1200_nand_dev = {
 
 /**********************************************************************/
 
-static struct smc91x_platdata db1200_eth_data = {
+static struct smc91x_platform_data db1200_eth_data = {
 	.flags	= SMC91X_NOWAIT | SMC91X_USE_16BIT,
 	.leda	= RPC_LED_100_10,
 	.ledb	= RPC_LED_TX_RX,
@@ -289,7 +289,7 @@ static struct platform_device db1200_eth_dev = {
 
 /**********************************************************************/
 
-static struct pata_platform_info db1200_ide_info = {
+static struct pata_platform_data db1200_ide_info = {
 	.ioport_shift	= DB1200_IDE_REG_SHIFT,
 };
 
@@ -610,7 +610,7 @@ static int db1200fb_panel_shutdown(void)
 	return 0;
 }
 
-static struct au1200fb_platdata db1200fb_pd = {
+static struct au1200fb_platform_data db1200fb_pd = {
 	.panel_index	= db1200fb_panel_index,
 	.panel_init	= db1200fb_panel_init,
 	.panel_shutdown = db1200fb_panel_shutdown,

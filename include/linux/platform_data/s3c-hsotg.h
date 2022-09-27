@@ -21,11 +21,11 @@ enum dwc2_hsotg_dmamode {
 };
 
 /**
- * struct dwc2_hsotg_plat - platform data for high-speed otg/udc
+ * struct dwc2_hsotg_platform_data - platform data for high-speed otg/udc
  * @dma: Whether to use DMA or not.
  * @is_osc: The clock source is an oscillator, not a crystal
  */
-struct dwc2_hsotg_plat {
+struct dwc2_hsotg_platform_data {
 	enum dwc2_hsotg_dmamode	dma;
 	unsigned int		is_osc:1;
 	int                     phy_type;
@@ -34,6 +34,6 @@ struct dwc2_hsotg_plat {
 	int (*phy_exit)(struct platform_device *pdev, int type);
 };
 
-extern void dwc2_hsotg_set_platdata(struct dwc2_hsotg_plat *pd);
+extern void dwc2_hsotg_set_platdata(struct dwc2_hsotg_platform_data *pd);
 
 #endif /* __LINUX_USB_S3C_HSOTG_H */

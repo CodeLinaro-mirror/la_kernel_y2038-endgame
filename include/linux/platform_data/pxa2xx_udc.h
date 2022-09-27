@@ -10,7 +10,7 @@
 #ifndef PXA2XX_UDC_H
 #define PXA2XX_UDC_H
 
-struct pxa2xx_udc_mach_info {
+struct pxa2xx_udc_platform_data {
         int  (*udc_is_connected)(void);		/* do we see host? */
         void (*udc_command)(int cmd);
 #define	PXA2XX_UDC_CMD_CONNECT		0	/* let host see us */

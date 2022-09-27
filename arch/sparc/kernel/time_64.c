@@ -540,7 +540,7 @@ static void mostek_write_byte(struct device *dev, u32 ofs, u8 val)
 	writeb(val, regs + ofs);
 }
 
-static struct m48t59_plat_data m48t59_data = {
+static struct m48t59_platform_data m48t59_data = {
 	.read_byte	= mostek_read_byte,
 	.write_byte	= mostek_write_byte,
 };

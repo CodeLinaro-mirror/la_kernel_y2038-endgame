@@ -559,7 +559,7 @@ static const struct irq_domain_ops wm831x_irq_domain_ops = {
 
 int wm831x_irq_init(struct wm831x *wm831x, int irq)
 {
-	struct wm831x_pdata *pdata = &wm831x->pdata;
+	struct wm831x_platform_data *pdata = &wm831x->pdata;
 	struct irq_domain *domain;
 	int i, ret, irq_base;
 

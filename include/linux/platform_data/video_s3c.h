@@ -26,7 +26,7 @@ struct s3c_fb_pd_win {
 };
 
 /**
- * struct s3c_fb_platdata -  S3C driver platform specific information
+ * struct s3c_fb_platform_data -  S3C driver platform specific information
  * @setup_gpio: Setup the external GPIO pins to the right state to transfer
  *		the data from the display system to the connected display
  *		device.
@@ -42,7 +42,7 @@ struct s3c_fb_pd_win {
  * the base framebuffer) that are initialised etc.
  *
  */
-struct s3c_fb_platdata {
+struct s3c_fb_platform_data {
 	void	(*setup_gpio)(void);
 
 	struct s3c_fb_pd_win	*win[S3C_FB_MAX_WIN];

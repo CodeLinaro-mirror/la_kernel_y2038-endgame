@@ -44,7 +44,7 @@ static struct mtd_partition nor_flash_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data nor_flash_data = {
+static struct physmap_flash_platform_data nor_flash_data = {
 	.width		= 2,
 	.parts		= nor_flash_partitions,
 	.nr_parts	= ARRAY_SIZE(nor_flash_partitions),
@@ -69,7 +69,7 @@ static struct platform_device nor_flash_device = {
 
 #define ST16C2550C_FLAGS (UPF_BOOT_AUTOCONF | UPF_IOREMAP)
 
-static struct plat_serial8250_port serial_platform_data[] = {
+static struct serial8250_platform_data serial_platform_data[] = {
 	[0] = {
 		.iotype		= UPIO_MEM,
 		.mapbase	= 0x16000000,

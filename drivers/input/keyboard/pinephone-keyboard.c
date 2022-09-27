@@ -137,7 +137,7 @@ static const uint32_t ppkb_keymap[] = {
 	KEY(PPKB_ROWS + 5, 5, KEY_RIGHTALT),
 };
 
-static const struct matrix_keymap_data ppkb_keymap_data = {
+static const struct matrix_keymap_platform_data ppkb_keymap_data = {
 	.keymap		= ppkb_keymap,
 	.keymap_size	= ARRAY_SIZE(ppkb_keymap),
 };

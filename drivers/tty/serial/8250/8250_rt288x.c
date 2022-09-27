@@ -62,7 +62,7 @@ static void au_serial_dl_write(struct uart_8250_port *up, u32 value)
 	__raw_writel(value, up->port.membase + RT288X_DL);
 }
 
-int au_platform_setup(struct plat_serial8250_port *p)
+int au_platform_setup(struct serial8250_platform_data *p)
 {
 	p->iotype = UPIO_AU;
 

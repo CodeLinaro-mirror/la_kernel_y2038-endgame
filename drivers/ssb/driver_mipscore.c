@@ -23,7 +23,7 @@
 
 static const char * const part_probes[] = { "bcm47xxpart", NULL };
 
-static struct physmap_flash_data ssb_pflash_data = {
+static struct physmap_flash_platform_data ssb_pflash_data = {
 	.part_probe_types	= part_probes,
 };
 

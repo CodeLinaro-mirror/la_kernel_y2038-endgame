@@ -222,7 +222,7 @@ static struct mtd_partition ts78xx_ts_nand_parts[] = {
 	}
 };
 
-static struct platform_nand_data ts78xx_ts_nand_data = {
+static struct nand_platform_data ts78xx_ts_nand_data = {
 	.chip	= {
 		.nr_chips		= 1,
 		.partitions		= ts78xx_ts_nand_parts,

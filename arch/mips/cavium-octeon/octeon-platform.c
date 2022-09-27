@@ -277,7 +277,7 @@ static void octeon_ehci_power_off(struct platform_device *pdev)
 	octeon2_usb_clocks_stop();
 }
 
-static struct usb_ehci_pdata octeon_ehci_pdata = {
+static struct usb_ehci_platform_data octeon_ehci_pdata = {
 	/* Octeon EHCI matches CPU endianness. */
 #ifdef __BIG_ENDIAN
 	.big_endian_mmio	= 1,
@@ -348,7 +348,7 @@ static void octeon_ohci_power_off(struct platform_device *pdev)
 	octeon2_usb_clocks_stop();
 }
 
-static struct usb_ohci_pdata octeon_ohci_pdata = {
+static struct usb_ohci_platform_data octeon_ohci_pdata = {
 	/* Octeon OHCI matches CPU endianness. */
 #ifdef __BIG_ENDIAN
 	.big_endian_mmio	= 1,

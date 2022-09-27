@@ -70,7 +70,7 @@ This shows a typical platform device, without the optional configuration
 platform data supplied. The next example uses the same resources, but adds
 the optional platform data to pass extra configuration data::
 
-  static struct dm9000_plat_data bast_dm9k_platdata = {
+  static struct dm9000_platform_data bast_dm9k_platdata = {
 	.flags		= DM9000_PLATF_16BITONLY,
   };
 

@@ -70,7 +70,7 @@ static struct cpuidle_driver davinci_idle_driver = {
 
 static int __init davinci_cpuidle_probe(struct platform_device *pdev)
 {
-	struct davinci_cpuidle_config *pdata = pdev->dev.platform_data;
+	struct davinci_cpuidle_platform_data *pdata = pdev->dev.platform_data;
 
 	if (!pdata) {
 		dev_err(&pdev->dev, "cannot get platform data\n");

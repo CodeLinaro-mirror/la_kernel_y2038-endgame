@@ -1021,7 +1021,7 @@ static int sh_cmt_setup(struct sh_cmt_device *cmt, struct platform_device *pdev)
 		cmt->info = of_device_get_match_data(&pdev->dev);
 		cmt->hw_channels = cmt->info->channels_mask;
 	} else if (pdev->dev.platform_data) {
-		struct sh_timer_config *cfg = pdev->dev.platform_data;
+		struct sh_timer_platform_data *cfg = pdev->dev.platform_data;
 		const struct platform_device_id *id = pdev->id_entry;
 
 		cmt->info = (const struct sh_cmt_info *)id->driver_data;

@@ -37,7 +37,7 @@
 struct pxa27x_keypad_platform_data {
 
 	/* code map for the matrix keys */
-	const struct matrix_keymap_data *matrix_keymap_data;
+	const struct matrix_keymap_platform_data *matrix_keymap_platform_data;
 	unsigned int	matrix_key_rows;
 	unsigned int	matrix_key_cols;
 

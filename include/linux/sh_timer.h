@@ -2,7 +2,7 @@
 #ifndef __SH_TIMER_H__
 #define __SH_TIMER_H__
 
-struct sh_timer_config {
+struct sh_timer_platform_data {
 	unsigned int channels_mask;
 };
 

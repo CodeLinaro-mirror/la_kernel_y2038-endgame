@@ -64,7 +64,7 @@ static struct platform_device heartbeat_device = {
 };
 
 /* LAN91C111 */
-static struct smc91x_platdata smc91x_info = {
+static struct smc91x_platform_data smc91x_info = {
 	.flags = SMC91X_USE_16BIT | SMC91X_NOWAIT,
 };
 
@@ -116,7 +116,7 @@ static struct mtd_partition nor_flash_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data nor_flash_data = {
+static struct physmap_flash_platform_data nor_flash_data = {
 	.width		= 2,
 	.parts		= nor_flash_partitions,
 	.nr_parts	= ARRAY_SIZE(nor_flash_partitions),

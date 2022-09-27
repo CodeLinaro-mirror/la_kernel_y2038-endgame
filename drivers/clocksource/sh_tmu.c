@@ -526,7 +526,7 @@ static int sh_tmu_setup(struct sh_tmu_device *tmu, struct platform_device *pdev)
 			return ret;
 	} else if (pdev->dev.platform_data) {
 		const struct platform_device_id *id = pdev->id_entry;
-		struct sh_timer_config *cfg = pdev->dev.platform_data;
+		struct sh_timer_platform_data *cfg = pdev->dev.platform_data;
 
 		tmu->model = id->driver_data;
 		tmu->num_channels = hweight8(cfg->channels_mask);

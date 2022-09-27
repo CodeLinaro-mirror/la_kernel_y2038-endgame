@@ -183,7 +183,7 @@ static inline int spear_kbd_parse_dt(struct platform_device *pdev,
 static int spear_kbd_probe(struct platform_device *pdev)
 {
 	struct kbd_platform_data *pdata = dev_get_platdata(&pdev->dev);
-	const struct matrix_keymap_data *keymap = pdata ? pdata->keymap : NULL;
+	const struct matrix_keymap_platform_data *keymap = pdata ? pdata->keymap : NULL;
 	struct spear_kbd *kbd;
 	struct input_dev *input_dev;
 	int irq;

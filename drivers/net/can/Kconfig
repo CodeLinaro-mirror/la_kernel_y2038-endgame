@@ -144,6 +144,7 @@ config CAN_GRCAN
 config CAN_JANZ_ICAN3
 	tristate "Janz VMOD-ICAN3 Intelligent CAN controller"
 	depends on MFD_JANZ_CMODIO
+	depends on UNUSED
 	help
 	  Driver for Janz VMOD-ICAN3 Intelligent CAN controller module, which
 	  connects to a MODULbus carrier board.

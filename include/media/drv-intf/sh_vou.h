@@ -20,7 +20,7 @@ enum sh_vou_bus_fmt {
 	SH_VOU_BUS_BT656,
 };
 
-struct sh_vou_pdata {
+struct sh_vou_platform_data {
 	enum sh_vou_bus_fmt bus_fmt;
 	int i2c_adap;
 	struct i2c_board_info *board_info;

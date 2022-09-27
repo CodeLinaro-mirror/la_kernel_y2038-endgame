@@ -407,12 +407,12 @@ static struct ti_sysc_platform_data ti_sysc_pdata = {
 #endif
 };
 
-static struct pcs_pdata pcs_pdata;
+static struct pcs_platform_data pcs_platform_data;
 
 void omap_pcs_legacy_init(int irq, void (*rearm)(void))
 {
-	pcs_pdata.irq = irq;
-	pcs_pdata.rearm = rearm;
+	pcs_platform_data.irq = irq;
+	pcs_platform_data.rearm = rearm;
 }
 
 static struct ti_prm_platform_data ti_prm_pdata = {
@@ -444,7 +444,7 @@ static struct pdata_init auxdata_quirks[] __initdata = {
 	{ /* sentinel */ },
 };
 
-struct omap_sr_data __maybe_unused omap_sr_pdata[OMAP_SR_NR];
+struct omap_sr_platform_data __maybe_unused omap_sr_pdata[OMAP_SR_NR];
 
 static struct of_dev_auxdata omap_auxdata_lookup[] = {
 #ifdef CONFIG_MACH_NOKIA_N8X0
@@ -492,7 +492,7 @@ static struct of_dev_auxdata omap_auxdata_lookup[] = {
 	/* Common auxdata */
 	OF_DEV_AUXDATA("simple-pm-bus", 0, NULL, omap_auxdata_lookup),
 	OF_DEV_AUXDATA("ti,sysc", 0, NULL, &ti_sysc_pdata),
-	OF_DEV_AUXDATA("pinctrl-single", 0, NULL, &pcs_pdata),
+	OF_DEV_AUXDATA("pinctrl-single", 0, NULL, &pcs_platform_data),
 	OF_DEV_AUXDATA("ti,omap-prm-inst", 0, NULL, &ti_prm_pdata),
 	OF_DEV_AUXDATA("ti,omap-sdma", 0, NULL, &dma_plat_info),
 	{ /* sentinel */ },

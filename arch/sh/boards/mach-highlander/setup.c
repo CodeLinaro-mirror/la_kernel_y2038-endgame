@@ -30,7 +30,7 @@
 #include <asm/io.h>
 #include <asm/io_trapped.h>
 
-static struct r8a66597_platdata r8a66597_data = {
+static struct r8a66597_platform_data r8a66597_data = {
 	.xtal = R8A66597_PLATDATA_XTAL_12MHZ,
 	.vif = 1,
 };
@@ -60,7 +60,7 @@ static struct platform_device r8a66597_usb_host_device = {
 	.resource	= r8a66597_usb_host_resources,
 };
 
-static struct m66592_platdata usbf_platdata = {
+static struct m66592_platform_data usbf_platdata = {
 	.xtal = M66592_PLATDATA_XTAL_24MHZ,
 	.vif = 1,
 };
@@ -109,7 +109,7 @@ static struct resource cf_ide_resources[] = {
 	},
 };
 
-static struct pata_platform_info pata_info = {
+static struct pata_platform_data pata_info = {
 	.ioport_shift	= 1,
 };
 
@@ -154,7 +154,7 @@ static struct platform_device heartbeat_device = {
 	.resource	= heartbeat_resources,
 };
 
-static struct ax_plat_data ax88796_platdata = {
+static struct ax_platform_data ax88796_platdata = {
 	.flags          = AXFLG_HAS_93CX6,
 	.wordlength     = 2,
 	.dcr_val        = 0x1,
@@ -214,7 +214,7 @@ static struct mtd_partition nor_flash_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data nor_flash_data = {
+static struct physmap_flash_platform_data nor_flash_data = {
 	.width		= 4,
 	.parts		= nor_flash_partitions,
 	.nr_parts	= ARRAY_SIZE(nor_flash_partitions),

@@ -15,7 +15,7 @@
 struct omap_kp_platform_data {
 	int rows;
 	int cols;
-	const struct matrix_keymap_data *keymap_data;
+	const struct matrix_keymap_platform_data *keymap_data;
 	bool rep;
 	unsigned long delay;
 	bool dbounce;

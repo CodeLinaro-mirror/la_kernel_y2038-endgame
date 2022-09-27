@@ -240,7 +240,7 @@ static struct resource serial_resource = {
 	.flags	= IORESOURCE_MEM,
 };
 
-static struct plat_serial8250_port serial_platform_data[] = {
+static struct serial8250_platform_data serial_platform_data[] = {
 	[0] = {
 		.mapbase	= DUART16552_PADDR,
 		.irq		= XTENSA_PIC_LINUX_IRQ(DUART16552_INTNUM),

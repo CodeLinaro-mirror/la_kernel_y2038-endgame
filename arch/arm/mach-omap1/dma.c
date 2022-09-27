@@ -281,7 +281,7 @@ static const struct dma_slave_map omap1xxx_sdma_map[] = {
 	{ "mmci-omap.1", "rx", SDMA_FILTER_PARAM(55) },
 };
 
-static struct omap_system_dma_plat_info dma_plat_info __initdata = {
+static struct omap_system_dma_platform_data dma_plat_info __initdata = {
 	.reg_map	= reg_map,
 	.channel_stride	= 0x40,
 	.show_dma_caps	= omap1_show_dma_caps,
@@ -293,7 +293,7 @@ static struct omap_system_dma_plat_info dma_plat_info __initdata = {
 
 static int __init omap1_system_dma_init(void)
 {
-	struct omap_system_dma_plat_info	p;
+	struct omap_system_dma_platform_data	p;
 	struct omap_dma_dev_attr		*d;
 	struct platform_device			*pdev, *dma_pdev;
 	int ret;

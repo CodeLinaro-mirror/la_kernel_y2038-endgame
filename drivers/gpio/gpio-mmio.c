@@ -697,15 +697,15 @@ static const struct of_device_id bgpio_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, bgpio_of_match);
 
-static struct bgpio_pdata *bgpio_parse_dt(struct platform_device *pdev,
+static struct bgpio_platform_data *bgpio_parse_dt(struct platform_device *pdev,
 					  unsigned long *flags)
 {
-	struct bgpio_pdata *pdata;
+	struct bgpio_platform_data *pdata;
 
 	if (!pdev->dev.of_node)
 		return NULL;
 
-	pdata = devm_kzalloc(&pdev->dev, sizeof(struct bgpio_pdata),
+	pdata = devm_kzalloc(&pdev->dev, sizeof(struct bgpio_platform_data),
 			     GFP_KERNEL);
 	if (!pdata)
 		return ERR_PTR(-ENOMEM);
@@ -721,7 +721,7 @@ static struct bgpio_pdata *bgpio_parse_dt(struct platform_device *pdev,
 	return pdata;
 }
 #else
-static struct bgpio_pdata *bgpio_parse_dt(struct platform_device *pdev,
+static struct bgpio_platform_data *bgpio_parse_dt(struct platform_device *pdev,
 					  unsigned long *flags)
 {
 	return NULL;
@@ -741,7 +741,7 @@ static int bgpio_pdev_probe(struct platform_device *pdev)
 	unsigned long flags = 0;
 	int err;
 	struct gpio_chip *gc;
-	struct bgpio_pdata *pdata;
+	struct bgpio_platform_data *pdata;
 
 	pdata = bgpio_parse_dt(pdev, &flags);
 	if (IS_ERR(pdata))

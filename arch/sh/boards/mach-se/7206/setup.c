@@ -30,7 +30,7 @@ static struct resource smc91x_resources[] = {
 	},
 };
 
-static struct smc91x_platdata smc91x_info = {
+static struct smc91x_platform_data smc91x_info = {
 	.flags	= SMC91X_USE_16BIT,
 };
 

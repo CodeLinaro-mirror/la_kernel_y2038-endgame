@@ -86,7 +86,7 @@ struct ax_device {
 	int duplex;
 
 	void __iomem *map2;
-	const struct ax_plat_data *plat;
+	const struct ax_platform_data *plat;
 
 	unsigned char running;
 	unsigned char resume_open;

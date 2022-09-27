@@ -2355,7 +2355,7 @@ static int pxa_udc_probe(struct platform_device *pdev)
 {
 	struct pxa_udc *udc = &memory;
 	int retval = 0, gpio;
-	struct pxa2xx_udc_mach_info *mach = dev_get_platdata(&pdev->dev);
+	struct pxa2xx_udc_platform_data *mach = dev_get_platdata(&pdev->dev);
 	unsigned long gpio_flags;
 
 	if (mach) {

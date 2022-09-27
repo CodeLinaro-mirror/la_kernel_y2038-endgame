@@ -46,7 +46,7 @@ of the board setup code.
 2. Panel definitions
 --------------------
 The LCDC must explicitly be told about the type of LCD panel
-attached.  Data must be wrapped in a "struct sh7760fb_platdata" and
+attached.  Data must be wrapped in a "struct sh7760fb_platform_data" and
 passed to the driver as platform_data.
 
 Suggest you take a closer look at the SH7760 Manual, Section 30.
@@ -88,7 +88,7 @@ get the framebuffer working on a 640x480 TFT::
          .flag           = 0,
   };
 
-  static struct sh7760fb_platdata sh7760fb_nl6448 = {
+  static struct sh7760fb_platform_data sh7760fb_nl6448 = {
          .def_mode       = &nl6448bc26,
          .ldmtr          = LDMTR_TFT_COLOR_16,   /* 16bit TFT panel */
          .lddfr          = LDDFR_8BPP,           /* we want 8bit output */

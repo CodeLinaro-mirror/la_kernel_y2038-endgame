@@ -53,7 +53,7 @@ static struct mtd_partition mv2120_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data mv2120_nor_flash_data = {
+static struct physmap_flash_platform_data mv2120_nor_flash_data = {
 	.width		= 1,
 	.parts		= mv2120_partitions,
 	.nr_parts	= ARRAY_SIZE(mv2120_partitions)

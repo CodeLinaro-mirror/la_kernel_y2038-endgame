@@ -187,7 +187,7 @@ static int pata_platform_probe(struct platform_device *pdev)
 	struct resource *io_res;
 	struct resource *ctl_res;
 	struct resource *irq_res;
-	struct pata_platform_info *pp_info = dev_get_platdata(&pdev->dev);
+	struct pata_platform_data *pp_info = dev_get_platdata(&pdev->dev);
 
 	/*
 	 * Simple resource validation ..

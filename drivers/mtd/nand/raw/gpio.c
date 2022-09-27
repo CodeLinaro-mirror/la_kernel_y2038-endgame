@@ -32,7 +32,7 @@ struct gpiomtd {
 	void __iomem		*io;
 	void __iomem		*io_sync;
 	struct nand_chip	nand_chip;
-	struct gpio_nand_platdata plat;
+	struct gpio_nand_platform_data plat;
 	struct gpio_desc *nce; /* Optional chip enable */
 	struct gpio_desc *cle;
 	struct gpio_desc *ale;
@@ -183,7 +183,7 @@ static const struct of_device_id gpio_nand_id_table[] = {
 MODULE_DEVICE_TABLE(of, gpio_nand_id_table);
 
 static int gpio_nand_get_config_of(const struct device *dev,
-				   struct gpio_nand_platdata *plat)
+				   struct gpio_nand_platform_data *plat)
 {
 	u32 val;
 
@@ -226,7 +226,7 @@ static struct resource *gpio_nand_get_io_sync_of(struct platform_device *pdev)
 }
 #else /* CONFIG_OF */
 static inline int gpio_nand_get_config_of(const struct device *dev,
-					  struct gpio_nand_platdata *plat)
+					  struct gpio_nand_platform_data *plat)
 {
 	return -ENOSYS;
 }
@@ -239,7 +239,7 @@ gpio_nand_get_io_sync_of(struct platform_device *pdev)
 #endif /* CONFIG_OF */
 
 static inline int gpio_nand_get_config(const struct device *dev,
-				       struct gpio_nand_platdata *plat)
+				       struct gpio_nand_platform_data *plat)
 {
 	int ret = gpio_nand_get_config_of(dev, plat);
 

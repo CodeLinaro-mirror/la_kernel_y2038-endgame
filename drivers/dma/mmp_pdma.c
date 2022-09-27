@@ -1018,7 +1018,7 @@ static struct dma_chan *mmp_pdma_dma_xlate(struct of_phandle_args *dma_spec,
 static int mmp_pdma_probe(struct platform_device *op)
 {
 	struct mmp_pdma_device *pdev;
-	struct mmp_dma_platdata *pdata = dev_get_platdata(&op->dev);
+	struct mmp_dma_platform_data *pdata = dev_get_platdata(&op->dev);
 	int i, ret, irq = 0;
 	int dma_channels = 0, irq_num = 0;
 	const enum dma_slave_buswidth widths =

@@ -162,7 +162,7 @@ static struct mtd_partition mtx1_mtd_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data mtx1_flash_data = {
+static struct physmap_flash_platform_data mtx1_flash_data = {
 	.width		= 4,
 	.nr_parts	= 4,
 	.parts		= mtx1_mtd_partitions,
@@ -225,7 +225,7 @@ static int mtx1_map_pci_irq(const struct pci_dev *d, u8 slot, u8 pin)
 	return mtx1_irqtab[slot][pin];
 }
 
-static struct alchemy_pci_platdata mtx1_pci_pd = {
+static struct alchemy_pci_platform_data mtx1_pci_pd = {
 	.board_map_irq	 = mtx1_map_pci_irq,
 	.board_pci_idsel = mtx1_pci_idsel,
 	.pci_cfg_set	 = PCI_CONFIG_AEN | PCI_CONFIG_R2H | PCI_CONFIG_R1H |

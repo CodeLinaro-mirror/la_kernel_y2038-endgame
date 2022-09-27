@@ -33,7 +33,7 @@ static struct resource swarm_pata_resource[] = {
 	},
 };
 
-static struct pata_platform_info pata_platform_data = {
+static struct pata_platform_data pata_platform_data = {
 	.ioport_shift	= SWARM_IDE_SHIFT,
 };
 

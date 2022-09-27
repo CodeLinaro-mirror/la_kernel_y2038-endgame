@@ -25,14 +25,14 @@
 
 #include "8250.h"
 
-struct pxa8250_data {
+struct pxa8250_platform_data {
 	int			line;
 	struct clk		*clk;
 };
 
 static int __maybe_unused serial_pxa_suspend(struct device *dev)
 {
-	struct pxa8250_data *data = dev_get_drvdata(dev);
+	struct pxa8250_platform_data *data = dev_get_drvdata(dev);
 
 	serial8250_suspend_port(data->line);
 
@@ -41,7 +41,7 @@ static int __maybe_unused serial_pxa_suspend(struct device *dev)
 
 static int __maybe_unused serial_pxa_resume(struct device *dev)
 {
-	struct pxa8250_data *data = dev_get_drvdata(dev);
+	struct pxa8250_platform_data *data = dev_get_drvdata(dev);
 
 	serial8250_resume_port(data->line);
 
@@ -79,7 +79,7 @@ static void serial_pxa_dl_write(struct uart_8250_port *up, u32 value)
 static void serial_pxa_pm(struct uart_port *port, unsigned int state,
 	      unsigned int oldstate)
 {
-	struct pxa8250_data *data = port->private_data;
+	struct pxa8250_platform_data *data = port->private_data;
 
 	if (!state)
 		clk_prepare_enable(data->clk);
@@ -90,7 +90,7 @@ static void serial_pxa_pm(struct uart_port *port, unsigned int state,
 static int serial_pxa_probe(struct platform_device *pdev)
 {
 	struct uart_8250_port uart = {};
-	struct pxa8250_data *data;
+	struct pxa8250_platform_data *data;
 	struct resource *mmres;
 	int irq, ret;
 
@@ -148,7 +148,7 @@ static int serial_pxa_probe(struct platform_device *pdev)
 
 static int serial_pxa_remove(struct platform_device *pdev)
 {
-	struct pxa8250_data *data = platform_get_drvdata(pdev);
+	struct pxa8250_platform_data *data = platform_get_drvdata(pdev);
 
 	serial8250_unregister_port(data->line);
 

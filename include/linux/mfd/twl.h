@@ -606,7 +606,7 @@ struct twl4030_madc_platform_data {
 #define PERSISTENT_KEY(r, c)	KEY((r), (c), KEY_RESERVED)
 
 struct twl4030_keypad_data {
-	const struct matrix_keymap_data *keymap_data;
+	const struct matrix_keymap_platform_data *keymap_data;
 	unsigned rows;
 	unsigned cols;
 	bool rep;

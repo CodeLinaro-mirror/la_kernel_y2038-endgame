@@ -1061,7 +1061,7 @@ static const struct fb_monspecs monspecs = {
 
 static struct sa1100fb_info *sa1100fb_init_fbinfo(struct device *dev)
 {
-	struct sa1100fb_mach_info *inf = dev_get_platdata(dev);
+	struct sa1100fb_platform_data *inf = dev_get_platdata(dev);
 	struct sa1100fb_info *fbi;
 	unsigned i;
 

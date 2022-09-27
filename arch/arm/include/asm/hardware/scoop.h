@@ -36,7 +36,7 @@
 #define SCOOP_GPCR_PA12	(1 << 2)
 #define SCOOP_GPCR_PA11	(1 << 1)
 
-struct scoop_config {
+struct scoop_platform_data {
 	unsigned short io_out;
 	unsigned short io_dir;
 	unsigned short suspend_clr;
@@ -54,13 +54,13 @@ struct scoop_pcmcia_dev {
 	unsigned char keep_rd;
 };
 
-struct scoop_pcmcia_config {
+struct scoop_pcmcia_platform_data {
 	struct scoop_pcmcia_dev *devs;
 	int num_devs;
 	void (*power_ctrl)(struct device *scoop, unsigned short cpr, int nr);
 };
 
-extern struct scoop_pcmcia_config *platform_scoop_config;
+extern struct scoop_pcmcia_platform_data *platform_scoop_config;
 
 void reset_scoop(struct device *dev);
 unsigned short read_scoop_reg(struct device *dev, unsigned short reg);

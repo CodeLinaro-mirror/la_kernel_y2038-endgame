@@ -26,7 +26,7 @@
 		.type		= PORT_16550A,			\
 	}
 
-static struct plat_serial8250_port ls1x_serial8250_pdata[] = {
+static struct serial8250_platform_data ls1x_serial8250_pdata[] = {
 	LS1X_UART(0),
 	LS1X_UART(1),
 	LS1X_UART(2),
@@ -45,7 +45,7 @@ struct platform_device ls1x_uart_pdev = {
 void __init ls1x_serial_set_uartclk(struct platform_device *pdev)
 {
 	struct clk *clk;
-	struct plat_serial8250_port *p;
+	struct serial8250_platform_data *p;
 
 	clk = clk_get(&pdev->dev, pdev->name);
 	if (IS_ERR(clk)) {
@@ -248,7 +248,7 @@ static struct resource ls1x_ehci_resources[] = {
 	},
 };
 
-static struct usb_ehci_pdata ls1x_ehci_pdata = {
+static struct usb_ehci_platform_data ls1x_ehci_pdata = {
 };
 
 struct platform_device ls1x_ehci_pdev = {

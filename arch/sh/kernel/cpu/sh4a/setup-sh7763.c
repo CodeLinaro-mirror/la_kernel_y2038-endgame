@@ -16,7 +16,7 @@
 #include <linux/usb/ohci_pdriver.h>
 #include <asm/platform_early.h>
 
-static struct plat_sci_port scif0_platform_data = {
+static struct scif_platform_data scif0_platform_data = {
 	.scscr		= SCSCR_REIE,
 	.type		= PORT_SCIF,
 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
@@ -37,7 +37,7 @@ static struct platform_device scif0_device = {
 	},
 };
 
-static struct plat_sci_port scif1_platform_data = {
+static struct scif_platform_data scif1_platform_data = {
 	.scscr		= SCSCR_REIE,
 	.type		= PORT_SCIF,
 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
@@ -58,7 +58,7 @@ static struct platform_device scif1_device = {
 	},
 };
 
-static struct plat_sci_port scif2_platform_data = {
+static struct scif_platform_data scif2_platform_data = {
 	.scscr		= SCSCR_REIE,
 	.type		= PORT_SCIF,
 	.regtype	= SCIx_SH4_SCIF_FIFODATA_REGTYPE,
@@ -114,7 +114,7 @@ static struct resource usb_ohci_resources[] = {
 
 static u64 usb_ohci_dma_mask = 0xffffffffUL;
 
-static struct usb_ohci_pdata usb_ohci_pdata;
+static struct usb_ohci_platform_data usb_ohci_platform_data;
 
 static struct platform_device usb_ohci_device = {
 	.name		= "ohci-platform",
@@ -122,7 +122,7 @@ static struct platform_device usb_ohci_device = {
 	.dev = {
 		.dma_mask		= &usb_ohci_dma_mask,
 		.coherent_dma_mask	= 0xffffffff,
-		.platform_data		= &usb_ohci_pdata,
+		.platform_data		= &usb_ohci_platform_data,
 	},
 	.num_resources	= ARRAY_SIZE(usb_ohci_resources),
 	.resource	= usb_ohci_resources,
@@ -152,7 +152,7 @@ static struct platform_device usbf_device = {
 	.resource	= usbf_resources,
 };
 
-static struct sh_timer_config tmu0_platform_data = {
+static struct sh_timer_platform_data tmu0_platform_data = {
 	.channels_mask = 7,
 };
 
@@ -173,7 +173,7 @@ static struct platform_device tmu0_device = {
 	.num_resources	= ARRAY_SIZE(tmu0_resources),
 };
 
-static struct sh_timer_config tmu1_platform_data = {
+static struct sh_timer_platform_data tmu1_platform_data = {
 	.channels_mask = 7,
 };
 

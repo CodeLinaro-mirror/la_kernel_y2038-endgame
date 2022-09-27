@@ -41,7 +41,7 @@ struct wm2200_micbias {
 	unsigned int bypass:1;             /** Use bypass mode */
 };
 
-struct wm2200_pdata {
+struct wm2200_platform_data {
 	int reset;      /** GPIO controlling /RESET, if any */
 	int ldo_ena;    /** GPIO controlling LODENA, if any */
 	int irq_flags;

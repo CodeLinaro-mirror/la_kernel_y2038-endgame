@@ -96,7 +96,7 @@ void __init plat_mem_setup(void)
 		.flags		= UPF_BOOT_AUTOCONF,	\
 	}
 
-static struct plat_serial8250_port jazz_serial_data[] = {
+static struct serial8250_platform_data jazz_serial_data[] = {
 	MEMPORT(JAZZ_SERIAL1_BASE, JAZZ_SERIAL1_IRQ),
 	MEMPORT(JAZZ_SERIAL2_BASE, JAZZ_SERIAL2_IRQ),
 	{ },

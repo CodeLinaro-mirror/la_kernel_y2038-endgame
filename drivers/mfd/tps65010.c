@@ -504,7 +504,7 @@ static struct tps65010 *the_tps;
 static void tps65010_remove(struct i2c_client *client)
 {
 	struct tps65010		*tps = i2c_get_clientdata(client);
-	struct tps65010_board	*board = dev_get_platdata(&client->dev);
+	struct tps65010_platform_data	*board = dev_get_platdata(&client->dev);
 
 	if (board && board->teardown)
 		board->teardown(client, &tps->chip);
@@ -520,7 +520,7 @@ static int tps65010_probe(struct i2c_client *client)
 	const struct i2c_device_id *id = i2c_client_get_device_id(client);
 	struct tps65010		*tps;
 	int			status;
-	struct tps65010_board	*board = dev_get_platdata(&client->dev);
+	struct tps65010_platform_data	*board = dev_get_platdata(&client->dev);
 
 	if (the_tps) {
 		dev_dbg(&client->dev, "only one tps6501x chip allowed\n");

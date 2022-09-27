@@ -63,7 +63,7 @@ static void __init vision_map_io(void)
 /*************************************************************************
  * Ethernet
  *************************************************************************/
-static struct ep93xx_eth_data vision_eth_data __initdata = {
+static struct ep93xx_eth_platform_data vision_eth_data __initdata = {
 	.phy_id		= 1,
 };
 
@@ -101,7 +101,7 @@ static void vision_lcd_blank(int blank_mode, struct fb_info *info)
 		gpio_set_value(VISION_LCD_ENABLE, 1);
 }
 
-static struct ep93xxfb_mach_info ep93xxfb_info __initdata = {
+static struct ep93xxfb_platform_data ep93xxfb_info __initdata = {
 	.flags		= EP93XXFB_USE_SDCSN0 | EP93XXFB_PCLK_FALLING,
 	.setup		= vision_lcd_setup,
 	.teardown	= vision_lcd_teardown,
@@ -251,7 +251,7 @@ static struct gpiod_lookup_table vision_spi_cs_gpio_table = {
 	},
 };
 
-static struct ep93xx_spi_info vision_spi_master __initdata = {
+static struct ep93xx_spi_platform_data vision_spi_master __initdata = {
 	.use_dma	= 1,
 };
 

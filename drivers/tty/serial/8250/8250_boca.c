@@ -9,7 +9,7 @@
 
 #include "8250.h"
 
-static struct plat_serial8250_port boca_data[] = {
+static struct serial8250_platform_data boca_data[] = {
 	SERIAL8250_PORT(0x100, 12),
 	SERIAL8250_PORT(0x108, 12),
 	SERIAL8250_PORT(0x110, 12),

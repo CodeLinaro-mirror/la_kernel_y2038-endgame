@@ -3087,7 +3087,7 @@ static int sh_mdiobb_write_c45(struct mii_bus *bus, int phy, int devad,
 
 /* MDIO bus init function */
 static int sh_mdio_init(struct sh_eth_private *mdp,
-			struct sh_eth_plat_data *pd)
+			struct sh_eth_platform_data *pd)
 {
 	int ret;
 	struct bb_info *bitbang;
@@ -3199,10 +3199,10 @@ static const struct net_device_ops sh_eth_netdev_ops_tsu = {
 };
 
 #ifdef CONFIG_OF
-static struct sh_eth_plat_data *sh_eth_parse_dt(struct device *dev)
+static struct sh_eth_platform_data *sh_eth_parse_dt(struct device *dev)
 {
 	struct device_node *np = dev->of_node;
-	struct sh_eth_plat_data *pdata;
+	struct sh_eth_platform_data *pdata;
 	phy_interface_t interface;
 	int ret;
 
@@ -3244,7 +3244,7 @@ static const struct of_device_id sh_eth_match_table[] = {
 };
 MODULE_DEVICE_TABLE(of, sh_eth_match_table);
 #else
-static inline struct sh_eth_plat_data *sh_eth_parse_dt(struct device *dev)
+static inline struct sh_eth_platform_data *sh_eth_parse_dt(struct device *dev)
 {
 	return NULL;
 }
@@ -3253,7 +3253,7 @@ static inline struct sh_eth_plat_data *sh_eth_parse_dt(struct device *dev)
 static int sh_eth_drv_probe(struct platform_device *pdev)
 {
 	struct resource *res;
-	struct sh_eth_plat_data *pd = dev_get_platdata(&pdev->dev);
+	struct sh_eth_platform_data *pd = dev_get_platdata(&pdev->dev);
 	const struct platform_device_id *id = platform_get_device_id(pdev);
 	struct sh_eth_private *mdp;
 	struct net_device *ndev;

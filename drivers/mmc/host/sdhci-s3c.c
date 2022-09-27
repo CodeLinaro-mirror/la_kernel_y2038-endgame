@@ -117,7 +117,7 @@ struct sdhci_s3c {
 	struct sdhci_host	*host;
 	struct platform_device	*pdev;
 	struct resource		*ioarea;
-	struct s3c_sdhci_platdata *pdata;
+	struct s3c_sdhci_platform_data *pdata;
 	int			cur_clk;
 	int			ext_cd_irq;
 
@@ -425,7 +425,7 @@ static struct sdhci_ops sdhci_s3c_ops = {
 
 #ifdef CONFIG_OF
 static int sdhci_s3c_parse_dt(struct device *dev,
-		struct sdhci_host *host, struct s3c_sdhci_platdata *pdata)
+		struct sdhci_host *host, struct s3c_sdhci_platform_data *pdata)
 {
 	struct device_node *node = dev->of_node;
 	u32 max_width;
@@ -455,7 +455,7 @@ static int sdhci_s3c_parse_dt(struct device *dev,
 }
 #else
 static int sdhci_s3c_parse_dt(struct device *dev,
-		struct sdhci_host *host, struct s3c_sdhci_platdata *pdata)
+		struct sdhci_host *host, struct s3c_sdhci_platform_data *pdata)
 {
 	return -EINVAL;
 }
@@ -474,7 +474,7 @@ static inline const struct sdhci_s3c_drv_data *sdhci_s3c_get_driver_data(
 
 static int sdhci_s3c_probe(struct platform_device *pdev)
 {
-	struct s3c_sdhci_platdata *pdata;
+	struct s3c_sdhci_platform_data *pdata;
 	const struct sdhci_s3c_drv_data *drv_data;
 	struct device *dev = &pdev->dev;
 	struct sdhci_host *host;

@@ -63,7 +63,7 @@ static struct mtd_partition kfr2r09_nor_flash_partitions[] =
 	},
 };
 
-static struct physmap_flash_data kfr2r09_nor_flash_data = {
+static struct physmap_flash_platform_data kfr2r09_nor_flash_data = {
 	.width		= 2,
 	.parts		= kfr2r09_nor_flash_partitions,
 	.nr_parts	= ARRAY_SIZE(kfr2r09_nor_flash_partitions),
@@ -154,7 +154,7 @@ static const struct fb_videomode kfr2r09_lcdc_modes[] = {
 	},
 };
 
-static struct sh_mobile_lcdc_info kfr2r09_sh_lcdc_info = {
+static struct sh_mobile_lcdc_platform_data kfr2r09_sh_lcdc_info = {
 	.clock_source = LCDC_CLK_BUS,
 	.ch[0] = {
 		.chan = LCDC_CHAN_MAINLCD,
@@ -212,7 +212,7 @@ static struct i2c_board_info kfr2r09_backlight_board_info = {
 	.platform_data = &kfr2r09_backlight_data,
 };
 
-static struct r8a66597_platdata kfr2r09_usb0_gadget_data = {
+static struct r8a66597_platform_data kfr2r09_usb0_gadget_data = {
 	.on_chip = 1,
 };
 
@@ -278,7 +278,7 @@ static struct platform_device kfr2r09_ceu_device = {
 	},
 };
 
-static struct rj54n1_pdata rj54n1_priv = {
+static struct rj54n1_platform_data rj54n1_priv = {
 	.mclk_freq	= CEU_MCLK_FREQ,
 	.ioctl_high	= false,
 };

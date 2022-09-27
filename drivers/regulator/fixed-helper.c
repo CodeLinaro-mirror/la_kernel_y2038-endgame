@@ -6,7 +6,7 @@
 #include <linux/regulator/fixed.h>
 
 struct fixed_regulator_data {
-	struct fixed_voltage_config cfg;
+	struct fixed_voltage_platform_data cfg;
 	struct regulator_init_data init_data;
 	struct platform_device pdev;
 };

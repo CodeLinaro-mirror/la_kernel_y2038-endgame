@@ -107,7 +107,7 @@
 #define EP93XXFB_MAX_YRES			768
 
 struct ep93xx_fbi {
-	struct ep93xxfb_mach_info	*mach_info;
+	struct ep93xxfb_platform_data	*mach_info;
 	struct clk			*clk;
 	struct resource			*res;
 	void __iomem			*mmio_base;
@@ -459,7 +459,7 @@ static void ep93xxfb_dealloc_videomem(struct fb_info *info)
 
 static int ep93xxfb_probe(struct platform_device *pdev)
 {
-	struct ep93xxfb_mach_info *mach_info = dev_get_platdata(&pdev->dev);
+	struct ep93xxfb_platform_data *mach_info = dev_get_platdata(&pdev->dev);
 	struct fb_info *info;
 	struct ep93xx_fbi *fbi;
 	struct resource *res;

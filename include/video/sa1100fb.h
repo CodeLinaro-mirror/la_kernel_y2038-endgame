@@ -28,7 +28,7 @@ struct sa1100fb_rgb {
 };
 
 /* This structure describes the machine which we are running on. */
-struct sa1100fb_mach_info {
+struct sa1100fb_platform_data {
 	u_long		pixclock;
 
 	u_short		xres;

@@ -142,7 +142,7 @@ static void integrator_uart_set_mctrl(struct amba_device *dev,
 		pr_err("MODEM: unable to write PL010 UART CRTLC\n");
 }
 
-struct amba_pl010_data ap_uart_data = {
+struct amba_pl010_platform_data ap_uart_data = {
 	.set_mctrl = integrator_uart_set_mctrl,
 };
 

@@ -79,7 +79,7 @@ static struct resource nokia770_kp_resources[] = {
 	},
 };
 
-static const struct matrix_keymap_data nokia770_keymap_data = {
+static const struct matrix_keymap_platform_data nokia770_keymap_data = {
 	.keymap		= nokia770_keymap,
 	.keymap_size	= ARRAY_SIZE(nokia770_keymap),
 };
@@ -173,7 +173,7 @@ static void __init hwa742_dev_init(void)
 
 /* assume no Mini-AB port */
 
-static struct omap_usb_config nokia770_usb_config __initdata = {
+static struct omap_usb_platform_data nokia770_usb_config __initdata = {
 	.otg		= 1,
 	.register_host	= 1,
 	.register_dev	= 1,

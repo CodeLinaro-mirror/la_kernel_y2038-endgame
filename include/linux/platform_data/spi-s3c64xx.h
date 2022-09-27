@@ -26,13 +26,13 @@ struct s3c64xx_spi_csinfo {
 };
 
 /**
- * struct s3c64xx_spi_info - SPI Controller defining structure
+ * struct s3c64xx_spi_platform_data - SPI Controller defining structure
  * @src_clk_nr: Clock source index for the CLK_CFG[SPI_CLKSEL] field.
  * @num_cs: Number of CS this controller emulates.
  * @no_cs: Used when CS line is not connected.
  * @cfg_gpio: Configure pins for this SPI controller.
  */
-struct s3c64xx_spi_info {
+struct s3c64xx_spi_platform_data {
 	int src_clk_nr;
 	int num_cs;
 	bool no_cs;
@@ -54,5 +54,5 @@ extern void s3c64xx_spi0_set_platdata(int src_clk_nr, int num_cs);
 /* defined by architecture to configure gpio */
 extern int s3c64xx_spi0_cfg_gpio(void);
 
-extern struct s3c64xx_spi_info s3c64xx_spi0_pdata;
+extern struct s3c64xx_spi_platform_data s3c64xx_spi0_pdata;
 #endif /*__SPI_S3C64XX_H */

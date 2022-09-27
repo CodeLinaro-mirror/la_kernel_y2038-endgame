@@ -112,7 +112,7 @@ struct s3c24xx_i2c {
 	struct device		*dev;
 	struct i2c_adapter	adap;
 
-	struct s3c2410_platform_i2c	*pdata;
+	struct s3c_i2c_platform_data	*pdata;
 	struct gpio_desc	*gpios[2];
 	struct pinctrl          *pctrl;
 	struct regmap		*sysreg;
@@ -821,7 +821,7 @@ static int s3c24xx_i2c_calcdivisor(unsigned long clkin, unsigned int wanted,
  */
 static int s3c24xx_i2c_clockrate(struct s3c24xx_i2c *i2c, unsigned int *got)
 {
-	struct s3c2410_platform_i2c *pdata = i2c->pdata;
+	struct s3c_i2c_platform_data *pdata = i2c->pdata;
 	unsigned long clkin = clk_get_rate(i2c->clk);
 	unsigned int divs, div1;
 	unsigned long target_frequency;
@@ -911,7 +911,7 @@ static int s3c24xx_i2c_parse_dt_gpio(struct s3c24xx_i2c *i2c)
  */
 static int s3c24xx_i2c_init(struct s3c24xx_i2c *i2c)
 {
-	struct s3c2410_platform_i2c *pdata;
+	struct s3c_i2c_platform_data *pdata;
 	unsigned int freq;
 
 	/* get the plafrom data */
@@ -950,7 +950,7 @@ static int s3c24xx_i2c_init(struct s3c24xx_i2c *i2c)
 static void
 s3c24xx_i2c_parse_dt(struct device_node *np, struct s3c24xx_i2c *i2c)
 {
-	struct s3c2410_platform_i2c *pdata = i2c->pdata;
+	struct s3c_i2c_platform_data *pdata = i2c->pdata;
 	int id;
 
 	if (!np)
@@ -985,7 +985,7 @@ s3c24xx_i2c_parse_dt(struct device_node *np, struct s3c24xx_i2c *i2c) { }
 static int s3c24xx_i2c_probe(struct platform_device *pdev)
 {
 	struct s3c24xx_i2c *i2c;
-	struct s3c2410_platform_i2c *pdata = NULL;
+	struct s3c_i2c_platform_data *pdata = NULL;
 	struct resource *res;
 	int ret;
 

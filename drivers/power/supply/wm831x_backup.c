@@ -42,17 +42,17 @@ static int wm831x_backup_read_voltage(struct wm831x *wm831x,
 
 static void wm831x_config_backup(struct wm831x *wm831x)
 {
-	struct wm831x_pdata *wm831x_pdata = wm831x->dev->platform_data;
-	struct wm831x_backup_pdata *pdata;
+	struct wm831x_platform_data *wm831x_platform_data = wm831x->dev->platform_data;
+	struct wm831x_backup_platform_data *pdata;
 	int ret, reg;
 
-	if (!wm831x_pdata || !wm831x_pdata->backup) {
+	if (!wm831x_platform_data || !wm831x_platform_data->backup) {
 		dev_warn(wm831x->dev,
 			 "No backup battery charger configuration\n");
 		return;
 	}
 
-	pdata = wm831x_pdata->backup;
+	pdata = wm831x_platform_data->backup;
 
 	reg = 0;
 
@@ -162,7 +162,7 @@ static enum power_supply_property wm831x_backup_props[] = {
 static int wm831x_backup_probe(struct platform_device *pdev)
 {
 	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
-	struct wm831x_pdata *wm831x_pdata = wm831x->dev->platform_data;
+	struct wm831x_platform_data *wm831x_platform_data = wm831x->dev->platform_data;
 	struct wm831x_backup *devdata;
 
 	devdata = devm_kzalloc(&pdev->dev, sizeof(struct wm831x_backup),
@@ -179,9 +179,9 @@ static int wm831x_backup_probe(struct platform_device *pdev)
 	 */
 	wm831x_config_backup(wm831x);
 
-	if (wm831x_pdata && wm831x_pdata->wm831x_num)
+	if (wm831x_platform_data && wm831x_platform_data->wm831x_num)
 		snprintf(devdata->name, sizeof(devdata->name),
-			 "wm831x-backup.%d", wm831x_pdata->wm831x_num);
+			 "wm831x-backup.%d", wm831x_platform_data->wm831x_num);
 	else
 		snprintf(devdata->name, sizeof(devdata->name),
 			 "wm831x-backup");
