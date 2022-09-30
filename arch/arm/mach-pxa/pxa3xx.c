@@ -496,8 +496,6 @@ static int __init pxa3xx_init(void)
 		pxa3xx_init_pm();
 
 		enable_irq_wake(IRQ_WAKEUP0);
-		if (cpu_is_pxa320())
-			enable_irq_wake(IRQ_WAKEUP1);
 
 		register_syscore_ops(&pxa_irq_syscore_ops);
 		register_syscore_ops(&pxa3xx_mfp_syscore_ops);
@@ -509,7 +507,7 @@ static int __init pxa3xx_init(void)
 		ret = platform_add_devices(devices, ARRAY_SIZE(devices));
 		if (ret)
 			return ret;
-		if (cpu_is_pxa300() || cpu_is_pxa310() || cpu_is_pxa320()) {
+		if (cpu_is_pxa300()) {
 			platform_device_add_data(&pxa3xx_device_gpio,
 						 &pxa3xx_gpio_pdata,
 						 sizeof(pxa3xx_gpio_pdata));

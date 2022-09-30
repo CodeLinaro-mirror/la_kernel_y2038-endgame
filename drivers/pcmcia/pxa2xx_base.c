@@ -268,12 +268,6 @@ static int pxa2xx_drv_pcmcia_probe(struct platform_device *dev)
 		goto err0;
 	}
 
-	if (cpu_is_pxa320() && ops->nr > 1) {
-		dev_err(&dev->dev, "pxa320 supports only one pcmcia slot");
-		ret = -EINVAL;
-		goto err0;
-	}
-
 	clk = devm_clk_get(&dev->dev, NULL);
 	if (IS_ERR(clk))
 		return -ENODEV;

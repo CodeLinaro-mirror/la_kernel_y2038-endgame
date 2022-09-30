@@ -44,8 +44,7 @@
 #define NR_SG	1
 #define CLKRT_OFF	(~0)
 
-#define mmc_has_26MHz()		(cpu_is_pxa300() || cpu_is_pxa310() \
-				|| cpu_is_pxa935())
+#define mmc_has_26MHz()		(cpu_is_pxa300())
 
 struct pxamci_host {
 	struct mmc_host		*mmc;
