@@ -422,12 +422,6 @@ config BATTERY_MAX1721X
 	  Say Y here to enable support for the MAX17211/MAX17215 standalone
 	  battery gas-gauge.
 
-config BATTERY_Z2
-	tristate "Z2 battery driver"
-	depends on I2C && MACH_ZIPIT2
-	help
-	  Say Y to include support for the battery on the Zipit Z2.
-
 config BATTERY_S3C_ADC
 	tristate "Battery driver for Samsung ADC based monitoring"
 	depends on S3C_ADC
