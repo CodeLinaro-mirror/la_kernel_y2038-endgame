@@ -466,7 +466,7 @@ void kprobe_arm_test_cases(void)
 #if __LINUX_ARM_ARCH__ >= 6
 	TEST_UNSUPPORTED("ldrex	r2, [sp]")
 #endif
-#if (__LINUX_ARM_ARCH__ >= 7) || defined(CONFIG_CPU_32v6K)
+#if __LINUX_ARM_ARCH__ >= 7
 	TEST_UNSUPPORTED("strexd	r0, r2, r3, [sp]")
 	TEST_UNSUPPORTED("ldrexd	r2, r3, [sp]")
 	TEST_UNSUPPORTED("strexb	r0, r2, [sp]")
