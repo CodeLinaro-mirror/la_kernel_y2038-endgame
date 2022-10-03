@@ -185,7 +185,7 @@ extern const struct clkops clkops_uart_16xx;
 extern const struct clkops clkops_generic;
 
 /* used for passing SoC type to omap1_{select,round_to}_table_rate() */
-extern u32 cpu_mask;
+extern u32 omap1_cpu_mask;
 
 extern const struct clk_ops omap1_clk_null_ops;
 extern const struct clk_ops omap1_clk_gate_ops;

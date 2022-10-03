@@ -236,7 +236,7 @@ int omap1_select_table_rate(struct omap1_clk *clk, unsigned long rate, unsigned 
 	ref_rate = ck_ref_p->rate;
 
 	for (ptr = omap1_rate_table; ptr->rate; ptr++) {
-		if (!(ptr->flags & cpu_mask))
+		if (!(ptr->flags & omap1_cpu_mask))
 			continue;
 
 		if (ptr->xtal != ref_rate)
@@ -333,7 +333,7 @@ long omap1_round_to_table_rate(struct omap1_clk *clk, unsigned long rate, unsign
 	highest_rate = -EINVAL;
 
 	for (ptr = omap1_rate_table; ptr->rate; ptr++) {
-		if (!(ptr->flags & cpu_mask))
+		if (!(ptr->flags & omap1_cpu_mask))
 			continue;
 
 		if (ptr->xtal != ref_rate)

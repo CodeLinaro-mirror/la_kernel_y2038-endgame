@@ -15,7 +15,7 @@ extern void omap3_sram_restore_context(void);
 
 extern int __init omap_sram_init(void);
 
-extern void *omap_sram_push(void *funcp, unsigned long size);
+extern void *omap2_sram_push(void *funcp, unsigned long size);
 
 /* Do not use these */
 extern void omap24xx_sram_reprogram_clock(u32 ckctl, u32 dpllctl);
