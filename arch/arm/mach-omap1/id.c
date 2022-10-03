@@ -59,11 +59,11 @@ static struct omap_id omap_ids[] __initdata = {
 	{ .jtag_id = 0xb5f7, .die_rev = 0x2, .omap_id = 0x03330100, .type = 0x17100000},
 };
 
-unsigned int omap_rev(void)
+unsigned int omap1_rev(void)
 {
 	return omap_revision;
 }
-EXPORT_SYMBOL(omap_rev);
+EXPORT_SYMBOL(omap1_rev);
 
 /*
  * Get OMAP type from PROD_ID.

@@ -202,7 +202,7 @@ void omap1_pm_suspend(void)
 	unsigned long arg0 = 0, arg1 = 0;
 
 	printk(KERN_INFO "PM: OMAP%x is trying to enter deep sleep...\n",
-		omap_rev());
+		omap1_rev());
 
 	omap_serial_wake_trigger(1);
 
@@ -381,7 +381,7 @@ void omap1_pm_suspend(void)
 	omap_serial_wake_trigger(0);
 
 	printk(KERN_INFO "PM: OMAP%x is re-starting from deep sleep...\n",
-		omap_rev());
+		omap1_rev());
 }
 
 #ifdef CONFIG_DEBUG_FS
@@ -588,10 +588,10 @@ static int __init omap_pm_init(void)
 	 * memory the MPU can see when it wakes up.
 	 */
 	if (cpu_is_omap15xx()) {
-		omap_sram_suspend = omap_sram_push(omap1510_cpu_suspend,
+		omap_sram_suspend = omap1_sram_push(omap1510_cpu_suspend,
 						   omap1510_cpu_suspend_sz);
 	} else if (cpu_is_omap16xx()) {
-		omap_sram_suspend = omap_sram_push(omap1610_cpu_suspend,
+		omap_sram_suspend = omap1_sram_push(omap1610_cpu_suspend,
 						   omap1610_cpu_suspend_sz);
 	}
 

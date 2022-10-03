@@ -38,17 +38,17 @@
 #endif
 
 /*
- * omap_rev bits:
+ * omap1_rev bits:
  * CPU id bits	(0730, 1510, 1710, 2422...)	[31:16]
  * CPU revision	(See _REV_ defined in cpu.h)	[15:08]
  * CPU class bits (15xx, 16xx, 24xx, 34xx...)	[07:00]
  */
-unsigned int omap_rev(void);
+unsigned int omap1_rev(void);
 
 /*
  * Get the CPU revision for OMAP devices
  */
-#define GET_OMAP_REVISION()	((omap_rev() >> 8) & 0xff)
+#define GET_OMAP_REVISION()	((omap1_rev() >> 8) & 0xff)
 
 /*
  * Macros to group OMAP into cpu classes.
@@ -56,7 +56,7 @@ unsigned int omap_rev(void);
  * cpu_is_omap15xx():	True for OMAP1510, OMAP5910 and OMAP310
  * cpu_is_omap16xx():	True for OMAP1610, OMAP5912 and OMAP1710
  */
-#define GET_OMAP_CLASS	(omap_rev() & 0xff)
+#define GET_OMAP_CLASS	(omap1_rev() & 0xff)
 
 #define IS_OMAP_CLASS(class, id)			\
 static inline int is_omap ##class (void)		\
@@ -64,7 +64,7 @@ static inline int is_omap ##class (void)		\
 	return (GET_OMAP_CLASS == (id)) ? 1 : 0;	\
 }
 
-#define GET_OMAP_SUBCLASS	((omap_rev() >> 20) & 0x0fff)
+#define GET_OMAP_SUBCLASS	((omap1_rev() >> 20) & 0x0fff)
 
 #define IS_OMAP_SUBCLASS(subclass, id)			\
 static inline int is_omap ##subclass (void)		\
@@ -109,7 +109,7 @@ IS_OMAP_CLASS(16xx, 0x16)
  * cpu_is_omap1621():	True for OMAP1621
  * cpu_is_omap1710():	True for OMAP1710
  */
-#define GET_OMAP_TYPE	((omap_rev() >> 16) & 0xffff)
+#define GET_OMAP_TYPE	((omap1_rev() >> 16) & 0xffff)
 
 #define IS_OMAP_TYPE(type, id)				\
 static inline int is_omap ##type (void)			\

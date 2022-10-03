@@ -15,7 +15,7 @@ extern void omap3_sram_restore_context(void);
 
 extern int __init omap_sram_init(void);
 
-extern void *omap_sram_push(void *funcp, unsigned long size);
+extern void *omap2_sram_push(void *funcp, unsigned long size);
 
 extern void omap242x_sram_ddr_init(u32 *slow_dll_ctrl, u32 fast_dll_ctrl,
 						u32 base_cs, u32 force_unlock);
