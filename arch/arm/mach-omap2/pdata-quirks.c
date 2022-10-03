@@ -554,7 +554,7 @@ pdata_quirks_init_clocks(const struct of_device_id *omap_dt_match_table)
 	}
 }
 
-void __init pdata_quirks_init(const struct of_device_id *omap_dt_match_table)
+void __init omap_pdata_quirks_init(const struct of_device_id *omap_dt_match_table)
 {
 	/*
 	 * We still need this for omap2420 and omap3 PM to work, others are
