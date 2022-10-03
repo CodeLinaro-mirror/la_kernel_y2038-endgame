@@ -15,7 +15,7 @@
 static void __init da850_init_machine(void)
 {
 	davinci_pm_init();
-	pdata_quirks_init();
+	davinci_pdata_quirks_init();
 }
 
 static const char *const da850_boards_compat[] __initconst = {

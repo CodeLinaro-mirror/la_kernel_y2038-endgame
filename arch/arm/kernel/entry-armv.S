@@ -678,7 +678,7 @@ __kuser_helper_start:
 
 __kuser_cmpxchg64:				@ 0xffff0f60
 
-#if defined(CONFIG_CPU_32v6K)
+#ifdef CONFIG_CPU_v7
 
 	stmfd	sp!, {r4, r5, r6, r7}
 	ldrd	r4, r5, [r0]			@ load old val
@@ -695,7 +695,7 @@ __kuser_cmpxchg64:				@ 0xffff0f60
 	ldmfd	sp!, {r4, r5, r6, r7}
 	usr_ret	lr
 
-#elif !defined(CONFIG_SMP)
+#else
 
 #ifdef CONFIG_MMU
 
@@ -740,8 +740,6 @@ kuser_cmpxchg64_fixup:
 	usr_ret	lr
 #endif
 
-#else
-#error "incoherent kernel configuration"
 #endif
 
 	kuser_pad __kuser_cmpxchg64, 64

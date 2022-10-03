@@ -222,7 +222,7 @@
 #ifndef CONFIG_THUMB2_KERNEL
 	@ ARM mode SVC restore
 	msr	spsr_cxsf, \rpsr
-#if defined(CONFIG_CPU_V6) || defined(CONFIG_CPU_32v6K)
+#if defined(CONFIG_CPU_V7)
 	@ We must avoid clrex due to Cortex-A15 erratum #830321
 	sub	r0, sp, #4			@ uninhabited address
 	strex	r1, r2, [r0]			@ clear the exclusive monitor
@@ -291,18 +291,12 @@
 
 
 	.macro	restore_user_regs, fast = 0, offset = 0
-#if defined(CONFIG_CPU_32v6K) && \
-    (!defined(CONFIG_CPU_V6) || defined(CONFIG_SMP))
-#ifdef CONFIG_CPU_V6
-ALT_SMP(nop)
-ALT_UP_B(.L1_\@)
-#endif
+#if !defined(CONFIG_TLS_REG_EMUL)
 	@ The TLS register update is deferred until return to user space so we
 	@ can use it for other things while running in the kernel
 	mrc	p15, 0, r1, c13, c0, 3		@ get current_thread_info pointer
 	ldr	r1, [r1, #TI_TP_VALUE]
 	mcr	p15, 0, r1, c13, c0, 3		@ set TLS register
-.L1_\@:
 #endif
 
 	uaccess_enable r1, isb=0
@@ -314,7 +308,7 @@ ALT_UP_B(.L1_\@)
 	tst	r1, #PSR_I_BIT | 0x0f
 	bne	1f
 	msr	spsr_cxsf, r1			@ save in spsr_svc
-#if defined(CONFIG_CPU_V6) || defined(CONFIG_CPU_32v6K)
+#if defined(CONFIG_CPU_V7)
 	@ We must avoid clrex due to Cortex-A15 erratum #830321
 	strex	r1, r2, [r2]			@ clear the exclusive monitor
 #endif
