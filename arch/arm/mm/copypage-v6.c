@@ -56,7 +56,8 @@ static void v6_clear_user_highpage_nonaliasing(struct page *page, unsigned long 
  */
 static void discard_old_kernel_data(void *kto)
 {
-	__asm__("mcrr	p15, 0, %1, %0, c6	@ 0xec401f06"
+	__asm__(".arch armv6\n"
+	"	 mcrr	p15, 0, %1, %0, c6	@ 0xec401f06"
 	   :
 	   : "r" (kto),
 	     "r" ((unsigned long)kto + PAGE_SIZE - 1)
