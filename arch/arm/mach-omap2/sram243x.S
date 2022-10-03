@@ -24,6 +24,8 @@
 #include "cm2xxx.h"
 #include "sdrc.h"
 
+	.arch armv6
+
 	.text
 
 	.align	3

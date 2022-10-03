@@ -16,6 +16,8 @@
 #include <linux/init.h>
 #include <asm/assembler.h>
 
+.arch armv6k
+
 #include "omap44xx.h"
 
 /* Physical address needed since MMU not enabled yet on secondary core */

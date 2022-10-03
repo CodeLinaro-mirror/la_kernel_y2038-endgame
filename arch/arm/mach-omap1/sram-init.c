@@ -56,7 +56,7 @@ static void *omap_sram_push_address(unsigned long size)
 	return (void __force *)omap_sram_ceil;
 }
 
-void *omap_sram_push(void *funcp, unsigned long size)
+void *omap1_sram_push(void *funcp, unsigned long size)
 {
 	void *sram;
 	unsigned long base;
@@ -138,7 +138,7 @@ int __init omap1_sram_init(void)
 {
 	omap_detect_and_map_sram();
 	_omap_sram_reprogram_clock =
-			omap_sram_push(omap1_sram_reprogram_clock,
+			omap1_sram_push(omap1_sram_reprogram_clock,
 					omap1_sram_reprogram_clock_sz);
 
 	return 0;

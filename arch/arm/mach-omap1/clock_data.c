@@ -689,7 +689,7 @@ static void __init omap1_show_rates(void)
 		  arm_ck.rate / 1000000, (arm_ck.rate / 100000) % 10);
 }
 
-u32 cpu_mask;
+u32 omap1_cpu_mask;
 
 int __init omap1_clk_init(void)
 {
@@ -713,15 +713,15 @@ int __init omap1_clk_init(void)
 	/* By default all idlect1 clocks are allowed to idle */
 	arm_idlect1_mask = ~0;
 
-	cpu_mask = 0;
+	omap1_cpu_mask = 0;
 	if (cpu_is_omap1710())
-		cpu_mask |= CK_1710;
+		omap1_cpu_mask |= CK_1710;
 	if (cpu_is_omap16xx())
-		cpu_mask |= CK_16XX;
+		omap1_cpu_mask |= CK_16XX;
 	if (cpu_is_omap1510())
-		cpu_mask |= CK_1510;
+		omap1_cpu_mask |= CK_1510;
 	if (cpu_is_omap310())
-		cpu_mask |= CK_310;
+		omap1_cpu_mask |= CK_310;
 
 	/* Pointers to these clocks are needed by code in clock.c */
 	api_ck_p = &api_ck.clk;
@@ -788,7 +788,7 @@ int __init omap1_clk_init(void)
 	omap_writew(0x0000, ARM_IDLECT2);	/* Turn LCD clock off also */
 
 	for (c = omap_clks; c < omap_clks + ARRAY_SIZE(omap_clks); c++) {
-		if (!(c->cpu & cpu_mask))
+		if (!(c->cpu & omap1_cpu_mask))
 			continue;
 
 		if (c->lk.clk_hw->init) { /* NULL if provider already registered */

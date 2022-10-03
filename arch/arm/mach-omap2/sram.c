@@ -78,7 +78,7 @@ static void *omap_sram_push_address(unsigned long size)
 	return (void __force *)omap_sram_ceil;
 }
 
-void *omap_sram_push(void *funcp, unsigned long size)
+void *omap2_sram_push(void *funcp, unsigned long size)
 {
 	void *sram;
 	unsigned long base;
@@ -250,13 +250,13 @@ u32 omap2_set_prcm(u32 dpll_ctrl_val, u32 sdrc_rfr_val, int bypass)
 #ifdef CONFIG_SOC_OMAP2420
 static int __init omap242x_sram_init(void)
 {
-	_omap2_sram_ddr_init = omap_sram_push(omap242x_sram_ddr_init,
+	_omap2_sram_ddr_init = omap2_sram_push(omap242x_sram_ddr_init,
 					omap242x_sram_ddr_init_sz);
 
-	_omap2_sram_reprogram_sdrc = omap_sram_push(omap242x_sram_reprogram_sdrc,
+	_omap2_sram_reprogram_sdrc = omap2_sram_push(omap242x_sram_reprogram_sdrc,
 					    omap242x_sram_reprogram_sdrc_sz);
 
-	_omap2_set_prcm = omap_sram_push(omap242x_sram_set_prcm,
+	_omap2_set_prcm = omap2_sram_push(omap242x_sram_set_prcm,
 					 omap242x_sram_set_prcm_sz);
 
 	return 0;
@@ -271,13 +271,13 @@ static inline int omap242x_sram_init(void)
 #ifdef CONFIG_SOC_OMAP2430
 static int __init omap243x_sram_init(void)
 {
-	_omap2_sram_ddr_init = omap_sram_push(omap243x_sram_ddr_init,
+	_omap2_sram_ddr_init = omap2_sram_push(omap243x_sram_ddr_init,
 					omap243x_sram_ddr_init_sz);
 
-	_omap2_sram_reprogram_sdrc = omap_sram_push(omap243x_sram_reprogram_sdrc,
+	_omap2_sram_reprogram_sdrc = omap2_sram_push(omap243x_sram_reprogram_sdrc,
 					    omap243x_sram_reprogram_sdrc_sz);
 
-	_omap2_set_prcm = omap_sram_push(omap243x_sram_set_prcm,
+	_omap2_set_prcm = omap2_sram_push(omap243x_sram_set_prcm,
 					 omap243x_sram_set_prcm_sz);
 
 	return 0;

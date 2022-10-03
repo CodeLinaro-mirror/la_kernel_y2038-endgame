@@ -436,7 +436,7 @@ static int __init pwrdms_setup(struct powerdomain *pwrdm, void *unused)
  */
 void omap_push_sram_idle(void)
 {
-	omap3_do_wfi_sram = omap_sram_push(omap3_do_wfi, omap3_do_wfi_sz);
+	omap3_do_wfi_sram = omap2_sram_push(omap3_do_wfi, omap3_do_wfi_sz);
 }
 
 static void __init pm_errata_configure(void)

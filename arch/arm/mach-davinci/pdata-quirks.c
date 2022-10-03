@@ -206,7 +206,7 @@ static struct pdata_init pdata_quirks[] __initdata = {
 	{ /* sentinel */ },
 };
 
-void __init pdata_quirks_init(void)
+void __init davinci_pdata_quirks_init(void)
 {
 	pdata_quirks_check(pdata_quirks);
 }

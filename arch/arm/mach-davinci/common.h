@@ -61,7 +61,7 @@ int davinci_pm_init(void);
 static inline int davinci_pm_init(void) { return 0; }
 #endif
 
-void __init pdata_quirks_init(void);
+void __init davinci_pdata_quirks_init(void);
 
 #define SRAM_SIZE	SZ_128K
 

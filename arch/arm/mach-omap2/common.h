@@ -318,7 +318,7 @@ static inline void omap5_secondary_hyp_startup(void)
 
 struct omap_system_dma_plat_info;
 
-void pdata_quirks_init(const struct of_device_id *);
+void omap_pdata_quirks_init(const struct of_device_id *);
 void omap_auxdata_legacy_init(struct device *dev);
 void omap_pcs_legacy_init(int irq, void (*rearm)(void));
 extern struct omap_system_dma_plat_info dma_plat_info;
