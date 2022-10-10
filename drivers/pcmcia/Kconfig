@@ -173,14 +173,14 @@ config PCMCIA_BCM63XX
 	depends on BCM63XX && PCMCIA
 
 config PCMCIA_SOC_COMMON
-	tristate
+	bool
 
 config PCMCIA_SA11XX_BASE
 	tristate
 
 config PCMCIA_SA1100
-	tristate "SA1100 support"
-	depends on ARM && ARCH_SA1100 && PCMCIA
+	bool "SA1100 support"
+	depends on ARM && ARCH_SA1100 && PCMCIA=y
 	select PCMCIA_SOC_COMMON
 	select PCMCIA_SA11XX_BASE
 	help
@@ -191,8 +191,8 @@ config PCMCIA_SA1100
 	  This driver is also available as a module called sa1100_cs.
 
 config PCMCIA_SA1111
-	tristate "SA1111 support"
-	depends on ARM && SA1111 && PCMCIA
+	bool "SA1111 support"
+	depends on ARM && SA1111 && PCMCIA=y
 	select PCMCIA_SOC_COMMON
 	select PCMCIA_SA11XX_BASE
 	select PCMCIA_MAX1600 if ASSABET_NEPONSET
@@ -205,7 +205,7 @@ config PCMCIA_SA1111
 
 config PCMCIA_PXA2XX
 	tristate "PXA2xx support"
-	depends on ARM && ARCH_PXA && PCMCIA && PXA_SHARPSL
+	depends on ARM && ARCH_PXA && PCMCIA=y && PXA_SHARPSL
 	select PCMCIA_SOC_COMMON
 	help
 	  Say Y here to include support for the PXA2xx PCMCIA controller
