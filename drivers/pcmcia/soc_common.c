@@ -1883,7 +1883,6 @@ static int max1600_configure(struct max1600 *m, unsigned int vcc, unsigned int v
 
 	return gpiod_set_array_value_cansleep(n, m->gpio, NULL, values);
 }
-EXPORT_SYMBOL_GPL(max1600_configure);
 
 
 static int sa1111_pcmcia_add(struct sa1111_dev *dev, struct pcmcia_low_level *ops,
