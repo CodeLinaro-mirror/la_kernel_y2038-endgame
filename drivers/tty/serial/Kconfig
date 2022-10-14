@@ -313,6 +313,7 @@ config SERIAL_TEGRA_UTC_CONSOLE
 config SERIAL_MAX3100
 	tristate "MAX3100/3110/3111/3222 support"
 	depends on SPI
+	depends on UNUSED
 	select SERIAL_CORE
 	help
 	  This selects support for an advanced UART from Maxim.

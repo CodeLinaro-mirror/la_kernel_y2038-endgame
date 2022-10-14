@@ -46,6 +46,7 @@ config TOUCHSCREEN_ADS7846
 config TOUCHSCREEN_AD7877
 	tristate "AD7877 based touchscreens"
 	depends on SPI_MASTER
+	depends on UNUSED
 	help
 	  Say Y here if you have a touchscreen interface using the
 	  AD7877 controller, and your board-specific initialization
