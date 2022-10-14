@@ -33,6 +33,7 @@ config WIZNET_W5100
 config WIZNET_W5300
 	tristate "WIZnet W5300 Ethernet support"
 	depends on HAS_IOMEM
+	depends on UNUSED
 	help
 	  Support for WIZnet W5300 chips.
 

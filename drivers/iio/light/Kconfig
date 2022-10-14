@@ -333,6 +333,7 @@ config RPR0521
 config SENSORS_LM3533
 	tristate "LM3533 ambient light sensor"
 	depends on MFD_LM3533
+	depends on UNUSED
 	help
 	  If you say yes here you get support for the ambient light sensor
 	  interface on National Semiconductor / TI LM3533 Lighting Power
