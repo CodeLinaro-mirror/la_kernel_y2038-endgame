@@ -2,6 +2,7 @@
 config MMP_FB
 	tristate "fb driver for Marvell MMP Display Subsystem"
 	depends on FB
+	depends on UNUSED
 	select FB_IOMEM_HELPERS
 	default y
 	help

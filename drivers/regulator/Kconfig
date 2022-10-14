@@ -471,6 +471,7 @@ config REGULATOR_LOCHNAGAR
 
 config REGULATOR_LP3971
 	tristate "National Semiconductors LP3971 PMIC regulator driver"
+	depends on UNUSED
 	depends on I2C
 	help
 	 Say Y here to support the voltage regulators and convertors
@@ -478,6 +479,7 @@ config REGULATOR_LP3971
 
 config REGULATOR_LP3972
 	tristate "National Semiconductors LP3972 PMIC regulator driver"
+	depends on UNUSED
 	depends on I2C
 	help
 	 Say Y here to support the voltage regulators and convertors

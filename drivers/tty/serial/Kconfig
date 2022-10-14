@@ -309,6 +309,7 @@ config SERIAL_TEGRA_TCU_CONSOLE
 config SERIAL_MAX3100
 	tristate "MAX3100 support"
 	depends on SPI
+	depends on UNUSED
 	select SERIAL_CORE
 	help
 	  MAX3100 chip support

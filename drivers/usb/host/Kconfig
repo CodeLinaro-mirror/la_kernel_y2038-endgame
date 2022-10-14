@@ -377,7 +377,7 @@ config USB_ISP116X_HCD
 config USB_ISP1362_HCD
 	tristate "ISP1362 HCD support"
 	depends on HAS_IOPORT
-	depends on COMPILE_TEST # nothing uses this
+	depends on UNUSED # nothing uses this
 	help
 	  Supports the Philips ISP1362 chip as a host controller
 
@@ -625,6 +625,7 @@ config FHCI_DEBUG
 config USB_SL811_HCD
 	tristate "SL811HS HCD support"
 	depends on HAS_IOMEM
+	depends on UNUSED
 	help
 	  The SL811HS is a single-port USB controller that supports either
 	  host side or peripheral side roles.  Enable this option if your
