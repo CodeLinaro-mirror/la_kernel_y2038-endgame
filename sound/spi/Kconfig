@@ -13,6 +13,7 @@ if SND_SPI
 config SND_AT73C213
 	tristate "Atmel AT73C213 DAC driver"
 	depends on ATMEL_SSC
+	depends on UNUSED
 	select SND_PCM
 	help
 	  Say Y here if you want to use the Atmel AT73C213 external DAC. This
