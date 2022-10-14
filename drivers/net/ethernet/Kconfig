@@ -110,6 +110,7 @@ config KORINA
 config LANTIQ_ETOP
 	tristate "Lantiq SoC ETOP driver"
 	depends on SOC_TYPE_XWAY
+	depends on UNUSED
 	help
 	  Support for the MII0 inside the Lantiq SoC
 
