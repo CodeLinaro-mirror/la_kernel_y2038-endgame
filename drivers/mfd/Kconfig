@@ -104,6 +104,7 @@ config MFD_AS3722
 config PMIC_ADP5520
 	bool "Analog Devices ADP5520/01 MFD PMIC Core Support"
 	depends on I2C=y
+	depends on UNUSED
 	help
 	  Say yes here to add support for Analog Devices ADP5520 and ADP5501,
 	  Multifunction Power Management IC. This includes
@@ -116,6 +117,7 @@ config MFD_AAT2870_CORE
 	select MFD_CORE
 	depends on I2C=y
 	depends on GPIOLIB || COMPILE_TEST
+	depends on UNUSED
 	help
 	  If you say yes here you get support for the AAT2870.
 	  This driver provides common support for accessing the device,
@@ -312,6 +314,7 @@ config MFD_ASIC3
 config PMIC_DA903X
 	bool "Dialog Semiconductor DA9030/DA9034 PMIC Support"
 	depends on I2C=y
+	depends on UNUSED
 	help
 	  Say yes here to add support for Dialog Semiconductor DA9030 (a.k.a
 	  ARAVA) and DA9034 (a.k.a MICCO), these are Power Management IC
@@ -1006,6 +1009,7 @@ config MFD_OCELOT
 config EZX_PCAP
 	bool "Motorola EZXPCAP Support"
 	depends on SPI_MASTER
+	depends on UNUSED
 	help
 	  This enables the PCAP ASIC present on EZX Phones. This is
 	  needed for MMC, TouchScreen, Sound, USB, etc..
@@ -1058,6 +1062,7 @@ config MFD_RETU
 
 config MFD_PCF50633
 	tristate "NXP PCF50633"
+	depends on UNUSED
 	depends on I2C
 	select REGMAP_I2C
 	help
@@ -1193,6 +1198,7 @@ config MFD_RT5120
 config MFD_RC5T583
 	bool "Ricoh RC5T583 Power Management system device"
 	depends on I2C=y
+	depends on UNUSED
 	select MFD_CORE
 	select REGMAP_I2C
 	help
@@ -1255,6 +1261,7 @@ config MFD_SI476X_CORE
 	tristate "Silicon Laboratories 4761/64/68 AM/FM radio."
 	depends on I2C
 	depends on !CC_IS_CLANG
+	depends on UNUSED
 	select MFD_CORE
 	select REGMAP_I2C
 	help
@@ -1417,6 +1424,7 @@ endmenu
 config MFD_STA2X11
 	bool "STMicroelectronics STA2X11"
 	depends on STA2X11
+	depends on UNUSED
 	select MFD_CORE
 	select REGMAP_MMIO
 
@@ -1461,6 +1469,7 @@ config MFD_LP3943
 config MFD_LP8788
 	bool "TI LP8788 Power Management Unit Driver"
 	depends on I2C=y
+	depends on UNUSED
 	select MFD_CORE
 	select REGMAP_I2C
 	select IRQ_DOMAIN
@@ -1753,6 +1762,7 @@ config MENELAUS
 config MFD_WL1273_CORE
 	tristate "TI WL1273 FM radio"
 	depends on I2C
+	depends on UNUSED
 	select MFD_CORE
 	default n
 	help
@@ -1762,6 +1772,7 @@ config MFD_WL1273_CORE
 
 config MFD_LM3533
 	tristate "TI/National Semiconductor LM3533 Lighting Power chip"
+	depends on UNUSED
 	depends on I2C
 	select MFD_CORE
 	select REGMAP_I2C
@@ -1909,6 +1920,7 @@ config MFD_WM8400
 	bool "Wolfson Microelectronics WM8400"
 	select MFD_CORE
 	depends on I2C=y
+	depends on UNUSED
 	select REGMAP_I2C
 	help
 	  Support for the Wolfson Microelecronics WM8400 PMIC and audio
