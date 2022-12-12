@@ -184,6 +184,7 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 	struct cpufreq_frequency_table *f_table;
 	int k, step, voltage;
 	int states;
+	size_t size;
 #if IS_ENABLED(CONFIG_ACPI_PROCESSOR)
 	unsigned int limit;
 #endif
@@ -321,8 +322,11 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 		states = 2;
 
 	/* Allocate private data and frequency table for current cpu */
-	centaur = kzalloc(struct_size(centaur, freq_table, states + 1),
-			  GFP_KERNEL);
+	size = struct_size(centaur, freq_table, states + 1);
+	if (size > KMALLOC_MAX_SIZE)
+		return -ENOMEM;
+
+	centaur = kzalloc(size, GFP_KERNEL);
 	if (!centaur)
 		return -ENOMEM;
 	eps_cpu[0] = centaur;
