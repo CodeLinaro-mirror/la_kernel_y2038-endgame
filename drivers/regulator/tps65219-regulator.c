@@ -366,11 +366,11 @@ static int tps65219_regulator_probe(struct platform_device *pdev)
 		irq_data[i].dev = tps->dev;
 		irq_data[i].type = irq_type;
 
-		tps65219_get_rdev_by_name(irq_type->regulator_name, rdevtbl, rdev);
-		if (rdev < 0) {
+		error = tps65219_get_rdev_by_name(irq_type->regulator_name, rdevtbl, rdev);
+		if (error) {
 			dev_err(tps->dev, "Failed to get rdev for %s\n",
 				irq_type->regulator_name);
-			return -EINVAL;
+			return error;
 		}
 		irq_data[i].rdev = rdev;
 
