@@ -182,6 +182,9 @@ static bool kvm_handle_pvm_sys64(struct kvm_vcpu *vcpu, u64 *exit_code)
 		kvm_handle_pvm_sysreg(vcpu, exit_code));
 }
 
+__diag_push()
+__diag_ignore(GCC, 5, "-Woverride-init", "for ESR_ELx_EC_MAX")
+__diag_ignore(clang, 9, "-Winitializer-overrides", "for ESR_ELx_EC_MAX")
 static const exit_handler_fn hyp_exit_handlers[] = {
 	[0 ... ESR_ELx_EC_MAX]		= NULL,
 	[ESR_ELx_EC_CP15_32]		= kvm_hyp_handle_cp15_32,
@@ -206,6 +209,7 @@ static const exit_handler_fn pvm_exit_handlers[] = {
 	[ESR_ELx_EC_PAC]		= kvm_hyp_handle_ptrauth,
 	[ESR_ELx_EC_MOPS]		= kvm_hyp_handle_mops,
 };
+__diag_pop()
 
 static const exit_handler_fn *kvm_get_exit_handler_array(struct kvm_vcpu *vcpu)
 {
