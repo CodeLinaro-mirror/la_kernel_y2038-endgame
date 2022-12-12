@@ -95,6 +95,8 @@ enum m1_pmu_events {
  * has been created experimentally, and I wouldn't be surprised if more
  * counters had strange affinities.
  */
+__diag_ignore(GCC, 8, "-Woverride-init", "default to ANY_BUT_0_1")
+__diag_ignore(clang, 9, "-Winitializer-overrides", "default to ANY_BUT_0_1")
 static const u16 m1_pmu_event_affinity[M1_PMU_PERFCTR_LAST + 1] = {
 	[0 ... M1_PMU_PERFCTR_LAST]	= ANY_BUT_0_1,
 	[M1_PMU_PERFCTR_UNKNOWN_01]	= BIT(7),
