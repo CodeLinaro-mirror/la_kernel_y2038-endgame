@@ -142,13 +142,15 @@ dmar_alloc_pci_notify_info(struct pci_dev *dev, unsigned long event)
 	size = struct_size(info, path, level);
 	if (size <= sizeof(dmar_pci_notify_info_buf)) {
 		info = (struct dmar_pci_notify_info *)dmar_pci_notify_info_buf;
-	} else {
+	} else if (size < KMALLOC_MAX_SIZE) {
 		info = kzalloc(size, GFP_KERNEL);
 		if (!info) {
 			if (dmar_dev_scope_status == 0)
 				dmar_dev_scope_status = -ENOMEM;
 			return NULL;
 		}
+	} else {
+		return NULL;
 	}
 
 	info->event = event;
