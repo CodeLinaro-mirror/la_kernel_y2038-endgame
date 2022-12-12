@@ -183,6 +183,7 @@ static struct irq_chip stm32_exti_h_chip_direct;
 __diag_push();
 __diag_ignore_all("-Woverride-init",
 		  "logic to initialize all and then override some is OK");
+__diag_ignore(clang, 9, "-Winitializer-overrides", "default to invalid")
 
 static const u8 stm32mp1_desc_irq[] = {
 	/* default value */
