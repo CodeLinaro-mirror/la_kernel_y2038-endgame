@@ -1133,14 +1133,14 @@ static int pcs_parse_bits_in_pinctrl_entry(struct pcs_device *pcs,
 
 	npins_in_row = pcs->width / pcs->bits_per_pin;
 
-	vals = devm_kzalloc(pcs->dev,
-			    array3_size(rows, npins_in_row, sizeof(*vals)),
+	vals = devm_kcalloc(pcs->dev,
+			    array_size(rows, npins_in_row), sizeof(*vals),
 			    GFP_KERNEL);
 	if (!vals)
 		return -ENOMEM;
 
-	pins = devm_kzalloc(pcs->dev,
-			    array3_size(rows, npins_in_row, sizeof(*pins)),
+	pins = devm_kcalloc(pcs->dev,
+			    array_size(rows, npins_in_row), sizeof(*pins),
 			    GFP_KERNEL);
 	if (!pins)
 		goto free_vals;
