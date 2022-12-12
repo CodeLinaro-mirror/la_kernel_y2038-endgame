@@ -15,6 +15,7 @@
 #include <linux/mtd/cfi_endian.h>
 #include <linux/mtd/xip.h>
 
+#if IS_ENABLED(CONFIG_MTD)
 #ifdef CONFIG_MTD_CFI_I1
 #define cfi_interleave(cfi) 1
 #define cfi_interleave_is_1(cfi) (cfi_interleave(cfi) == 1)
@@ -88,7 +89,7 @@ static inline int cfi_interleave_supported(int i)
 		return 0;
 	}
 }
-
+#endif
 
 /* NB: these values must represents the number of bytes needed to meet the
  *     device type (x8, x16, x32).  Eg. a 32 bit device is 4 x 8 bytes.
