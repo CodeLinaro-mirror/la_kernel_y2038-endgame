@@ -418,7 +418,7 @@ int qnoc_probe(struct platform_device *pdev)
 	struct qcom_icc_node * const *qnodes;
 	struct qcom_icc_provider *qp;
 	struct icc_node *node;
-	size_t num_nodes, i;
+	size_t num_nodes, i, size;
 	const char * const *cds;
 	int cd_num;
 	int ret;
@@ -442,7 +442,11 @@ int qnoc_probe(struct platform_device *pdev)
 		cd_num = ARRAY_SIZE(bus_clocks);
 	}
 
-	qp = devm_kzalloc(dev, struct_size(qp, bus_clks, cd_num), GFP_KERNEL);
+	size = struct_size(qp, bus_clks, cd_num);
+	if (size > KMALLOC_MAX_SIZE)
+		return -ENOMEM;
+
+	qp = devm_kzalloc(dev, size, GFP_KERNEL);
 	if (!qp)
 		return -ENOMEM;
 
