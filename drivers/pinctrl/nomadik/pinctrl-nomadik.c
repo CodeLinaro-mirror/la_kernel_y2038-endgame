@@ -17,6 +17,7 @@
 #include <linux/gpio/driver.h>
 #include <linux/spinlock.h>
 #include <linux/interrupt.h>
+#include <linux/seq_file.h>
 #include <linux/slab.h>
 #include <linux/of_device.h>
 #include <linux/of_address.h>
