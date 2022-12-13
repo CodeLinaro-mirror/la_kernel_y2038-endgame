@@ -765,6 +765,8 @@ void ocfs2_refcount_lock_res_init(struct ocfs2_lock_res *lockres,
 
 void ocfs2_lock_res_free(struct ocfs2_lock_res *res)
 {
+	struct ocfs2_dlm_lksb *lksb;
+
 	if (!(res->l_flags & OCFS2_LOCK_INITIALIZED))
 		return;
 
@@ -786,8 +788,10 @@ void ocfs2_lock_res_free(struct ocfs2_lock_res *res)
 			"Lockres %s has %u ex holders\n",
 			res->l_name, res->l_ex_holders);
 
+	lksb = RELOC_HIDE(&res->l_lksb, 0);
+
 	/* Need to clear out the lock status block for the dlm */
-	memset(&res->l_lksb, 0, sizeof(res->l_lksb));
+	memset(lksb, 0, sizeof(*lksb));
 
 	res->l_flags = 0UL;
 }
