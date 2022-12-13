@@ -799,7 +799,9 @@ static enum resp_states atomic_write_reply(struct rxe_qp *qp,
 	}
 
 	if (!res->replay) {
-#ifdef CONFIG_64BIT
+		if (!IS_ENABLED(CONFIG_64BIT))
+			return RESPST_ERR_UNSUPPORTED_OPCODE;
+
 		if (mr->state != RXE_MR_STATE_VALID)
 			return RESPST_ERR_RKEY_VIOLATION;
 
@@ -826,9 +828,6 @@ static enum resp_states atomic_write_reply(struct rxe_qp *qp,
 		qp->resp.status = IB_WC_SUCCESS;
 
 		return RESPST_ACKNOWLEDGE;
-#else
-		return RESPST_ERR_UNSUPPORTED_OPCODE;
-#endif /* CONFIG_64BIT */
 	}
 
 	return RESPST_ACKNOWLEDGE;
