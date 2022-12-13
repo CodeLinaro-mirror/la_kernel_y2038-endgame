@@ -691,15 +691,13 @@ static int ip_vs_est_calc_limits(struct netns_ipvs *ipvs, int *chain_max)
 		}
 		if (diff >= NSEC_PER_SEC)
 			continue;
-		val = diff;
-		do_div(val, loops);
+		val = div_s64(diff, loops);
 		if (!min_est || val < min_est) {
 			min_est = val;
 			/* goal: 95usec per chain */
 			val = 95 * NSEC_PER_USEC;
 			if (val >= min_est) {
-				do_div(val, min_est);
-				max = (int)val;
+				max = div_s64(val, min_est);
 			} else {
 				max = 1;
 			}
