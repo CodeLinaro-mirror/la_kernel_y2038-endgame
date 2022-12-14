@@ -2985,8 +2985,7 @@ ath5k_reset(struct ath5k_hw *ah, struct ieee80211_channel *chan,
 	memset(&ah->survey, 0, sizeof(ah->survey));
 	spin_lock_bh(&common->cc_lock);
 	ath_hw_cycle_counters_update(common);
-	memset(&common->cc_survey, 0, sizeof(common->cc_survey));
-	memset(&common->cc_ani, 0, sizeof(common->cc_ani));
+	memset(&common->cc, 0, sizeof(common->cc));
 	spin_unlock_bh(&common->cc_lock);
 
 	/*
