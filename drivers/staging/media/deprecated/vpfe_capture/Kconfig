@@ -5,6 +5,7 @@ config VIDEO_DM6446_CCDC
 	depends on VIDEO_DEV
 	depends on ARCH_DAVINCI || COMPILE_TEST
 	depends on I2C
+	depends on VIDEO_DAVINCI_VPBE_DISPLAY
 	select VIDEOBUF_DMA_CONTIG
 	help
 	  Enables DaVinci CCD hw module. DaVinci CCDC hw interfaces
@@ -25,6 +26,7 @@ config VIDEO_DM355_CCDC
 	depends on VIDEO_DEV
 	depends on ARCH_DAVINCI || COMPILE_TEST
 	depends on I2C
+	depends on VIDEO_DAVINCI_VPBE_DISPLAY
 	select VIDEOBUF_DMA_CONTIG
 	help
 	  Enables DM355 CCD hw module. DM355 CCDC hw interfaces
@@ -45,6 +47,7 @@ config VIDEO_DM365_ISIF
 	depends on VIDEO_DEV
 	depends on ARCH_DAVINCI || COMPILE_TEST
 	depends on I2C
+	depends on VIDEO_DAVINCI_VPBE_DISPLAY
 	select VIDEOBUF_DMA_CONTIG
 	help
 	  Enables ISIF hw module. This is the hardware module for
