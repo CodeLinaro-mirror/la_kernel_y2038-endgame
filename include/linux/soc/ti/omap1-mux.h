@@ -302,7 +302,7 @@ enum omap1xxx_index {
 
 };
 
-#ifdef CONFIG_OMAP_MUX
+#if defined(CONFIG_OMAP_MUX) && defined(CONFIG_ARCH_OMAP1_ANY)
 extern int omap_cfg_reg(unsigned long reg_cfg);
 #else
 static inline int omap_cfg_reg(unsigned long reg_cfg) { return 0; }
