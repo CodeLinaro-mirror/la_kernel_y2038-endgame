@@ -70,7 +70,7 @@ static uint32_t get_cell_size(const void *fdt)
 	return cell_size;
 }
 
-static void merge_fdt_bootargs(void *fdt, const char *fdt_cmdline)
+static noinline_for_stack void merge_fdt_bootargs(void *fdt, const char *fdt_cmdline)
 {
 	char cmdline[COMMAND_LINE_SIZE];
 	const char *fdt_bootargs;
