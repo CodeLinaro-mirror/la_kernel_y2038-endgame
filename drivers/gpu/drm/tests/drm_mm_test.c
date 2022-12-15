@@ -298,7 +298,7 @@ static bool expect_reserve_fail(struct kunit *test, struct drm_mm *mm, struct dr
 	return false;
 }
 
-static bool check_reserve_boundaries(struct kunit *test, struct drm_mm *mm,
+static bool noinline_for_stack check_reserve_boundaries(struct kunit *test, struct drm_mm *mm,
 				     unsigned int count,
 				     u64 size)
 {
