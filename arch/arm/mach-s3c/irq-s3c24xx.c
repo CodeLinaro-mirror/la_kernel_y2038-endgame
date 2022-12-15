@@ -535,10 +535,9 @@ static void s3c24xx_clear_intc(struct s3c_irq_intc *intc)
 	}
 }
 
-static struct s3c_irq_intc * __init s3c24xx_init_intc(struct device_node *np,
-				       struct s3c_irq_data *irq_data,
-				       struct s3c_irq_intc *parent,
-				       unsigned long address)
+static struct s3c_irq_intc * __init __maybe_unused
+s3c24xx_init_intc(struct device_node *np, struct s3c_irq_data *irq_data,
+		  struct s3c_irq_intc *parent, unsigned long address)
 {
 	struct s3c_irq_intc *intc;
 	void __iomem *base = (void *)0xf6000000; /* static mapping */
