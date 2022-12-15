@@ -177,7 +177,7 @@ out_free:
 	return ret;
 }
 
-static int __init test_user_copy_init(void)
+static int test_user_copy_init(void)
 {
 	int ret = 0;
 	char *kmem;
