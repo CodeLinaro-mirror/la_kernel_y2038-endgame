@@ -2931,7 +2931,6 @@ static int dma40_resume(struct device *dev)
 }
 #endif
 
-#ifdef CONFIG_PM
 static void dma40_backup(void __iomem *baseaddr, u32 *backup,
 			 u32 *regaddr, int num, bool save)
 {
@@ -3005,13 +3004,10 @@ static int dma40_runtime_resume(struct device *dev)
 		       base->virtbase + D40_DREG_GCC);
 	return 0;
 }
-#endif
 
 static const struct dev_pm_ops dma40_pm_ops = {
-	SET_LATE_SYSTEM_SLEEP_PM_OPS(dma40_suspend, dma40_resume)
-	SET_RUNTIME_PM_OPS(dma40_runtime_suspend,
-				dma40_runtime_resume,
-				NULL)
+	LATE_SYSTEM_SLEEP_PM_OPS(dma40_suspend, dma40_resume)
+	RUNTIME_PM_OPS(dma40_runtime_suspend, dma40_runtime_resume, NULL)
 };
 
 /* Initialization functions. */
@@ -3712,7 +3708,7 @@ static const struct of_device_id d40_match[] = {
 static struct platform_driver d40_driver = {
 	.driver = {
 		.name  = D40_NAME,
-		.pm = &dma40_pm_ops,
+		.pm = pm_ptr(&dma40_pm_ops),
 		.of_match_table = d40_match,
 	},
 };
