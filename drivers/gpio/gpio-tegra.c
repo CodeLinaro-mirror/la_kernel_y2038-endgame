@@ -71,7 +71,6 @@ struct tegra_gpio_bank {
 	/* Lock for updating debounce count register */
 	spinlock_t dbc_lock[4];
 
-#ifdef CONFIG_PM_SLEEP
 	u32 cnf[4];
 	u32 out[4];
 	u32 oe[4];
@@ -79,7 +78,6 @@ struct tegra_gpio_bank {
 	u32 int_lvl[4];
 	u32 wake_enb[4];
 	u32 dbc_enb[4];
-#endif
 	u32 dbc_cnt[4];
 };
 
@@ -456,7 +454,6 @@ static int tegra_gpio_populate_parent_fwspec(struct gpio_chip *chip,
 	return 0;
 }
 
-#ifdef CONFIG_PM_SLEEP
 static int tegra_gpio_resume(struct device *dev)
 {
 	struct tegra_gpio_info *tgi = dev_get_drvdata(dev);
@@ -564,7 +561,6 @@ static int tegra_gpio_irq_set_wake(struct irq_data *d, unsigned int enable)
 
 	return 0;
 }
-#endif
 
 static int tegra_gpio_irq_set_affinity(struct irq_data *data,
 				       const struct cpumask *dest,
@@ -608,9 +604,7 @@ static const struct irq_chip tegra_gpio_irq_chip = {
 	.irq_mask		= tegra_gpio_irq_mask,
 	.irq_unmask		= tegra_gpio_irq_unmask,
 	.irq_set_type		= tegra_gpio_irq_set_type,
-#ifdef CONFIG_PM_SLEEP
-	.irq_set_wake		= tegra_gpio_irq_set_wake,
-#endif
+	.irq_set_wake		= pm_sleep_ptr(tegra_gpio_irq_set_wake),
 	.irq_print_chip		= tegra_gpio_irq_print_chip,
 	.irq_request_resources	= tegra_gpio_irq_request_resources,
 	.irq_release_resources	= tegra_gpio_irq_release_resources,
@@ -624,9 +618,7 @@ static const struct irq_chip tegra210_gpio_irq_chip = {
 	.irq_unmask		= tegra_gpio_irq_unmask,
 	.irq_set_affinity	= tegra_gpio_irq_set_affinity,
 	.irq_set_type		= tegra_gpio_irq_set_type,
-#ifdef CONFIG_PM_SLEEP
-	.irq_set_wake		= tegra_gpio_irq_set_wake,
-#endif
+	.irq_set_wake		= pm_sleep_ptr(tegra_gpio_irq_set_wake),
 	.irq_print_chip		= tegra_gpio_irq_print_chip,
 	.irq_request_resources	= tegra_gpio_irq_request_resources,
 	.irq_release_resources	= tegra_gpio_irq_release_resources,
@@ -676,7 +668,7 @@ static inline void tegra_gpio_debuginit(struct tegra_gpio_info *tgi)
 #endif
 
 static const struct dev_pm_ops tegra_gpio_pm_ops = {
-	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(tegra_gpio_suspend, tegra_gpio_resume)
+	NOIRQ_SYSTEM_SLEEP_PM_OPS(tegra_gpio_suspend, tegra_gpio_resume)
 };
 
 static const struct of_device_id tegra_pmc_of_match[] = {
@@ -826,7 +818,7 @@ MODULE_DEVICE_TABLE(of, tegra_gpio_of_match);
 static struct platform_driver tegra_gpio_driver = {
 	.driver = {
 		.name = "tegra-gpio",
-		.pm = &tegra_gpio_pm_ops,
+		.pm = pm_sleep_ptr(&tegra_gpio_pm_ops),
 		.of_match_table = tegra_gpio_of_match,
 	},
 	.probe = tegra_gpio_probe,

@@ -1727,8 +1727,6 @@ static struct dma_chan *rcar_dmac_of_xlate(struct of_phandle_args *dma_spec,
 /* -----------------------------------------------------------------------------
  * Power management
  */
-
-#ifdef CONFIG_PM
 static int rcar_dmac_runtime_suspend(struct device *dev)
 {
 	return 0;
@@ -1740,7 +1738,6 @@ static int rcar_dmac_runtime_resume(struct device *dev)
 
 	return rcar_dmac_init(dmac);
 }
-#endif
 
 static const struct dev_pm_ops rcar_dmac_pm = {
 	/*
@@ -1748,10 +1745,10 @@ static const struct dev_pm_ops rcar_dmac_pm = {
 	 *   - Wait for the current transfer to complete and stop the device,
 	 *   - Resume transfers, if any.
 	 */
-	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
-				      pm_runtime_force_resume)
-	SET_RUNTIME_PM_OPS(rcar_dmac_runtime_suspend, rcar_dmac_runtime_resume,
-			   NULL)
+	NOIRQ_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+				 pm_runtime_force_resume)
+	RUNTIME_PM_OPS(rcar_dmac_runtime_suspend, rcar_dmac_runtime_resume,
+		       NULL)
 };
 
 /* -----------------------------------------------------------------------------
@@ -2034,7 +2031,7 @@ MODULE_DEVICE_TABLE(of, rcar_dmac_of_ids);
 
 static struct platform_driver rcar_dmac_driver = {
 	.driver		= {
-		.pm	= &rcar_dmac_pm,
+		.pm	= pm_ptr(&rcar_dmac_pm),
 		.name	= "rcar-dmac",
 		.of_match_table = rcar_dmac_of_ids,
 	},
