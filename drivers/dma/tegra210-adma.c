@@ -964,16 +964,16 @@ static void tegra_adma_remove(struct platform_device *pdev)
 }
 
 static const struct dev_pm_ops tegra_adma_dev_pm_ops = {
-	SET_RUNTIME_PM_OPS(tegra_adma_runtime_suspend,
-			   tegra_adma_runtime_resume, NULL)
-	SET_LATE_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
-				     pm_runtime_force_resume)
+	RUNTIME_PM_OPS(tegra_adma_runtime_suspend,
+		       tegra_adma_runtime_resume, NULL)
+	LATE_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+				 pm_runtime_force_resume)
 };
 
 static struct platform_driver tegra_admac_driver = {
 	.driver = {
 		.name	= "tegra-adma",
-		.pm	= &tegra_adma_dev_pm_ops,
+		.pm	= pm_ptr(&tegra_adma_dev_pm_ops),
 		.of_match_table = tegra_adma_of_match,
 	},
 	.probe		= tegra_adma_probe,

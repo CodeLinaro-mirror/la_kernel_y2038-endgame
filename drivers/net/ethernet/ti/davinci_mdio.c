@@ -688,7 +688,6 @@ static void davinci_mdio_remove(struct platform_device *pdev)
 	pm_runtime_disable(&pdev->dev);
 }
 
-#ifdef CONFIG_PM
 static int davinci_mdio_runtime_suspend(struct device *dev)
 {
 	struct davinci_mdio_data *data = dev_get_drvdata(dev);
@@ -717,9 +716,7 @@ static int davinci_mdio_runtime_resume(struct device *dev)
 	}
 	return 0;
 }
-#endif
 
-#ifdef CONFIG_PM_SLEEP
 static int davinci_mdio_suspend(struct device *dev)
 {
 	struct davinci_mdio_data *data = dev_get_drvdata(dev);
@@ -749,18 +746,17 @@ static int davinci_mdio_resume(struct device *dev)
 
 	return 0;
 }
-#endif
 
 static const struct dev_pm_ops davinci_mdio_pm_ops = {
-	SET_RUNTIME_PM_OPS(davinci_mdio_runtime_suspend,
-			   davinci_mdio_runtime_resume, NULL)
-	SET_LATE_SYSTEM_SLEEP_PM_OPS(davinci_mdio_suspend, davinci_mdio_resume)
+	RUNTIME_PM_OPS(davinci_mdio_runtime_suspend,
+		       davinci_mdio_runtime_resume, NULL)
+	LATE_SYSTEM_SLEEP_PM_OPS(davinci_mdio_suspend, davinci_mdio_resume)
 };
 
 static struct platform_driver davinci_mdio_driver = {
 	.driver = {
 		.name	 = "davinci_mdio",
-		.pm	 = &davinci_mdio_pm_ops,
+		.pm	 = pm_ptr(&davinci_mdio_pm_ops),
 		.of_match_table = of_match_ptr(davinci_mdio_of_mtable),
 	},
 	.probe = davinci_mdio_probe,

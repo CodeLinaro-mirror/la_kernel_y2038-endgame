@@ -1039,7 +1039,6 @@ static void mdc_dma_remove(struct platform_device *pdev)
 		img_mdc_runtime_suspend(&pdev->dev);
 }
 
-#ifdef CONFIG_PM_SLEEP
 static int img_mdc_suspend_late(struct device *dev)
 {
 	struct mdc_dma *mdma = dev_get_drvdata(dev);
@@ -1060,19 +1059,16 @@ static int img_mdc_resume_early(struct device *dev)
 {
 	return pm_runtime_force_resume(dev);
 }
-#endif /* CONFIG_PM_SLEEP */
 
 static const struct dev_pm_ops img_mdc_pm_ops = {
-	SET_RUNTIME_PM_OPS(img_mdc_runtime_suspend,
-			   img_mdc_runtime_resume, NULL)
-	SET_LATE_SYSTEM_SLEEP_PM_OPS(img_mdc_suspend_late,
-				     img_mdc_resume_early)
+	RUNTIME_PM_OPS(img_mdc_runtime_suspend, img_mdc_runtime_resume, NULL)
+	LATE_SYSTEM_SLEEP_PM_OPS(img_mdc_suspend_late, img_mdc_resume_early)
 };
 
 static struct platform_driver mdc_dma_driver = {
 	.driver = {
 		.name = "img-mdc-dma",
-		.pm = &img_mdc_pm_ops,
+		.pm = pm_ptr(&img_mdc_pm_ops),
 		.of_match_table = of_match_ptr(mdc_dma_of_match),
 	},
 	.probe = mdc_dma_probe,

@@ -2570,7 +2570,6 @@ static void edma_remove(struct platform_device *pdev)
 	pm_runtime_disable(dev);
 }
 
-#ifdef CONFIG_PM_SLEEP
 static int edma_pm_suspend(struct device *dev)
 {
 	struct edma_cc *ecc = dev_get_drvdata(dev);
@@ -2618,10 +2617,9 @@ static int edma_pm_resume(struct device *dev)
 
 	return 0;
 }
-#endif
 
 static const struct dev_pm_ops edma_pm_ops = {
-	SET_LATE_SYSTEM_SLEEP_PM_OPS(edma_pm_suspend, edma_pm_resume)
+	LATE_SYSTEM_SLEEP_PM_OPS(edma_pm_suspend, edma_pm_resume)
 };
 
 static struct platform_driver edma_driver = {
@@ -2629,7 +2627,7 @@ static struct platform_driver edma_driver = {
 	.remove_new	= edma_remove,
 	.driver = {
 		.name	= "edma",
-		.pm	= &edma_pm_ops,
+		.pm	= pm_sleep_ptr(&edma_pm_ops),
 		.of_match_table = edma_of_ids,
 	},
 };
