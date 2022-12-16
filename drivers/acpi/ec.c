@@ -540,7 +540,6 @@ static void acpi_ec_enable_event(struct acpi_ec *ec)
 		acpi_ec_clear(ec);
 }
 
-#ifdef CONFIG_PM_SLEEP
 static void __acpi_ec_flush_work(void)
 {
 	flush_workqueue(ec_wq); /* flush ec->work */
@@ -562,6 +561,7 @@ static void acpi_ec_disable_event(struct acpi_ec *ec)
 	__acpi_ec_flush_work();
 }
 
+#ifdef CONFIG_PM_SLEEP
 void acpi_ec_flush_work(void)
 {
 	/* Without ec_wq there is nothing to flush. */
@@ -2091,7 +2091,6 @@ out:
 	acpi_put_table((struct acpi_table_header *)ecdt_ptr);
 }
 
-#ifdef CONFIG_PM_SLEEP
 static int acpi_ec_suspend(struct device *dev)
 {
 	struct acpi_ec *ec = dev_get_drvdata(dev);
@@ -2139,6 +2138,7 @@ static int acpi_ec_resume(struct device *dev)
 	return 0;
 }
 
+#ifdef CONFIG_PM_SLEEP
 void acpi_ec_mark_gpe_for_wake(void)
 {
 	if (first_ec && !ec_no_wakeup)
@@ -2219,8 +2219,8 @@ bool acpi_ec_dispatch_gpe(void)
 #endif /* CONFIG_PM_SLEEP */
 
 static const struct dev_pm_ops acpi_ec_pm = {
-	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(acpi_ec_suspend_noirq, acpi_ec_resume_noirq)
-	SET_SYSTEM_SLEEP_PM_OPS(acpi_ec_suspend, acpi_ec_resume)
+	NOIRQ_SYSTEM_SLEEP_PM_OPS(acpi_ec_suspend_noirq, acpi_ec_resume_noirq)
+	SYSTEM_SLEEP_PM_OPS(acpi_ec_suspend, acpi_ec_resume)
 };
 
 static int param_set_event_clearing(const char *val,
@@ -2268,7 +2268,7 @@ static struct platform_driver acpi_ec_driver = {
 	.driver = {
 		.name = "acpi-ec",
 		.acpi_match_table = ec_device_ids,
-		.pm = &acpi_ec_pm,
+		.pm = pm_ptr(&acpi_ec_pm),
 	},
 };
 
