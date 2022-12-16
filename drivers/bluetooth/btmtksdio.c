@@ -1431,8 +1431,7 @@ static void btmtksdio_remove(struct sdio_func *func)
 	hci_free_dev(hdev);
 }
 
-#ifdef CONFIG_PM
-static int btmtksdio_runtime_suspend(struct device *dev)
+static __maybe_unused int btmtksdio_runtime_suspend(struct device *dev)
 {
 	struct sdio_func *func = dev_to_sdio_func(dev);
 	struct btmtksdio_dev *bdev;
@@ -1454,7 +1453,7 @@ static int btmtksdio_runtime_suspend(struct device *dev)
 	return err;
 }
 
-static int btmtksdio_runtime_resume(struct device *dev)
+static __maybe_unused int btmtksdio_runtime_resume(struct device *dev)
 {
 	struct sdio_func *func = dev_to_sdio_func(dev);
 	struct btmtksdio_dev *bdev;
@@ -1474,12 +1473,8 @@ static int btmtksdio_runtime_resume(struct device *dev)
 	return err;
 }
 
-static UNIVERSAL_DEV_PM_OPS(btmtksdio_pm_ops, btmtksdio_runtime_suspend,
-			    btmtksdio_runtime_resume, NULL);
-#define BTMTKSDIO_PM_OPS (&btmtksdio_pm_ops)
-#else	/* CONFIG_PM */
-#define BTMTKSDIO_PM_OPS NULL
-#endif	/* CONFIG_PM */
+static DEFINE_RUNTIME_DEV_PM_OPS(btmtksdio_pm_ops, btmtksdio_runtime_suspend,
+				 btmtksdio_runtime_resume, NULL);
 
 static struct sdio_driver btmtksdio_driver = {
 	.name		= "btmtksdio",
@@ -1488,7 +1483,7 @@ static struct sdio_driver btmtksdio_driver = {
 	.id_table	= btmtksdio_table,
 	.drv = {
 		.owner = THIS_MODULE,
-		.pm = BTMTKSDIO_PM_OPS,
+		.pm = pm_ptr(&btmtksdio_pm_ops),
 	}
 };
 
