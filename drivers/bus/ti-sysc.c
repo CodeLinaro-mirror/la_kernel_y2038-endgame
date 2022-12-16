@@ -2411,7 +2411,7 @@ static struct sysc *sysc_child_to_parent(struct device *dev)
 	return dev_get_drvdata(parent);
 }
 
-static int __maybe_unused sysc_child_runtime_suspend(struct device *dev)
+static int sysc_child_runtime_suspend(struct device *dev)
 {
 	struct sysc *ddata;
 	int error;
@@ -2428,7 +2428,7 @@ static int __maybe_unused sysc_child_runtime_suspend(struct device *dev)
 	return sysc_runtime_suspend(ddata->dev);
 }
 
-static int __maybe_unused sysc_child_runtime_resume(struct device *dev)
+static int sysc_child_runtime_resume(struct device *dev)
 {
 	struct sysc *ddata;
 	int error;
@@ -2445,7 +2445,6 @@ static int __maybe_unused sysc_child_runtime_resume(struct device *dev)
 	return pm_generic_runtime_resume(dev);
 }
 
-#ifdef CONFIG_PM_SLEEP
 static int sysc_child_suspend_noirq(struct device *dev)
 {
 	struct sysc *ddata;
@@ -2515,16 +2514,14 @@ static int sysc_child_resume_noirq(struct device *dev)
 
 	return pm_generic_resume_noirq(dev);
 }
-#endif
 
 static struct dev_pm_domain sysc_child_pm_domain = {
 	.ops = {
-		SET_RUNTIME_PM_OPS(sysc_child_runtime_suspend,
-				   sysc_child_runtime_resume,
-				   NULL)
+		RUNTIME_PM_OPS(sysc_child_runtime_suspend,
+			       sysc_child_runtime_resume, NULL)
 		USE_PLATFORM_PM_SLEEP_OPS
-		SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(sysc_child_suspend_noirq,
-					      sysc_child_resume_noirq)
+		NOIRQ_SYSTEM_SLEEP_PM_OPS(sysc_child_suspend_noirq,
+					  sysc_child_resume_noirq)
 	}
 };
 
