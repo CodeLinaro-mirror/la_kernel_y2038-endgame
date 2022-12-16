@@ -387,6 +387,7 @@ static int _od_fail_runtime_resume(struct device *dev)
 	return -ENODEV;
 }
 
+#ifdef CONFIG_SUSPEND
 static int _od_suspend_noirq(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -422,17 +423,21 @@ static int _od_resume_noirq(struct device *dev)
 
 	return pm_generic_resume_noirq(dev);
 }
+#else
+#define _od_suspend_noirq NULL
+#define _od_resume_noirq NULL
+#endif
 
 static struct dev_pm_domain omap_device_fail_pm_domain = {
 	.ops = {
-		RUNTIME_PM_OPS(_od_fail_runtime_suspend,
-			       _od_fail_runtime_resume, NULL)
+		RUNTIME_PM_OPS(_od_fail_runtime_suspend, _od_fail_runtime_resume, NULL)
 	}
 };
 
 static struct dev_pm_domain omap_device_pm_domain = {
 	.ops = {
-		RUNTIME_PM_OPS(_od_runtime_suspend, _od_runtime_resume, NULL)
+		RUNTIME_PM_OPS(_od_runtime_suspend, _od_runtime_resume,
+				   NULL)
 		USE_PLATFORM_PM_SLEEP_OPS
 		NOIRQ_SYSTEM_SLEEP_PM_OPS(_od_suspend_noirq, _od_resume_noirq)
 	}
