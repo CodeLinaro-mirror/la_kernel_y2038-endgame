@@ -1264,8 +1264,7 @@ save_context:
 	return ret;
 }
 
-static int __maybe_unused sysc_runtime_suspend_legacy(struct device *dev,
-						      struct sysc *ddata)
+static int sysc_runtime_suspend_legacy(struct device *dev, struct sysc *ddata)
 {
 	struct ti_sysc_platform_data *pdata;
 	int error;
@@ -1287,8 +1286,7 @@ static int __maybe_unused sysc_runtime_suspend_legacy(struct device *dev,
 	return 0;
 }
 
-static int __maybe_unused sysc_runtime_resume_legacy(struct device *dev,
-						     struct sysc *ddata)
+static int sysc_runtime_resume_legacy(struct device *dev, struct sysc *ddata)
 {
 	struct ti_sysc_platform_data *pdata;
 	int error;
@@ -1310,7 +1308,7 @@ static int __maybe_unused sysc_runtime_resume_legacy(struct device *dev,
 	return 0;
 }
 
-static int __maybe_unused sysc_runtime_suspend(struct device *dev)
+static int sysc_runtime_suspend(struct device *dev)
 {
 	struct sysc *ddata;
 	int error = 0;
@@ -1463,7 +1461,7 @@ static int sysc_reinit_module(struct sysc *ddata, bool leave_enabled)
 	return error;
 }
 
-static int __maybe_unused sysc_noirq_suspend(struct device *dev)
+static int sysc_noirq_suspend(struct device *dev)
 {
 	struct sysc *ddata;
 
@@ -1481,7 +1479,7 @@ static int __maybe_unused sysc_noirq_suspend(struct device *dev)
 	return sysc_runtime_suspend(dev);
 }
 
-static int __maybe_unused sysc_noirq_resume(struct device *dev)
+static int sysc_noirq_resume(struct device *dev)
 {
 	struct sysc *ddata;
 	int error = 0;
@@ -2445,6 +2443,7 @@ static int sysc_child_runtime_resume(struct device *dev)
 	return pm_generic_runtime_resume(dev);
 }
 
+#ifdef CONFIG_PM_SLEEP
 static int sysc_child_suspend_noirq(struct device *dev)
 {
 	struct sysc *ddata;
@@ -2514,6 +2513,10 @@ static int sysc_child_resume_noirq(struct device *dev)
 
 	return pm_generic_resume_noirq(dev);
 }
+#else
+static int sysc_child_suspend_noirq(struct device *dev) { return 0; }
+static int sysc_child_resume_noirq(struct device *dev) { return 0; }
+#endif
 
 static struct dev_pm_domain sysc_child_pm_domain = {
 	.ops = {
