@@ -345,12 +345,8 @@ struct dev_pm_ops {
 #define SET_SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn)
 #endif
 
-#ifdef CONFIG_PM_SLEEP
 #define SET_LATE_SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
 	LATE_SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn)
-#else
-#define SET_LATE_SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn)
-#endif
 
 #ifdef CONFIG_PM_SLEEP
 #define SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
