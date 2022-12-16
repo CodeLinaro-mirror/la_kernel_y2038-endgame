@@ -19,6 +19,7 @@
 #include <linux/errno.h>
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
+#include <linux/mod_devicetable.h>
 #include <linux/gpio.h>
 
 #include <pcmcia/ss.h>
