@@ -257,8 +257,6 @@ static void apds9802als_remove(struct i2c_client *client)
 	kfree(data);
 }
 
-#ifdef CONFIG_PM
-
 static int apds9802als_suspend(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -275,14 +273,8 @@ static int apds9802als_resume(struct device *dev)
 	return 0;
 }
 
-static UNIVERSAL_DEV_PM_OPS(apds9802als_pm_ops, apds9802als_suspend,
+static DEFINE_RUNTIME_DEV_PM_OPS(apds9802als_pm_ops, apds9802als_suspend,
 	apds9802als_resume, NULL);
-
-#define APDS9802ALS_PM_OPS (&apds9802als_pm_ops)
-
-#else	/* CONFIG_PM */
-#define APDS9802ALS_PM_OPS NULL
-#endif	/* CONFIG_PM */
 
 static const struct i2c_device_id apds9802als_id[] = {
 	{ DRIVER_NAME, 0 },
@@ -294,7 +286,7 @@ MODULE_DEVICE_TABLE(i2c, apds9802als_id);
 static struct i2c_driver apds9802als_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
-		.pm = APDS9802ALS_PM_OPS,
+		.pm = pm_ptr(&apds9802als_pm_ops),
 	},
 	.probe = apds9802als_probe,
 	.remove = apds9802als_remove,
