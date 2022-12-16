@@ -95,7 +95,6 @@ static const struct regmap_irq_chip madera_irq_chip = {
 	.num_irqs	= ARRAY_SIZE(madera_irqs),
 };
 
-#ifdef CONFIG_PM_SLEEP
 static int madera_suspend(struct device *dev)
 {
 	struct madera *madera = dev_get_drvdata(dev->parent);
@@ -150,12 +149,10 @@ static int madera_resume(struct device *dev)
 
 	return 0;
 }
-#endif
 
 static const struct dev_pm_ops madera_irq_pm_ops = {
-	SET_SYSTEM_SLEEP_PM_OPS(madera_suspend, madera_resume)
-	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(madera_suspend_noirq,
-				      madera_resume_noirq)
+	SYSTEM_SLEEP_PM_OPS(madera_suspend, madera_resume)
+	NOIRQ_SYSTEM_SLEEP_PM_OPS(madera_suspend_noirq, madera_resume_noirq)
 };
 
 static int madera_irq_probe(struct platform_device *pdev)
@@ -241,7 +238,7 @@ static struct platform_driver madera_irq_driver = {
 	.remove = &madera_irq_remove,
 	.driver = {
 		.name	= "madera-irq",
-		.pm	= &madera_irq_pm_ops,
+		.pm	= pm_sleep_ptr(&madera_irq_pm_ops),
 	}
 };
 module_platform_driver(madera_irq_driver);

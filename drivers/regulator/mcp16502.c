@@ -548,7 +548,6 @@ static int mcp16502_probe(struct i2c_client *client)
 	return 0;
 }
 
-#ifdef CONFIG_PM_SLEEP
 static int mcp16502_suspend_noirq(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -568,14 +567,11 @@ static int mcp16502_resume_noirq(struct device *dev)
 
 	return 0;
 }
-#endif
 
-#ifdef CONFIG_PM
 static const struct dev_pm_ops mcp16502_pm_ops = {
-	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(mcp16502_suspend_noirq,
-				      mcp16502_resume_noirq)
+	NOIRQ_SYSTEM_SLEEP_PM_OPS(mcp16502_suspend_noirq,
+				  mcp16502_resume_noirq)
 };
-#endif
 static const struct i2c_device_id mcp16502_i2c_id[] = {
 	{ "mcp16502", 0 },
 	{ }
@@ -588,9 +584,7 @@ static struct i2c_driver mcp16502_drv = {
 		.name	= "mcp16502-regulator",
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
 		.of_match_table	= mcp16502_ids,
-#ifdef CONFIG_PM
-		.pm = &mcp16502_pm_ops,
-#endif
+		.pm = pm_sleep_ptr(&mcp16502_pm_ops),
 	},
 	.id_table	= mcp16502_i2c_id,
 };

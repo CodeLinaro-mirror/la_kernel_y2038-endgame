@@ -302,7 +302,6 @@ static int imx_intmux_remove(struct platform_device *pdev)
 	return 0;
 }
 
-#ifdef CONFIG_PM
 static int imx_intmux_runtime_suspend(struct device *dev)
 {
 	struct intmux_data *data = dev_get_drvdata(dev);
@@ -338,13 +337,12 @@ static int imx_intmux_runtime_resume(struct device *dev)
 
 	return 0;
 }
-#endif
 
 static const struct dev_pm_ops imx_intmux_pm_ops = {
-	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
-				      pm_runtime_force_resume)
-	SET_RUNTIME_PM_OPS(imx_intmux_runtime_suspend,
-			   imx_intmux_runtime_resume, NULL)
+	NOIRQ_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+				  pm_runtime_force_resume)
+	RUNTIME_PM_OPS(imx_intmux_runtime_suspend,
+		       imx_intmux_runtime_resume, NULL)
 };
 
 static const struct of_device_id imx_intmux_id[] = {
@@ -356,7 +354,7 @@ static struct platform_driver imx_intmux_driver = {
 	.driver = {
 		.name = "imx-intmux",
 		.of_match_table = imx_intmux_id,
-		.pm = &imx_intmux_pm_ops,
+		.pm = pm_ptr(&imx_intmux_pm_ops),
 	},
 	.probe = imx_intmux_probe,
 	.remove = imx_intmux_remove,
