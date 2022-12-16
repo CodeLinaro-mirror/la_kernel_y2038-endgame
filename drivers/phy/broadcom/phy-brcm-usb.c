@@ -579,7 +579,6 @@ static void brcm_usb_phy_remove(struct platform_device *pdev)
 	unregister_pm_notifier(&priv->pm_notifier);
 }
 
-#ifdef CONFIG_PM_SLEEP
 static int brcm_usb_phy_suspend(struct device *dev)
 {
 	struct brcm_usb_phy_data *priv = dev_get_drvdata(dev);
@@ -657,10 +656,9 @@ static int brcm_usb_phy_resume(struct device *dev)
 	priv->ini.wake_enabled = false;
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
 
 static const struct dev_pm_ops brcm_usb_phy_pm_ops = {
-	SET_LATE_SYSTEM_SLEEP_PM_OPS(brcm_usb_phy_suspend, brcm_usb_phy_resume)
+	LATE_SYSTEM_SLEEP_PM_OPS(brcm_usb_phy_suspend, brcm_usb_phy_resume)
 };
 
 MODULE_DEVICE_TABLE(of, brcm_usb_dt_ids);
@@ -670,7 +668,7 @@ static struct platform_driver brcm_usb_driver = {
 	.remove_new	= brcm_usb_phy_remove,
 	.driver		= {
 		.name	= "brcmstb-usb-phy",
-		.pm = &brcm_usb_phy_pm_ops,
+		.pm = pm_sleep_ptr(&brcm_usb_phy_pm_ops),
 		.of_match_table = brcm_usb_dt_ids,
 	},
 };

@@ -697,7 +697,6 @@ static const struct pinmux_ops uniphier_pmxops = {
 	.strict = true,
 };
 
-#ifdef CONFIG_PM_SLEEP
 static int uniphier_pinctrl_suspend(struct device *dev)
 {
 	struct uniphier_pinctrl_priv *priv = dev_get_drvdata(dev);
@@ -763,12 +762,10 @@ static int uniphier_pinctrl_add_reg_region(struct device *dev,
 
 	return 0;
 }
-#endif
 
 static int uniphier_pinctrl_pm_init(struct device *dev,
 				    struct uniphier_pinctrl_priv *priv)
 {
-#ifdef CONFIG_PM_SLEEP
 	const struct uniphier_pinctrl_socdata *socdata = priv->socdata;
 	unsigned int num_drvctrl = 0;
 	unsigned int num_drv2ctrl = 0;
@@ -779,6 +776,9 @@ static int uniphier_pinctrl_pm_init(struct device *dev,
 	enum uniphier_pin_drv_type drv_type;
 	enum uniphier_pin_pull_dir pull_dir;
 	int i, ret;
+
+	if (!IS_ENABLED(CONFIG_PM_SLEEP))
+		return 0;
 
 	for (i = 0; i < socdata->npins; i++) {
 		void *drv_data = socdata->pins[i].drv_data;
@@ -851,13 +851,12 @@ static int uniphier_pinctrl_pm_init(struct device *dev,
 					      num_iectrl, 1);
 	if (ret)
 		return ret;
-#endif
+
 	return 0;
 }
 
 const struct dev_pm_ops uniphier_pinctrl_pm_ops = {
-	SET_LATE_SYSTEM_SLEEP_PM_OPS(uniphier_pinctrl_suspend,
-				     uniphier_pinctrl_resume)
+	LATE_SYSTEM_SLEEP_PM_OPS(uniphier_pinctrl_suspend, uniphier_pinctrl_resume)
 };
 
 int uniphier_pinctrl_probe(struct platform_device *pdev,
