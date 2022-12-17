@@ -2901,7 +2901,6 @@ static int __init d40_dmaengine_init(struct d40_base *base,
 }
 
 /* Suspend resume functionality */
-#ifdef CONFIG_PM_SLEEP
 static int dma40_suspend(struct device *dev)
 {
 	struct d40_base *base = dev_get_drvdata(dev);
@@ -2929,7 +2928,6 @@ static int dma40_resume(struct device *dev)
 
 	return pm_runtime_force_resume(dev);
 }
-#endif
 
 static void dma40_backup(void __iomem *baseaddr, u32 *backup,
 			 u32 *regaddr, int num, bool save)
