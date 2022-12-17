@@ -3009,7 +3009,7 @@ noinline_for_stack int mlx5e_safe_switch_params(struct mlx5e_priv *priv,
 		return -ENOMEM;
 	new_chs->params = *params;
 
-	mlx5e_selq_prepare_params(&priv->selq, new_chs->params);
+	mlx5e_selq_prepare_params(&priv->selq, &new_chs->params);
 
 	err = mlx5e_open_channels(priv, new_chs);
 	if (err)
@@ -3435,7 +3435,7 @@ static noinline_for_stack int mlx5e_setup_tc_mqprio_dcb(struct mlx5e_priv *priv,
 	if (tc && tc != MLX5E_MAX_NUM_TC)
 		return -EINVAL;
 
-	new_params = kmemdup(priv->channels.params,
+	new_params = kmemdup(&priv->channels.params,
 			     sizeof(priv->channels.params), GFP_KERNEL);
 	if (!new_params)
 		return -ENOMEM;
