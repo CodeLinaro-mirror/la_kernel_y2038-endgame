@@ -2992,37 +2992,42 @@ out:
 	return err;
 }
 
-int mlx5e_safe_switch_params(struct mlx5e_priv *priv,
+noinline_for_stack int mlx5e_safe_switch_params(struct mlx5e_priv *priv,
 			     struct mlx5e_params *params,
 			     mlx5e_fp_preactivate preactivate,
 			     void *context, bool reset)
 {
-	struct mlx5e_channels new_chs = {};
+	struct mlx5e_channels *new_chs;
 	int err;
 
 	reset &= test_bit(MLX5E_STATE_OPENED, &priv->state);
 	if (!reset)
 		return mlx5e_switch_priv_params(priv, params, preactivate, context);
 
-	new_chs.params = *params;
+	new_chs = kzalloc(sizeof(*new_chs), GFP_KERNEL);
+	if (!new_chs)
+		return -ENOMEM;
+	new_chs->params = *params;
 
-	mlx5e_selq_prepare_params(&priv->selq, &new_chs.params);
+	mlx5e_selq_prepare_params(&priv->selq, new_chs->params);
 
-	err = mlx5e_open_channels(priv, &new_chs);
+	err = mlx5e_open_channels(priv, new_chs);
 	if (err)
 		goto err_cancel_selq;
 
-	err = mlx5e_switch_priv_channels(priv, &new_chs, preactivate, context);
+	err = mlx5e_switch_priv_channels(priv, new_chs, preactivate, context);
 	if (err)
 		goto err_close;
 
+	kfree(new_chs);
 	return 0;
 
 err_close:
-	mlx5e_close_channels(&new_chs);
+	mlx5e_close_channels(new_chs);
 
 err_cancel_selq:
 	mlx5e_selq_cancel(&priv->selq);
+	kfree(new_chs);
 	return err;
 }
 
@@ -3418,10 +3423,10 @@ static void mlx5e_params_mqprio_reset(struct mlx5e_params *params)
 	mlx5e_params_mqprio_dcb_set(params, 1);
 }
 
-static int mlx5e_setup_tc_mqprio_dcb(struct mlx5e_priv *priv,
+static noinline_for_stack int mlx5e_setup_tc_mqprio_dcb(struct mlx5e_priv *priv,
 				     struct tc_mqprio_qopt *mqprio)
 {
-	struct mlx5e_params new_params;
+	struct mlx5e_params *new_params;
 	u8 tc = mqprio->num_tc;
 	int err;
 
@@ -3430,10 +3435,13 @@ static int mlx5e_setup_tc_mqprio_dcb(struct mlx5e_priv *priv,
 	if (tc && tc != MLX5E_MAX_NUM_TC)
 		return -EINVAL;
 
-	new_params = priv->channels.params;
-	mlx5e_params_mqprio_dcb_set(&new_params, tc ? tc : 1);
+	new_params = kmemdup(priv->channels.params,
+			     sizeof(priv->channels.params), GFP_KERNEL);
+	if (!new_params)
+		return -ENOMEM;
+	mlx5e_params_mqprio_dcb_set(new_params, tc ? tc : 1);
 
-	err = mlx5e_safe_switch_params(priv, &new_params,
+	err = mlx5e_safe_switch_params(priv, new_params,
 				       mlx5e_num_channels_changed_ctx, NULL, true);
 
 	if (!err && priv->mqprio_rl) {
@@ -3444,6 +3452,8 @@ static int mlx5e_setup_tc_mqprio_dcb(struct mlx5e_priv *priv,
 
 	priv->max_opened_tc = max_t(u8, priv->max_opened_tc,
 				    mlx5e_get_dcb_num_tc(&priv->channels.params));
+
+	kfree(new_params);
 	return err;
 }
 
@@ -3532,7 +3542,7 @@ static struct mlx5e_mqprio_rl *mlx5e_mqprio_rl_create(struct mlx5_core_dev *mdev
 	return rl;
 }
 
-static int mlx5e_setup_tc_mqprio_channel(struct mlx5e_priv *priv,
+static noinline_for_stack int mlx5e_setup_tc_mqprio_channel(struct mlx5e_priv *priv,
 					 struct tc_mqprio_qopt_offload *mqprio)
 {
 	mlx5e_fp_preactivate preactivate;
