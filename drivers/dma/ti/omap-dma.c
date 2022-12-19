@@ -701,7 +701,7 @@ static void omap_dma_put_lch(struct omap_dmadev *od, int lch)
 
 static inline bool omap_dma_legacy(struct omap_dmadev *od)
 {
-	return IS_ENABLED(CONFIG_ARCH_OMAP1) && od->legacy;
+	return IS_ENABLED(CONFIG_ARCH_OMAP1_ANY) && od->legacy;
 }
 
 static int omap_dma_alloc_chan_resources(struct dma_chan *chan)
@@ -1679,7 +1679,7 @@ static int omap_dma_probe(struct platform_device *pdev)
 			dev_err(&pdev->dev, "omap_system_dma_plat_info is missing");
 			return -ENODEV;
 		}
-	} else if (IS_ENABLED(CONFIG_ARCH_OMAP1)) {
+	} else if (IS_ENABLED(CONFIG_ARCH_OMAP1_ANY)) {
 		od->cfg = &default_cfg;
 
 		od->plat = omap_get_plat_info();
