@@ -905,10 +905,12 @@ void __reiserfs_warning(struct super_block *s, const char *id,
 /* always check a condition and panic if it's false. */
 #define __RASSERT(cond, scond, format, args...)			\
 do {									\
-	if (!(cond))							\
-		reiserfs_panic(NULL, "assertion failure", "(" #cond ") at " \
-			       __FILE__ ":%i:%s: " format "\n",		\
-			       __LINE__, __func__ , ##args);		\
+	if (!(cond)) {							\
+		panic("%s:%d: assertion failure", "(" #cond ")"		\
+			       ":%i:%s: " format "\n", 			\
+				__func__, __LINE__,\
+			        ##args);		\
+	}						\
 } while (0)
 
 #define RASSERT(cond, format, args...) __RASSERT(cond, #cond, format, ##args)
@@ -3189,13 +3191,10 @@ int fix_nodes(int n_op_mode, struct tree_balance *tb,
 void unfix_nodes(struct tree_balance *);
 
 /* prints.c */
-void __cold __reiserfs_panic(struct super_block *s, const char *id,
-		      const char *function, const char *fmt, ...);
+void __reiserfs_panic(struct super_block *s, const char *id,
+		      const char *function, const char *fmt, ...) __noreturn __cold;
 #define reiserfs_panic(s, id, fmt, args...)			\
-	do {							\
-		__reiserfs_panic(s, id, __func__, fmt, ##args);	\
-		BUG();						\
-	} while (0)
+		__reiserfs_panic(s, id, __func__, fmt, ##args)
 void __reiserfs_error(struct super_block *s, const char *id,
 		      const char *function, const char *fmt, ...);
 #define reiserfs_error(s, id, fmt, args...) \
