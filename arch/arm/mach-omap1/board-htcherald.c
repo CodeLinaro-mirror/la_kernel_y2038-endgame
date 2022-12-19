@@ -17,7 +17,6 @@
 #include <linux/gpio_keys.h>
 #include <linux/i2c.h>
 #include <linux/platform_data/i2c-gpio.h>
-#include <linux/htcpld.h>
 #include <linux/leds.h>
 #include <linux/spi/spi.h>
 #include <linux/spi/ads7846.h>
@@ -297,66 +296,6 @@ static struct platform_device gpio_leds_device = {
 	},
 };
 
-/* HTC PLD chips */
-
-static struct resource htcpld_resources[] = {
-	[0] = {
-		.flags  = IORESOURCE_IRQ,
-	},
-};
-
-static struct htcpld_chip_platform_data htcpld_chips[] = {
-	[0] = {
-		.addr		= 0x03,
-		.reset		= 0x04,
-		.num_gpios	= 8,
-		.gpio_out_base	= HTCPLD_BASE(0, 0),
-		.gpio_in_base	= HTCPLD_BASE(4, 0),
-	},
-	[1] = {
-		.addr		= 0x04,
-		.reset		= 0x8e,
-		.num_gpios	= 8,
-		.gpio_out_base	= HTCPLD_BASE(1, 0),
-		.gpio_in_base	= HTCPLD_BASE(5, 0),
-	},
-	[2] = {
-		.addr		= 0x05,
-		.reset		= 0x80,
-		.num_gpios	= 8,
-		.gpio_out_base	= HTCPLD_BASE(2, 0),
-		.gpio_in_base	= HTCPLD_BASE(6, 0),
-		.irq_base	= HTCPLD_IRQ(0, 0),
-		.num_irqs	= 8,
-	},
-	[3] = {
-		.addr		= 0x06,
-		.reset		= 0x40,
-		.num_gpios	= 8,
-		.gpio_out_base	= HTCPLD_BASE(3, 0),
-		.gpio_in_base	= HTCPLD_BASE(7, 0),
-		.irq_base	= HTCPLD_IRQ(1, 0),
-		.num_irqs	= 8,
-	},
-};
-
-static struct htcpld_core_platform_data htcpld_pfdata = {
-	.i2c_adapter_id	   = 1,
-
-	.chip		   = htcpld_chips,
-	.num_chip	   = ARRAY_SIZE(htcpld_chips),
-};
-
-static struct platform_device htcpld_device = {
-	.name		= "i2c-htcpld",
-	.id		= -1,
-	.resource	= htcpld_resources,
-	.num_resources	= ARRAY_SIZE(htcpld_resources),
-	.dev	= {
-		.platform_data	= &htcpld_pfdata,
-	},
-};
-
 /* USB Device */
 static struct omap_usb_config htcherald_usb_config __initdata = {
 	.otg = 0,
@@ -398,7 +337,6 @@ static struct omap_mmc_platform_data *htc_mmc_data[1];
 static struct platform_device *devices[] __initdata = {
 	&kp_device,
 	&lcd_device,
-	&htcpld_device,
 	&gpio_leds_device,
 	&herald_gpiokeys_device,
 };
@@ -547,8 +485,6 @@ static void __init htcherald_init(void)
 	printk(KERN_INFO "HTC Herald init.\n");
 
 	/* Do board initialization before we register all the devices */
-	htcpld_resources[0].start = gpio_to_irq(HTCHERALD_GIRQ_BTNS);
-	htcpld_resources[0].end = gpio_to_irq(HTCHERALD_GIRQ_BTNS);
 	platform_add_devices(devices, ARRAY_SIZE(devices));
 
 	htcherald_disable_watchdog();
