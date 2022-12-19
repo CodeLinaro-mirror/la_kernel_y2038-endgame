@@ -13,6 +13,7 @@ config KMSAN
 	depends on HAVE_ARCH_KMSAN && HAVE_KMSAN_COMPILER
 	depends on SLUB && DEBUG_KERNEL && !KASAN && !KCSAN
 	depends on !PREEMPT_RT
+	depends on !FORTIFY_SOURCE || !X86_64
 	select STACKDEPOT
 	select STACKDEPOT_ALWAYS_INIT
 	help
