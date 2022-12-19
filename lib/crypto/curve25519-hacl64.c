@@ -585,7 +585,7 @@ static __always_inline void ladder_bigloop_cmult_big_loop(u8 *n1, u64 *nq,
 	}
 }
 
-static void ladder_cmult(u64 *result, u8 *n1, u64 *q)
+static __no_kmsan_checks void ladder_cmult(u64 *result, u8 *n1, u64 *q)
 {
 	u64 point_buf[40] = { 0 };
 	u64 *nq = point_buf;
@@ -754,7 +754,7 @@ static __always_inline void format_scalar_of_point(u8 *scalar, u64 *point)
 	format_fcontract(scalar, sc);
 }
 
-void curve25519_generic(u8 mypublic[CURVE25519_KEY_SIZE],
+void __no_kmsan_checks curve25519_generic(u8 mypublic[CURVE25519_KEY_SIZE],
 			const u8 secret[CURVE25519_KEY_SIZE],
 			const u8 basepoint[CURVE25519_KEY_SIZE])
 {
