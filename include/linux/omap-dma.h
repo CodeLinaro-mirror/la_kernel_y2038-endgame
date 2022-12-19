@@ -294,7 +294,7 @@ struct omap_system_dma_plat_info {
 
 extern struct omap_system_dma_plat_info *omap_get_plat_info(void);
 
-#if defined(CONFIG_ARCH_OMAP1)
+#if defined(CONFIG_ARCH_OMAP1_ANY) 
 extern void omap_set_dma_priority(int lch, int dst_port, int priority);
 #else
 static inline void omap_set_dma_priority(int lch, int dst_port, int priority)
