@@ -277,7 +277,9 @@ SYSCALL_DEFINE2(memfd_create,
 		unsigned int, flags)
 {
 	char comm[TASK_COMM_LEN];
+#ifdef CONFIG_SYSCTL
 	struct pid_namespace *ns;
+#endif
 	unsigned int *file_seals;
 	struct file *file;
 	int fd, error;
