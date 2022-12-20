@@ -558,7 +558,7 @@ static int psnet_open_pf_bar(struct pci_dev *pdev, struct psnet *psnet)
 		return -ENODEV;
 	}
 
-	snprintf(name, SNET_NAME_SIZE, "psnet[%s]-bars", pci_name(pdev));
+	snprintf(name, sizeof(name), "psnet[%s]-bars", pci_name(pdev));
 	ret = pcim_iomap_regions(pdev, mask, name);
 	if (ret) {
 		SNET_ERR(pdev, "Failed to request and map PCI BARs\n");
@@ -578,7 +578,7 @@ static int snet_open_vf_bar(struct pci_dev *pdev, struct snet *snet)
 	char name[20];
 	int ret;
 
-	snprintf(name, SNET_NAME_SIZE, "snet[%s]-bar", pci_name(pdev));
+	snprintf(name, sizeof(name), "snet[%s]-bar", pci_name(pdev));
 	/* Request and map BAR */
 	ret = pcim_iomap_regions(pdev, BIT(snet->psnet->cfg.vf_bar), name);
 	if (ret) {
