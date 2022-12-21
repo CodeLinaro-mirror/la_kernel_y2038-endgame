@@ -149,18 +149,22 @@ static inline __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 	asm("addl 0(%1), %0	;\n"
 	    "adcl 4(%1), %0	;\n"
 	    "adcl 8(%1), %0	;\n"
-	    "adcl 12(%1), %0	;\n"
-	    "adcl 0(%2), %0	;\n"
-	    "adcl 4(%2), %0	;\n"
-	    "adcl 8(%2), %0	;\n"
-	    "adcl 12(%2), %0	;\n"
-	    "adcl %3, %0	;\n"
-	    "adcl %4, %0	;\n"
+	    : "=&r" (sum)
+	    : "r" (saddr), "0" (sum)
+	    : "memory");
+
+	asm("addl 0(%1), %0	;\n"
+	    "adcl 4(%1), %0	;\n"
+	    "adcl 8(%1), %0	;\n"
+	    : "=&r" (sum)
+	    : "r" (daddr), "0" (sum)
+	    : "memory");
+
+	asm("adcl %1, %0	;\n"
+	    "adcl %2, %0	;\n"
 	    "adcl $0, %0	;\n"
 	    : "=&r" (sum)
-	    : "r" (saddr), "r" (daddr),
-	      "r" (htonl(len)), "r" (htonl(proto)), "0" (sum)
-	    : "memory");
+	    : "r" (htonl(len)), "r" (htonl(proto)), "0" (sum));
 
 	return csum_fold(sum);
 }
