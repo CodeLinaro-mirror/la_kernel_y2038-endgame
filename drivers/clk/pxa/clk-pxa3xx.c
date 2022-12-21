@@ -269,19 +269,6 @@ static struct desc_clk_cken pxa300_310_clocks[] __initdata = {
 	PXA3XX_CKEN_1RATE("pxa3xx-gpio", NULL, GPIO, pxa3xx_13MHz_bus_parents),
 };
 
-static struct desc_clk_cken pxa320_clocks[] __initdata = {
-	PXA3XX_PBUS_CKEN("pxa3xx-nand", NULL, NAND, 1, 2, 1, 6, 0),
-	PXA3XX_PBUS_CKEN("pxa3xx-gcu", NULL, PXA320_GCU, 1, 1, 1, 1, 0),
-	PXA3XX_CKEN_1RATE("pxa3xx-gpio", NULL, GPIO, pxa3xx_13MHz_bus_parents),
-};
-
-static struct desc_clk_cken pxa93x_clocks[] __initdata = {
-
-	PXA3XX_PBUS_CKEN("pxa3xx-gcu", NULL, PXA300_GCU, 1, 1, 1, 1, 0),
-	PXA3XX_PBUS_CKEN("pxa3xx-nand", NULL, NAND, 1, 2, 1, 4, 0),
-	PXA3XX_CKEN_1RATE("pxa93x-gpio", NULL, GPIO, pxa3xx_13MHz_bus_parents),
-};
-
 static unsigned long clk_pxa3xx_system_bus_get_rate(struct clk_hw *hw,
 					    unsigned long parent_rate)
 {
@@ -446,13 +433,8 @@ int __init pxa3xx_clocks_init(void __iomem *regs, void __iomem *oscc_reg)
 	ret = clk_pxa_cken_init(pxa3xx_clocks, ARRAY_SIZE(pxa3xx_clocks), regs);
 	if (ret)
 		return ret;
-	if (cpu_is_pxa320())
-		return clk_pxa_cken_init(pxa320_clocks,
-					 ARRAY_SIZE(pxa320_clocks), regs);
-	if (cpu_is_pxa300() || cpu_is_pxa310())
-		return clk_pxa_cken_init(pxa300_310_clocks,
-					 ARRAY_SIZE(pxa300_310_clocks), regs);
-	return clk_pxa_cken_init(pxa93x_clocks, ARRAY_SIZE(pxa93x_clocks), regs);
+	return clk_pxa_cken_init(pxa300_310_clocks,
+				 ARRAY_SIZE(pxa300_310_clocks), regs);
 }
 
 static void __init pxa3xx_dt_clocks_init(struct device_node *np)

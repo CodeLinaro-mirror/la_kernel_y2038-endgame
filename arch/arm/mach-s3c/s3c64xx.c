@@ -73,18 +73,10 @@ static void __init s3c64xx_init_uarts(struct s3c2410_uart_platform_data *cfg, in
 
 /* table of supported CPUs */
 
-static const char name_s3c6400[] = "S3C6400";
 static const char name_s3c6410[] = "S3C6410";
 
 static struct cpu_table cpu_ids[] __initdata = {
 	{
-		.idcode		= S3C6400_CPU_ID,
-		.idmask		= S3C64XX_CPU_MASK,
-		.map_io		= s3c6400_map_io,
-		.init_uarts	= s3c64xx_init_uarts,
-		.init		= s3c6400_init,
-		.name		= name_s3c6400,
-	}, {
 		.idcode		= S3C6410_CPU_ID,
 		.idmask		= S3C64XX_CPU_MASK,
 		.map_io		= s3c6410_map_io,

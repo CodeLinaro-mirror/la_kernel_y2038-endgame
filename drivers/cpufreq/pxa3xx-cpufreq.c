@@ -91,15 +91,6 @@ static struct pxa3xx_freq_info pxa300_freqs[] = {
 	OP(624, 24, 2, 208, 260, 208, 312, 3, 1375, 1400), /* 624MHz */
 };
 
-static struct pxa3xx_freq_info pxa320_freqs[] = {
-	/*  CPU XL XN  HSS DMEM SMEM SRAM DFI VCC_CORE VCC_SRAM */
-	OP(104,  8, 1, 104, 260,  78, 104, 3, 1000, 1100), /* 104MHz */
-	OP(208, 16, 1, 104, 260, 104, 156, 2, 1000, 1100), /* 208MHz */
-	OP(416, 16, 2, 156, 260, 104, 208, 2, 1100, 1200), /* 416MHz */
-	OP(624, 24, 2, 208, 260, 208, 312, 3, 1375, 1400), /* 624MHz */
-	OP(806, 31, 2, 208, 260, 208, 312, 3, 1400, 1400), /* 806MHz */
-};
-
 static unsigned int pxa3xx_freqs_num;
 static struct pxa3xx_freq_info *pxa3xx_freqs;
 static struct cpufreq_frequency_table *pxa3xx_freqs_table;
@@ -186,17 +177,11 @@ static int pxa3xx_cpufreq_init(struct cpufreq_policy *policy)
 
 	/* set default policy and cpuinfo */
 	policy->min = policy->cpuinfo.min_freq = 104000;
-	policy->max = policy->cpuinfo.max_freq =
-		(cpu_is_pxa320()) ? 806000 : 624000;
+	policy->max = policy->cpuinfo.max_freq = 624000;
 	policy->cpuinfo.transition_latency = 1000; /* FIXME: 1 ms, assumed */
 
-	if (cpu_is_pxa300() || cpu_is_pxa310())
-		ret = setup_freqs_table(policy, pxa300_freqs,
-					ARRAY_SIZE(pxa300_freqs));
-
-	if (cpu_is_pxa320())
-		ret = setup_freqs_table(policy, pxa320_freqs,
-					ARRAY_SIZE(pxa320_freqs));
+	ret = setup_freqs_table(policy, pxa300_freqs,
+				ARRAY_SIZE(pxa300_freqs));
 
 	if (ret) {
 		pr_err("failed to setup frequency table\n");
