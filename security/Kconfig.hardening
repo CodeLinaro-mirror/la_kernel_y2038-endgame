@@ -132,6 +132,7 @@ choice
 		bool "zero-init everything (strongest and safest)"
 		depends on CC_HAS_AUTO_VAR_INIT_ZERO
 		depends on !KMSAN
+		depends on CC_IS_CLANG || !RUST
 		help
 		  Initializes everything on the stack (including padding)
 		  with a zero value. This is intended to eliminate all
