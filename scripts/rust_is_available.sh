@@ -126,7 +126,7 @@ fi
 # In the future, we might be able to perform a full version check, see
 # https://github.com/rust-lang/rust-bindgen/issues/2138.
 if [ "$1" = -v ]; then
-	cc_name=$($(dirname $0)/cc-version.sh "$CC" | cut -f1 -d' ')
+	cc_name=$($(dirname $0)/cc-version.sh $CC | cut -f1 -d' ')
 	if [ "$cc_name" = Clang ]; then
 		clang_version=$( \
 			LC_ALL=C "$CC" --version 2>/dev/null \
