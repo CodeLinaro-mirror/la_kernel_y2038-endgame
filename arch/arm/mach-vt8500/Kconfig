@@ -17,6 +17,7 @@ config ARCH_WM8505
 config ARCH_WM8750
 	bool "WonderMedia WM8750"
 	depends on ARCH_MULTI_V6
+	depends on CPU_LITTLE_ENDIAN
 	select ARCH_VT8500
 	help
 	  Support for WonderMedia WM8750 System-on-Chip.

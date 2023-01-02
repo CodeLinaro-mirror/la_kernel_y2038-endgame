@@ -5,7 +5,7 @@
 
 menuconfig ARCH_S3C64XX
 	bool "Samsung S3C64XX (deprecated, see help)"
-	depends on ARCH_MULTI_V6
+	depends on ARCH_MULTI_V6 && CPU_LITTLE_ENDIAN
 	select ARM_AMBA
 	select ARM_VIC
 	select CLKSRC_SAMSUNG_PWM

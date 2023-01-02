@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-2.0-only
 menuconfig ARCH_MXC
 	bool "Freescale i.MX family"
-	depends on ((ARCH_MULTI_V4T || ARCH_MULTI_V5) && CPU_LITTLE_ENDIAN) || \
-		ARCH_MULTI_V6 || ARCH_MULTI_V7 || ARM_SINGLE_ARMV7M
+	depends on ((ARCH_MULTI_V4T || ARCH_MULTI_V5 || ARCH_MULTI_V6) && CPU_LITTLE_ENDIAN) || \
+		ARCH_MULTI_V7 || ARM_SINGLE_ARMV7M
 	select CLKSRC_IMX_GPT
 	select GENERIC_IRQ_CHIP
 	select GPIOLIB

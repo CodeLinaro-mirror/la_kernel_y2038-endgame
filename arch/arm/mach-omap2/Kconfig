@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 menu "TI OMAP/AM/DM/DRA Family"
-	depends on ARCH_MULTI_V6 || ARCH_MULTI_V7
+	depends on (ARCH_MULTI_V6 && CPU_LITTLE_ENDIAN) || ARCH_MULTI_V7
 
 config OMAP_HWMOD
 	bool
