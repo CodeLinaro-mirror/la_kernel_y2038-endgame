@@ -20,7 +20,7 @@ config ARCH_VERSATILE
 menuconfig ARCH_INTEGRATOR
 	bool "ARM Ltd. Integrator family"
 	depends on ARCH_MULTI_V4T || ARCH_MULTI_V5 || ARCH_MULTI_V6
-	depends on CPU_LITTLE_ENDIAN || ARCH_MULTI_V6
+	depends on CPU_LITTLE_ENDIAN
 	select ARM_AMBA
 	select CMA
 	select DMA_CMA
@@ -145,7 +145,7 @@ endif
 
 menuconfig ARCH_REALVIEW
 	bool "ARM Ltd. RealView family"
-	depends on (CPU_LITTLE_ENDIAN && ARCH_MULTI_V5) || ARCH_MULTI_V6 || ARCH_MULTI_V7
+	depends on (CPU_LITTLE_ENDIAN && (ARCH_MULTI_V5 || ARCH_MULTI_V6)) || ARCH_MULTI_V7
 	select ARM_AMBA
 	select ARM_GIC
 	select ARM_TIMER_SP804
