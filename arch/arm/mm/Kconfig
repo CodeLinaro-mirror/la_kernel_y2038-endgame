@@ -652,6 +652,14 @@ config CPU_V7M_NUM_IRQ
 
 	  If unsure, keep default value.
 
+config CPU_LDREX
+	def_bool CPU_V6 || CPU_V6K || CPU_V7 || CPU_V7M
+	depends on !(CPU_32v5 || CPU_32v4T || CPU_32v4 || CPU_32v3)
+
+config CPU_LDREXD
+	def_bool CPU_V6K || CPU_V7
+	depends on !(CPU_V7M || CPU_V6 || CPU_32v5 || CPU_32v4T || CPU_32v4 || CPU_32v3)
+
 #
 # CPU supports 36-bit I/O
 #
@@ -769,7 +777,7 @@ endchoice
 config CPU_ENDIAN_BE8
 	bool
 	depends on CPU_BIG_ENDIAN
-	default CPU_V6 || CPU_V6K || CPU_V7 || CPU_V7M
+	default CPU_LDREX
 	help
 	  Support for the BE-8 (big-endian) mode on ARMv6 and ARMv7 processors.
 
