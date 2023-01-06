@@ -29,6 +29,7 @@
 #include <linux/time.h>
 
 #include <mach/hardware.h>
+#include <mach/regs-gpio.h>
 #include <mach/regs-irq.h>
 #include <asm/memory.h>
 #include <asm/suspend.h>
