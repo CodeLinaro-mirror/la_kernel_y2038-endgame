@@ -14,6 +14,7 @@
 
 #include <mach/jornada720.h>
 #include <mach/hardware.h>
+#include <mach/regs-pinctrl.h>
 
 #include <video/s1d13xxxfb.h>
 
