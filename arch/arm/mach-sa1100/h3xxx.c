@@ -24,6 +24,7 @@
 #include <mach/h3xxx.h>
 #include <mach/irqs.h>
 #include <mach/regs-gpio.h>
+#include <mach/regs-serial.h>
 
 #include "generic.h"
 

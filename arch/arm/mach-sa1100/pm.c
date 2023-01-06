@@ -31,6 +31,7 @@
 #include <mach/hardware.h>
 #include <mach/regs-gpio.h>
 #include <mach/regs-irq.h>
+#include <mach/regs-serial.h>
 #include <asm/page.h>
 #include <asm/suspend.h>
 #include <asm/mach/time.h>

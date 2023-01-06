@@ -26,7 +26,7 @@
 #include <linux/slab.h>
 #include <linux/list.h>
 
-#include <mach/hardware.h>
+#include <mach/regs-serial.h>
 
 static void ipaq_micro_trigger_tx(struct ipaq_micro *micro)
 {
