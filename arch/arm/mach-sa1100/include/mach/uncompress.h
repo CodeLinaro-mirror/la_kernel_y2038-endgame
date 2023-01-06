@@ -7,7 +7,7 @@
  * Reorganised to be machine independent.
  */
 
-#include "hardware.h"
+#include <mach/regs-serial.h>
 
 #define IOMEM(x)	(x)
 
