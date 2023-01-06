@@ -13,6 +13,7 @@
 #define __ARCH_SA1100_MTD_XIP_H__
 
 #include <mach/regs-irq.h>
+#include <mach/regs-ost.h>
 
 #define xip_irqpending()	(ICIP & ICMR)
 
