@@ -23,6 +23,7 @@
 
 #include <mach/h3xxx.h>
 #include <mach/irqs.h>
+#include <mach/regs-gpio.h>
 
 #include "generic.h"
 

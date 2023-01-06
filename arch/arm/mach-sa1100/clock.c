@@ -12,6 +12,7 @@
 #include <linux/spinlock.h>
 
 #include <mach/hardware.h>
+#include <mach/regs-gpio.h>
 #include <mach/generic.h>
 
 static const char * const clk_tucr_parents[] = {
