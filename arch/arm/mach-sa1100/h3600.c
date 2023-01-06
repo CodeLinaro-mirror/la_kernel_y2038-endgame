@@ -17,6 +17,7 @@
 
 #include <mach/h3xxx.h>
 #include <mach/irqs.h>
+#include <mach/regs-lcd.h>
 
 #include "generic.h"
 
