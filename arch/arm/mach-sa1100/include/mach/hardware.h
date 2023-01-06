@@ -51,6 +51,17 @@
 
 #endif
 
+
+/*
+ * SA1100 CS line to physical address
+ */
+#define SA1100_CS0_PHYS	0x00000000
+#define SA1100_CS1_PHYS	0x08000000
+#define SA1100_CS2_PHYS	0x10000000
+#define SA1100_CS3_PHYS	0x18000000
+#define SA1100_CS4_PHYS	0x40000000
+#define SA1100_CS5_PHYS	0x48000000
+
 #include "SA-1100.h"
 
 #endif  /* _ASM_ARCH_HARDWARE_H */
