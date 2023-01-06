@@ -66,6 +66,7 @@
 #ifdef CONFIG_ARCH_SA1100
 #include <mach/hardware.h>
 #include <mach/h3xxx.h>
+#include <mach/regs-gpio.h>
 #include <asm/hardware/sa1111.h>
 #include <asm/irq.h>
 #include <asm/mach-types.h>

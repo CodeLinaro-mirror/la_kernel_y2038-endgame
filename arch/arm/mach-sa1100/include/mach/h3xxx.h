@@ -9,7 +9,7 @@
 #ifndef _INCLUDE_H3XXX_H_
 #define _INCLUDE_H3XXX_H_
 
-#include "hardware.h" /* Gives GPIO_MAX */
+#include <mach/regs-gpio.h> /* Gives GPIO_MAX */
 
 /* Physical memory regions corresponding to chip selects */
 #define H3600_EGPIO_PHYS	(SA1100_CS5_PHYS + 0x01000000)

@@ -11,6 +11,7 @@
 #include <linux/syscore_ops.h>
 #include <soc/sa1100/pwer.h>
 #include <mach/hardware.h>
+#include <mach/regs-gpio.h>
 #include <mach/irqs.h>
 #include <mach/generic.h>
 

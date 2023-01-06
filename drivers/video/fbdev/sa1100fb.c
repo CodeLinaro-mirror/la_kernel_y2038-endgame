@@ -183,6 +183,7 @@
 #include <video/sa1100fb.h>
 
 #include <mach/regs-lcd.h>
+#include <mach/regs-gpio.h>
 #include <asm/mach-types.h>
 
 /*
