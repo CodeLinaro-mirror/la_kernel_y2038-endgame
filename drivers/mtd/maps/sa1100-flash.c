@@ -20,7 +20,7 @@
 #include <linux/mtd/partitions.h>
 #include <linux/mtd/concat.h>
 
-#include <mach/hardware.h>
+#include <mach/regs-msc.h>
 #include <linux/sizes.h>
 #include <asm/mach/flash.h>
 
