@@ -29,6 +29,7 @@
 #include <linux/time.h>
 
 #include <mach/hardware.h>
+#include <mach/regs-irq.h>
 #include <asm/page.h>
 #include <asm/suspend.h>
 #include <asm/mach/time.h>
