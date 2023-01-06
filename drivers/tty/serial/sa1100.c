@@ -22,6 +22,7 @@
 
 #include <asm/irq.h>
 #include <mach/regs-serial.h>
+#include <mach/regs-pinctrl.h>
 #include <mach/irqs.h>
 
 #include "serial_mctrl_gpio.h"

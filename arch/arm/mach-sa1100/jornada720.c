@@ -32,6 +32,7 @@
 #include <mach/hardware.h>
 #include <mach/irqs.h>
 #include <mach/regs-gpio.h>
+#include <mach/regs-pinctrl.h>
 
 #include "generic.h"
 

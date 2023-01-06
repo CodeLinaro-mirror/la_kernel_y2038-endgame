@@ -17,6 +17,7 @@
 #include <linux/io.h>
 
 #include <mach/hardware.h>
+#include <mach/regs-pinctrl.h>
 #include <mach/irqs.h>
 #include <asm/hardware/ssp.h>
 
