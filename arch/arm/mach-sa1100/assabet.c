@@ -34,6 +34,7 @@
 #include <mach/regs-gpio.h>
 #include <mach/regs-lcd.h>
 #include <mach/regs-msc.h>
+#include <mach/regs-serial.h>
 #include <asm/mach-types.h>
 #include <asm/setup.h>
 #include <asm/page.h>
