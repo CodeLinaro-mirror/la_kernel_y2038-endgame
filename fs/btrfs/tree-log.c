@@ -4799,6 +4799,8 @@ static int btrfs_log_prealloc_extents(struct btrfs_trans_handle *trans,
 	while (true) {
 		leaf = path->nodes[0];
 		slot = path->slots[0];
+		if (ins_nr == 0)
+			start_slot = slot;
 
 		if (slot >= btrfs_header_nritems(leaf)) {
 			if (ins_nr > 0) {
@@ -4839,8 +4841,6 @@ static int btrfs_log_prealloc_extents(struct btrfs_trans_handle *trans,
 				goto out;
 			dropped_extents = true;
 		}
-		if (ins_nr == 0)
-			start_slot = slot;
 		ins_nr++;
 		path->slots[0]++;
 		if (!dst_path) {
