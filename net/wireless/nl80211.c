@@ -12859,10 +12859,15 @@ static int nl80211_set_cqm_rssi(struct genl_info *info,
 	wdev_lock(wdev);
 	if (n_thresholds) {
 		struct cfg80211_cqm_config *cqm_config;
+		size_t size = struct_size(cqm_config, rssi_thresholds,
+                                                 n_thresholds);
 
-		cqm_config = kzalloc(struct_size(cqm_config, rssi_thresholds,
-						 n_thresholds),
-				     GFP_KERNEL);
+		if (size > KMALLOC_MAX_SIZE) {
+			err = -ENOMEM;
+			goto unlock;
+		}
+			
+		cqm_config = kzalloc(size, GFP_KERNEL);
 		if (!cqm_config) {
 			err = -ENOMEM;
 			goto unlock;

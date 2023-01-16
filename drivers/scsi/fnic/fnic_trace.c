@@ -458,6 +458,7 @@ int fnic_get_stats_data(struct stats_debug_info *debug,
 int fnic_trace_buf_init(void)
 {
 	unsigned long fnic_buf_head;
+	size_t size;
 	int i;
 	int err = 0;
 
@@ -473,9 +474,9 @@ int fnic_trace_buf_init(void)
 		goto err_fnic_trace_buf_init;
 	}
 
-	fnic_trace_entries.page_offset =
-		vmalloc(array_size(fnic_max_trace_entries,
-				   sizeof(unsigned long)));
+	size = array_size(fnic_max_trace_entries, sizeof(unsigned long));
+	if (size < INT_MAX)
+		fnic_trace_entries.page_offset = vmalloc(size);
 	if (!fnic_trace_entries.page_offset) {
 		printk(KERN_ERR PFX "Failed to allocate memory for"
 				  " page_offset\n");
@@ -542,14 +543,17 @@ void fnic_trace_free(void)
 int fnic_fc_trace_init(void)
 {
 	unsigned long fc_trace_buf_head;
+	size_t size;
 	int err = 0;
 	int i;
 
 	fc_trace_max_entries = (fnic_fc_trace_max_pages * PAGE_SIZE)/
 				FC_TRC_SIZE_BYTES;
+	size = array_size(PAGE_SIZE, fnic_fc_trace_max_pages);
+	if (size > INT_MAX)
+		return -ENOMEM;
 	fnic_fc_ctlr_trace_buf_p =
-		(unsigned long)vmalloc(array_size(PAGE_SIZE,
-						  fnic_fc_trace_max_pages));
+		(unsigned long)vmalloc(size);
 	if (!fnic_fc_ctlr_trace_buf_p) {
 		pr_err("fnic: Failed to allocate memory for "
 		       "FC Control Trace Buf\n");
@@ -561,9 +565,9 @@ int fnic_fc_trace_init(void)
 			fnic_fc_trace_max_pages * PAGE_SIZE);
 
 	/* Allocate memory for page offset */
-	fc_trace_entries.page_offset =
-		vmalloc(array_size(fc_trace_max_entries,
-				   sizeof(unsigned long)));
+	size = array_size(fc_trace_max_entries, sizeof(unsigned long));
+	if (size < INT_MAX)
+		fc_trace_entries.page_offset = vmalloc(size);
 	if (!fc_trace_entries.page_offset) {
 		pr_err("fnic:Failed to allocate memory for page_offset\n");
 		if (fnic_fc_ctlr_trace_buf_p) {
