@@ -29,6 +29,6 @@ static void sh770x_sci_init_pins(struct uart_port *port, unsigned int cflag)
 	}
 }
 
-struct plat_sci_port_ops sh770x_sci_port_ops = {
+struct scif_platform_data_ops sh770x_sci_port_ops = {
 	.init_pins	= sh770x_sci_init_pins,
 };
