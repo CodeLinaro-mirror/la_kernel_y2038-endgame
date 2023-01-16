@@ -63,6 +63,7 @@ static struct cfi_private *genprobe_ident_chips(struct map_info *map, struct chi
 	unsigned long *chip_map;
 	int max_chips;
 	int i, j;
+	size_t size;
 
 	memset(&cfi, 0, sizeof(cfi));
 
@@ -134,7 +135,11 @@ static struct cfi_private *genprobe_ident_chips(struct map_info *map, struct chi
 	 * our caller, and copy the appropriate data into them.
 	 */
 
-	retcfi = kmalloc(struct_size(retcfi, chips, cfi.numchips), GFP_KERNEL);
+	size = struct_size(retcfi, chips, cfi.numchips);
+	if (size < KMALLOC_MAX_SIZE)
+		retcfi = kmalloc(size, GFP_KERNEL);
+	else
+		retcfi = NULL;
 
 	if (!retcfi) {
 		kfree(cfi.cfiq);

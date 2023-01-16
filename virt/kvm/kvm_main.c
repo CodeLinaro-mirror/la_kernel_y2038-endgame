@@ -5501,6 +5501,7 @@ int kvm_io_bus_unregister_dev(struct kvm *kvm, enum kvm_bus bus_idx,
 {
 	int i, j;
 	struct kvm_io_bus *new_bus, *bus;
+	size_t size;
 
 	lockdep_assert_held(&kvm->slots_lock);
 
@@ -5517,8 +5518,11 @@ int kvm_io_bus_unregister_dev(struct kvm *kvm, enum kvm_bus bus_idx,
 	if (i == bus->dev_count)
 		return 0;
 
-	new_bus = kmalloc(struct_size(bus, range, bus->dev_count - 1),
-			  GFP_KERNEL_ACCOUNT);
+	size = struct_size(bus, range, bus->dev_count - 1);
+	if (size > KMALLOC_MAX_SIZE)
+		return -ENOMEM;
+
+	new_bus = kmalloc(size, GFP_KERNEL_ACCOUNT);
 	if (new_bus) {
 		memcpy(new_bus, bus, struct_size(bus, range, i));
 		new_bus->dev_count--;

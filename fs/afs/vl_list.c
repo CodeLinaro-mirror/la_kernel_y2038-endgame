@@ -13,9 +13,12 @@ struct afs_vlserver *afs_alloc_vlserver(const char *name, size_t name_len,
 					unsigned short port)
 {
 	struct afs_vlserver *vlserver;
+	size_t size = struct_size(vlserver, name, name_len + 1);
 
-	vlserver = kzalloc(struct_size(vlserver, name, name_len + 1),
-			   GFP_KERNEL);
+	if (size > KMALLOC_MAX_SIZE)
+		return NULL;
+
+	vlserver = kzalloc(size, GFP_KERNEL);
 	if (vlserver) {
 		refcount_set(&vlserver->ref, 1);
 		rwlock_init(&vlserver->lock);

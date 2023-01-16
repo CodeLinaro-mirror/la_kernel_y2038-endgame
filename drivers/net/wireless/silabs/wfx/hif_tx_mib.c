@@ -102,6 +102,8 @@ int wfx_hif_set_beacon_filter_table(struct wfx_vif *wvif, int tbl_len,
 	struct wfx_hif_mib_bcn_filter_table *arg;
 	int buf_len = struct_size(arg, ie_table, tbl_len);
 
+	if (buf_len > KMALLOC_MAX_SIZE)
+		return -ENOMEM;
 	arg = kzalloc(buf_len, GFP_KERNEL);
 	if (!arg)
 		return -ENOMEM;
