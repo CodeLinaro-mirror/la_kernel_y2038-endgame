@@ -1730,7 +1730,7 @@ static noinline int btrfs_ioctl_tree_search(struct inode *inode,
 					    void __user *argp)
 {
 	struct btrfs_ioctl_search_args __user *uargs = argp;
-	struct btrfs_ioctl_search_key sk;
+	struct btrfs_ioctl_search_key sk = {};
 	int ret;
 	size_t buf_size;
 
@@ -1760,7 +1760,7 @@ static noinline int btrfs_ioctl_tree_search_v2(struct inode *inode,
 					       void __user *argp)
 {
 	struct btrfs_ioctl_search_args_v2 __user *uarg = argp;
-	struct btrfs_ioctl_search_args_v2 args;
+	struct btrfs_ioctl_search_args_v2 args = {};
 	int ret;
 	size_t buf_size;
 	const size_t buf_limit = SZ_16M;
@@ -2971,7 +2971,7 @@ static void get_block_group_info(struct list_head *groups_list,
 static long btrfs_ioctl_space_info(struct btrfs_fs_info *fs_info,
 				   void __user *arg)
 {
-	struct btrfs_ioctl_space_args space_args;
+	struct btrfs_ioctl_space_args space_args = {};
 	struct btrfs_ioctl_space_info space;
 	struct btrfs_ioctl_space_info *dest;
 	struct btrfs_ioctl_space_info *dest_orig;
@@ -3132,7 +3132,7 @@ out:
 static noinline long btrfs_ioctl_wait_sync(struct btrfs_fs_info *fs_info,
 					   void __user *argp)
 {
-	u64 transid;
+	u64 transid = 0;
 
 	if (argp) {
 		if (copy_from_user(&transid, argp, sizeof(transid)))
@@ -4106,7 +4106,7 @@ static int btrfs_ioctl_set_fslabel(struct file *file, void __user *arg)
 	struct btrfs_root *root = BTRFS_I(inode)->root;
 	struct btrfs_super_block *super_block = fs_info->super_copy;
 	struct btrfs_trans_handle *trans;
-	char label[BTRFS_LABEL_SIZE];
+	char label[BTRFS_LABEL_SIZE] = {};
 	int ret;
 
 	if (!capable(CAP_SYS_ADMIN))
@@ -4248,7 +4248,7 @@ static int btrfs_ioctl_set_features(struct file *file, void __user *arg)
 	struct btrfs_fs_info *fs_info = btrfs_sb(inode->i_sb);
 	struct btrfs_root *root = BTRFS_I(inode)->root;
 	struct btrfs_super_block *super_block = fs_info->super_copy;
-	struct btrfs_ioctl_feature_flags flags[2];
+	struct btrfs_ioctl_feature_flags flags[2] = {};
 	struct btrfs_trans_handle *trans;
 	u64 newflags;
 	int ret;
@@ -4320,7 +4320,7 @@ static int _btrfs_ioctl_send(struct inode *inode, void __user *argp, bool compat
 
 	if (compat) {
 #if defined(CONFIG_64BIT) && defined(CONFIG_COMPAT)
-		struct btrfs_ioctl_send_args_32 args32;
+		struct btrfs_ioctl_send_args_32 args32 = {};
 
 		ret = copy_from_user(&args32, argp, sizeof(args32));
 		if (ret)
@@ -4369,7 +4369,7 @@ static int btrfs_ioctl_encoded_read(struct file *file, void __user *argp,
 
 	if (compat) {
 #if defined(CONFIG_64BIT) && defined(CONFIG_COMPAT)
-		struct btrfs_ioctl_encoded_io_args_32 args32;
+		struct btrfs_ioctl_encoded_io_args_32 args32 = {};
 
 		copy_end = offsetofend(struct btrfs_ioctl_encoded_io_args_32,
 				       flags);
@@ -4433,7 +4433,7 @@ out_acct:
 
 static int btrfs_ioctl_encoded_write(struct file *file, void __user *argp, bool compat)
 {
-	struct btrfs_ioctl_encoded_io_args args;
+	struct btrfs_ioctl_encoded_io_args args = {};
 	struct iovec iovstack[UIO_FASTIOV];
 	struct iovec *iov = iovstack;
 	struct iov_iter iter;
@@ -4453,7 +4453,7 @@ static int btrfs_ioctl_encoded_write(struct file *file, void __user *argp, bool 
 
 	if (compat) {
 #if defined(CONFIG_64BIT) && defined(CONFIG_COMPAT)
-		struct btrfs_ioctl_encoded_io_args_32 args32;
+		struct btrfs_ioctl_encoded_io_args_32 args32 = {};
 
 		if (copy_from_user(&args32, argp, sizeof(args32))) {
 			ret = -EFAULT;

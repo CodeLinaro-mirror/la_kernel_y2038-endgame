@@ -4362,6 +4362,10 @@ int btrfs_qgroup_trace_subtree_after_cow(struct btrfs_trans_handle *trans,
 	}
 	node = blocks->blocks[level].rb_node;
 
+	if (!node) {
+		spin_unlock(&blocks->lock);
+		goto out;
+	}
 	while (node) {
 		block = rb_entry(node, struct btrfs_qgroup_swapped_block, node);
 		if (block->subvol_bytenr < subvol_eb->start) {
