@@ -755,7 +755,7 @@ static int parse_elf_property(const char *data, size_t *off, size_t datasz,
 	return 0;
 }
 
-#define NOTE_DATA_SZ SZ_1K
+#define NOTE_DATA_SZ SZ_512
 #define GNU_PROPERTY_TYPE_0_NAME "GNU"
 #define NOTE_NAME_SZ (sizeof(GNU_PROPERTY_TYPE_0_NAME))
 
