@@ -1880,7 +1880,7 @@ int max1600_configure(struct max1600 *m, unsigned int vcc, unsigned int vpp)
 EXPORT_SYMBOL_GPL(max1600_configure);
 
 
-int sa1111_pcmcia_add(struct sa1111_dev *dev, struct pcmcia_low_level *ops,
+static int sa1111_pcmcia_add(struct sa1111_dev *dev, struct pcmcia_low_level *ops,
 	int (*add)(struct soc_pcmcia_socket *))
 {
 	struct sa1111_pcmcia_socket *s;
@@ -1992,7 +1992,7 @@ static struct pcmcia_low_level neponset_pcmcia_ops = {
 	.nr			= 2,
 };
 
-int pcmcia_neponset_init(struct sa1111_dev *sadev)
+static int pcmcia_neponset_init(struct sa1111_dev *sadev)
 {
 	sa11xx_drv_pcmcia_ops(&neponset_pcmcia_ops);
 	return sa1111_pcmcia_add(sadev, &neponset_pcmcia_ops,
@@ -2109,7 +2109,7 @@ static struct pcmcia_low_level jornada720_pcmcia_ops = {
 	.nr			= 2,
 };
 
-int pcmcia_jornada720_init(struct sa1111_dev *sadev)
+static int pcmcia_jornada720_init(struct sa1111_dev *sadev)
 {
 	/* Fixme: why messing around with SA11x0's GPIO1? */
 	GRER |= 0x00000002;
@@ -2326,11 +2326,17 @@ static struct sa1111_driver pcmcia_driver = {
 
 static int __init sa1111_drv_pcmcia_init(void)
 {
+	if (!IS_ENABLED(CONFIG_SA1111))
+		return 0;
+
 	return sa1111_driver_register(&pcmcia_driver);
 }
 
 static void __exit sa1111_drv_pcmcia_exit(void)
 {
+	if (!IS_ENABLED(CONFIG_SA1111))
+		return;
+
 	sa1111_driver_unregister(&pcmcia_driver);
 }
 
