@@ -25,21 +25,9 @@ obj-$(CONFIG_I82365)				+= i82365.o
 obj-$(CONFIG_I82092)				+= i82092.o
 obj-$(CONFIG_TCIC)				+= tcic.o
 obj-$(CONFIG_PCMCIA_SOC_COMMON)			+= soc_common.o
-obj-$(CONFIG_PCMCIA_SA11XX_BASE)		+= sa11xx_base.o
-obj-$(CONFIG_PCMCIA_SA1100)			+= sa1100_cs.o
-obj-$(CONFIG_PCMCIA_SA1111)			+= sa1111_cs.o
 obj-$(CONFIG_PCMCIA_BCM63XX)			+= bcm63xx_pcmcia.o
 obj-$(CONFIG_OMAP_CF)				+= omap_cf.o
 obj-$(CONFIG_ELECTRA_CF)			+= electra_cf.o
 obj-$(CONFIG_PCMCIA_ALCHEMY_DEVBOARD)		+= db1xxx_ss.o
 obj-$(CONFIG_PCMCIA_MAX1600)			+= max1600.o
-
-sa1111_cs-y					+= sa1111_generic.o
-sa1111_cs-$(CONFIG_ASSABET_NEPONSET)		+= sa1111_neponset.o
-sa1111_cs-$(CONFIG_SA1100_JORNADA720)		+= sa1111_jornada720.o
-
-sa1100_cs-y					+= sa1100_generic.o
-sa1100_cs-$(CONFIG_SA1100_COLLIE)		+= pxa2xx_sharpsl.o
-sa1100_cs-$(CONFIG_SA1100_H3600)		+= sa1100_h3600.o
-
 obj-$(CONFIG_PCMCIA_XXS1500)			+= xxs1500_ss.o
