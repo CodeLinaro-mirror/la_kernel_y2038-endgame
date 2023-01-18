@@ -93,8 +93,8 @@ int snd_dmaengine_pcm_refine_runtime_hwparams(
 	struct dma_chan *chan);
 
 /*
- * Try to request the DMA channel using compat_request_channel or
- * compat_filter_fn if it couldn't be requested through devicetree.
+ * Try to request the DMA channel using compat_filter_fn if it
+ * couldn't be requested through devicetree.
  */
 #define SND_DMAENGINE_PCM_FLAG_COMPAT BIT(0)
 /*
@@ -112,8 +112,6 @@ int snd_dmaengine_pcm_refine_runtime_hwparams(
  * struct snd_dmaengine_pcm_config - Configuration data for dmaengine based PCM
  * @prepare_slave_config: Callback used to fill in the DMA slave_config for a
  *   PCM substream. Will be called from the PCM drivers hwparams callback.
- * @compat_request_channel: Callback to request a DMA channel for platforms
- *   which do not use devicetree.
  * @process: Callback used to apply processing on samples transferred from/to
  *   user space.
  * @compat_filter_fn: Will be used as the filter function when requesting a
@@ -126,18 +124,11 @@ int snd_dmaengine_pcm_refine_runtime_hwparams(
  * @pcm_hardware: snd_pcm_hardware struct to be used for the PCM.
  * @prealloc_buffer_size: Size of the preallocated audio buffer.
  *
- * Note: If both compat_request_channel and compat_filter_fn are set
- * compat_request_channel will be used to request the channel and
- * compat_filter_fn will be ignored. Otherwise the channel will be requested
- * using dma_request_channel with compat_filter_fn as the filter function.
  */
 struct snd_dmaengine_pcm_config {
 	int (*prepare_slave_config)(struct snd_pcm_substream *substream,
 			struct snd_pcm_hw_params *params,
 			struct dma_slave_config *slave_config);
-	struct dma_chan *(*compat_request_channel)(
-			struct snd_soc_pcm_runtime *rtd,
-			struct snd_pcm_substream *substream);
 	int (*process)(struct snd_pcm_substream *substream,
 		       int channel, unsigned long hwoff,
 		       unsigned long bytes);
