@@ -16,7 +16,7 @@
 #include <linux/init.h>
 #include <asm/assembler.h>
 
-.arch armv6k
+.arch armv7-a
 
 #include "omap44xx.h"
 
