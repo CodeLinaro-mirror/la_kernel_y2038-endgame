@@ -190,9 +190,6 @@ static struct dma_chan *dmaengine_pcm_compat_request_channel(
 	if ((pcm->flags & SND_DMAENGINE_PCM_FLAG_HALF_DUPLEX) && pcm->chan[0])
 		return pcm->chan[0];
 
-	if (pcm->config->compat_request_channel)
-		return pcm->config->compat_request_channel(rtd, substream);
-
 	return snd_dmaengine_pcm_request_channel(pcm->config->compat_filter_fn,
 						 dma_data->filter_data);
 }
