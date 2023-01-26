@@ -343,10 +343,15 @@ static struct miscdevice mce_chrdev_device = {
 static __init int dev_mcelog_init_device(void)
 {
 	int mce_log_len;
+	size_t alloc_size;
 	int err;
 
 	mce_log_len = max(MCE_LOG_MIN_LEN, num_online_cpus());
-	mcelog = kzalloc(struct_size(mcelog, entry, mce_log_len), GFP_KERNEL);
+	alloc_size = struct_size(mcelog, entry, mce_log_len);
+	if (alloc_size > KMALLOC_MAX_SIZE)
+		return -ENOMEM;
+
+	mcelog = kzalloc(alloc_size, GFP_KERNEL);
 	if (!mcelog)
 		return -ENOMEM;
 
