@@ -22,7 +22,7 @@
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/module.h>
-#include <linux/of_gpio.h>
+#include <linux/gpio/consumer.h>
 #include <linux/of_platform.h>
 #include <linux/pinctrl/consumer.h>
 #include <linux/pinctrl/pinctrl.h>
@@ -812,30 +812,24 @@ static int c8sectpfe_probe(struct platform_device *pdev)
 		}
 		of_node_put(i2c_bus);
 
-		tsin->rst_gpio = of_get_named_gpio(child, "reset-gpios", 0);
-
-		ret = gpio_is_valid(tsin->rst_gpio);
-		if (!ret) {
-			dev_err(dev,
-				"reset gpio for tsin%d not valid (gpio=%d)\n",
-				tsin->tsin_id, tsin->rst_gpio);
-			ret = -EINVAL;
-			goto err_node_put;
-		}
-
-		ret = devm_gpio_request_one(dev, tsin->rst_gpio,
-					GPIOF_OUT_INIT_LOW, "NIM reset");
+		tsin->rst_gpio = devm_fwnode_gpiod_get_index(dev,
+							     of_node_to_fwnode(child),
+							     "reset-gpios",
+							     0, GPIOD_OUT_LOW,
+							     "NIM reset");
+		ret = PTR_ERR_OR_ZERO(tsin->rst_gpio);
 		if (ret && ret != -EBUSY) {
-			dev_err(dev, "Can't request tsin%d reset gpio\n"
-				, fei->channel_data[index]->tsin_id);
+			dev_err_probe(dev, ret,
+				      "reset gpio for tsin%d not valid\n",
+				      tsin->tsin_id);
 			goto err_node_put;
 		}
 
 		if (!ret) {
 			/* toggle reset lines */
-			gpio_direction_output(tsin->rst_gpio, 0);
+			gpiod_direction_output(tsin->rst_gpio, 0);
 			usleep_range(3500, 5000);
-			gpio_direction_output(tsin->rst_gpio, 1);
+			gpiod_direction_output(tsin->rst_gpio, 1);
 			usleep_range(3000, 5000);
 		}
 
