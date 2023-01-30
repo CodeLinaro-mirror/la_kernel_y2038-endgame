@@ -98,7 +98,7 @@ static inline void dsi_write_reg(struct dsi_data *dsi,
 	__raw_writel(val, base + idx.idx);
 }
 
-static __always_inline u32 dsi_read_reg(struct dsi_data *dsi, const struct dsi_reg idx)
+static inline u32 dsi_read_reg(struct dsi_data *dsi, const struct dsi_reg idx)
 {
 	void __iomem *base;
 
