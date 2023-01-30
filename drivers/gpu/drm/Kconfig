@@ -32,7 +32,6 @@ menuconfig DRM
 
 config DRM_MIPI_DBI
 	tristate
-	select DRM_KMS_HELPER
 	depends on DRM
 
 config DRM_MIPI_DSI
