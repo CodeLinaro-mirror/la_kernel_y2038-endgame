@@ -544,7 +544,7 @@ __errata_finish:
 	mcr	p14, 6, r0, c0, c0, 0		@ stop userspace TEEHBR access
 1:
 #endif
-	adr	r3, v7_crval
+	adr_l	r3, v7_crval
 	ldmia	r3, {r3, r6}
  ARM_BE8(orr	r6, r6, #1 << 25)		@ big-endian page tables
 #ifdef CONFIG_SWP_EMULATE
