@@ -1602,7 +1602,6 @@ config ARM64_TAGGED_ADDR_ABI
 
 menuconfig COMPAT
 	bool "Kernel support for 32-bit EL0"
-	depends on ARM64_4K_PAGES || EXPERT
 	select HAVE_UID16
 	select OLD_SIGSUSPEND3
 	select COMPAT_OLD_SIGACTION
@@ -1614,7 +1613,8 @@ menuconfig COMPAT
 
 	  If you use a page size other than 4KB (i.e, 16KB or 64KB), please be aware
 	  that you will only be able to execute AArch32 binaries that were compiled
-	  with page size aligned segments.
+	  with page size aligned segments, usually requiring at least binutils
+	  version 2.25.
 
 	  If you want to execute 32-bit userspace applications, say Y.
 
