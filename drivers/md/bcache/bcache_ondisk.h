@@ -23,13 +23,9 @@ static inline void SET_##name(type *k, __u64 v)			\
 struct bkey {
 	__u64	high;
 	__u64	low;
-#ifndef __STRICT_ANSI__
-	/* gcc extension not meant for user space */
 	__u64	ptr[];
-#endif
 };
 
-#ifndef __STRICT_ANSI__
 #define KEY_FIELD(name, field, offset, size)				\
 	BITMASK(name, struct bkey, field, offset, size)
 
@@ -132,8 +128,6 @@ static inline struct bkey *bkey_idx(const struct bkey *k, unsigned int nr_keys)
 
 	return (struct bkey *) (d + nr_keys);
 }
-#endif
-
 /* Enough for a key with 6 pointers */
 #define BKEY_PAD		8
 
