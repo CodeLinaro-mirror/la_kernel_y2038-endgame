@@ -152,7 +152,9 @@ ENTRY(cpu_resume_arm)
 #endif
 
 ENTRY(cpu_resume)
+#ifndef CONFIG_CPU_V7M
 ARM_BE8(setend be)			@ ensure we are in BE mode
+#endif
 #ifdef CONFIG_ARM_VIRT_EXT
 	bl	__hyp_stub_install_secondary
 #endif
