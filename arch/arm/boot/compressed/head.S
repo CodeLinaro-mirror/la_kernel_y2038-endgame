@@ -221,8 +221,10 @@ start:
 
 		__EFI_HEADER
 1:
+#ifndef CONFIG_CPU_V7M
  ARM_BE8(	setend	be		)	@ go BE8 if compiled for BE8
- AR_CLASS(	mrs	r9, cpsr	)
+		mrs	r9, cpsr
+#endif
 #ifdef CONFIG_ARM_VIRT_EXT
 		bl	__hyp_stub_install	@ get into SVC mode, reversibly
 #endif
