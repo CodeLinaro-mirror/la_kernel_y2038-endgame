@@ -872,7 +872,8 @@ static u32 mxc_jpeg_get_plane_size(struct mxc_jpeg_q_data *q_data, u32 plane_no)
 		return size;
 
 	for (i = fmt->mem_planes; i < fmt->comp_planes; i++)
-		size += q_data->sizeimage[i];
+		if (i < MXC_JPEG_MAX_PLANES)
+			size += q_data->sizeimage[i];
 
 	return size;
 }
