@@ -10,6 +10,7 @@
 
 #include <linux/module.h>
 #include <media/tpg/v4l2-tpg.h>
+#include <linux/mm.h>
 
 /* Must remain in sync with enum tpg_pattern */
 const char * const tpg_pattern_strings[] = {
@@ -133,9 +134,11 @@ int tpg_alloc(struct tpg_data *tpg, unsigned max_w)
 	}
 	for (plane = 0; plane < TPG_MAX_PLANES; plane++) {
 		unsigned pixelsz = plane ? 2 : 4;
+		size_t alloc_size = array_size(pixelsz, max_w);
 
-		tpg->contrast_line[plane] =
-			vzalloc(array_size(pixelsz, max_w));
+		if (alloc_size > VMALLOC_TOTAL)
+			return -ENOMEM;
+		tpg->contrast_line[plane] = vzalloc(alloc_size);
 		if (!tpg->contrast_line[plane])
 			return -ENOMEM;
 		tpg->black_line[plane] =
