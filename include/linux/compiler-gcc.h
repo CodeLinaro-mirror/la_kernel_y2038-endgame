@@ -177,7 +177,8 @@
 /*
  * Prior to 9.1, -Wno-alloc-size-larger-than (and therefore the "alloc_size"
  * attribute) do not work, and must be disabled.
+ * In version 9.x there are too many false positives.
  */
-#if GCC_VERSION < 90100
+#if GCC_VERSION < 100100
 #undef __alloc_size__
 #endif
