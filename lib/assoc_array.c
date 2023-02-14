@@ -1487,11 +1487,14 @@ descend:
 	 * advance the target cursor.
 	 */
 	if (assoc_array_ptr_is_shortcut(cursor)) {
+		size_t alloc_size;
 		shortcut = assoc_array_ptr_to_shortcut(cursor);
 		keylen = round_up(shortcut->skip_to_level, ASSOC_ARRAY_KEY_CHUNK_SIZE);
 		keylen >>= ASSOC_ARRAY_KEY_CHUNK_SHIFT;
-		new_s = kmalloc(struct_size(new_s, index_key, keylen),
-				GFP_KERNEL);
+		alloc_size = struct_size(new_s, index_key, keylen);
+		if (alloc_size > KMALLOC_MAX_SIZE)
+			goto enomem;
+		new_s = kmalloc(alloc_size, GFP_KERNEL);
 		if (!new_s)
 			goto enomem;
 		pr_devel("dup shortcut %p -> %p\n", shortcut, new_s);
