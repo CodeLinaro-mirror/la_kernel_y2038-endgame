@@ -527,7 +527,7 @@ static struct dma_async_tx_descriptor *sa11x0_dma_prep_slave_sg(
 	struct sa11x0_dma_desc *txd;
 	struct scatterlist *sgent;
 	unsigned i, j = sglen;
-	size_t size = 0;
+	size_t size = 0, alloc_size;
 
 	/* SA11x0 channels can only operate in their native direction */
 	if (dir != (c->ddar & DDAR_RW ? DMA_DEV_TO_MEM : DMA_MEM_TO_DEV)) {
@@ -553,7 +553,11 @@ static struct dma_async_tx_descriptor *sa11x0_dma_prep_slave_sg(
 		}
 	}
 
-	txd = kzalloc(struct_size(txd, sg, j), GFP_ATOMIC);
+	alloc_size = struct_size(txd, sg, j);
+	if (alloc_size > KMALLOC_MAX_SIZE)
+		return NULL;
+
+	txd = kzalloc(alloc_size, GFP_ATOMIC);
 	if (!txd) {
 		dev_dbg(chan->device->dev, "vchan %p: kzalloc failed\n", &c->vc);
 		return NULL;

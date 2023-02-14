@@ -842,6 +842,7 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
 	int cpu = -1;
 	int ring_count;
 	u8 tcs = adapter->hw_tcs;
+	size_t alloc_size;
 
 	ring_count = txr_count + rxr_count + xdp_count;
 
@@ -855,11 +856,13 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
 	}
 
 	/* allocate q_vector and rings */
-	q_vector = kzalloc_node(struct_size(q_vector, ring, ring_count),
-				GFP_KERNEL, node);
+	alloc_size = struct_size(q_vector, ring, ring_count);
+	if (alloc_size > KMALLOC_MAX_SIZE)
+		return -ENOMEM;
+
+	q_vector = kzalloc_node(alloc_size, GFP_KERNEL, node);
 	if (!q_vector)
-		q_vector = kzalloc(struct_size(q_vector, ring, ring_count),
-				   GFP_KERNEL);
+		q_vector = kzalloc(alloc_size, GFP_KERNEL);
 	if (!q_vector)
 		return -ENOMEM;
 
