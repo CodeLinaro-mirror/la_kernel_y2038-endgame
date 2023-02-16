@@ -171,12 +171,14 @@ else
 # The following turn off the warnings enabled by -Wextra
 KBUILD_CFLAGS += -Wno-missing-field-initializers
 KBUILD_CFLAGS += -Wno-type-limits
-KBUILD_CFLAGS += -Wno-shift-negative-value
 
 ifdef CONFIG_CC_IS_CLANG
 KBUILD_CFLAGS += -Wno-initializer-overrides
 else
 KBUILD_CFLAGS += -Wno-maybe-uninitialized
+ifneq ($(call gcc-min-version, 90100),y)
+KBUILD_CFLAGS += $(call cc-disable-warning, shift-negative-value)
+endif
 endif
 
 endif
