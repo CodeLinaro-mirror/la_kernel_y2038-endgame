@@ -189,6 +189,9 @@ KBUILD_CFLAGS += -Wno-format
 KBUILD_CFLAGS += -Wno-initializer-overrides
 else
 KBUILD_CFLAGS += -Wno-maybe-uninitialized
+ifneq ($(call gcc-min-version, 90100),y)
+KBUILD_CFLAGS += $(call cc-disable-warning, shift-negative-value)
+endif
 endif
 
 endif
