@@ -17,6 +17,9 @@
 
 asmlinkage long compat_sys_rt_sigreturn(void);
 
+__diag_ignore(GCC, 5, "-Woverride-init", "default to sys_ni_syscall")
+__diag_ignore(clang, 9, "-Winitializer-overrides", "default to sys_ni_syscall")
+
 void * const compat_sys_call_table[__NR_syscalls] = {
 	[0 ... __NR_syscalls - 1] = __riscv_sys_ni_syscall,
 #include <asm/unistd.h>
