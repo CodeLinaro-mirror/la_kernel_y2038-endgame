@@ -20,7 +20,7 @@
 #undef __SYSCALL
 #define __SYSCALL(nr, call)	[nr] = __riscv_##call,
 
-__diag_ignore(GCC, 8, "-Woverride-init", "default to sys_ni_syscall")
+__diag_ignore(GCC, 5, "-Woverride-init", "default to sys_ni_syscall")
 __diag_ignore(clang, 9, "-Winitializer-overrides", "default to sys_ni_syscall")
 
 void * const sys_call_table[__NR_syscalls] = {
