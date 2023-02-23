@@ -123,7 +123,7 @@
 #define RL5C4XX_MISC3			0x00A2 /* 16 bit */
 #define  RL5C47X_MISC3_CB_CLKRUN_DIS	BIT(1)
 
-#ifdef __YENTA_H
+#if IS_ENABLED(CONFIG_CARDBUS)
 
 #define rl_misc(socket)		((socket)->private[0])
 #define rl_ctl(socket)		((socket)->private[1])

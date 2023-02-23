@@ -18,6 +18,7 @@
 #define _LINUX_CS_INTERNAL_H
 
 #include <linux/kref.h>
+#include <pcmcia/cistpl.h>
 
 /* Flags in client state */
 #define CLIENT_WIN_REQ(i)	(0x1<<(i))

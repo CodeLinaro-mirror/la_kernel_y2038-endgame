@@ -16,7 +16,7 @@
 #include <linux/sched.h>	/* task_struct, completion */
 #include <linux/mutex.h>
 
-#ifdef CONFIG_CARDBUS
+#if IS_ENABLED(CONFIG_CARDBUS)
 #include <linux/pci.h>
 #endif
 
@@ -176,7 +176,7 @@ struct pcmcia_socket {
 	int (*power_hook)(struct pcmcia_socket *sock, int operation);
 
 	/* allows tuning the CB bridge before loading driver for the CB card */
-#ifdef CONFIG_CARDBUS
+#if IS_ENABLED(CONFIG_CARDBUS)
 	void (*tune_bridge)(struct pcmcia_socket *sock, struct pci_bus *bus);
 #endif
 

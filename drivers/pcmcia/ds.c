@@ -1421,9 +1421,16 @@ static int __init init_pcmcia_bus(void)
 {
 	int ret;
 
+	ret = class_register(&pcmcia_socket_class);
+	if (ret < 0) {
+		printk(KERN_WARNING "pcmcia: class register error %d\n", ret);
+		return ret;
+	}
+
 	ret = bus_register(&pcmcia_bus_type);
 	if (ret < 0) {
 		printk(KERN_WARNING "pcmcia: bus_register error: %d\n", ret);
+		class_unregister(&pcmcia_socket_class);
 		return ret;
 	}
 	ret = class_interface_register(&pcmcia_bus_interface);
@@ -1431,20 +1438,21 @@ static int __init init_pcmcia_bus(void)
 		printk(KERN_WARNING
 			"pcmcia: class_interface_register error: %d\n", ret);
 		bus_unregister(&pcmcia_bus_type);
+		class_unregister(&pcmcia_socket_class);
 		return ret;
 	}
 
 	return 0;
 }
-fs_initcall(init_pcmcia_bus); /* one level after subsys_initcall so that
-			       * pcmcia_socket_class is already registered */
-
+subsys_initcall(init_pcmcia_bus);
 
 static void __exit exit_pcmcia_bus(void)
 {
 	class_interface_unregister(&pcmcia_bus_interface);
 
 	bus_unregister(&pcmcia_bus_type);
+
+	class_unregister(&pcmcia_socket_class);
 }
 module_exit(exit_pcmcia_bus);
 
