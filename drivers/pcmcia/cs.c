@@ -133,7 +133,7 @@ int pcmcia_register_socket(struct pcmcia_socket *socket)
 	list_add_tail(&socket->socket_list, &pcmcia_socket_list);
 	up_write(&pcmcia_socket_list_rwsem);
 
-#ifndef CONFIG_CARDBUS
+#if !IS_ENABLED(CONFIG_CARDBUS)
 	/*
 	 * If we do not support Cardbus, ensure that
 	 * the Cardbus socket capability is disabled.
@@ -313,7 +313,7 @@ static void socket_shutdown(struct pcmcia_socket *s)
 	 */
 	mutex_unlock(&s->ops_mutex);
 
-#ifdef CONFIG_CARDBUS
+#if IS_ENABLED(CONFIG_CARDBUS)
 	cb_free(s);
 #endif
 
@@ -428,7 +428,7 @@ static int socket_insert(struct pcmcia_socket *skt)
 			   (skt->state & SOCKET_CARDBUS) ? "CardBus" : "PCMCIA",
 			   skt->sock);
 
-#ifdef CONFIG_CARDBUS
+#if IS_ENABLED(CONFIG_CARDBUS)
 		if (skt->state & SOCKET_CARDBUS) {
 			cb_alloc(skt);
 			skt->state |= SOCKET_CARDBUS_CONFIG;
@@ -522,7 +522,7 @@ static int socket_late_resume(struct pcmcia_socket *skt)
 static int socket_complete_resume(struct pcmcia_socket *skt)
 {
 	int ret = 0;
-#ifdef CONFIG_CARDBUS
+#if IS_ENABLED(CONFIG_CARDBUS)
 	if (skt->state & SOCKET_CARDBUS) {
 		/* We can't be sure the CardBus card is the same
 		 * as the one previously inserted. Therefore, remove
@@ -823,7 +823,7 @@ static int pcmcia_socket_uevent(const struct device *dev,
 }
 
 
-static struct completion pcmcia_unload;
+static DECLARE_COMPLETION(pcmcia_unload);
 
 static void pcmcia_release_socket_class(const struct class *data)
 {
@@ -901,19 +901,4 @@ struct class pcmcia_socket_class = {
 };
 EXPORT_SYMBOL(pcmcia_socket_class);
 
-
-static int __init init_pcmcia_cs(void)
-{
-	init_completion(&pcmcia_unload);
-	return class_register(&pcmcia_socket_class);
-}
-
-static void __exit exit_pcmcia_cs(void)
-{
-	class_unregister(&pcmcia_socket_class);
-	wait_for_completion(&pcmcia_unload);
-}
-
-subsys_initcall(init_pcmcia_cs);
-module_exit(exit_pcmcia_cs);
 
