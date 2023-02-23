@@ -21,6 +21,9 @@ config PCMCIA
 	tristate "16-bit PCMCIA support"
 	depends on HAS_IOMEM
 	select CRC32
+	depends on X86_32 || ARCH_PXA || ARCH_SA1100 || ARCH_OMAP1 || \
+		   MIPS_ALCHEMY || PPC_PASEMI || COMPILE_TEST
+	depends on CARDBUS=n
 	default y
 	help
 	   This option enables support for 16-bit PCMCIA cards. Most older
@@ -51,8 +54,9 @@ config PCMCIA_LOAD_CIS
 	  If unsure, say Y.
 
 config CARDBUS
-	bool "32-bit CardBus support"
+	tristate "32-bit CardBus support"
 	depends on PCI
+	select YENTA
 	default y
 	help
 	  CardBus is a bus mastering architecture for PC-cards, which allows
@@ -71,10 +75,9 @@ config PCMCIA_MAX1600
 comment "PC-card bridges"
 
 config YENTA
-	tristate "CardBus yenta-compatible bridge support"
-	depends on PCI
-	select CARDBUS if !EXPERT
-	select PCCARD_NONSTATIC if PCMCIA != n
+	tristate "CardBus yenta-compatible bridge support" if EXPERT
+	depends on PCI && CARDBUS
+	default y
 	help
 	  This option enables support for CardBus host bridges.  Virtually
 	  all modern PCMCIA bridges are CardBus compatible.  A "bridge" is

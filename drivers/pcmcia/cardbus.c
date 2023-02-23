@@ -121,4 +121,5 @@ void cb_free(struct pcmcia_socket *s)
 		pci_stop_and_remove_bus_device(dev);
 
 	pci_unlock_rescan_remove();
+
 }

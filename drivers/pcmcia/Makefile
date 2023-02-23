@@ -3,17 +3,17 @@
 # Makefile for the kernel pcmcia subsystem (c/o David Hinds)
 #
 
-pcmcia_core-y					+= cs.o socket_sysfs.o
-pcmcia_core-$(CONFIG_CARDBUS)			+= cardbus.o
-obj-$(CONFIG_PCCARD)				+= pcmcia_core.o
+cardbus_core-y					+= cardbus.o cs.o socket_sysfs.o rsrc_mgr.o
+obj-$(CONFIG_CARDBUS)				+= cardbus_core.o
 
-pcmcia-y					+= ds.o pcmcia_resource.o cistpl.o pcmcia_cis.o
+pcmcia-y					+= ds.o pcmcia_resource.o cistpl.o pcmcia_cis.o \
+						   cs.o socket_sysfs.o
 obj-$(CONFIG_PCMCIA)				+= pcmcia.o
 
 pcmcia_rsrc-y					+= rsrc_mgr.o
 pcmcia_rsrc-$(CONFIG_PCCARD_NONSTATIC)		+= rsrc_nonstatic.o
 pcmcia_rsrc-$(CONFIG_PCCARD_IODYN)		+= rsrc_iodyn.o
-obj-$(CONFIG_PCCARD)				+= pcmcia_rsrc.o
+obj-$(CONFIG_PCMCIA)				+= pcmcia_rsrc.o
 
 
 # socket drivers
