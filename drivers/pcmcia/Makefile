@@ -3,9 +3,6 @@
 # Makefile for the kernel pcmcia subsystem (c/o David Hinds)
 #
 
-cardbus_core-y					+= cardbus.o cs.o socket_sysfs.o rsrc_mgr.o
-obj-$(CONFIG_CARDBUS)				+= cardbus_core.o
-
 pcmcia-y					+= ds.o pcmcia_resource.o cistpl.o pcmcia_cis.o \
 						   cs.o socket_sysfs.o
 obj-$(CONFIG_PCMCIA)				+= pcmcia.o
