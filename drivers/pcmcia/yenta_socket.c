@@ -24,6 +24,7 @@
 
 #include "yenta_socket.h"
 #include "i82365.h"
+#include "cs_internal.h"
 
 static bool disable_clkrun;
 module_param(disable_clkrun, bool, 0444);
@@ -228,17 +229,8 @@ static int yenta_get_status(struct pcmcia_socket *sock, unsigned int *value)
 		val |= (state & (CB_CDETECT1 | CB_CDETECT2)) ? 0 : SS_DETECT;
 		val |= (state & CB_PWRCYCLE) ? SS_POWERON | SS_READY : 0;
 	} else if (state & CB_16BITCARD) {
-		u8 status = exca_readb(socket, I365_STATUS);
-		val |= ((status & I365_CS_DETECT) == I365_CS_DETECT) ? SS_DETECT : 0;
-		if (exca_readb(socket, I365_INTCTL) & I365_PC_IOCARD) {
-			val |= (status & I365_CS_STSCHG) ? 0 : SS_STSCHG;
-		} else {
-			val |= (status & I365_CS_BVD1) ? 0 : SS_BATDEAD;
-			val |= (status & I365_CS_BVD2) ? 0 : SS_BATWARN;
-		}
-		val |= (status & I365_CS_WRPROT) ? SS_WRPROT : 0;
-		val |= (status & I365_CS_READY) ? SS_READY : 0;
-		val |= (status & I365_CS_POWERON) ? SS_POWERON : 0;
+		dev_warn_once(&socket->dev->dev,
+			      "16-bit PCMCIA cards are no longer supported\n");
 	}
 
 	*value = val;
@@ -1176,7 +1168,7 @@ static int yenta_probe(struct pci_dev *dev, const struct pci_device_id *id)
 
 	/* prepare pcmcia_socket */
 	socket->socket.ops = &yenta_socket_operations;
-	socket->socket.resource_ops = &pccard_nonstatic_ops;
+	socket->socket.resource_ops = &pccard_static_ops;
 	socket->socket.dev.parent = &dev->dev;
 	socket->socket.driver_data = socket;
 	socket->socket.owner = THIS_MODULE;
@@ -1450,6 +1442,27 @@ static struct pci_driver yenta_cardbus_driver = {
 	.driver.pm	= YENTA_PM_OPS,
 };
 
-module_pci_driver(yenta_cardbus_driver);
+static int __init yenta_init(void)
+{
+	int ret;
+
+	ret = class_register(&pcmcia_socket_class);
+	if (ret)
+		return ret;
+
+	ret = pci_register_driver(&yenta_cardbus_driver);
+	if (ret)
+		class_unregister(&pcmcia_socket_class);
+
+	return ret;
+}
+module_init(yenta_init);
+
+static void __exit yenta_exit(void)
+{
+	pci_unregister_driver(&yenta_cardbus_driver);
+	class_unregister(&pcmcia_socket_class);
+}
+module_exit(yenta_exit);
 
 MODULE_LICENSE("GPL");
