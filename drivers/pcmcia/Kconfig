@@ -168,10 +168,6 @@ config PCMCIA_XXS1500
 
 	  This driver is also available as a module called xxs1500_ss.ko
 
-config PCMCIA_BCM63XX
-	tristate "bcm63xx pcmcia support"
-	depends on BCM63XX && PCMCIA
-
 config PCMCIA_SOC_COMMON
 	bool
 
