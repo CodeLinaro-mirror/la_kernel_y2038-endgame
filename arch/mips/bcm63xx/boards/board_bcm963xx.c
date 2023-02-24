@@ -23,7 +23,6 @@
 #include <bcm63xx_dev_enet.h>
 #include <bcm63xx_dev_flash.h>
 #include <bcm63xx_dev_hsspi.h>
-#include <bcm63xx_dev_pcmcia.h>
 #include <bcm63xx_dev_spi.h>
 #include <bcm63xx_dev_usb_usbd.h>
 #include <board_bcm963xx.h>
@@ -267,7 +266,6 @@ static struct board_info __initdata board_96348gw_10 = {
 	.expected_cpu_id = 0x6348,
 
 	.has_ohci0 = 1,
-	.has_pccard = 1,
 	.has_pci = 1,
 	.has_uart0 = 1,
 
@@ -318,7 +316,6 @@ static struct board_info __initdata board_96348gw_11 = {
 	.expected_cpu_id = 0x6348,
 
 	.has_ohci0 = 1,
-	.has_pccard = 1,
 	.has_pci = 1,
 	.has_uart0 = 1,
 
@@ -419,7 +416,6 @@ static struct board_info __initdata board_FAST2404 = {
 	.expected_cpu_id = 0x6348,
 
 	.has_ohci0 = 1,
-	.has_pccard = 1,
 	.has_pci = 1,
 	.has_uart0 = 1,
 
@@ -508,7 +504,6 @@ static struct board_info __initdata board_96358vw = {
 
 	.has_ehci0 = 1,
 	.has_ohci0 = 1,
-	.has_pccard = 1,
 	.has_pci = 1,
 	.has_uart0 = 1,
 
@@ -558,7 +553,6 @@ static struct board_info __initdata board_96358vw2 = {
 
 	.has_ehci0 = 1,
 	.has_ohci0 = 1,
-	.has_pccard = 1,
 	.has_pci = 1,
 	.has_uart0 = 1,
 
@@ -808,11 +802,6 @@ void __init board_prom_init(void)
 	}
 #endif /* CONFIG_PCI */
 
-	if (board.has_pccard) {
-		if (BCMCPU_IS_6348())
-			val |= GPIO_MODE_6348_G1_MII_PCCARD;
-	}
-
 	if (board.has_enet0 && !board.enet0.use_internal_phy) {
 		if (BCMCPU_IS_6348())
 			val |= GPIO_MODE_6348_G3_EXT_MII |
@@ -861,9 +850,6 @@ int __init board_register_devices(void)
 
 	if (board.has_uart1)
 		bcm63xx_uart_register(1);
-
-	if (board.has_pccard)
-		bcm63xx_pcmcia_register();
 
 	if (board.has_enet0 &&
 	    !bcm63xx_nvram_get_mac_address(board.enet0.mac_addr))
