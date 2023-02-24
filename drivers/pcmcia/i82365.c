@@ -54,7 +54,7 @@
 #include <linux/isapnp.h>
 
 /* ISA-bus controllers */
-#include "i82365.h"
+#include <pcmcia/i82365.h>
 #include "cirrus.h"
 #include "vg468.h"
 #include "ricoh.h"

@@ -53,66 +53,10 @@ config PCMCIA_LOAD_CIS
 
 	  If unsure, say Y.
 
-config CARDBUS
-	tristate "32-bit CardBus support"
-	depends on PCI
-	select YENTA
-	default y
-	help
-	  CardBus is a bus mastering architecture for PC-cards, which allows
-	  for 32 bit PC-cards (the original PCMCIA standard specifies only
-	  a 16 bit wide bus). Many newer PC-cards are actually CardBus cards.
-
-	  To use 32 bit PC-cards, you also need a CardBus compatible host
-	  bridge. Virtually all modern PCMCIA bridges do this, and most of
-	  them are "yenta-compatible", so say Y or M there, too.
-
-	  If unsure, say Y.
-
 config PCMCIA_MAX1600
 	tristate
 
 comment "PC-card bridges"
-
-config YENTA
-	tristate "CardBus yenta-compatible bridge support" if EXPERT
-	depends on PCI && CARDBUS
-	default y
-	help
-	  This option enables support for CardBus host bridges.  Virtually
-	  all modern PCMCIA bridges are CardBus compatible.  A "bridge" is
-	  the hardware inside your computer that PCMCIA cards are plugged
-	  into.
-
-	  To compile this driver as modules, choose M here: the
-	  module will be called yenta_socket.
-
-	  If unsure, say Y.
-
-config YENTA_O2
-	default y
-	bool "Special initialization for O2Micro bridges" if EXPERT
-	depends on YENTA
-
-config YENTA_RICOH
-	default y
-	bool "Special initialization for Ricoh bridges" if EXPERT
-	depends on YENTA
-
-config YENTA_TI
-	default y
-	bool "Special initialization for TI and EnE bridges" if EXPERT
-	depends on YENTA
-
-config YENTA_ENE_TUNE
-	default y
-	bool "Auto-tune EnE bridges for CB cards" if EXPERT
-	depends on YENTA_TI && CARDBUS
-
-config YENTA_TOSHIBA
-	default y
-	bool "Special initialization for Toshiba ToPIC bridges" if EXPERT
-	depends on YENTA
 
 config PD6729
 	tristate "Cirrus PD6729 compatible bridge support"

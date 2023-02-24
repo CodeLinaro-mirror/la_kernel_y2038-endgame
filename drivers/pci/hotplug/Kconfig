@@ -174,3 +174,60 @@ config HOTPLUG_PCI_S390
 	  When in doubt, say Y.
 
 endif # HOTPLUG_PCI
+
+menuconfig CARDBUS
+	tristate "Support for CardBus PC Cards"
+	depends on PCI
+	select YENTA
+	default PCCARD
+	help
+	  CardBus is a bus mastering architecture for PC-cards, which allows
+	  for 32 bit PC-cards.  This is mainly used on 32-bit x86 Laptops,
+	  and is independent of support for the newer PCIe based ExpressCard
+	  standard and the older 16-bit PCMCIA cards.
+
+	  If unsure, say N.
+
+if CARDBUS
+
+config YENTA
+	tristate "CardBus yenta-compatible bridge support" if EXPERT
+	depends on PCI
+	default y
+	help
+	  This option enables support for CardBus host bridges.  Virtually
+	  all modern PCMCIA bridges are CardBus compatible.  A "bridge" is
+	  the hardware inside your computer that PCMCIA cards are plugged
+	  into.
+
+	  To compile this driver as modules, choose M here: the
+	  module will be called yenta_socket.
+
+	  If unsure, say Y.
+
+config YENTA_O2
+	default y
+	bool "Special initialization for O2Micro bridges" if EXPERT
+	depends on YENTA
+
+config YENTA_RICOH
+	default y
+	bool "Special initialization for Ricoh bridges" if EXPERT
+	depends on YENTA
+
+config YENTA_TI
+	default y
+	bool "Special initialization for TI and EnE bridges" if EXPERT
+	depends on YENTA
+
+config YENTA_ENE_TUNE
+	default y
+	bool "Auto-tune EnE bridges for CB cards" if EXPERT
+	depends on YENTA_TI && CARDBUS
+
+config YENTA_TOSHIBA
+	default y
+	bool "Special initialization for Toshiba ToPIC bridges" if EXPERT
+	depends on YENTA
+
+endif
