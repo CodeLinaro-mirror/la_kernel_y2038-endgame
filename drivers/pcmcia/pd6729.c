@@ -18,10 +18,9 @@
 #include <linux/io.h>
 
 #include <pcmcia/ss.h>
-
+#include <pcmcia/i82365.h>
 
 #include "pd6729.h"
-#include "i82365.h"
 #include "cirrus.h"
 
 MODULE_LICENSE("GPL");

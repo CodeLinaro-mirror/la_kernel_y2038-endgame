@@ -13,9 +13,6 @@ obj-$(CONFIG_PCMCIA)				+= pcmcia_rsrc.o
 
 
 # socket drivers
-
-obj-$(CONFIG_YENTA) 				+= yenta_socket.o
-
 obj-$(CONFIG_PD6729)				+= pd6729.o
 obj-$(CONFIG_PCMCIA_SOC_COMMON)			+= soc_common.o
 obj-$(CONFIG_PCMCIA_SA11XX_BASE)		+= sa11xx_base.o
