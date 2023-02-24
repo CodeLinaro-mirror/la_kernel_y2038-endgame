@@ -16,10 +16,6 @@
 #include <linux/sched.h>	/* task_struct, completion */
 #include <linux/mutex.h>
 
-#if IS_ENABLED(CONFIG_CARDBUS)
-#include <linux/pci.h>
-#endif
-
 /* Definitions for card status flags for GetStatus */
 #define SS_WRPROT	0x0001
 #define SS_CARDLOCK	0x0002
@@ -175,11 +171,6 @@ struct pcmcia_socket {
 	/* so is power hook */
 	int (*power_hook)(struct pcmcia_socket *sock, int operation);
 
-	/* allows tuning the CB bridge before loading driver for the CB card */
-#if IS_ENABLED(CONFIG_CARDBUS)
-	void (*tune_bridge)(struct pcmcia_socket *sock, struct pci_bus *bus);
-#endif
-
 	/* state thread */
 	struct task_struct		*thread;
 	struct completion		thread_done;
@@ -197,7 +188,6 @@ struct pcmcia_socket {
 	/* pcmcia (16-bit) */
 	struct pcmcia_callback		*callback;
 
-#if defined(CONFIG_PCMCIA) || defined(CONFIG_PCMCIA_MODULE)
 	/* The following elements refer to 16-bit PCMCIA devices inserted
 	 * into the socket */
 	struct list_head		devices_list;
@@ -214,8 +204,6 @@ struct pcmcia_socket {
 
 	/* IRQ to be used by PCMCIA devices. May not be IRQ 0. */
 	unsigned int			pcmcia_irq;
-
-#endif /* CONFIG_PCMCIA */
 
 	/* socket device */
 	struct device			dev;
@@ -239,17 +227,8 @@ struct pcmcia_socket {
  *
  */
 extern struct pccard_resource_ops pccard_static_ops;
-#if defined(CONFIG_PCMCIA) || defined(CONFIG_PCMCIA_MODULE)
 extern struct pccard_resource_ops pccard_iodyn_ops;
 extern struct pccard_resource_ops pccard_nonstatic_ops;
-#else
-/* If PCMCIA is not used, but only CARDBUS, these functions are not used
- * at all. Therefore, do not use the large (240K!) rsrc_nonstatic module
- */
-#define pccard_iodyn_ops pccard_static_ops
-#define pccard_nonstatic_ops pccard_static_ops
-#endif
-
 
 /* socket drivers use this callback in their IRQ handler */
 extern void pcmcia_parse_events(struct pcmcia_socket *socket,
