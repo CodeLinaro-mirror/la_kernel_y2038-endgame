@@ -37,8 +37,6 @@ static ssize_t pccard_show_type(struct device *dev, struct device_attribute *att
 
 	if (!(s->state & SOCKET_PRESENT))
 		return -ENODEV;
-	if (s->state & SOCKET_CARDBUS)
-		return sysfs_emit(buf, "32-bit\n");
 	return sysfs_emit(buf, "16-bit\n");
 }
 static DEVICE_ATTR(card_type, 0444, pccard_show_type, NULL);

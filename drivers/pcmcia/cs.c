@@ -133,14 +133,6 @@ int pcmcia_register_socket(struct pcmcia_socket *socket)
 	list_add_tail(&socket->socket_list, &pcmcia_socket_list);
 	up_write(&pcmcia_socket_list_rwsem);
 
-#if !IS_ENABLED(CONFIG_CARDBUS)
-	/*
-	 * If we do not support Cardbus, ensure that
-	 * the Cardbus socket capability is disabled.
-	 */
-	socket->features &= ~SS_CAP_CARDBUS;
-#endif
-
 	/* set proper values in socket->dev */
 	dev_set_drvdata(&socket->dev, socket);
 	socket->dev.class = &pcmcia_socket_class;
@@ -313,10 +305,6 @@ static void socket_shutdown(struct pcmcia_socket *s)
 	 */
 	mutex_unlock(&s->ops_mutex);
 
-#if IS_ENABLED(CONFIG_CARDBUS)
-	cb_free(s);
-#endif
-
 	/* give socket some time to power down */
 	msleep(100);
 
@@ -356,15 +344,6 @@ static int socket_setup(struct pcmcia_socket *skt, int initial_delay)
 		dev_err(&skt->dev, "voltage interrogation timed out\n");
 		return -ETIMEDOUT;
 	}
-
-	if (status & SS_CARDBUS) {
-		if (!(skt->features & SS_CAP_CARDBUS)) {
-			dev_err(&skt->dev, "cardbus cards are not supported\n");
-			return -EINVAL;
-		}
-		skt->state |= SOCKET_CARDBUS;
-	} else
-		skt->state &= ~SOCKET_CARDBUS;
 
 	/*
 	 * Decode the card voltage requirements, and apply power to the card.
@@ -425,19 +404,12 @@ static int socket_insert(struct pcmcia_socket *skt)
 		skt->state |= SOCKET_PRESENT;
 
 		dev_notice(&skt->dev, "pccard: %s card inserted into slot %d\n",
-			   (skt->state & SOCKET_CARDBUS) ? "CardBus" : "PCMCIA",
-			   skt->sock);
+			   "PCMCIA", skt->sock);
 
-#if IS_ENABLED(CONFIG_CARDBUS)
-		if (skt->state & SOCKET_CARDBUS) {
-			cb_alloc(skt);
-			skt->state |= SOCKET_CARDBUS_CONFIG;
-		}
-#endif
 		dev_dbg(&skt->dev, "insert done\n");
 		mutex_unlock(&skt->ops_mutex);
 
-		if (!(skt->state & SOCKET_CARDBUS) && (skt->callback))
+		if (skt->callback)
 			skt->callback->add(skt);
 	} else {
 		mutex_unlock(&skt->ops_mutex);
@@ -509,30 +481,8 @@ static int socket_late_resume(struct pcmcia_socket *skt)
 		return socket_insert(skt);
 	}
 
-	if (!(skt->state & SOCKET_CARDBUS) && (skt->callback))
+	if (skt->callback)
 		ret = skt->callback->early_resume(skt);
-	return ret;
-}
-
-/*
- * Finalize the resume. In case of a cardbus socket, we have
- * to rebind the devices as we can't be certain that it has been
- * replaced, or not.
- */
-static int socket_complete_resume(struct pcmcia_socket *skt)
-{
-	int ret = 0;
-#if IS_ENABLED(CONFIG_CARDBUS)
-	if (skt->state & SOCKET_CARDBUS) {
-		/* We can't be sure the CardBus card is the same
-		 * as the one previously inserted. Therefore, remove
-		 * and re-add... */
-		cb_free(skt);
-		ret = cb_alloc(skt);
-		if (ret)
-			cb_free(skt);
-	}
-#endif
 	return ret;
 }
 
@@ -543,15 +493,11 @@ static int socket_complete_resume(struct pcmcia_socket *skt)
  */
 static int socket_resume(struct pcmcia_socket *skt)
 {
-	int err;
 	if (!(skt->state & SOCKET_SUSPEND))
 		return -EBUSY;
 
 	socket_early_resume(skt);
-	err = socket_late_resume(skt);
-	if (!err)
-		err = socket_complete_resume(skt);
-	return err;
+	return socket_late_resume(skt);
 }
 
 static void socket_remove(struct pcmcia_socket *skt)
@@ -639,8 +585,7 @@ static int pccardd(void *__skt)
 				socket_remove(skt);
 			if (sysfs_events & PCMCIA_UEVENT_INSERT)
 				socket_insert(skt);
-			if ((sysfs_events & PCMCIA_UEVENT_SUSPEND) &&
-				!(skt->state & SOCKET_CARDBUS)) {
+			if (sysfs_events & PCMCIA_UEVENT_SUSPEND) {
 				if (skt->callback)
 					ret = skt->callback->suspend(skt);
 				else
@@ -650,14 +595,12 @@ static int pccardd(void *__skt)
 					msleep(100);
 				}
 			}
-			if ((sysfs_events & PCMCIA_UEVENT_RESUME) &&
-				!(skt->state & SOCKET_CARDBUS)) {
+			if (sysfs_events & PCMCIA_UEVENT_RESUME) {
 				ret = socket_resume(skt);
 				if (!ret && skt->callback)
 					skt->callback->resume(skt);
 			}
-			if ((sysfs_events & PCMCIA_UEVENT_REQUERY) &&
-				!(skt->state & SOCKET_CARDBUS)) {
+			if (sysfs_events & PCMCIA_UEVENT_REQUERY) {
 				if (!ret && skt->callback)
 					skt->callback->requery(skt);
 			}
@@ -753,7 +696,7 @@ int pccard_register_pcmcia(struct pcmcia_socket *s, struct pcmcia_callback *c)
 
 		s->callback = c;
 
-		if ((s->state & (SOCKET_PRESENT|SOCKET_CARDBUS)) == SOCKET_PRESENT)
+		if (s->state & SOCKET_PRESENT)
 			s->callback->add(s);
 	} else
 		s->callback = NULL;
@@ -788,12 +731,6 @@ int pcmcia_reset_card(struct pcmcia_socket *skt)
 			ret = -EBUSY;
 			break;
 		}
-		if (skt->state & SOCKET_CARDBUS) {
-			dev_dbg(&skt->dev, "can't reset, is cardbus\n");
-			ret = -EPERM;
-			break;
-		}
-
 		if (skt->callback)
 			skt->callback->suspend(skt);
 		mutex_lock(&skt->ops_mutex);
@@ -861,12 +798,6 @@ static int __used pcmcia_socket_dev_resume(struct device *dev)
 	return __pcmcia_pm_op(dev, socket_late_resume);
 }
 
-static void __used pcmcia_socket_dev_complete(struct device *dev)
-{
-	WARN(__pcmcia_pm_op(dev, socket_complete_resume),
-		"failed to complete resume");
-}
-
 static const struct dev_pm_ops pcmcia_socket_pm_ops = {
 	/* dev_resume may be called with IRQs enabled */
 	SET_SYSTEM_SLEEP_PM_OPS(NULL,
@@ -881,7 +812,6 @@ static const struct dev_pm_ops pcmcia_socket_pm_ops = {
 	.resume_noirq = pcmcia_socket_dev_resume_noirq,
 	.thaw_noirq = pcmcia_socket_dev_resume_noirq,
 	.restore_noirq = pcmcia_socket_dev_resume_noirq,
-	.complete = pcmcia_socket_dev_complete,
 };
 
 #define PCMCIA_SOCKET_CLASS_PM_OPS (&pcmcia_socket_pm_ops)

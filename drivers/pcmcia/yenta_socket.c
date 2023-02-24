@@ -1452,58 +1452,7 @@ static int yenta_get_status(struct pcmcia_socket *sock, unsigned int *value)
 
 static void yenta_set_power(struct yenta_socket *socket, socket_state_t *state)
 {
-	/* some birdges require to use the ExCA registers to power 16bit cards */
-	if (!(cb_readl(socket, CB_SOCKET_STATE) & CB_CBCARD) &&
-	    (socket->flags & YENTA_16BIT_POWER_EXCA)) {
-		u8 reg, old;
-		reg = old = exca_readb(socket, I365_POWER);
-		reg &= ~(I365_VCC_MASK | I365_VPP1_MASK | I365_VPP2_MASK);
-
-		/* i82365SL-DF style */
-		if (socket->flags & YENTA_16BIT_POWER_DF) {
-			switch (state->Vcc) {
-			case 33:
-				reg |= I365_VCC_3V;
-				break;
-			case 50:
-				reg |= I365_VCC_5V;
-				break;
-			default:
-				reg = 0;
-				break;
-			}
-			switch (state->Vpp) {
-			case 33:
-			case 50:
-				reg |= I365_VPP1_5V;
-				break;
-			case 120:
-				reg |= I365_VPP1_12V;
-				break;
-			}
-		} else {
-			/* i82365SL-B style */
-			switch (state->Vcc) {
-			case 50:
-				reg |= I365_VCC_5V;
-				break;
-			default:
-				reg = 0;
-				break;
-			}
-			switch (state->Vpp) {
-			case 50:
-				reg |= I365_VPP1_5V | I365_VPP2_5V;
-				break;
-			case 120:
-				reg |= I365_VPP1_12V | I365_VPP2_12V;
-				break;
-			}
-		}
-
-		if (reg != old)
-			exca_writeb(socket, I365_POWER, reg);
-	} else {
+	if (cb_readl(socket, CB_SOCKET_STATE) & CB_CBCARD) {
 		u32 reg = 0;	/* CB_SC_STPCLK? */
 		switch (state->Vcc) {
 		case 33:
@@ -1555,46 +1504,6 @@ static int yenta_set_socket(struct pcmcia_socket *sock, socket_state_t *state)
 			bridge |= CB_BRIDGE_INTR;
 		}
 		exca_writeb(socket, I365_INTCTL, intr);
-	}  else {
-		u8 reg;
-
-		reg = exca_readb(socket, I365_INTCTL) & (I365_RING_ENA | I365_INTR_ENA);
-		reg |= (state->flags & SS_RESET) ? 0 : I365_PC_RESET;
-		reg |= (state->flags & SS_IOCARD) ? I365_PC_IOCARD : 0;
-		if (state->io_irq != socket->dev->irq) {
-			reg |= state->io_irq;
-			bridge |= CB_BRIDGE_INTR;
-		}
-		exca_writeb(socket, I365_INTCTL, reg);
-
-		reg = exca_readb(socket, I365_POWER) & (I365_VCC_MASK|I365_VPP1_MASK);
-		reg |= I365_PWR_NORESET;
-		if (state->flags & SS_PWR_AUTO)
-			reg |= I365_PWR_AUTO;
-		if (state->flags & SS_OUTPUT_ENA)
-			reg |= I365_PWR_OUT;
-		if (exca_readb(socket, I365_POWER) != reg)
-			exca_writeb(socket, I365_POWER, reg);
-
-		/* CSC interrupt: no ISA irq for CSC */
-		reg = exca_readb(socket, I365_CSCINT);
-		reg &= I365_CSC_IRQ_MASK;
-		reg |= I365_CSC_DETECT;
-		if (state->flags & SS_IOCARD) {
-			if (state->csc_mask & SS_STSCHG)
-				reg |= I365_CSC_STSCHG;
-		} else {
-			if (state->csc_mask & SS_BATDEAD)
-				reg |= I365_CSC_BVD1;
-			if (state->csc_mask & SS_BATWARN)
-				reg |= I365_CSC_BVD2;
-			if (state->csc_mask & SS_READY)
-				reg |= I365_CSC_READY;
-		}
-		exca_writeb(socket, I365_CSCINT, reg);
-		exca_readb(socket, I365_CSC);
-		if (sock->zoom_video)
-			sock->zoom_video(sock, state->flags & SS_ZVCARD);
 	}
 	config_writew(socket, CB_BRIDGE_CONTROL, bridge);
 	/* Socket event mask: get card insert/remove events.. */
