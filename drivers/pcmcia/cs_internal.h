@@ -70,9 +70,6 @@ struct pccard_resource_ops {
 #define SOCKET_IN_RESUME	0x0040
 #define SOCKET_SUSPEND		0x0080
 #define SOCKET_WIN_REQ(i)	(0x0100<<(i))
-#define SOCKET_CARDBUS		0x8000
-#define SOCKET_CARDBUS_CONFIG	0x10000
-
 
 /*
  * Stuff internal to module "pcmcia_rsrc":
@@ -89,12 +86,6 @@ extern struct resource *pcmcia_make_resource(resource_size_t start,
 /* socket_sysfs.c */
 extern int pccard_sysfs_add_socket(struct device *dev);
 extern void pccard_sysfs_remove_socket(struct device *dev);
-
-/* cardbus.c */
-int cb_alloc(struct pcmcia_socket *s);
-void cb_free(struct pcmcia_socket *s);
-
-
 
 /*
  * Stuff exported by module "pcmcia_core" to module "pcmcia"
