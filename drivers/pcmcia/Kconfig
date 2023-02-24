@@ -23,7 +23,7 @@ config PCMCIA
 	select CRC32
 	depends on X86_32 || ARCH_PXA || ARCH_SA1100 || ARCH_OMAP1 || \
 		   MIPS_ALCHEMY || PPC_PASEMI || COMPILE_TEST
-	depends on CARDBUS=n
+	depends on !CARDBUS
 	default y
 	help
 	   This option enables support for 16-bit PCMCIA cards. Most older

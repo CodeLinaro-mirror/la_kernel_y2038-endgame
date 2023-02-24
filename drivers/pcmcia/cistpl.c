@@ -290,9 +290,6 @@ static int read_cis_cache(struct pcmcia_socket *s, int attr, u_int addr,
 	struct cis_cache_entry *cis;
 	int ret = 0;
 
-	if (s->state & SOCKET_CARDBUS)
-		return -EINVAL;
-
 	mutex_lock(&s->ops_mutex);
 	if (s->fake_cis) {
 		if (s->fake_cis_len >= addr+len)
@@ -374,9 +371,6 @@ int verify_cis_cache(struct pcmcia_socket *s)
 	char *buf;
 	int ret;
 
-	if (s->state & SOCKET_CARDBUS)
-		return -EINVAL;
-
 	buf = kmalloc(256, GFP_KERNEL);
 	if (buf == NULL) {
 		dev_warn(&s->dev, "no memory for verifying CIS\n");
@@ -449,7 +443,7 @@ int pccard_get_first_tuple(struct pcmcia_socket *s, unsigned int function,
 	if (!s)
 		return -EINVAL;
 
-	if (!(s->state & SOCKET_PRESENT) || (s->state & SOCKET_CARDBUS))
+	if (!(s->state & SOCKET_PRESENT))
 		return -ENODEV;
 	tuple->TupleLink = tuple->Flags = 0;
 
@@ -527,7 +521,7 @@ int pccard_get_next_tuple(struct pcmcia_socket *s, unsigned int function,
 
 	if (!s)
 		return -EINVAL;
-	if (!(s->state & SOCKET_PRESENT) || (s->state & SOCKET_CARDBUS))
+	if (!(s->state & SOCKET_PRESENT))
 		return -ENODEV;
 
 	link[1] = tuple->TupleLink;
