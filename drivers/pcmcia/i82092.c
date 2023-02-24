@@ -17,11 +17,11 @@
 #include <linux/device.h>
 
 #include <pcmcia/ss.h>
+#include <pcmcia/i82365.h>
 
 #include <linux/io.h>
 
 #include "i82092aa.h"
-#include "i82365.h"
 
 MODULE_LICENSE("GPL");
 
