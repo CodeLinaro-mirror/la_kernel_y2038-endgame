@@ -34,7 +34,7 @@
 #include <linux/timer.h>
 #include <linux/workqueue.h>
 #include <asm/irq.h>
-#include "i82365.h"
+#include <pcmcia/i82365.h>
 
 /* Definitions for card status flags for GetStatus */
 #define SS_WRPROT	0x0001
@@ -871,7 +871,7 @@ static int pcmcia_socket_uevent(const struct device *dev,
 
 static DECLARE_COMPLETION(pcmcia_unload);
 
-static void pcmcia_release_socket_class(struct class *data)
+static void pcmcia_release_socket_class(const struct class *data)
 {
 	complete(&pcmcia_unload);
 }
