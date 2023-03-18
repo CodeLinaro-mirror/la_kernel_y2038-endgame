@@ -39,7 +39,7 @@
 #include <asm/stacktrace.h>
 #include <asm/system_misc.h>
 #include <asm/opcodes.h>
-
+#include <asm/pgtable.h>
 
 static const char *handler[]= {
 	"prefetch abort",
