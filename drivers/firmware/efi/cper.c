@@ -25,6 +25,7 @@
 #include <acpi/ghes.h>
 #include <ras/ras_event.h>
 #include "cper_cxl.h"
+#include "../../acpi/apei/apei-internal.h"
 
 /*
  * CPER record ID need to be unique even after reboot, because record
