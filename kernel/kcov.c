@@ -313,9 +313,10 @@ void notrace __sanitizer_cov_trace_const_cmp8(u64 arg1, u64 arg2)
 }
 EXPORT_SYMBOL(__sanitizer_cov_trace_const_cmp8);
 
-void notrace __sanitizer_cov_trace_switch(u64 val, u64 *cases)
+void notrace __sanitizer_cov_trace_switch(u64 val, void *arg)
 {
 	u64 i;
+	u64 *cases = arg;
 	u64 count = cases[0];
 	u64 size = cases[1];
 	u64 type = KCOV_CMP_CONST;

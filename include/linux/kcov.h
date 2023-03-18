@@ -72,6 +72,17 @@ static inline void kcov_remote_stop_softirq(void)
 		kcov_remote_stop();
 }
 
+void __sanitizer_cov_trace_pc(void);
+void __sanitizer_cov_trace_cmp1(u8 arg1, u8 arg2);
+void __sanitizer_cov_trace_cmp2(u16 arg1, u16 arg2);
+void __sanitizer_cov_trace_cmp4(u32 arg1, u32 arg2);
+void __sanitizer_cov_trace_cmp8(u64 arg1, u64 arg2);
+void __sanitizer_cov_trace_const_cmp1(u8 arg1, u8 arg2);
+void __sanitizer_cov_trace_const_cmp2(u16 arg1, u16 arg2);
+void __sanitizer_cov_trace_const_cmp4(u32 arg1, u32 arg2);
+void __sanitizer_cov_trace_const_cmp8(u64 arg1, u64 arg2);
+void __sanitizer_cov_trace_switch(u64 val, void *cases);
+
 #else
 
 static inline void kcov_task_init(struct task_struct *t) {}
