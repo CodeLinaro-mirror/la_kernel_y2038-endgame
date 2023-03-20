@@ -61,6 +61,7 @@ static void xsc3_mc_copy_user_page(void *kto, const void *kfrom)
 	: "r2", "r3", "r4", "r5");
 }
 
+MULTI_USER_STATIC
 void xsc3_mc_copy_user_highpage(struct page *to, struct page *from,
 	unsigned long vaddr, struct vm_area_struct *vma)
 {
@@ -77,6 +78,7 @@ void xsc3_mc_copy_user_highpage(struct page *to, struct page *from,
 /*
  * XScale optimised clear_user_page
  */
+MULTI_USER_STATIC
 void xsc3_mc_clear_user_highpage(struct page *page, unsigned long vaddr)
 {
 	void *ptr, *kaddr = kmap_atomic(page);
