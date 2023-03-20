@@ -63,6 +63,7 @@ static void feroceon_copy_user_page(void *kto, const void *kfrom)
 	: "r2", "r3", "r4", "r5", "r6", "r7", "ip", "lr");
 }
 
+MULTI_USER_STATIC
 void feroceon_copy_user_highpage(struct page *to, struct page *from,
 	unsigned long vaddr, struct vm_area_struct *vma)
 {
@@ -76,6 +77,7 @@ void feroceon_copy_user_highpage(struct page *to, struct page *from,
 	kunmap_atomic(kto);
 }
 
+MULTI_USER_STATIC
 void feroceon_clear_user_highpage(struct page *page, unsigned long vaddr)
 {
 	void *ptr, *kaddr = kmap_atomic(page);
