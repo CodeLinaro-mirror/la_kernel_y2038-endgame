@@ -25,4 +25,10 @@ struct pxa2xx_udc_platform_data {
 	int	gpio_pullup;			/* high == pullup activated */
 };
 
+#ifdef CONFIG_PXA27x
+extern void pxa27x_clear_otgph(void);
+#else
+#define pxa27x_clear_otgph()	do {} while (0)
+#endif
+
 #endif
