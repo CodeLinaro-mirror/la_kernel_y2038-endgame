@@ -141,6 +141,7 @@ extern struct cpu_user_fns cpu_user;
 #define __cpu_clear_user_highpage	cpu_user.cpu_clear_user_highpage
 #define __cpu_copy_user_highpage	cpu_user.cpu_copy_user_highpage
 
+#define MULTI_USER_STATIC static
 #else
 
 #define __cpu_clear_user_highpage	__glue(_USER,_clear_user_highpage)
@@ -149,6 +150,8 @@ extern struct cpu_user_fns cpu_user;
 extern void __cpu_clear_user_highpage(struct page *page, unsigned long vaddr);
 extern void __cpu_copy_user_highpage(struct page *to, struct page *from,
 			unsigned long vaddr, struct vm_area_struct *vma);
+
+#define MULTI_USER_STATIC
 #endif
 
 #define clear_user_highpage(page,vaddr)		\
