@@ -35,6 +35,7 @@ static void fa_copy_user_page(void *kto, const void *kfrom)
 	: "r3", "r4", "ip", "lr");
 }
 
+MULTI_USER_STATIC
 void fa_copy_user_highpage(struct page *to, struct page *from,
 	unsigned long vaddr, struct vm_area_struct *vma)
 {
@@ -52,6 +53,7 @@ void fa_copy_user_highpage(struct page *to, struct page *from,
  *
  * Same story as above.
  */
+MULTI_USER_STATIC
 void fa_clear_user_highpage(struct page *page, unsigned long vaddr)
 {
 	void *ptr, *kaddr = kmap_atomic(page);
