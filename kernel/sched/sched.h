@@ -120,6 +120,16 @@ extern unsigned int sysctl_sched_rt_period;
 extern int sysctl_sched_rt_runtime;
 extern int sched_rr_timeslice;
 
+extern void task_vruntime_update(struct rq *rq, struct task_struct *p, bool in_fi);
+extern void free_fair_sched_group(struct task_group *tg);
+extern int alloc_fair_sched_group(struct task_group *tg, struct task_group *parent);
+extern void online_fair_sched_group(struct task_group *tg);
+extern void init_tg_cfs_entry(struct task_group *tg, struct cfs_rq *cfs_rq,
+			struct sched_entity *se, int cpu,
+			struct sched_entity *parent);
+extern void unregister_fair_sched_group(struct task_group *tg);
+
+
 /*
  * Helpers for converting nanosecond timing to jiffy resolution
  */
@@ -331,6 +341,8 @@ extern bool __checkparam_dl(const struct sched_attr *attr);
 extern bool dl_param_changed(struct task_struct *p, const struct sched_attr *attr);
 extern int  dl_cpuset_cpumask_can_shrink(const struct cpumask *cur, const struct cpumask *trial);
 extern int  dl_cpu_busy(int cpu, struct task_struct *p);
+struct cfs_bandwidth;
+extern void init_cfs_bandwidth(struct cfs_bandwidth *cfs_b);
 
 #ifdef CONFIG_CGROUP_SCHED
 
@@ -452,15 +464,6 @@ static inline int walk_tg_tree(tg_visitor down, tg_visitor up, void *data)
 }
 
 extern int tg_nop(struct task_group *tg, void *data);
-
-extern void free_fair_sched_group(struct task_group *tg);
-extern int alloc_fair_sched_group(struct task_group *tg, struct task_group *parent);
-extern void online_fair_sched_group(struct task_group *tg);
-extern void unregister_fair_sched_group(struct task_group *tg);
-extern void init_tg_cfs_entry(struct task_group *tg, struct cfs_rq *cfs_rq,
-			struct sched_entity *se, int cpu,
-			struct sched_entity *parent);
-extern void init_cfs_bandwidth(struct cfs_bandwidth *cfs_b);
 
 extern void __refill_cfs_bandwidth_runtime(struct cfs_bandwidth *cfs_b);
 extern void start_cfs_bandwidth(struct cfs_bandwidth *cfs_b);
@@ -2360,6 +2363,7 @@ static inline struct cpuidle_state *idle_get_state(struct rq *rq)
 #endif
 
 extern void schedule_idle(void);
+asmlinkage void schedule_user(void);
 
 extern void sysrq_sched_debug_show(void);
 extern void sched_init_granularity(void);
