@@ -18578,13 +18578,14 @@ int bpf_check_attach_target(struct bpf_verifier_log *log,
 			else
 				addr = (long) tgt_prog->aux->func[subprog]->bpf_func;
 		} else {
-			if (btf_is_module(btf)) {
+			if (btf_is_module(btf) && IS_ENABLED(CONFIG_KALLSYMS)) {
 				mod = btf_try_get_module(btf);
 				if (mod)
 					addr = find_kallsyms_symbol_value(mod, tname);
 				else
 					addr = 0;
-			} else {
+			} else
+			{
 				addr = kallsyms_lookup_name(tname);
 			}
 			if (!addr) {
