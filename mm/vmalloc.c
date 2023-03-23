@@ -3643,7 +3643,7 @@ static size_t vmap_ram_vread_iter(struct iov_iter *iter, const char *addr,
 	struct xarray *xa;
 	unsigned long offset;
 	unsigned int rs, re;
-	size_t remains, n;
+	size_t remains = count, n;
 
 	/*
 	 * If it's area created by vm_map_ram() interface directly, but
