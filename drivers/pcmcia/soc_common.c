@@ -252,7 +252,7 @@ static irqreturn_t soc_common_pcmcia_interrupt(int irq, void *dev);
 static int pc_debug;
 module_param(pc_debug, int, 0644);
 
-void soc_pcmcia_debug(struct soc_pcmcia_socket *skt, const char *func,
+static void soc_pcmcia_debug(struct soc_pcmcia_socket *skt, const char *func,
 		      int lvl, const char *fmt, ...)
 {
 	struct va_format vaf;
@@ -277,7 +277,8 @@ void soc_pcmcia_debug(struct soc_pcmcia_socket *skt, const char *func,
 #define to_soc_pcmcia_socket(x)	\
 	container_of(x, struct soc_pcmcia_socket, socket)
 
-int soc_pcmcia_regulator_set(struct soc_pcmcia_socket *skt,
+#ifdef CONFIG_ARCH_SA1100
+static int soc_pcmcia_regulator_set(struct soc_pcmcia_socket *skt,
 	struct soc_pcmcia_regulator *r, int v)
 {
 	bool on;
@@ -310,6 +311,7 @@ int soc_pcmcia_regulator_set(struct soc_pcmcia_socket *skt,
 
 	return ret;
 }
+#endif
 
 static unsigned short
 calc_speed(unsigned short *spds, int num, unsigned short dflt)
@@ -326,7 +328,7 @@ calc_speed(unsigned short *spds, int num, unsigned short dflt)
 	return speed;
 }
 
-void soc_common_pcmcia_get_timing(struct soc_pcmcia_socket *skt,
+static void soc_common_pcmcia_get_timing(struct soc_pcmcia_socket *skt,
 	struct soc_pcmcia_timing *timing)
 {
 	timing->io =
@@ -357,7 +359,8 @@ static void soc_pcmcia_hw_shutdown(struct soc_pcmcia_socket *skt)
 	__soc_pcmcia_hw_shutdown(skt, ARRAY_SIZE(skt->stat));
 }
 
-int soc_pcmcia_request_gpiods(struct soc_pcmcia_socket *skt)
+#ifdef CONFIG_ARCH_SA1100
+static int soc_pcmcia_request_gpiods(struct soc_pcmcia_socket *skt)
 {
 	struct device *dev = skt->socket.dev.parent;
 	struct gpio_desc *desc;
@@ -379,6 +382,7 @@ int soc_pcmcia_request_gpiods(struct soc_pcmcia_socket *skt)
 
 	return 0;
 }
+#endif
 
 static int soc_pcmcia_hw_init(struct soc_pcmcia_socket *skt)
 {
@@ -461,16 +465,18 @@ static void soc_pcmcia_hw_disable(struct soc_pcmcia_socket *skt)
 			irq_set_irq_type(skt->stat[i].irq, IRQ_TYPE_NONE);
 }
 
+#ifdef CONFIG_ARCH_SA1100
 /*
  * The CF 3.0 specification says that cards tie VS1 to ground and leave
  * VS2 open.  Many implementations do not wire up the VS signals, so we
  * provide hard-coded values as per the CF 3.0 spec.
  */
-void soc_common_cf_socket_state(struct soc_pcmcia_socket *skt,
+static void soc_common_cf_socket_state(struct soc_pcmcia_socket *skt,
 	struct pcmcia_state *state)
 {
 	state->vs_3v = 1;
 }
+#endif
 
 static unsigned int soc_common_pcmcia_skt_state(struct soc_pcmcia_socket *skt)
 {
@@ -944,7 +950,7 @@ static int soc_common_pcmcia_cpufreq_nb(struct notifier_block *nb,
 }
 #endif
 
-void soc_pcmcia_init_one(struct soc_pcmcia_socket *skt,
+static void soc_pcmcia_init_one(struct soc_pcmcia_socket *skt,
 	const struct pcmcia_low_level *ops, struct device *dev)
 {
 	int i;
@@ -958,7 +964,7 @@ void soc_pcmcia_init_one(struct soc_pcmcia_socket *skt,
 		skt->stat[i].gpio = -EINVAL;
 }
 
-void soc_pcmcia_remove_one(struct soc_pcmcia_socket *skt)
+static void soc_pcmcia_remove_one(struct soc_pcmcia_socket *skt)
 {
 	del_timer_sync(&skt->poll_timer);
 
@@ -982,7 +988,7 @@ void soc_pcmcia_remove_one(struct soc_pcmcia_socket *skt)
 	release_resource(&skt->res_skt);
 }
 
-int soc_pcmcia_add_one(struct soc_pcmcia_socket *skt)
+static int soc_pcmcia_add_one(struct soc_pcmcia_socket *skt)
 {
 	int ret;
 
@@ -2640,7 +2646,7 @@ pxa2xx_pcmcia_frequency_change(struct soc_pcmcia_socket *skt,
 }
 #endif
 
-void pxa2xx_configure_sockets(struct device *dev, struct pcmcia_low_level *ops)
+static void pxa2xx_configure_sockets(struct device *dev, struct pcmcia_low_level *ops)
 {
 	pxa_smemc_set_pcmcia_socket(1);
 }
@@ -2648,7 +2654,7 @@ void pxa2xx_configure_sockets(struct device *dev, struct pcmcia_low_level *ops)
 #define SKT_DEV_INFO_SIZE(n) \
 	(sizeof(struct skt_dev_info) + (n)*sizeof(struct soc_pcmcia_socket))
 
-int pxa2xx_drv_pcmcia_add_one(struct soc_pcmcia_socket *skt)
+static int pxa2xx_drv_pcmcia_add_one(struct soc_pcmcia_socket *skt)
 {
 	skt->res_skt.start = _PCMCIA(skt->nr);
 	skt->res_skt.end = _PCMCIA(skt->nr) + PCMCIASp - 1;
@@ -2673,7 +2679,7 @@ int pxa2xx_drv_pcmcia_add_one(struct soc_pcmcia_socket *skt)
 	return soc_pcmcia_add_one(skt);
 }
 
-void pxa2xx_drv_pcmcia_ops(struct pcmcia_low_level *ops)
+static void pxa2xx_drv_pcmcia_ops(struct pcmcia_low_level *ops)
 {
 	/* Provide our PXA2xx specific timing routines. */
 	ops->set_timing  = pxa2xx_pcmcia_set_timing;
