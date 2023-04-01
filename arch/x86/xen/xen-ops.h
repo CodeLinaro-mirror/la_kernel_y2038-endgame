@@ -160,4 +160,18 @@ void xen_hvm_post_suspend(int suspend_cancelled);
 static inline void xen_hvm_post_suspend(int suspend_cancelled) {}
 #endif
 
+void xen_force_evtchn_callback(void);
+pteval_t xen_pte_val(pte_t pte);
+pgdval_t xen_pgd_val(pgd_t pgd);
+pte_t xen_make_pte(pteval_t pte);
+pgd_t xen_make_pgd(pgdval_t pgd);
+pmdval_t xen_pmd_val(pmd_t pmd);
+pmd_t xen_make_pmd(pmdval_t pmd);
+pudval_t xen_pud_val(pud_t pud);
+pud_t xen_make_pud(pudval_t pud);
+p4dval_t xen_p4d_val(p4d_t p4d);
+p4d_t xen_make_p4d(p4dval_t p4d);
+pte_t xen_make_pte_init(pteval_t pte);
+void xen_start_kernel(struct start_info *si);
+
 #endif /* XEN_OPS_H */
