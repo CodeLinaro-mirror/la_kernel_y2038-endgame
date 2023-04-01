@@ -4,6 +4,8 @@
 
 #include <asm/ibt.h>
 
+void __lockfunc __pv_queued_spin_unlock_slowpath(struct qspinlock *lock, u8 locked);
+
 /*
  * For x86-64, PV_CALLEE_SAVE_REGS_THUNK() saves and restores 8 64-bit
  * registers. For i386, however, only 1 32-bit register needs to be saved
@@ -59,7 +61,7 @@ DEFINE_PARAVIRT_ASM(__raw_callee_save___pv_queued_spin_unlock,
 
 #else /* CONFIG_64BIT */
 
-extern void __lockfunc __pv_queued_spin_unlock(struct qspinlock *lock);
+void __lockfunc __pv_queued_spin_unlock(struct qspinlock *lock);
 __PV_CALLEE_SAVE_REGS_THUNK(__pv_queued_spin_unlock, ".spinlock.text");
 
 #endif /* CONFIG_64BIT */
