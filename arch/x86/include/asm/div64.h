@@ -71,6 +71,8 @@ static inline u64 mul_u32_u32(u32 a, u32 b)
 }
 #define mul_u32_u32 mul_u32_u32
 
+#define __div64_32 /* not needed */
+
 #else
 # include <asm-generic/div64.h>
 
