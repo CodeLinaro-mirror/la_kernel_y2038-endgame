@@ -41,12 +41,6 @@
 #include "radeon_drv.h"
 #include "radeon_kms.h"
 
-#if defined(CONFIG_VGA_SWITCHEROO)
-bool radeon_has_atpx(void);
-#else
-static inline bool radeon_has_atpx(void) { return false; }
-#endif
-
 /**
  * radeon_driver_unload_kms - Main unload function for KMS.
  *
