@@ -2964,6 +2964,24 @@ void radeon_irq_kms_set_irq_n_enabled(struct radeon_device *rdev,
 void radeon_audio_component_init(struct radeon_device *rdev);
 void radeon_audio_component_fini(struct radeon_device *rdev);
 
+/* atpx handler */
+#if defined(CONFIG_VGA_SWITCHEROO)
+bool radeon_has_atpx(void);
+void radeon_register_atpx_handler(void);
+void radeon_unregister_atpx_handler(void);
+bool radeon_has_atpx_dgpu_power_cntl(void);
+bool radeon_is_atpx_hybrid(void);
+bool radeon_atpx_dgpu_req_power_for_displays(void);
+#else
+static inline bool radeon_has_atpx(void) { return false; }
+static inline void radeon_register_atpx_handler(void) {}
+static inline void radeon_unregister_atpx_handler(void) {}
+static inline bool radeon_has_atpx_dgpu_power_cntl(void) { return false; }
+static inline bool radeon_is_atpx_hybrid(void) { return false; }
+static inline bool radeon_atpx_dgpu_req_power_for_displays(void) { return false; }
+#endif
+
+
 #include "radeon_object.h"
 
 #endif

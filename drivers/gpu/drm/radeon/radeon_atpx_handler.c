@@ -12,6 +12,7 @@
 #include <linux/delay.h>
 
 #include "radeon_acpi.h"
+#include "radeon.h"
 
 struct radeon_atpx_functions {
 	bool px_params;

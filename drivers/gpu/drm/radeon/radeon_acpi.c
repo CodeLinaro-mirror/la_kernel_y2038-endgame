@@ -38,12 +38,6 @@
 #include "radeon_acpi.h"
 #include "radeon_pm.h"
 
-#if defined(CONFIG_VGA_SWITCHEROO)
-bool radeon_atpx_dgpu_req_power_for_displays(void);
-#else
-static inline bool radeon_atpx_dgpu_req_power_for_displays(void) { return false; }
-#endif
-
 #define ACPI_AC_CLASS           "ac_adapter"
 
 struct atif_verify_interface {
