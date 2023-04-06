@@ -9,6 +9,7 @@
 #include <asm/cacheflush.h>
 #include <asm/facility.h>
 #include <asm/pgalloc.h>
+#include <asm/pgtable.h>
 #include <asm/kfence.h>
 #include <asm/page.h>
 #include <asm/set_memory.h>
