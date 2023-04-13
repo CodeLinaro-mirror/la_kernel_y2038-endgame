@@ -100,7 +100,7 @@ config MACH_ARMADA_XP
 config MACH_DOVE
 	bool "Marvell Dove boards"
 	depends on ARCH_MULTI_V7
-	select CACHE_L2X0
+	select CACHE_TAUROS2
 	select CPU_PJ4
 	select DOVE_CLK
 	select MACH_MVEBU_ANY
