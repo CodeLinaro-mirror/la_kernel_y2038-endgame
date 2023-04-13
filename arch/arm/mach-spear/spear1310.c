@@ -53,6 +53,8 @@ static void __init spear1310_map_io(void)
 }
 
 DT_MACHINE_START(SPEAR1310_DT, "ST SPEAr1310 SoC with Flattened Device Tree")
+	.l2c_aux_val	=	0,
+	.l2c_aux_mask	=	~0,
 	.smp		=	smp_ops(spear13xx_smp_ops),
 	.map_io		=	spear1310_map_io,
 	.init_time	=	spear13xx_timer_init,

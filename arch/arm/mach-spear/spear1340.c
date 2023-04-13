@@ -26,6 +26,8 @@ static const char * const spear1340_dt_board_compat[] = {
 };
 
 DT_MACHINE_START(SPEAR1340_DT, "ST SPEAr1340 SoC with Flattened Device Tree")
+	.l2c_aux_val	=	0,
+	.l2c_aux_mask	=	~0,
 	.smp		=	smp_ops(spear13xx_smp_ops),
 	.map_io		=	spear13xx_map_io,
 	.init_time	=	spear13xx_timer_init,

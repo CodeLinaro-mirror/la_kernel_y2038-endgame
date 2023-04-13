@@ -21,32 +21,6 @@
 #include "spear.h"
 #include "generic.h"
 
-void __init spear13xx_l2x0_init(void)
-{
-	/*
-	 * 512KB (64KB/way), 8-way associativity, parity supported
-	 *
-	 * FIXME: 9th bit, of Auxiliary Controller register must be set
-	 * for some spear13xx devices for stable L2 operation.
-	 *
-	 * Enable Early BRESP, L2 prefetch for Instruction and Data,
-	 * write alloc and 'Full line of zero' options
-	 *
-	 */
-	if (!IS_ENABLED(CONFIG_CACHE_L2X0))
-		return;
-
-	writel_relaxed(0x06, VA_L2CC_BASE + L310_PREFETCH_CTRL);
-
-	/*
-	 * Program following latencies in order to make
-	 * SPEAr1340 work at 600 MHz
-	 */
-	writel_relaxed(0x221, VA_L2CC_BASE + L310_TAG_LATENCY_CTRL);
-	writel_relaxed(0x441, VA_L2CC_BASE + L310_DATA_LATENCY_CTRL);
-	l2x0_init(VA_L2CC_BASE, 0x30a00001, 0xfe0fffff);
-}
-
 /*
  * Following will create 16MB static virtual/physical mappings
  * PHYSICAL		VIRTUAL
