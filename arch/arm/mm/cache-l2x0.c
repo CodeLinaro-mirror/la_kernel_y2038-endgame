@@ -891,38 +891,6 @@ static int __init __l2c_init(const struct l2c_init_data *data,
 	return 0;
 }
 
-void __init l2x0_init(void __iomem *base, u32 aux_val, u32 aux_mask)
-{
-	const struct l2c_init_data *data;
-	u32 cache_id;
-
-	l2x0_base = base;
-
-	cache_id = readl_relaxed(base + L2X0_CACHE_ID);
-
-	switch (cache_id & L2X0_CACHE_ID_PART_MASK) {
-	default:
-	case L2X0_CACHE_ID_PART_L210:
-		data = &l2c210_data;
-		break;
-
-	case L2X0_CACHE_ID_PART_L220:
-		data = &l2c220_data;
-		break;
-
-	case L2X0_CACHE_ID_PART_L310:
-		data = &l2c310_init_fns;
-		break;
-	}
-
-	/* Read back current (default) hardware configuration */
-	if (data->save)
-		data->save(l2x0_base);
-
-	__l2c_init(data, aux_val, aux_mask, cache_id, false);
-}
-
-#ifdef CONFIG_OF
 static int l2_wt_override;
 
 /* Aurora don't have the cache ID register available, so we have to
@@ -1822,4 +1790,3 @@ int __init l2x0_of_init(u32 aux_val, u32 aux_mask)
 
 	return __l2c_init(data, aux_val, aux_mask, cache_id, nosync);
 }
-#endif
