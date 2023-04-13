@@ -204,6 +204,7 @@ config REALVIEW_EB_A9MP
 config REALVIEW_EB_ARM11MP
 	bool "Support ARM11MPCore Tile"
 	depends on MACH_REALVIEW_EB && ARCH_MULTI_V6
+	select MIGHT_HAVE_CACHE_L2X0
 	select HAVE_SMP
 	help
 	  Enable support for the ARM11MPCore tile fitted to the Realview(R)
@@ -212,6 +213,7 @@ config REALVIEW_EB_ARM11MP
 config MACH_REALVIEW_PB11MP
 	bool "Support RealView(R) Platform Baseboard for ARM11MPCore"
 	depends on ARCH_MULTI_V6
+	select MIGHT_HAVE_CACHE_L2X0
 	select HAVE_SMP
 	help
 	  Include support for the ARM(R) RealView(R) Platform Baseboard for
@@ -222,6 +224,7 @@ config MACH_REALVIEW_PB11MP
 config MACH_REALVIEW_PB1176
 	bool "Support RealView(R) Platform Baseboard for ARM1176JZF-S"
 	depends on ARCH_MULTI_V6
+	select MIGHT_HAVE_CACHE_L2X0
 	select CPU_V6
 	select HAVE_TCM
 	help

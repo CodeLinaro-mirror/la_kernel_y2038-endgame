@@ -374,7 +374,6 @@ config ARCH_MULTI_V6
 	bool "ARMv6 based platforms (ARM11)"
 	depends on !ARCH_MULTI_V7
 	depends on CPU_LITTLE_ENDIAN
-	select MIGHT_HAVE_CACHE_L2X0
 	select CPU_V6K
 
 config ARCH_MULTI_V7
