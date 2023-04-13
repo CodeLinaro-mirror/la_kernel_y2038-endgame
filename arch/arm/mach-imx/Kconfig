@@ -41,6 +41,7 @@ comment "ARM1136 platforms"
 
 config SOC_IMX31
 	bool "i.MX31 support"
+	select MIGHT_HAVE_CACHE_L2X0 # missing in DT
 	select CPU_V6
 	select MXC_AVIC
 	help
@@ -48,6 +49,7 @@ config SOC_IMX31
 
 config SOC_IMX35
 	bool "i.MX35 support"
+	select MIGHT_HAVE_CACHE_L2X0
 	select MXC_AVIC
 	select PINCTRL_IMX35
 	help
