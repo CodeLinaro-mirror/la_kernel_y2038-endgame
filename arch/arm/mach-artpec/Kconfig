@@ -16,6 +16,7 @@ config MACH_ARTPEC6
 	select HAVE_ARM_SCU
 	select HAVE_ARM_TWD if SMP
 	select MFD_SYSCON
+	select MIGHT_HAVE_CACHE_L2X0
 	help
 	  Support for Axis ARTPEC-6 ARM Cortex A9 Platform
 

@@ -6,6 +6,7 @@ menuconfig ARCH_QCOM
 	select ARM_AMBA
 	select CLKSRC_QCOM
 	select HAVE_ARM_ARCH_TIMER
+	select MIGHT_HAVE_CACHE_L2X0
 	select PINCTRL
 	select QCOM_SCM if SMP
 	help

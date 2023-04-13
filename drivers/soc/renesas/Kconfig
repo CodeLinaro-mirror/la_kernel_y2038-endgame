@@ -10,6 +10,7 @@ if SOC_RENESAS
 
 config ARCH_RCAR_GEN1
 	bool
+	select MIGHT_HAVE_CACHE_L2X0
 	select PM
 	select PM_GENERIC_DOMAINS
 	select RENESAS_INTC_IRQPIN
@@ -72,12 +73,14 @@ config ARCH_EMEV2
 	bool "ARM32 Platform support for Emma Mobile EV2"
 	default ARCH_RENESAS
 	select HAVE_ARM_SCU if SMP
+	select MIGHT_HAVE_CACHE_L2X0
 	select SYS_SUPPORTS_EM_STI
 
 config ARCH_R7S72100
 	bool "ARM32 Platform support for R7S72100 (RZ/A1H)"
 	default ARCH_RENESAS
 	select ARM_ERRATA_754322
+	select MIGHT_HAVE_CACHE_L2X0
 	select PM
 	select PM_GENERIC_DOMAINS
 	select RENESAS_OSTM
@@ -87,6 +90,7 @@ config ARCH_R7S72100
 config ARCH_R7S9210
 	bool "ARM32 Platform support for R7S9210 (RZ/A2)"
 	default ARCH_RENESAS
+	select MIGHT_HAVE_CACHE_L2X0
 	select PM
 	select PM_GENERIC_DOMAINS
 	select RENESAS_OSTM
@@ -106,6 +110,7 @@ config ARCH_R8A7740
 	default ARCH_RENESAS
 	select ARCH_RMOBILE
 	select ARM_ERRATA_754322
+	select MIGHT_HAVE_CACHE_L2X0
 	select RENESAS_INTC_IRQPIN
 
 config ARCH_R8A7742
@@ -213,6 +218,7 @@ config ARCH_SH73A0
 	select ARM_GLOBAL_TIMER
 	select HAVE_ARM_SCU if SMP
 	select HAVE_ARM_TWD if SMP
+	select MIGHT_HAVE_CACHE_L2X0
 	select RENESAS_INTC_IRQPIN
 
 endif # ARM
