@@ -41,7 +41,6 @@ config ARCH_MULTI_V7
 	select ARCH_MULTI_V6_V7
 	select CPU_V7
 	select HAVE_SMP
-	select MIGHT_HAVE_CACHE_L2X0
 
 config ARCH_MULTI_V6_V7
 	bool
@@ -86,6 +85,7 @@ config MACH_ASM9260
 menuconfig ARCH_HPE
 	bool "HPE SoC support"
 	depends on ARCH_MULTI_V7
+	select MIGHT_HAVE_CACHE_L2X0
 	help
 	  This enables support for HPE ARM based BMC chips.
 
@@ -156,6 +156,7 @@ config ARCH_RDA
 	depends on ARCH_MULTI_V7
 	select RDA_INTC
 	select RDA_TIMER
+	select MIGHT_HAVE_CACHE_L2X0
 	help
 	  This enables support for the RDA Micro 8810PL SoC family.
 

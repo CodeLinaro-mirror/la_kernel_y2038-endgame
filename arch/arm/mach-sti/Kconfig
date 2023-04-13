@@ -8,6 +8,7 @@ menuconfig ARCH_STI
 	select CLKSRC_ST_LPC
 	select PINCTRL
 	select PINCTRL_ST
+	select MIGHT_HAVE_CACHE_L2X0
 	select MFD_SYSCON
 	select ARCH_HAS_RESET_CONTROLLER
 	select HAVE_ARM_SCU if SMP
