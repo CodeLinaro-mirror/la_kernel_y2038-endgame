@@ -373,6 +373,30 @@ config CPU_PJ4B
 	bool
 	select CPU_V7
 
+config CPU_CORTEX_A5
+	bool
+	select CPU_V7
+
+config CPU_CORTEX_A7
+	bool
+	select CPU_V7
+
+config CPU_CORTEX_A8
+	bool
+	select CPU_V7
+
+config CPU_CORTEX_A9
+	bool
+	select CPU_V7
+
+config CPU_CORTEX_A15
+	bool
+	select CPU_V7
+
+config CPU_CORTEX_A17
+	bool
+	select CPU_V7
+
 # ARMv6
 config CPU_V6
 	bool
