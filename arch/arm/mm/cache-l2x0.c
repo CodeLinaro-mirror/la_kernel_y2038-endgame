@@ -237,25 +237,6 @@ static void l2c210_sync(void)
 	__l2c210_cache_sync(l2x0_base);
 }
 
-static const struct l2c_init_data l2c210_data __initconst = {
-	.type = "L2C-210",
-	.way_size_0 = SZ_8K,
-	.num_lock = 1,
-	.enable = l2c_enable,
-	.save = l2c_save,
-	.configure = l2c_configure,
-	.unlock = l2c_unlock,
-	.outer_cache = {
-		.inv_range = l2c210_inv_range,
-		.clean_range = l2c210_clean_range,
-		.flush_range = l2c210_flush_range,
-		.flush_all = l2c210_flush_all,
-		.disable = l2c_disable,
-		.sync = l2c210_sync,
-		.resume = l2c_resume,
-	},
-};
-
 /*
  * L2C-220 specific code.
  *
@@ -401,25 +382,6 @@ static void l2c220_unlock(void __iomem *base, unsigned num_lock)
 	if (readl_relaxed(base + L2X0_AUX_CTRL) & L220_AUX_CTRL_NS_LOCKDOWN)
 		l2c_unlock(base, num_lock);
 }
-
-static const struct l2c_init_data l2c220_data = {
-	.type = "L2C-220",
-	.way_size_0 = SZ_8K,
-	.num_lock = 1,
-	.enable = l2c220_enable,
-	.save = l2c_save,
-	.configure = l2c_configure,
-	.unlock = l2c220_unlock,
-	.outer_cache = {
-		.inv_range = l2c220_inv_range,
-		.clean_range = l2c220_clean_range,
-		.flush_range = l2c220_flush_range,
-		.flush_all = l2c220_flush_all,
-		.disable = l2c_disable,
-		.sync = l2c220_sync,
-		.resume = l2c_resume,
-	},
-};
 
 /*
  * L2C-310 specific code.
@@ -758,26 +720,6 @@ static void l2c310_unlock(void __iomem *base, unsigned num_lock)
 		l2c_unlock(base, num_lock);
 }
 
-static const struct l2c_init_data l2c310_init_fns __initconst = {
-	.type = "L2C-310",
-	.way_size_0 = SZ_8K,
-	.num_lock = 8,
-	.enable = l2c310_enable,
-	.fixup = l2c310_fixup,
-	.save = l2c310_save,
-	.configure = l2c310_configure,
-	.unlock = l2c310_unlock,
-	.outer_cache = {
-		.inv_range = l2c210_inv_range,
-		.clean_range = l2c210_clean_range,
-		.flush_range = l2c210_flush_range,
-		.flush_all = l2c210_flush_all,
-		.disable = l2c310_disable,
-		.sync = l2c210_sync,
-		.resume = l2c310_resume,
-	},
-};
-
 static int __init __l2c_init(const struct l2c_init_data *data,
 			     u32 aux_val, u32 aux_mask, u32 cache_id, bool nosync)
 {
@@ -892,38 +834,6 @@ static int __init __l2c_init(const struct l2c_init_data *data,
 	return 0;
 }
 
-void __init l2x0_init(void __iomem *base, u32 aux_val, u32 aux_mask)
-{
-	const struct l2c_init_data *data;
-	u32 cache_id;
-
-	l2x0_base = base;
-
-	cache_id = readl_relaxed(base + L2X0_CACHE_ID);
-
-	switch (cache_id & L2X0_CACHE_ID_PART_MASK) {
-	default:
-	case L2X0_CACHE_ID_PART_L210:
-		data = &l2c210_data;
-		break;
-
-	case L2X0_CACHE_ID_PART_L220:
-		data = &l2c220_data;
-		break;
-
-	case L2X0_CACHE_ID_PART_L310:
-		data = &l2c310_init_fns;
-		break;
-	}
-
-	/* Read back current (default) hardware configuration */
-	if (data->save)
-		data->save(l2x0_base);
-
-	__l2c_init(data, aux_val, aux_mask, cache_id, false);
-}
-
-#ifdef CONFIG_OF
 static int l2_wt_override;
 
 /* Aurora don't have the cache ID register available, so we have to
@@ -1823,4 +1733,3 @@ int __init l2x0_of_init(u32 aux_val, u32 aux_mask)
 
 	return __l2c_init(data, aux_val, aux_mask, cache_id, nosync);
 }
-#endif
