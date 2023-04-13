@@ -24,10 +24,11 @@
 
 static void __init sh73a0_generic_init(void)
 {
-#ifdef CONFIG_CACHE_L2X0
-	/* Shared attribute override enable, 64K*8way */
-	l2x0_init(ioremap(0xf0100000, PAGE_SIZE), 0x00400000, 0xc20f0fff);
-#endif
+	/*
+	 * early L2 initialization init_irq does not work on sh73a0,
+	 * so do it here
+	 */
+	l2x0_of_init(0, ~0);
 }
 
 static const char *const sh73a0_boards_compat_dt[] __initconst = {
