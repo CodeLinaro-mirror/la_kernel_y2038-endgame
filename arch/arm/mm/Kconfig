@@ -1012,7 +1012,7 @@ config MIGHT_HAVE_CACHE_L2X0
 	  inadvertently configuring a broken kernel.
 
 config CACHE_L2X0
-	bool "Enable the L2x0 outer cache controller" if MIGHT_HAVE_CACHE_L2X0
+	bool "Enable the L2x0 outer cache controller" if EXPERT && MIGHT_HAVE_CACHE_L2X0
 	default MIGHT_HAVE_CACHE_L2X0
 	select OUTER_CACHE
 	select OUTER_CACHE_SYNC
