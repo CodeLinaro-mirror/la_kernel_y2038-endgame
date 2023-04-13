@@ -375,3 +375,6 @@ struct op {
 };
 
 asmlinkage void vfp_save_state(void *location, u32 fpexc);
+struct thread_info;
+asmlinkage void vfp_entry(u32 trigger, struct thread_info *ti, u32 resume_pc,
+			  u32 resume_return_address);
