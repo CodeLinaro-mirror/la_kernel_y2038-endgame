@@ -379,7 +379,6 @@ config ARCH_MULTI_V6
 config ARCH_MULTI_V7
 	bool "ARMv7 based platforms (Cortex-A, PJ4, Scorpion, Krait)"
 	default y
-	select MIGHT_HAVE_CACHE_L2X0
 	select CPU_V7
 	select HAVE_SMP
 

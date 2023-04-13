@@ -11,6 +11,7 @@ config ARCH_HPE_GXP
 	select ARM_VIC
 	select GENERIC_IRQ_CHIP
 	select CLKSRC_MMIO
+	select MIGHT_HAVE_CACHE_L2X0
 	help
 	  HPE GXP is the name of the HPE Soc. This SoC is used to implement many
 	  BMC features at HPE. It supports ARMv7 architecture based on the Cortex

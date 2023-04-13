@@ -4,5 +4,6 @@ menuconfig ARCH_RDA
 	depends on ARCH_MULTI_V7
 	select RDA_INTC
 	select RDA_TIMER
+	select MIGHT_HAVE_CACHE_L2X0
 	help
 	  This enables support for the RDA Micro 8810PL SoC family.

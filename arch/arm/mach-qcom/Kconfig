@@ -45,5 +45,6 @@ config ARCH_MSM8974
 config ARCH_MDM9615
 	bool "Enable support for MDM9615"
 	select CLKSRC_QCOM
+	select MIGHT_HAVE_CACHE_L2X0
 
 endif
