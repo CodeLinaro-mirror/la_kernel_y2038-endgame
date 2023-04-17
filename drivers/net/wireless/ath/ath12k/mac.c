@@ -5518,7 +5518,7 @@ static int ath12k_mac_initiate_hw_scan(struct ieee80211_hw *hw,
 	struct cfg80211_scan_request *req = &hw_req->req;
 	struct ath12k_wmi_scan_req_arg *arg = NULL;
 	u8 link_id;
-	int ret;
+	int ret = 0;
 	int i;
 	bool create = true;
 
@@ -5595,6 +5595,9 @@ static int ath12k_mac_initiate_hw_scan(struct ieee80211_hw *hw,
 	case ATH12K_SCAN_RUNNING:
 	case ATH12K_SCAN_ABORTING:
 		ret = -EBUSY;
+		break;
+	default:
+		ret = -EINVAL;
 		break;
 	}
 	spin_unlock_bh(&ar->data_lock);
@@ -8090,6 +8093,9 @@ static int ath12k_conf_tx_uapsd(struct ath12k_link_vif *arvif,
 	case IEEE80211_AC_BK:
 		value = WMI_STA_PS_UAPSD_AC0_DELIVERY_EN |
 			WMI_STA_PS_UAPSD_AC0_TRIGGER_EN;
+		break;
+	default:
+		value = 0;
 		break;
 	}
 
