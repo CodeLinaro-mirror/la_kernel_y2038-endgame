@@ -1614,7 +1614,7 @@ static void ath12k_peer_assoc_h_he(struct ath12k *ar,
 {
 	const struct ieee80211_sta_he_cap *he_cap = &sta->deflink.he_cap;
 	int i;
-	u8 ampdu_factor, rx_mcs_80, rx_mcs_160, max_nss;
+	u8 ampdu_factor, rx_mcs_80 = 0, rx_mcs_160 = 0, max_nss;
 	u16 mcs_160_map, mcs_80_map;
 	bool support_160;
 	u16 v;
@@ -2939,7 +2939,7 @@ static int ath12k_mac_op_hw_scan(struct ieee80211_hw *hw,
 	struct ath12k_vif *arvif = ath12k_vif_to_arvif(vif);
 	struct cfg80211_scan_request *req = &hw_req->req;
 	struct ath12k_wmi_scan_req_arg arg = {};
-	int ret;
+	int ret = 0;
 	int i;
 
 	mutex_lock(&ar->conf_mutex);
@@ -2958,6 +2958,9 @@ static int ath12k_mac_op_hw_scan(struct ieee80211_hw *hw,
 	case ATH12K_SCAN_RUNNING:
 	case ATH12K_SCAN_ABORTING:
 		ret = -EBUSY;
+		break;
+	default:
+		ret = -EINVAL;
 		break;
 	}
 	spin_unlock_bh(&ar->data_lock);
@@ -3982,6 +3985,9 @@ static int ath12k_conf_tx_uapsd(struct ath12k *ar, struct ieee80211_vif *vif,
 	case IEEE80211_AC_BK:
 		value = WMI_STA_PS_UAPSD_AC0_DELIVERY_EN |
 			WMI_STA_PS_UAPSD_AC0_TRIGGER_EN;
+		break;
+	default:
+		value = 0;
 		break;
 	}
 
