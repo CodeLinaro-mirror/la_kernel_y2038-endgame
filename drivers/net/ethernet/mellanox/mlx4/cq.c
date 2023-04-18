@@ -290,6 +290,7 @@ static void mlx4_cq_free_icm(struct mlx4_dev *dev, int cqn)
 static int mlx4_init_user_cqes(void *buf, int entries, int cqe_size)
 {
 	int entries_per_copy = PAGE_SIZE / cqe_size;
+	size_t copy_size = array_size(entries, cqe_size);
 	void *init_ents;
 	int err = 0;
 	int i;
@@ -304,7 +305,7 @@ static int mlx4_init_user_cqes(void *buf, int entries, int cqe_size)
 	 */
 	memset(init_ents, 0xcc, PAGE_SIZE);
 
-	if (entries_per_copy < entries) {
+	if (copy_size > PAGE_SIZE) {
 		for (i = 0; i < entries / entries_per_copy; i++) {
 			err = copy_to_user((void __user *)buf, init_ents, PAGE_SIZE) ?
 				-EFAULT : 0;
@@ -315,7 +316,7 @@ static int mlx4_init_user_cqes(void *buf, int entries, int cqe_size)
 		}
 	} else {
 		err = copy_to_user((void __user *)buf, init_ents,
-				   array_size(entries, cqe_size)) ?
+				   copy_size) ?
 			-EFAULT : 0;
 	}
 
