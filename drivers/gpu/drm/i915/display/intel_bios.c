@@ -454,7 +454,7 @@ init_bdb_block(struct drm_i915_private *i915,
 	struct bdb_block_entry *entry;
 	void *temp_block = NULL;
 	const void *block;
-	size_t block_size, size;
+	size_t block_size;
 
 	block = find_raw_section(bdb, section_id);
 
@@ -479,11 +479,6 @@ init_bdb_block(struct drm_i915_private *i915,
 	if (section_id == BDB_MIPI_SEQUENCE && *(const u8 *)block >= 3)
 		block_size += 5;
 
-	size = struct_size(entry, data, max(min_size, block_size) + 3);
-	if (size > KMALLOC_MAX_SIZE) {
-		kfree(temp_block);
-		return;
-	}
 	entry = kzalloc(struct_size(entry, data, max(min_size, block_size) + 3),
 			GFP_KERNEL);
 	if (!entry) {

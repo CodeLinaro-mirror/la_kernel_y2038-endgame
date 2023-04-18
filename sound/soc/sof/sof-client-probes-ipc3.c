@@ -180,8 +180,6 @@ static int ipc3_probes_points_add(struct sof_client_dev *cdev,
 	size_t size = struct_size(msg, desc, num_desc);
 	int ret;
 
-	if (size > KMALLOC_MAX_SIZE)
-		return -ENOMEM;
 	msg = kmalloc(size, GFP_KERNEL);
 	if (!msg)
 		return -ENOMEM;
@@ -212,8 +210,6 @@ static int ipc3_probes_points_remove(struct sof_client_dev *cdev,
 	size_t size = struct_size(msg, buffer_id, num_buffer_id);
 	int ret;
 
-	if (size > KMALLOC_MAX_SIZE)
-		return -ENOMEM;
 	msg = kmalloc(size, GFP_KERNEL);
 	if (!msg)
 		return -ENOMEM;

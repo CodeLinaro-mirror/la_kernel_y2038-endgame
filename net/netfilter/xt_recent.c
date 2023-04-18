@@ -341,7 +341,6 @@ static int recent_mt_check(const struct xt_mtchk_param *par,
 #endif
 	unsigned int nstamp_mask;
 	unsigned int i;
-	size_t size;
 	int ret = -EINVAL;
 
 	net_get_random_once(&hash_rnd, sizeof(hash_rnd));
@@ -392,12 +391,7 @@ static int recent_mt_check(const struct xt_mtchk_param *par,
 		goto out;
 	}
 
-	size = struct_size(t, iphash, ip_list_hash_size);
-	if (size > KMALLOC_MAX_SIZE) {
-		ret = -ENOMEM;
-		goto out;
-	}
-	t = kvzalloc(size, GFP_KERNEL);
+	t = kvzalloc(struct_size(t, iphash, ip_list_hash_size), GFP_KERNEL);
 	if (t == NULL) {
 		ret = -ENOMEM;
 		goto out;

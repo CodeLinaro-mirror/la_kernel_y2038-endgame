@@ -448,12 +448,9 @@ reg_copy_regd(const struct ieee80211_regdomain *src_regd)
 {
 	struct ieee80211_regdomain *regd;
 	unsigned int i;
-	size_t size = struct_size(regd, reg_rules, src_regd->n_reg_rules);
 
-	if (size > KMALLOC_MAX_SIZE)
-		return ERR_PTR(-ENOMEM);
-
-	regd = kzalloc(size, GFP_KERNEL);
+	regd = kzalloc(struct_size(regd, reg_rules, src_regd->n_reg_rules),
+		       GFP_KERNEL);
 	if (!regd)
 		return ERR_PTR(-ENOMEM);
 

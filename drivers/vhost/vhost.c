@@ -1428,7 +1428,6 @@ static long vhost_set_memory(struct vhost_dev *d, struct vhost_memory __user *m)
 	struct vhost_memory_region *region;
 	struct vhost_iotlb *newumem, *oldumem;
 	unsigned long size = offsetof(struct vhost_memory, regions);
-	size_t alloc_size;
 	int i;
 
 	if (copy_from_user(&mem, m, size))
@@ -1437,10 +1436,8 @@ static long vhost_set_memory(struct vhost_dev *d, struct vhost_memory __user *m)
 		return -EOPNOTSUPP;
 	if (mem.nregions > max_mem_regions)
 		return -E2BIG;
-	alloc_size = struct_size(newmem, regions, mem.nregions);
-	if (alloc_size > KMALLOC_MAX_SIZE)
-		return -ENOMEM;
-	newmem = kvzalloc(alloc_size, GFP_KERNEL);
+	newmem = kvzalloc(struct_size(newmem, regions, mem.nregions),
+			GFP_KERNEL);
 	if (!newmem)
 		return -ENOMEM;
 

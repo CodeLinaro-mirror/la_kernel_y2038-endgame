@@ -10,7 +10,6 @@
 #include <linux/ceph/decode.h>
 #include <linux/crush/hash.h>
 #include <linux/crush/mapper.h>
-#include <linux/mm.h>
 
 static __printf(2, 3)
 void osdmap_info(const struct ceph_osdmap *map, const char *fmt, ...)
@@ -1202,21 +1201,14 @@ static int osdmap_set_max_osd(struct ceph_osdmap *map, u32 max)
 	struct ceph_entity_addr *addr;
 	u32 to_copy;
 	int i;
-	size_t state_size, weight_size, addr_size;
 
 	dout("%s old %u new %u\n", __func__, map->max_osd, max);
 	if (max == map->max_osd)
 		return 0;
 
-	state_size = array_size(max, sizeof(*state));
-	weight_size = array_size(max, sizeof(*weight));
-	addr_size = array_size(max, sizeof(*addr));
-	if (state_size + weight_size + addr_size > VMALLOC_TOTAL)
-		return -ENOMEM;
-	   
-	state = kvmalloc(state_size, GFP_NOFS);
-	weight = kvmalloc(weight_size, GFP_NOFS);
-	addr = kvmalloc(addr_size, GFP_NOFS);
+	state = kvmalloc(array_size(max, sizeof(*state)), GFP_NOFS);
+	weight = kvmalloc(array_size(max, sizeof(*weight)), GFP_NOFS);
+	addr = kvmalloc(array_size(max, sizeof(*addr)), GFP_NOFS);
 	if (!state || !weight || !addr) {
 		kvfree(state);
 		kvfree(weight);
