@@ -2785,7 +2785,6 @@ int iwl_fw_dbg_collect(struct iwl_fw_runtime *fwrt,
 	struct iwl_fw_dump_desc *desc;
 	unsigned int delay = 0;
 	bool monitor_only = false;
-	size_t size;
 
 	if (trigger) {
 		u16 occurrences = le16_to_cpu(trigger->occurrences) - 1;
@@ -2807,9 +2806,6 @@ int iwl_fw_dbg_collect(struct iwl_fw_runtime *fwrt,
 		delay = le32_to_cpu(trigger->stop_delay) * USEC_PER_MSEC;
 	}
 
-	size = struct_size(desc, trig_desc.data, len);
-	if (size > KMALLOC_MAX_SIZE)
-		return -ENOMEM;
 	desc = kzalloc(struct_size(desc, trig_desc.data, len), GFP_ATOMIC);
 	if (!desc)
 		return -ENOMEM;

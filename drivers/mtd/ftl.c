@@ -197,7 +197,6 @@ static int build_maps(partition_t *part)
     int hdr_ok, ret = -1;
     ssize_t retval;
     loff_t offset;
-    size_t size;
 
     /* Set up erase unit maps */
     part->DataUnits = le16_to_cpu(part->header.NumEraseUnits) -
@@ -264,10 +263,6 @@ static int build_maps(partition_t *part)
 
     /* Set up virtual page map */
     blocks = le32_to_cpu(header.FormattedSize) >> header.BlockSize;
-    size = array_size(blocks, sizeof(uint32_t));
-    if (size > KMALLOC_MAX_SIZE)
-	goto out_XferInfo;
-
     part->VirtualBlockMap = vmalloc(array_size(blocks, sizeof(uint32_t)));
     if (!part->VirtualBlockMap)
 	    goto out_XferInfo;

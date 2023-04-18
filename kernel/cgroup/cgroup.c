@@ -5587,14 +5587,9 @@ static struct cgroup *cgroup_create(struct cgroup *parent, const char *name,
 	struct kernfs_node *kn;
 	int level = parent->level + 1;
 	int ret;
-	size_t alloc_size;
 
 	/* allocate the cgroup and its ID, 0 is reserved for the root */
-	alloc_size = struct_size(cgrp, ancestors, (level + 1));
-	if (alloc_size > KMALLOC_MAX_SIZE)
-		return ERR_PTR(-ENOMEM);
-
-	cgrp = kzalloc(alloc_size, GFP_KERNEL);
+	cgrp = kzalloc(struct_size(cgrp, ancestors, (level + 1)), GFP_KERNEL);
 	if (!cgrp)
 		return ERR_PTR(-ENOMEM);
 

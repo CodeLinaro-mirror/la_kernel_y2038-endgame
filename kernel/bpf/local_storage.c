@@ -146,7 +146,6 @@ static long cgroup_storage_update_elem(struct bpf_map *map, void *key,
 {
 	struct bpf_cgroup_storage *storage;
 	struct bpf_storage_buffer *new;
-	size_t size;
 
 	if (unlikely(flags & ~(BPF_F_LOCK | BPF_EXIST)))
 		return -EINVAL;
@@ -165,11 +164,7 @@ static long cgroup_storage_update_elem(struct bpf_map *map, void *key,
 		return 0;
 	}
 
-	size = struct_size(new, data, map->value_size);
-	if (size > KMALLOC_MAX_SIZE)
-		return -ENOMEM;
-
-	new = bpf_map_kmalloc_node(map, size,
+	new = bpf_map_kmalloc_node(map, struct_size(new, data, map->value_size),
 				   __GFP_ZERO | GFP_NOWAIT | __GFP_NOWARN,
 				   map->numa_node);
 	if (!new)

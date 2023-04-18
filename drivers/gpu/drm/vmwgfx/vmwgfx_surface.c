@@ -1933,10 +1933,6 @@ static int vmw_surface_dirty_alloc(struct vmw_resource *res)
 	num_subres = num_layers * num_mip;
 	dirty_size = struct_size(dirty, boxes, num_subres);
 
-	if (dirty_size > KMALLOC_MAX_SIZE) {
-		ret = -ENOMEM;
-		goto out_no_dirty;
-	}
 	dirty = kvzalloc(dirty_size, GFP_KERNEL);
 	if (!dirty) {
 		ret = -ENOMEM;

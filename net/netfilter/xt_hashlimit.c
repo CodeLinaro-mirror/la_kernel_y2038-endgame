@@ -282,7 +282,6 @@ static int htable_create(struct net *net, struct hashlimit_cfg3 *cfg,
 	const struct seq_operations *ops;
 	unsigned int size, i;
 	unsigned long nr_pages = totalram_pages();
-	size_t alloc_size;
 	int ret;
 
 	if (cfg->size) {
@@ -296,10 +295,7 @@ static int htable_create(struct net *net, struct hashlimit_cfg3 *cfg,
 			size = 16;
 	}
 	/* FIXME: don't use vmalloc() here or anywhere else -HW */
-	alloc_size = struct_size(hinfo, hash, size);
-	if (alloc_size > INT_MAX)
-		return -ENOMEM;
-	hinfo = vmalloc(alloc_size);
+	hinfo = vmalloc(struct_size(hinfo, hash, size));
 	if (hinfo == NULL)
 		return -ENOMEM;
 	*out_hinfo = hinfo;
