@@ -1243,7 +1243,7 @@ out:
 	release_firmware(fw);
 }
 
-static __maybe_unused int imx_dsp_suspend(struct device *dev)
+static int imx_dsp_suspend(struct device *dev)
 {
 	struct rproc *rproc = dev_get_drvdata(dev);
 	struct imx_dsp_rproc *priv = rproc->priv;
@@ -1278,7 +1278,7 @@ out:
 	return pm_runtime_force_suspend(dev);
 }
 
-static __maybe_unused int imx_dsp_resume(struct device *dev)
+static int imx_dsp_resume(struct device *dev)
 {
 	struct rproc *rproc = dev_get_drvdata(dev);
 	int ret = 0;
@@ -1312,9 +1312,8 @@ err:
 }
 
 static const struct dev_pm_ops imx_dsp_rproc_pm_ops = {
-	SET_SYSTEM_SLEEP_PM_OPS(imx_dsp_suspend, imx_dsp_resume)
-	SET_RUNTIME_PM_OPS(imx_dsp_runtime_suspend,
-			   imx_dsp_runtime_resume, NULL)
+	SYSTEM_SLEEP_PM_OPS(imx_dsp_suspend, imx_dsp_resume)
+	RUNTIME_PM_OPS(imx_dsp_runtime_suspend, imx_dsp_runtime_resume, NULL)
 };
 
 static const struct of_device_id imx_dsp_rproc_of_match[] = {
@@ -1332,7 +1331,7 @@ static struct platform_driver imx_dsp_rproc_driver = {
 	.driver = {
 		.name = "imx-dsp-rproc",
 		.of_match_table = imx_dsp_rproc_of_match,
-		.pm = &imx_dsp_rproc_pm_ops,
+		.pm = pm_ptr(&imx_dsp_rproc_pm_ops),
 	},
 };
 module_platform_driver(imx_dsp_rproc_driver);
