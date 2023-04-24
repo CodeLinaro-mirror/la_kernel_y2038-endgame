@@ -2417,8 +2417,9 @@ cifs_find_tcon(struct cifs_ses *ses, struct smb3_fs_context *ctx)
 void
 cifs_put_tcon(struct cifs_tcon *tcon)
 {
-	unsigned int xid;
+	struct TCP_Server_Info *server;
 	struct cifs_ses *ses;
+	unsigned int xid;
 
 	/*
 	 * IPC tcon share the lifetime of their session and are
@@ -2428,6 +2429,7 @@ cifs_put_tcon(struct cifs_tcon *tcon)
 		return;
 
 	ses = tcon->ses;
+	server = ses->server;
 	cifs_dbg(FYI, "%s: tc_count=%d\n", __func__, tcon->tc_count);
 	spin_lock(&cifs_tcp_ses_lock);
 	spin_lock(&tcon->tc_lock);
