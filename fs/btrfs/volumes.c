@@ -2705,6 +2705,8 @@ int btrfs_init_new_device(struct btrfs_fs_info *fs_info, const char *device_path
 			btrfs_abort_transaction(trans, ret);
 			goto error_trans;
 		}
+	} else {
+		seed_devices = NULL;
 	}
 
 	mutex_lock(&fs_devices->device_list_mutex);

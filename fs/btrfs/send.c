@@ -1886,9 +1886,8 @@ static int get_cur_inode_state(struct send_ctx *sctx, u64 ino, u64 gen,
 	if (send_gen)
 		*send_gen = ((left_ret == -ENOENT) ? 0 : info.gen);
 
-	if (!sctx->parent_root) {
-		right_ret = -ENOENT;
-	} else {
+	right_ret = -ENOENT;
+	if (sctx->parent_root) {
 		ret = get_inode_info(sctx->parent_root, ino, &info);
 		if (ret < 0 && ret != -ENOENT)
 			goto out;
