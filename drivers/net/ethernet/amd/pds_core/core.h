@@ -261,6 +261,7 @@ int pdsc_dl_enable_validate(struct devlink *dl, u32 id,
 
 void __iomem *pdsc_map_dbpage(struct pdsc *pdsc, int page_num);
 
+#ifdef CONFIG_DEBUG_FS
 void pdsc_debugfs_create(void);
 void pdsc_debugfs_destroy(void);
 void pdsc_debugfs_add_dev(struct pdsc *pdsc);
@@ -270,6 +271,17 @@ void pdsc_debugfs_add_viftype(struct pdsc *pdsc);
 void pdsc_debugfs_add_irqs(struct pdsc *pdsc);
 void pdsc_debugfs_add_qcq(struct pdsc *pdsc, struct pdsc_qcq *qcq);
 void pdsc_debugfs_del_qcq(struct pdsc_qcq *qcq);
+#else
+static inline void pdsc_debugfs_create(void) {}
+static inline void pdsc_debugfs_destroy(void) {}
+static inline void pdsc_debugfs_add_dev(struct pdsc *pdsc) {}
+static inline void pdsc_debugfs_del_dev(struct pdsc *pdsc) {}
+static inline void pdsc_debugfs_add_ident(struct pdsc *pdsc) {}
+static inline void pdsc_debugfs_add_viftype(struct pdsc *pdsc) {}
+static inline void pdsc_debugfs_add_irqs(struct pdsc *pdsc) {}
+static inline void pdsc_debugfs_add_qcq(struct pdsc *pdsc, struct pdsc_qcq *qcq) {}
+static inline void pdsc_debugfs_del_qcq(struct pdsc_qcq *qcq) {}
+#endif
 
 int pdsc_err_to_errno(enum pds_core_status_code code);
 bool pdsc_is_fw_running(struct pdsc *pdsc);
