@@ -82,4 +82,34 @@ extern const struct gcov_link gcov_link[];
 extern int gcov_events_enabled;
 extern struct mutex gcov_lock;
 
+void __gcov_init(struct gcov_info *info);
+void __gcov_flush(void);
+void __gcov_merge_add(gcov_type *counters, unsigned int n_counters);
+void __gcov_merge_single(gcov_type *counters, unsigned int n_counters);
+void __gcov_merge_delta(gcov_type *counters, unsigned int n_counters);
+void __gcov_merge_ior(gcov_type *counters, unsigned int n_counters);
+void __gcov_merge_time_profile(gcov_type *counters, unsigned int n_counters);
+void __gcov_merge_icall_topn(gcov_type *counters, unsigned int n_counters);
+void __gcov_exit(void);
+
+size_t convert_to_gcda(char *buffer, struct gcov_info *info);
+void gcov_info_add(struct gcov_info *dst, struct gcov_info *src);
+struct gcov_info *gcov_info_dup(struct gcov_info *info);
+const char *gcov_info_filename(struct gcov_info *info);
+void gcov_info_free(struct gcov_info *info);
+int gcov_info_is_compatible(struct gcov_info *info1, struct gcov_info *info2);
+void gcov_info_link(struct gcov_info *info);
+struct gcov_info *gcov_info_next(struct gcov_info *info);
+void gcov_info_reset(struct gcov_info *info);
+void gcov_info_unlink(struct gcov_info *prev, struct gcov_info *info);
+unsigned int gcov_info_version(struct gcov_info *info);
+bool gcov_info_within_module(struct gcov_info *info, struct module *mod);
+void llvm_gcda_emit_arcs(u32 num_counters, u64 *counters);
+void llvm_gcda_emit_function(u32 ident, u32 func_checksum, u32 cfg_checksum);
+void llvm_gcda_end_file(void);
+void llvm_gcda_start_file(const char *orig_filename, u32 version, u32 checksum);
+void llvm_gcda_summary_info(void);
+typedef void (*llvm_gcov_callback)(void);
+void llvm_gcov_init(llvm_gcov_callback writeout, llvm_gcov_callback flush);
+
 #endif /* GCOV_H */
