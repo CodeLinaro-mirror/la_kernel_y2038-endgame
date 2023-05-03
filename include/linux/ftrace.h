@@ -41,6 +41,9 @@ struct ftrace_ops;
 struct ftrace_regs;
 struct dyn_ftrace;
 
+char *arch_ftrace_match_adjust(char *str, const char *search);
+unsigned long ftrace_return_to_handler(unsigned long frame_pointer);
+
 #ifdef CONFIG_FUNCTION_TRACER
 /*
  * If the arch's mcount caller does not support all of ftrace's
