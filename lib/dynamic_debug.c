@@ -854,8 +854,6 @@ static inline char *dynamic_emit_prefix(struct _ddebug *desc, char *buf)
 	return buf;
 }
 
-#if defined(CONFIG_DYNAMIC_DEBUG) || \
-	(defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
 void __dynamic_pr_debug(struct _ddebug *descriptor, const char *fmt, ...)
 {
 	va_list args;
@@ -977,7 +975,6 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
 }
 EXPORT_SYMBOL(__dynamic_ibdev_dbg);
 
-#endif
 #endif
 
 /*
