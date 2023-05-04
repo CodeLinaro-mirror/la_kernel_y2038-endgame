@@ -23,7 +23,6 @@
 #endif
 
 #ifndef __ASSEMBLY__
-void init_IRQ(void);
 
 #ifdef CONFIG_SMP
 #include <linux/cpumask.h>
