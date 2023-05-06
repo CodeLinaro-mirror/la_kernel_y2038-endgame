@@ -257,6 +257,8 @@ cat << EOF
 
 /* Newer ports are not required to provide fstat in favor of statx */
 #define __IGNORE_fstat
+
+#define __IGNORE_cachestat
 EOF
 }
 
