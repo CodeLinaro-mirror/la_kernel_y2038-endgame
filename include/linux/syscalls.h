@@ -311,7 +311,6 @@ static inline void addr_limit_user_check(void)
  * for architectures overriding the syscall calling convention, do not
  * include the prototypes if CONFIG_ARCH_HAS_SYSCALL_WRAPPER is enabled.
  */
-#ifndef CONFIG_ARCH_HAS_SYSCALL_WRAPPER
 asmlinkage long sys_io_setup(unsigned nr_reqs, aio_context_t __user *ctx);
 asmlinkage long sys_io_destroy(aio_context_t ctx);
 asmlinkage long sys_io_submit(aio_context_t, long,
@@ -684,6 +683,7 @@ asmlinkage long sys_clock_getres_time32(clockid_t which_clock,
 asmlinkage long sys_clock_nanosleep_time32(clockid_t which_clock, int flags,
 				struct old_timespec32 __user *rqtp,
 				struct old_timespec32 __user *rmtp);
+asmlinkage long sys_ni_posix_timers(void);
 
 /* kernel/printk.c */
 asmlinkage long sys_syslog(int type, char __user *buf, int len);
@@ -1278,8 +1278,6 @@ asmlinkage long sys_old_mmap(struct mmap_arg_struct __user *arg);
  * not implemented -- see kernel/sys_ni.c
  */
 asmlinkage long sys_ni_syscall(void);
-
-#endif /* CONFIG_ARCH_HAS_SYSCALL_WRAPPER */
 
 
 /*
