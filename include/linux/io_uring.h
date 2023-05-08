@@ -102,6 +102,10 @@ static inline const char *io_uring_get_opcode(u8 opcode)
 {
 	return "";
 }
+static inline const void *io_uring_sqe_cmd(const struct io_uring_sqe *sqe)
+{
+	return NULL;
+}
 #endif
 
 #endif
