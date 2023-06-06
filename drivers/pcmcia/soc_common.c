@@ -43,6 +43,7 @@
 #include <linux/ioport.h>
 #include <linux/irq.h>
 #include <linux/kernel.h>
+#include <linux/platform_device.h>
 #include <linux/mm.h>
 #include <linux/moduleparam.h>
 #include <linux/mutex.h>
