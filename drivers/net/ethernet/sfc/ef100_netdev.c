@@ -302,7 +302,7 @@ int ef100_netdev_event(struct notifier_block *this,
 	struct efx_nic *efx = container_of(this, struct efx_nic, netdev_notifier);
 	struct net_device *net_dev = netdev_notifier_info_to_dev(ptr);
 	struct ef100_nic_data *nic_data = efx->nic_data;
-	int err;
+	int err = 0;
 
 	if (efx->net_dev == net_dev &&
 	    (event == NETDEV_CHANGENAME || event == NETDEV_REGISTER))
@@ -310,7 +310,8 @@ int ef100_netdev_event(struct notifier_block *this,
 
 	if (!nic_data->grp_mae)
 		return NOTIFY_DONE;
-	err = efx_tc_netdev_event(efx, event, net_dev);
+	if (IS_ENABLED(CONFIG_SFC_SRIOV))
+		err = efx_tc_netdev_event(efx, event, net_dev);
 	if (err & NOTIFY_STOP_MASK)
 		return err;
 
@@ -322,11 +323,12 @@ static int ef100_netevent_event(struct notifier_block *this,
 {
 	struct efx_nic *efx = container_of(this, struct efx_nic, netevent_notifier);
 	struct ef100_nic_data *nic_data = efx->nic_data;
-	int err;
+	int err = 0;;
 
 	if (!nic_data->grp_mae)
 		return NOTIFY_DONE;
-	err = efx_tc_netevent_event(efx, event, ptr);
+	if (IS_ENABLED(CONFIG_SFC_SRIOV))
+		err = efx_tc_netevent_event(efx, event, ptr);
 	if (err & NOTIFY_STOP_MASK)
 		return err;
 
