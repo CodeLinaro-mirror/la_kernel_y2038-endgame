@@ -26,19 +26,23 @@ struct aq_rxpage {
 	unsigned int pg_off;
 };
 
-/*           TxC       SOP        DX         EOP
- *         +----------+----------+----------+-----------
- *   8bytes|len l3,l4 | pa       | pa       | pa
- *         +----------+----------+----------+-----------
- * 4/8bytes|len pkt   |len pkt   |          | skb
- *         +----------+----------+----------+-----------
- * 4/8bytes|is_gso    |len,flags |len       |len,is_eop
- *         +----------+----------+----------+-----------
+/*           TxC       SOP        DX         EOP	RX
+ *         +----------+----------+----------+----------+-------
+ *   8bytes|len l3,l4 | pa       | pa       | pa       | hash
+ *         +----------+----------+----------+----------+-------
+ * 4/8bytes|len pkt   |len pkt   |          | skb      | page
+ *         +----------+----------+----------+----------+-------
+ * 4/8bytes|is_gso    |len,flags |len       |len,is_eop| daddr
+ *         +----------+----------+----------+----------+-------
+ * 4/8bytes|          |          |          |          | order,pgoff
+ *         +----------+----------+----------+----------+-------
+ * 2bytes  |          |          |          |          | vlan_rx_tag
+ *         +----------+----------+----------+----------+-------
+ * 8bytes  +                   flags
+ *         +----------+----------+----------+----------+-------
  *
- *  This aq_ring_buff_s doesn't have endianness dependency.
- *  It is __packed for cache line optimizations.
  */
-struct __packed aq_ring_buff_s {
+struct aq_ring_buff_s {
 	union {
 		/* RX/TX */
 		dma_addr_t pa;
