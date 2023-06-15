@@ -524,17 +524,6 @@ static const char *ar933x_uart_type(struct uart_port *port)
 	return (port->type == PORT_AR933X) ? "AR933X UART" : NULL;
 }
 
-static void ar933x_uart_release_port(struct uart_port *port)
-{
-	/* Nothing to release ... */
-}
-
-static int ar933x_uart_request_port(struct uart_port *port)
-{
-	/* UARTs always present */
-	return 0;
-}
-
 static void ar933x_uart_config_port(struct uart_port *port, int flags)
 {
 	if (flags & UART_CONFIG_TYPE)

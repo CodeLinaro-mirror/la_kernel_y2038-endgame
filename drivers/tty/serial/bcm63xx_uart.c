@@ -550,30 +550,11 @@ static void bcm_uart_set_termios(struct uart_port *port, struct ktermios *new,
 }
 
 /*
- * serial core request to claim uart iomem
- */
-static int bcm_uart_request_port(struct uart_port *port)
-{
-	/* UARTs always present */
-	return 0;
-}
-
-/*
- * serial core request to release uart iomem
- */
-static void bcm_uart_release_port(struct uart_port *port)
-{
-	/* Nothing to release ... */
-}
-
-/*
  * serial core request to do any port required autoconfiguration
  */
 static void bcm_uart_config_port(struct uart_port *port, int flags)
 {
 	if (flags & UART_CONFIG_TYPE) {
-		if (bcm_uart_request_port(port))
-			return;
 		port->type = PORT_BCM63XX;
 	}
 }
@@ -644,8 +625,6 @@ static const struct uart_ops bcm_uart_ops = {
 	.shutdown	= bcm_uart_shutdown,
 	.set_termios	= bcm_uart_set_termios,
 	.type		= bcm_uart_type,
-	.release_port	= bcm_uart_release_port,
-	.request_port	= bcm_uart_request_port,
 	.config_port	= bcm_uart_config_port,
 	.verify_port	= bcm_uart_verify_port,
 #ifdef CONFIG_CONSOLE_POLL

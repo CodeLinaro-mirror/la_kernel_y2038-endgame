@@ -213,17 +213,6 @@ static const char *altera_jtaguart_type(struct uart_port *port)
 	return (port->type == PORT_ALTERA_JTAGUART) ? "Altera JTAG UART" : NULL;
 }
 
-static int altera_jtaguart_request_port(struct uart_port *port)
-{
-	/* UARTs always present */
-	return 0;
-}
-
-static void altera_jtaguart_release_port(struct uart_port *port)
-{
-	/* Nothing to release... */
-}
-
 static int altera_jtaguart_verify_port(struct uart_port *port,
 				       struct serial_struct *ser)
 {
@@ -247,8 +236,6 @@ static const struct uart_ops altera_jtaguart_ops = {
 	.shutdown	= altera_jtaguart_shutdown,
 	.set_termios	= altera_jtaguart_set_termios,
 	.type		= altera_jtaguart_type,
-	.request_port	= altera_jtaguart_request_port,
-	.release_port	= altera_jtaguart_release_port,
 	.config_port	= altera_jtaguart_config_port,
 	.verify_port	= altera_jtaguart_verify_port,
 };

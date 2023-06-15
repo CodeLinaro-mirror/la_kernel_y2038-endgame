@@ -399,15 +399,6 @@ static const char *arc_serial_type(struct uart_port *port)
 	return port->type == PORT_ARC ? DRIVER_NAME : NULL;
 }
 
-static void arc_serial_release_port(struct uart_port *port)
-{
-}
-
-static int arc_serial_request_port(struct uart_port *port)
-{
-	return 0;
-}
-
 /*
  * Verify the new serial_struct (for TIOCSSERIAL).
  */
@@ -463,8 +454,6 @@ static const struct uart_ops arc_serial_pops = {
 	.shutdown	= arc_serial_shutdown,
 	.set_termios	= arc_serial_set_termios,
 	.type		= arc_serial_type,
-	.release_port	= arc_serial_release_port,
-	.request_port	= arc_serial_request_port,
 	.config_port	= arc_serial_config_port,
 	.verify_port	= arc_serial_verify_port,
 #ifdef CONFIG_CONSOLE_POLL

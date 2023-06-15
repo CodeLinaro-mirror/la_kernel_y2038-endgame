@@ -1119,12 +1119,6 @@ static const char *max310x_type(struct uart_port *port)
 	return (port->type == PORT_MAX310X) ? s->devtype->name : NULL;
 }
 
-static int max310x_request_port(struct uart_port *port)
-{
-	/* Do nothing */
-	return 0;
-}
-
 static void max310x_config_port(struct uart_port *port, int flags)
 {
 	if (flags & UART_CONFIG_TYPE)
@@ -1158,8 +1152,6 @@ static const struct uart_ops max310x_ops = {
 	.shutdown	= max310x_shutdown,
 	.set_termios	= max310x_set_termios,
 	.type		= max310x_type,
-	.request_port	= max310x_request_port,
-	.release_port	= max310x_null_void,
 	.config_port	= max310x_config_port,
 	.verify_port	= max310x_verify_port,
 };

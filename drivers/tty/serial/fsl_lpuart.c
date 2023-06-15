@@ -2367,16 +2367,6 @@ static const char *lpuart_type(struct uart_port *port)
 	return "FSL_LPUART";
 }
 
-static void lpuart_release_port(struct uart_port *port)
-{
-	/* nothing to do */
-}
-
-static int lpuart_request_port(struct uart_port *port)
-{
-	return  0;
-}
-
 /* configure/autoconfigure the port */
 static void lpuart_config_port(struct uart_port *port, int flags)
 {
@@ -2416,8 +2406,6 @@ static const struct uart_ops lpuart_pops = {
 	.set_termios	= lpuart_set_termios,
 	.pm		= lpuart_uart_pm,
 	.type		= lpuart_type,
-	.request_port	= lpuart_request_port,
-	.release_port	= lpuart_release_port,
 	.config_port	= lpuart_config_port,
 	.verify_port	= lpuart_verify_port,
 	.flush_buffer	= lpuart_flush_buffer,
@@ -2441,8 +2429,6 @@ static const struct uart_ops lpuart32_pops = {
 	.set_termios	= lpuart32_set_termios,
 	.pm		= lpuart_uart_pm,
 	.type		= lpuart_type,
-	.request_port	= lpuart_request_port,
-	.release_port	= lpuart_release_port,
 	.config_port	= lpuart_config_port,
 	.verify_port	= lpuart_verify_port,
 	.flush_buffer	= lpuart_flush_buffer,

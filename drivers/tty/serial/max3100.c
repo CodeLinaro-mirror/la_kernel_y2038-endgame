@@ -681,25 +681,6 @@ static void max3100_stop_tx(struct uart_port *port)
 	dev_dbg(&s->spi->dev, "%s\n", __func__);
 }
 
-static int max3100_request_port(struct uart_port *port)
-{
-	struct max3100_port *s = container_of(port,
-					      struct max3100_port,
-					      port);
-
-	dev_dbg(&s->spi->dev, "%s\n", __func__);
-	return 0;
-}
-
-static void max3100_break_ctl(struct uart_port *port, int break_state)
-{
-	struct max3100_port *s = container_of(port,
-					      struct max3100_port,
-					      port);
-
-	dev_dbg(&s->spi->dev, "%s\n", __func__);
-}
-
 static const struct uart_ops max3100_ops = {
 	.tx_empty	= max3100_tx_empty,
 	.set_mctrl	= max3100_set_mctrl,
@@ -713,8 +694,6 @@ static const struct uart_ops max3100_ops = {
 	.shutdown	= max3100_shutdown,
 	.set_termios	= max3100_set_termios,
 	.type		= max3100_type,
-	.release_port   = max3100_release_port,
-	.request_port   = max3100_request_port,
 	.config_port	= max3100_config_port,
 	.verify_port	= max3100_verify_port,
 };
