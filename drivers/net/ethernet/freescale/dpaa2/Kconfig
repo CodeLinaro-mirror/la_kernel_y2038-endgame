@@ -32,6 +32,7 @@ config FSL_DPAA2_PTP_CLOCK
 
 config FSL_DPAA2_SWITCH
 	tristate "Freescale DPAA2 Ethernet Switch"
+	depends on FSL_MC_BUS && FSL_MC_DPIO
 	depends on BRIDGE || BRIDGE=n
 	depends on NET_SWITCHDEV
 	help
