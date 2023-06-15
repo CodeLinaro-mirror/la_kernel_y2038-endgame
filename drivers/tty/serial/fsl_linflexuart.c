@@ -515,16 +515,6 @@ static const char *linflex_type(struct uart_port *port)
 	return "FSL_LINFLEX";
 }
 
-static void linflex_release_port(struct uart_port *port)
-{
-	/* nothing to do */
-}
-
-static int linflex_request_port(struct uart_port *port)
-{
-	return 0;
-}
-
 /* configure/auto-configure the port */
 static void linflex_config_port(struct uart_port *port, int flags)
 {
@@ -544,8 +534,6 @@ static const struct uart_ops linflex_pops = {
 	.shutdown	= linflex_shutdown,
 	.set_termios	= linflex_set_termios,
 	.type		= linflex_type,
-	.request_port	= linflex_request_port,
-	.release_port	= linflex_release_port,
 	.config_port	= linflex_config_port,
 };
 

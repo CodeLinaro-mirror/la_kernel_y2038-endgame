@@ -902,18 +902,6 @@ static const char *ip22zilog_type(struct uart_port *port)
 	return "IP22-Zilog";
 }
 
-/* We do not request/release mappings of the registers here, this
- * happens at early serial probe time.
- */
-static void ip22zilog_release_port(struct uart_port *port)
-{
-}
-
-static int ip22zilog_request_port(struct uart_port *port)
-{
-	return 0;
-}
-
 /* These do not need to do anything interesting either.  */
 static void ip22zilog_config_port(struct uart_port *port, int flags)
 {
@@ -938,8 +926,6 @@ static const struct uart_ops ip22zilog_pops = {
 	.shutdown	=	ip22zilog_shutdown,
 	.set_termios	=	ip22zilog_set_termios,
 	.type		=	ip22zilog_type,
-	.release_port	=	ip22zilog_release_port,
-	.request_port	=	ip22zilog_request_port,
 	.config_port	=	ip22zilog_config_port,
 	.verify_port	=	ip22zilog_verify_port,
 };

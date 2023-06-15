@@ -348,17 +348,6 @@ static const char *altera_uart_type(struct uart_port *port)
 	return (port->type == PORT_ALTERA_UART) ? "Altera UART" : NULL;
 }
 
-static int altera_uart_request_port(struct uart_port *port)
-{
-	/* UARTs always present */
-	return 0;
-}
-
-static void altera_uart_release_port(struct uart_port *port)
-{
-	/* Nothing to release... */
-}
-
 static int altera_uart_verify_port(struct uart_port *port,
 				   struct serial_struct *ser)
 {
@@ -402,8 +391,6 @@ static const struct uart_ops altera_uart_ops = {
 	.shutdown	= altera_uart_shutdown,
 	.set_termios	= altera_uart_set_termios,
 	.type		= altera_uart_type,
-	.request_port	= altera_uart_request_port,
-	.release_port	= altera_uart_release_port,
 	.config_port	= altera_uart_config_port,
 	.verify_port	= altera_uart_verify_port,
 #ifdef CONFIG_CONSOLE_POLL

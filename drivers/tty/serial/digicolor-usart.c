@@ -355,15 +355,6 @@ static void digicolor_uart_config_port(struct uart_port *port, int flags)
 		port->type = PORT_DIGICOLOR;
 }
 
-static void digicolor_uart_release_port(struct uart_port *port)
-{
-}
-
-static int digicolor_uart_request_port(struct uart_port *port)
-{
-	return 0;
-}
-
 static const struct uart_ops digicolor_uart_ops = {
 	.tx_empty	= digicolor_uart_tx_empty,
 	.set_mctrl	= digicolor_uart_set_mctrl,
@@ -377,8 +368,6 @@ static const struct uart_ops digicolor_uart_ops = {
 	.set_termios	= digicolor_uart_set_termios,
 	.type		= digicolor_uart_type,
 	.config_port	= digicolor_uart_config_port,
-	.release_port	= digicolor_uart_release_port,
-	.request_port	= digicolor_uart_request_port,
 };
 
 static void digicolor_uart_console_putchar(struct uart_port *port, unsigned char ch)
