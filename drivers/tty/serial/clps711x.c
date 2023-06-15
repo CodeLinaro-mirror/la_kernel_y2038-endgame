@@ -320,13 +320,8 @@ static void uart_clps711x_config_port(struct uart_port *port, int flags)
 		port->type = PORT_CLPS711X;
 }
 
-static void uart_clps711x_nop_void(struct uart_port *port)
+static void uart_clps711x_stop_rx(struct uart_port *port)
 {
-}
-
-static int uart_clps711x_nop_int(struct uart_port *port)
-{
-	return 0;
 }
 
 static const struct uart_ops uart_clps711x_ops = {
@@ -335,7 +330,7 @@ static const struct uart_ops uart_clps711x_ops = {
 	.get_mctrl	= uart_clps711x_get_mctrl,
 	.stop_tx	= uart_clps711x_stop_tx,
 	.start_tx	= uart_clps711x_start_tx,
-	.stop_rx	= uart_clps711x_nop_void,
+	.stop_rx	= uart_clps711x_stop_rx,
 	.break_ctl	= uart_clps711x_break_ctl,
 	.set_ldisc	= uart_clps711x_set_ldisc,
 	.startup	= uart_clps711x_startup,
@@ -343,8 +338,6 @@ static const struct uart_ops uart_clps711x_ops = {
 	.set_termios	= uart_clps711x_set_termios,
 	.type		= uart_clps711x_type,
 	.config_port	= uart_clps711x_config_port,
-	.release_port	= uart_clps711x_nop_void,
-	.request_port	= uart_clps711x_nop_int,
 };
 
 #ifdef CONFIG_SERIAL_CLPS711X_CONSOLE
