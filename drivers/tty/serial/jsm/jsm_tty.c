@@ -325,15 +325,6 @@ static const char *jsm_tty_type(struct uart_port *port)
 	return "jsm";
 }
 
-static void jsm_tty_release_port(struct uart_port *port)
-{
-}
-
-static int jsm_tty_request_port(struct uart_port *port)
-{
-	return 0;
-}
-
 static void jsm_config_port(struct uart_port *port, int flags)
 {
 	port->type = PORT_JSM;
@@ -352,8 +343,6 @@ static const struct uart_ops jsm_ops = {
 	.shutdown	= jsm_tty_close,
 	.set_termios	= jsm_tty_set_termios,
 	.type		= jsm_tty_type,
-	.release_port	= jsm_tty_release_port,
-	.request_port	= jsm_tty_request_port,
 	.config_port	= jsm_config_port,
 };
 
