@@ -142,19 +142,19 @@ module_param(max_rport_logins, int, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(max_rport_logins, "Max number of logins to initiator and target rports on a port (physical/logical), default=1024");
 
 static void
-bfad_sm_uninit(struct bfad_s *bfad, enum bfad_sm_event event);
+bfad_sm_uninit(struct bfad_s *bfad, enum bfad_sm_event);
 static void
-bfad_sm_created(struct bfad_s *bfad, enum bfad_sm_event event);
+bfad_sm_created(struct bfad_s *bfad, enum bfad_sm_event);
 static void
-bfad_sm_initializing(struct bfad_s *bfad, enum bfad_sm_event event);
+bfad_sm_initializing(struct bfad_s *bfad, enum bfad_sm_event);
 static void
-bfad_sm_operational(struct bfad_s *bfad, enum bfad_sm_event event);
+bfad_sm_operational(struct bfad_s *bfad, enum bfad_sm_event);
 static void
-bfad_sm_stopping(struct bfad_s *bfad, enum bfad_sm_event event);
+bfad_sm_stopping(struct bfad_s *bfad, enum bfad_sm_event);
 static void
-bfad_sm_failed(struct bfad_s *bfad, enum bfad_sm_event event);
+bfad_sm_failed(struct bfad_s *bfad, enum bfad_sm_event);
 static void
-bfad_sm_fcs_exit(struct bfad_s *bfad, enum bfad_sm_event event);
+bfad_sm_fcs_exit(struct bfad_s *bfad, enum bfad_sm_event);
 
 /*
  * Beginning state for the driver instance, awaiting the pci_probe event
