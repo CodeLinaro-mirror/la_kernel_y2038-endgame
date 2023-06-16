@@ -325,7 +325,7 @@ static int __send_message(struct bnxt_qplib_rcfw *rcfw,
 	crsqe->is_internal_cmd = false;
 	crsqe->is_waiter_alive = true;
 	crsqe->is_in_used = true;
-	crsqe->opcode = opcode;
+	crsqe->opcode = 0;
 
 	crsqe->req_size = __get_cmdq_base_cmd_size(msg->req, msg->req_sz);
 	if (__get_cmdq_base_resp_size(msg->req, msg->req_sz) && msg->sb) {
