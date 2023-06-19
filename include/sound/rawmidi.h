@@ -161,8 +161,7 @@ int snd_rawmidi_free(struct snd_rawmidi *rmidi);
 
 /* callbacks */
 
-int snd_rawmidi_receive(struct snd_rawmidi_substream *substream,
-			const unsigned char *buffer, int count);
+int snd_rawmidi_receive(void *ptr, const void *buffer, int count);
 int snd_rawmidi_transmit_empty(struct snd_rawmidi_substream *substream);
 int snd_rawmidi_transmit_peek(struct snd_rawmidi_substream *substream,
 			      unsigned char *buffer, int count);

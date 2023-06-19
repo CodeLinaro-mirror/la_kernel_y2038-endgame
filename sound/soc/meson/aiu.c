@@ -209,6 +209,11 @@ static const char * const aiu_spdif_ids[] = {
 	[MCLK]	= "spdif_mclk_sel"
 };
 
+static void aiu_clk_disable(void *clk)
+{
+	clk_disable_unprepare(clk);
+}
+
 static int aiu_clk_get(struct device *dev)
 {
 	struct aiu *aiu = dev_get_drvdata(dev);
@@ -239,9 +244,7 @@ static int aiu_clk_get(struct device *dev)
 		return ret;
 	}
 
-	ret = devm_add_action_or_reset(dev,
-				       (void(*)(void *))clk_disable_unprepare,
-				       aiu->pclk);
+	ret = devm_add_action_or_reset(dev, aiu_clk_disable, aiu->pclk);
 	if (ret)
 		dev_err(dev, "failed to add reset action on pclk");
 

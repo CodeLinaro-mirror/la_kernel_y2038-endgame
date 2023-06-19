@@ -1165,9 +1165,9 @@ static struct timespec64 get_framing_tstamp(struct snd_rawmidi_substream *substr
  *
  * Return: The size of read data, or a negative error code on failure.
  */
-int snd_rawmidi_receive(struct snd_rawmidi_substream *substream,
-			const unsigned char *buffer, int count)
+int snd_rawmidi_receive(void *ptr, const void *buffer, int count)
 {
+	struct snd_rawmidi_substream *substream = ptr;
 	unsigned long flags;
 	struct timespec64 ts64 = get_framing_tstamp(substream);
 	int result = 0, count1;
@@ -1195,7 +1195,7 @@ int snd_rawmidi_receive(struct snd_rawmidi_substream *substream,
 	} else if (count == 1) {	/* special case, faster code */
 		substream->bytes++;
 		if (runtime->avail < runtime->buffer_size) {
-			runtime->buffer[runtime->hw_ptr++] = buffer[0];
+			runtime->buffer[runtime->hw_ptr++] = ((u8 *)buffer)[0];
 			runtime->hw_ptr %= runtime->buffer_size;
 			runtime->avail++;
 			result++;

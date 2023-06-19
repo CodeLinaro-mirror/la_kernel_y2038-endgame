@@ -243,6 +243,11 @@ static const struct regmap_config t9015_regmap_config = {
 	.max_register		= POWER_CFG,
 };
 
+static void t9015_clk_disable(void *clk)
+{
+	clk_disable_unprepare(clk);
+}
+
 static int t9015_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -270,9 +275,7 @@ static int t9015_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	ret = devm_add_action_or_reset(dev,
-			(void(*)(void *))clk_disable_unprepare,
-			priv->pclk);
+	ret = devm_add_action_or_reset(dev, t9015_clk_disable, priv->pclk);
 	if (ret)
 		return ret;
 

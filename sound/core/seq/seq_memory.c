@@ -135,7 +135,7 @@ EXPORT_SYMBOL(snd_seq_dump_var_event);
  * expand the variable length event to linear buffer space.
  */
 
-static int seq_copy_in_kernel(void *ptr, void *src, int size)
+static int seq_copy_in_kernel(void *ptr, const void *src, int size)
 {
 	char **bufptr = ptr;
 
@@ -144,7 +144,7 @@ static int seq_copy_in_kernel(void *ptr, void *src, int size)
 	return 0;
 }
 
-static int seq_copy_in_user(void *ptr, void *src, int size)
+static int seq_copy_in_user(void *ptr, const void *src, int size)
 {
 	char __user **bufptr = ptr;
 

@@ -256,6 +256,11 @@ kunit_test_suites(&executor_test_suite);
 
 /* Test helpers */
 
+static void __kunit_kfree(void *ptr)
+{
+	return kfree(ptr);
+}
+
 /* Use the resource API to register a call to kfree(to_free).
  * Since we never actually use the resource, it's safe to use on const data.
  */
@@ -265,9 +270,7 @@ static void kfree_at_end(struct kunit *test, const void *to_free)
 	if (IS_ERR_OR_NULL(to_free))
 		return;
 
-	kunit_add_action(test,
-			(kunit_action_t *)kfree,
-			(void *)to_free);
+	kunit_add_action(test, __kunit_kfree, (void *)to_free);
 }
 
 static struct kunit_suite *alloc_fake_suite(struct kunit *test,

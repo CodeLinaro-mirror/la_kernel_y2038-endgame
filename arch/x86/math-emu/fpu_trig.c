@@ -1629,9 +1629,19 @@ static void fscale(FPU_REG *st0_ptr, u_char st0_tag)
 
 /*---------------------------------------------------------------------------*/
 
+static void FPU_ST0_fdecstp(FPU_REG *st0_ptr, u_char st0_tag)
+{
+	fdecstp();
+}
+
+static void FPU_ST0_fincstp(FPU_REG *st0_ptr, u_char st0_tag)
+{
+	fincstp();
+}
+
 static FUNC_ST0 const trig_table_a[] = {
 	f2xm1, fyl2x, fptan, fpatan,
-	fxtract, fprem1, (FUNC_ST0) fdecstp, (FUNC_ST0) fincstp
+	fxtract, fprem1, FPU_ST0_fdecstp, FPU_ST0_fincstp,
 };
 
 void FPU_triga(void)

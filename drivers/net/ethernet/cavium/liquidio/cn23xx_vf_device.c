@@ -386,10 +386,10 @@ void cn23xx_vf_ask_pf_to_do_flr(struct octeon_device *oct)
 }
 EXPORT_SYMBOL_GPL(cn23xx_vf_ask_pf_to_do_flr);
 
-static void octeon_pfvf_hs_callback(struct octeon_device *oct,
-				    struct octeon_mbox_cmd *cmd,
-				    void *arg)
+static void octeon_pfvf_hs_callback(void *octp, void *cmdp, void *arg)
 {
+	struct octeon_device *oct = octp;
+	struct octeon_mbox_cmd *cmd = cmdp;
 	u32 major = 0;
 
 	memcpy((uint8_t *)&oct->pfvf_hsword, cmd->msg.s.params,
@@ -429,7 +429,7 @@ int cn23xx_octeon_pfvf_handshake(struct octeon_device *oct)
 	mbox_cmd.q_no = 0;
 	mbox_cmd.recv_len = 0;
 	mbox_cmd.recv_status = 0;
-	mbox_cmd.fn = (octeon_mbox_callback_t)octeon_pfvf_hs_callback;
+	mbox_cmd.fn = octeon_pfvf_hs_callback;
 	mbox_cmd.fn_arg = &status;
 
 	octeon_mbox_write(oct, &mbox_cmd);

@@ -772,6 +772,11 @@ static struct notifier_block kunit_mod_nb = {
 };
 #endif
 
+static void __kunit_kfree(void *ptr)
+{
+	kfree(ptr);
+}
+
 void *kunit_kmalloc_array(struct kunit *test, size_t n, size_t size, gfp_t gfp)
 {
 	void *data;
@@ -781,7 +786,7 @@ void *kunit_kmalloc_array(struct kunit *test, size_t n, size_t size, gfp_t gfp)
 	if (!data)
 		return NULL;
 
-	if (kunit_add_action_or_reset(test, (kunit_action_t *)kfree, data) != 0)
+	if (kunit_add_action_or_reset(test, __kunit_kfree, data) != 0)
 		return NULL;
 
 	return data;
@@ -793,7 +798,7 @@ void kunit_kfree(struct kunit *test, const void *ptr)
 	if (!ptr)
 		return;
 
-	kunit_release_action(test, (kunit_action_t *)kfree, (void *)ptr);
+	kunit_release_action(test, __kunit_kfree, (void *)ptr);
 }
 EXPORT_SYMBOL_GPL(kunit_kfree);
 
