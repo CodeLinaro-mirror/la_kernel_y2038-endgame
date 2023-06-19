@@ -78,10 +78,10 @@ static void scp_wdt_handler(struct mtk_scp *scp, u32 scp_to_host)
 		rproc_report_crash(scp_node->rproc, RPROC_WATCHDOG);
 }
 
-static void scp_init_ipi_handler(void *data, unsigned int len, void *priv)
+static void scp_init_ipi_handler(const void *data, unsigned int len, void *priv)
 {
 	struct mtk_scp *scp = priv;
-	struct scp_run *run = data;
+	struct scp_run *run = (void *)data;
 
 	scp->run.signaled = run->signaled;
 	strscpy(scp->run.fw_ver, run->fw_ver, SCP_FW_VER_LEN);

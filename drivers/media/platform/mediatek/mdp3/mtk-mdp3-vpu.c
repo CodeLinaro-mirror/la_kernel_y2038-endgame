@@ -77,10 +77,10 @@ void mdp_vpu_shared_mem_free(struct mdp_vpu_dev *vpu)
 		dma_free_wc(dev, vpu->config_size, vpu->config, vpu->config_addr);
 }
 
-static void mdp_vpu_ipi_handle_init_ack(void *data, unsigned int len,
+static void mdp_vpu_ipi_handle_init_ack(const void *data, unsigned int len,
 					void *priv)
 {
-	struct mdp_ipi_init_msg *msg = (struct mdp_ipi_init_msg *)data;
+	const struct mdp_ipi_init_msg *msg = data;
 	struct mdp_vpu_dev *vpu =
 		(struct mdp_vpu_dev *)(unsigned long)msg->drv_data;
 
@@ -91,10 +91,10 @@ static void mdp_vpu_ipi_handle_init_ack(void *data, unsigned int len,
 	complete(&vpu->ipi_acked);
 }
 
-static void mdp_vpu_ipi_handle_deinit_ack(void *data, unsigned int len,
+static void mdp_vpu_ipi_handle_deinit_ack(const void *data, unsigned int len,
 					  void *priv)
 {
-	struct mdp_ipi_deinit_msg *msg = (struct mdp_ipi_deinit_msg *)data;
+	const struct mdp_ipi_deinit_msg *msg = data;
 	struct mdp_vpu_dev *vpu =
 		(struct mdp_vpu_dev *)(unsigned long)msg->drv_data;
 
@@ -102,10 +102,10 @@ static void mdp_vpu_ipi_handle_deinit_ack(void *data, unsigned int len,
 	complete(&vpu->ipi_acked);
 }
 
-static void mdp_vpu_ipi_handle_frame_ack(void *data, unsigned int len,
+static void mdp_vpu_ipi_handle_frame_ack(const void *data, unsigned int len,
 					 void *priv)
 {
-	struct img_sw_addr *addr = (struct img_sw_addr *)data;
+	const struct img_sw_addr *addr = data;
 	struct img_ipi_frameparam *param =
 		(struct img_ipi_frameparam *)(unsigned long)addr->va;
 	struct mdp_vpu_dev *vpu =

@@ -8,7 +8,7 @@
 
 #include <linux/platform_device.h>
 
-typedef void (*scp_ipi_handler_t) (void *data,
+typedef void (*scp_ipi_handler_t) (const void *data,
 				   unsigned int len,
 				   void *priv);
 struct mtk_scp;
