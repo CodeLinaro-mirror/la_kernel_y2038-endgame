@@ -212,7 +212,7 @@ struct rds6_info_socket {
 	__be16		connected_port;
 	__u32		rcvbuf;
 	__u64		inum;
-} __attribute__((packed));
+} __attribute__((packed)) __attribute__((aligned(4)));
 
 struct rds_info_tcp_socket {
 	__be32          local_addr;
@@ -227,17 +227,27 @@ struct rds_info_tcp_socket {
 	__u8		tos;
 } __attribute__((packed));
 
+struct unaligned_in6_addr {
+	union {
+	__u8		u6_addr8[16];
+#if __UAPI_DEF_IN6_ADDR_ALT
+		__be16		u6_addr16[8] __attribute__((packed));
+		__be32		u6_addr32[4] __attribute__((packed));
+#endif
+	} in6_u;
+};
+
 struct rds6_info_tcp_socket {
 	struct in6_addr	local_addr;
 	__be16		local_port;
-	struct in6_addr	peer_addr;
+	struct unaligned_in6_addr peer_addr;
 	__be16		peer_port;
 	__u64		hdr_rem;
 	__u64		data_rem;
 	__u32		last_sent_nxt;
 	__u32		last_expected_una;
 	__u32		last_seen_una;
-} __attribute__((packed));
+} __attribute__((packed)) __attribute__((aligned(4)));
 
 #define RDS_IB_GID_LEN	16
 struct rds_info_rdma_connection {

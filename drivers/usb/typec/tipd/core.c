@@ -89,8 +89,8 @@ enum {
 /* TPS_REG_RX_IDENTITY_SOP */
 struct tps6598x_rx_identity_reg {
 	u8 status;
-	struct usb_pd_identity identity;
-} __packed;
+	struct usb_pd_identity identity __packed;
+};
 
 /* TPS_REG_USB4_STATUS */
 struct tps6598x_usb4_status_reg {

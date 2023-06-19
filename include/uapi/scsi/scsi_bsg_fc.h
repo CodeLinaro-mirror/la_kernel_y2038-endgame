@@ -188,7 +188,7 @@ struct fc_bsg_host_ct {
 	__u32	preamble_word1;	/* GS_Type, GS_SubType, Options, Rsvd */
 	__u32	preamble_word2;	/* Cmd Code, Max Size */
 
-};
+} __packed;
 /* Response:
  *
  * The reply structure is an fc_bsg_ctels_reply structure
@@ -210,7 +210,7 @@ struct fc_bsg_host_vendor {
 
 	/* start of vendor command area */
 	__u32 vendor_cmd[];
-};
+} __packed;
 
 /* Response:
  */
@@ -256,7 +256,7 @@ struct fc_bsg_rport_ct {
 	__u32	preamble_word0;	/* revision & IN_ID */
 	__u32	preamble_word1;	/* GS_Type, GS_SubType, Options, Rsvd */
 	__u32	preamble_word2;	/* Cmd Code, Max Size */
-};
+} __packed;
 /* Response:
  *
  * The reply structure is an fc_bsg_ctels_reply structure
