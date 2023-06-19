@@ -1403,7 +1403,7 @@ enum ib_send_flags {
 };
 
 struct ib_sge {
-	u64	addr;
+	u64	addr __packed;
 	u32	length;
 	u32	lkey;
 };

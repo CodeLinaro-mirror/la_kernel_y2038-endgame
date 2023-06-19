@@ -171,7 +171,7 @@ struct tx_desc {
 			__le32 addr;
 			__le32 addrHi;
 		} frag;
-		u64 tx_addr;	/* opaque for hardware, for TX_DESC */
+		u64 tx_addr __packed;	/* opaque for hardware, for TX_DESC */
 	};
 	__le32 processFlags;
 #define TYPHOON_TX_PF_NO_CRC		cpu_to_le32(0x00000001)
@@ -187,7 +187,7 @@ struct tx_desc {
 #define TYPHOON_TX_PF_VLAN_MASK		cpu_to_le32(0x0ffff000)
 #define TYPHOON_TX_PF_INTERNAL		cpu_to_le32(0xf0000000)
 #define TYPHOON_TX_PF_VLAN_TAG_SHIFT	12
-} __packed;
+} __packed __aligned(4);
 
 /* The TCP Segmentation offload option descriptor
  *

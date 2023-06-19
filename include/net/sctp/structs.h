@@ -331,7 +331,7 @@ struct sctp_signed_cookie {
 	__u8 mac[SCTP_COOKIE_MAC_SIZE];
 	__u32 __pad;		/* force sctp_cookie alignment to 64 bits */
 	struct sctp_cookie c;
-} __packed;
+} __aligned(__alignof__(struct sctp_cookie));
 
 /* This is another convenience type to allocate memory for address
  * params for the maximum size and pass such structures around

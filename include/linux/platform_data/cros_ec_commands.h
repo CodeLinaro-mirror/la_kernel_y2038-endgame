@@ -2774,7 +2774,7 @@ struct ec_params_motion_sense {
 			uint8_t sensor_num;
 			uint8_t activity;  /* enum motionsensor_activity */
 		} get_activity;
-	};
+	} __packed;
 } __ec_todo_packed;
 
 struct ec_response_motion_sense {
