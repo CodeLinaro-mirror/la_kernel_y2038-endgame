@@ -140,6 +140,7 @@ series
 tags
 !tags/
 TAGS
+!tags/
 
 # cscope files
 cscope.*
