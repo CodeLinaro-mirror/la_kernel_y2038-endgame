@@ -27,17 +27,22 @@ MODULE_ALIAS_CRYPTO("sha512-arm");
 
 asmlinkage void sha512_block_data_order(u64 *state, u8 const *src, int blocks);
 
+static void sha512_block_data_order_wrapper(struct sha512_state *sst, u8 const *src, int blocks)
+{
+	return sha512_block_data_order((u64 *)sst, src, blocks);
+}
+
 int sha512_arm_update(struct shash_desc *desc, const u8 *data,
 		      unsigned int len)
 {
 	return sha512_base_do_update(desc, data, len,
-		(sha512_block_fn *)sha512_block_data_order);
+		sha512_block_data_order_wrapper);
 }
 
 static int sha512_arm_final(struct shash_desc *desc, u8 *out)
 {
 	sha512_base_do_finalize(desc,
-		(sha512_block_fn *)sha512_block_data_order);
+		sha512_block_data_order_wrapper);
 	return sha512_base_finish(desc, out);
 }
 
@@ -45,7 +50,7 @@ int sha512_arm_finup(struct shash_desc *desc, const u8 *data,
 		     unsigned int len, u8 *out)
 {
 	sha512_base_do_update(desc, data, len,
-		(sha512_block_fn *)sha512_block_data_order);
+		sha512_block_data_order_wrapper);
 	return sha512_arm_final(desc, out);
 }
 

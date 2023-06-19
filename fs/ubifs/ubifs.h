@@ -654,9 +654,10 @@ enum {
 struct ubifs_info;
 
 /* Callback used by the 'ubifs_lpt_scan_nolock()' function */
+struct scan_data;
 typedef int (*ubifs_lpt_scan_callback)(struct ubifs_info *c,
 				       const struct ubifs_lprops *lprops,
-				       int in_tree, void *data);
+				       int in_tree, struct scan_data *data);
 
 /**
  * struct ubifs_wbuf - UBIFS write-buffer.
