@@ -514,7 +514,7 @@ struct iwl_rx_mpdu_desc_v1 {
 		 * TSF value on air rise (INA), only valid if
 		 * %IWL_RX_MPDU_PHY_TSF_OVERLOAD isn't set
 		 */
-		__le64 tsf_on_air_rise;
+		__le64 tsf_on_air_rise __packed;
 
 		struct {
 			/**
@@ -531,7 +531,7 @@ struct iwl_rx_mpdu_desc_v1 {
 			__le32 phy_data1;
 		};
 	};
-} __packed; /* RX_MPDU_RES_START_API_S_VER_4 */
+} __packed __aligned(4); /* RX_MPDU_RES_START_API_S_VER_4 */
 
 /**
  * struct iwl_rx_mpdu_desc_v3 - RX MPDU descriptor
@@ -611,7 +611,7 @@ struct iwl_rx_mpdu_desc_v3 {
 		 * TSF value on air rise (INA), only valid if
 		 * %IWL_RX_MPDU_PHY_TSF_OVERLOAD isn't set
 		 */
-		__le64 tsf_on_air_rise;
+		__le64 tsf_on_air_rise __packed;
 
 		struct {
 			/**
@@ -638,7 +638,7 @@ struct iwl_rx_mpdu_desc_v3 {
 	 * @reserved: reserved
 	 */
 	__le32 reserved[1];
-} __packed; /* RX_MPDU_RES_START_API_S_VER_3,
+} __packed __aligned(4); /* RX_MPDU_RES_START_API_S_VER_3,
 	       RX_MPDU_RES_START_API_S_VER_5 */
 
 /**
@@ -713,7 +713,7 @@ struct iwl_rx_mpdu_desc {
 		struct iwl_rx_mpdu_desc_v1 v1;
 		struct iwl_rx_mpdu_desc_v3 v3;
 	};
-} __packed; /* RX_MPDU_RES_START_API_S_VER_3,
+} __packed __aligned(4); /* RX_MPDU_RES_START_API_S_VER_3,
 	       RX_MPDU_RES_START_API_S_VER_4,
 	       RX_MPDU_RES_START_API_S_VER_5 */
 
@@ -801,7 +801,7 @@ struct iwl_rx_no_data {
 	__le32 rate;
 	__le32 phy_info[2];
 	__le32 rx_vec[2];
-} __packed; /* RX_NO_DATA_NTFY_API_S_VER_1,
+} __packed __aligned(4); /* RX_NO_DATA_NTFY_API_S_VER_1,
 	       RX_NO_DATA_NTFY_API_S_VER_2 */
 
 /**
@@ -827,7 +827,7 @@ struct iwl_rx_no_data_ver_3 {
 	__le32 rate;
 	__le32 phy_info[2];
 	__le32 rx_vec[4];
-} __packed; /* RX_NO_DATA_NTFY_API_S_VER_1,
+} __packed __aligned(4); /* RX_NO_DATA_NTFY_API_S_VER_1,
 	       RX_NO_DATA_NTFY_API_S_VER_2
 	       RX_NO_DATA_NTFY_API_S_VER_3 */
 
