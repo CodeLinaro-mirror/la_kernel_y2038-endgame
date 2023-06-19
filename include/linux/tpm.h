@@ -289,13 +289,13 @@ enum tpm_chip_flags {
 #define to_tpm_chip(d) container_of(d, struct tpm_chip, dev)
 
 struct tpm_header {
-	__be16 tag;
-	__be32 length;
+	__be16 tag __packed;
+	__be32 length __packed;
 	union {
-		__be32 ordinal;
-		__be32 return_code;
+		__be32 ordinal __packed;
+		__be32 return_code __packed;
 	};
-} __packed;
+};
 
 /* A string buffer type for constructing TPM commands. This is based on the
  * ideas of string buffer code in security/keys/trusted.h but is heap based

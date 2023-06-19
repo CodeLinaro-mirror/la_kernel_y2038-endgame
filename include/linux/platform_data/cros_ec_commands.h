@@ -2684,7 +2684,7 @@ struct ec_params_motion_sense {
 			 */
 			int16_t hys_degree;
 		} tablet_mode_threshold;
-	};
+	} __packed;
 } __ec_todo_packed;
 
 struct ec_response_motion_sense {

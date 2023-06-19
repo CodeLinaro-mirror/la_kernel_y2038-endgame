@@ -639,10 +639,10 @@ struct smp_req {
 	union {
 		u8	smp_req[32];
 		struct {
-			__le64 long_req_addr;/* sg dma address, LE */
+			__le64 long_req_addr __packed;/* sg dma address, LE */
 			__le32 long_req_size;/* LE */
 			u32	_r_a;
-			__le64 long_resp_addr;/* sg dma address, LE */
+			__le64 long_resp_addr __packed;/* sg dma address, LE */
 			__le32 long_resp_size;/* LE */
 			u32	_r_b;
 			} long_smp_req;/* sequencer extension */
