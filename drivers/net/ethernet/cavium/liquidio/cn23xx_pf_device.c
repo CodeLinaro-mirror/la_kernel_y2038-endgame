@@ -1459,9 +1459,9 @@ void cn23xx_tell_vf_its_macaddr_changed(struct octeon_device *oct, int vfidx,
 EXPORT_SYMBOL_GPL(cn23xx_tell_vf_its_macaddr_changed);
 
 static void
-cn23xx_get_vf_stats_callback(struct octeon_device *oct,
-			     struct octeon_mbox_cmd *cmd, void *arg)
+cn23xx_get_vf_stats_callback(void *octp, void *cmdp, void *arg)
 {
+	struct octeon_mbox_cmd *cmd = cmdp;
 	struct oct_vf_stats_ctx *ctx = arg;
 
 	memcpy(ctx->stats, cmd->data, sizeof(struct oct_vf_stats));
@@ -1490,7 +1490,7 @@ int cn23xx_get_vf_stats(struct octeon_device *oct, int vfidx,
 	mbox_cmd.q_no = vfidx * oct->sriov_info.rings_per_vf;
 	mbox_cmd.recv_len = 0;
 	mbox_cmd.recv_status = 0;
-	mbox_cmd.fn = (octeon_mbox_callback_t)cn23xx_get_vf_stats_callback;
+	mbox_cmd.fn = cn23xx_get_vf_stats_callback;
 	ctx.stats = stats;
 	atomic_set(&ctx.status, 0);
 	mbox_cmd.fn_arg = (void *)&ctx;

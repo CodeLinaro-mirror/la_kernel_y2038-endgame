@@ -38,6 +38,11 @@ static const struct of_device_id meson_efuse_match[] = {
 };
 MODULE_DEVICE_TABLE(of, meson_efuse_match);
 
+static void meson_efuse_clk_disable(void *clk)
+{
+	clk_disable_unprepare(clk);
+}
+
 static int meson_efuse_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -74,9 +79,7 @@ static int meson_efuse_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	ret = devm_add_action_or_reset(dev,
-				       (void(*)(void *))clk_disable_unprepare,
-				       clk);
+	ret = devm_add_action_or_reset(dev, meson_efuse_clk_disable, clk);
 	if (ret) {
 		dev_err(dev, "failed to add disable callback");
 		return ret;
