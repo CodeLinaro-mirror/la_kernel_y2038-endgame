@@ -77,8 +77,8 @@ enum {
 /* TPS_REG_RX_IDENTITY_SOP */
 struct tps6598x_rx_identity_reg {
 	u8 status;
-	struct usb_pd_identity identity;
-} __packed;
+	struct usb_pd_identity identity __packed;
+};
 
 /* Standard Task return codes */
 #define TPS_TASK_TIMEOUT		1

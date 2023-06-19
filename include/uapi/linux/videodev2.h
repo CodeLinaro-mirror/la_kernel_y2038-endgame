@@ -1838,7 +1838,7 @@ struct v4l2_ext_control {
 		struct v4l2_ctrl_av1_frame __user *p_av1_frame;
 		struct v4l2_ctrl_av1_film_grain __user *p_av1_film_grain;
 		void __user *ptr;
-	};
+	} __packed;
 } __attribute__ ((packed));
 
 struct v4l2_ext_controls {

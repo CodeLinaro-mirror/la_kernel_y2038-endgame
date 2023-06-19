@@ -270,7 +270,7 @@ struct iser_rx_desc {
 	struct ib_sge		     rx_sg;
 	struct ib_cqe		     cqe;
 	char		             pad[ISER_RX_PAD_SIZE];
-} __packed;
+} __packed __aligned(4);
 
 /**
  * struct iser_login_desc - iSER login descriptor

@@ -105,8 +105,8 @@ struct rt2_hdr {
 struct ipv6_destopt_hao {
 	__u8			type;
 	__u8			length;
-	struct in6_addr		addr;
-} __attribute__((packed));
+	struct in6_addr		addr __packed;
+};
 
 /*
  *	IPv6 fixed header

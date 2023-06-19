@@ -66,8 +66,8 @@ struct sockaddr_pppox {
 	__kernel_sa_family_t sa_family;       /* address family, AF_PPPOX */
 	unsigned int    sa_protocol;          /* protocol identifier */
 	union {
-		struct pppoe_addr  pppoe;
-		struct pptp_addr   pptp;
+		struct pppoe_addr  pppoe __packed;
+		struct pptp_addr   pptp __packed;
 	} sa_addr;
 } __packed;
 

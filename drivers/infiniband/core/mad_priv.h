@@ -73,14 +73,14 @@ struct ib_mad_private_header {
 	struct ib_mad_recv_wc recv_wc;
 	struct ib_wc wc;
 	u64 mapping;
-} __packed;
+};
 
 struct ib_mad_private {
 	struct ib_mad_private_header header;
 	size_t mad_size;
 	struct ib_grh grh;
 	u8 mad[];
-} __packed;
+};
 
 struct ib_rmpp_segment {
 	struct list_head list;
