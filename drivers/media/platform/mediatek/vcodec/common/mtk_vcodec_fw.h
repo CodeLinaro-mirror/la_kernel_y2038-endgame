@@ -23,7 +23,7 @@ enum mtk_vcodec_fw_use {
 
 struct mtk_vcodec_fw;
 
-typedef void (*mtk_vcodec_ipi_handler) (void *data,
+typedef void (*mtk_vcodec_ipi_handler) (const void *data,
 	unsigned int len, void *priv);
 
 struct mtk_vcodec_fw *mtk_vcodec_fw_select(void *priv, enum mtk_vcodec_fw_type type,
