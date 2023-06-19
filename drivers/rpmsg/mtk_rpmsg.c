@@ -69,13 +69,13 @@ static void __mtk_ept_release(struct kref *kref)
 	kfree(to_mtk_rpmsg_endpoint(ept));
 }
 
-static void mtk_rpmsg_ipi_handler(void *data, unsigned int len, void *priv)
+static void mtk_rpmsg_ipi_handler(const void *data, unsigned int len, void *priv)
 {
 	struct mtk_rpmsg_endpoint *mept = priv;
 	struct rpmsg_endpoint *ept = &mept->ept;
 	int ret;
 
-	ret = (*ept->cb)(ept->rpdev, data, len, ept->priv, ept->addr);
+	ret = (*ept->cb)(ept->rpdev, (void *)data, len, ept->priv, ept->addr);
 	if (ret)
 		dev_warn(&ept->rpdev->dev, "rpmsg handler return error = %d",
 			 ret);
