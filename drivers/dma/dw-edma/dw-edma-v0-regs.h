@@ -29,41 +29,41 @@ struct dw_edma_v0_ch_regs {
 	u32 ch_control2;				/* 0x0004 */
 	u32 transfer_size;				/* 0x0008 */
 	union {
-		u64 reg;				/* 0x000c..0x0010 */
+		u64 reg __packed;			/* 0x000c..0x0010 */
 		struct {
 			u32 lsb;			/* 0x000c */
 			u32 msb;			/* 0x0010 */
 		};
 	} sar;
 	union {
-		u64 reg;				/* 0x0014..0x0018 */
+		u64 reg __packed;			/* 0x0014..0x0018 */
 		struct {
 			u32 lsb;			/* 0x0014 */
 			u32 msb;			/* 0x0018 */
 		};
 	} dar;
 	union {
-		u64 reg;				/* 0x001c..0x0020 */
+		u64 reg __packed;			/* 0x001c..0x0020 */
 		struct {
 			u32 lsb;			/* 0x001c */
 			u32 msb;			/* 0x0020 */
 		};
 	} llp;
-} __packed;
+} __packed __aligned(4);
 
 struct dw_edma_v0_ch {
 	struct dw_edma_v0_ch_regs wr;			/* 0x0200 */
 	u32 padding_1[55];				/* 0x0224..0x02fc */
 	struct dw_edma_v0_ch_regs rd;			/* 0x0300 */
 	u32 padding_2[55];				/* 0x0324..0x03fc */
-} __packed;
+} __packed __aligned(4);
 
 struct dw_edma_v0_unroll {
 	u32 padding_1;					/* 0x00f8 */
 	u32 wr_engine_chgroup;				/* 0x0100 */
 	u32 rd_engine_chgroup;				/* 0x0104 */
 	union {
-		u64 reg;				/* 0x0108..0x010c */
+		u64 reg __packed;			/* 0x0108..0x010c */
 		struct {
 			u32 lsb;			/* 0x0108 */
 			u32 msb;			/* 0x010c */
@@ -71,7 +71,7 @@ struct dw_edma_v0_unroll {
 	} wr_engine_hshake_cnt;
 	u32 padding_2[2];				/* 0x0110..0x0114 */
 	union {
-		u64 reg;				/* 0x0120..0x0124 */
+		u64 reg __packed;			/* 0x0120..0x0124 */
 		struct {
 			u32 lsb;			/* 0x0120 */
 			u32 msb;			/* 0x0124 */
@@ -97,12 +97,12 @@ struct dw_edma_v0_unroll {
 	u32 rd_ch7_pwr_en;				/* 0x0184 */
 	u32 padding_5[30];				/* 0x0188..0x01fc */
 	struct dw_edma_v0_ch ch[EDMA_V0_MAX_NR_CH];	/* 0x0200..0x1120 */
-} __packed;
+} __packed __aligned(4);
 
 struct dw_edma_v0_legacy {
 	u32 viewport_sel;				/* 0x00f8 */
 	struct dw_edma_v0_ch_regs ch;			/* 0x0100..0x0120 */
-} __packed;
+} __packed __aligned(4);
 
 struct dw_edma_v0_regs {
 	/* eDMA global registers */
@@ -113,7 +113,7 @@ struct dw_edma_v0_regs {
 	u32 wr_doorbell;				/* 0x0010 */
 	u32 padding_2;					/* 0x0014 */
 	union {
-		u64 reg;				/* 0x0018..0x001c */
+		u64 reg __packed;			/* 0x0018..0x001c */
 		struct {
 			u32 lsb;			/* 0x0018 */
 			u32 msb;			/* 0x001c */
@@ -124,7 +124,7 @@ struct dw_edma_v0_regs {
 	u32 rd_doorbell;				/* 0x0030 */
 	u32 padding_4;					/* 0x0034 */
 	union {
-		u64 reg;				/* 0x0038..0x003c */
+		u64 reg __packed;			/* 0x0038..0x003c */
 		struct {
 			u32 lsb;			/* 0x0038 */
 			u32 msb;			/* 0x003c */
@@ -138,14 +138,14 @@ struct dw_edma_v0_regs {
 	u32 wr_int_clear;				/* 0x0058 */
 	u32 wr_err_status;				/* 0x005c */
 	union {
-		u64 reg;				/* 0x0060..0x0064 */
+		u64 reg __packed;			/* 0x0060..0x0064 */
 		struct {
 			u32 lsb;			/* 0x0060 */
 			u32 msb;			/* 0x0064 */
 		};
 	} wr_done_imwr;
 	union {
-		u64 reg;				/* 0x0068..0x006c */
+		u64 reg __packed;			/* 0x0068..0x006c */
 		struct {
 			u32 lsb;			/* 0x0068 */
 			u32 msb;			/* 0x006c */
@@ -164,7 +164,7 @@ struct dw_edma_v0_regs {
 	u32 rd_int_clear;				/* 0x00ac */
 	u32 padding_10;					/* 0x00b0 */
 	union {
-		u64 reg;				/* 0x00b4..0x00b8 */
+		u64 reg __packed;			/* 0x00b4..0x00b8 */
 		struct {
 			u32 lsb;			/* 0x00b4 */
 			u32 msb;			/* 0x00b8 */
@@ -174,14 +174,14 @@ struct dw_edma_v0_regs {
 	u32 rd_linked_list_err_en;			/* 0x00c4 */
 	u32 padding_12;					/* 0x00c8 */
 	union {
-		u64 reg;				/* 0x00cc..0x00d0 */
+		u64 reg __packed;			/* 0x00cc..0x00d0 */
 		struct {
 			u32 lsb;			/* 0x00cc */
 			u32 msb;			/* 0x00d0 */
 		};
 	} rd_done_imwr;
 	union {
-		u64 reg;				/* 0x00d4..0x00d8 */
+		u64 reg __packed;			/* 0x00d4..0x00d8 */
 		struct {
 			u32 lsb;			/* 0x00d4 */
 			u32 msb;			/* 0x00d8 */
@@ -196,38 +196,38 @@ struct dw_edma_v0_regs {
 	union dw_edma_v0_type {
 		struct dw_edma_v0_legacy legacy;	/* 0x00f8..0x0120 */
 		struct dw_edma_v0_unroll unroll;	/* 0x00f8..0x1120 */
-	} type;
-} __packed;
+	} type __packed __aligned(4);
+} __packed __aligned(4);
 
 struct dw_edma_v0_lli {
 	u32 control;
 	u32 transfer_size;
 	union {
-		u64 reg;
+		u64 reg __packed;
 		struct {
 			u32 lsb;
 			u32 msb;
 		};
 	} sar;
 	union {
-		u64 reg;
+		u64 reg __packed;
 		struct {
 			u32 lsb;
 			u32 msb;
 		};
 	} dar;
-} __packed;
+} __packed __aligned(4);
 
 struct dw_edma_v0_llp {
 	u32 control;
 	u32 reserved;
 	union {
-		u64 reg;
+		u64 reg __packed;
 		struct {
 			u32 lsb;
 			u32 msb;
 		};
 	} llp;
-} __packed;
+} __packed __aligned(4);
 
 #endif /* _DW_EDMA_V0_REGS_H */

@@ -67,7 +67,7 @@ struct usb_os_desc_header {
 			__u8	Reserved;
 		};
 		__le16	wCount;
-	};
+	} __packed;
 } __attribute__((packed));
 
 struct usb_ext_compat_desc {

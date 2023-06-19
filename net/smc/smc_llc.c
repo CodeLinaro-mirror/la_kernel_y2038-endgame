@@ -35,7 +35,7 @@ struct smc_llc_hdr {
 #endif
 		};
 		u16 length_v2;	/* 44 - 8192*/
-	};
+	} __packed;
 	u8 flags;
 } __packed;		/* format defined in
 			 * IBM Shared Memory Communications Version 2

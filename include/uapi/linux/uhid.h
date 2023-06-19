@@ -194,7 +194,7 @@ struct uhid_event {
 		struct uhid_set_report_req set_report;
 		struct uhid_set_report_reply_req set_report_reply;
 		struct uhid_start_req start;
-	} u;
+	} __packed u;
 } __attribute__((__packed__));
 
 #endif /* __UHID_H_ */

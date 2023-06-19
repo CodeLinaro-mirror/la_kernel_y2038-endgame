@@ -293,7 +293,7 @@ static void rds6_tcp_tc_info(struct socket *sock, unsigned int len,
 
 		tsinfo6.local_addr = sk->sk_v6_rcv_saddr;
 		tsinfo6.local_port = inet->inet_sport;
-		tsinfo6.peer_addr = sk->sk_v6_daddr;
+		memcpy(&tsinfo6.peer_addr, &sk->sk_v6_daddr, sizeof(sk->sk_v6_daddr));
 		tsinfo6.peer_port = inet->inet_dport;
 
 		tsinfo6.hdr_rem = tc->t_tinc_hdr_rem;

@@ -195,7 +195,7 @@ struct pd_chunked_ext_message_data {
 struct pd_message {
 	__le16 header;
 	union {
-		__le32 payload[PD_MAX_PAYLOAD];
+		__le32 payload[PD_MAX_PAYLOAD] __packed;
 		struct pd_chunked_ext_message_data ext_msg;
 	};
 } __packed;
