@@ -1113,6 +1113,8 @@ static int cvt_to_ump_midi2(struct snd_seq_client *dest,
 	n = encoder->midi2_encode(event, dest_port, data, encoder->status);
 	if (!n)
 		return 0;
+	if (n > ARRAY_SIZE(data))
+		return -EINVAL;
 
 	setup_ump_event(&ev_cvt, event);
 	for (i = 0; i < n; i++) {
