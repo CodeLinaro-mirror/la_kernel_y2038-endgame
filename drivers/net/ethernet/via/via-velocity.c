@@ -3612,7 +3612,7 @@ static void velocity_get_strings(struct net_device *dev, u32 sset, u8 *data)
 {
 	switch (sset) {
 	case ETH_SS_STATS:
-		memcpy(data, *velocity_gstrings, sizeof(velocity_gstrings));
+		memcpy(data, velocity_gstrings, sizeof(velocity_gstrings));
 		break;
 	}
 }

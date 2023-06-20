@@ -1474,7 +1474,7 @@ static void hinic_get_strings(struct net_device *netdev,
 
 	switch (stringset) {
 	case ETH_SS_TEST:
-		memcpy(data, *hinic_test_strings, sizeof(hinic_test_strings));
+		memcpy(data, hinic_test_strings, sizeof(hinic_test_strings));
 		return;
 	case ETH_SS_STATS:
 		for (i = 0; i < ARRAY_SIZE(hinic_function_stats); i++) {

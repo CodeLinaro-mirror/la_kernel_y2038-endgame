@@ -1199,7 +1199,7 @@ qlcnic_get_strings(struct net_device *dev, u32 stringset, u8 *data)
 
 	switch (stringset) {
 	case ETH_SS_TEST:
-		memcpy(data, *qlcnic_gstrings_test,
+		memcpy(data, qlcnic_gstrings_test,
 		       QLCNIC_TEST_LEN * ETH_GSTRING_LEN);
 		break;
 	case ETH_SS_STATS:
