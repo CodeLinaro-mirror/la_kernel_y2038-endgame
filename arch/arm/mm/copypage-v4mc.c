@@ -61,7 +61,6 @@ static void mc_copy_user_page(void *from, void *to)
 	: "r2", "r3", "ip", "lr");
 }
 
-MULTI_USER_STATIC
 void v4_mc_copy_user_highpage(struct page *to, struct page *from,
 	unsigned long vaddr, struct vm_area_struct *vma)
 {
@@ -85,7 +84,6 @@ void v4_mc_copy_user_highpage(struct page *to, struct page *from,
 /*
  * ARMv4 optimised clear_user_page
  */
-MULTI_USER_STATIC
 void v4_mc_clear_user_highpage(struct page *page, unsigned long vaddr)
 {
 	void *ptr, *kaddr = kmap_atomic(page);
