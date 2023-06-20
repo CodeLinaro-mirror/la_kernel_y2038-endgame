@@ -882,11 +882,13 @@ typedef struct smb_com_open_rsp {
 	__u8 OplockLevel;
 	__u16 Fid;
 	__le32 CreateAction;
+	struct_group(times,
 	__le64 CreationTime;
 	__le64 LastAccessTime;
 	__le64 LastWriteTime;
 	__le64 ChangeTime;
 	__le32 FileAttributes;
+	);
 	__le64 AllocationSize;
 	__le64 EndOfFile;
 	__le16 FileType;
