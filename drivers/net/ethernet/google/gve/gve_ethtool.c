@@ -96,7 +96,7 @@ static void gve_get_strings(struct net_device *netdev, u32 stringset, u8 *data)
 	num_tx_queues = gve_num_tx_queues(priv);
 	switch (stringset) {
 	case ETH_SS_STATS:
-		memcpy(s, *gve_gstrings_main_stats,
+		memcpy(s, gve_gstrings_main_stats,
 		       sizeof(gve_gstrings_main_stats));
 		s += sizeof(gve_gstrings_main_stats);
 
@@ -116,13 +116,13 @@ static void gve_get_strings(struct net_device *netdev, u32 stringset, u8 *data)
 			}
 		}
 
-		memcpy(s, *gve_gstrings_adminq_stats,
+		memcpy(s, gve_gstrings_adminq_stats,
 		       sizeof(gve_gstrings_adminq_stats));
 		s += sizeof(gve_gstrings_adminq_stats);
 		break;
 
 	case ETH_SS_PRIV_FLAGS:
-		memcpy(s, *gve_gstrings_priv_flags,
+		memcpy(s, gve_gstrings_priv_flags,
 		       sizeof(gve_gstrings_priv_flags));
 		s += sizeof(gve_gstrings_priv_flags);
 		break;

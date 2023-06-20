@@ -336,7 +336,7 @@ static void qlge_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
 
 	switch (stringset) {
 	case ETH_SS_TEST:
-		memcpy(buf, *qlge_gstrings_test, QLGE_TEST_LEN * ETH_GSTRING_LEN);
+		memcpy(buf, qlge_gstrings_test, QLGE_TEST_LEN * ETH_GSTRING_LEN);
 		break;
 	case ETH_SS_STATS:
 		for (index = 0; index < QLGE_STATS_LEN; index++) {
