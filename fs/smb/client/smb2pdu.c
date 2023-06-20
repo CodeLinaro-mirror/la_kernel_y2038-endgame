@@ -3406,7 +3406,7 @@ __SMB2_close(const unsigned int xid, struct cifs_tcon *tcon,
 		 * has a final 4 byte pad that close response does not have
 		 */
 		if (pbuf)
-			memcpy(pbuf, (char *)&rsp->CreationTime, sizeof(*pbuf) - 4);
+			memcpy(pbuf, (char *)&rsp->times, sizeof(*pbuf) - 4);
 	}
 
 	atomic_dec(&tcon->num_remote_opens);

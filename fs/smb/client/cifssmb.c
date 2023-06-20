@@ -1245,7 +1245,7 @@ openRetry:
 
 	if (buf) {
 		/* copy from CreationTime to Attributes */
-		memcpy((char *)buf, (char *)&rsp->CreationTime, 36);
+		memcpy((char *)buf, (char *)&rsp->times, 36);
 		/* the file_info buf is endian converted by caller */
 		buf->AllocationSize = rsp->AllocationSize;
 		buf->EndOfFile = rsp->EndOfFile;

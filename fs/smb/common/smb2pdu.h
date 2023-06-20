@@ -702,6 +702,7 @@ struct smb2_close_rsp {
 	__le16 StructureSize; /* 60 */
 	__le16 Flags;
 	__le32 Reserved;
+	struct_group(times,
 	__le64 CreationTime;
 	__le64 LastAccessTime;
 	__le64 LastWriteTime;
@@ -709,6 +710,7 @@ struct smb2_close_rsp {
 	__le64 AllocationSize;	/* Beginning of FILE_STANDARD_INFO equivalent */
 	__le64 EndOfFile;
 	__le32 Attributes;
+	);
 } __packed;
 
 
