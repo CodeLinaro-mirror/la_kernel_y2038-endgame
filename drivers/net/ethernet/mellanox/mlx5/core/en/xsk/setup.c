@@ -29,7 +29,8 @@ bool mlx5e_validate_xsk_param(struct mlx5e_params *params,
 			      struct mlx5_core_dev *mdev)
 {
 	/* AF_XDP doesn't support frames larger than PAGE_SIZE. */
-	if (xsk->chunk_size > PAGE_SIZE || xsk->chunk_size < MLX5E_MIN_XSK_CHUNK_SIZE) {
+	if ((PAGE_SIZE < U16_MAX && xsk->chunk_size > PAGE_SIZE)
+	    || xsk->chunk_size < MLX5E_MIN_XSK_CHUNK_SIZE) {
 		mlx5_core_err(mdev, "XSK chunk size %u out of bounds [%u, %lu]\n", xsk->chunk_size,
 			      MLX5E_MIN_XSK_CHUNK_SIZE, PAGE_SIZE);
 		return false;
