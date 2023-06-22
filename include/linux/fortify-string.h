@@ -573,7 +573,7 @@ __FORTIFY_INLINE bool fortify_memcpy_chk(__kernel_size_t size,
 		 * the same time.
 		 * XXX  7 remaining warnings in arm64 allmodconfig
 		 */
-		if ((IS_ENABLED(KBUILD_EXTRA_WARN1) ||
+		if ((IS_ENABLED(KBUILD_EXTRA_WARN2) ||
 		     __compiletime_lessthan(p_size_field, size)) &&
 		    __compiletime_lessthan(q_size_field, size))
 			__read_overflow2_field(q_size_field, size);
