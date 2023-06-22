@@ -582,7 +582,7 @@ __FORTIFY_INLINE bool fortify_memcpy_chk(__kernel_size_t size,
 		 * or when an over-write happened, so both can be fixed at
 		 * the same time.
 		 */
-		if ((IS_ENABLED(KBUILD_EXTRA_WARN1) ||
+		if ((IS_ENABLED(KBUILD_EXTRA_WARN2) ||
 		     __compiletime_lessthan(p_size_field, size)) &&
 		    __compiletime_lessthan(q_size_field, size))
 			__read_overflow2_field(q_size_field, size);
