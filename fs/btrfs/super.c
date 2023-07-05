@@ -1863,9 +1863,9 @@ static inline void btrfs_descending_sort_devices(
 
 /*
  * The helper to calc the free space on the devices that can be used to store
- * file data.
+ * file data, always inline to avoid a link failure with gcc-9 and earlier.
  */
-static inline int btrfs_calc_avail_data_space(struct btrfs_fs_info *fs_info,
+static __always_inline int btrfs_calc_avail_data_space(struct btrfs_fs_info *fs_info,
 					      u64 *free_bytes)
 {
 	struct btrfs_device_info *devices_info;
