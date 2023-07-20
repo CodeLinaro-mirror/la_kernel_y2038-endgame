@@ -125,7 +125,6 @@ KBUILD_CFLAGS += $(call cc-option, -Wno-format-overflow)
 ifdef CONFIG_CC_IS_GCC
 KBUILD_CFLAGS += -Wno-format-truncation
 endif
-KBUILD_CFLAGS += $(call cc-option, -Wno-stringop-truncation)
 
 KBUILD_CFLAGS += -Wno-override-init # alias for -Wno-initializer-overrides in clang
 
@@ -160,6 +159,9 @@ KBUILD_CFLAGS += $(call cc-option, -Wlogical-op)
 KBUILD_CFLAGS += -Wmissing-field-initializers
 KBUILD_CFLAGS += $(call cc-option, -Wmaybe-uninitialized)
 KBUILD_CFLAGS += -Wunused-macros
+KBUILD_CFLAGS += $(call cc-option, -Wformat-overflow)
+KBUILD_CFLAGS += $(call cc-option, -Wformat-truncation)
+KBUILD_CFLAGS += $(call cc-option, -Wstringop-truncation)
 KBUILD_CFLAGS += $(call cc-option, -Waddress-of-packed-member)
 KBUILD_CFLAGS += -Wframe-address
 KBUILD_CFLAGS += -Wformat-security
@@ -171,6 +173,9 @@ else
 
 # The following turn off the warnings enabled by -Wextra
 KBUILD_CFLAGS += -Wno-missing-field-initializers
+KBUILD_CFLAGS += $(call cc-option, -Wno-format-overflow)
+KBUILD_CFLAGS += $(call cc-option, -Wno-format-truncation)
+KBUILD_CFLAGS += $(call cc-option, -Wno-stringop-truncation)
 KBUILD_CFLAGS += $(call cc-option, -Wno-address-of-packed-member)
 KBUILD_CFLAGS += -Wno-frame-address
 KBUILD_CFLAGS += -Wno-format-security
