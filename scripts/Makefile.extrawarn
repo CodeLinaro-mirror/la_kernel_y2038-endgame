@@ -13,10 +13,6 @@ KBUILD_CFLAGS += -Werror=implicit-function-declaration
 KBUILD_CFLAGS += -Werror=implicit-int
 KBUILD_CFLAGS += -Werror=return-type
 KBUILD_CFLAGS += -Werror=strict-prototypes
-KBUILD_CFLAGS += -Wno-format-security
-KBUILD_CFLAGS += -Wno-trigraphs
-KBUILD_CFLAGS += $(call cc-disable-warning,frame-address,)
-KBUILD_CFLAGS += $(call cc-disable-warning, address-of-packed-member)
 KBUILD_CFLAGS += -Wmissing-declarations
 KBUILD_CFLAGS += -Wmissing-prototypes
 
@@ -157,6 +153,10 @@ KBUILD_CFLAGS += -Wmissing-field-initializers
 KBUILD_CFLAGS += -Wtype-limits
 KBUILD_CFLAGS += $(call cc-option, -Wmaybe-uninitialized)
 KBUILD_CFLAGS += $(call cc-option, -Wunused-macros)
+KBUILD_CFLAGS += $(call cc-option, -Waddress-of-packed-member)
+KBUILD_CFLAGS += $(call cc-option, -Wframe-address)
+KBUILD_CFLAGS += -Wformat-security
+KBUILD_CFLAGS += -Wtrigraphs
 
 ifdef CONFIG_CC_IS_CLANG
 KBUILD_CFLAGS += -Winitializer-overrides
@@ -169,6 +169,10 @@ else
 # The following turn off the warnings enabled by -Wextra
 KBUILD_CFLAGS += -Wno-missing-field-initializers
 KBUILD_CFLAGS += -Wno-type-limits
+KBUILD_CFLAGS += $(call cc-disable-warning, address-of-packed-member)
+KBUILD_CFLAGS += $(call cc-disable-warning, frame-address)
+KBUILD_CFLAGS += -Wno-format-security
+KBUILD_CFLAGS += -Wno-trigraphs
 
 ifdef CONFIG_CC_IS_CLANG
 KBUILD_CFLAGS += -Wno-initializer-overrides
