@@ -132,29 +132,29 @@ endif
 #
 ifneq ($(findstring 2, $(KBUILD_EXTRA_WARN)),)
 
-KBUILD_CFLAGS += $(call cc-option, -Wunused-const-variable)
-KBUILD_CFLAGS += $(call cc-option, -Wunused-but-set-variable)
-KBUILD_CFLAGS += $(call cc-option, -Wunused-but-set-parameter)
-KBUILD_CFLAGS += -Wdisabled-optimization
-KBUILD_CFLAGS += -Wshadow
-KBUILD_CFLAGS += $(call cc-option, -Wlogical-op)
-KBUILD_CFLAGS += -Wmissing-field-initializers
-KBUILD_CFLAGS += -Wtype-limits
-KBUILD_CFLAGS += $(call cc-option, -Wunused-macros)
-KBUILD_CFLAGS += $(call cc-option, -Wformat-overflow)
-KBUILD_CFLAGS += $(call cc-option, -Wformat-truncation)
-KBUILD_CFLAGS += $(call cc-option, -Wstringop-overflow)
-KBUILD_CFLAGS += $(call cc-option, -Wstringop-truncation)
-KBUILD_CFLAGS += $(call cc-option, -Wvoid-pointer-to-enum-cast)
-KBUILD_CFLAGS += $(call cc-option, -Waddress-of-packed-member)
-KBUILD_CFLAGS += $(call cc-option, -Wframe-address)
-KBUILD_CFLAGS += -Wformat-security
+KBUILD_CFLAGS += $(call cc-option, -Wunused-const-variable) # 30
+KBUILD_CFLAGS += $(call cc-option, -Wunused-but-set-variable) # 34
+KBUILD_CFLAGS += $(call cc-option, -Wunused-but-set-parameter) # 0
+KBUILD_CFLAGS += -Wdisabled-optimization # 0
+#KBUILD_CFLAGS += -Wshadow # Many
+KBUILD_CFLAGS += $(call cc-option, -Wlogical-op) # 28
+#KBUILD_CFLAGS += -Wmissing-field-initializers # many
+#BUILD_CFLAGS += -Wtype-limits # Many
+#KBUILD_CFLAGS += $(call cc-option, -Wunused-macros) # Many
+KBUILD_CFLAGS += $(call cc-option, -Wvoid-pointer-to-enum-cast) # 0
+KBUILD_CFLAGS += $(call cc-option, -Wformat-overflow) # 25
+KBUILD_CFLAGS += $(call cc-option, -Wformat-truncation) # 314
+KBUILD_CFLAGS += $(call cc-option, -Wstringop-overflow) # 4
+KBUILD_CFLAGS += $(call cc-option, -Wstringop-truncation) # 18
+KBUILD_CFLAGS += $(call cc-option, -Waddress-of-packed-member) # 1635
+KBUILD_CFLAGS += $(call cc-option, -Wframe-address) # 0
+KBUILD_CFLAGS += -Wformat-security # 233
 KBUILD_CFLAGS += -Wtrigraphs
 
 ifdef CONFIG_CC_IS_CLANG
 KBUILD_CFLAGS += -Winitializer-overrides
 else
-KBUILD_CFLAGS += $(call cc-option, -Wmaybe-uninitialized)
+KBUILD_CFLAGS += $(call cc-option, -Wmaybe-uninitialized) # 461
 endif
 
 KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN2
@@ -162,8 +162,6 @@ KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN2
 else
 
 # The following turn off the warnings enabled by -Wextra
-KBUILD_CFLAGS += -Wno-missing-field-initializers
-KBUILD_CFLAGS += -Wno-type-limits
 KBUILD_CFLAGS += $(call cc-disable-warning, format-overflow)
 KBUILD_CFLAGS += $(call cc-disable-warning, format-truncation)
 KBUILD_CFLAGS += $(call cc-disable-warning, stringop-overflow)
@@ -182,11 +180,14 @@ KBUILD_CFLAGS += -Wno-initializer-overrides
 else
 KBUILD_CFLAGS += -Wno-maybe-uninitialized
 ifneq ($(call gcc-min-version, 90100),y)
-KBUILD_CFLAGS += $(call cc-disable-warning, shift-negative-value)
+KBUILD_CFLAGS += $(call cc-disable-warning, shift-negative-value) # 0
 endif
 endif
 
 endif
+
+KBUILD_CFLAGS += -Wno-type-limits
+KBUILD_CFLAGS += -Wno-missing-field-initializers
 
 #
 # W=3 - more obscure warnings, can most likely be ignored
