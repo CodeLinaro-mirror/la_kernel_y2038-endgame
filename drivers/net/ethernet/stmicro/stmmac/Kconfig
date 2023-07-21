@@ -6,7 +6,6 @@ config STMMAC_ETH
 	depends on ETHTOOL_NETLINK
 	select MII
 	select PCS_XPCS
-	select PCS_LYNX
 	select PAGE_POOL
 	select PHYLINK
 	select CRC32
@@ -198,6 +197,7 @@ config DWMAC_SOCFPGA
 	select MFD_SYSCON
 	select MDIO_REGMAP
 	select REGMAP_MMIO
+	select PCS_LYNX
 	help
 	  Support for ethernet controller on Altera SOCFPGA
 
