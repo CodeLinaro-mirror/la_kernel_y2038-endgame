@@ -36,8 +36,6 @@ config UBSAN_TRAP
 
 config CC_HAS_UBSAN_BOUNDS_STRICT
 	def_bool $(cc-option,-fsanitize=bounds-strict)
-	# work around https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110074
-	depends on GCC_VERSION > 140000 || !GCOV_PROFILE_ALL
 	help
 	  The -fsanitize=bounds-strict option is only available on GCC,
 	  but uses the more strict handling of arrays that includes knowledge
