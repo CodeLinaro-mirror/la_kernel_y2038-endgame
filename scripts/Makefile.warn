@@ -49,10 +49,6 @@ KBUILD_CFLAGS += $(call cc-option, -Wno-format-truncation-non-kprintf)
 # because -Wuninitialized will still flag when an uninitialized const variable
 # is used.
 KBUILD_CFLAGS += $(call cc-option, -Wno-default-const-init-unsafe)
-else
-
-# gcc inanely warns about local variables called 'main'
-KBUILD_CFLAGS += -Wno-main
 endif
 
 # Too noisy on range checks and in macros handling both signed and unsigned.
@@ -154,6 +150,8 @@ KBUILD_CFLAGS += -Wno-pointer-to-enum-cast
 KBUILD_CFLAGS += -Wno-tautological-constant-out-of-range-compare
 KBUILD_CFLAGS += -Wno-unaligned-access
 KBUILD_CFLAGS += -Wno-enum-compare-conditional
+else
+KBUILD_CFLAGS += -Wno-main
 endif
 
 endif
