@@ -18,16 +18,12 @@
 
 #include <asm/hibernate.h>
 
-#ifdef CONFIG_SPARC32
-int sparc32_foo(void)
+int main(void)
 {
+#ifdef CONFIG_SPARC32
 	DEFINE(AOFF_thread_fork_kpsr,
 			offsetof(struct thread_struct, fork_kpsr));
-	return 0;
-}
 #else
-int sparc64_foo(void)
-{
 #ifdef CONFIG_HIBERNATION
 	BLANK();
 	OFFSET(SC_REG_FP, saved_context, fp);
@@ -41,12 +37,7 @@ int sparc64_foo(void)
 	OFFSET(SC_REG_G5, saved_context, g5);
 	OFFSET(SC_REG_G6, saved_context, g6);
 #endif
-	return 0;
-}
 #endif
-
-int foo(void)
-{
 	BLANK();
 	DEFINE(AOFF_task_thread, offsetof(struct task_struct, thread));
 	BLANK();

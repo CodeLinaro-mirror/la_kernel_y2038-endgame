@@ -14,6 +14,7 @@
 #include <asm/processor.h>
 #include <asm/ftrace.h>
 
+void output_ptreg_defines(void);
 void output_ptreg_defines(void)
 {
 	COMMENT("LoongArch pt_regs offsets.");
@@ -61,6 +62,7 @@ void output_ptreg_defines(void)
 	BLANK();
 }
 
+void output_task_defines(void);
 void output_task_defines(void)
 {
 	COMMENT("LoongArch task_struct offsets.");
@@ -76,6 +78,7 @@ void output_task_defines(void)
 	BLANK();
 }
 
+void output_thread_info_defines(void);
 void output_thread_info_defines(void)
 {
 	COMMENT("LoongArch thread_info offsets.");
@@ -92,6 +95,7 @@ void output_thread_info_defines(void)
 	BLANK();
 }
 
+void output_thread_defines(void);
 void output_thread_defines(void)
 {
 	COMMENT("LoongArch specific thread_struct offsets.");
@@ -128,6 +132,7 @@ void output_thread_defines(void)
 	BLANK();
 }
 
+void output_thread_fpu_defines(void);
 void output_thread_fpu_defines(void)
 {
 	OFFSET(THREAD_FPR0, loongarch_fpu, fpr[0]);
@@ -169,6 +174,7 @@ void output_thread_fpu_defines(void)
 	BLANK();
 }
 
+void output_thread_lbt_defines(void);
 void output_thread_lbt_defines(void)
 {
 	OFFSET(THREAD_SCR0,  loongarch_lbt, scr0);
@@ -179,6 +185,7 @@ void output_thread_lbt_defines(void)
 	BLANK();
 }
 
+void output_mm_defines(void);
 void output_mm_defines(void)
 {
 	COMMENT("Size of struct page");
@@ -211,6 +218,7 @@ void output_mm_defines(void)
 	BLANK();
 }
 
+void output_sc_defines(void);
 void output_sc_defines(void)
 {
 	COMMENT("Linux sigcontext offsets.");
@@ -219,6 +227,7 @@ void output_sc_defines(void)
 	BLANK();
 }
 
+void output_signal_defines(void);
 void output_signal_defines(void)
 {
 	COMMENT("Linux signal numbers.");
@@ -257,6 +266,7 @@ void output_signal_defines(void)
 }
 
 #ifdef CONFIG_SMP
+void output_smpboot_defines(void);
 void output_smpboot_defines(void)
 {
 	COMMENT("Linux smp cpu boot offsets.");
@@ -267,6 +277,7 @@ void output_smpboot_defines(void)
 #endif
 
 #ifdef CONFIG_HIBERNATION
+void output_pbe_defines(void);
 void output_pbe_defines(void)
 {
 	COMMENT("Linux struct pbe offsets.");
@@ -279,6 +290,7 @@ void output_pbe_defines(void)
 #endif
 
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+void output_fgraph_ret_regs_defines(void);
 void output_fgraph_ret_regs_defines(void)
 {
 	COMMENT("LoongArch fgraph_ret_regs offsets.");
