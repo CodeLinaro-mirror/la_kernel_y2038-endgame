@@ -5,3 +5,5 @@ obj-y += vdso/
 
 # for cleaning
 subdir- += boot
+
+subdir-ccflags-$(CONFIG_WNO_MISSING_PROTOTYPES) := -Wno-missing-prototypes -Wno-missing-declarations

@@ -5,6 +5,7 @@
 
 asflags-y := $(KBUILD_CFLAGS)
 ccflags-y := -Werror
+ccflags-$(CONFIG_WNO_MISSING_PROTOTYPES) := -Wno-missing-prototypes -Wno-missing-declarations
 
 # Many of these routines have implementations tuned for ev6.
 # Choose them iff we're targeting ev6 specifically.

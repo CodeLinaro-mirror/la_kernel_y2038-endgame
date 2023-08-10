@@ -2,6 +2,7 @@
 #
 # Makefile for Nios2-specific library files.
 #
+ccflags-$(CONFIG_WNO_MISSING_PROTOTYPES) := -Wno-missing-prototypes -Wno-missing-declarations
 
 lib-y += delay.o
 lib-y += memcpy.o

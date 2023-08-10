@@ -170,6 +170,16 @@ config WERROR
 
 	  If in doubt, say Y.
 
+config WNO_MISSING_PROTOTYPES
+	bool "Hide -Wmissing-prototype warnings in arch code"
+	default WERROR || !COMPILE_TEST
+	help
+	  Some architectures have not yet eliminated all warnings for
+	  missing prototypes in their core code and will produce a lot
+	  of output for these. Ideally these should all be addresszed
+	  by individual bugfix patches, but in the meantime saying 'y'
+	  will skip that output.
+
 config UAPI_HEADER_TEST
 	bool "Compile test UAPI headers"
 	depends on HEADERS_INSTALL && CC_CAN_LINK
