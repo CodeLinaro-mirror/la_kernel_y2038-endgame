@@ -3,6 +3,7 @@
 #
 # Makefile for m68k-specific library files..
 #
+ccflags-$(CONFIG_WNO_MISSING_PROTOTYPES) := -Wno-missing-prototypes -Wno-missing-declarations
 
 lib-y	:= muldi3.o memcpy.o memset.o memmove.o
 

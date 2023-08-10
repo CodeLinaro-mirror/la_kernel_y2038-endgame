@@ -11,8 +11,9 @@
 # Copyright (C) 2009 Lemote Inc. & DSLab, Lanzhou University
 # Author: Wu Zhangjin <wuzhangjin@gmail.com>
 #
-
 include $(srctree)/arch/mips/Kbuild.platforms
+
+ccflags-$(CONFIG_WNO_MISSING_PROTOTYPES) := -Wno-missing-prototypes -Wno-missing-declarations
 
 # set the default size of the mallocing area for decompressing
 BOOT_HEAP_SIZE := 0x400000

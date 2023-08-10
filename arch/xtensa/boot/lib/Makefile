@@ -8,6 +8,8 @@ zlib	:= inffast.c inflate.c inftrees.c
 lib-y	+= $(zlib:.c=.o) zmem.o
 
 ccflags-y	:= -I $(srctree)/lib/zlib_inflate
+ccflags-$(CONFIG_WNO_MISSING_PROTOTYPES) := -Wno-missing-prototypes -Wno-missing-declarations
+
 ifdef CONFIG_FUNCTION_TRACER
 CFLAGS_REMOVE_inflate.o = -pg
 CFLAGS_REMOVE_zmem.o = -pg

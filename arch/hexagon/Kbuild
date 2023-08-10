@@ -1,2 +1,4 @@
 # SPDX-License-Identifier: GPL-2.0-only
 obj-y += kernel/ mm/ lib/
+
+subdir-ccflags-$(CONFIG_WNO_MISSING_PROTOTYPES) := -Wno-missing-prototypes -Wno-missing-declarations

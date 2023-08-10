@@ -7,3 +7,5 @@ obj-$(CONFIG_HD6446X_SERIES)	+= cchips/hd6446x/
 
 # for cleaning
 subdir- += boot
+
+subdir-ccflags-$(CONFIG_WNO_MISSING_PROTOTYPES) := -Wno-missing-prototypes -Wno-missing-declarations

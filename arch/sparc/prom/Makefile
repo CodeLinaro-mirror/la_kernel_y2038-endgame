@@ -4,6 +4,7 @@
 #
 asflags := -ansi
 ccflags := -Werror
+ccflags-$(CONFIG_WNO_MISSING_PROTOTYPES) := -Wno-missing-prototypes -Wno-missing-declarations
 
 lib-y                 := bootstr_$(BITS).o
 lib-y                 += init_$(BITS).o

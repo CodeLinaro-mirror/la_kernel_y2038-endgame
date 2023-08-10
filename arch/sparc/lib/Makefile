@@ -4,6 +4,7 @@
 
 asflags-y := -ansi -DST_DIV0=0x02
 ccflags-y := -Werror
+ccflags-$(CONFIG_WNO_MISSING_PROTOTYPES) := -Wno-missing-prototypes -Wno-missing-declarations
 
 lib-$(CONFIG_SPARC32) += ashrdi3.o
 lib-$(CONFIG_SPARC32) += memcpy.o memset.o

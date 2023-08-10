@@ -4,6 +4,7 @@
 #
 # create a compressed vmlinux image from the original vmlinux
 #
+ccflags-$(CONFIG_WNO_MISSING_PROTOTYPES) := -Wno-missing-prototypes -Wno-missing-declarations
 
 OBJECTS := head_32.o misc.o cache.o piggy.o \
            ashiftrt.o ashldi3.o ashrsi3.o ashlsi3.o lshrsi3.o
