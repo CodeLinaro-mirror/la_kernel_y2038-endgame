@@ -41,8 +41,8 @@
  * The self-test should stress every RSS vector.
  */
 struct efx_loopback_payload {
-	char pad[2]; /* Ensures ip is 4-byte aligned */
 	struct_group_attr(packet, __packed,
+		char pad[2]; /* Ensures ip is 4-byte aligned */
 		struct ethhdr header;
 		struct iphdr ip;
 		struct udphdr udp;
