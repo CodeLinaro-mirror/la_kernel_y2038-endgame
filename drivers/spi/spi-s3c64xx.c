@@ -1150,13 +1150,8 @@ static int s3c64xx_spi_probe(struct platform_device *pdev)
 {
 	struct resource	*mem_res;
 	struct s3c64xx_spi_driver_data *sdd;
-<<<<<<< HEAD
-	struct s3c64xx_spi_info *sci = dev_get_platdata(&pdev->dev);
-	struct spi_controller *host;
-=======
 	struct s3c64xx_spi_platform_data *sci = dev_get_platdata(&pdev->dev);
-	struct spi_master *master;
->>>>>>> 8d76ab6b274f (platform_data rename)
+	struct spi_controller *host;
 	int ret, irq;
 	char clk_name[16];
 
@@ -1340,15 +1335,9 @@ static int s3c64xx_spi_suspend(struct device *dev)
 
 static int s3c64xx_spi_resume(struct device *dev)
 {
-<<<<<<< HEAD
 	struct spi_controller *host = dev_get_drvdata(dev);
 	struct s3c64xx_spi_driver_data *sdd = spi_controller_get_devdata(host);
-	struct s3c64xx_spi_info *sci = sdd->cntrlr_info;
-=======
-	struct spi_master *master = dev_get_drvdata(dev);
-	struct s3c64xx_spi_driver_data *sdd = spi_master_get_devdata(master);
 	struct s3c64xx_spi_platform_data *sci = sdd->cntrlr_info;
->>>>>>> 8d76ab6b274f (platform_data rename)
 	int ret;
 
 	if (sci->cfg_gpio)

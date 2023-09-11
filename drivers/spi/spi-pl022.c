@@ -371,7 +371,7 @@ struct pl022 {
 	void __iomem			*virtbase;
 	struct clk			*clk;
 	struct spi_controller		*host;
-	struct pl022_ssp_platform_data	*master_info;
+	struct pl022_ssp_platform_data	*host_info;
 	/* Message per-transfer pump */
 	struct tasklet_struct		pump_transfers;
 	struct spi_message		*cur_msg;
