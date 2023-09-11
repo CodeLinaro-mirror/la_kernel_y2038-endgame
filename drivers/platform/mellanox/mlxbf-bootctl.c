@@ -513,7 +513,7 @@ static ssize_t oob_mac_show(struct device *dev,
 
 	mac_byte_ptr = (u8 *)&res.a1;
 
-	return sysfs_format_mac(buf, mac_byte_ptr, ETH_ALEN);
+	return sysfs_emit(buf, "%*phC\n", ETH_ALEN, mac_byte_ptr);
 }
 
 static ssize_t oob_mac_store(struct device *dev,
