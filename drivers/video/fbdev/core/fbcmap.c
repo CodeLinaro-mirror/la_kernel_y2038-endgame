@@ -134,6 +134,7 @@ int fb_alloc_cmap(struct fb_cmap *cmap, int len, int transp)
 {
 	return fb_alloc_cmap_gfp(cmap, len, transp, GFP_ATOMIC);
 }
+EXPORT_SYMBOL(fb_alloc_cmap);
 
 /**
  *      fb_dealloc_cmap - deallocate a colormap
@@ -154,6 +155,7 @@ void fb_dealloc_cmap(struct fb_cmap *cmap)
 	cmap->red = cmap->green = cmap->blue = cmap->transp = NULL;
 	cmap->len = 0;
 }
+EXPORT_SYMBOL(fb_dealloc_cmap);
 
 /**
  *	fb_copy_cmap - copy a colormap
@@ -187,6 +189,7 @@ int fb_copy_cmap(const struct fb_cmap *from, struct fb_cmap *to)
 		memcpy(to->transp+tooff, from->transp+fromoff, size);
 	return 0;
 }
+EXPORT_SYMBOL(fb_copy_cmap);
 
 int fb_cmap_to_user(const struct fb_cmap *from, struct fb_cmap_user *to)
 {
@@ -263,6 +266,7 @@ int fb_set_cmap(struct fb_cmap *cmap, struct fb_info *info)
 
 	return rc;
 }
+EXPORT_SYMBOL(fb_set_cmap);
 
 int fb_set_user_cmap(struct fb_cmap_user *cmap, struct fb_info *info)
 {
@@ -314,6 +318,7 @@ const struct fb_cmap *fb_default_cmap(int len)
 	return &default_8_colors;
     return &default_16_colors;
 }
+EXPORT_SYMBOL(fb_default_cmap);
 
 
 /**
@@ -348,15 +353,4 @@ void fb_invert_cmaps(void)
 	blue16[i] = ~blue16[i];
     }
 }
-
-
-    /*
-     *  Visible symbols for modules
-     */
-
-EXPORT_SYMBOL(fb_alloc_cmap);
-EXPORT_SYMBOL(fb_dealloc_cmap);
-EXPORT_SYMBOL(fb_copy_cmap);
-EXPORT_SYMBOL(fb_set_cmap);
-EXPORT_SYMBOL(fb_default_cmap);
 EXPORT_SYMBOL(fb_invert_cmaps);

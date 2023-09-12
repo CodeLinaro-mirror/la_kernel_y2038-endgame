@@ -846,6 +846,7 @@ done:
 	DPRINTK("No valid mode found\n");
 	return 0;
 }
+EXPORT_SYMBOL(fb_find_mode);
 
 /**
  * fb_var_to_videomode - convert fb_var_screeninfo to fb_videomode
@@ -893,6 +894,7 @@ void fb_var_to_videomode(struct fb_videomode *mode,
 	hfreq = pixclock/htotal;
 	mode->refresh = hfreq/vtotal;
 }
+EXPORT_SYMBOL(fb_var_to_videomode);
 
 /**
  * fb_videomode_to_var - convert fb_videomode to fb_var_screeninfo
@@ -918,6 +920,7 @@ void fb_videomode_to_var(struct fb_var_screeninfo *var,
 	var->sync = mode->sync;
 	var->vmode = mode->vmode & FB_VMODE_MASK;
 }
+EXPORT_SYMBOL(fb_videomode_to_var);
 
 /**
  * fb_mode_is_equal - compare 2 videomodes
@@ -942,6 +945,7 @@ int fb_mode_is_equal(const struct fb_videomode *mode1,
 		mode1->sync         == mode2->sync &&
 		mode1->vmode        == mode2->vmode);
 }
+EXPORT_SYMBOL(fb_mode_is_equal);
 
 /**
  * fb_find_best_mode - find best matching videomode
@@ -984,6 +988,7 @@ const struct fb_videomode *fb_find_best_mode(const struct fb_var_screeninfo *var
 	}
 	return best;
 }
+EXPORT_SYMBOL(fb_find_best_mode);
 
 /**
  * fb_find_nearest_mode - find closest videomode
@@ -1023,6 +1028,7 @@ const struct fb_videomode *fb_find_nearest_mode(const struct fb_videomode *mode,
 
 	return best;
 }
+EXPORT_SYMBOL(fb_find_nearest_mode);
 
 /**
  * fb_match_mode - find a videomode which exactly matches the timings in var
@@ -1046,6 +1052,7 @@ const struct fb_videomode *fb_match_mode(const struct fb_var_screeninfo *var,
 	}
 	return NULL;
 }
+EXPORT_SYMBOL(fb_match_mode);
 
 /**
  * fb_add_videomode - adds videomode entry to modelist
@@ -1079,6 +1086,7 @@ int fb_add_videomode(const struct fb_videomode *mode, struct list_head *head)
 	}
 	return 0;
 }
+EXPORT_SYMBOL(fb_add_videomode);
 
 /**
  * fb_delete_videomode - removed videomode entry from modelist
@@ -1138,6 +1146,7 @@ void fb_videomode_to_modelist(const struct fb_videomode *modedb, int num,
 			return;
 	}
 }
+EXPORT_SYMBOL(fb_videomode_to_modelist);
 
 const struct fb_videomode *fb_find_best_display(const struct fb_monspecs *specs,
 					        struct list_head *head)
@@ -1196,14 +1205,3 @@ finished:
 	return best;
 }
 EXPORT_SYMBOL(fb_find_best_display);
-
-EXPORT_SYMBOL(fb_videomode_to_var);
-EXPORT_SYMBOL(fb_var_to_videomode);
-EXPORT_SYMBOL(fb_mode_is_equal);
-EXPORT_SYMBOL(fb_add_videomode);
-EXPORT_SYMBOL(fb_match_mode);
-EXPORT_SYMBOL(fb_find_best_mode);
-EXPORT_SYMBOL(fb_find_nearest_mode);
-EXPORT_SYMBOL(fb_videomode_to_modelist);
-EXPORT_SYMBOL(fb_find_mode);
-EXPORT_SYMBOL(fb_find_mode_cvt);

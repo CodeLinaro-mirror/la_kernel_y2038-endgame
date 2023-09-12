@@ -745,15 +745,40 @@ extern void fb_bl_default_curve(struct fb_info *fb_info, u8 off, u8 min, u8 max)
 #define FB_MODE_IS_FROM_VAR     32
 
 extern int fbmon_dpms(const struct fb_info *fb_info);
-extern int fb_get_mode(int flags, u32 val, struct fb_var_screeninfo *var,
-		       struct fb_info *info);
 extern int fb_validate_mode(const struct fb_var_screeninfo *var,
 			    struct fb_info *info);
-extern int fb_parse_edid(unsigned char *edid, struct fb_var_screeninfo *var);
+#if defined(CONFIG_FIRMWARE_EDID) && defined(CONFIG_X86)
 extern const unsigned char *fb_firmware_edid(struct device *device);
+#else
+static inline const unsigned char *fb_firmware_edid(struct device *device)
+{
+	return NULL;
+}
+#endif
+#ifdef CONFIG_FB_MODE_HELPERS
+extern int fb_parse_edid(unsigned char *edid, struct fb_var_screeninfo *var);
 extern void fb_edid_to_monspecs(unsigned char *edid,
 				struct fb_monspecs *specs);
 extern void fb_destroy_modedb(struct fb_videomode *modedb);
+extern int fb_get_mode(int flags, u32 val, struct fb_var_screeninfo *var,
+		       struct fb_info *info);
+#else
+static inline int fb_parse_edid(unsigned char *edid, struct fb_var_screeninfo *var)
+{
+	return 1;
+}
+static inline void fb_edid_to_monspecs(unsigned char *edid, struct fb_monspecs *specs)
+{
+}
+static inline void fb_destroy_modedb(struct fb_videomode *modedb)
+{
+}
+static inline int fb_get_mode(int flags, u32 val, struct fb_var_screeninfo *var,
+		struct fb_info *info)
+{
+	return -EINVAL;
+}
+#endif
 extern int fb_find_mode_cvt(struct fb_videomode *mode, int margins, int rb);
 extern unsigned char *fb_ddc_read(struct i2c_adapter *adapter);
 
