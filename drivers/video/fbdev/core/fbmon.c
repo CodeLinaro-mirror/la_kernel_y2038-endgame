@@ -691,6 +691,7 @@ void fb_destroy_modedb(struct fb_videomode *modedb)
 {
 	kfree(modedb);
 }
+EXPORT_SYMBOL(fb_destroy_modedb);
 
 static int fb_get_monitor_limits(unsigned char *edid, struct fb_monspecs *specs)
 {
@@ -933,6 +934,7 @@ int fb_parse_edid(unsigned char *edid, struct fb_var_screeninfo *var)
 	}
 	return 1;
 }
+EXPORT_SYMBOL(fb_parse_edid);
 
 void fb_edid_to_monspecs(unsigned char *edid, struct fb_monspecs *specs)
 {
@@ -999,6 +1001,7 @@ void fb_edid_to_monspecs(unsigned char *edid, struct fb_monspecs *specs)
 
 	DPRINTK("========================================\n");
 }
+EXPORT_SYMBOL(fb_edid_to_monspecs);
 
 /*
  * VESA Generalized Timing Formula (GTF)
@@ -1306,6 +1309,7 @@ int fb_get_mode(int flags, u32 val, struct fb_var_screeninfo *var, struct fb_inf
 	kfree(timings);
 	return err;
 }
+EXPORT_SYMBOL(fb_get_mode);
 
 #ifdef CONFIG_VIDEOMODE_HELPERS
 int fb_videomode_from_videomode(const struct videomode *vm,
@@ -1400,22 +1404,6 @@ EXPORT_SYMBOL_GPL(of_get_fb_videomode);
 #endif /* CONFIG_OF */
 #endif /* CONFIG_VIDEOMODE_HELPERS */
 
-#else
-int fb_parse_edid(unsigned char *edid, struct fb_var_screeninfo *var)
-{
-	return 1;
-}
-void fb_edid_to_monspecs(unsigned char *edid, struct fb_monspecs *specs)
-{
-}
-void fb_destroy_modedb(struct fb_videomode *modedb)
-{
-}
-int fb_get_mode(int flags, u32 val, struct fb_var_screeninfo *var,
-		struct fb_info *info)
-{
-	return -EINVAL;
-}
 #endif /* CONFIG_FB_MODE_HELPERS */
 
 /*
@@ -1480,6 +1468,7 @@ int fb_validate_mode(const struct fb_var_screeninfo *var, struct fb_info *info)
 		pixclock < dclkmin || pixclock > dclkmax) ?
 		-EINVAL : 0;
 }
+EXPORT_SYMBOL(fb_validate_mode);
 
 #if defined(CONFIG_FIRMWARE_EDID) && defined(CONFIG_X86)
 
@@ -1505,16 +1494,5 @@ const unsigned char *fb_firmware_edid(struct device *device)
 
 	return edid;
 }
-#else
-const unsigned char *fb_firmware_edid(struct device *device)
-{
-	return NULL;
-}
-#endif
 EXPORT_SYMBOL(fb_firmware_edid);
-
-EXPORT_SYMBOL(fb_parse_edid);
-EXPORT_SYMBOL(fb_edid_to_monspecs);
-EXPORT_SYMBOL(fb_get_mode);
-EXPORT_SYMBOL(fb_validate_mode);
-EXPORT_SYMBOL(fb_destroy_modedb);
+#endif
