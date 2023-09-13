@@ -710,6 +710,7 @@ MODULE_DESCRIPTION("Framebuffer base");
 subsys_initcall(fbmem_init);
 #endif
 
+#ifdef CONFIG_FB_DEVICE
 int fb_new_modelist(struct fb_info *info)
 {
 	struct fb_var_screeninfo var = info->var;
@@ -738,6 +739,7 @@ int fb_new_modelist(struct fb_info *info)
 
 	return 0;
 }
+#endif
 
 bool fb_modesetting_disabled(const char *drvname)
 {

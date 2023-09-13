@@ -30,6 +30,7 @@
 #define DPRINTK(fmt, args...)
 #endif
 
+#if IS_ENABLED(CONFIG_FB)
 /*
  *  Standard video mode definitions (taken from XFree86)
  */
@@ -848,6 +849,7 @@ done:
 	return 0;
 }
 EXPORT_SYMBOL(fb_find_mode);
+#endif
 
 /**
  * fb_var_to_videomode - convert fb_var_screeninfo to fb_videomode
@@ -1129,6 +1131,7 @@ void fb_destroy_modelist(struct list_head *head)
 }
 EXPORT_SYMBOL_GPL(fb_destroy_modelist);
 
+#if IS_ENABLED(CONFIG_FB_DEVICE) || IS_ENABLED(CONFIG_FB)
 /**
  * fb_videomode_to_modelist - convert mode array to mode list
  * @modedb: array of struct fb_videomode
@@ -1148,7 +1151,9 @@ void fb_videomode_to_modelist(const struct fb_videomode *modedb, int num,
 	}
 }
 EXPORT_SYMBOL(fb_videomode_to_modelist);
+#endif
 
+#if IS_ENABLED(CONFIG_FB)
 const struct fb_videomode *fb_find_best_display(const struct fb_monspecs *specs,
 					        struct list_head *head)
 {
@@ -1206,3 +1211,4 @@ finished:
 	return best;
 }
 EXPORT_SYMBOL(fb_find_best_display);
+#endif

@@ -3071,6 +3071,7 @@ void fbcon_fb_blanked(struct fb_info *info, int blank)
 	par->blank_state = blank;
 }
 
+#ifdef CONFIG_FB_DEVICE
 void fbcon_new_modelist(struct fb_info *info)
 {
 	int i;
@@ -3091,6 +3092,7 @@ void fbcon_new_modelist(struct fb_info *info)
 		fbcon_set_disp(info, &var, vc->vc_num);
 	}
 }
+#endif
 
 void fbcon_get_requirement(struct fb_info *info,
 			   struct fb_blit_caps *caps)
