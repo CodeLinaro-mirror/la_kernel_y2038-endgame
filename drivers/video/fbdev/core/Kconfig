@@ -192,7 +192,7 @@ config FB_MODE_HELPERS
 	  just increase the kernel size by about 5K.
 
 config FB_TILEBLITTING
-	bool "Enable Tile Blitting Support"
+	bool
 	depends on FB
 	help
 	  This enables tile blitting.  Tile blitting is a drawing technique
@@ -204,6 +204,3 @@ config FB_TILEBLITTING
 	  an index to an array of bitmaps will be used.  To clear or move a
 	  rectangular section of a screen, the rectangle will be described in
 	  terms of number of tiles in the x- and y-axis.
-
-	  This is particularly important to one driver, matroxfb.  If
-	  unsure, say N.
