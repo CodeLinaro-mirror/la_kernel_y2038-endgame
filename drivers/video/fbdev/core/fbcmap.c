@@ -192,6 +192,7 @@ int fb_copy_cmap(const struct fb_cmap *from, struct fb_cmap *to)
 }
 EXPORT_SYMBOL(fb_copy_cmap);
 
+#ifdef CONFIG_FB_DEVICE
 int fb_cmap_to_user(const struct fb_cmap *from, struct fb_cmap_user *to)
 {
 	unsigned int tooff = 0, fromoff = 0;
@@ -220,6 +221,7 @@ int fb_cmap_to_user(const struct fb_cmap *from, struct fb_cmap_user *to)
 			return -EFAULT;
 	return 0;
 }
+#endif
 
 /**
  *	fb_set_cmap - set the colormap
@@ -269,6 +271,7 @@ int fb_set_cmap(struct fb_cmap *cmap, struct fb_info *info)
 }
 EXPORT_SYMBOL(fb_set_cmap);
 
+#ifdef CONFIG_FB_DEVICE
 int fb_set_user_cmap(struct fb_cmap_user *cmap, struct fb_info *info)
 {
 	int rc, size = cmap->len * sizeof(u16);
@@ -297,6 +300,7 @@ out:
 	fb_dealloc_cmap(&umap);
 	return rc;
 }
+#endif
 
 /**
  *	fb_default_cmap - get default colormap
@@ -321,7 +325,7 @@ const struct fb_cmap *fb_default_cmap(int len)
 }
 EXPORT_SYMBOL(fb_default_cmap);
 
-
+#if IS_ENABLED(CONFIG_FB)
 /**
  *	fb_invert_cmaps - invert all defaults colormaps
  *
@@ -355,3 +359,4 @@ void fb_invert_cmaps(void)
     }
 }
 EXPORT_SYMBOL(fb_invert_cmaps);
+#endif
