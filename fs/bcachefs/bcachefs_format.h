@@ -151,7 +151,7 @@ struct bpos {
 #else
 #error edit for your odd byteorder.
 #endif
-} __packed;
+} __packed __aligned(4);
 
 #define KEY_INODE_MAX			((__u64)~0ULL)
 #define KEY_OFFSET_MAX			((__u64)~0ULL)
@@ -185,7 +185,7 @@ struct bversion {
 	__u32		hi;
 	__u64		lo;
 #endif
-} __packed;
+} __packed __aligned(4);
 
 struct bkey {
 	/* Size of combined key and value, in u64s */
