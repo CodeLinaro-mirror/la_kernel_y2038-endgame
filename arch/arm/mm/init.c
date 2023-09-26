@@ -503,8 +503,6 @@ void free_initrd_mem(unsigned long start, unsigned long end)
 static struct execmem_params execmem_params __ro_after_init = {
 	.ranges = {
 		[EXECMEM_DEFAULT] = {
-			.start = MODULES_VADDR,
-			.end = MODULES_END,
 			.alignment = 1,
 		},
 	},
@@ -514,6 +512,8 @@ struct execmem_params __init *execmem_arch_params(void)
 {
 	struct execmem_range *r = &execmem_params.ranges[EXECMEM_DEFAULT];
 
+	r->start = MODULES_VADDR;
+	r->end = MODULES_END;
 	r->pgprot = PAGE_KERNEL_EXEC;
 
 	if (IS_ENABLED(CONFIG_ARM_MODULE_PLTS)) {
