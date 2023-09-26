@@ -2019,6 +2019,7 @@ static bool pagemap_scan_push_range(unsigned long categories,
 	return true;
 }
 
+#if defined(CONFIG_TRANSPARENT_HUGEPAGE) || defined(CONFIG_HUGETLB_PAGE)
 static void pagemap_scan_backout_range(struct pagemap_scan_private *p,
 				       unsigned long addr, unsigned long end)
 {
@@ -2031,6 +2032,7 @@ static void pagemap_scan_backout_range(struct pagemap_scan_private *p,
 
 	p->found_pages -= (end - addr) / PAGE_SIZE;
 }
+#endif
 
 static int pagemap_scan_output(unsigned long categories,
 			       struct pagemap_scan_private *p,
