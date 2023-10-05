@@ -473,7 +473,7 @@ out:
  * Given an AppleTalk network, find the device to use. This can be
  * a simple lookup.
  */
-struct net_device *atrtr_get_dev(struct atalk_addr *sa)
+static struct net_device *atrtr_get_dev(struct atalk_addr *sa)
 {
 	struct atalk_route *atr = atrtr_find(sa);
 	return atr ? atr->dev : NULL;
@@ -1911,10 +1911,6 @@ static struct packet_type ppptalk_packet_type __read_mostly = {
 
 static unsigned char ddp_snap_id[] = { 0x08, 0x00, 0x07, 0x80, 0x9B };
 
-/* Export symbols for use by drivers when AppleTalk is a module */
-EXPORT_SYMBOL(atrtr_get_dev);
-EXPORT_SYMBOL(atalk_find_dev_addr);
-
 /* Called by proto.c on kernel start up */
 static int __init atalk_init(void)
 {
@@ -1935,8 +1931,10 @@ static int __init atalk_init(void)
 		goto out_sock;
 	}
 
-	dev_add_pack(&ltalk_packet_type);
-	dev_add_pack(&ppptalk_packet_type);
+	if (IS_ENABLED(CONFIG_DEV_APPLETALK)) {
+		dev_add_pack(&ltalk_packet_type);
+		dev_add_pack(&ppptalk_packet_type);
+	}
 
 	rc = register_netdevice_notifier(&ddp_notifier);
 	if (rc)
@@ -1962,8 +1960,10 @@ out_aarp:
 out_dev:
 	unregister_netdevice_notifier(&ddp_notifier);
 out_snap:
-	dev_remove_pack(&ppptalk_packet_type);
-	dev_remove_pack(&ltalk_packet_type);
+	if (IS_ENABLED(CONFIG_DEV_APPLETALK)) {
+		dev_remove_pack(&ppptalk_packet_type);
+		dev_remove_pack(&ltalk_packet_type);
+	}
 	unregister_snap_client(ddp_dl);
 out_sock:
 	sock_unregister(PF_APPLETALK);
@@ -1990,8 +1990,10 @@ static void __exit atalk_exit(void)
 	atalk_proc_exit();
 	aarp_cleanup_module();	/* General aarp clean-up. */
 	unregister_netdevice_notifier(&ddp_notifier);
-	dev_remove_pack(&ltalk_packet_type);
-	dev_remove_pack(&ppptalk_packet_type);
+	if (IS_ENABLED(CONFIG_DEV_APPLETALK)) {
+		dev_remove_pack(&ltalk_packet_type);
+		dev_remove_pack(&ppptalk_packet_type);
+	}
 	unregister_snap_client(ddp_dl);
 	sock_unregister(PF_APPLETALK);
 	proto_unregister(&ddp_proto);

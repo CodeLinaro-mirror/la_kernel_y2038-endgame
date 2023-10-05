@@ -438,14 +438,17 @@ static struct atalk_addr *__aarp_proxy_find(struct net_device *dev,
  */
 static void aarp_send_probe_phase1(struct atalk_iface *iface)
 {
+#if IS_ENABLED(CONFIG_DEV_APPLETALK)
 	struct ifreq atreq;
 	struct sockaddr_at *sa = (struct sockaddr_at *)&atreq.ifr_addr;
 	const struct net_device_ops *ops = iface->dev->netdev_ops;
 
 	sa->sat_addr.s_node = iface->address.s_node;
 	sa->sat_addr.s_net = ntohs(iface->address.s_net);
-
-	/* We pass the Net:Node to the drivers/cards by a Device ioctl. */
+	/*
+	 * We used to pass the address via device ioctl, this has to
+	 *  be rewritten if we bring back localtalk.
+	 */
 	if (!(ops->ndo_do_ioctl(iface->dev, &atreq, SIOCSIFADDR))) {
 		ops->ndo_do_ioctl(iface->dev, &atreq, SIOCGIFADDR);
 		if (iface->address.s_net != htons(sa->sat_addr.s_net) ||
@@ -455,13 +458,15 @@ static void aarp_send_probe_phase1(struct atalk_iface *iface)
 		iface->address.s_net  = htons(sa->sat_addr.s_net);
 		iface->address.s_node = sa->sat_addr.s_node;
 	}
+#endif
 }
 
 
 void aarp_probe_network(struct atalk_iface *atif)
 {
-	if (atif->dev->type == ARPHRD_LOCALTLK ||
-	    atif->dev->type == ARPHRD_PPP)
+	if (IS_ENABLED(CONFIG_DEV_APPLETALK) &&
+	    (atif->dev->type == ARPHRD_LOCALTLK ||
+	     atif->dev->type == ARPHRD_PPP))
 		aarp_send_probe_phase1(atif);
 	else {
 		unsigned int count;
@@ -488,8 +493,9 @@ int aarp_proxy_probe_network(struct atalk_iface *atif, struct atalk_addr *sa)
 	 * we don't currently support LocalTalk or PPP for proxy AARP;
 	 * if someone wants to try and add it, have fun
 	 */
-	if (atif->dev->type == ARPHRD_LOCALTLK ||
-	    atif->dev->type == ARPHRD_PPP)
+	if (IS_ENABLED(CONFIG_DEV_APPLETALK) &&
+	    (atif->dev->type == ARPHRD_LOCALTLK ||
+	     atif->dev->type == ARPHRD_PPP))
 		goto out;
 
 	/*
@@ -550,7 +556,8 @@ int aarp_send_ddp(struct net_device *dev, struct sk_buff *skb,
 	skb_reset_network_header(skb);
 
 	/* Check for LocalTalk first */
-	if (dev->type == ARPHRD_LOCALTLK) {
+	if (IS_ENABLED(CONFIG_DEV_APPLETALK) &&
+	    dev->type == ARPHRD_LOCALTLK) {
 		struct atalk_addr *at = atalk_find_dev_addr(dev);
 		struct ddpehdr *ddp = (struct ddpehdr *)skb->data;
 		int ft = 2;
@@ -588,7 +595,7 @@ int aarp_send_ddp(struct net_device *dev, struct sk_buff *skb,
 	}
 
 	/* On a PPP link we neither compress nor aarp.  */
-	if (dev->type == ARPHRD_PPP) {
+	if (IS_ENABLED(CONFIG_DEV_APPLETALK) && dev->type == ARPHRD_PPP) {
 		skb->protocol = htons(ETH_P_PPPTALK);
 		skb->dev = dev;
 		goto sendit;
@@ -674,7 +681,6 @@ free_it:
 drop:
 	return NET_XMIT_DROP;
 }
-EXPORT_SYMBOL(aarp_send_ddp);
 
 /*
  *	An entry in the aarp unresolved queue has become resolved. Send
