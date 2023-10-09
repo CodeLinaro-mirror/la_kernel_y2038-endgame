@@ -2529,7 +2529,7 @@ static const struct amba_id etm4_ids[] = {
 
 MODULE_DEVICE_TABLE(amba, etm4_ids);
 
-static struct amba_driver etm4x_amba_driver = {
+static struct amba_driver etm4x_amba_driver __refdata = {
 	.drv = {
 		.name   = "coresight-etm4x",
 		.suppress_bind_attrs = true,

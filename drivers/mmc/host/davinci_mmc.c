@@ -1375,7 +1375,7 @@ static int davinci_mmcsd_resume(struct device *dev)
 static DEFINE_SIMPLE_DEV_PM_OPS(davinci_mmcsd_pm_ops,
 				davinci_mmcsd_suspend, davinci_mmcsd_resume);
 
-static struct platform_driver davinci_mmcsd_driver = {
+static struct platform_driver davinci_mmcsd_driver __refdata = {
 	.driver		= {
 		.name	= "davinci_mmc",
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
