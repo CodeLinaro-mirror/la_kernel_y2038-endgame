@@ -256,7 +256,7 @@ static const struct of_device_id opa362_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, opa362_of_match);
 
-static struct platform_driver opa362_driver = {
+static struct platform_driver opa362_driver __refdata = {
 	.probe	= opa362_probe,
 	.remove_new = opa362_remove,
 	.driver	= {

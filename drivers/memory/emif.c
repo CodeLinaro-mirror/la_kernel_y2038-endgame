@@ -1184,7 +1184,7 @@ static const struct of_device_id emif_of_match[] = {
 MODULE_DEVICE_TABLE(of, emif_of_match);
 #endif
 
-static struct platform_driver emif_driver = {
+static struct platform_driver emif_driver __refdata = {
 	.remove		= __exit_p(emif_remove),
 	.shutdown	= emif_shutdown,
 	.driver = {

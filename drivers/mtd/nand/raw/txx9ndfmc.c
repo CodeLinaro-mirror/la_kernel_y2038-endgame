@@ -406,7 +406,7 @@ static int txx9ndfmc_resume(struct platform_device *dev)
 #define txx9ndfmc_resume NULL
 #endif
 
-static struct platform_driver txx9ndfmc_driver = {
+static struct platform_driver txx9ndfmc_driver __refdata = {
 	.remove		= __exit_p(txx9ndfmc_remove),
 	.resume		= txx9ndfmc_resume,
 	.driver		= {

@@ -441,7 +441,7 @@ static int __exit at91_shdwc_remove(struct platform_device *pdev)
 	return 0;
 }
 
-static struct platform_driver at91_shdwc_driver = {
+static struct platform_driver at91_shdwc_driver __refdata = {
 	.remove = __exit_p(at91_shdwc_remove),
 	.driver = {
 		.name = "at91-shdwc",

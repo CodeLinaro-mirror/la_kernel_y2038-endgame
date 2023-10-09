@@ -313,7 +313,7 @@ static const struct of_device_id sharp_ls_of_match[] = {
 
 MODULE_DEVICE_TABLE(of, sharp_ls_of_match);
 
-static struct platform_driver sharp_ls_driver = {
+static struct platform_driver sharp_ls_driver __refdata = {
 	.probe = sharp_ls_probe,
 	.remove_new = sharp_ls_remove,
 	.driver = {

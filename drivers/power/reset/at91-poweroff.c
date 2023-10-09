@@ -223,7 +223,7 @@ static const struct of_device_id at91_poweroff_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, at91_poweroff_of_match);
 
-static struct platform_driver at91_poweroff_driver = {
+static struct platform_driver at91_poweroff_driver __refdata = {
 	.remove = __exit_p(at91_poweroff_remove),
 	.driver = {
 		.name = "at91-poweroff",

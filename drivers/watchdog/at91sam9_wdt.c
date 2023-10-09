@@ -392,7 +392,7 @@ static const struct of_device_id at91_wdt_dt_ids[] = {
 MODULE_DEVICE_TABLE(of, at91_wdt_dt_ids);
 #endif
 
-static struct platform_driver at91wdt_driver = {
+static struct platform_driver at91wdt_driver __refdata = {
 	.remove		= __exit_p(at91wdt_remove),
 	.driver		= {
 		.name	= "at91_wdt",

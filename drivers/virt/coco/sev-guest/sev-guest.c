@@ -1012,7 +1012,7 @@ static int __exit sev_guest_remove(struct platform_device *pdev)
  * support any SEV guest API. As such, even though it has been introduced
  * with the SEV-SNP support, it is named "sev-guest".
  */
-static struct platform_driver sev_guest_driver = {
+static struct platform_driver sev_guest_driver __refdata = {
 	.remove		= __exit_p(sev_guest_remove),
 	.driver		= {
 		.name = "sev-guest",

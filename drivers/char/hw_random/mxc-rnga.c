@@ -194,7 +194,7 @@ static const struct of_device_id mxc_rnga_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, mxc_rnga_of_match);
 
-static struct platform_driver mxc_rnga_driver = {
+static struct platform_driver mxc_rnga_driver __refdata = {
 	.driver = {
 		.name = "mxc_rnga",
 		.of_match_table = mxc_rnga_of_match,

@@ -427,7 +427,7 @@ static int __exit at91_reset_remove(struct platform_device *pdev)
 	return 0;
 }
 
-static struct platform_driver at91_reset_driver = {
+static struct platform_driver at91_reset_driver __refdata = {
 	.remove = __exit_p(at91_reset_remove),
 	.driver = {
 		.name = "at91-reset",

@@ -326,7 +326,7 @@ static const struct of_device_id dvic_of_match[] = {
 
 MODULE_DEVICE_TABLE(of, dvic_of_match);
 
-static struct platform_driver dvi_connector_driver = {
+static struct platform_driver dvi_connector_driver __refdata = {
 	.probe	= dvic_probe,
 	.remove_new = dvic_remove,
 	.driver	= {

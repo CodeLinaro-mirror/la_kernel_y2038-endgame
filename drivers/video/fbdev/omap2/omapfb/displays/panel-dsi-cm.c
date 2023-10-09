@@ -1278,7 +1278,7 @@ static const struct of_device_id dsicm_of_match[] = {
 
 MODULE_DEVICE_TABLE(of, dsicm_of_match);
 
-static struct platform_driver dsicm_driver = {
+static struct platform_driver dsicm_driver __refdata = {
 	.probe = dsicm_probe,
 	.remove_new = dsicm_remove,
 	.driver = {

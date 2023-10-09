@@ -243,7 +243,7 @@ static const struct of_device_id tfp410_of_match[] = {
 
 MODULE_DEVICE_TABLE(of, tfp410_of_match);
 
-static struct platform_driver tfp410_driver = {
+static struct platform_driver tfp410_driver __refdata = {
 	.probe	= tfp410_probe,
 	.remove_new = tfp410_remove,
 	.driver	= {

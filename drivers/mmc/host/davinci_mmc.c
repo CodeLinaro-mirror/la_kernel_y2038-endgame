@@ -1391,7 +1391,7 @@ static const struct dev_pm_ops davinci_mmcsd_pm = {
 #define davinci_mmcsd_pm_ops NULL
 #endif
 
-static struct platform_driver davinci_mmcsd_driver = {
+static struct platform_driver davinci_mmcsd_driver __refdata = {
 	.driver		= {
 		.name	= "davinci_mmc",
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,

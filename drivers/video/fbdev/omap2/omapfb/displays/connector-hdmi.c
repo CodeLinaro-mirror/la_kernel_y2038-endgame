@@ -270,7 +270,7 @@ static const struct of_device_id hdmic_of_match[] = {
 
 MODULE_DEVICE_TABLE(of, hdmic_of_match);
 
-static struct platform_driver hdmi_connector_driver = {
+static struct platform_driver hdmi_connector_driver __refdata = {
 	.probe	= hdmic_probe,
 	.remove_new = hdmic_remove,
 	.driver	= {

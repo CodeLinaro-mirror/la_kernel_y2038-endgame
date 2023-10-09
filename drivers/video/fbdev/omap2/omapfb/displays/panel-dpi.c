@@ -232,7 +232,7 @@ static const struct of_device_id panel_dpi_of_match[] = {
 
 MODULE_DEVICE_TABLE(of, panel_dpi_of_match);
 
-static struct platform_driver panel_dpi_driver = {
+static struct platform_driver panel_dpi_driver __refdata = {
 	.probe = panel_dpi_probe,
 	.remove_new = panel_dpi_remove,
 	.driver = {

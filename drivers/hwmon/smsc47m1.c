@@ -850,7 +850,7 @@ static int __exit smsc47m1_remove(struct platform_device *pdev)
 	return 0;
 }
 
-static struct platform_driver smsc47m1_driver = {
+static struct platform_driver smsc47m1_driver __refdata = {
 	.driver = {
 		.name	= DRVNAME,
 	},

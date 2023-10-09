@@ -243,7 +243,7 @@ static const struct of_device_id tvc_of_match[] = {
 
 MODULE_DEVICE_TABLE(of, tvc_of_match);
 
-static struct platform_driver tvc_connector_driver = {
+static struct platform_driver tvc_connector_driver __refdata = {
 	.probe	= tvc_probe,
 	.remove_new = tvc_remove,
 	.driver	= {
