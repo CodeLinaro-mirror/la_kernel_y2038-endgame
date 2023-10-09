@@ -292,7 +292,7 @@ fail0:
 	return status;
 }
 
-static void __exit omap_cf_remove(struct platform_device *pdev)
+static void omap_cf_remove(struct platform_device *pdev)
 {
 	struct omap_cf_socket *cf = platform_get_drvdata(pdev);
 
@@ -314,7 +314,7 @@ static struct platform_driver omap_cf_driver __refdata = {
 	.driver = {
 		.name	= driver_name,
 	},
-	.remove		= __exit_p(omap_cf_remove),
+	.remove		= omap_cf_remove,
 };
 
 static int __init omap_cf_init(void)
