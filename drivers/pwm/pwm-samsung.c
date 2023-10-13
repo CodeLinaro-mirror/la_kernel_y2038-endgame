@@ -155,7 +155,7 @@ static void pwm_samsung_set_divisor(struct samsung_pwm_chip *our_chip,
 
 static int pwm_samsung_is_tdiv(struct samsung_pwm_chip *our_chip, unsigned int chan)
 {
-	struct samsung_pwm_platform_data *variant = &chip->variant;
+	struct samsung_pwm_platform_data *variant = &our_chip->variant;
 	u32 reg;
 
 	reg = readl(our_chip->base + REG_TCFG1);
@@ -184,7 +184,7 @@ static unsigned long pwm_samsung_get_tin_rate(struct samsung_pwm_chip *our_chip,
 static unsigned long pwm_samsung_calc_tin(struct samsung_pwm_chip *our_chip,
 					  unsigned int chan, unsigned long freq)
 {
-	struct samsung_pwm_platform_data *variant = &chip->variant;
+	struct samsung_pwm_platform_data *variant = &our_chip->variant;
 	unsigned long rate;
 	struct clk *clk;
 	u8 div;
