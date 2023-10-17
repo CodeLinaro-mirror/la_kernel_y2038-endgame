@@ -939,6 +939,10 @@ struct screen_info vgacon_screen_info = {
 };
 #endif
 
+#if defined(CONFIG_EFI)
+struct screen_info screen_info;
+#endif
+
 static int __init customize_machine(void)
 {
 	/*
