@@ -6708,7 +6708,6 @@ static void dml_prefetch_check(struct display_mode_lib_st *mode_lib)
 
 	} // for j
 }
-__diag_pop()
 
 /// @brief The Mode Support function.
 dml_bool_t dml_core_mode_support(struct display_mode_lib_st *mode_lib)
@@ -8250,6 +8249,7 @@ dml_bool_t dml_core_mode_support(struct display_mode_lib_st *mode_lib)
 
 	return mode_lib->ms.support.ModeIsSupported;
 } // dml_core_mode_support
+__diag_pop()
 
 /// @brief This function calculates some parameters thats are needed ahead of the mode programming function all
 void dml_core_mode_support_partial(struct display_mode_lib_st *mode_lib)
