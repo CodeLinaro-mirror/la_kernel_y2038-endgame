@@ -1893,8 +1893,8 @@ static struct config_group *nvmet_ports_make(struct config_group *group,
 		return ERR_PTR(-ENOMEM);
 	}
 
-	if (nvme_keyring_id()) {
-		port->keyring = key_lookup(nvme_keyring_id());
+	if (nvme_target_keyring_id()) {
+		port->keyring = key_lookup(nvme_target_keyring_id());
 		if (IS_ERR(port->keyring)) {
 			pr_warn("NVMe keyring not available, disabling TLS\n");
 			port->keyring = NULL;

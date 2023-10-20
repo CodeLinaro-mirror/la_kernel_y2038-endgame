@@ -4724,7 +4724,7 @@ static int __init nvme_core_init(void)
 		result = PTR_ERR(nvme_ns_chr_class);
 		goto unregister_generic_ns;
 	}
-	result = nvme_keyring_init();
+	result = nvme_host_keyring_init();
 	if (result)
 		goto destroy_ns_chr;
 	result = nvme_init_auth();
@@ -4733,7 +4733,7 @@ static int __init nvme_core_init(void)
 	return 0;
 
 keyring_exit:
-	nvme_keyring_exit();
+	nvme_host_keyring_exit();
 destroy_ns_chr:
 	class_destroy(nvme_ns_chr_class);
 unregister_generic_ns:
@@ -4757,7 +4757,7 @@ out:
 static void __exit nvme_core_exit(void)
 {
 	nvme_exit_auth();
-	nvme_keyring_exit();
+	nvme_host_keyring_exit();
 	class_destroy(nvme_ns_chr_class);
 	class_destroy(nvme_subsys_class);
 	class_destroy(nvme_class);

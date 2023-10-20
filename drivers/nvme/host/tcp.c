@@ -1585,7 +1585,7 @@ static int nvme_tcp_start_tls(struct nvme_ctrl *nctrl,
 	int ret;
 	struct tls_handshake_args args;
 	unsigned long tmo = tls_handshake_timeout * HZ;
-	key_serial_t keyring = nvme_keyring_id();
+	key_serial_t keyring = nvme_host_keyring_id();
 
 	dev_dbg(nctrl->device, "queue %d: start TLS with key %x\n",
 		qid, pskid);
@@ -1919,7 +1919,7 @@ static int nvme_tcp_alloc_admin_queue(struct nvme_ctrl *ctrl)
 		if (ctrl->opts->tls_key)
 			pskid = key_serial(ctrl->opts->tls_key);
 		else
-			pskid = nvme_tls_psk_default(ctrl->opts->keyring,
+			pskid = nvme_host_tls_psk_default(ctrl->opts->keyring,
 						      ctrl->opts->host->nqn,
 						      ctrl->opts->subsysnqn);
 		if (!pskid) {
