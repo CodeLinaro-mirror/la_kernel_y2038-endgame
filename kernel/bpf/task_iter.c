@@ -902,6 +902,7 @@ struct bpf_iter_css_task_kern {
 
 __bpf_kfunc_start_defs();
 
+#ifdef CONFIG_CGROUPS
 __bpf_kfunc int bpf_iter_css_task_new(struct bpf_iter_css_task *it,
 		struct cgroup_subsys_state *css, unsigned int flags)
 {
@@ -945,6 +946,7 @@ __bpf_kfunc void bpf_iter_css_task_destroy(struct bpf_iter_css_task *it)
 	css_task_iter_end(kit->css_it);
 	bpf_mem_free(&bpf_global_ma, kit->css_it);
 }
+#endif
 
 __bpf_kfunc_end_defs();
 
