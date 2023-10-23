@@ -353,6 +353,7 @@ config XEN_GRANT_DMA_OPS
 config XEN_VIRTIO
 	bool "Xen virtio support"
 	depends on VIRTIO
+	depends on IOMMU_SUPPORT
 	select XEN_GRANT_DMA_OPS
 	select XEN_GRANT_DMA_IOMMU if OF
 	help

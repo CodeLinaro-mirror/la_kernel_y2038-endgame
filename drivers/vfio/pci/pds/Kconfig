@@ -4,6 +4,7 @@
 config PDS_VFIO_PCI
 	tristate "VFIO support for PDS PCI devices"
 	depends on PDS_CORE && PCI_IOV
+	depends on IOMMU_API
 	select VFIO_PCI_CORE
 	select IOMMUFD_DRIVER
 	help

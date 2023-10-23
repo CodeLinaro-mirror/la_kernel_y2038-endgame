@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 config MLX5_VFIO_PCI
 	tristate "VFIO support for MLX5 PCI devices"
+	depends on IOMMU_API
 	depends on MLX5_CORE
 	select VFIO_PCI_CORE
 	select IOMMUFD_DRIVER

@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-2.0-only
 menuconfig VFIO
 	tristate "VFIO Non-Privileged userspace driver framework"
-	select IOMMU_API
 	depends on IOMMUFD || !IOMMUFD
+	depends on IOMMU_API
 	select INTERVAL_TREE
 	select VFIO_GROUP if SPAPR_TCE_IOMMU || IOMMUFD=n
 	select VFIO_DEVICE_CDEV if !VFIO_GROUP

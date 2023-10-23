@@ -4,7 +4,7 @@ config DRM_NOUVEAU
 	depends on DRM && PCI && MMU
 	depends on (ACPI_VIDEO && ACPI_WMI && MXM_WMI) || !(ACPI && X86)
 	depends on BACKLIGHT_CLASS_DEVICE
-	select IOMMU_API
+	depends on IOMMU_API
 	select FW_LOADER
 	select DRM_DISPLAY_DP_HELPER
 	select DRM_DISPLAY_HDMI_HELPER

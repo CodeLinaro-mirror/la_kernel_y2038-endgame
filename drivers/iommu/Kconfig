@@ -3,10 +3,6 @@
 config IOMMU_IOVA
 	tristate
 
-# IOMMU_API always gets selected by whoever wants it.
-config IOMMU_API
-	bool
-
 config IOMMUFD_DRIVER
 	bool
 	default n
@@ -486,5 +482,9 @@ config SPRD_IOMMU
 	  ISP(image), and CPP(camera pixel processor), etc.
 
 	  Say Y here if you want to use the multimedia devices listed above.
+
+# IOMMU_API must be selected by any IOMMU provider
+config IOMMU_API
+	bool
 
 endif # IOMMU_SUPPORT

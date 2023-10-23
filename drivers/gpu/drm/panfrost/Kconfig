@@ -5,9 +5,9 @@ config DRM_PANFROST
 	depends on DRM
 	depends on ARM || ARM64 || COMPILE_TEST
 	depends on !GENERIC_ATOMIC64    # for IOMMU_IO_PGTABLE_LPAE
+	depends on IOMMU_API
 	depends on MMU
 	select DRM_SCHED
-	select IOMMU_SUPPORT
 	select IOMMU_IO_PGTABLE_LPAE
 	select DRM_GEM_SHMEM_HELPER
 	select PM_DEVFREQ
