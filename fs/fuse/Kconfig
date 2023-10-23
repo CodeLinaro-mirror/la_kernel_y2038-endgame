@@ -31,7 +31,7 @@ config CUSE
 config VIRTIO_FS
 	tristate "Virtio Filesystem"
 	depends on FUSE_FS
-	select VIRTIO
+	depends on VIRTIO
 	help
 	  The Virtio Filesystem allows guests to mount file systems from the
 	  host.

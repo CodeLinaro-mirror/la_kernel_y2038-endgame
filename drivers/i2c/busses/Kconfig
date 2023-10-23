@@ -1481,7 +1481,7 @@ config I2C_FSI
 
 config I2C_VIRTIO
         tristate "Virtio I2C Adapter"
-        select VIRTIO
+        depends on VIRTIO
         help
           If you say yes to this option, support will be included for the virtio
           I2C adapter driver. The hardware can be emulated by any device model
