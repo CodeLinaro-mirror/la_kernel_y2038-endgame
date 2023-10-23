@@ -23,8 +23,8 @@ config CAIF_TTY
 config CAIF_VIRTIO
 	tristate "CAIF virtio transport driver"
 	depends on CAIF && HAS_DMA
+	depends on VIRTIO
 	select VHOST_RING
-	select VIRTIO
 	select GENERIC_ALLOCATOR
 	default n
 	help
