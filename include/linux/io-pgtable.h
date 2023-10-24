@@ -207,6 +207,7 @@ struct arm_lpae_io_pgtable_walk_data {
  * These functions map directly onto the iommu_ops member functions with
  * the same names.
  */
+struct iommu_dirty_bitmap;
 struct io_pgtable_ops {
 	int (*map_pages)(struct io_pgtable_ops *ops, unsigned long iova,
 			 phys_addr_t paddr, size_t pgsize, size_t pgcount,
