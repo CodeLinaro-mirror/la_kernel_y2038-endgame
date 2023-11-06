@@ -1433,7 +1433,7 @@ static inline unsigned int sa1100_pcmcia_cmd_time(unsigned int cpu_clock_khz,
 }
 
 
-int sa11xx_drv_pcmcia_add_one(struct soc_pcmcia_socket *skt)
+static int sa11xx_drv_pcmcia_add_one(struct soc_pcmcia_socket *skt)
 {
 	skt->res_skt.start = _PCMCIA(skt->nr);
 	skt->res_skt.end = _PCMCIA(skt->nr) + PCMCIASp - 1;
@@ -1574,7 +1574,7 @@ sa1100_pcmcia_show_timing(struct soc_pcmcia_socket *skt, char *buf)
 	return p - buf;
 }
 
-void sa11xx_drv_pcmcia_ops(struct pcmcia_low_level *ops)
+static void sa11xx_drv_pcmcia_ops(struct pcmcia_low_level *ops)
 {
 	/*
 	 * set default MECR calculation if the board specific
@@ -1594,7 +1594,7 @@ void sa11xx_drv_pcmcia_ops(struct pcmcia_low_level *ops)
 #define SKT_DEV_INFO_SIZE(n) \
 	(sizeof(struct skt_dev_info) + (n)*sizeof(struct soc_pcmcia_socket))
 
-int sa11xx_drv_pcmcia_probe(struct device *dev, struct pcmcia_low_level *ops,
+static int sa11xx_drv_pcmcia_probe(struct device *dev, struct pcmcia_low_level *ops,
 			    int first, int nr)
 {
 	struct skt_dev_info *sinfo;
@@ -1690,7 +1690,7 @@ static inline struct sa1111_pcmcia_socket *to_skt(struct soc_pcmcia_socket *s)
 	return container_of(s, struct sa1111_pcmcia_socket, soc);
 }
 
-void sa1111_pcmcia_socket_state(struct soc_pcmcia_socket *skt, struct pcmcia_state *state)
+static void sa1111_pcmcia_socket_state(struct soc_pcmcia_socket *skt, struct pcmcia_state *state)
 {
 	struct sa1111_pcmcia_socket *s = to_skt(skt);
 	u32 status = readl_relaxed(s->dev->mapbase + PCSR);
@@ -1718,7 +1718,7 @@ void sa1111_pcmcia_socket_state(struct soc_pcmcia_socket *skt, struct pcmcia_sta
 	}
 }
 
-int sa1111_pcmcia_configure_socket(struct soc_pcmcia_socket *skt, const socket_state_t *state)
+static int sa1111_pcmcia_configure_socket(struct soc_pcmcia_socket *skt, const socket_state_t *state)
 {
 	struct sa1111_pcmcia_socket *s = to_skt(skt);
 	u32 pccr_skt_mask, pccr_set_mask, val;
@@ -1783,7 +1783,7 @@ static const char *max1600_gpio_name[2][MAX1600_GPIO_MAX] = {
 	{ "b0vcc", "b1vcc", "b0vpp", "b1vpp" },
 };
 
-int max1600_init(struct device *dev, struct max1600 **ptr,
+static int max1600_init(struct device *dev, struct max1600 **ptr,
 	unsigned int channel, unsigned int code)
 {
 	struct max1600 *m;
@@ -1832,7 +1832,7 @@ int max1600_init(struct device *dev, struct max1600 **ptr,
 	return 0;
 }
 
-int max1600_configure(struct max1600 *m, unsigned int vcc, unsigned int vpp)
+static int max1600_configure(struct max1600 *m, unsigned int vcc, unsigned int vpp)
 {
 	DECLARE_BITMAP(values, MAX1600_GPIO_MAX) = { 0, };
 	int n = MAX1600_GPIO_0VPP;
@@ -2258,7 +2258,7 @@ struct pcmcia_low_level h3600_pcmcia_ops = {
 	.socket_suspend		= h3600_pcmcia_socket_suspend,
 };
 
-int pcmcia_h3600_init(struct device *dev)
+static int pcmcia_h3600_init(struct device *dev)
 {
 	int ret = -ENODEV;
 
@@ -2402,7 +2402,7 @@ static struct pcmcia_low_level sa11x0_cf_ops = {
 	.configure_socket = sa11x0_cf_configure_socket,
 };
 
-int pcmcia_collie_init(struct device *dev)
+static int pcmcia_collie_init(struct device *dev)
 {
        int ret = -ENODEV;
 
