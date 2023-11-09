@@ -7,7 +7,7 @@
 
 static inline __attribute_const__ __u32 __arch_swab32(__u32 val)
 {
-	asm("bswapl %0" : "=r" (val) : "0" (val));
+	asm("bswapl %w0" : "=r" (val) : "0" (val));
 	return val;
 }
 #define __arch_swab32 __arch_swab32
