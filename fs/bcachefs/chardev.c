@@ -407,7 +407,7 @@ err:
 	return ret;
 }
 
-static long bch2_ioctl_fs_usage(struct bch_fs *c,
+static noinline long bch2_ioctl_fs_usage(struct bch_fs *c,
 				struct bch_ioctl_fs_usage __user *user_arg)
 {
 	struct bch_ioctl_fs_usage *arg = NULL;
@@ -482,7 +482,7 @@ err:
 	return ret;
 }
 
-static long bch2_ioctl_dev_usage(struct bch_fs *c,
+static noinline long bch2_ioctl_dev_usage(struct bch_fs *c,
 				 struct bch_ioctl_dev_usage __user *user_arg)
 {
 	struct bch_ioctl_dev_usage arg;
