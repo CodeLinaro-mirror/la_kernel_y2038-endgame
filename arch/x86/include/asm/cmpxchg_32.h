@@ -72,6 +72,8 @@ static __always_inline bool __try_cmpxchg64_local(volatile u64 *ptr, u64 *oldp, 
 
 #define arch_cmpxchg64 __cmpxchg64
 
+#define system_has_cmpxchg64() 1
+
 #define arch_cmpxchg64_local __cmpxchg64_local
 
 #define arch_try_cmpxchg64 __try_cmpxchg64
@@ -148,8 +150,8 @@ static __always_inline bool arch_try_cmpxchg64_local(volatile u64 *ptr, u64 *old
 }
 #define arch_try_cmpxchg64_local arch_try_cmpxchg64_local
 
-#endif
-
 #define system_has_cmpxchg64()		boot_cpu_has(X86_FEATURE_CX8)
+
+#endif
 
 #endif /* _ASM_X86_CMPXCHG_32_H */

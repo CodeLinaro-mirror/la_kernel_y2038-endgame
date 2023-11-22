@@ -143,10 +143,6 @@ __arch_xchg(unsigned long x, volatile void *ptr, int size)
 					        sizeof(*(ptr)));	\
 })
 
-#define arch_cmpxchg64_local(ptr, o, n) __generic_cmpxchg64_local((ptr), (o), (n))
-
-#include <asm-generic/cmpxchg.h>
-
 #else	/* min ARCH >= ARMv6 */
 
 extern void __bad_cmpxchg(volatile void *ptr, int size);
@@ -247,6 +243,17 @@ static inline unsigned long __cmpxchg_local(volatile void *ptr,
 				        sizeof(*(ptr)));		\
 })
 
+#endif	/* __LINUX_ARM_ARCH__ >= 6 */
+
+#if __LINUX_ARM_ARCH__ < 6 || defined(CONFIG_CPU_V6) /* min ARCH < ARMv6k */
+
+#ifndef CONFIG_SMP
+#define arch_cmpxchg64_local(ptr, o, n) __generic_cmpxchg64_local((ptr), (o), (n))
+#include <asm-generic/cmpxchg.h>
+#endif
+
+#else /* min ARCH >= ARMv6k */
+
 static inline unsigned long long __cmpxchg64(unsigned long long *ptr,
 					     unsigned long long old,
 					     unsigned long long new)
@@ -279,7 +286,8 @@ static inline unsigned long long __cmpxchg64(unsigned long long *ptr,
 })
 
 #define arch_cmpxchg64_local(ptr, o, n) arch_cmpxchg64_relaxed((ptr), (o), (n))
+#define system_has_cmpxchg64	1
 
-#endif	/* __LINUX_ARM_ARCH__ >= 6 */
+#endif /* min ARCH >= ARMv6k */
 
 #endif /* __ASM_ARM_CMPXCHG_H */
