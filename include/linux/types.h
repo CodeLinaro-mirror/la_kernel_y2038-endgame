@@ -6,6 +6,8 @@
 
 #ifndef __ASSEMBLY__
 
+#include <linux/stdbool.h>
+
 #define DECLARE_BITMAP(name,bits) \
 	unsigned long name[BITS_TO_LONGS(bits)]
 
@@ -30,8 +32,6 @@ typedef __kernel_suseconds_t	suseconds_t;
 typedef __kernel_timer_t	timer_t;
 typedef __kernel_clockid_t	clockid_t;
 typedef __kernel_mqd_t		mqd_t;
-
-typedef _Bool			bool;
 
 typedef __kernel_uid32_t	uid_t;
 typedef __kernel_gid32_t	gid_t;
