@@ -47,14 +47,14 @@ static int tpm2_key_encode(struct trusted_key_payload *payload,
 			       asn1_oid_len(tpm2key_oid));
 
 	if (options->blobauth_len == 0) {
-		unsigned char bool[3], *w = bool;
+		unsigned char b[3], *w = b;
 		/* tag 0 is emptyAuth */
-		w = asn1_encode_boolean(w, w + sizeof(bool), true);
+		w = asn1_encode_boolean(w, w + sizeof(b), true);
 		if (WARN(IS_ERR(w), "BUG: Boolean failed to encode")) {
 			ret = PTR_ERR(w);
 			goto err;
 		}
-		work = asn1_encode_tag(work, end_work, 0, bool, w - bool);
+		work = asn1_encode_tag(work, end_work, 0, b, w - b);
 	}
 
 	/*
