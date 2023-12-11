@@ -469,7 +469,7 @@ KERNELDOC       = $(srctree)/tools/docs/kernel-doc
 export KERNELDOC
 
 KBUILD_USERHOSTCFLAGS := -Wall -Wmissing-prototypes -Wstrict-prototypes \
-			 -O2 -fomit-frame-pointer -std=gnu11
+			 -O2 -fomit-frame-pointer -std=gnu2x
 KBUILD_USERCFLAGS  := $(KBUILD_USERHOSTCFLAGS) $(USERCFLAGS)
 KBUILD_USERLDFLAGS := $(USERLDFLAGS)
 
@@ -810,7 +810,7 @@ ifdef need-config
 include $(objtree)/include/config/auto.conf
 endif
 
-CC_FLAGS_DIALECT := -std=gnu11
+CC_FLAGS_DIALECT := -std=gnu2x
 # Allow including a tagged struct or union anonymously in another struct/union.
 CC_FLAGS_DIALECT += $(CONFIG_CC_MS_EXTENSIONS)
 # Clang enables warnings about GNU and Microsoft extensions by default, disable
