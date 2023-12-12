@@ -184,6 +184,7 @@ KBUILD_CFLAGS += -Wno-trigraphs
 
 ifdef CONFIG_CC_IS_CLANG
 KBUILD_CFLAGS += -Wno-enum-enum-conversion
+KBUILD_CFLAGS += $(call cc-disable-warning, constant-logical-operand)
 endif
 
 ifdef CONFIG_CC_IS_GCC
