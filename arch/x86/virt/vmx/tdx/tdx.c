@@ -1219,6 +1219,7 @@ int tdx_enable(void)
 }
 EXPORT_SYMBOL_FOR_KVM(tdx_enable);
 
+#ifdef CONFIG_X86_MCE
 static bool is_pamt_page(unsigned long phys)
 {
 	struct tdmr_info_list *tdmr_list = &tdx_tdmr_list;
@@ -1318,6 +1319,7 @@ const char *tdx_dump_mce_info(struct mce *m)
 
 	return "TDX private memory error. Possible kernel bug.";
 }
+#endif
 
 static __init int record_keyid_partitioning(u32 *tdx_keyid_start,
 					    u32 *nr_tdx_keyids)
