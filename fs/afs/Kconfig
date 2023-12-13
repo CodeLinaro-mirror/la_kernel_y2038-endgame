@@ -2,6 +2,7 @@
 config AFS_FS
 	tristate "Andrew File System support (AFS)"
 	depends on INET
+	depends on 64BIT
 	select AF_RXRPC
 	select DNS_RESOLVER
 	select NETFS_SUPPORT
