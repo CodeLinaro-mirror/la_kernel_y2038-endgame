@@ -92,7 +92,7 @@ struct wm0010_priv {
 	struct mutex lock;
 	struct device *dev;
 
-	struct wm0010_pdata pdata;
+	struct wm0010_platform_data pdata;
 
 	struct gpio_desc *reset;
 

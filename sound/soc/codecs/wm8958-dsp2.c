@@ -898,7 +898,7 @@ void wm8958_dsp2_init(struct snd_soc_component *component)
 {
 	struct wm8994_priv *wm8994 = snd_soc_component_get_drvdata(component);
 	struct wm8994 *control = wm8994->wm8994;
-	struct wm8994_pdata *pdata = &control->pdata;
+	struct wm8994_platform_data *pdata = &control->pdata;
 	int ret, i;
 
 	wm8994->dsp_active = -1;

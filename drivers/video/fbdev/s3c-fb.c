@@ -211,7 +211,7 @@ struct s3c_fb {
 	unsigned char		 enabled;
 	bool			 output_on;
 
-	struct s3c_fb_platdata	*pdata;
+	struct s3c_fb_platform_data	*pdata;
 	struct s3c_fb_win	*windows[S3C_FB_MAX_WIN];
 
 	int			 irq_no;
@@ -1355,7 +1355,7 @@ static int s3c_fb_probe(struct platform_device *pdev)
 	const struct platform_device_id *platid;
 	struct s3c_fb_driverdata *fbdrv;
 	struct device *dev = &pdev->dev;
-	struct s3c_fb_platdata *pd;
+	struct s3c_fb_platform_data *pd;
 	struct s3c_fb *sfb;
 	int win;
 	int ret = 0;
@@ -1555,7 +1555,7 @@ static int s3c_fb_suspend(struct device *dev)
 static int s3c_fb_resume(struct device *dev)
 {
 	struct s3c_fb *sfb = dev_get_drvdata(dev);
-	struct s3c_fb_platdata *pd = sfb->pdata;
+	struct s3c_fb_platform_data *pd = sfb->pdata;
 	struct s3c_fb_win *win;
 	int win_no;
 	u32 reg;
@@ -1630,7 +1630,7 @@ static int s3c_fb_runtime_suspend(struct device *dev)
 static int s3c_fb_runtime_resume(struct device *dev)
 {
 	struct s3c_fb *sfb = dev_get_drvdata(dev);
-	struct s3c_fb_platdata *pd = sfb->pdata;
+	struct s3c_fb_platform_data *pd = sfb->pdata;
 
 	clk_prepare_enable(sfb->bus_clk);
 

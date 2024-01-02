@@ -7,7 +7,7 @@
 #ifndef _MACH_SHARPSL_PM
 #define _MACH_SHARPSL_PM
 
-struct sharpsl_charger_machinfo {
+struct sharpsl_charger_platform_data {
 	void (*init)(void);
 	void (*exit)(void);
 	int gpio_acin;
@@ -83,7 +83,7 @@ struct sharpsl_pm_status {
 
 	int full_count;
 	unsigned long charge_start_time;
-	struct sharpsl_charger_machinfo *machinfo;
+	struct sharpsl_charger_platform_data *machinfo;
 	struct battery_stat battstat;
 };
 

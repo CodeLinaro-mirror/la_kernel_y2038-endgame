@@ -13,19 +13,19 @@
 struct wm831x;
 struct regulator_init_data;
 
-struct wm831x_backlight_pdata {
+struct wm831x_backlight_platform_data {
 	int isink;     /** ISINK to use, 1 or 2 */
 	int max_uA;    /** Maximum current to allow */
 };
 
-struct wm831x_backup_pdata {
+struct wm831x_backup_platform_data {
 	int charger_enable;
 	int no_constant_voltage;  /** Disable constant voltage charging */
 	int vlim;   /** Voltage limit in millivolts */
 	int ilim;   /** Current limit in microamps */
 };
 
-struct wm831x_battery_pdata {
+struct wm831x_battery_platform_data {
 	int enable;         /** Enable charging */
 	int fast_enable;    /** Enable fast charging */
 	int off_mask;       /** Mask OFF while charging */
@@ -46,7 +46,7 @@ struct wm831x_battery_pdata {
  * allowing voltage transitions without the expense of an access over
  * I2C or SPI buses.
  */
-struct wm831x_buckv_pdata {
+struct wm831x_buckv_platform_data {
 	int dvs_control_src; /** Hardware DVS source to use (1 or 2) */
 	int dvs_init_state;  /** DVS state to expect on startup */
 	int dvs_state_gpio;  /** CPU GPIO to use for monitoring status */
@@ -63,13 +63,13 @@ enum wm831x_status_src {
 	WM831X_STATUS_MANUAL = 4,
 };
 
-struct wm831x_status_pdata {
+struct wm831x_status_platform_data {
 	enum wm831x_status_src default_src;
 	const char *name;
 	const char *default_trigger;
 };
 
-struct wm831x_touch_pdata {
+struct wm831x_touch_platform_data {
 	int fivewire;          /** 1 for five wire mode, 0 for 4 wire */
 	int isel;              /** Current for pen down (uA) */
 	int rpu;               /** Pen down sensitivity resistor divider */
@@ -87,7 +87,7 @@ enum wm831x_watchdog_action {
 	WM831X_WDOG_WAKE = 3,
 };
 
-struct wm831x_watchdog_pdata {
+struct wm831x_watchdog_platform_data {
 	enum wm831x_watchdog_action primary, secondary;
 	unsigned int software:1;
 };
@@ -101,7 +101,7 @@ struct wm831x_watchdog_pdata {
 #define WM831X_GPIO_CONFIGURE 0x10000
 #define WM831X_GPIO_NUM 16
 
-struct wm831x_pdata {
+struct wm831x_platform_data {
 	/** Used to distinguish multiple WM831x chips */
 	int wm831x_num;
 
@@ -122,14 +122,14 @@ struct wm831x_pdata {
 	int irq_base;
 	int gpio_base;
 	int gpio_defaults[WM831X_GPIO_NUM];
-	struct wm831x_backlight_pdata *backlight;
-	struct wm831x_backup_pdata *backup;
-	struct wm831x_battery_pdata *battery;
-	struct wm831x_touch_pdata *touch;
-	struct wm831x_watchdog_pdata *watchdog;
+	struct wm831x_backlight_platform_data *backlight;
+	struct wm831x_backup_platform_data *backup;
+	struct wm831x_battery_platform_data *battery;
+	struct wm831x_touch_platform_data *touch;
+	struct wm831x_watchdog_platform_data *watchdog;
 
 	/** LED1 = 0 and so on */
-	struct wm831x_status_pdata *status[WM831X_MAX_STATUS];
+	struct wm831x_status_platform_data *status[WM831X_MAX_STATUS];
 	/** DCDC1 = 0 and so on */
 	struct regulator_init_data *dcdc[WM831X_MAX_DCDC];
 	/** EPE1 = 0 and so on */

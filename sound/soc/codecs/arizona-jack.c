@@ -1206,7 +1206,7 @@ out:
 static int arizona_extcon_device_get_pdata(struct device *dev,
 					   struct arizona *arizona)
 {
-	struct arizona_pdata *pdata = &arizona->pdata;
+	struct arizona_platform_data *pdata = &arizona->pdata;
 	unsigned int val = ARIZONA_ACCDET_MODE_HPL;
 	int ret;
 
@@ -1262,7 +1262,7 @@ static int arizona_extcon_device_get_pdata(struct device *dev,
 int arizona_jack_codec_dev_probe(struct arizona_priv *info, struct device *dev)
 {
 	struct arizona *arizona = info->arizona;
-	struct arizona_pdata *pdata = &arizona->pdata;
+	struct arizona_platform_data *pdata = &arizona->pdata;
 	int ret, mode;
 
 	if (!dev_get_platdata(arizona->dev))
@@ -1393,7 +1393,7 @@ static int arizona_jack_enable_jack_detect(struct arizona_priv *info,
 					   struct snd_soc_jack *jack)
 {
 	struct arizona *arizona = info->arizona;
-	struct arizona_pdata *pdata = &arizona->pdata;
+	struct arizona_platform_data *pdata = &arizona->pdata;
 	unsigned int val;
 	unsigned int clamp_mode;
 	int jack_irq_fall, jack_irq_rise;

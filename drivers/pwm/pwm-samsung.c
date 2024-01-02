@@ -79,7 +79,7 @@ struct samsung_pwm_channel {
  * @channel:		per channel driver data
  */
 struct samsung_pwm_chip {
-	struct samsung_pwm_variant variant;
+	struct samsung_pwm_platform_data variant;
 	u8 inverter_mask;
 	u8 disabled_mask;
 
@@ -153,7 +153,7 @@ static void pwm_samsung_set_divisor(struct samsung_pwm_chip *our_chip,
 
 static int pwm_samsung_is_tdiv(struct samsung_pwm_chip *our_chip, unsigned int chan)
 {
-	struct samsung_pwm_variant *variant = &our_chip->variant;
+	struct samsung_pwm_platform_data *variant = &our_chip->variant;
 	u32 reg;
 
 	reg = readl(our_chip->base + REG_TCFG1);
@@ -183,7 +183,7 @@ static unsigned long pwm_samsung_calc_tin(struct pwm_chip *chip,
 					  unsigned int chan, unsigned long freq)
 {
 	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
-	struct samsung_pwm_variant *variant = &our_chip->variant;
+	struct samsung_pwm_platform_data *variant = &our_chip->variant;
 	unsigned long rate;
 	struct clk *clk;
 	u8 div;
@@ -467,28 +467,28 @@ static const struct pwm_ops pwm_samsung_ops = {
 };
 
 #ifdef CONFIG_OF
-static const struct samsung_pwm_variant s3c24xx_variant = {
+static const struct samsung_pwm_platform_data s3c24xx_variant = {
 	.bits		= 16,
 	.div_base	= 1,
 	.has_tint_cstat	= false,
 	.tclk_mask	= BIT(4),
 };
 
-static const struct samsung_pwm_variant s3c64xx_variant = {
+static const struct samsung_pwm_platform_data s3c64xx_variant = {
 	.bits		= 32,
 	.div_base	= 0,
 	.has_tint_cstat	= true,
 	.tclk_mask	= BIT(7) | BIT(6) | BIT(5),
 };
 
-static const struct samsung_pwm_variant s5p64x0_variant = {
+static const struct samsung_pwm_platform_data s5p64x0_variant = {
 	.bits		= 32,
 	.div_base	= 0,
 	.has_tint_cstat	= true,
 	.tclk_mask	= 0,
 };
 
-static const struct samsung_pwm_variant s5pc100_variant = {
+static const struct samsung_pwm_platform_data s5pc100_variant = {
 	.bits		= 32,
 	.div_base	= 0,
 	.has_tint_cstat	= true,

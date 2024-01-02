@@ -253,7 +253,7 @@ static const struct nand_controller_ops au1550nd_ops = {
 
 static int au1550nd_probe(struct platform_device *pdev)
 {
-	struct au1550nd_platdata *pd;
+	struct au1550nd_platform_data *pd;
 	struct au1550nd_ctx *ctx;
 	struct nand_chip *this;
 	struct mtd_info *mtd;

@@ -365,7 +365,7 @@ static int ucb1x00_irq_set_type(struct irq_data *data, unsigned int type)
 static int ucb1x00_irq_set_wake(struct irq_data *data, unsigned int on)
 {
 	struct ucb1x00 *ucb = irq_data_get_irq_chip_data(data);
-	struct ucb1x00_plat_data *pdata = ucb->mcp->attached_device.platform_data;
+	struct ucb1x00_platform_data *pdata = ucb->mcp->attached_device.platform_data;
 	unsigned mask = 1 << (data->irq - ucb->irq_base);
 
 	if (!pdata || !pdata->can_wakeup)
@@ -494,7 +494,7 @@ static struct class ucb1x00_class = {
 
 static int ucb1x00_probe(struct mcp *mcp)
 {
-	struct ucb1x00_plat_data *pdata = mcp->attached_device.platform_data;
+	struct ucb1x00_platform_data *pdata = mcp->attached_device.platform_data;
 	struct ucb1x00_driver *drv;
 	struct ucb1x00 *ucb;
 	unsigned id, i, irq_base;
@@ -613,7 +613,7 @@ static int ucb1x00_probe(struct mcp *mcp)
 
 static void ucb1x00_remove(struct mcp *mcp)
 {
-	struct ucb1x00_plat_data *pdata = mcp->attached_device.platform_data;
+	struct ucb1x00_platform_data *pdata = mcp->attached_device.platform_data;
 	struct ucb1x00 *ucb = mcp_get_drvdata(mcp);
 	struct list_head *l, *n;
 
@@ -665,7 +665,7 @@ void ucb1x00_unregister_driver(struct ucb1x00_driver *drv)
 
 static int ucb1x00_suspend(struct device *dev)
 {
-	struct ucb1x00_plat_data *pdata = dev_get_platdata(dev);
+	struct ucb1x00_platform_data *pdata = dev_get_platdata(dev);
 	struct ucb1x00 *ucb = dev_get_drvdata(dev);
 	struct ucb1x00_dev *udev;
 
@@ -697,7 +697,7 @@ static int ucb1x00_suspend(struct device *dev)
 
 static int ucb1x00_resume(struct device *dev)
 {
-	struct ucb1x00_plat_data *pdata = dev_get_platdata(dev);
+	struct ucb1x00_platform_data *pdata = dev_get_platdata(dev);
 	struct ucb1x00 *ucb = dev_get_drvdata(dev);
 	struct ucb1x00_dev *udev;
 

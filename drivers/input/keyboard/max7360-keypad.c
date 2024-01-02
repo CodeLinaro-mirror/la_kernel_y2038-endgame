@@ -136,7 +136,7 @@ static int max7360_keypad_build_keymap(struct max7360_keypad *max7360_keypad)
 {
 	struct input_dev *input_dev = max7360_keypad->input;
 	struct device *dev = input_dev->dev.parent->parent;
-	struct matrix_keymap_data keymap_data;
+	struct matrix_keymap_platform_data keymap_data;
 	const char *propname = "linux,keymap";
 	unsigned int max_keys;
 	int error;

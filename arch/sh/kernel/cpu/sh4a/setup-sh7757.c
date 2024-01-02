@@ -24,7 +24,7 @@
 #include <asm/mmzone.h>
 #include <asm/platform_early.h>
 
-static struct plat_sci_port scif2_platform_data = {
+static struct scif_platform_data scif2_platform_data = {
 	.scscr		= SCSCR_REIE,
 	.type		= PORT_SCIF,
 };
@@ -44,7 +44,7 @@ static struct platform_device scif2_device = {
 	},
 };
 
-static struct plat_sci_port scif3_platform_data = {
+static struct scif_platform_data scif3_platform_data = {
 	.scscr		= SCSCR_REIE,
 	.type		= PORT_SCIF,
 };
@@ -64,7 +64,7 @@ static struct platform_device scif3_device = {
 	},
 };
 
-static struct plat_sci_port scif4_platform_data = {
+static struct scif_platform_data scif4_platform_data = {
 	.scscr		= SCSCR_REIE,
 	.type		= PORT_SCIF,
 };
@@ -84,7 +84,7 @@ static struct platform_device scif4_device = {
 	},
 };
 
-static struct sh_timer_config tmu0_platform_data = {
+static struct sh_timer_platform_data tmu0_platform_data = {
 	.channels_mask = 3,
 };
 
@@ -383,7 +383,7 @@ static const struct sh_dmae_channel sh7757_dmae_channels[] = {
 
 static const unsigned int ts_shift[] = TS_SHIFT;
 
-static struct sh_dmae_pdata dma0_platform_data = {
+static struct sh_dmae_platform_data dma0_platform_data = {
 	.slave		= sh7757_dmae0_slaves,
 	.slave_num	= ARRAY_SIZE(sh7757_dmae0_slaves),
 	.channel	= sh7757_dmae_channels,
@@ -397,7 +397,7 @@ static struct sh_dmae_pdata dma0_platform_data = {
 	.dmaor_init	= DMAOR_INIT,
 };
 
-static struct sh_dmae_pdata dma1_platform_data = {
+static struct sh_dmae_platform_data dma1_platform_data = {
 	.slave		= sh7757_dmae1_slaves,
 	.slave_num	= ARRAY_SIZE(sh7757_dmae1_slaves),
 	.channel	= sh7757_dmae_channels,
@@ -411,7 +411,7 @@ static struct sh_dmae_pdata dma1_platform_data = {
 	.dmaor_init	= DMAOR_INIT,
 };
 
-static struct sh_dmae_pdata dma2_platform_data = {
+static struct sh_dmae_platform_data dma2_platform_data = {
 	.slave		= sh7757_dmae2_slaves,
 	.slave_num	= ARRAY_SIZE(sh7757_dmae2_slaves),
 	.channel	= sh7757_dmae_channels,
@@ -425,7 +425,7 @@ static struct sh_dmae_pdata dma2_platform_data = {
 	.dmaor_init	= DMAOR_INIT,
 };
 
-static struct sh_dmae_pdata dma3_platform_data = {
+static struct sh_dmae_platform_data dma3_platform_data = {
 	.slave		= sh7757_dmae3_slaves,
 	.slave_num	= ARRAY_SIZE(sh7757_dmae3_slaves),
 	.channel	= sh7757_dmae_channels,
@@ -725,7 +725,7 @@ static struct resource usb_ohci_resources[] = {
 	},
 };
 
-static struct usb_ohci_pdata usb_ohci_pdata;
+static struct usb_ohci_platform_data usb_ohci_platform_data;
 
 static struct platform_device usb_ohci_device = {
 	.name		= "ohci-platform",
@@ -733,7 +733,7 @@ static struct platform_device usb_ohci_device = {
 	.dev = {
 		.dma_mask = &usb_ohci_device.dev.coherent_dma_mask,
 		.coherent_dma_mask = DMA_BIT_MASK(32),
-		.platform_data	= &usb_ohci_pdata,
+		.platform_data	= &usb_ohci_platform_data,
 	},
 	.num_resources	= ARRAY_SIZE(usb_ohci_resources),
 	.resource	= usb_ohci_resources,

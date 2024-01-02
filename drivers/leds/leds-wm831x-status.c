@@ -208,8 +208,8 @@ ATTRIBUTE_GROUPS(wm831x_status);
 static int wm831x_status_probe(struct platform_device *pdev)
 {
 	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
-	struct wm831x_pdata *chip_pdata;
-	struct wm831x_status_pdata pdata;
+	struct wm831x_platform_data *chip_pdata;
+	struct wm831x_status_platform_data pdata;
 	struct wm831x_status *drvdata;
 	struct resource *res;
 	int id = pdev->id % ARRAY_SIZE(chip_pdata->status);

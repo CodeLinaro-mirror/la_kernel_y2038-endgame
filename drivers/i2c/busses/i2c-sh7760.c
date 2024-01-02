@@ -431,7 +431,7 @@ static int calc_CCR(unsigned long scl_hz)
 
 static int sh7760_i2c_probe(struct platform_device *pdev)
 {
-	struct sh7760_i2c_platdata *pd;
+	struct sh7760_i2c_platform_data *pd;
 	struct resource *res;
 	struct cami2c *id;
 	int ret;

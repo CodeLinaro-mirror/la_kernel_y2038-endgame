@@ -213,7 +213,7 @@ err_enable:
 }
 
 #ifdef CONFIG_REGULATOR
-static int wm8994_ldo_in_use(struct wm8994_pdata *pdata, int ldo)
+static int wm8994_ldo_in_use(struct wm8994_platform_data *pdata, int ldo)
 {
 	struct wm8994_ldo_pdata *ldo_pdata;
 
@@ -228,7 +228,7 @@ static int wm8994_ldo_in_use(struct wm8994_pdata *pdata, int ldo)
 	return ldo_pdata->init_data->num_consumer_supplies != 0;
 }
 #else
-static int wm8994_ldo_in_use(struct wm8994_pdata *pdata, int ldo)
+static int wm8994_ldo_in_use(struct wm8994_platform_data *pdata, int ldo)
 {
 	return 0;
 }
@@ -260,7 +260,7 @@ static const struct reg_sequence wm1811_reva_patch[] = {
 static int wm8994_set_pdata_from_of(struct wm8994 *wm8994)
 {
 	struct device_node *np = wm8994->dev->of_node;
-	struct wm8994_pdata *pdata = &wm8994->pdata;
+	struct wm8994_platform_data *pdata = &wm8994->pdata;
 	int i;
 
 	if (!np)
@@ -302,7 +302,7 @@ static int wm8994_set_pdata_from_of(struct wm8994 *wm8994)
  */
 static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 {
-	struct wm8994_pdata *pdata;
+	struct wm8994_platform_data *pdata;
 	struct regmap_config *regmap_config;
 	const struct reg_sequence *regmap_patch = NULL;
 	const char *devname;

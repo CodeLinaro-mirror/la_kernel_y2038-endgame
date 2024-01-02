@@ -290,7 +290,7 @@ EXPORT_SYMBOL_GPL(arizona_init_gpio);
 
 int arizona_init_common(struct arizona *arizona)
 {
-	struct arizona_pdata *pdata = &arizona->pdata;
+	struct arizona_platform_data *pdata = &arizona->pdata;
 	unsigned int val, mask;
 	int i;
 
@@ -2782,7 +2782,7 @@ EXPORT_SYMBOL_GPL(arizona_lhpf_coeff_put);
 
 int arizona_of_get_audio_pdata(struct arizona *arizona)
 {
-	struct arizona_pdata *pdata = &arizona->pdata;
+	struct arizona_platform_data *pdata = &arizona->pdata;
 	struct device_node *np = arizona->dev->of_node;
 	u32 val;
 	u32 pdm_val[ARIZONA_MAX_PDM_SPK];

@@ -112,7 +112,7 @@ struct sci_port {
 
 	/* Platform configuration */
 	const struct sci_port_params *params;
-	const struct plat_sci_port *cfg;
+	const struct scif_platform_data *cfg;
 
 	unsigned int		sampling_rate_mask;
 	resource_size_t		reg_size;

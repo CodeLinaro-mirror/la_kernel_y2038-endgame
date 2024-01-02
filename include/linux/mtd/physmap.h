@@ -16,7 +16,7 @@
 struct map_info;
 struct platform_device;
 
-struct physmap_flash_data {
+struct physmap_flash_platform_data {
 	unsigned int		width;
 	int			(*init)(struct platform_device *);
 	void			(*exit)(struct platform_device *);

@@ -40,7 +40,7 @@
 
 static unsigned int panel_type = 6;
 static struct platform_device *am200_device;
-static struct metronome_board am200_board;
+static struct metronome_platform_data am200_board;
 
 static struct pxafb_mode_info am200_fb_mode_9inch7 = {
 	.pixclock	= 40000,
@@ -84,7 +84,7 @@ static struct pxafb_mode_info am200_fb_mode_6inch = {
 	.sync		= FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 };
 
-static struct pxafb_mach_info am200_fb_info = {
+static struct pxafb_platform_data am200_fb_info = {
 	.modes		= &am200_fb_mode_6inch,
 	.num_modes	= 1,
 	.lcd_conn	= LCD_TYPE_COLOR_TFT | LCD_PCLK_EDGE_FALL |
@@ -321,7 +321,7 @@ static int am200_wait_event_intr(struct metronomefb_par *par)
 					gpio_get_value(RDY_GPIO_PIN), HZ);
 }
 
-static struct metronome_board am200_board = {
+static struct metronome_platform_data am200_board = {
 	.owner			= THIS_MODULE,
 	.setup_irq		= am200_setup_irq,
 	.setup_io		= am200_init_gpio_regs,

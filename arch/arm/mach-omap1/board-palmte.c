@@ -65,7 +65,7 @@ static const unsigned int palmte_keymap[] = {
 	KEY(4, 1, KEY_ENTER),
 };
 
-static const struct matrix_keymap_data palmte_keymap_data = {
+static const struct matrix_keymap_platform_data palmte_keymap_data = {
 	.keymap		= palmte_keymap,
 	.keymap_size	= ARRAY_SIZE(palmte_keymap),
 };
@@ -117,7 +117,7 @@ static struct mtd_partition palmte_rom_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data palmte_rom_data = {
+static struct physmap_flash_platform_data palmte_rom_data = {
 	.width		= 2,
 	.set_vpp	= omap1_set_vpp,
 	.parts		= palmte_rom_partitions,
@@ -145,7 +145,7 @@ static struct platform_device palmte_lcd_device = {
 	.id		= -1,
 };
 
-static struct omap_backlight_config palmte_backlight_config = {
+static struct omap_backlight_platform_data palmte_backlight_config = {
 	.default_intensity	= 0xa0,
 };
 
@@ -164,7 +164,7 @@ static struct platform_device *palmte_devices[] __initdata = {
 	&palmte_backlight_device,
 };
 
-static struct omap_usb_config palmte_usb_config __initdata = {
+static struct omap_usb_platform_data palmte_usb_config __initdata = {
 	.register_dev	= 1,	/* Mini-B only receptacle */
 	.hmc_mode	= 0,
 	.pins[0]	= 2,

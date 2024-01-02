@@ -793,7 +793,7 @@ EXPORT_GPL_DEV_PM_OPS(arizona_pm_ops) = {
 #ifdef CONFIG_OF
 static int arizona_of_get_core_pdata(struct arizona *arizona)
 {
-	struct arizona_pdata *pdata = &arizona->pdata;
+	struct arizona_platform_data *pdata = &arizona->pdata;
 	int ret, i;
 
 	/* Handle old non-standard DT binding */

@@ -7,9 +7,9 @@
  * Generic platform-device LCD power control interface.
 */
 
-struct plat_lcd_data;
+struct plat_lcd_platform_data;
 
-struct plat_lcd_data {
-	int	(*probe)(struct plat_lcd_data *);
-	void	(*set_power)(struct plat_lcd_data *, unsigned int power);
+struct plat_lcd_platform_data {
+	int	(*probe)(struct plat_lcd_platform_data *);
+	void	(*set_power)(struct plat_lcd_platform_data *, unsigned int power);
 };

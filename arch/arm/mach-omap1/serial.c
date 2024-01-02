@@ -30,14 +30,14 @@ static struct clk * uart1_ck;
 static struct clk * uart2_ck;
 static struct clk * uart3_ck;
 
-static inline unsigned int omap_serial_in(struct plat_serial8250_port *up,
+static inline unsigned int omap_serial_in(struct serial8250_platform_data *up,
 					  int offset)
 {
 	offset <<= up->regshift;
 	return (unsigned int)__raw_readb(up->membase + offset);
 }
 
-static inline void omap_serial_outp(struct plat_serial8250_port *p, int offset,
+static inline void omap_serial_outp(struct serial8250_platform_data *p, int offset,
 				    int value)
 {
 	offset <<= p->regshift;
@@ -49,7 +49,7 @@ static inline void omap_serial_outp(struct plat_serial8250_port *p, int offset,
  * properly. Note that the TX watermark initialization may not be needed
  * once the 8250.c watermark handling code is merged.
  */
-static void __init omap_serial_reset(struct plat_serial8250_port *p)
+static void __init omap_serial_reset(struct serial8250_platform_data *p)
 {
 	omap_serial_outp(p, UART_OMAP_MDR1,
 			UART_OMAP_MDR1_DISABLE);	/* disable UART */
@@ -63,7 +63,7 @@ static void __init omap_serial_reset(struct plat_serial8250_port *p)
 	}
 }
 
-static struct plat_serial8250_port serial_platform_data[] = {
+static struct serial8250_platform_data serial_platform_data[] = {
 	{
 		.mapbase	= OMAP1_UART1_BASE,
 		.irq		= INT_UART1,

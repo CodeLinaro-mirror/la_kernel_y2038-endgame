@@ -19,7 +19,7 @@
 
 static int wm831x_spi_probe(struct spi_device *spi)
 {
-	struct wm831x_pdata *pdata = dev_get_platdata(&spi->dev);
+	struct wm831x_platform_data *pdata = dev_get_platdata(&spi->dev);
 	struct wm831x *wm831x;
 	enum wm831x_parent type;
 	int ret;

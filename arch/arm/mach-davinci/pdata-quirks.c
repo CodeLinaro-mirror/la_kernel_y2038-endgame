@@ -77,7 +77,7 @@ static struct vpif_subdev_info da850_vpif_capture_sdev_info[] = {
 	},
 };
 
-static struct vpif_capture_config da850_vpif_capture_config = {
+static struct vpif_capture_platform_data da850_vpif_capture_platform_data = {
 	.subdev_info = da850_vpif_capture_sdev_info,
 	.subdev_count = ARRAY_SIZE(da850_vpif_capture_sdev_info),
 	.chan_config[0] = {
@@ -107,7 +107,7 @@ static void __init da850_vpif_legacy_register_capture(void)
 {
 	int ret;
 
-	ret = da850_register_vpif_capture(&da850_vpif_capture_config);
+	ret = da850_register_vpif_capture(&da850_vpif_capture_platform_data);
 	if (ret)
 		pr_warn("%s: VPIF capture setup failed: %d\n",
 			__func__, ret);
@@ -115,7 +115,7 @@ static void __init da850_vpif_legacy_register_capture(void)
 
 static void __init da850_vpif_capture_legacy_init_lcdk(void)
 {
-	da850_vpif_capture_config.subdev_count = 1;
+	da850_vpif_capture_platform_data.subdev_count = 1;
 	da850_vpif_legacy_register_capture();
 }
 
@@ -168,7 +168,7 @@ static const struct vpif_output da850_ch0_outputs[] = {
 	},
 };
 
-static struct vpif_display_config da850_vpif_display_config = {
+static struct vpif_display_platform_data da850_vpif_display_platform_data = {
 	.subdevinfo   = da850_vpif_subdev,
 	.subdev_count = ARRAY_SIZE(da850_vpif_subdev),
 	.chan_config[0] = {
@@ -182,7 +182,7 @@ static void __init da850_vpif_display_legacy_init_evm(void)
 {
 	int ret;
 
-	ret = da850_register_vpif_display(&da850_vpif_display_config);
+	ret = da850_register_vpif_display(&da850_vpif_display_platform_data);
 	if (ret)
 		pr_warn("%s: VPIF display setup failed: %d\n",
 			__func__, ret);

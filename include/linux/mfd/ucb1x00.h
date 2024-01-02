@@ -111,7 +111,7 @@ enum ucb1x00_reset {
 	UCB_RST_PROBE_FAIL,
 };
 
-struct ucb1x00_plat_data {
+struct ucb1x00_platform_data {
 	void			(*reset)(enum ucb1x00_reset);
 	unsigned		irq_base;
 	int			gpio_base;

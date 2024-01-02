@@ -48,7 +48,7 @@ EXPORT_SYMBOL(omapdss_get_default_display_name);
 
 enum omapdss_version omapdss_get_version(void)
 {
-	struct omap_dss_board_info *pdata = core.pdev->dev.platform_data;
+	struct omap_dss_platform_data *pdata = core.pdev->dev.platform_data;
 	return pdata->version;
 }
 EXPORT_SYMBOL(omapdss_get_version);
@@ -60,7 +60,7 @@ struct platform_device *dss_get_core_pdev(void)
 
 int dss_dsi_enable_pads(int dsi_id, unsigned lane_mask)
 {
-	struct omap_dss_board_info *board_data = core.pdev->dev.platform_data;
+	struct omap_dss_platform_data *board_data = core.pdev->dev.platform_data;
 
 	if (!board_data->dsi_enable_pads)
 		return -ENOENT;
@@ -70,7 +70,7 @@ int dss_dsi_enable_pads(int dsi_id, unsigned lane_mask)
 
 void dss_dsi_disable_pads(int dsi_id, unsigned lane_mask)
 {
-	struct omap_dss_board_info *board_data = core.pdev->dev.platform_data;
+	struct omap_dss_platform_data *board_data = core.pdev->dev.platform_data;
 
 	if (!board_data->dsi_disable_pads)
 		return;
@@ -80,7 +80,7 @@ void dss_dsi_disable_pads(int dsi_id, unsigned lane_mask)
 
 int dss_set_min_bus_tput(struct device *dev, unsigned long tput)
 {
-	struct omap_dss_board_info *pdata = core.pdev->dev.platform_data;
+	struct omap_dss_platform_data *pdata = core.pdev->dev.platform_data;
 
 	if (pdata->set_min_bus_tput)
 		return pdata->set_min_bus_tput(dev, tput);

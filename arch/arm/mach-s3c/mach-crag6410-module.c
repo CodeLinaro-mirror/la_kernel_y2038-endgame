@@ -42,7 +42,7 @@ static struct gpiod_lookup_table wm0010_gpiod_table = {
 	},
 };
 
-static struct wm0010_pdata wm0010_pdata = {
+static struct wm0010_platform_data wm0010_pdata = {
 	/* Intentionally left blank */
 };
 
@@ -81,7 +81,7 @@ static struct gpiod_lookup_table wm5100_gpiod_table = {
 	},
 };
 
-static struct wm5100_pdata wm5100_pdata = {
+static struct wm5100_platform_data wm5100_pdata = {
 	.irq_flags = IRQF_TRIGGER_HIGH,
 
 	.in_mode = {
@@ -136,7 +136,7 @@ static struct gpiod_lookup_table wm8996_gpiod_table = {
 	},
 };
 
-static struct wm8996_pdata wm8996_pdata __initdata = {
+static struct wm8996_platform_data wm8996_pdata __initdata = {
 	.micdet_def = 1,
 	.inl_mode = WM8996_DIFFERRENTIAL_1,
 	.inr_mode = WM8996_DIFFERRENTIAL_1,
@@ -155,7 +155,7 @@ static struct wm8996_pdata wm8996_pdata __initdata = {
 	.num_retune_mobile_cfgs = ARRAY_SIZE(wm8996_retune),
 };
 
-static struct wm8962_pdata wm8962_pdata __initdata = {
+static struct wm8962_platform_data wm8962_pdata __initdata = {
 	.gpio_init = {
 		0,
 		WM8962_GPIO_FN_OPCLK,
@@ -167,7 +167,7 @@ static struct wm8962_pdata wm8962_pdata __initdata = {
 	.in4_dc_measure = true,
 };
 
-static struct wm9081_pdata wm9081_pdata __initdata = {
+static struct wm9081_platform_data wm9081_platform_data __initdata = {
 	.irq_high = false,
 	.irq_cmos = false,
 };
@@ -178,7 +178,7 @@ static const struct i2c_board_info wm1254_devs[] = {
 	  .irq = GLENFARCLAS_PMIC_IRQ_BASE + WM831X_IRQ_GPIO_2,
 	},
 	{ I2C_BOARD_INFO("wm9081", 0x6c),
-	  .platform_data = &wm9081_pdata, },
+	  .platform_data = &wm9081_platform_data, },
 };
 
 static const struct i2c_board_info wm1255_devs[] = {
@@ -187,7 +187,7 @@ static const struct i2c_board_info wm1255_devs[] = {
 	  .irq = GLENFARCLAS_PMIC_IRQ_BASE + WM831X_IRQ_GPIO_2,
 	},
 	{ I2C_BOARD_INFO("wm9081", 0x6c),
-	  .platform_data = &wm9081_pdata, },
+	  .platform_data = &wm9081_platform_data, },
 };
 
 static const struct i2c_board_info wm1259_devs[] = {
@@ -205,7 +205,7 @@ static struct regulator_init_data wm8994_ldo2 = {
 	.supply_regulator = "WALLVDD",
 };
 
-static struct wm8994_pdata wm8994_pdata = {
+static struct wm8994_platform_data wm8994_platform_data = {
 	.gpio_base = CODEC_GPIO_BASE,
 	.micb2_delay = 150,
 	.gpio_defaults = {
@@ -219,7 +219,7 @@ static struct wm8994_pdata wm8994_pdata = {
 
 static const struct i2c_board_info wm1277_devs[] = {
 	{ I2C_BOARD_INFO("wm8958", 0x1a),  /* WM8958 is the superset */
-	  .platform_data = &wm8994_pdata,
+	  .platform_data = &wm8994_platform_data,
 	  .irq = GLENFARCLAS_PMIC_IRQ_BASE + WM831X_IRQ_GPIO_2,
 	  .dev_name = "wm8958",
 	},
@@ -236,7 +236,7 @@ static struct gpiod_lookup_table wm8994_gpiod_table = {
 	},
 };
 
-static struct arizona_pdata wm5102_reva_pdata = {
+static struct arizona_platform_data wm5102_reva_pdata = {
 	.gpio_base = CODEC_GPIO_BASE,
 	.irq_flags = IRQF_TRIGGER_HIGH,
 	.micd_pol_gpio = CODEC_GPIO_BASE + 4,
@@ -269,7 +269,7 @@ static struct gpiod_lookup_table wm5102_reva_gpiod_table = {
 	},
 };
 
-static struct arizona_pdata wm5102_pdata = {
+static struct arizona_platform_data wm5102_pdata = {
 	.gpio_base = CODEC_GPIO_BASE,
 	.irq_flags = IRQF_TRIGGER_HIGH,
 	.micd_pol_gpio = CODEC_GPIO_BASE + 2,
@@ -316,10 +316,10 @@ static struct spi_board_info wm5110_spi_devs[] = {
 
 static const struct i2c_board_info wm6230_i2c_devs[] = {
 	{ I2C_BOARD_INFO("wm9081", 0x6c),
-	  .platform_data = &wm9081_pdata, },
+	  .platform_data = &wm9081_platform_data, },
 };
 
-static struct wm2200_pdata wm2200_pdata = {
+static struct wm2200_platform_data wm2200_pdata = {
 	.gpio_defaults = {
 		[2] = 0x0005,  /* GPIO3 24.576MHz output clock */
 	},

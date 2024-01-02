@@ -60,7 +60,7 @@ static void alchemy_8250_pm(struct uart_port *port, unsigned int state,
 		.pm		= alchemy_8250_pm,		\
 	}
 
-static struct plat_serial8250_port au1x00_uart_data[][4] __initdata = {
+static struct serial8250_platform_data au1x00_uart_data[][4] __initdata = {
 	[ALCHEMY_CPU_AU1000] = {
 		PORT(AU1000_UART0_PHYS_ADDR, AU1000_UART0_INT),
 		PORT(AU1000_UART1_PHYS_ADDR, AU1000_UART1_INT),
@@ -101,9 +101,9 @@ static struct platform_device au1xx0_uart_device = {
 static void __init alchemy_setup_uarts(int ctype)
 {
 	long uartclk;
-	int s = sizeof(struct plat_serial8250_port);
+	int s = sizeof(struct serial8250_platform_data);
 	int c = alchemy_get_uarts(ctype);
-	struct plat_serial8250_port *ports;
+	struct serial8250_platform_data *ports;
 	struct clk *clk = clk_get(NULL, ALCHEMY_PERIPH_CLK);
 
 	if (IS_ERR(clk))
@@ -151,7 +151,7 @@ static void alchemy_ehci_power_off(struct platform_device *pdev)
 	alchemy_usb_control(ALCHEMY_USB_EHCI0, 0);
 }
 
-static struct usb_ehci_pdata alchemy_ehci_pdata = {
+static struct usb_ehci_platform_data alchemy_ehci_pdata = {
 	.no_io_watchdog = 1,
 	.power_on	= alchemy_ehci_power_on,
 	.power_off	= alchemy_ehci_power_off,
@@ -180,7 +180,7 @@ static void alchemy_ohci_power_off(struct platform_device *pdev)
 	alchemy_usb_control(unit, 0);
 }
 
-static struct usb_ohci_pdata alchemy_ohci_pdata = {
+static struct usb_ohci_platform_data alchemy_ohci_pdata = {
 	.power_on		= alchemy_ohci_power_on,
 	.power_off		= alchemy_ohci_power_off,
 	.power_suspend		= alchemy_ohci_power_off,

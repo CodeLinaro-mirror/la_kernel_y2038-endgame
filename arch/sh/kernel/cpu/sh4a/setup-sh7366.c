@@ -17,7 +17,7 @@
 #include <asm/clock.h>
 #include <asm/platform_early.h>
 
-static struct plat_sci_port scif0_platform_data = {
+static struct scif_platform_data scif0_platform_data = {
 	.scscr		= SCSCR_REIE,
 	.type		= PORT_SCIF,
 };
@@ -58,7 +58,7 @@ static struct platform_device iic_device = {
 	.resource       = iic_resources,
 };
 
-static struct r8a66597_platdata r8a66597_data = {
+static struct r8a66597_platform_data r8a66597_data = {
 	.on_chip = 1,
 };
 
@@ -171,7 +171,7 @@ static struct platform_device veu1_device = {
 	.num_resources	= ARRAY_SIZE(veu1_resources),
 };
 
-static struct sh_timer_config cmt_platform_data = {
+static struct sh_timer_platform_data cmt_platform_data = {
 	.channels_mask = 0x20,
 };
 
@@ -190,7 +190,7 @@ static struct platform_device cmt_device = {
 	.num_resources	= ARRAY_SIZE(cmt_resources),
 };
 
-static struct sh_timer_config tmu0_platform_data = {
+static struct sh_timer_platform_data tmu0_platform_data = {
 	.channels_mask = 7,
 };
 

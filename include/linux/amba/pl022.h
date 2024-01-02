@@ -234,7 +234,7 @@ struct dma_chan;
  * @rt: indicates the controller should run the message pump with realtime
  *     priority to minimise the transfer latency on the bus.
  */
-struct pl022_ssp_controller {
+struct pl022_ssp_platform_data {
 	u16 bus_id;
 	u8 enable_dma:1;
 	dma_filter_fn dma_filter;

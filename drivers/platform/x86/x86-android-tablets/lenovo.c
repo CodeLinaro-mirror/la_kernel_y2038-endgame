@@ -948,7 +948,7 @@ static struct arizona_micd_config lenovo_yt3_wm5102_micd_config[] = {
 	{ ARIZONA_ACCDET_SRC, 2, 1 },
 };
 
-static struct arizona_pdata lenovo_yt3_wm5102_pdata = {
+static struct arizona_platform_data lenovo_yt3_wm5102_pdata = {
 	.irq_flags = IRQF_TRIGGER_LOW,
 	.micd_detect_debounce = 200,
 	.micd_ranges = arizona_micd_aosp_ranges,

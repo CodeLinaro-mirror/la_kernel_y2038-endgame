@@ -21,7 +21,7 @@ struct input_dev;
 #define MATRIX_SCAN_CODE(row, col, row_shift)	(((row) << (row_shift)) + (col))
 
 /**
- * struct matrix_keymap_data - keymap for matrix keyboards
+ * struct matrix_keymap_platform_data - keymap for matrix keyboards
  * @keymap: pointer to array of uint32 values encoded with KEY() macro
  *	representing keymap
  * @keymap_size: number of entries (initialized) in this keymap
@@ -29,12 +29,12 @@ struct input_dev;
  * This structure is supposed to be used by platform code to supply
  * keymaps to drivers that implement matrix-like keypads/keyboards.
  */
-struct matrix_keymap_data {
+struct matrix_keymap_platform_data {
 	const uint32_t *keymap;
 	unsigned int	keymap_size;
 };
 
-int matrix_keypad_build_keymap(const struct matrix_keymap_data *keymap_data,
+int matrix_keypad_build_keymap(const struct matrix_keymap_platform_data *keymap_data,
 			       const char *keymap_name,
 			       unsigned int rows, unsigned int cols,
 			       unsigned short *keymap,

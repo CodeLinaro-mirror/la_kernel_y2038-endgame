@@ -245,7 +245,7 @@ struct smc_local {
 	/* on some platforms a u16 write must be 4-bytes aligned */
 	bool	half_word_align4;
 
-	struct smc91x_platdata cfg;
+	struct smc91x_platform_data cfg;
 };
 
 #define SMC_8BIT(p)	((p)->cfg.flags & SMC91X_USE_8BIT)
