@@ -42,6 +42,7 @@ comment "ARM1136 platforms"
 config SOC_IMX35
 	bool "i.MX35 support"
 	select CPU_ARM1136R1
+	select MIGHT_HAVE_CACHE_L2X0
 	select MXC_AVIC
 	help
 	  This enables support for Freescale i.MX35 processor

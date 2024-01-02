@@ -199,6 +199,7 @@ config MACH_REALVIEW_PB1176
 	bool "Support RealView(R) Platform Baseboard for ARM1176JZF-S"
 	depends on ARCH_MULTI_V6
 	select CPU_ARM1176
+	select MIGHT_HAVE_CACHE_L2X0
 	select HAVE_TCM
 	help
 	  Include support for the ARM(R) RealView(R) Platform Baseboard for

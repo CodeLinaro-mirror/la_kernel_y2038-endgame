@@ -41,10 +41,10 @@ config ARCH_MULTI_V7
 	select ARCH_MULTI_V6_V7
 	select CPU_V7
 	select HAVE_SMP
+	select MIGHT_HAVE_CACHE_L2X0
 
 config ARCH_MULTI_V6_V7
 	bool
-	select MIGHT_HAVE_CACHE_L2X0
 
 config ARCH_MULTI_CPU_AUTO
 	def_bool !(ARCH_MULTI_V4 || ARCH_MULTI_V4T || ARCH_MULTI_V6_V7)
