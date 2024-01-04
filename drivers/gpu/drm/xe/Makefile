@@ -343,6 +343,13 @@ xe-$(CONFIG_DRM_XE_DISPLAY) += \
 	i915-display/skl_watermark.o \
 	i915-display/vlv_sideband.o
 
+ifdef CONFIG_DEBUG_FS
+xe-$(CONFIG_DRM_XE_DISPLAY) += \
+	i915-display/intel_display_debugfs.o \
+	i915-display/intel_display_debugfs_params.o \
+	i915-display/intel_pipe_crc.o
+endif
+
 ifeq ($(CONFIG_ACPI),y)
 	xe-$(CONFIG_DRM_XE_DISPLAY) += \
 		i915-display/intel_acpi.o \
