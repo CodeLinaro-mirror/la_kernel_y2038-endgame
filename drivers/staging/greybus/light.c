@@ -585,7 +585,6 @@ static void gb_lights_light_v4l2_unregister(struct gb_light *light)
 }
 #endif
 
-#if IS_REACHABLE(CONFIG_LEDS_CLASS_FLASH)
 /* Flash specific operations */
 static int gb_lights_flash_intensity_set(struct led_classdev_flash *fcdev,
 					 u32 brightness)
@@ -848,25 +847,6 @@ static int gb_lights_channel_flash_config(struct gb_channel *channel)
 
 	return 0;
 }
-#else
-static int gb_lights_channel_flash_config(struct gb_channel *channel)
-{
-	struct gb_connection *connection = get_conn_from_channel(channel);
-
-	dev_err(&connection->bundle->dev, "no support for flash devices\n");
-	return 0;
-}
-
-static int __gb_lights_flash_led_register(struct gb_channel *channel)
-{
-	return 0;
-}
-
-static void __gb_lights_flash_led_unregister(struct gb_channel *channel)
-{
-}
-
-#endif
 
 static int __gb_lights_led_register(struct gb_channel *channel)
 {
