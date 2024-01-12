@@ -23,10 +23,9 @@
 #include <linux/rtsx_usb.h>
 #include <linux/unaligned.h>
 
-#if defined(CONFIG_LEDS_CLASS) || (defined(CONFIG_LEDS_CLASS_MODULE) && \
-		defined(CONFIG_MMC_REALTEK_USB_MODULE))
 #include <linux/leds.h>
 #include <linux/workqueue.h>
+#if IS_ENABLED(CONFIG_LEDS_CLASS)
 #define RTSX_USB_USE_LEDS_CLASS
 #endif
 

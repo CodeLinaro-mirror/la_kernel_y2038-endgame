@@ -427,7 +427,7 @@ static void __sdhci_led_deactivate(struct sdhci_host *host)
 	sdhci_writeb(host, ctrl, SDHCI_HOST_CONTROL);
 }
 
-#if IS_REACHABLE(CONFIG_LEDS_CLASS)
+#if IS_ENABLED(CONFIG_LEDS_CLASS)
 static void sdhci_led_control(struct led_classdev *led,
 			      enum led_brightness brightness)
 {

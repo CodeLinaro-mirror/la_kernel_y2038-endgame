@@ -66,6 +66,7 @@ config MMC_PXA
 
 config MMC_SDHCI
 	tristate "Secure Digital Host Controller Interface support"
+	depends on LEDS_CLASS_OPTIONAL
 	depends on HAS_DMA
 	help
 	  This selects the generic Secure Digital Host Controller Interface.
@@ -587,6 +588,7 @@ config MMC_ALCOR
 
 config MMC_AU1X
 	bool "Alchemy AU1XX0 MMC Card Interface support"
+	depends on LEDS_CLASS_OPTIONAL
 	depends on MIPS_ALCHEMY
 	depends on MMC=y
 	help
@@ -989,6 +991,7 @@ config MMC_REALTEK_PCI
 
 config MMC_REALTEK_USB
 	tristate "Realtek USB SD/MMC Card Interface Driver"
+	depends on LEDS_CLASS_OPTIONAL
 	depends on MISC_RTSX_USB
 	help
 	  Say Y here to include driver code to support SD/MMC card interface
