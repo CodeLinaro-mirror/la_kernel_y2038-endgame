@@ -1049,8 +1049,8 @@ static int au1xmmc_probe(struct platform_device *pdev)
 			pr_info(DRIVER_NAME ": DBDMA init failed; using PIO\n");
 	}
 
-#ifdef CONFIG_LEDS_CLASS
-	if (host->platdata && host->platdata->led) {
+	if (IS_ENABLED(CONFIG_LEDS_CLASS) &&
+	    host->platdata && host->platdata->led) {
 		struct led_classdev *led = host->platdata->led;
 		led->name = mmc_hostname(mmc);
 		led->brightness = LED_OFF;
@@ -1059,7 +1059,6 @@ static int au1xmmc_probe(struct platform_device *pdev)
 		if (ret)
 			goto out5;
 	}
-#endif
 
 	au1xmmc_reset_controller(host);
 
@@ -1078,11 +1077,10 @@ static int au1xmmc_probe(struct platform_device *pdev)
 	return 0;	/* all ok */
 
 out6:
-#ifdef CONFIG_LEDS_CLASS
-	if (host->platdata && host->platdata->led)
+	if (IS_ENABLED(CONFIG_LEDS_CLASS) &&
+	     host->platdata && host->platdata->led)
 		led_classdev_unregister(host->platdata->led);
 out5:
-#endif
 	__raw_writel(0, HOST_ENABLE(host));
 	__raw_writel(0, HOST_CONFIG(host));
 	__raw_writel(0, HOST_CONFIG2(host));
@@ -1118,10 +1116,9 @@ static void au1xmmc_remove(struct platform_device *pdev)
 	if (host) {
 		mmc_remove_host(host->mmc);
 
-#ifdef CONFIG_LEDS_CLASS
-		if (host->platdata && host->platdata->led)
+		if (IS_ENABLED(CONFIG_LEDS_CLASS) &&
+		    host->platdata && host->platdata->led)
 			led_classdev_unregister(host->platdata->led);
-#endif
 
 		if (host->platdata && host->platdata->cd_setup &&
 		    !(host->mmc->caps & MMC_CAP_NEEDS_POLL))
