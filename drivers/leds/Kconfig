@@ -26,6 +26,16 @@ config LEDS_CLASS
 	  This option enables the LED sysfs class in /sys/class/leds.  You'll
 	  need this to do anything useful with LEDs.  If unsure, say Y.
 
+config LEDS_CLASS_OPTIONAL
+	tristate
+	default y if LEDS_CLASS=n
+	default LEDS_CLASS
+	help
+	  This is a helper symbol that device drivers can depend on when
+	  they can use LED support but also work when it is disabled.
+	  Any driver that depends on this can not be built-in when
+	  LEDS_CLASS itself is a loadable module.
+
 config LEDS_CLASS_FLASH
 	tristate "LED Flash Class Support"
 	depends on LEDS_CLASS
