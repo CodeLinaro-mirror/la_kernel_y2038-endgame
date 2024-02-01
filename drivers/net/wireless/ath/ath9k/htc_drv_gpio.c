@@ -15,6 +15,7 @@
  */
 
 #include "htc.h"
+#include <linux/gpio/consumer.h>
 
 /******************/
 /*     BTCOEX     */
@@ -229,8 +230,11 @@ void ath9k_led_work(struct work_struct *work)
 						   struct ath9k_htc_priv,
 						   led_work);
 
-	ath9k_hw_set_gpio(priv->ah, priv->ah->led_pin,
-			  (priv->brightness == LED_OFF));
+	if (priv->ah->led_gpio)
+		gpiod_set_value(priv->ah->led_gpio, priv->brightness != LED_OFF);
+	else
+		ath9k_hw_set_gpio(priv->ah, priv->ah->led_pin,
+				  (priv->brightness == LED_OFF));
 }
 
 static void ath9k_led_brightness(struct led_classdev *led_cdev,
@@ -254,12 +258,20 @@ void ath9k_deinit_leds(struct ath9k_htc_priv *priv)
 	led_classdev_unregister(&priv->led_cdev);
 	cancel_work_sync(&priv->led_work);
 
-	ath9k_hw_gpio_free(priv->ah, priv->ah->led_pin);
+	if (priv->ah->led_gpio)
+		gpiod_put(priv->ah->led_gpio);
+	else
+		ath9k_hw_gpio_free(priv->ah, priv->ah->led_pin);
 }
 
 
 void ath9k_configure_leds(struct ath9k_htc_priv *priv)
 {
+	if (priv->ah->led_gpio) {
+		gpiod_set_value(priv->ah->led_gpio, 1);
+		return;
+	}
+
 	/* Configure gpio 1 for output */
 	ath9k_hw_gpio_request_out(priv->ah, priv->ah->led_pin,
 				  "ath9k-led",
@@ -272,7 +284,11 @@ void ath9k_init_leds(struct ath9k_htc_priv *priv)
 {
 	int ret;
 
-	if (AR_SREV_9287(priv->ah))
+	if (AR_SREV_SOC(priv->ah)) {
+		priv->ah->led_gpio = gpiod_get(priv->ah->dev, "led", 0);
+		if (IS_ERR(priv->ah->led_gpio))
+			priv->ah->led_gpio = NULL;
+	} else if (AR_SREV_9287(priv->ah))
 		priv->ah->led_pin = ATH_LED_PIN_9287;
 	else if (AR_SREV_9271(priv->ah))
 		priv->ah->led_pin = ATH_LED_PIN_9271;

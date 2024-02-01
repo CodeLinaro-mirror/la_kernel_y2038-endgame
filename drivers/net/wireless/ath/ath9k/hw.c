@@ -2714,26 +2714,6 @@ static void ath9k_hw_gpio_cfg_output_mux(struct ath_hw *ah, u32 gpio, u32 type)
 	}
 }
 
-/* BSP should set the corresponding MUX register correctly.
- */
-static void ath9k_hw_gpio_cfg_soc(struct ath_hw *ah, u32 gpio, bool out,
-				  const char *label)
-{
-	int err;
-
-	if (ah->caps.gpio_requested & BIT(gpio))
-		return;
-
-	err = devm_gpio_request_one(ah->dev, gpio, out ? GPIOF_OUT_INIT_LOW : GPIOF_IN, label);
-	if (err) {
-		ath_err(ath9k_hw_common(ah), "request GPIO%d failed:%d\n",
-			gpio, err);
-		return;
-	}
-
-	ah->caps.gpio_requested |= BIT(gpio);
-}
-
 static void ath9k_hw_gpio_cfg_wmac(struct ath_hw *ah, u32 gpio, bool out,
 				   u32 ah_signal_type)
 {
@@ -2767,8 +2747,6 @@ static void ath9k_hw_gpio_request(struct ath_hw *ah, u32 gpio, bool out,
 
 	if (BIT(gpio) & ah->caps.gpio_mask)
 		ath9k_hw_gpio_cfg_wmac(ah, gpio, out, ah_signal_type);
-	else if (AR_SREV_SOC(ah))
-		ath9k_hw_gpio_cfg_soc(ah, gpio, out, label);
 	else
 		WARN_ON(1);
 }
@@ -2822,8 +2800,6 @@ u32 ath9k_hw_gpio_get(struct ath_hw *ah, u32 gpio)
 			val = REG_READ(ah, AR_GPIO_IN(ah)) & BIT(gpio);
 		else
 			val = MS_REG_READ(AR, gpio);
-	} else if (BIT(gpio) & ah->caps.gpio_requested) {
-		val = gpio_get_value(gpio) & BIT(gpio);
 	} else {
 		WARN_ON(1);
 	}
@@ -2846,8 +2822,6 @@ void ath9k_hw_set_gpio(struct ath_hw *ah, u32 gpio, u32 val)
 			AR7010_GPIO_OUT : AR_GPIO_IN_OUT(ah);
 
 		REG_RMW(ah, out_addr, val << gpio, BIT(gpio));
-	} else if (BIT(gpio) & ah->caps.gpio_requested) {
-		gpio_set_value(gpio, val);
 	} else {
 		WARN_ON(1);
 	}

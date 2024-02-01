@@ -910,6 +910,8 @@ struct ath_hw {
 	u32 gpio_mask;
 	u32 gpio_val;
 
+	struct gpio_desc *led_gpio;
+
 	struct ar5416IniArray ini_dfs;
 	struct ar5416IniArray iniModes;
 	struct ar5416IniArray iniCommon;
