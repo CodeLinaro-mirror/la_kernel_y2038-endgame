@@ -15,6 +15,7 @@
  */
 
 #include "ath9k.h"
+#include <linux/gpio/consumer.h>
 
 /********************************/
 /*	 LED functions		*/
@@ -27,7 +28,11 @@ static void ath_fill_led_pin(struct ath_softc *sc)
 	struct ath_hw *ah = sc->sc_ah;
 
 	/* Set default led pin if invalid */
-	if (ah->led_pin < 0) {
+	if (AR_SREV_SOC(ah)) {
+		ah->led_gpio = gpiod_get(ah->dev, "led", 0);
+		if (IS_ERR(ah->led_gpio))
+			ah->led_gpio = NULL;
+	} else if (ah->led_pin < 0) {
 		if (AR_SREV_9287(ah))
 			ah->led_pin = ATH_LED_PIN_9287;
 		else if (AR_SREV_9485(ah))
@@ -57,7 +62,10 @@ static void ath_led_brightness(struct led_classdev *led_cdev,
 	if (sc->sc_ah->config.led_active_high)
 		val = !val;
 
-	ath9k_hw_set_gpio(sc->sc_ah, sc->sc_ah->led_pin, val);
+	if (sc->sc_ah->led_gpio)
+		gpiod_set_value(sc->sc_ah->led_gpio, val);
+	else
+		ath9k_hw_set_gpio(sc->sc_ah, sc->sc_ah->led_pin, val);
 }
 
 void ath_deinit_leds(struct ath_softc *sc)
@@ -68,7 +76,8 @@ void ath_deinit_leds(struct ath_softc *sc)
 	ath_led_brightness(&sc->led_cdev, LED_OFF);
 	led_classdev_unregister(&sc->led_cdev);
 
-	ath9k_hw_gpio_free(sc->sc_ah, sc->sc_ah->led_pin);
+	if (sc->sc_ah->led_gpio)
+		gpiod_put(sc->sc_ah->led_gpio);
 }
 
 void ath_init_leds(struct ath_softc *sc)
