@@ -2359,7 +2359,6 @@ config PREEMPT_NOTIFIERS
 	bool
 
 config PADATA
-	depends on SMP
 	bool
 
 config ASN1
