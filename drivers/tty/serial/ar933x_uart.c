@@ -619,8 +619,6 @@ static const struct uart_ops ar933x_uart_ops = {
 	.shutdown	= ar933x_uart_shutdown,
 	.set_termios	= ar933x_uart_set_termios,
 	.type		= ar933x_uart_type,
-	.release_port	= ar933x_uart_release_port,
-	.request_port	= ar933x_uart_request_port,
 	.config_port	= ar933x_uart_config_port,
 	.verify_port	= ar933x_uart_verify_port,
 #ifdef CONFIG_CONSOLE_POLL
