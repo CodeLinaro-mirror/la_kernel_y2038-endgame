@@ -219,7 +219,7 @@ static struct qed_mfw_speed_map qed_mfw_legacy_maps[] __ro_after_init = {
 			  qed_mfw_legacy_bb_100g),
 };
 
-static void __init qed_mfw_speed_map_populate(struct qed_mfw_speed_map *map)
+static void __init __attribute__((flatten)) qed_mfw_speed_map_populate(struct qed_mfw_speed_map *map)
 {
 	linkmode_set_bit_array(map->cap_arr, map->arr_size, map->caps);
 
