@@ -27,6 +27,7 @@ struct xfrm_id {
 	xfrm_address_t	daddr;
 	__be32		spi;
 	__u8		proto;
+	__u8		__pad[3];
 };
 
 struct xfrm_sec_ctx {
@@ -251,11 +252,13 @@ struct xfrm_user_sec_ctx {
 struct xfrm_user_tmpl {
 	struct xfrm_id		id;
 	__u16			family;
+	__u16			__pad1;
 	xfrm_address_t		saddr;
 	__u32			reqid;
 	__u8			mode;
 	__u8			share;
 	__u8			optional;
+	__u8			__pad2;
 	__u32			aalgos;
 	__u32			ealgos;
 	__u32			calgos;
