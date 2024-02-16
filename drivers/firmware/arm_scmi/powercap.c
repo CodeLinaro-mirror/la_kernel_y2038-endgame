@@ -823,6 +823,8 @@ scmi_powercap_notify_supported(const struct scmi_protocol_handle *ph,
 		supported = dom_info->notify_powercap_cap_change;
 	else if (evt_id == SCMI_EVENT_POWERCAP_MEASUREMENTS_CHANGED)
 		supported = dom_info->notify_powercap_measurement_change;
+	else
+		supported = false;
 
 	return supported;
 }
