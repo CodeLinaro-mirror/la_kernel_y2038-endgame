@@ -89,7 +89,7 @@ SECTIONS
      * The EFI stub always executes from RAM, and runs strictly before the
      * decompressor, so we can make an exception for its r/w data, and keep it
      */
-    *(.data.efistub .bss.efistub)
+    *(.data.* .bss.*)
     __pecoff_data_end = .;
 
     /*
