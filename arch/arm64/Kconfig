@@ -117,11 +117,11 @@ config ARM64
 	select ARCH_WANT_DEFAULT_BPF_JIT
 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
 	select ARCH_WANT_FRAME_POINTERS
-	select ARCH_WANT_HUGE_PMD_SHARE if ARM64_4K_PAGES || (ARM64_16K_PAGES && !ARM64_VA_BITS_36)
+	select ARCH_WANT_HUGE_PMD_SHARE if PAGE_SIZE_4KB || (PAGE_SIZE_16KB && !ARM64_VA_BITS_36)
 	select ARCH_WANT_LD_ORPHAN_WARN
 	select ARCH_WANTS_EXECMEM_LATE
 	select ARCH_WANTS_NO_INSTR
-	select ARCH_WANTS_THP_SWAP if ARM64_4K_PAGES
+	select ARCH_WANTS_THP_SWAP if PAGE_SIZE_4KB
 	select ARCH_HAS_UBSAN
 	select ARM_AMBA
 	select ARM_ARCH_TIMER
@@ -339,16 +339,16 @@ config ARCH_MMAP_RND_BITS_MAX
 	default 24 if ARM64_VA_BITS=39
 	default 27 if ARM64_VA_BITS=42
 	default 30 if ARM64_VA_BITS=47
-	default 29 if (ARM64_VA_BITS=48 || ARM64_VA_BITS=52) && ARM64_64K_PAGES
-	default 31 if (ARM64_VA_BITS=48 || ARM64_VA_BITS=52) && ARM64_16K_PAGES
+	default 29 if (ARM64_VA_BITS=48 || ARM64_VA_BITS=52) && PAGE_SIZE_64KB
+	default 31 if (ARM64_VA_BITS=48 || ARM64_VA_BITS=52) && PAGE_SIZE_16KB
 	default 33 if (ARM64_VA_BITS=48 || ARM64_VA_BITS=52)
-	default 14 if ARM64_64K_PAGES
-	default 16 if ARM64_16K_PAGES
+	default 14 if PAGE_SIZE_64KB
+	default 16 if PAGE_SIZE_16KB
 	default 18
 
 config ARCH_MMAP_RND_COMPAT_BITS_MIN
-	default 7 if ARM64_64K_PAGES
-	default 9 if ARM64_16K_PAGES
+	default 7 if PAGE_SIZE_64KB
+	default 9 if PAGE_SIZE_16KB
 	default 11
 
 config ARCH_MMAP_RND_COMPAT_BITS_MAX
@@ -395,14 +395,14 @@ config FIX_EARLYCON_MEM
 
 config PGTABLE_LEVELS
 	int
-	default 2 if ARM64_16K_PAGES && ARM64_VA_BITS_36
-	default 2 if ARM64_64K_PAGES && ARM64_VA_BITS_42
-	default 3 if ARM64_64K_PAGES && (ARM64_VA_BITS_48 || ARM64_VA_BITS_52)
-	default 3 if ARM64_4K_PAGES && ARM64_VA_BITS_39
-	default 3 if ARM64_16K_PAGES && ARM64_VA_BITS_47
-	default 4 if ARM64_16K_PAGES && (ARM64_VA_BITS_48 || ARM64_VA_BITS_52)
-	default 4 if !ARM64_64K_PAGES && ARM64_VA_BITS_48
-	default 5 if ARM64_4K_PAGES && ARM64_VA_BITS_52
+	default 2 if PAGE_SIZE_16KB && ARM64_VA_BITS_36
+	default 2 if PAGE_SIZE_64KB && ARM64_VA_BITS_42
+	default 3 if PAGE_SIZE_64KB && (ARM64_VA_BITS_48 || ARM64_VA_BITS_52)
+	default 3 if PAGE_SIZE_4KB && ARM64_VA_BITS_39
+	default 3 if PAGE_SIZE_16KB && ARM64_VA_BITS_47
+	default 4 if PAGE_SIZE_16KB && (ARM64_VA_BITS_48 || ARM64_VA_BITS_52)
+	default 4 if !PAGE_SIZE_64KB && ARM64_VA_BITS_48
+	default 5 if PAGE_SIZE_4KB && ARM64_VA_BITS_52
 
 config ARCH_SUPPORTS_UPROBES
 	def_bool y
@@ -430,13 +430,13 @@ config BUILTIN_RETURN_ADDRESS_STRIPS_PAC
 config KASAN_SHADOW_OFFSET
 	hex
 	depends on KASAN_GENERIC || KASAN_SW_TAGS
-	default 0xdfff800000000000 if (ARM64_VA_BITS_48 || (ARM64_VA_BITS_52 && !ARM64_16K_PAGES)) && !KASAN_SW_TAGS
-	default 0xdfffc00000000000 if (ARM64_VA_BITS_47 || ARM64_VA_BITS_52) && ARM64_16K_PAGES && !KASAN_SW_TAGS
+	default 0xdfff800000000000 if (ARM64_VA_BITS_48 || (ARM64_VA_BITS_52 && !PAGE_SIZE_16KB)) && !KASAN_SW_TAGS
+	default 0xdfffc00000000000 if (ARM64_VA_BITS_47 || ARM64_VA_BITS_52) && PAGE_SIZE_16KB && !KASAN_SW_TAGS
 	default 0xdffffe0000000000 if ARM64_VA_BITS_42 && !KASAN_SW_TAGS
 	default 0xdfffffc000000000 if ARM64_VA_BITS_39 && !KASAN_SW_TAGS
 	default 0xdffffff800000000 if ARM64_VA_BITS_36 && !KASAN_SW_TAGS
-	default 0xefff800000000000 if (ARM64_VA_BITS_48 || (ARM64_VA_BITS_52 && !ARM64_16K_PAGES)) && KASAN_SW_TAGS
-	default 0xefffc00000000000 if (ARM64_VA_BITS_47 || ARM64_VA_BITS_52) && ARM64_16K_PAGES && KASAN_SW_TAGS
+	default 0xefff800000000000 if (ARM64_VA_BITS_48 || (ARM64_VA_BITS_52 && !PAGE_SIZE_16KB)) && KASAN_SW_TAGS
+	default 0xefffc00000000000 if (ARM64_VA_BITS_47 || ARM64_VA_BITS_52) && PAGE_SIZE_16KB && KASAN_SW_TAGS
 	default 0xeffffe0000000000 if ARM64_VA_BITS_42 && KASAN_SW_TAGS
 	default 0xefffffc000000000 if ARM64_VA_BITS_39 && KASAN_SW_TAGS
 	default 0xeffffff800000000 if ARM64_VA_BITS_36 && KASAN_SW_TAGS
@@ -1482,11 +1482,11 @@ choice
 
 config ARM64_PA_BITS_48
 	bool "48-bit"
-	depends on ARM64_64K_PAGES || !ARM64_VA_BITS_52
+	depends on PAGE_SIZE_64KB || !ARM64_VA_BITS_52
 
 config ARM64_PA_BITS_52
 	bool "52-bit"
-	depends on ARM64_64K_PAGES || ARM64_VA_BITS_52
+	depends on PAGE_SIZE_64KB || ARM64_VA_BITS_52
 	help
 	  Enable support for a 52-bit physical address space, introduced as
 	  part of the ARMv8.2-LPA extension.
@@ -1504,7 +1504,7 @@ config ARM64_PA_BITS
 
 config ARM64_LPA2
 	def_bool y
-	depends on ARM64_PA_BITS_52 && !ARM64_64K_PAGES
+	depends on ARM64_PA_BITS_52 && !PAGE_SIZE_64KB
 
 choice
 	prompt "Endianness"
@@ -1659,8 +1659,8 @@ config XEN
 # 64K |       29          |      16      |       13             |         13              |
 config ARCH_FORCE_MAX_ORDER
 	int
-	default "13" if ARM64_64K_PAGES
-	default "11" if ARM64_16K_PAGES
+	default "13" if PAGE_SIZE_64KB
+	default "11" if PAGE_SIZE_16KB
 	default "10"
 	help
 	  The kernel page allocator limits the size of maximal physically
