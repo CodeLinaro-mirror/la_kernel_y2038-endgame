@@ -9,6 +9,7 @@
 #include <linux/fault-inject.h>
 #include <linux/io-64-nonatomic-lo-hi.h>
 #include <linux/sizes.h>
+#include <linux/io-64-nonatomic-lo-hi.h>
 
 #include <drm/drm_drv.h>
 #include <drm/drm_managed.h>
