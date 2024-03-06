@@ -65,7 +65,16 @@ enum fc_sof {
 	FC_SOF_N2 =	0x35,	/* normal class 2 */
 	FC_SOF_N3 =	0x36,	/* normal class 3 */
 	FC_SOF_C4 =	0x39,	/* activate class 4 */
+
+	/* Define classes in terms of the SOF code (initial).  */
+	FC_CLASS_NONE = 0,	/* software value indicating no class */
+	FC_CLASS_2 =	FC_SOF_I2,
+	FC_CLASS_3 =	FC_SOF_I3,
+	FC_CLASS_4 =	FC_SOF_I4,
+	FC_CLASS_F =	FC_SOF_F,
 } __attribute__((packed));
+
+#define fc_class fc_sof
 
 enum fc_eof {
 	FC_EOF_N =	0x41,	/* normal (not last frame of seq) */
@@ -79,17 +88,6 @@ enum fc_eof {
 } __attribute__((packed));
 
 #define FC_SOF_CLASS_MASK 0x06	/* mask for class of service in SOF */
-
-/*
- * Define classes in terms of the SOF code (initial).
- */
-enum fc_class {
-	FC_CLASS_NONE = 0,	/* software value indicating no class */
-	FC_CLASS_2 =	FC_SOF_I2,
-	FC_CLASS_3 =	FC_SOF_I3,
-	FC_CLASS_4 =	FC_SOF_I4,
-	FC_CLASS_F =	FC_SOF_F,
-};
 
 /*
  * Determine whether SOF code indicates the need for a BLS ACK.

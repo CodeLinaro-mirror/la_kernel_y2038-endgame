@@ -781,16 +781,14 @@ struct iwl_mac_beacon_cmd_v7 {
 	struct ieee80211_hdr frame[];
 } __packed; /* BEACON_TEMPLATE_CMD_API_S_VER_7 */
 
+enum iwl_mac_beacon_flags {
 /* Bit flags for BEACON_TEMPLATE_CMD_API until version 10 */
-enum iwl_mac_beacon_flags_v1 {
 	IWL_MAC_BEACON_CCK_V1	= BIT(8),
 	IWL_MAC_BEACON_ANT_A_V1 = BIT(9),
 	IWL_MAC_BEACON_ANT_B_V1 = BIT(10),
 	IWL_MAC_BEACON_FILS_V1	= BIT(12),
-};
 
 /* Bit flags for BEACON_TEMPLATE_CMD_API version 11 and above */
-enum iwl_mac_beacon_flags {
 	IWL_MAC_BEACON_CCK	= BIT(5),
 	IWL_MAC_BEACON_ANT_A	= BIT(6),
 	IWL_MAC_BEACON_ANT_B	= BIT(7),

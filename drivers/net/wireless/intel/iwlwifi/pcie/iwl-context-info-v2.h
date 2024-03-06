@@ -21,20 +21,6 @@
 #define CSR_AUTO_FUNC_INIT              BIT(7)
 
 /**
- * enum iwl_prph_scratch_mtr_format - tfd size configuration
- * @IWL_PRPH_MTR_FORMAT_16B: 16 bit tfd
- * @IWL_PRPH_MTR_FORMAT_32B: 32 bit tfd
- * @IWL_PRPH_MTR_FORMAT_64B: 64 bit tfd
- * @IWL_PRPH_MTR_FORMAT_256B: 256 bit tfd
- */
-enum iwl_prph_scratch_mtr_format {
-	IWL_PRPH_MTR_FORMAT_16B = 0x0,
-	IWL_PRPH_MTR_FORMAT_32B = 0x40000,
-	IWL_PRPH_MTR_FORMAT_64B = 0x80000,
-	IWL_PRPH_MTR_FORMAT_256B = 0xC0000,
-};
-
-/**
  * enum iwl_prph_scratch_flags - PRPH scratch control flags
  * @IWL_PRPH_SCRATCH_IMR_DEBUG_EN: IMR support for debug
  * @IWL_PRPH_SCRATCH_EARLY_DEBUG_EN: enable early debug conf
@@ -50,6 +36,10 @@ enum iwl_prph_scratch_mtr_format {
  * @IWL_PRPH_SCRATCH_MTR_FORMAT: a mask for the size of the tfd.
  *	There are 4 optional values: 0: 16 bit, 1: 32 bit, 2: 64 bit,
  *	3: 256 bit.
+ * @IWL_PRPH_MTR_FORMAT_16B: 16 bit tfd
+ * @IWL_PRPH_MTR_FORMAT_32B: 32 bit tfd
+ * @IWL_PRPH_MTR_FORMAT_64B: 64 bit tfd
+ * @IWL_PRPH_MTR_FORMAT_256B: 256 bit tfd
  * @IWL_PRPH_SCRATCH_RB_SIZE_EXT_MASK: RB size full information, ignored
  *	by older firmware versions, so set IWL_PRPH_SCRATCH_RB_SIZE_4K
  *	appropriately; use the below values for this.
@@ -70,6 +60,10 @@ enum iwl_prph_scratch_flags {
 	IWL_PRPH_SCRATCH_RB_SIZE_4K		= BIT(16),
 	IWL_PRPH_SCRATCH_MTR_MODE		= BIT(17),
 	IWL_PRPH_SCRATCH_MTR_FORMAT		= BIT(18) | BIT(19),
+	IWL_PRPH_MTR_FORMAT_16B = 0x0,
+	IWL_PRPH_MTR_FORMAT_32B = 0x40000,
+	IWL_PRPH_MTR_FORMAT_64B = 0x80000,
+	IWL_PRPH_MTR_FORMAT_256B = 0xC0000,
 	IWL_PRPH_SCRATCH_RB_SIZE_EXT_MASK	= 0xf << 20,
 	IWL_PRPH_SCRATCH_RB_SIZE_EXT_8K		= 8 << 20,
 	IWL_PRPH_SCRATCH_RB_SIZE_EXT_12K	= 9 << 20,

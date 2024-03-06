@@ -1757,7 +1757,7 @@ static int sis900_rx(struct net_device *net_dev)
 			rx_status &= (~ ((unsigned int)TOOLONG));
 #endif
 
-		if (rx_status & (ABORT|OVERRUN|TOOLONG|RUNT|RXISERR|CRCERR|FAERR)) {
+		if (rx_status & (RXABORT|OVERRUN|TOOLONG|RUNT|RXISERR|CRCERR|FAERR)) {
 			/* corrupted packet received */
 			if (netif_msg_rx_err(sis_priv))
 				printk(KERN_DEBUG "%s: Corrupted packet "
