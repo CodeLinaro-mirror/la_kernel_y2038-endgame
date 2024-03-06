@@ -1432,7 +1432,7 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 	 * table in SCB space.
 	 */
 	if (!(cmd->flags & SCMD_TAGGED)
-	    && (ahc->features & AHC_SCB_BTT) == 0) {
+	    && (ahc->features & AHC_MULTIROLE) == 0) {
 		int target_offset;
 
 		target_offset = cmd->device->id + cmd->device->channel * 8;

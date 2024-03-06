@@ -26,11 +26,12 @@ enum chip_flavors {
 };
 
 /* driver compile-time configuration */
+
+/* software requires power-of-2 ring size */
+#define MVS_TX_RING_SZ 1024 /* TX ring size (12-bit) */
+#define MVS_RX_RING_SZ 1024 /* RX ring size (12-bit) */
+
 enum driver_configuration {
-	MVS_TX_RING_SZ		= 1024,	/* TX ring size (12-bit) */
-	MVS_RX_RING_SZ		= 1024, /* RX ring size (12-bit) */
-					/* software requires power-of-2
-					   ring size */
 	MVS_SOC_SLOTS		= 64,
 	MVS_SOC_TX_RING_SZ	= MVS_SOC_SLOTS * 2,
 	MVS_SOC_RX_RING_SZ	= MVS_SOC_SLOTS * 2,
@@ -118,7 +119,9 @@ enum hw_register_bits {
 
 	/* MVS_INT_COAL */
 	COAL_EN			= (1U << 16),	/* Enable int coalescing */
+};
 
+enum {
 	/* MVS_INT_STAT, MVS_INT_MASK */
 	CINT_I2C		= (1U << 31),	/* I2C event */
 	CINT_SW0		= (1U << 30),	/* software event 0 */
@@ -139,7 +142,9 @@ enum hw_register_bits {
 	CINT_PORT_MASK		= (0xFF << CINT_PORT_MASK_OFFSET),
 	CINT_PHY_MASK_OFFSET	= 4,
 	CINT_PHY_MASK		= (0x0F << CINT_PHY_MASK_OFFSET),
+};
 
+enum {
 	/* TX (delivery) ring bits */
 	TXQ_CMD_SHIFT		= 29,
 	TXQ_CMD_SSP		= 1,		/* SSP protocol */
@@ -158,7 +163,9 @@ enum hw_register_bits {
 	TXQ_PHY_SHIFT		= 12,		/* PHY bitmap */
 	TXQ_PHY_MASK		= 0xff,
 	TXQ_SLOT_MASK		= 0xfff,	/* slot number */
+};
 
+enum {
 	/* RX (completion) ring bits */
 	RXQ_GOOD		= (1U << 23),	/* Response good */
 	RXQ_SLOT_RESET		= (1U << 21),	/* Slot reset complete */
@@ -168,7 +175,9 @@ enum hw_register_bits {
 	RXQ_ERR			= (1U << 17),	/* err info rec xfer'd */
 	RXQ_DONE		= (1U << 16),	/* cmd complete */
 	RXQ_SLOT_MASK		= 0xfff,	/* slot number */
+};
 
+enum {
 	/* mvs_cmd_hdr bits */
 	MCH_PRD_LEN_SHIFT	= 16,		/* 16-bit PRD table len */
 	MCH_SSP_FR_TYPE_SHIFT	= 13,		/* SSP frame type */

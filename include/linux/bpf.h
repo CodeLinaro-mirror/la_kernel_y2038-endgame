@@ -705,6 +705,7 @@ extern const struct bpf_map_ops bpf_map_offload_ops;
 enum bpf_type_flag {
 	/* PTR may be NULL. */
 	PTR_MAYBE_NULL		= BIT(0 + BPF_BASE_TYPE_BITS),
+#define PTR_MAYBE_NULL (u32)PTR_MAYBE_NULL
 
 	/* MEM is read-only. When applied on bpf_arg, it indicates the arg is
 	 * compatible with both mutable and immutable memory.
@@ -735,9 +736,11 @@ enum bpf_type_flag {
 	 * kfunc or bpf helpers).
 	 */
 	PTR_UNTRUSTED		= BIT(6 + BPF_BASE_TYPE_BITS),
+#define PTR_UNTRUSTED (u32)PTR_UNTRUSTED
 
 	/* MEM can be uninitialized. */
 	MEM_UNINIT		= BIT(7 + BPF_BASE_TYPE_BITS),
+#define MEM_UNINIT (u32)MEM_UNINIT
 
 	/* DYNPTR points to memory local to the bpf program. */
 	DYNPTR_TYPE_LOCAL	= BIT(8 + BPF_BASE_TYPE_BITS),
@@ -747,6 +750,7 @@ enum bpf_type_flag {
 
 	/* Size is known at compile time. */
 	MEM_FIXED_SIZE		= BIT(10 + BPF_BASE_TYPE_BITS),
+#define MEM_FIXED_SIZE (u32)MEM_FIXED_SIZE
 
 	/* MEM is of an allocated object of type in program BTF. This is used to
 	 * tag PTR_TO_BTF_ID allocated using bpf_obj_new.
@@ -781,6 +785,7 @@ enum bpf_type_flag {
 	 * for example contain an object that was recently freed.
 	 */
 	PTR_TRUSTED		= BIT(12 + BPF_BASE_TYPE_BITS),
+#define PTR_TRUSTED (u32)PTR_TRUSTED
 
 	/* MEM is tagged with rcu and memory access needs rcu_read_lock protection. */
 	MEM_RCU			= BIT(13 + BPF_BASE_TYPE_BITS),
@@ -843,6 +848,7 @@ enum bpf_arg_type {
 	 * on eBPF program stack
 	 */
 	ARG_PTR_TO_MEM,		/* pointer to valid memory (stack, packet, map value) */
+#define ARG_PTR_TO_MEM (u32)ARG_PTR_TO_MEM
 	ARG_PTR_TO_ARENA,
 
 	ARG_CONST_SIZE,		/* number of bytes accessed from memory */
@@ -857,6 +863,7 @@ enum bpf_arg_type {
 	ARG_PTR_TO_RINGBUF_MEM,	/* pointer to dynamically reserved ringbuf memory */
 	ARG_CONST_ALLOC_SIZE_OR_ZERO,	/* number of allocated bytes requested */
 	ARG_PTR_TO_BTF_ID_SOCK_COMMON,	/* pointer to in-kernel sock_common or bpf-mirrored bpf_sock */
+#define ARG_PTR_TO_BTF_ID_SOCK_COMMON (u32)ARG_PTR_TO_BTF_ID_SOCK_COMMON
 	ARG_PTR_TO_PERCPU_BTF_ID,	/* pointer to in-kernel percpu type */
 	ARG_PTR_TO_FUNC,	/* pointer to a bpf program function */
 	ARG_PTR_TO_STACK,	/* pointer to stack */
@@ -864,6 +871,7 @@ enum bpf_arg_type {
 	ARG_PTR_TO_TIMER,	/* pointer to bpf_timer */
 	ARG_KPTR_XCHG_DEST,	/* pointer to destination that kptrs are bpf_kptr_xchg'd into */
 	ARG_PTR_TO_DYNPTR,      /* pointer to bpf_dynptr. See bpf_type_flag for dynptr type */
+#define ARG_PTR_TO_DYNPTR (u32)ARG_PTR_TO_DYNPTR
 	__BPF_ARG_TYPE_MAX,
 
 	/* Extended arg_types. */

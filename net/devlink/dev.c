@@ -332,7 +332,7 @@ __devlink_reload_stats_update(struct devlink *devlink, u32 *reload_stats,
 	int action;
 
 	for_each_set_bit(action, &actions, __DEVLINK_RELOAD_ACTION_MAX) {
-		stat_idx = limit * __DEVLINK_RELOAD_ACTION_MAX + action;
+		stat_idx = limit * (u32)__DEVLINK_RELOAD_ACTION_MAX + action;
 		reload_stats[stat_idx]++;
 	}
 	devlink_notify(devlink, DEVLINK_CMD_NEW);

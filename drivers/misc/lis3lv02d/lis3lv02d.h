@@ -108,6 +108,12 @@ enum lis3lv02d_ctrl1_12b {
 	CTRL1_DF1	= 0x20,
 	CTRL1_PD0	= 0x40,
 	CTRL1_PD1	= 0x80,
+
+	CTRL1_DR0	= 0x08,
+	CTRL1_DR1	= 0x10,
+	CTRL1_PM0	= 0x20,
+	CTRL1_PM1	= 0x40,
+	CTRL1_PM2	= 0x80,
 };
 
 /* Delta to ctrl1_12b version */
@@ -124,14 +130,6 @@ enum lis3lv02d_ctrl1_3dc {
 	CTRL1_ODR1	= 0x20,
 	CTRL1_ODR2	= 0x40,
 	CTRL1_ODR3	= 0x80,
-};
-
-enum lis331dlh_ctrl1 {
-	CTRL1_DR0	= 0x08,
-	CTRL1_DR1	= 0x10,
-	CTRL1_PM0	= 0x20,
-	CTRL1_PM1	= 0x40,
-	CTRL1_PM2	= 0x80,
 };
 
 enum lis331dlh_ctrl2 {

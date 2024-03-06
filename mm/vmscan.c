@@ -420,7 +420,7 @@ static unsigned long lruvec_lru_size(struct lruvec *lruvec, enum lru_list lru,
 		if (!mem_cgroup_disabled())
 			size += mem_cgroup_get_zone_lru_size(lruvec, lru, zid);
 		else
-			size += zone_page_state(zone, NR_ZONE_LRU_BASE + lru);
+			size += zone_page_state(zone, (u32)NR_ZONE_LRU_BASE + lru);
 	}
 	return size;
 }
@@ -1790,7 +1790,7 @@ move:
 			if (!nr_skipped[zid])
 				continue;
 
-			__count_zid_vm_events(PGSCAN_SKIP, zid, nr_skipped[zid]);
+			__count_zid_vm_events((u32)PGSCAN_SKIP, zid, nr_skipped[zid]);
 			skipped += nr_skipped[zid];
 		}
 	}
@@ -2295,8 +2295,8 @@ static bool inactive_is_low(struct lruvec *lruvec, enum lru_list inactive_lru)
 	unsigned long inactive_ratio;
 	unsigned long gb;
 
-	inactive = lruvec_page_state(lruvec, NR_LRU_BASE + inactive_lru);
-	active = lruvec_page_state(lruvec, NR_LRU_BASE + active_lru);
+	inactive = lruvec_page_state(lruvec, LRU_BASE + inactive_lru);
+	active = lruvec_page_state(lruvec, LRU_BASE + active_lru);
 
 	gb = (inactive + active) >> (30 - PAGE_SHIFT);
 	if (gb)
@@ -4592,7 +4592,7 @@ static int scan_folios(unsigned long nr_to_scan, struct lruvec *lruvec,
 
 		if (skipped_zone) {
 			list_splice(&moved, head);
-			__count_zid_vm_events(PGSCAN_SKIP, zone, skipped_zone);
+			__count_zid_vm_events((u32)PGSCAN_SKIP, zone, skipped_zone);
 			skipped += skipped_zone;
 		}
 
@@ -6351,7 +6351,7 @@ retry:
 	delayacct_freepages_start();
 
 	if (!cgroup_reclaim(sc))
-		__count_zid_vm_events(ALLOCSTALL, sc->reclaim_idx, 1);
+		__count_zid_vm_events((u32)ALLOCSTALL, sc->reclaim_idx, 1);
 
 	do {
 		if (!sc->proactive)
