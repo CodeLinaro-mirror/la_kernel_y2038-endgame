@@ -93,6 +93,22 @@
 		*(.vfp11_veneer)                                        \
 		*(.v4_bx)
 
+/*
+When CONFIG_LD_DEAD_CODE_DATA_ELIMINATION is enabled, it is important to
+annotate .vectors sections with KEEP. While linking with ld, it is
+acceptable to directly use KEEP with .vectors sections in ARM_VECTORS.
+However, when using ld.lld for linking, KEEP is not recognized within the
+OVERLAY command; it is treated as a regular string. Hence, it is advisable
+to define a distinct section here that explicitly retains the .vectors
+sections when CONFIG_LD_DEAD_CODE_DATA_ELIMINATION is turned on.
+*/
+#define ARM_VECTORS_TEXT						\
+	.vectors.text : {						\
+		KEEP(*(.vectors))					\
+		KEEP(*(.vectors.bhb.loop8))				\
+		KEEP(*(.vectors.bhb.bpiall))				\
+       }
+
 #define ARM_TEXT							\
 		IDMAP_TEXT						\
 		__entry_text_start = .;					\

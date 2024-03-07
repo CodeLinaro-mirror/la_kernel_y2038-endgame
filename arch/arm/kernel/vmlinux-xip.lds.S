@@ -135,6 +135,10 @@ SECTIONS
 	ARM_TCM
 #endif
 
+#ifdef LD_DEAD_CODE_DATA_ELIMINATION
+	ARM_VECTORS_TEXT
+#endif
+
 	/*
 	 * End of copied data. We need a dummy section to get its LMA.
 	 * Also located before final ALIGN() as trailing padding is not stored
