@@ -412,3 +412,4 @@ void acpi_device_notify_remove(struct device *dev)
 
 	acpi_unbind_one(dev);
 }
+EXPORT_SYMBOL_GPL(acpi_device_notify_remove);
