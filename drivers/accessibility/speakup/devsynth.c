@@ -68,7 +68,7 @@ static ssize_t speakup_file_writeu(struct file *fp, const char __user *buffer,
 			case 7: /* 0xfe */
 			case 1: /* 0x80 */
 				/* Invalid, drop */
-				goto drop;
+				continue;
 
 			case 0:
 				/* ASCII, copy */
@@ -96,7 +96,7 @@ static ssize_t speakup_file_writeu(struct file *fp, const char __user *buffer,
 					if ((c & 0xc0) != 0x80)	{
 						/* Invalid, drop the head */
 						want = 1;
-						goto drop;
+						continue;
 					}
 					value = (value << 6) | (c & 0x3f);
 					in++;
@@ -107,7 +107,6 @@ static ssize_t speakup_file_writeu(struct file *fp, const char __user *buffer,
 				want = 1;
 				break;
 			}
-drop:
 		}
 
 		count -= bytes;
