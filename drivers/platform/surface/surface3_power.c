@@ -245,7 +245,7 @@ static int mshw0011_bix(struct mshw0011_data *cdata, struct bix *bix)
 		dev_err(&client->dev, "Error reading serial no: %d\n", ret);
 		return ret;
 	} else {
-		snprintf(bix->serial, ARRAY_SIZE(bix->serial), "%3pE%6pE", buf + 7, buf);
+		snprintf(bix->serial, ARRAY_SIZE(bix->serial), "%3pE%4pE", buf + 7, buf);
 	}
 
 	/* get cycle count */
