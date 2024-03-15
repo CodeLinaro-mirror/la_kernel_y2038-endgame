@@ -770,7 +770,7 @@ static struct task_struct *probe_task;
 
 static int ps3_probe_thread(void *data)
 {
-	struct ps3_notification_device dev;
+	static struct ps3_notification_device dev;
 	int res;
 	unsigned int irq;
 	u64 lpar;
