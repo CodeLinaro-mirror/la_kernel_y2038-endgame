@@ -3284,9 +3284,9 @@ static char *decode_hioctl(unsigned int cmd)
  *
  * Return: 0 on success, -errno on failure
  */
-static int cxlflash_lun_provision(struct cxlflash_cfg *cfg,
-				  struct ht_cxlflash_lun_provision *lunprov)
+static int cxlflash_lun_provision(struct cxlflash_cfg *cfg, void *arg)
 {
+	struct ht_cxlflash_lun_provision *lunprov = arg;
 	struct afu *afu = cfg->afu;
 	struct device *dev = &cfg->dev->dev;
 	struct sisl_ioarcb rcb;
@@ -3378,9 +3378,9 @@ out:
  *
  * Return: 0 on success, -errno on failure
  */
-static int cxlflash_afu_debug(struct cxlflash_cfg *cfg,
-			      struct ht_cxlflash_afu_debug *afu_dbg)
+static int cxlflash_afu_debug(struct cxlflash_cfg *cfg, void *arg)
 {
+	struct ht_cxlflash_afu_debug *afu_dbg = arg;
 	struct afu *afu = cfg->afu;
 	struct device *dev = &cfg->dev->dev;
 	struct sisl_ioarcb rcb;
@@ -3494,10 +3494,8 @@ static long cxlflash_chr_ioctl(struct file *file, unsigned int cmd,
 		size_t size;
 		hioctl ioctl;
 	} ioctl_tbl[] = {	/* NOTE: order matters here */
-	{ sizeof(struct ht_cxlflash_lun_provision),
-		(hioctl)cxlflash_lun_provision },
-	{ sizeof(struct ht_cxlflash_afu_debug),
-		(hioctl)cxlflash_afu_debug },
+	{ sizeof(struct ht_cxlflash_lun_provision), cxlflash_lun_provision },
+	{ sizeof(struct ht_cxlflash_afu_debug), cxlflash_afu_debug },
 	};
 
 	/* Hold read semaphore so we can drain if needed */

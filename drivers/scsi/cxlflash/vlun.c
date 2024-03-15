@@ -819,8 +819,7 @@ out:
 	return rc;
 }
 
-int cxlflash_vlun_resize(struct scsi_device *sdev,
-			 struct dk_cxlflash_resize *resize)
+int cxlflash_vlun_resize(struct scsi_device *sdev, void *resize)
 {
 	return _cxlflash_vlun_resize(sdev, NULL, resize);
 }
@@ -1187,9 +1186,9 @@ err:
  *
  * Return: 0 on success, -errno on failure
  */
-int cxlflash_disk_clone(struct scsi_device *sdev,
-			struct dk_cxlflash_clone *clone)
+int cxlflash_disk_clone(struct scsi_device *sdev, void *arg)
 {
+	struct dk_cxlflash_clone *clone = arg;
 	struct cxlflash_cfg *cfg = shost_priv(sdev->host);
 	struct device *dev = &cfg->dev->dev;
 	struct llun_info *lli = sdev->hostdata;
