@@ -135,7 +135,6 @@ KBUILD_CFLAGS += $(call cc-option, -Wno-format-overflow)
 ifdef CONFIG_CC_IS_GCC
 KBUILD_CFLAGS += -Wno-format-truncation
 endif
-KBUILD_CFLAGS += $(call cc-option, -Wno-stringop-truncation)
 
 KBUILD_CFLAGS += -Wno-override-init # alias for -Wno-initializer-overrides in clang
 
