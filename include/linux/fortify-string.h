@@ -571,6 +571,7 @@ __FORTIFY_INLINE bool fortify_memcpy_chk(__kernel_size_t size,
 		 * Warn for source field over-read when building with W=1
 		 * or when an over-write happened, so both can be fixed at
 		 * the same time.
+		 * XXX  7 remaining warnings in arm64 allmodconfig
 		 */
 		if ((IS_ENABLED(KBUILD_EXTRA_WARN1) ||
 		     __compiletime_lessthan(p_size_field, size)) &&
