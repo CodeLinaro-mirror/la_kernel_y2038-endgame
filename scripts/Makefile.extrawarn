@@ -34,7 +34,7 @@ KBUILD_CFLAGS += -Wno-gnu
 else
 
 # gcc inanely warns about local variables called 'main'
-KBUILD_CFLAGS += -Wno-main
+# KBUILD_CFLAGS += -Wno-main # 1
 endif
 
 # These result in bogus false positives
@@ -85,7 +85,7 @@ KBUILD_CFLAGS += -Wunused
 #
 ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
 
-KBUILD_CFLAGS += -Wmissing-format-attribute
+KBUILD_CFLAGS += -Wmissing-format-attribute # 10
 KBUILD_CFLAGS += -Wmissing-include-dirs
 
 KBUILD_CPPFLAGS += -Wundef
@@ -97,12 +97,12 @@ else
 # Suppress them by using -Wno... except for W=1.
 KBUILD_CFLAGS += $(call cc-disable-warning, unused-but-set-variable)
 KBUILD_CFLAGS += $(call cc-disable-warning, packed-not-aligned)
-KBUILD_CFLAGS += $(call cc-disable-warning, format-overflow)
+KBUILD_CFLAGS += $(call cc-disable-warning, format-overflow) # 15
 ifdef CONFIG_CC_IS_GCC
-KBUILD_CFLAGS += $(call cc-disable-warning, format-truncation)
+KBUILD_CFLAGS += $(call cc-disable-warning, format-truncation) # 151 gcc, 10 clang
 endif
 
-KBUILD_CFLAGS += -Wno-override-init # alias for -Wno-initializer-overrides in clang
+KBUILD_CFLAGS += -Wno-override-init # alias for -Wno-initializer-overrides in clang # 16
 
 ifdef CONFIG_CC_IS_CLANG
 # Clang before clang-16 would warn on default argument promotions.
@@ -118,9 +118,9 @@ ifeq ($(call clang-min-version, 120000),y)
 KBUILD_CFLAGS += -Wformat-insufficient-args
 endif
 endif
-KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-enum-cast)
+KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-enum-cast) # 22
 KBUILD_CFLAGS += $(call cc-disable-warning, unaligned-access)
-KBUILD_CFLAGS += -Wno-enum-compare-conditional
+KBUILD_CFLAGS += -Wno-enum-compare-conditional # 6
 KBUILD_CFLAGS += -Wno-enum-enum-conversion
 endif
 
