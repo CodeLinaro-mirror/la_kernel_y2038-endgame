@@ -63,6 +63,7 @@ do {\
 	inp = (union inputArgs *)alloc_upcall(op, insize); \
         if (IS_ERR(inp)) { return PTR_ERR(inp); }\
         outp = (union outputArgs *)(inp); \
+	(void)outp; \
         outsize = insize; \
 } while (0)
 
