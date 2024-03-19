@@ -290,18 +290,28 @@ static struct scsi_dev_info_list_table *scsi_devinfo_lookup_by_key(int key)
 static void scsi_strcpy_devinfo(char *name, char *to, size_t to_length,
 				char *from, int compatible)
 {
-	size_t from_length;
+	int ret;
 
-	from_length = strlen(from);
-	/* This zero-pads the destination */
-	strncpy(to, from, to_length);
-	if (from_length < to_length && !compatible) {
-		/*
-		 * space pad the string if it is short.
-		 */
-		memset(&to[from_length], ' ', to_length - from_length);
+	if (compatible) {
+		/* This zero-pads and nul-terminates the destination */
+		ret = strscpy_pad(to, from, to_length);
+	} else {
+		/* no nul-termination but space-padding for short strings */
+		size_t from_length = strlen(from);
+		ret = from_length;
+
+		if (from_length > to_length) {
+			from_length = to_length;
+			ret = -E2BIG;
+		}
+
+		memcpy(to, from, from_length);
+
+		if (from_length < to_length)
+			memset(&to[from_length], ' ', to_length - from_length);
 	}
-	if (from_length > to_length)
+
+	if (ret < 0)
 		 printk(KERN_WARNING "%s: %s string '%s' is too long\n",
 			__func__, name, from);
 }
