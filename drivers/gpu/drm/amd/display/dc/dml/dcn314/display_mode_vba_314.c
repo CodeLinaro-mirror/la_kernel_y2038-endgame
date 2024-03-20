@@ -2001,8 +2001,6 @@ static unsigned int CalculateVMAndRowBytes(
 	return PDEAndMetaPTEBytesFrame;
 }
 
-__diag_push()
-__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(struct display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
@@ -3282,7 +3280,6 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 			&v->Z8NumberOfStutterBurstsPerFrame,
 			&v->StutterPeriod);
 }
-__diag_pop()
 
 static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
 {
@@ -3878,8 +3875,6 @@ static noinline void CalculatePrefetchSchedulePerPlane(
 		&v->VReadyOffsetPix[k]);
 }
 
-__diag_push()
-__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
@@ -5638,7 +5633,6 @@ void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_
 		v->maxMpcComb = MaximumMPCCombine;
 	}
 }
-__diag_pop()
 
 static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 		struct display_mode_lib *mode_lib,
@@ -7124,8 +7118,6 @@ static noinline_for_stack void UseMinimumDCFCLK(
 	int dummy1, i, j, k;
 	double NormalEfficiency,  dummy2, dummy3;
 	double TotalMaxPrefetchFlipDPTERowBandwidth[DC__VOLTAGE_STATES][2];
-
-	return;
 
 	NormalEfficiency = v->PercentOfIdealFabricAndSDPPortBWReceivedAfterUrgLatency / 100.0;
 	for (i = 0; i < v->soc.num_states; ++i) {

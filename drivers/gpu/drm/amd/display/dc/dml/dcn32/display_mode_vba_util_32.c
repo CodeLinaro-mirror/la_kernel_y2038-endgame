@@ -2983,8 +2983,6 @@ void dml32_UseMinimumDCFCLK(
 	double   NormalEfficiency;
 	double   TotalMaxPrefetchFlipDPTERowBandwidth[DC__VOLTAGE_STATES][2];
 
-	return;
-
 	NormalEfficiency = PercentOfIdealSDPPortBWReceivedAfterUrgLatency / 100.0;
 	for  (i = 0; i < DC__VOLTAGE_STATES; ++i) {
 		for  (j = 0; j <= 1; ++j) {
