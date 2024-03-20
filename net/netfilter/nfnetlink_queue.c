@@ -44,7 +44,9 @@
 #include "../bridge/br_private.h"
 #endif
 
+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
 #include <net/netfilter/nf_conntrack.h>
+#endif
 
 #define NFQNL_QMAX_DEFAULT 1024
 #define NFQNL_HASH_MIN     1024
@@ -735,14 +737,15 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
 
 	nfnl_ct = rcu_dereference(nfnl_ct_hook);
 
-	if (IS_ENABLED(CONFIG_NF_CONNTRACK) &&
-	    queue->flags & NFQA_CFG_F_CONNTRACK) {
+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
+	if (queue->flags & NFQA_CFG_F_CONNTRACK) {
 		if (nfnl_ct != NULL) {
 			ct = nf_ct_get(entskb, &ctinfo);
 			if (ct != NULL)
 				size += nfnl_ct->build_size(ct);
 		}
 	}
+#endif
 
 	if (queue->flags & NFQA_CFG_F_UID_GID) {
 		size += (nla_total_size(sizeof(u_int32_t))	/* uid */
@@ -895,8 +898,7 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
 	if (seclen > 0 && nla_put(skb, NFQA_SECCTX, ctx.len, ctx.context))
 		goto nla_put_failure;
 
-	if (IS_ENABLED(CONFIG_NF_CONNTRACK) && ct &&
-	    nfnl_ct->build(skb, ct, ctinfo, NFQA_CT, NFQA_CT_INFO) < 0)
+	if (ct && nfnl_ct->build(skb, ct, ctinfo, NFQA_CT, NFQA_CT_INFO) < 0)
 		goto nla_put_failure;
 
 	if (cap_len > data_len &&
