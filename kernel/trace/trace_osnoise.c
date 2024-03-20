@@ -1983,7 +1983,7 @@ static void stop_per_cpu_kthreads(void)
 static int start_kthread(unsigned int cpu)
 {
 	struct task_struct *kthread;
-	int (*threadfn)(void *data) = osnoise_main;
+	void *main = osnoise_main;
 	char comm[24];
 
 	/* Do not start a new thread if it is already running */
@@ -1992,7 +1992,7 @@ static int start_kthread(unsigned int cpu)
 
 	if (timerlat_enabled()) {
 		snprintf(comm, 24, "timerlat/%d", cpu);
-		threadfn = timerlat_main;
+		main = timerlat_main;
 	} else {
 		/* if no workload, just return */
 		if (!test_bit(OSN_WORKLOAD, &osnoise_options)) {
@@ -2003,7 +2003,7 @@ static int start_kthread(unsigned int cpu)
 		snprintf(comm, 24, "osnoise/%d", cpu);
 	}
 
-	kthread = kthread_run_on_cpu(threadfn, NULL, cpu, comm);
+	kthread = kthread_run_on_cpu(main, NULL, cpu, comm);
 
 	if (IS_ERR(kthread)) {
 		pr_err(BANNER "could not start sampling thread\n");
