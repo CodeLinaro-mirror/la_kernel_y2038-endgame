@@ -67,6 +67,8 @@ void module_add_driver(struct module *mod, struct device_driver *drv)
 					    driver_name);
 		kfree(driver_name);
 	}
+
+	(void)no_warn;
 }
 
 void module_remove_driver(struct device_driver *drv)
