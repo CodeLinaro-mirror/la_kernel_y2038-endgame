@@ -1473,8 +1473,6 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 	struct vba_vars_st *locals = &mode_lib->vba;
 	unsigned int j, k;
 
-	return;
-
 	mode_lib->vba.WritebackDISPCLK = 0.0;
 	mode_lib->vba.DISPCLKWithRamping = 0;
 	mode_lib->vba.DISPCLKWithoutRamping = 0;
@@ -3529,8 +3527,6 @@ void dml21_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 
 	int idx;
 	unsigned int i, j, k, m;
-
-	return;
 
 	/*MODE SUPPORT, VOLTAGE STATE AND SOC CONFIGURATION*/
 
