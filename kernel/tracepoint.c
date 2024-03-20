@@ -103,7 +103,7 @@ static void tp_stub_func(void)
 
 static inline void *allocate_probes(int count)
 {
-	struct tp_probes *p  = kcalloc(count, struct_size(p, probes, 1),
+	struct tp_probes *p  = kmalloc(struct_size(p, probes, count),
 				       GFP_KERNEL);
 	return p == NULL ? NULL : p->probes;
 }
