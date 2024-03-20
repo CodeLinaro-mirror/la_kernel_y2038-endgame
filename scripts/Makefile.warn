@@ -52,7 +52,7 @@ KBUILD_CFLAGS += $(call cc-option, -Wno-default-const-init-unsafe)
 else
 
 # gcc inanely warns about local variables called 'main'
-# KBUILD_CFLAGS += -Wno-main # 1
+KBUILD_CFLAGS += -Wno-main
 endif
 
 # Too noisy on range checks and in macros handling both signed and unsigned.
@@ -117,7 +117,7 @@ KBUILD_CFLAGS += -Wunused
 #
 ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
 
-KBUILD_CFLAGS += -Wmissing-format-attribute # 10
+KBUILD_CFLAGS += -Wmissing-format-attribute
 KBUILD_CFLAGS += -Wmissing-include-dirs
 KBUILD_CFLAGS += -Wunused-const-variable
 
@@ -128,14 +128,16 @@ else
 
 # Some diagnostics enabled by default are noisy.
 # Suppress them by using -Wno... except for W=1.
+KBUILD_CFLAGS += -Wno-unused-but-set-variable
 KBUILD_CFLAGS += -Wno-unused-const-variable
 KBUILD_CFLAGS += $(call cc-option, -Wno-packed-not-aligned)
-KBUILD_CFLAGS += $(call cc-option, -Wno-format-overflow) # 15
+KBUILD_CFLAGS += $(call cc-option, -Wno-format-overflow)
 ifdef CONFIG_CC_IS_GCC
-KBUILD_CFLAGS += -Wno-format-truncation # 151 gcc, 10 clang
+KBUILD_CFLAGS += -Wno-format-truncation
 endif
+KBUILD_CFLAGS += $(call cc-option, -Wno-stringop-truncation)
 
-KBUILD_CFLAGS += -Wno-override-init # alias for -Wno-initializer-overrides in clang # 16
+KBUILD_CFLAGS += -Wno-override-init # alias for -Wno-initializer-overrides in clang
 
 ifdef CONFIG_CC_IS_CLANG
 # Clang before clang-16 would warn on default argument promotions.
@@ -148,9 +150,10 @@ KBUILD_CFLAGS += -Wformat-extra-args -Wformat-invalid-specifier
 KBUILD_CFLAGS += -Wformat-zero-length -Wnonnull
 KBUILD_CFLAGS += -Wformat-insufficient-args
 endif
-KBUILD_CFLAGS += -Wno-pointer-to-enum-cast # 22
+KBUILD_CFLAGS += -Wno-pointer-to-enum-cast
+KBUILD_CFLAGS += -Wno-tautological-constant-out-of-range-compare
 KBUILD_CFLAGS += -Wno-unaligned-access
-KBUILD_CFLAGS += -Wno-enum-compare-conditional # 6
+KBUILD_CFLAGS += -Wno-enum-compare-conditional
 endif
 
 endif
