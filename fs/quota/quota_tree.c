@@ -669,13 +669,13 @@ static loff_t find_tree_dqentry(struct qtree_mem_dqinfo *info,
 	if (!buf)
 		return -ENOMEM;
 	ret = read_blk(info, blks[depth], buf);
-	blk = le32_to_cpu(ref[get_index(info, dquot->dq_id, depth)]);
 	if (ret < 0) {
 		quota_error(dquot->dq_sb, "Can't read quota tree block %u",
 			    blks[depth]);
 		goto out_buf;
 	}
 	ret = 0;
+	blk = le32_to_cpu(ref[get_index(info, dquot->dq_id, depth)]);
 	if (!blk)	/* No reference? */
 		goto out_buf;
 	ret = do_check_range(dquot->dq_sb, "block", blk, QT_TREEOFF,
