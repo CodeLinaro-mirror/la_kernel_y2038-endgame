@@ -1150,7 +1150,7 @@ static struct platform_driver meson_spicc_driver = {
 	.remove = meson_spicc_remove,
 	.driver  = {
 		.name = "meson-spicc",
-		.of_match_table = of_match_ptr(meson_spicc_of_match),
+		.of_match_table = meson_spicc_of_match,
 	},
 };
 
