@@ -541,7 +541,7 @@ MODULE_DEVICE_TABLE(acpi, acp3x_audio_acpi_match);
 static struct platform_driver acp3x_audio = {
 	.driver = {
 		.name = "acp3x-alc5682-max98357",
-		.acpi_match_table = ACPI_PTR(acp3x_audio_acpi_match),
+		.acpi_match_table = acp3x_audio_acpi_match,
 		.pm = &snd_soc_pm_ops,
 	},
 	.probe = acp3x_probe,

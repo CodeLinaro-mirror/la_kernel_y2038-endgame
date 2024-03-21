@@ -1151,13 +1151,11 @@ static const struct of_device_id rt1318_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, rt1318_of_match);
 
-#ifdef CONFIG_ACPI
 static const struct acpi_device_id rt1318_acpi_match[] = {
 	{ "10EC1318" },
 	{ }
 };
 MODULE_DEVICE_TABLE(acpi, rt1318_acpi_match);
-#endif
 
 static int rt1318_parse_dt(struct rt1318_priv *rt1318, struct device *dev)
 {
@@ -1340,8 +1338,8 @@ static int rt1318_i2c_probe(struct i2c_client *i2c)
 static struct i2c_driver rt1318_i2c_driver = {
 	.driver = {
 		.name = "rt1318",
-		.of_match_table = of_match_ptr(rt1318_of_match),
-		.acpi_match_table = ACPI_PTR(rt1318_acpi_match),
+		.of_match_table = rt1318_of_match,
+		.acpi_match_table = rt1318_acpi_match,
 	},
 	.probe = rt1318_i2c_probe,
 	.id_table = rt1318_i2c_id,
