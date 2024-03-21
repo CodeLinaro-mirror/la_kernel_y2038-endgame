@@ -411,7 +411,6 @@ static const struct imagis_properties imagis_3038c_data = {
 	.whoami_val = IST3038C_WHOAMI,
 };
 
-#ifdef CONFIG_OF
 static const struct of_device_id imagis_of_match[] = {
 	{ .compatible = "imagis,ist3032c", .data = &imagis_3032c_data },
 	{ .compatible = "imagis,ist3038b", .data = &imagis_3038b_data },
@@ -419,13 +418,12 @@ static const struct of_device_id imagis_of_match[] = {
 	{ },
 };
 MODULE_DEVICE_TABLE(of, imagis_of_match);
-#endif
 
 static struct i2c_driver imagis_ts_driver = {
 	.driver = {
 		.name = "imagis-touchscreen",
 		.pm = pm_sleep_ptr(&imagis_pm_ops),
-		.of_match_table = of_match_ptr(imagis_of_match),
+		.of_match_table = imagis_of_match,
 	},
 	.probe = imagis_probe,
 };
