@@ -30,7 +30,8 @@ obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
 obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 obj-$(CONFIG_LOAD_UEFI_KEYS)		+= mokvar-table.o
 
-obj-$(CONFIG_SYSFB)			+= sysfb_efi.o
+sysfb-$(CONFIG_SYSFB)			+= sysfb_efi.o
+obj-$(CONFIG_EFI)			+= $(sysfb-y)
 
 arm-obj-$(CONFIG_EFI)			:= efi-init.o arm-runtime.o
 obj-$(CONFIG_ARM)			+= $(arm-obj-y)
