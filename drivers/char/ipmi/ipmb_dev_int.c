@@ -364,7 +364,7 @@ MODULE_DEVICE_TABLE(acpi, acpi_ipmb_id);
 static struct i2c_driver ipmb_driver = {
 	.driver = {
 		.name = "ipmb-dev",
-		.acpi_match_table = ACPI_PTR(acpi_ipmb_id),
+		.acpi_match_table = acpi_ipmb_id,
 	},
 	.probe = ipmb_probe,
 	.remove = ipmb_remove,
