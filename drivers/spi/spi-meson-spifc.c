@@ -417,7 +417,7 @@ static struct platform_driver meson_spifc_driver = {
 	.driver	= {
 		.name		= "meson-spifc",
 		.of_match_table	= of_match_ptr(meson_spifc_dt_match),
-		.pm		= pm_ptr(&meson_spifc_pm_ops),
+		.pm		= &meson_spifc_pm_ops,
 	},
 };
 
