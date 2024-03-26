@@ -437,7 +437,7 @@ static int arm_cspmu_init_impl_ops(struct arm_cspmu *cspmu)
 				ret = -EINVAL;
 			}
 		} else {
-			request_module_nowait(match->module_name);
+			request_module_nowait("%s", match->module_name);
 			ret = -EPROBE_DEFER;
 		}
 

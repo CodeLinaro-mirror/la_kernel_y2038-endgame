@@ -2295,7 +2295,7 @@ static int vop2_plane_init(struct vop2 *vop2, struct vop2_win *win,
 				       &vop2_plane_funcs, win_data->formats,
 				       win_data->nformats,
 				       win_data->format_modifiers,
-				       win->type, win_data->name);
+				       win->type, "%s", win_data->name);
 	if (ret) {
 		drm_err(vop2->drm, "failed to initialize plane %d\n", ret);
 		return ret;

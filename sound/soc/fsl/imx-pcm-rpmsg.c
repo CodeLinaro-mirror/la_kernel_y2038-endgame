@@ -702,10 +702,11 @@ static int imx_rpmsg_pcm_probe(struct platform_device *pdev)
 	info->rpdev = container_of(pdev->dev.parent, struct rpmsg_device, dev);
 	info->dev = &pdev->dev;
 	/* Setup work queue */
-	info->rpmsg_wq = alloc_ordered_workqueue(info->rpdev->id.name,
+	info->rpmsg_wq = alloc_ordered_workqueue("%s",
 						 WQ_HIGHPRI |
 						 WQ_UNBOUND |
-						 WQ_FREEZABLE);
+						 WQ_FREEZABLE,
+						 info->rpdev->id.name);
 	if (!info->rpmsg_wq) {
 		dev_err(&pdev->dev, "workqueue create failed\n");
 		return -ENOMEM;

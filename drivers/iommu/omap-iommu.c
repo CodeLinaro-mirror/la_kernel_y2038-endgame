@@ -1212,7 +1212,7 @@ static int omap_iommu_probe(struct platform_device *pdev)
 
 	if (omap_iommu_can_register(pdev)) {
 		err = iommu_device_sysfs_add(&obj->iommu, obj->dev, NULL,
-					     obj->name);
+					     "%s", obj->name);
 		if (err)
 			return err;
 

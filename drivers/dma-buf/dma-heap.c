@@ -276,7 +276,7 @@ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
 				NULL,
 				heap->heap_devt,
 				NULL,
-				heap->name);
+				"%s", heap->name);
 	if (IS_ERR(dev_ret)) {
 		pr_err("dma_heap: Unable to create device\n");
 		err_ret = ERR_CAST(dev_ret);

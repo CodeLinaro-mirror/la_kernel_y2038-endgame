@@ -2202,7 +2202,7 @@ int snd_ctl_request_layer(const char *module_name)
 			if (strcmp(lops->module_name, module_name) == 0)
 				return 0;
 	}
-	return request_module(module_name);
+	return request_module("%s", module_name);
 }
 EXPORT_SYMBOL_GPL(snd_ctl_request_layer);
 

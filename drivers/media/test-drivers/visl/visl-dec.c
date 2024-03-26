@@ -66,7 +66,7 @@ static void visl_get_ref_frames(struct visl_ctx *ctx, u8 *buf,
 	u32 i;
 	u32 len;
 
-	len = scnprintf(buf, buflen, header);
+	len = scnprintf(buf, buflen, "%s", header);
 	buf += len;
 	buflen -= len;
 

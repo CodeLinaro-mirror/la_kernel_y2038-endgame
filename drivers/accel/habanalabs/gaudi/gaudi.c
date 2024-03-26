@@ -6431,7 +6431,7 @@ static void gaudi_get_event_desc(u16 event_type, char *desc, size_t size)
 	if (!gaudi_irq_map_table[event_type].valid)
 		goto event_not_supported;
 
-	snprintf(desc, size, gaudi_irq_map_table[event_type].name);
+	snprintf(desc, size, "%s", gaudi_irq_map_table[event_type].name);
 
 	return;
 

@@ -10443,7 +10443,7 @@ static u32 sock_addr_convert_ctx_access(enum bpf_access_type type,
 					struct bpf_insn *insn_buf,
 					struct bpf_prog *prog, u32 *target_size)
 {
-	int off, port_size = sizeof_field(struct sockaddr_in6, sin6_port);
+	int off, tmp, port_size = sizeof_field(struct sockaddr_in6, sin6_port);
 	struct bpf_insn *insn = insn_buf;
 
 	switch (si->off) {
@@ -10475,12 +10475,14 @@ static u32 sock_addr_convert_ctx_access(enum bpf_access_type type,
 		 * Here we check this invariant and use just one of the
 		 * structures if it's true.
 		 */
+
 		BUILD_BUG_ON(offsetof(struct sockaddr_in, sin_port) !=
 			     offsetof(struct sockaddr_in6, sin6_port));
 		BUILD_BUG_ON(sizeof_field(struct sockaddr_in, sin_port) !=
 			     sizeof_field(struct sockaddr_in6, sin6_port));
 		/* Account for sin6_port being smaller than user_port. */
-		port_size = min(port_size, BPF_LDST_BYTES(si));
+		tmp = BPF_LDST_BYTES(si);
+		port_size = min(port_size, tmp);
 		SOCK_ADDR_LOAD_OR_STORE_NESTED_FIELD_SIZE_OFF(
 			struct bpf_sock_addr_kern, struct sockaddr_in6, uaddr,
 			sin6_port, bytes_to_bpf_size(port_size), 0, tmp_reg);

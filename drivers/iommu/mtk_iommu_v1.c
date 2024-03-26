@@ -689,7 +689,7 @@ static int mtk_iommu_v1_probe(struct platform_device *pdev)
 		goto out_put_larbs;
 
 	ret = iommu_device_sysfs_add(&data->iommu, &pdev->dev, NULL,
-				     dev_name(&pdev->dev));
+				     "%s", dev_name(&pdev->dev));
 	if (ret)
 		goto out_clk_unprepare;
 

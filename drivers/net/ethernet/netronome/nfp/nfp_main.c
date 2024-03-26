@@ -451,7 +451,7 @@ nfp_get_fw_policy_value(struct pci_dev *pdev, struct nfp_nsp *nsp,
 	long hi_val;
 	int err;
 
-	snprintf(hwinfo, sizeof(hwinfo), key);
+	snprintf(hwinfo, sizeof(hwinfo), "%s", key);
 	err = nfp_nsp_hwinfo_lookup_optional(nsp, hwinfo, sizeof(hwinfo),
 					     default_val);
 	if (err)

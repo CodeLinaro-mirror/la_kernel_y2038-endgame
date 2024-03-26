@@ -765,7 +765,7 @@ static int netup_unidvb_request_modules(struct device *dev)
 	int err;
 
 	while (*curr_mod != NULL) {
-		err = request_module(*curr_mod);
+		err = request_module("%s", *curr_mod);
 		if (err) {
 			dev_warn(dev, "request_module(%s) failed: %d\n",
 				*curr_mod, err);

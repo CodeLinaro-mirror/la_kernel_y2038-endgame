@@ -83,7 +83,7 @@ static ssize_t lio_target_np_driver_store(struct config_item *item,
 
 	if (op) {
 		if (strlen(mod_name)) {
-			rc = request_module(mod_name);
+			rc = request_module("%s", mod_name);
 			if (rc != 0) {
 				pr_warn("Unable to request_module for %s\n",
 					mod_name);

@@ -483,7 +483,8 @@ static int sprd_iommu_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, sdev);
 	sdev->dev = dev;
 
-	ret = iommu_device_sysfs_add(&sdev->iommu, dev, NULL, dev_name(dev));
+	ret = iommu_device_sysfs_add(&sdev->iommu, dev, NULL, "%s",
+				     dev_name(dev));
 	if (ret)
 		goto free_page;
 

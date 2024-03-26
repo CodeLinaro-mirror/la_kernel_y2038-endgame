@@ -846,7 +846,7 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
 	}
 
 	ret = iommu_device_sysfs_add(&qcom_iommu->iommu, dev, NULL,
-				     dev_name(dev));
+				     "%s", dev_name(dev));
 	if (ret) {
 		dev_err(dev, "Failed to register iommu in sysfs\n");
 		goto err_pm_disable;

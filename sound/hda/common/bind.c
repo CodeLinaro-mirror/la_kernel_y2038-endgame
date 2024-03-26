@@ -232,7 +232,7 @@ static void request_codec_module(struct hda_codec *codec)
 	}
 
 	if (mod)
-		request_module(mod);
+		request_module("%s", mod);
 #endif /* MODULE */
 }
 

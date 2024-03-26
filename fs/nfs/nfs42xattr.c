@@ -984,7 +984,7 @@ static int __init nfs4_xattr_shrinker_init(struct shrinker **shrinker,
 {
 	int ret;
 
-	*shrinker = shrinker_alloc(SHRINKER_MEMCG_AWARE, name);
+	*shrinker = shrinker_alloc(SHRINKER_MEMCG_AWARE, "%s", name);
 	if (!*shrinker)
 		return -ENOMEM;
 

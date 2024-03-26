@@ -1678,9 +1678,9 @@ int scmi_notification_init(struct scmi_handle *handle)
 	if (!ni->registered_protocols)
 		goto err;
 
-	ni->notify_wq = alloc_workqueue(dev_name(handle->dev),
+	ni->notify_wq = alloc_workqueue("%s",
 					WQ_UNBOUND | WQ_FREEZABLE | WQ_SYSFS,
-					0);
+					0, dev_name(handle->dev));
 	if (!ni->notify_wq)
 		goto err;
 

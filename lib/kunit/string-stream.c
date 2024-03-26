@@ -143,7 +143,7 @@ int string_stream_append(struct string_stream *stream,
 	if (!other_content)
 		return -ENOMEM;
 
-	ret = string_stream_add(stream, other_content);
+	ret = string_stream_add(stream, "%s", other_content);
 	kfree(other_content);
 
 	return ret;

@@ -2344,7 +2344,7 @@ static int sysc_child_add_named_clock(struct sysc *ddata,
 	if (IS_ERR(clk))
 		return -ENODEV;
 
-	l = clkdev_create(clk, name, dev_name(child));
+	l = clkdev_create(clk, name, "%s", dev_name(child));
 	if (!l)
 		error = -ENOMEM;
 put_clk:

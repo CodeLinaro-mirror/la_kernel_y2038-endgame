@@ -1797,7 +1797,7 @@ static int etnaviv_gpu_bind(struct device *dev, struct device *master,
 			return PTR_ERR(gpu->cooling);
 	}
 
-	gpu->wq = alloc_ordered_workqueue(dev_name(dev), 0);
+	gpu->wq = alloc_ordered_workqueue("%s", 0, dev_name(dev));
 	if (!gpu->wq) {
 		ret = -ENOMEM;
 		goto out_thermal;

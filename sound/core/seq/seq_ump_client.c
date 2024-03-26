@@ -470,7 +470,7 @@ static int snd_seq_ump_probe(struct snd_seq_device *dev)
 
 	client->seq_client =
 		snd_seq_create_kernel_client(card, ump->core.device,
-					     ump->core.name);
+					     "%s", ump->core.name);
 	if (client->seq_client < 0) {
 		err = client->seq_client;
 		goto error;

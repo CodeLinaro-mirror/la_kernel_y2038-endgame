@@ -2602,7 +2602,8 @@ vchiq_init_state(struct vchiq_state *state, struct vchiq_slot_zero *slot_zero, s
 	 * bring up slot handler thread
 	 */
 	snprintf(threadname, sizeof(threadname), "vchiq-slot/%d", state->id);
-	state->slot_handler_thread = kthread_create(&slot_handler_func, (void *)state, threadname);
+	state->slot_handler_thread = kthread_create(&slot_handler_func, (void *)state,
+						    "%s", threadname);
 
 	if (IS_ERR(state->slot_handler_thread)) {
 		dev_err(state->dev, "couldn't create thread %s\n", threadname);
@@ -2611,7 +2612,8 @@ vchiq_init_state(struct vchiq_state *state, struct vchiq_slot_zero *slot_zero, s
 	set_user_nice(state->slot_handler_thread, -19);
 
 	snprintf(threadname, sizeof(threadname), "vchiq-recy/%d", state->id);
-	state->recycle_thread = kthread_create(&recycle_func, (void *)state, threadname);
+	state->recycle_thread = kthread_create(&recycle_func, (void *)state,
+					       "%s", threadname);
 	if (IS_ERR(state->recycle_thread)) {
 		dev_err(state->dev, "couldn't create thread %s\n", threadname);
 		ret = PTR_ERR(state->recycle_thread);
@@ -2620,7 +2622,8 @@ vchiq_init_state(struct vchiq_state *state, struct vchiq_slot_zero *slot_zero, s
 	set_user_nice(state->recycle_thread, -19);
 
 	snprintf(threadname, sizeof(threadname), "vchiq-sync/%d", state->id);
-	state->sync_thread = kthread_create(&sync_func, (void *)state, threadname);
+	state->sync_thread = kthread_create(&sync_func, (void *)state,
+					    "%s", threadname);
 	if (IS_ERR(state->sync_thread)) {
 		dev_err(state->dev, "couldn't create thread %s\n", threadname);
 		ret = PTR_ERR(state->sync_thread);

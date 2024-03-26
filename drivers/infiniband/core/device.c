@@ -1219,7 +1219,7 @@ static int assign_name(struct ib_device *device, const char *name)
 	if (strchr(name, '%'))
 		ret = alloc_name(device, name);
 	else
-		ret = dev_set_name(&device->dev, name);
+		ret = dev_set_name(&device->dev, "%s", name);
 	if (ret)
 		goto out;
 

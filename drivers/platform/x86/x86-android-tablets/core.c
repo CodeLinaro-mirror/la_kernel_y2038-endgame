@@ -413,7 +413,7 @@ static __init int x86_android_tablet_probe(struct platform_device *pdev)
 	 * instead pre-load any modules which are listed as requirements.
 	 */
 	for (i = 0; dev_info->modules && dev_info->modules[i]; i++)
-		request_module(dev_info->modules[i]);
+		request_module("%s", dev_info->modules[i]);
 
 	switch (dev_info->gpiochip_type) {
 	case X86_GPIOCHIP_BAYTRAIL:

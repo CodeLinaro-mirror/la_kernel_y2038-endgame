@@ -48,7 +48,7 @@ int hfi1_cdev_init(int minor, const char *name,
 	cdev_init(cdev, fops);
 	cdev->owner = THIS_MODULE;
 	cdev_set_parent(cdev, parent);
-	kobject_set_name(&cdev->kobj, name);
+	kobject_set_name(&cdev->kobj, "%s", name);
 
 	ret = cdev_add(cdev, dev, 1);
 	if (ret < 0) {

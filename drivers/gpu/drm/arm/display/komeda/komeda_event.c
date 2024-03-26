@@ -48,7 +48,7 @@ static int komeda_sprintf(struct komeda_str *str, const char *fmt, ...)
 static void evt_sprintf(struct komeda_str *str, u64 evt, const char *msg)
 {
 	if (evt)
-		komeda_sprintf(str, msg);
+		komeda_sprintf(str, "%s", msg);
 }
 
 static void evt_str(struct komeda_str *str, u64 events)

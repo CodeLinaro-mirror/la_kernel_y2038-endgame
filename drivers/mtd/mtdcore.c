@@ -377,7 +377,7 @@ bool mtd_check_expert_analysis_mode(void)
 		"This is only reserved for post-mortem forensics and debug purposes.\n"
 		"Never enable this mode if you do not know what you are doing!\n";
 
-	return WARN_ONCE(mtd_expert_analysis_mode, mtd_expert_analysis_warning);
+	return WARN_ONCE(mtd_expert_analysis_mode, "%s", mtd_expert_analysis_warning);
 }
 EXPORT_SYMBOL_GPL(mtd_check_expert_analysis_mode);
 #endif

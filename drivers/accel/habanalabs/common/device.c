@@ -920,7 +920,7 @@ static int device_early_init(struct hl_device *hdev)
 	}
 
 	snprintf(workq_name, 32, "hl%u-cs-completions", hdev->cdev_idx);
-	hdev->cs_cmplt_wq = alloc_workqueue(workq_name, WQ_UNBOUND, 0);
+	hdev->cs_cmplt_wq = alloc_workqueue("%s", WQ_UNBOUND, 0, workq_name);
 	if (!hdev->cs_cmplt_wq) {
 		dev_err(hdev->dev,
 			"Failed to allocate CS completions workqueue\n");
@@ -929,7 +929,7 @@ static int device_early_init(struct hl_device *hdev)
 	}
 
 	snprintf(workq_name, 32, "hl%u-ts-free-obj", hdev->cdev_idx);
-	hdev->ts_free_obj_wq = alloc_workqueue(workq_name, WQ_UNBOUND, 0);
+	hdev->ts_free_obj_wq = alloc_workqueue("%s", WQ_UNBOUND, 0, workq_name);
 	if (!hdev->ts_free_obj_wq) {
 		dev_err(hdev->dev,
 			"Failed to allocate Timestamp registration free workqueue\n");
@@ -938,7 +938,7 @@ static int device_early_init(struct hl_device *hdev)
 	}
 
 	snprintf(workq_name, 32, "hl%u-prefetch", hdev->cdev_idx);
-	hdev->prefetch_wq = alloc_workqueue(workq_name, WQ_UNBOUND, 0);
+	hdev->prefetch_wq = alloc_workqueue("%s", WQ_UNBOUND, 0, workq_name);
 	if (!hdev->prefetch_wq) {
 		dev_err(hdev->dev, "Failed to allocate MMU prefetch workqueue\n");
 		rc = -ENOMEM;

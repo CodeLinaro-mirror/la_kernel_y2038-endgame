@@ -155,7 +155,7 @@ static int preemptirq_run_test(void)
 	init_completion(&done);
 
 	snprintf(task_name, sizeof(task_name), "%s_test", test_mode);
-	task =  kthread_run(preemptirq_delay_run, NULL, task_name);
+	task =  kthread_run(preemptirq_delay_run, NULL, "%s", task_name);
 	if (IS_ERR(task))
 		return PTR_ERR(task);
 	if (task) {

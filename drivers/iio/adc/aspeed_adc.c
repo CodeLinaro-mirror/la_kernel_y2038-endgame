@@ -505,7 +505,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
 				       data->fixed_div_clk);
 	if (ret)
 		return ret;
-	snprintf(clk_parent_name, ARRAY_SIZE(clk_parent_name), clk_name);
+	snprintf(clk_parent_name, ARRAY_SIZE(clk_parent_name), "%s", clk_name);
 
 	if (data->model_data->need_prescaler) {
 		snprintf(clk_name, ARRAY_SIZE(clk_name), "%s-prescaler",
@@ -517,7 +517,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
 		if (IS_ERR(data->clk_prescaler))
 			return PTR_ERR(data->clk_prescaler);
 		snprintf(clk_parent_name, ARRAY_SIZE(clk_parent_name),
-			 clk_name);
+			 "%s", clk_name);
 		scaler_flags = CLK_SET_RATE_PARENT;
 	}
 	/*

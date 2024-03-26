@@ -438,7 +438,7 @@ static int sun8i_a33_mbus_probe(struct platform_device *pdev)
 err_remove_opps:
 	dev_pm_opp_remove_all_dynamic(dev);
 
-	return dev_err_probe(dev, ret, err);
+	return dev_err_probe(dev, ret, "%s", err);
 }
 
 static void sun8i_a33_mbus_remove(struct platform_device *pdev)

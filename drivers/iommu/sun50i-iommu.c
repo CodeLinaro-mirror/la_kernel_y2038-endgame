@@ -1043,7 +1043,7 @@ static int sun50i_iommu_probe(struct platform_device *pdev)
 	}
 
 	ret = iommu_device_sysfs_add(&iommu->iommu, &pdev->dev,
-				     NULL, dev_name(&pdev->dev));
+				     NULL, "%s", dev_name(&pdev->dev));
 	if (ret)
 		goto err_free_cache;
 

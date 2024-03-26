@@ -95,7 +95,7 @@ static int msix_request_irq(struct hfi1_devdata *dd, void *arg,
 		return -EINVAL;
 
 	irq = pci_irq_vector(dd->pcidev, nr);
-	ret = pci_request_irq(dd->pcidev, nr, handler, thread, arg, name);
+	ret = pci_request_irq(dd->pcidev, nr, handler, thread, arg, "%s", name);
 	if (ret) {
 		dd_dev_err(dd,
 			   "%s: request for IRQ %d failed, MSIx %lx, err %d\n",

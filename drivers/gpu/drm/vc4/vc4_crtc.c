@@ -1409,7 +1409,7 @@ int __vc4_crtc_init(struct drm_device *drm,
 	vc4_crtc->feeds_txp = feeds_txp;
 	spin_lock_init(&vc4_crtc->irq_lock);
 	ret = drmm_crtc_init_with_planes(drm, crtc, primary_plane, NULL,
-					 crtc_funcs, data->name);
+					 crtc_funcs, "%s", data->name);
 	if (ret)
 		return ret;
 

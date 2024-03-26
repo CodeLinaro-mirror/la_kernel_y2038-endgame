@@ -197,7 +197,7 @@ static int mlxreg_io_attr_init(struct mlxreg_io_priv_data *priv)
 		/* Set attribute name as a label. */
 		priv->mlxreg_io_attr[i]->name =
 				devm_kasprintf(&priv->pdev->dev, GFP_KERNEL,
-					       priv->pdata->data[i].label);
+					       "%s", priv->pdata->data[i].label);
 
 		if (!priv->mlxreg_io_attr[i]->name) {
 			dev_err(&priv->pdev->dev, "Memory allocation failed for sysfs attribute %d.\n",

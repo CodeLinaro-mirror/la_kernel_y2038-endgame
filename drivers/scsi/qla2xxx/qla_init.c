@@ -4097,12 +4097,12 @@ static void qla2xxx_print_sfp_info(struct scsi_qla_host *vha)
 		return;
 
 	memset(str, 0, STR_LEN);
-	snprintf(str, SFF_VEN_NAME_LEN+1, a0->vendor_name);
+	snprintf(str, SFF_VEN_NAME_LEN+1, "%s", a0->vendor_name);
 	ql_dbg(ql_dbg_init, vha, 0x015a,
 	    "SFP MFG Name: %s\n", str);
 
 	memset(str, 0, STR_LEN);
-	snprintf(str, SFF_PART_NAME_LEN+1, a0->vendor_pn);
+	snprintf(str, SFF_PART_NAME_LEN+1, "%s", a0->vendor_pn);
 	ql_dbg(ql_dbg_init, vha, 0x015c,
 	    "SFP Part Name: %s\n", str);
 

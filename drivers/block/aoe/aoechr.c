@@ -304,7 +304,7 @@ aoechr_init(void)
 	for (i = 0; i < ARRAY_SIZE(chardevs); ++i)
 		device_create(&aoe_class, NULL,
 			      MKDEV(AOE_MAJOR, chardevs[i].minor), NULL,
-			      chardevs[i].name);
+			      "%s", chardevs[i].name);
 
 	return 0;
 }

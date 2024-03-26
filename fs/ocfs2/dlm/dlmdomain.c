@@ -1849,7 +1849,6 @@ static int dlm_join_domain(struct dlm_ctxt *dlm)
 	int status;
 	unsigned int backoff;
 	unsigned int total_backoff = 0;
-	char wq_name[O2NM_MAX_NAME_LEN];
 
 	BUG_ON(!dlm);
 
@@ -1875,9 +1874,8 @@ static int dlm_join_domain(struct dlm_ctxt *dlm)
 
 	dlm_debug_init(dlm);
 
-	snprintf(wq_name, O2NM_MAX_NAME_LEN, "dlm_wq-%s", dlm->name);
-	dlm->dlm_worker = alloc_workqueue(wq_name, WQ_MEM_RECLAIM | WQ_PERCPU,
-					  0);
+	dlm->dlm_worker = alloc_workqueue("dlm_wq-%s", WQ_MEM_RECLAIM | WQ_PERCPU,
+					  0, dlm->name);
 	if (!dlm->dlm_worker) {
 		status = -ENOMEM;
 		mlog_errno(status);

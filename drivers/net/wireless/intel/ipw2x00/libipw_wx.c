@@ -583,7 +583,7 @@ int libipw_wx_set_encodeext(struct libipw_device *ieee,
 
 	ops = libipw_get_crypto_ops(alg);
 	if (ops == NULL) {
-		request_module(module);
+		request_module("%s", module);
 		ops = libipw_get_crypto_ops(alg);
 	}
 	if (ops == NULL) {

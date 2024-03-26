@@ -22292,7 +22292,7 @@ lpfc_read_object(struct lpfc_hba *phba, char *rdobject, uint32_t *datap,
 
 	memset((void *)read_object->u.request.rd_object_name, 0,
 	       LPFC_OBJ_NAME_SZ);
-	scnprintf((char *)rd_object_name, sizeof(rd_object_name), rdobject);
+	scnprintf((char *)rd_object_name, sizeof(rd_object_name), "%s", rdobject);
 	for (j = 0; j < strlen(rdobject); j++)
 		read_object->u.request.rd_object_name[j] =
 			cpu_to_le32(rd_object_name[j]);

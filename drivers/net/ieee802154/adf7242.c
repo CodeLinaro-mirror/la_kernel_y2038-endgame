@@ -1261,8 +1261,8 @@ static int adf7242_probe(struct spi_device *spi)
 
 	spi_set_drvdata(spi, lp);
 	INIT_DELAYED_WORK(&lp->work, adf7242_rx_cal_work);
-	lp->wqueue = alloc_ordered_workqueue(dev_name(&spi->dev),
-					     WQ_MEM_RECLAIM);
+	lp->wqueue = alloc_ordered_workqueue("%s", WQ_MEM_RECLAIM,
+					     dev_name(&spi->dev));
 	if (unlikely(!lp->wqueue)) {
 		ret = -ENOMEM;
 		goto err_alloc_wq;

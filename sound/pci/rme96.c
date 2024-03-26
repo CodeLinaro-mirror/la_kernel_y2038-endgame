@@ -1665,7 +1665,7 @@ snd_rme96_proc_read(struct snd_info_entry *entry, struct snd_info_buffer *buffer
 	
 	rme96->rcreg = readl(rme96->iobase + RME96_IO_CONTROL_REGISTER);
 
-	snd_iprintf(buffer, rme96->card->longname);
+	snd_iprintf(buffer, "%s", rme96->card->longname);
 	snd_iprintf(buffer, " (index #%d)\n", rme96->card->number + 1);
 
 	snd_iprintf(buffer, "\nGeneral settings\n");

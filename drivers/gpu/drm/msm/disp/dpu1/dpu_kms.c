@@ -1035,7 +1035,8 @@ static void dpu_kms_mdp_snapshot(struct msm_disp_state *disp_state, struct msm_k
 	/* dump CWB sub-blocks HW regs info */
 	for (i = 0; i < cat->cwb_count; i++)
 		msm_disp_snapshot_add_block(disp_state, cat->cwb[i].len,
-					    dpu_kms->mmio + cat->cwb[i].base, cat->cwb[i].name);
+					    dpu_kms->mmio + cat->cwb[i].base,
+					    "%s", cat->cwb[i].name);
 
 	/* dump DSC sub-blocks HW regs info */
 	for (i = 0; i < cat->dsc_count; i++) {

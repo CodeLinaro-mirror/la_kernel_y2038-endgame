@@ -2098,7 +2098,7 @@ static int mlxbf_pmc_init_perftype_reg(struct device *dev, unsigned int blk_num)
 		attr->dev_attr.store = mlxbf_pmc_counter_store;
 		attr->nr = blk_num;
 		attr->dev_attr.attr.name = devm_kasprintf(dev, GFP_KERNEL,
-							  events[count].evt_name);
+							  "%s", events[count].evt_name);
 		if (!attr->dev_attr.attr.name)
 			return -ENOMEM;
 		pmc->block[blk_num].block_attr[i] = &attr->dev_attr.attr;
@@ -2129,7 +2129,7 @@ static int mlxbf_pmc_create_groups(struct device *dev, unsigned int blk_num)
 	/* Add a new attribute_group for the block */
 	pmc->block[blk_num].block_attr_grp.attrs = pmc->block[blk_num].block_attr;
 	pmc->block[blk_num].block_attr_grp.name = devm_kasprintf(
-		dev, GFP_KERNEL, pmc->block_name[blk_num]);
+		dev, GFP_KERNEL, "%s", pmc->block_name[blk_num]);
 	if (!pmc->block[blk_num].block_attr_grp.name)
 		return -ENOMEM;
 	pmc->groups[pmc->group_num] = &pmc->block[blk_num].block_attr_grp;

@@ -804,7 +804,7 @@ static ssize_t iio_format_list(char *buf, const int *vals, int type, int length,
 		break;
 	}
 
-	len = sysfs_emit(buf, prefix);
+	len = sysfs_emit(buf, "%s", prefix);
 
 	for (i = 0; i <= length - stride; i += stride) {
 		if (i != 0) {

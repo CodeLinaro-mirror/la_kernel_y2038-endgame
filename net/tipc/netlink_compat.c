@@ -885,7 +885,7 @@ static int tipc_nl_compat_name_table_dump_header(struct tipc_nl_compat_msg *msg)
 	if (depth > 4)
 		depth = 4;
 	for (i = 0; i < depth; i++)
-		tipc_tlv_sprintf(msg->rep, header[i]);
+		tipc_tlv_sprintf(msg->rep, "%s", header[i]);
 	tipc_tlv_sprintf(msg->rep, "\n");
 
 	return 0;

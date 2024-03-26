@@ -2508,7 +2508,7 @@ static void snd_seq_info_dump_subscribers(struct snd_info_buffer *buffer,
 	guard(rwsem_read)(&group->list_mutex);
 	if (list_empty(&group->list_head))
 		return;
-	snd_iprintf(buffer, msg);
+	snd_iprintf(buffer, "%s", msg);
 	list_for_each(p, &group->list_head) {
 		if (is_src)
 			s = list_entry(p, struct snd_seq_subscribers, src_list);

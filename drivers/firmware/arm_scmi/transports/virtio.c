@@ -419,9 +419,9 @@ static int virtio_chan_setup(struct scmi_chan_info *cinfo, struct device *dev,
 		int ret;
 
 		vioch->deferred_tx_wq =
-			alloc_workqueue(dev_name(&scmi_vdev->dev),
+			alloc_workqueue("%s",
 					WQ_UNBOUND | WQ_FREEZABLE | WQ_SYSFS,
-					0);
+					0, dev_name(&scmi_vdev->dev));
 		if (!vioch->deferred_tx_wq)
 			return -ENOMEM;
 

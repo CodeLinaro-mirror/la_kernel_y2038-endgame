@@ -720,7 +720,7 @@ static irqreturn_t da9121_irq_handler(int irq, void *data)
 				chip->persistent[reg_idx] |= item->event_bit;
 				regulator_notifier_call_chain(rdev, item->notification, NULL);
 			} else {
-				dev_warn(chip->dev, item->warn);
+				dev_warn(chip->dev, "%s", item->warn);
 				handled[reg_idx] |= item->event_bit;
 				ret = IRQ_HANDLED;
 			}

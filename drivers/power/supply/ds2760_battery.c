@@ -700,7 +700,8 @@ static int w1_ds2760_add_slave(struct w1_slave *sl)
 	}
 
 	INIT_DELAYED_WORK(&di->monitor_work, ds2760_battery_work);
-	di->monitor_wqueue = alloc_ordered_workqueue(name, WQ_MEM_RECLAIM);
+	di->monitor_wqueue = alloc_ordered_workqueue("%s", WQ_MEM_RECLAIM,
+						     name);
 	if (!di->monitor_wqueue) {
 		retval = -ESRCH;
 		goto workqueue_failed;

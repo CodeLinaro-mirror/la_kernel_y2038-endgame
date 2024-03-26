@@ -384,7 +384,7 @@ static int skl_int3472_handle_gpio_resources(struct acpi_resource *ares,
 	ACPI_FREE(obj);
 
 	if (ret < 0)
-		return dev_err_probe(int3472->dev, ret, err_msg);
+		return dev_err_probe(int3472->dev, ret, "%s", err_msg);
 
 	/* Tell acpi_dev_get_resources() to not make a copy of the resource */
 	return 1;
