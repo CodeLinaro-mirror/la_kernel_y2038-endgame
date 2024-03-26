@@ -25,6 +25,7 @@ obj-$(CONFIG_KUNIT_TEST) +=		platform-test.o
 # string-stream-test compiles built-in only.
 ifeq ($(CONFIG_KUNIT_TEST),y)
 obj-$(CONFIG_KUNIT_TEST) +=		string-stream-test.o
+CFLAGS_string-stream-test.o +=		$(call cc-disable-warning, format-security)
 obj-$(CONFIG_KUNIT_TEST) +=		assert_test.o
 endif
 

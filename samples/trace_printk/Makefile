@@ -5,3 +5,4 @@
 # This module can also be used to test the trace_printk code.
 
 obj-$(CONFIG_SAMPLE_TRACE_PRINTK) += trace-printk.o
+CFLAGS_trace-printk.o += $(call cc-disable-warning, format-security)
