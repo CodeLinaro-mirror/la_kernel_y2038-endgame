@@ -179,7 +179,7 @@ __setup("test_suspend", setup_test_suspend);
 static int __init test_suspend(void)
 {
 	static char		warn_no_rtc[] __initdata =
-		KERN_WARNING "PM: no wakealarm-capable RTC driver is ready\n";
+		"PM: no wakealarm-capable RTC driver is ready\n";
 
 	struct rtc_device	*rtc = NULL;
 	struct device		*dev;
@@ -207,7 +207,7 @@ static int __init test_suspend(void)
 		put_device(dev);
 	}
 	if (!rtc) {
-		printk(warn_no_rtc);
+		printk(KERN_WARNING "%s", warn_no_rtc);
 		return 0;
 	}
 

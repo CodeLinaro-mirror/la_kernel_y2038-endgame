@@ -430,7 +430,7 @@ xlog_recover_validate_buf_type(
 		return;
 
 	if (warnmsg) {
-		xfs_warn(mp, warnmsg);
+		xfs_warn(mp, "%s", warnmsg);
 		ASSERT(0);
 	}
 

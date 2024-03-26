@@ -46,7 +46,7 @@ static int request_codec_module(struct hda_codec *codec)
 
 	if (mod) {
 		dev_dbg(&codec->core.dev, "loading codec module: %s\n", mod);
-		request_module(mod);
+		request_module("%s", mod);
 	}
 #endif /* MODULE */
 	return device_attach(hda_codec_dev(codec));

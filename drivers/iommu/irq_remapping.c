@@ -163,5 +163,5 @@ int __init irq_remap_enable_fault_handling(void)
 void panic_if_irq_remap(const char *msg)
 {
 	if (irq_remapping_enabled)
-		panic(msg);
+		panic("%s", msg);
 }

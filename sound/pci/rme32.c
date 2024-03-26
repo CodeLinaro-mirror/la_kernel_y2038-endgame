@@ -1377,7 +1377,7 @@ snd_rme32_proc_read(struct snd_info_entry * entry, struct snd_info_buffer *buffe
 
 	rme32->rcreg = readl(rme32->iobase + RME32_IO_CONTROL_REGISTER);
 
-	snd_iprintf(buffer, rme32->card->longname);
+	snd_iprintf(buffer, "%s", rme32->card->longname);
 	snd_iprintf(buffer, " (index #%d)\n", rme32->card->number + 1);
 
 	snd_iprintf(buffer, "\nGeneral settings\n");

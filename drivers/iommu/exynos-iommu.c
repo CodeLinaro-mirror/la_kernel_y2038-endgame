@@ -778,7 +778,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
 	__sysmmu_get_version(data);
 
 	ret = iommu_device_sysfs_add(&data->iommu, &pdev->dev, NULL,
-				     dev_name(data->sysmmu));
+				     "%s", dev_name(data->sysmmu));
 	if (ret)
 		return ret;
 

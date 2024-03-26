@@ -122,7 +122,7 @@ struct rds_transport *rds_trans_get(int t_type)
 	if (!trans) {
 		up_read(&rds_trans_sem);
 		if (rds_trans_modules[t_type])
-			request_module(rds_trans_modules[t_type]);
+			request_module("%s", rds_trans_modules[t_type]);
 		down_read(&rds_trans_sem);
 		trans = transports[t_type];
 	}

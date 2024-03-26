@@ -165,10 +165,10 @@ static int usb_phy_uevent(const struct device *dev, struct kobj_uevent_env *env)
 	snprintf(uchger_type, ARRAY_SIZE(uchger_type),
 		 "USB_CHARGER_TYPE=%s", usb_chger_type[usb_phy->chg_type]);
 
-	if (add_uevent_var(env, uchger_state))
+	if (add_uevent_var(env, "%s", uchger_state))
 		return -ENOMEM;
 
-	if (add_uevent_var(env, uchger_type))
+	if (add_uevent_var(env, "%s", uchger_type))
 		return -ENOMEM;
 
 	return 0;

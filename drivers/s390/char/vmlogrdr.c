@@ -728,7 +728,7 @@ static int vmlogrdr_register_device(struct vmlogrdr_priv_t *priv)
 	int ret;
 
 	dev = iucv_alloc_device(vmlogrdr_attr_groups, &vmlogrdr_driver,
-				priv, priv->internal_name);
+				priv, "%s", priv->internal_name);
 	if (!dev)
 		return -ENOMEM;
 	ret = device_register(dev);

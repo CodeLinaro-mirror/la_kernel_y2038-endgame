@@ -14,7 +14,6 @@ KBUILD_CFLAGS += -Werror=implicit-function-declaration
 KBUILD_CFLAGS += -Werror=implicit-int
 KBUILD_CFLAGS += -Werror=return-type
 KBUILD_CFLAGS += -Werror=strict-prototypes
-KBUILD_CFLAGS += -Wno-format-security
 KBUILD_CFLAGS += -Wno-trigraphs
 KBUILD_CFLAGS += -Wno-frame-address
 KBUILD_CFLAGS += $(call cc-option, -Wno-address-of-packed-member)
@@ -106,6 +105,7 @@ KBUILD_CFLAGS += $(call cc-option,-Werror=designated-init)
 KBUILD_CFLAGS += $(call cc-option,-Wenum-conversion)
 
 KBUILD_CFLAGS += -Wunused
+KBUILD_CFLAGS += -Wformat-security
 
 #
 # W=1 - warnings which may be relevant and do not occur too often

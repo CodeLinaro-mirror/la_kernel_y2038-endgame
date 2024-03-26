@@ -3771,7 +3771,7 @@ static int xbox_one_attach(struct dvb_usb_adapter *adap)
 	strscpy(info.type, "mn88472", I2C_NAME_SIZE);
 	info.addr = 0x18;
 	info.platform_data = &mn88472_config;
-	request_module(info.type);
+	request_module("%s", info.type);
 	client_demod = i2c_new_client_device(&d->i2c_adap, &info);
 	if (!i2c_client_has_driver(client_demod))
 		goto fail_demod_device;
@@ -3799,7 +3799,7 @@ static int xbox_one_attach(struct dvb_usb_adapter *adap)
 	info.addr = 0x60;
 	info.platform_data = &tda18250_config;
 
-	request_module(info.type);
+	request_module("%s", info.type);
 	client_tuner = i2c_new_client_device(&adap->dev->i2c_adap, &info);
 	if (!i2c_client_has_driver(client_tuner))
 		goto fail_tuner_device;

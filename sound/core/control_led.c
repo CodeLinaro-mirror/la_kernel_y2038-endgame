@@ -740,7 +740,7 @@ static int __init snd_ctl_led_init(void)
 		led->dev.parent = &snd_ctl_led_dev;
 		led->dev.release = snd_ctl_led_release;
 		led->dev.groups = snd_ctl_led_dev_attr_groups;
-		dev_set_name(&led->dev, led->name);
+		dev_set_name(&led->dev, "%s", led->name);
 		if (device_add(&led->dev)) {
 			put_device(&led->dev);
 			for (; group > 0; group--) {

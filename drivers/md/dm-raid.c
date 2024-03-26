@@ -3560,7 +3560,7 @@ static void raid_status(struct dm_target *ti, status_type_t type,
 
 		/* HM FIXME: do we want another state char for raid0? It shows 'D'/'A'/'-' now */
 		for (i = 0; i < rs->raid_disks; i++)
-			DMEMIT(__raid_dev_status(rs, &rs->dev[i].rdev));
+			DMEMIT("%s", __raid_dev_status(rs, &rs->dev[i].rdev));
 
 		/*
 		 * In-sync/Reshape ratio:
@@ -3705,7 +3705,7 @@ static void raid_status(struct dm_target *ti, status_type_t type,
 
 		for (i = 0; i < rs->raid_disks; i++) {
 			DMEMIT(",raid_device_%d_status=", i);
-			DMEMIT(__raid_dev_status(rs, &rs->dev[i].rdev));
+			DMEMIT("%s", __raid_dev_status(rs, &rs->dev[i].rdev));
 		}
 
 		if (rt_is_raid456(rt)) {

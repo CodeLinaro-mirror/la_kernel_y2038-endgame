@@ -323,8 +323,8 @@ static void append_delim(char *str_buf, int *str_buf_pos, int str_buf_len,
 				char *fmt_buf, int *fmt_buf_pos, int fmt_buf_len,
 				const char *delim_str)
 {
-	append_fmt(str_buf, str_buf_pos, str_buf_len, delim_str);
-	append_fmt(fmt_buf, fmt_buf_pos, fmt_buf_len, delim_str);
+	append_fmt(str_buf, str_buf_pos, str_buf_len, "%s", delim_str);
+	append_fmt(fmt_buf, fmt_buf_pos, fmt_buf_len, "%s", delim_str);
 }
 
 #define test_array_8(fn, check_data, string, fmt, arr)				\

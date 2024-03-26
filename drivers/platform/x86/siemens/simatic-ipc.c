@@ -188,7 +188,7 @@ static void request_additional_modules(u32 station_id)
 
 	for (i = 0; i < SIMATIC_IPC_MAX_EXTRA_MODULES; i++) {
 		if (extra_modules[i])
-			request_module(extra_modules[i]);
+			request_module("%s", extra_modules[i]);
 		else
 			break;
 	}

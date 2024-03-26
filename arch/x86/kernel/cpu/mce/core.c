@@ -342,7 +342,7 @@ static noinstr void mce_panic(const char *msg, struct mce_hw_err *final, char *e
 					SetPageHWPoison(p);
 			}
 		}
-		panic(msg);
+		panic("%s", msg);
 	} else
 		pr_emerg(HW_ERR "Fake kernel panic: %s\n", msg);
 

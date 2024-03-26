@@ -410,7 +410,7 @@ int hellcreek_ptp_setup(struct hellcreek *hellcreek)
 	hellcreek->ptp_clock_info.owner = THIS_MODULE;
 	snprintf(hellcreek->ptp_clock_info.name,
 		 sizeof(hellcreek->ptp_clock_info.name),
-		 dev_name(hellcreek->dev));
+		 "%s", dev_name(hellcreek->dev));
 
 	/* IP-Core can add up to 0.5 ns per 8 ns cycle, which means
 	 * accumulator_overflow_rate shall not exceed 62.5 MHz (which adjusts

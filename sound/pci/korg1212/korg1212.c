@@ -1934,7 +1934,7 @@ static void snd_korg1212_proc_read(struct snd_info_entry *entry,
 	int n;
 	struct snd_korg1212 *korg1212 = entry->private_data;
 
-	snd_iprintf(buffer, korg1212->card->longname);
+	snd_iprintf(buffer, "%s", korg1212->card->longname);
 	snd_iprintf(buffer, " (index #%d)\n", korg1212->card->number + 1);
 	snd_iprintf(buffer, "\nGeneral settings\n");
 	snd_iprintf(buffer, "    period size: %zd bytes\n", K1212_PERIOD_BYTES);

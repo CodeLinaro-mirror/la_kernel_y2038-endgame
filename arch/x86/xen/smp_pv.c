@@ -190,8 +190,8 @@ static void __init xen_pv_smp_prepare_cpus(unsigned int max_cpus)
 			"use Xen dom0_max_vcpus=1 parameter" :
 			"The noapic parameter is incompatible with Xen";
 
-		xen_raw_printk(m);
-		panic(m);
+		xen_raw_printk("%s", m);
+		panic("%s", m);
 	}
 	xen_init_lock_cpu(0);
 

@@ -43,7 +43,7 @@ struct v4l2_subdev *v4l2_spi_new_subdev(struct v4l2_device *v4l2_dev,
 	if (!v4l2_dev)
 		return NULL;
 	if (info->modalias[0])
-		request_module(info->modalias);
+		request_module("%s", info->modalias);
 
 	spi = spi_new_device(ctlr, info);
 

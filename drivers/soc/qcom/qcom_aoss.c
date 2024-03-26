@@ -282,7 +282,7 @@ static int qmp_qdss_clk_prepare(struct clk_hw *hw)
 	static const char *buf = "{class: clock, res: qdss, val: 1}";
 	struct qmp *qmp = container_of(hw, struct qmp, qdss_clk);
 
-	return qmp_send(qmp, buf);
+	return qmp_send(qmp, "%s", buf);
 }
 
 static void qmp_qdss_clk_unprepare(struct clk_hw *hw)
@@ -290,7 +290,7 @@ static void qmp_qdss_clk_unprepare(struct clk_hw *hw)
 	static const char *buf = "{class: clock, res: qdss, val: 0}";
 	struct qmp *qmp = container_of(hw, struct qmp, qdss_clk);
 
-	qmp_send(qmp, buf);
+	qmp_send(qmp, "%s", buf);
 }
 
 static const struct clk_ops qmp_qdss_clk_ops = {
@@ -544,7 +544,7 @@ static ssize_t qmp_debugfs_write(struct file *file, const char __user *user_buf,
 			return -EINVAL;
 	}
 
-	ret = qmp_send(qmp, buf);
+	ret = qmp_send(qmp, "%s", buf);
 	if (ret < 0)
 		return ret;
 

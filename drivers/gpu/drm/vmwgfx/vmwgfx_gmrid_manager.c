@@ -103,7 +103,7 @@ static int vmw_gmrid_man_get_node(struct ttm_resource_manager *man,
 				snprintf(buf, sizeof(buf),
 					 "vmwgfx, error: guest graphics is out of memory (mob limit at: %u KiB).\n",
 					 ((gman->max_gmr_pages) << (PAGE_SHIFT - 10)));
-				vmw_host_printf(buf);
+				vmw_host_printf("%s", buf);
 				DRM_WARN("%s", buf);
 				goto nospace;
 			}

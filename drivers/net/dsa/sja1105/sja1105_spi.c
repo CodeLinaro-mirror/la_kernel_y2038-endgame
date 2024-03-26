@@ -289,7 +289,7 @@ int static_config_buf_prepare_for_upload(struct sja1105_private *priv,
 						  priv->info->max_frame_mem);
 	if (valid != SJA1105_CONFIG_OK) {
 		dev_err(&priv->spidev->dev,
-			sja1105_static_config_error_msg[valid]);
+			"%s", sja1105_static_config_error_msg[valid]);
 		return -EINVAL;
 	}
 

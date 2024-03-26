@@ -119,7 +119,7 @@ static void drm_test_check_plane_state(struct kunit *test)
 								params->min_scale,
 								params->max_scale,
 								params->can_position, false),
-			    0, params->msg);
+			    0, "%s", params->msg);
 	KUNIT_EXPECT_TRUE(test, plane_state->visible);
 	check_src_eq(test, plane_state, params->src_expected.x, params->src_expected.y,
 		     params->src_expected.w, params->src_expected.h);
@@ -261,7 +261,7 @@ static void drm_test_check_invalid_plane_state(struct kunit *test)
 								params->min_scale,
 								params->max_scale,
 								params->can_position, false),
-			    0, params->msg);
+			    0, "%s", params->msg);
 }
 
 static const struct drm_check_plane_state_test drm_check_invalid_plane_state_tests[] = {

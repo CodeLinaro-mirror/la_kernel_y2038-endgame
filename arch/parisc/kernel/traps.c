@@ -472,7 +472,7 @@ void parisc_terminate(char *msg, struct pt_regs *regs, int code, unsigned long o
 	 * This hack works, prints the panic message twice,
 	 * and it enables reboot timers!
 	 */
-	panic(msg);
+	panic("%s", msg);
 }
 
 void notrace handle_interruption(int code, struct pt_regs *regs)

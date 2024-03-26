@@ -103,7 +103,7 @@ nfp_devlink_param_u8_get(struct devlink *devlink, u32 id,
 		return err;
 	}
 
-	snprintf(hwinfo, sizeof(hwinfo), arg->hwinfo_name);
+	snprintf(hwinfo, sizeof(hwinfo), "%s", arg->hwinfo_name);
 	err = nfp_nsp_hwinfo_lookup_optional(nsp, hwinfo, sizeof(hwinfo),
 					     arg->default_hi_val);
 	if (err) {
