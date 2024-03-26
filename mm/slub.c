@@ -646,18 +646,12 @@ static inline unsigned int slub_get_cpu_partial(struct kmem_cache *s)
  */
 static __always_inline void slab_lock(struct slab *slab)
 {
-	struct page *page = slab_page(slab);
-
-	VM_BUG_ON_PAGE(PageTail(page), page);
-	bit_spin_lock(PG_locked, &page->flags);
+	bit_spin_lock(PG_locked, &slab->__page_flags);
 }
 
 static __always_inline void slab_unlock(struct slab *slab)
 {
-	struct page *page = slab_page(slab);
-
-	VM_BUG_ON_PAGE(PageTail(page), page);
-	bit_spin_unlock(PG_locked, &page->flags);
+	bit_spin_unlock(PG_locked, &slab->__page_flags);
 }
 
 static inline bool
