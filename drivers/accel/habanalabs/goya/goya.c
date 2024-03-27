@@ -4234,7 +4234,7 @@ static const char *_goya_get_event_desc(u16 event_type)
 	case GOYA_ASYNC_EVENT_ID_TPC5_ECC:
 	case GOYA_ASYNC_EVENT_ID_TPC6_ECC:
 	case GOYA_ASYNC_EVENT_ID_TPC7_ECC:
-		return "TPC%d_ecc";
+		return "TPC";
 	case GOYA_ASYNC_EVENT_ID_MME_ECC:
 		return "MME_ecc";
 	case GOYA_ASYNC_EVENT_ID_MME_ECC_EXT:
@@ -4252,11 +4252,11 @@ static const char *_goya_get_event_desc(u16 event_type)
 	case GOYA_ASYNC_EVENT_ID_PSOC_CORESIGHT:
 		return "PSOC_coresight";
 	case GOYA_ASYNC_EVENT_ID_SRAM0 ... GOYA_ASYNC_EVENT_ID_SRAM29:
-		return "SRAM%d";
+		return "SRAM";
 	case GOYA_ASYNC_EVENT_ID_GIC500:
 		return "GIC500";
 	case GOYA_ASYNC_EVENT_ID_PLL0 ... GOYA_ASYNC_EVENT_ID_PLL6:
-		return "PLL%d";
+		return "PLL";
 	case GOYA_ASYNC_EVENT_ID_AXI_ECC:
 		return "AXI_ecc";
 	case GOYA_ASYNC_EVENT_ID_L2_RAM_ECC:
@@ -4275,7 +4275,7 @@ static const char *_goya_get_event_desc(u16 event_type)
 	case GOYA_ASYNC_EVENT_ID_TPC5_DEC:
 	case GOYA_ASYNC_EVENT_ID_TPC6_DEC:
 	case GOYA_ASYNC_EVENT_ID_TPC7_DEC:
-		return "TPC%d_dec";
+		return "TPC";
 	case GOYA_ASYNC_EVENT_ID_MME_WACS:
 		return "MME_wacs";
 	case GOYA_ASYNC_EVENT_ID_MME_WACSD:
@@ -4294,19 +4294,19 @@ static const char *_goya_get_event_desc(u16 event_type)
 	case GOYA_ASYNC_EVENT_ID_TPC5_KRN_ERR:
 	case GOYA_ASYNC_EVENT_ID_TPC6_KRN_ERR:
 	case GOYA_ASYNC_EVENT_ID_TPC7_KRN_ERR:
-		return "TPC%d_krn_err";
+		return "TPC";
 	case GOYA_ASYNC_EVENT_ID_TPC0_CMDQ ... GOYA_ASYNC_EVENT_ID_TPC7_CMDQ:
-		return "TPC%d_cq";
+		return "TPC";
 	case GOYA_ASYNC_EVENT_ID_TPC0_QM ... GOYA_ASYNC_EVENT_ID_TPC7_QM:
-		return "TPC%d_qm";
+		return "TPC";
 	case GOYA_ASYNC_EVENT_ID_MME_QM:
 		return "MME_qm";
 	case GOYA_ASYNC_EVENT_ID_MME_CMDQ:
 		return "MME_cq";
 	case GOYA_ASYNC_EVENT_ID_DMA0_QM ... GOYA_ASYNC_EVENT_ID_DMA4_QM:
-		return "DMA%d_qm";
+		return "DMA";
 	case GOYA_ASYNC_EVENT_ID_DMA0_CH ... GOYA_ASYNC_EVENT_ID_DMA4_CH:
-		return "DMA%d_ch";
+		return "DMA";
 	case GOYA_ASYNC_EVENT_ID_TPC0_BMON_SPMU:
 	case GOYA_ASYNC_EVENT_ID_TPC1_BMON_SPMU:
 	case GOYA_ASYNC_EVENT_ID_TPC2_BMON_SPMU:
@@ -4315,9 +4315,9 @@ static const char *_goya_get_event_desc(u16 event_type)
 	case GOYA_ASYNC_EVENT_ID_TPC5_BMON_SPMU:
 	case GOYA_ASYNC_EVENT_ID_TPC6_BMON_SPMU:
 	case GOYA_ASYNC_EVENT_ID_TPC7_BMON_SPMU:
-		return "TPC%d_bmon_spmu";
+		return "TPC";
 	case GOYA_ASYNC_EVENT_ID_DMA_BM_CH0 ... GOYA_ASYNC_EVENT_ID_DMA_BM_CH4:
-		return "DMA_bm_ch%d";
+		return "DMA_bm_ch";
 	case GOYA_ASYNC_EVENT_ID_FIX_POWER_ENV_S:
 		return "POWER_ENV_S";
 	case GOYA_ASYNC_EVENT_ID_FIX_POWER_ENV_E:
@@ -4347,15 +4347,15 @@ static void goya_get_event_desc(u16 event_type, char *desc, size_t size)
 	case GOYA_ASYNC_EVENT_ID_TPC6_ECC:
 	case GOYA_ASYNC_EVENT_ID_TPC7_ECC:
 		index = (event_type - GOYA_ASYNC_EVENT_ID_TPC0_ECC) / 3;
-		snprintf(desc, size, _goya_get_event_desc(event_type), index);
+		snprintf(desc, size, "%s%d_ecc", _goya_get_event_desc(event_type), index);
 		break;
 	case GOYA_ASYNC_EVENT_ID_SRAM0 ... GOYA_ASYNC_EVENT_ID_SRAM29:
 		index = event_type - GOYA_ASYNC_EVENT_ID_SRAM0;
-		snprintf(desc, size, _goya_get_event_desc(event_type), index);
+		snprintf(desc, size, "%s%d", _goya_get_event_desc(event_type), index);
 		break;
 	case GOYA_ASYNC_EVENT_ID_PLL0 ... GOYA_ASYNC_EVENT_ID_PLL6:
 		index = event_type - GOYA_ASYNC_EVENT_ID_PLL0;
-		snprintf(desc, size, _goya_get_event_desc(event_type), index);
+		snprintf(desc, size, "%s%d", _goya_get_event_desc(event_type), index);
 		break;
 	case GOYA_ASYNC_EVENT_ID_TPC0_DEC:
 	case GOYA_ASYNC_EVENT_ID_TPC1_DEC:
@@ -4366,7 +4366,7 @@ static void goya_get_event_desc(u16 event_type, char *desc, size_t size)
 	case GOYA_ASYNC_EVENT_ID_TPC6_DEC:
 	case GOYA_ASYNC_EVENT_ID_TPC7_DEC:
 		index = (event_type - GOYA_ASYNC_EVENT_ID_TPC0_DEC) / 3;
-		snprintf(desc, size, _goya_get_event_desc(event_type), index);
+		snprintf(desc, size, "%s%d_dec", _goya_get_event_desc(event_type), index);
 		break;
 	case GOYA_ASYNC_EVENT_ID_TPC0_KRN_ERR:
 	case GOYA_ASYNC_EVENT_ID_TPC1_KRN_ERR:
@@ -4377,23 +4377,23 @@ static void goya_get_event_desc(u16 event_type, char *desc, size_t size)
 	case GOYA_ASYNC_EVENT_ID_TPC6_KRN_ERR:
 	case GOYA_ASYNC_EVENT_ID_TPC7_KRN_ERR:
 		index = (event_type - GOYA_ASYNC_EVENT_ID_TPC0_KRN_ERR) / 10;
-		snprintf(desc, size, _goya_get_event_desc(event_type), index);
+		snprintf(desc, size, "%s%d_krn_err", _goya_get_event_desc(event_type), index);
 		break;
 	case GOYA_ASYNC_EVENT_ID_TPC0_CMDQ ... GOYA_ASYNC_EVENT_ID_TPC7_CMDQ:
 		index = event_type - GOYA_ASYNC_EVENT_ID_TPC0_CMDQ;
-		snprintf(desc, size, _goya_get_event_desc(event_type), index);
+		snprintf(desc, size, "%s%d_cq", _goya_get_event_desc(event_type), index);
 		break;
 	case GOYA_ASYNC_EVENT_ID_TPC0_QM ... GOYA_ASYNC_EVENT_ID_TPC7_QM:
 		index = event_type - GOYA_ASYNC_EVENT_ID_TPC0_QM;
-		snprintf(desc, size, _goya_get_event_desc(event_type), index);
+		snprintf(desc, size, "%s%d_qm", _goya_get_event_desc(event_type), index);
 		break;
 	case GOYA_ASYNC_EVENT_ID_DMA0_QM ... GOYA_ASYNC_EVENT_ID_DMA4_QM:
 		index = event_type - GOYA_ASYNC_EVENT_ID_DMA0_QM;
-		snprintf(desc, size, _goya_get_event_desc(event_type), index);
+		snprintf(desc, size, "%s%d_qm", _goya_get_event_desc(event_type), index);
 		break;
 	case GOYA_ASYNC_EVENT_ID_DMA0_CH ... GOYA_ASYNC_EVENT_ID_DMA4_CH:
 		index = event_type - GOYA_ASYNC_EVENT_ID_DMA0_CH;
-		snprintf(desc, size, _goya_get_event_desc(event_type), index);
+		snprintf(desc, size, "%s%d_ch", _goya_get_event_desc(event_type), index);
 		break;
 	case GOYA_ASYNC_EVENT_ID_TPC0_BMON_SPMU:
 	case GOYA_ASYNC_EVENT_ID_TPC1_BMON_SPMU:
@@ -4404,17 +4404,17 @@ static void goya_get_event_desc(u16 event_type, char *desc, size_t size)
 	case GOYA_ASYNC_EVENT_ID_TPC6_BMON_SPMU:
 	case GOYA_ASYNC_EVENT_ID_TPC7_BMON_SPMU:
 		index = (event_type - GOYA_ASYNC_EVENT_ID_TPC0_BMON_SPMU) / 10;
-		snprintf(desc, size, _goya_get_event_desc(event_type), index);
+		snprintf(desc, size, "%s%d_bmon_spmu", _goya_get_event_desc(event_type), index);
 		break;
 	case GOYA_ASYNC_EVENT_ID_DMA_BM_CH0 ... GOYA_ASYNC_EVENT_ID_DMA_BM_CH4:
 		index = event_type - GOYA_ASYNC_EVENT_ID_DMA_BM_CH0;
-		snprintf(desc, size, _goya_get_event_desc(event_type), index);
+		snprintf(desc, size, "%s%d", _goya_get_event_desc(event_type), index);
 		break;
 	case GOYA_ASYNC_EVENT_PKT_QUEUE_OUT_SYNC:
-		snprintf(desc, size, _goya_get_event_desc(event_type));
+		snprintf(desc, size, "%s", _goya_get_event_desc(event_type));
 		break;
 	default:
-		snprintf(desc, size, _goya_get_event_desc(event_type));
+		snprintf(desc, size, "%s", _goya_get_event_desc(event_type));
 		break;
 	}
 }
