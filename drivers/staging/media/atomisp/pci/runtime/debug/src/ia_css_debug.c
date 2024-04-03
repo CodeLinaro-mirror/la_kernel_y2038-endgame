@@ -1124,7 +1124,7 @@ ia_css_debug_pipe_graph_dump_prologue(void)
 void ia_css_debug_pipe_graph_dump_epilogue(void)
 {
 	if (strlen(ring_buffer) > 0) {
-		dtrace_dot(ring_buffer);
+		dtrace_dot("%s", ring_buffer);
 	}
 
 	if (pg_inst.stream_format != N_ATOMISP_INPUT_FORMAT) {
@@ -1395,7 +1395,7 @@ ia_css_debug_pipe_graph_dump_sp_raw_copy(
 		 out_frame->frame_info.padded_width,
 		 out_frame->frame_info.res.height);
 
-	dtrace_dot(ring_buffer);
+	dtrace_dot("%s", ring_buffer);
 
 	dtrace_dot(
 	    "\"%s(pipe%d)\"->\"%p\" [label = out_frame];",
