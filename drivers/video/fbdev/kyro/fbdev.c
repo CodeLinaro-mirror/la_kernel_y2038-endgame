@@ -798,17 +798,13 @@ static int __init kyrofb_init(void)
 #endif
 	return pci_register_driver(&kyrofb_pci_driver);
 }
+module_init(kyrofb_init);
 
 static void __exit kyrofb_exit(void)
 {
 	pci_unregister_driver(&kyrofb_pci_driver);
 }
-
-module_init(kyrofb_init);
-
-#ifdef MODULE
 module_exit(kyrofb_exit);
-#endif
 
 MODULE_AUTHOR("STMicroelectronics; Paul Mundt <lethal@linux-sh.org>");
 MODULE_DESCRIPTION("STG4000/Kyro/PowerVR 3 driver");

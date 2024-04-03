@@ -76,7 +76,7 @@
 #define __exitused  __used
 #endif
 
-#define __exit          __section(".exit.text") __exitused __cold notrace
+#define __exit          __section(".exit.text") __cold notrace
 
 #ifdef CONFIG_MEMORY_HOTPLUG
 #define __meminit
@@ -389,7 +389,7 @@ void __init parse_early_options(char *cmdline);
 #ifdef MODULE
 #define __exit_p(x) x
 #else
-#define __exit_p(x) NULL
+#define __exit_p(x) (0 ? (x) : NULL)
 #endif
 
 #endif /* _LINUX_INIT_H */

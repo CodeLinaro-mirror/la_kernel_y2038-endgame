@@ -621,12 +621,12 @@ static int __init asiliantfb_init(void)
 
 	return pci_register_driver(&asiliantfb_driver);
 }
-
 module_init(asiliantfb_init);
 
 static void __exit asiliantfb_exit(void)
 {
 	pci_unregister_driver(&asiliantfb_driver);
 }
+module_exit(asiliantfb_exit);
 
 MODULE_LICENSE("GPL");
