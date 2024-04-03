@@ -848,6 +848,7 @@ static void __exit omap_system_dma_exit(void)
 {
 	platform_driver_unregister(&omap_system_dma_driver);
 }
+module_exit(omap_system_dma_exit);
 
 MODULE_DESCRIPTION("OMAP SYSTEM DMA DRIVER");
 MODULE_LICENSE("GPL");

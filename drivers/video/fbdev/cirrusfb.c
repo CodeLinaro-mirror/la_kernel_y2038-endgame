@@ -2379,6 +2379,7 @@ static int __init cirrusfb_init(void)
 #endif
 	return error;
 }
+module_init(cirrusfb_init);
 
 static void __exit cirrusfb_exit(void)
 {
@@ -2389,17 +2390,12 @@ static void __exit cirrusfb_exit(void)
 	zorro_unregister_driver(&cirrusfb_zorro_driver);
 #endif
 }
-
-module_init(cirrusfb_init);
+module_exit(cirrusfb_exit);
 
 module_param(mode_option, charp, 0);
 MODULE_PARM_DESC(mode_option, "Initial video mode e.g. '648x480-8@60'");
 module_param(noaccel, bool, 0);
 MODULE_PARM_DESC(noaccel, "Disable acceleration");
-
-#ifdef MODULE
-module_exit(cirrusfb_exit);
-#endif
 
 /**********************************************************************/
 /* about the following functions - I have used the same names for the */
