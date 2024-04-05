@@ -41,7 +41,15 @@
 #include <asm/amigayle.h>
 #include <asm/amipcmcia.h>
 
-#include "8390.h"
+#define ei_inb(port)            in_8(port)
+#define ei_outb(val, port)      out_8(port, val)
+#define ei_inb_p(port)          in_8(port)
+#define ei_outb_p(val, port)    out_8(port, val)
+
+static const char version[] =
+    "apne.c:v1.1 7/10/98 Alain Malek (Alain.Malek@cryogen.ch)\n";
+
+#include "lib8390.c"
 
 /* ---- No user-serviceable parts below ---- */
 
@@ -105,14 +113,21 @@ static int init_pcmcia(void);
 #define MANUAL_HWADDR5 0x9a
 */
 
-static const char version[] =
-    "apne.c:v1.1 7/10/98 Alain Malek (Alain.Malek@cryogen.ch)\n";
-
 static int apne_owned;	/* signal if card already owned */
 
-static u32 apne_msg_enable;
-module_param_named(msg_enable, apne_msg_enable, uint, 0444);
-MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
+static const struct net_device_ops apne_netdev_ops = {
+	.ndo_open		= __ei_open,
+	.ndo_stop		= __ei_close,
+	.ndo_start_xmit		= __ei_start_xmit,
+	.ndo_tx_timeout		= __ei_tx_timeout,
+	.ndo_get_stats		= __ei_get_stats,
+	.ndo_set_rx_mode	= __ei_set_multicast_list,
+	.ndo_validate_addr	= eth_validate_addr,
+	.ndo_set_mac_address	= eth_mac_addr,
+#ifdef CONFIG_NET_POLL_CONTROLLER
+	.ndo_poll_controller	= __ei_poll,
+#endif
+};
 
 static struct net_device * __init apne_probe(void)
 {
@@ -141,11 +156,11 @@ static struct net_device * __init apne_probe(void)
 		return ERR_PTR(-ENODEV);
 	}
 
-	dev = alloc_ei_netdev();
+	dev = ____alloc_ei_netdev(0);
 	if (!dev)
 		return ERR_PTR(-ENOMEM);
 	ei_local = netdev_priv(dev);
-	ei_local->msg_enable = apne_msg_enable;
+	ei_local->msg_enable = msg_enable;
 
 	/* disable pcmcia irq for readtuple */
 	pcmcia_disable_irq();
@@ -203,7 +218,7 @@ static int __init apne_probe1(struct net_device *dev, int ioaddr)
 #endif
     static unsigned version_printed;
 
-    if ((apne_msg_enable & NETIF_MSG_DRV) && (version_printed++ == 0))
+    if ((msg_enable & NETIF_MSG_DRV) && (version_printed++ == 0))
 		netdev_info(dev, version);
 
     netdev_info(dev, "PCMCIA NE*000 ethercard probe");
@@ -309,7 +324,7 @@ static int __init apne_probe1(struct net_device *dev, int ioaddr)
 
     dev->base_addr = ioaddr;
     dev->irq = IRQ_AMIGA_PORTS;
-    dev->netdev_ops = &ei_netdev_ops;
+    dev->netdev_ops = &apne_netdev_ops;
 
     /* Install the Interrupt handler */
     i = request_irq(dev->irq, apne_interrupt, IRQF_SHARED, DRV_NAME, dev);
@@ -333,7 +348,7 @@ static int __init apne_probe1(struct net_device *dev, int ioaddr)
     ei_status.block_output = &apne_block_output;
     ei_status.get_8390_hdr = &apne_get_8390_hdr;
 
-    NS8390_init(dev, 0);
+    __NS8390_init(dev, 0);
 
     pcmcia_ack_int(pcmcia_get_intreq());		/* ack PCMCIA int req */
     pcmcia_enable_irq();
@@ -513,7 +528,7 @@ apne_block_output(struct net_device *dev, int count,
 	if (time_after(jiffies, dma_start + 2*HZ/100)) {	/* 20ms */
 		netdev_warn(dev, "timeout waiting for Tx RDC.\n");
 		apne_reset_8390(dev);
-		NS8390_init(dev,1);
+		__NS8390_init(dev,1);
 		break;
 	}
 
@@ -534,10 +549,10 @@ static irqreturn_t apne_interrupt(int irq, void *dev_id)
         pcmcia_ack_int(pcmcia_intreq);
         return IRQ_NONE;
     }
-    if (apne_msg_enable & NETIF_MSG_INTR)
+    if (msg_enable & NETIF_MSG_INTR)
 	pr_debug("pcmcia intreq = %x\n", pcmcia_intreq);
     pcmcia_disable_irq();			/* to get rid of the sti() within ei_interrupt */
-    ei_interrupt(irq, dev_id);
+    __ei_interrupt(irq, dev_id);
     pcmcia_ack_int(pcmcia_get_intreq());
     pcmcia_enable_irq();
     return IRQ_HANDLED;
