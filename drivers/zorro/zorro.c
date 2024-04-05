@@ -142,7 +142,7 @@ static int __init amiga_zorro_probe(struct platform_device *pdev)
 
 	zorro_autocon = bus->devices;
 	bus->dev.parent = &pdev->dev;
-	dev_set_name(&bus->dev, zorro_bus_type.name);
+	dev_set_name(&bus->dev, "%s", zorro_bus_type.name);
 	error = device_register(&bus->dev);
 	if (error) {
 		pr_err("Zorro: Error registering zorro_bus\n");
