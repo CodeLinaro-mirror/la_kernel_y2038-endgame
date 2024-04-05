@@ -140,6 +140,10 @@ KBUILD_CFLAGS += $(call cc-option, -Wno-stringop-truncation)
 KBUILD_CFLAGS += -Wno-override-init # alias for -Wno-initializer-overrides in clang
 
 ifdef CONFIG_CC_IS_CLANG
+ifneq ($(call clang-min-version, 180000),y)
+KBUILD_CFLAGS += -Wno-constant-logical-operand
+endif
+
 # Clang before clang-16 would warn on default argument promotions.
 ifneq ($(call clang-min-version, 160000),y)
 # Disable -Wformat
