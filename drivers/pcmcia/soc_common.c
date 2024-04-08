@@ -2257,7 +2257,7 @@ struct pcmcia_low_level h3600_pcmcia_ops = {
 	.socket_suspend		= h3600_pcmcia_socket_suspend,
 };
 
-static int pcmcia_h3600_init(struct device *dev)
+static int __maybe_unused pcmcia_h3600_init(struct device *dev)
 {
 	int ret = -ENODEV;
 
@@ -2401,7 +2401,7 @@ static struct pcmcia_low_level sa11x0_cf_ops = {
 	.configure_socket = sa11x0_cf_configure_socket,
 };
 
-static int pcmcia_collie_init(struct device *dev)
+static int __maybe_unused pcmcia_collie_init(struct device *dev)
 {
        int ret = -ENODEV;
 
