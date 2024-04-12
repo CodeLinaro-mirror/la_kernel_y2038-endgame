@@ -14,7 +14,6 @@ subdir-ccflags-y += -Wno-sign-compare
 condflags := \
 	$(call cc-option, -Wrestrict)				\
 	$(call cc-option, -Wunused-but-set-variable)		\
-	$(call cc-option, -Wunused-const-variable)		\
 	$(call cc-option, -Wpacked-not-aligned)			\
 	$(call cc-option, -Wformat-overflow)			\
 	$(call cc-option, -Wformat-truncation)			\
