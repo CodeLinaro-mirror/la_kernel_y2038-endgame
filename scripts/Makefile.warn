@@ -52,6 +52,7 @@ else
 
 # gcc inanely warns about local variables called 'main'
 KBUILD_CFLAGS += -Wno-main
+KBUILD_CFLAGS += -Wunused-const-variable
 endif
 
 # Too noisy on range checks and in macros handling both signed and unsigned.
