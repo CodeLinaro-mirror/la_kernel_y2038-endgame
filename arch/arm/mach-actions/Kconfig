@@ -10,6 +10,8 @@ menuconfig ARCH_ACTIONS
 	select GENERIC_IRQ_CHIP
 	select HAVE_ARM_SCU if SMP
 	select HAVE_ARM_TWD if SMP
+	select PM
+	select PM_GENERIC_DOMAINS
 	select OWL_PM_DOMAINS_HELPER
 	select OWL_TIMER
 	help
