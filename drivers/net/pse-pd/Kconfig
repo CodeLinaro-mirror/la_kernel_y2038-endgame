@@ -5,7 +5,7 @@
 
 menuconfig PSE_CONTROLLER
 	bool "Ethernet Power Sourcing Equipment Support"
-	depends on REGULATOR
+	depends on REGULATOR=y
 	help
 	  Generic Power Sourcing Equipment Controller support.
 
