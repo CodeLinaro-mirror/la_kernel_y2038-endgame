@@ -184,10 +184,10 @@ static int prepare_dma_bufs(struct ishtp_device *dev,
 
 		fragment->fragment_tbl[i].ddr_adrs = cpu_to_le64(dma_addr);
 		length = clamp(ish_fw->size - offset, 0, fragment_size);
-		fragment->fragment_tbl[i].length = cpu_to_le32(length);
-		fragment->fragment_tbl[i].fw_off = cpu_to_le32(offset);
 		memcpy(dma_bufs[i], ish_fw->data + offset, length);
 		clflush_cache_range(dma_bufs[i], fragment_size);
+		fragment->fragment_tbl[i].length = cpu_to_le32(length);
+		fragment->fragment_tbl[i].fw_off = cpu_to_le32(offset);
 
 		offset += length;
 	}
