@@ -14,7 +14,13 @@ struct hid_bpf_ctx_kern {
 struct hid_device *hid_get_device(unsigned int hid_id);
 void hid_put_device(struct hid_device *hid);
 int hid_bpf_allocate_event_data(struct hid_device *hdev);
+#ifdef CONFIG_BPF_JIT
 void __hid_bpf_ops_destroy_device(struct hid_device *hdev);
+#else
+static inline void __hid_bpf_ops_destroy_device(struct hid_device *hdev)
+{
+}
+#endif
 int hid_bpf_reconnect(struct hid_device *hdev);
 
 struct bpf_prog;
