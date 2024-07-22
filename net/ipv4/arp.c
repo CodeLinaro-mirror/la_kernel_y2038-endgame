@@ -1378,7 +1378,6 @@ static struct packet_type arp_packet_type __read_mostly = {
 	.func =	arp_rcv,
 };
 
-#ifdef CONFIG_PROC_FS
 #if IS_ENABLED(CONFIG_AX25)
 
 /*
@@ -1492,7 +1491,6 @@ static const struct seq_operations arp_seq_ops = {
 	.stop	= neigh_seq_stop,
 	.show	= arp_seq_show,
 };
-#endif /* CONFIG_PROC_FS */
 
 static int __net_init arp_net_init(struct net *net)
 {

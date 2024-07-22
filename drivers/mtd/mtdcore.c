@@ -2533,8 +2533,6 @@ void *mtd_kmalloc_up_to(const struct mtd_info *mtd, size_t *size)
 }
 EXPORT_SYMBOL_GPL(mtd_kmalloc_up_to);
 
-#ifdef CONFIG_PROC_FS
-
 /*====================================================================*/
 /* Support for /proc/mtd */
 
@@ -2552,7 +2550,6 @@ static int mtd_proc_show(struct seq_file *m, void *v)
 	mutex_unlock(&mtd_table_mutex);
 	return 0;
 }
-#endif /* CONFIG_PROC_FS */
 
 /*====================================================================*/
 /* Init code */

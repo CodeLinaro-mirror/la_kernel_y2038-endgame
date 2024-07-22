@@ -1029,7 +1029,6 @@ static int pppoe_recvmsg(struct socket *sock, struct msghdr *m,
 	return error;
 }
 
-#ifdef CONFIG_PROC_FS
 static int pppoe_seq_show(struct seq_file *seq, void *v)
 {
 	struct pppox_sock *po;
@@ -1118,7 +1117,6 @@ static const struct seq_operations pppoe_seq_ops = {
 	.stop		= pppoe_seq_stop,
 	.show		= pppoe_seq_show,
 };
-#endif /* CONFIG_PROC_FS */
 
 static const struct proto_ops pppoe_ops = {
 	.family		= AF_PPPOX,

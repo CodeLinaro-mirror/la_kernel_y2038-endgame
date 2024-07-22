@@ -1260,8 +1260,6 @@ static int nr_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 	return 0;
 }
 
-#ifdef CONFIG_PROC_FS
-
 static void *nr_info_start(struct seq_file *seq, loff_t *pos)
 	__acquires(&nr_list_lock)
 {
@@ -1342,7 +1340,6 @@ static const struct seq_operations nr_info_seqops = {
 	.stop = nr_info_stop,
 	.show = nr_info_show,
 };
-#endif	/* CONFIG_PROC_FS */
 
 static const struct net_proto_family nr_family_ops = {
 	.family		=	PF_NETROM,

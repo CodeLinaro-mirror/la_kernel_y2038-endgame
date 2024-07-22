@@ -1384,8 +1384,6 @@ end:
  * L2TPv2, we dump only L2TPv2 tunnels and sessions here.
  *****************************************************************************/
 
-#ifdef CONFIG_PROC_FS
-
 struct pppol2tp_seq_data {
 	struct seq_net_private p;
 	unsigned long tkey;		/* lookup key of current tunnel */
@@ -1590,7 +1588,6 @@ static const struct seq_operations pppol2tp_seq_ops = {
 	.stop		= pppol2tp_seq_stop,
 	.show		= pppol2tp_seq_show,
 };
-#endif /* CONFIG_PROC_FS */
 
 /*****************************************************************************
  * Network namespace

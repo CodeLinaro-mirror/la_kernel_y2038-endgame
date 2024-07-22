@@ -1431,7 +1431,6 @@ static int rose_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 	return 0;
 }
 
-#ifdef CONFIG_PROC_FS
 static void *rose_info_start(struct seq_file *seq, loff_t *pos)
 	__acquires(rose_list_lock)
 {
@@ -1510,7 +1509,6 @@ static const struct seq_operations rose_info_seqops = {
 	.stop = rose_info_stop,
 	.show = rose_info_show,
 };
-#endif	/* CONFIG_PROC_FS */
 
 static const struct net_proto_family rose_family_ops = {
 	.family		=	PF_ROSE,

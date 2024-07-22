@@ -776,8 +776,6 @@ out:
 	return IRQ_RETVAL(handled);
 }
 
-#ifdef CONFIG_PROC_FS
-
 static void *yam_seq_start(struct seq_file *seq, loff_t *pos)
 {
 	return (*pos < NR_PORTS) ? yam_devs[*pos] : NULL;
@@ -826,7 +824,6 @@ static const struct seq_operations yam_seqops = {
 	.stop = yam_seq_stop,
 	.show = yam_seq_show,
 };
-#endif
 
 
 /* --------------------------------------------------------------------- */

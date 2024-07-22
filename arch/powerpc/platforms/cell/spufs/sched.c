@@ -1052,7 +1052,6 @@ void spuctx_switch_state(struct spu_context *ctx,
 	}
 }
 
-#ifdef CONFIG_PROC_FS
 static int show_spu_loadavg(struct seq_file *s, void *private)
 {
 	int a, b, c;
@@ -1075,7 +1074,6 @@ static int show_spu_loadavg(struct seq_file *s, void *private)
 		idr_get_cursor(&task_active_pid_ns(current)->idr) - 1);
 	return 0;
 }
-#endif
 
 int __init spu_sched_init(void)
 {

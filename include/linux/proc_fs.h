@@ -77,9 +77,9 @@ static inline struct proc_fs_info *proc_sb_info(struct super_block *sb)
 	return sb->s_fs_info;
 }
 
-#ifdef CONFIG_PROC_FS
-
 typedef int (*proc_write_t)(struct file *, char *, size_t);
+
+#ifdef CONFIG_PROC_FS
 
 extern void proc_root_init(void);
 extern void proc_flush_pid(struct pid *);
@@ -190,11 +190,25 @@ static inline struct proc_dir_entry *proc_mkdir_data(const char *name,
 	umode_t mode, struct proc_dir_entry *parent, void *data) { return NULL; }
 static inline struct proc_dir_entry *proc_mkdir_mode(const char *name,
 	umode_t mode, struct proc_dir_entry *parent) { return NULL; }
-#define proc_create_seq_private(name, mode, parent, ops, size, data) ({NULL;})
-#define proc_create_seq_data(name, mode, parent, ops, data) ({NULL;})
-#define proc_create_seq(name, mode, parent, ops) ({NULL;})
-#define proc_create_single(name, mode, parent, show) ({NULL;})
-#define proc_create_single_data(name, mode, parent, show, data) ({NULL;})
+static inline struct proc_dir_entry *proc_create_seq_private(const char *name,
+		umode_t mode, struct proc_dir_entry *parent,
+		const struct seq_operations *ops,
+		unsigned int state_size, void *data)
+{
+	return NULL;
+}
+#define proc_create_seq_data(name, mode, parent, ops, data) \
+	proc_create_seq_private(name, mode, parent, ops, 0, data)
+#define proc_create_seq(name, mode, parent, ops) \
+	proc_create_seq_private(name, mode, parent, ops, 0, NULL)
+static inline struct proc_dir_entry *proc_create_single_data(const char *name,
+		umode_t mode, struct proc_dir_entry *parent,
+		int (*show)(struct seq_file *, void *), void *data)
+{
+	return NULL;
+}
+#define proc_create_single(name, mode, parent, show) \
+	proc_create_single_data(name, mode, parent, show, NULL)
 
 static inline struct proc_dir_entry *
 proc_create(const char *name, umode_t mode, struct proc_dir_entry *parent,
@@ -215,11 +229,36 @@ static inline void proc_remove(struct proc_dir_entry *de) {}
 #define remove_proc_entry(name, parent) do {} while (0)
 static inline int remove_proc_subtree(const char *name, struct proc_dir_entry *parent) { return 0; }
 
-#define proc_create_net_data(name, mode, parent, ops, state_size, data) ({NULL;})
-#define proc_create_net_data_write(name, mode, parent, ops, write, state_size, data) ({NULL;})
-#define proc_create_net(name, mode, parent, state_size, ops) ({NULL;})
-#define proc_create_net_single(name, mode, parent, show, data) ({NULL;})
-#define proc_create_net_single_write(name, mode, parent, show, write, data) ({NULL;})
+static inline struct proc_dir_entry *proc_create_net_data(const char *name, umode_t mode,
+		struct proc_dir_entry *parent, const struct seq_operations *ops,
+		unsigned int state_size, void *data)
+{
+	return NULL;
+}
+#define proc_create_net(name, mode, parent, ops, state_size) \
+	proc_create_net_data(name, mode, parent, ops, state_size, NULL)
+static inline struct proc_dir_entry *proc_create_net_single(const char *name, umode_t mode,
+		struct proc_dir_entry *parent,
+		int (*show)(struct seq_file *, void *), void *data)
+{
+	return NULL;
+}
+static inline struct proc_dir_entry *proc_create_net_data_write(const char *name, umode_t mode,
+						  struct proc_dir_entry *parent,
+						  const struct seq_operations *ops,
+						  proc_write_t write,
+						  unsigned int state_size, void *data)
+{
+	return NULL;
+}
+static inline struct proc_dir_entry *proc_create_net_single_write(const char *name, umode_t mode,
+						    struct proc_dir_entry *parent,
+						    int (*show)(struct seq_file *, void *),
+						    proc_write_t write,
+						    void *data)
+{
+	return NULL;
+}
 
 static inline struct pid *tgid_pidfd_to_pid(const struct file *file)
 {

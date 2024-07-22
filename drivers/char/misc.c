@@ -81,7 +81,6 @@ static void misc_minor_free(int minor)
 	ida_free(&misc_minors_ida, minor);
 }
 
-#ifdef CONFIG_PROC_FS
 static void *misc_seq_start(struct seq_file *seq, loff_t *pos)
 {
 	mutex_lock(&misc_mtx);
@@ -113,7 +112,6 @@ static const struct seq_operations misc_seq_ops = {
 	.stop  = misc_seq_stop,
 	.show  = misc_seq_show,
 };
-#endif
 
 static int misc_open(struct inode *inode, struct file *file)
 {
