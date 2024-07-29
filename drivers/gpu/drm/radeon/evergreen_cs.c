@@ -33,11 +33,6 @@
 #include "evergreen_reg_safe.h"
 #include "cayman_reg_safe.h"
 
-#ifndef MIN
-#define MAX(a, b)                   (((a) > (b)) ? (a) : (b))
-#define MIN(a, b)                   (((a) < (b)) ? (a) : (b))
-#endif
-
 #define REG_SAFE_BM_SIZE ARRAY_SIZE(evergreen_reg_safe_bm)
 
 struct evergreen_cs_track {
@@ -206,7 +201,7 @@ static int evergreen_surface_check_linear_aligned(struct radeon_cs_parser *p,
 	struct evergreen_cs_track *track = p->track;
 	unsigned palign;
 
-	palign = MAX(64, track->group_size / surf->bpe);
+	palign = max(64, track->group_size / surf->bpe);
 	surf->layer_size = surf->nbx * surf->nby * surf->bpe * surf->nsamples;
 	surf->base_align = track->group_size;
 	surf->palign = palign;
@@ -229,7 +224,7 @@ static int evergreen_surface_check_1d(struct radeon_cs_parser *p,
 	unsigned palign;
 
 	palign = track->group_size / (8 * surf->bpe * surf->nsamples);
-	palign = MAX(8, palign);
+	palign = max(8, palign);
 	surf->layer_size = surf->nbx * surf->nby * surf->bpe;
 	surf->base_align = track->group_size;
 	surf->palign = palign;

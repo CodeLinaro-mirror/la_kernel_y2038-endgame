@@ -25,9 +25,6 @@
 
 #include "hdcp.h"
 
-#ifndef MIN
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-#endif
 #define HDCP_I2C_ADDR 0x3a	/* 0x74 >> 1*/
 #define KSV_READ_SIZE 0xf	/* 0x6803b - 0x6802c */
 #define HDCP_MAX_AUX_TRANSACTION_SIZE 16
@@ -168,7 +165,7 @@ static enum mod_hdcp_status read(struct mod_hdcp *hdcp,
 			return MOD_HDCP_STATUS_DDC_FAILURE;
 
 		while (buf_len > 0) {
-			cur_size = MIN(buf_len, HDCP_MAX_AUX_TRANSACTION_SIZE);
+			cur_size = min(buf_len, HDCP_MAX_AUX_TRANSACTION_SIZE);
 			success = hdcp->config.ddc.funcs.read_dpcd(hdcp->config.ddc.handle,
 					hdcp_dpcd_addrs[msg_id] + data_offset,
 					buf + data_offset,
@@ -207,7 +204,7 @@ static enum mod_hdcp_status read_repeatedly(struct mod_hdcp *hdcp,
 	uint32_t data_offset = 0;
 
 	while (buf_len > 0) {
-		cur_size = MIN(buf_len, read_size);
+		cur_size = min(buf_len, read_size);
 		status = read(hdcp, msg_id, buf + data_offset, cur_size);
 
 		if (status != MOD_HDCP_STATUS_SUCCESS)
@@ -239,7 +236,7 @@ static enum mod_hdcp_status write(struct mod_hdcp *hdcp,
 			return MOD_HDCP_STATUS_DDC_FAILURE;
 
 		while (buf_len > 0) {
-			cur_size = MIN(buf_len, HDCP_MAX_AUX_TRANSACTION_SIZE);
+			cur_size = min(buf_len, HDCP_MAX_AUX_TRANSACTION_SIZE);
 			success = hdcp->config.ddc.funcs.write_dpcd(
 					hdcp->config.ddc.handle,
 					hdcp_dpcd_addrs[msg_id] + data_offset,
@@ -520,7 +517,7 @@ enum mod_hdcp_status mod_hdcp_read_rx_id_list(struct mod_hdcp *hdcp)
 			bytes_read = HDCP_MAX_AUX_TRANSACTION_SIZE;
 			device_count = HDCP_2_2_DEV_COUNT_LO(hdcp->auth.msg.hdcp2.rx_id_list[2]) +
 					(HDCP_2_2_DEV_COUNT_HI(hdcp->auth.msg.hdcp2.rx_id_list[1]) << 4);
-			rx_id_list_size = MIN((21 + 5 * device_count),
+			rx_id_list_size = min((21 + 5 * device_count),
 					(sizeof(hdcp->auth.msg.hdcp2.rx_id_list) - 1));
 			status = read(hdcp, MOD_HDCP_MESSAGE_ID_READ_REPEATER_AUTH_SEND_RECEIVERID_LIST_PART2,
 					hdcp->auth.msg.hdcp2.rx_id_list + 1 + bytes_read,

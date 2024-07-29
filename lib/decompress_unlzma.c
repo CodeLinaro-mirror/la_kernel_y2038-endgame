@@ -36,10 +36,7 @@
 #endif /* STATIC */
 
 #include <linux/decompress/mm.h>
-
-#ifndef MIN
-#define	MIN(a, b) (((a) < (b)) ? (a) : (b))
-#endif
+#include <linux/minmax.h>
 
 static long long INIT read_int(unsigned char *ptr, int size)
 {
@@ -614,7 +611,7 @@ STATIC inline int INIT unlzma(unsigned char *buf, long in_len,
 	if (output)
 		wr.buffer = output;
 	else {
-		wr.bufsize = MIN(header.dst_size, header.dict_size);
+		wr.bufsize = min(header.dst_size, header.dict_size);
 		wr.buffer = large_malloc(wr.bufsize);
 	}
 	if (wr.buffer == NULL)

@@ -36,10 +36,6 @@
 
 #include "gpio_service_interface.h"
 
-#ifndef MIN
-#define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
-#endif
-
 #define CTX \
 	enc10->base.ctx
 #define DC_LOGGER \
@@ -60,10 +56,6 @@
 
 #define AUX_REG_WRITE(reg_name, val) \
 			dm_write_reg(CTX, AUX_REG(reg_name), val)
-
-#ifndef MIN
-#define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
-#endif
 
 // HDMI FRL EQ Setting masks/shifts
 // EQ level 0-32 bits[0:1]

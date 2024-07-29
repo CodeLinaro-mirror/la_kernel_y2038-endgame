@@ -48,13 +48,6 @@
 #define IND_REG(index) \
 	(enc10->link_regs->index)
 
-#ifndef MAX
-#define MAX(X, Y) ((X) > (Y) ? (X) : (Y))
-#endif
-#ifndef MIN
-#define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
-#endif
-
 static struct mpll_cfg dcn2_mpll_cfg[] = {
 	// RBR
 	{
@@ -277,7 +270,7 @@ void dcn20_link_encoder_get_max_link_cap(struct link_encoder *enc,
 	if (enc->funcs->is_in_alt_mode && enc->funcs->is_in_alt_mode(enc)) {
 		REG_GET(RDPCSTX_PHY_CNTL6, RDPCS_PHY_DPALT_DP4, &is_in_usb_c_dp4_mode);
 		if (!is_in_usb_c_dp4_mode)
-			link_settings->lane_count = MIN(LANE_COUNT_TWO, link_settings->lane_count);
+			link_settings->lane_count = min(LANE_COUNT_TWO, link_settings->lane_count);
 	}
 
 }
