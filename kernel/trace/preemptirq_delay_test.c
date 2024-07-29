@@ -116,7 +116,7 @@ static void (*testfuncs[])(int)  = {
 static int preemptirq_delay_run(void *data)
 {
 	int i;
-	int s = MIN(burst_size, NR_TEST_FUNCS);
+	int s = min(burst_size, NR_TEST_FUNCS);
 	cpumask_var_t cpu_mask;
 
 	if (!alloc_cpumask_var(&cpu_mask, GFP_KERNEL))

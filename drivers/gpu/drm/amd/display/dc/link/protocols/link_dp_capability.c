@@ -56,13 +56,6 @@
 #define DC_LOGGER \
 	link->ctx->logger
 
-#ifndef MAX
-#define MAX(X, Y) ((X) > (Y) ? (X) : (Y))
-#endif
-#ifndef MIN
-#define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
-#endif
-
 struct dp_lt_fallback_entry {
 	enum dc_lane_count lane_count;
 	enum dc_link_rate link_rate;
@@ -240,11 +233,11 @@ static union dp_cable_id intersect_cable_id(
 {
 	union dp_cable_id out;
 
-	out.bits.UHBR10_20_CAPABILITY = MIN(a->bits.UHBR10_20_CAPABILITY,
+	out.bits.UHBR10_20_CAPABILITY = min_t(u8, a->bits.UHBR10_20_CAPABILITY,
 			b->bits.UHBR10_20_CAPABILITY);
-	out.bits.UHBR13_5_CAPABILITY = MIN(a->bits.UHBR13_5_CAPABILITY,
+	out.bits.UHBR13_5_CAPABILITY = min_t(u8, a->bits.UHBR13_5_CAPABILITY,
 			b->bits.UHBR13_5_CAPABILITY);
-	out.bits.CABLE_TYPE = MAX(a->bits.CABLE_TYPE, b->bits.CABLE_TYPE);
+	out.bits.CABLE_TYPE = max_t(u8, a->bits.CABLE_TYPE, b->bits.CABLE_TYPE);
 
 	return out;
 }

@@ -35,12 +35,6 @@
 #include "dc_stream_priv.h"
 
 #define DC_LOGGER dc->ctx->logger
-#ifndef MIN
-#define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
-#endif
-#ifndef MAX
-#define MAX(x, y) ((x > y) ? x : y)
-#endif
 
 /*******************************************************************************
  * Private functions
@@ -1142,15 +1136,15 @@ static int dc_stream_get_max_delta_lumin_millinits(struct dc_stream_state *strea
 		return higher_refresh_brightness - lower_refresh_brightness;
 	}
 
-	min = MIN(lower_refresh_brightness, higher_refresh_brightness);
-	max = MAX(lower_refresh_brightness, higher_refresh_brightness);
+	min = min(lower_refresh_brightness, higher_refresh_brightness);
+	max = max(lower_refresh_brightness, higher_refresh_brightness);
 
 	int nearest_smallest_index = dc_stream_get_nearest_smallest_index(stream, hz1);
 
 	for (; nearest_smallest_index < (LUMINANCE_DATA_TABLE_SIZE - 1) &&
 			stream->lumin_data.refresh_rate_hz[nearest_smallest_index + 1] <= hz2 ; nearest_smallest_index++) {
-		min = MIN(min, stream->lumin_data.luminance_millinits[nearest_smallest_index + 1]);
-		max = MAX(max, stream->lumin_data.luminance_millinits[nearest_smallest_index + 1]);
+		min = min(min, stream->lumin_data.luminance_millinits[nearest_smallest_index + 1]);
+		max = max(max, stream->lumin_data.luminance_millinits[nearest_smallest_index + 1]);
 	}
 
 	return (max - min);

@@ -34,10 +34,6 @@
 
 #include "gpio_service_interface.h"
 
-#ifndef MIN
-#define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
-#endif
-
 #define CTX \
 	enc10->base.ctx
 #define DC_LOGGER \

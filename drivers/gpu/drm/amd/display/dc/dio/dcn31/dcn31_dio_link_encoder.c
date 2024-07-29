@@ -63,10 +63,6 @@
 #define AUX_REG_WRITE(reg_name, val) \
 			dm_write_reg(CTX, AUX_REG(reg_name), val)
 
-#ifndef MIN
-#define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
-#endif
-
 static uint8_t phy_id_from_transmitter(enum transmitter t)
 {
 	uint8_t phy_id;
@@ -659,7 +655,7 @@ void dcn31_link_encoder_get_max_link_cap(struct link_encoder *enc, struct dc_lin
 		if (cmd.query_dp_alt.data.is_dp_alt_disable == 0 &&
 				cmd.query_dp_alt.data.is_usb &&
 				cmd.query_dp_alt.data.is_dp4 == 0)
-			link_settings->lane_count = MIN(LANE_COUNT_TWO, link_settings->lane_count);
+			link_settings->lane_count = min(LANE_COUNT_TWO, link_settings->lane_count);
 
 		return;
 	}
@@ -681,5 +677,5 @@ void dcn31_link_encoder_get_max_link_cap(struct link_encoder *enc, struct dc_lin
 	}
 
 	if (!is_in_usb_c_dp4_mode)
-		link_settings->lane_count = MIN(LANE_COUNT_TWO, link_settings->lane_count);
+		link_settings->lane_count = min(LANE_COUNT_TWO, link_settings->lane_count);
 }

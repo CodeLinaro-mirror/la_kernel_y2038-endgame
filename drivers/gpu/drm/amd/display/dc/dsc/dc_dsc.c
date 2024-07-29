@@ -48,13 +48,6 @@ static bool dsc_policy_disable_dsc_stream_overhead;
 
 static bool disable_128b_132b_stream_overhead;
 
-#ifndef MAX
-#define MAX(X, Y) ((X) > (Y) ? (X) : (Y))
-#endif
-#ifndef MIN
-#define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
-#endif
-
 /* Need to account for padding due to pixel-to-symbol packing
  * for uncompressed 128b/132b streams.
  */
@@ -818,7 +811,7 @@ static bool decide_dsc_bandwidth_range(
 	/* TODO - make this value generic to all signal types */
 	else if (dsc_caps->edp_sink_max_bits_per_pixel) {
 		/* apply max bpp limitation from edp sink */
-		range->max_target_bpp_x16 = MIN(dsc_caps->edp_sink_max_bits_per_pixel,
+		range->max_target_bpp_x16 = min(dsc_caps->edp_sink_max_bits_per_pixel,
 				max_bpp_x16);
 		range->min_target_bpp_x16 = min_bpp_x16;
 	}

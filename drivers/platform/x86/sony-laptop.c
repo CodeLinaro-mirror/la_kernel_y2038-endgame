@@ -769,12 +769,12 @@ static int sony_nc_buffer_call(acpi_handle handle, char *name, u64 *value,
 	if (!buffer) {
 		/* do nothing */
 	} else if (object->type == ACPI_TYPE_BUFFER) {
-		len = MIN(buflen, object->buffer.length);
+		len = min(buflen, object->buffer.length);
 		memset(buffer, 0, buflen);
 		memcpy(buffer, object->buffer.pointer, len);
 
 	} else if (object->type == ACPI_TYPE_INTEGER) {
-		len = MIN(buflen, sizeof(object->integer.value));
+		len = min(buflen, sizeof(object->integer.value));
 		memset(buffer, 0, buflen);
 		memcpy(buffer, &object->integer.value, len);
 
