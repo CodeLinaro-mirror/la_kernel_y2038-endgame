@@ -7944,6 +7944,9 @@ static noinline_for_stack void dml_core_ms_prefetch_check(struct dml2_core_inter
 
 }
 
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 
 static bool dml_core_mode_support(struct dml2_core_calcs_mode_support_ex *in_out_params)
 {
@@ -9623,6 +9626,7 @@ static bool dml_core_mode_support(struct dml2_core_calcs_mode_support_ex *in_out
 
 	return mode_lib->ms.support.ModeSupport;
 }
+__diag_pop()
 
 unsigned int dml2_core_calcs_mode_support_ex(struct dml2_core_calcs_mode_support_ex *in_out_params)
 {
