@@ -284,7 +284,7 @@ RGB[0,8191],coef[-8192,8191] -> RGB[0,8191]
 	 ISP_VEC_NELEMS)
 
 #define __ISP_PADDED_OUTPUT_WIDTH(out_width, dvs_env_width, left_crop) \
-	((out_width) + MAX(dvs_env_width, _ISP_LEFT_CROP_EXTRA(left_crop)))
+	((out_width) + max(dvs_env_width, _ISP_LEFT_CROP_EXTRA(left_crop)))
 
 #define __ISP_CHUNK_STRIDE_ISP(mode) \
 	((1 << _ISP_LOG_VECTOR_STEP(mode)) * ISP_VEC_NELEMS)
