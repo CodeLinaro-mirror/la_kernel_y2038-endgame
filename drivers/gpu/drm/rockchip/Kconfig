@@ -121,6 +121,7 @@ config ROCKCHIP_LVDS
 	bool "Rockchip LVDS support"
 	depends on DRM_ROCKCHIP
 	depends on PINCTRL && OF
+	depends on I2C
 	select DRM_DISPLAY_HELPER
 	select DRM_BRIDGE_CONNECTOR
 	help
@@ -133,6 +134,7 @@ config ROCKCHIP_RGB
 	bool "Rockchip RGB support"
 	depends on DRM_ROCKCHIP
 	depends on PINCTRL
+	depends on I2C
 	select DRM_DISPLAY_HELPER
 	select DRM_BRIDGE_CONNECTOR
 	help
