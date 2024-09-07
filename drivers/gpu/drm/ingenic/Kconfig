@@ -5,6 +5,7 @@ config DRM_INGENIC
 	depends on CMA
 	depends on OF
 	depends on COMMON_CLK
+	depends on I2C
 	select DRM_BRIDGE
 	select DRM_CLIENT_SELECTION
 	select DRM_PANEL_BRIDGE

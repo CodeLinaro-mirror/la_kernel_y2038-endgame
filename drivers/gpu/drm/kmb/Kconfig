@@ -2,6 +2,7 @@ config DRM_KMB_DISPLAY
 	tristate "Intel Keembay Display"
 	depends on DRM
 	depends on ARCH_KEEMBAY || COMPILE_TEST
+	depends on I2C
 	select DRM_CLIENT_SELECTION
 	select DRM_KMS_HELPER
 	select DRM_DISPLAY_HELPER

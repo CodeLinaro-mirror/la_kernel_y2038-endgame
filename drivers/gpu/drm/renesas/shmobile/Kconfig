@@ -3,6 +3,7 @@ config DRM_SHMOBILE
 	tristate "DRM Support for SH Mobile"
 	depends on DRM && PM
 	depends on ARCH_RENESAS || ARCH_SHMOBILE || COMPILE_TEST
+	depends on I2C
 	select BACKLIGHT_CLASS_DEVICE
 	select DRM_CLIENT_SELECTION
 	select DRM_KMS_HELPER
