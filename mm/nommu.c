@@ -1184,9 +1184,7 @@ unsigned long do_mmap(struct file *file,
 		goto error_just_free;
 
 	/* clear anonymous mappings that don't ask for uninitialized data */
-	if (!vma->vm_file &&
-	    (!IS_ENABLED(CONFIG_MMAP_ALLOW_UNINITIALIZED) ||
-	     !(flags & MAP_UNINITIALIZED)))
+	if (!vma->vm_file)
 		memset((void *)region->vm_start, 0,
 		       region->vm_end - region->vm_start);
 
