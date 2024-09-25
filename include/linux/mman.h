@@ -25,9 +25,6 @@
 #ifndef MAP_HUGE_1GB
 #define MAP_HUGE_1GB 0
 #endif
-#ifndef MAP_UNINITIALIZED
-#define MAP_UNINITIALIZED 0
-#endif
 #ifndef MAP_SYNC
 #define MAP_SYNC 0
 #endif
@@ -45,7 +42,6 @@
 		| MAP_ANONYMOUS \
 		| MAP_DENYWRITE \
 		| MAP_EXECUTABLE \
-		| MAP_UNINITIALIZED \
 		| MAP_GROWSDOWN \
 		| MAP_LOCKED \
 		| MAP_NORESERVE \
