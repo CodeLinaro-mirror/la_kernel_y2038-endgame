@@ -36,7 +36,7 @@
 #define MS_INVALIDATE	4		/* invalidate the caches */
 
 /*
- * Flags for madvise, 1 through 3 are normal */
+ * Flags for madvise, 1 through 3 are normal
  */
 /* originally MADV_SPACEAVAIL 5 */
 #define MADV_DONTNEED	6		/* don't need these pages */
