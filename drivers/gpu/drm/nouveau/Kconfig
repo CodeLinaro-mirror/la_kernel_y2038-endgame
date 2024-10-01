@@ -4,6 +4,7 @@ config DRM_NOUVEAU
 	depends on DRM && PCI
 	depends on (ACPI_VIDEO && ACPI_WMI && MXM_WMI) || !(ACPI && X86)
 	depends on BACKLIGHT_CLASS_DEVICE
+	depends on I2C
 	select IOMMU_API
 	select FW_LOADER
 	select FW_CACHE if PM_SLEEP
@@ -17,7 +18,6 @@ config DRM_NOUVEAU
 	select DRM_EXEC
 	select DRM_GPUVM
 	select DRM_SCHED
-	select I2C
 	select I2C_ALGOBIT
 	select SND_HDA_COMPONENT if SND_HDA_CORE
 	select PM_DEVFREQ if ARCH_TEGRA
