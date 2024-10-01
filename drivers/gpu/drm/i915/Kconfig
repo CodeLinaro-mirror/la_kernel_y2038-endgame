@@ -5,6 +5,7 @@ config DRM_I915
 	depends on X86 && PCI
 	depends on ACPI_VIDEO || !ACPI
 	depends on BACKLIGHT_CLASS_DEVICE || !BACKLIGHT_CLASS_DEVICE
+	depends on I2C
 	select INTEL_GTT if X86
 	select INTERVAL_TREE
 	# we need shmfs for the swappable backing store, and in particular
@@ -22,7 +23,6 @@ config DRM_I915
 	select DRM_MIPI_DSI
 	select FB_IOMEM_HELPERS if DRM_FBDEV_EMULATION
 	select RELAY
-	select I2C
 	select I2C_ALGOBIT
 	select IRQ_WORK
 	select SYNC_FILE
