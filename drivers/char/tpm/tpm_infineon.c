@@ -35,8 +35,7 @@
 struct tpm_inf_dev {
 	int iotype;
 
-	void __iomem *data_base;	/* MMIO ioremap'd addr */
-	void __iomem *config_base;	/* MMIO ioremap'd config */
+	void __iomem *mem_base;	/* MMIO ioremap'd addr */
 	unsigned long map_base;	/* phys MMIO base */
 	unsigned long map_size;	/* MMIO region size */
 	unsigned int index_off;	/* index register offset */
@@ -52,22 +51,40 @@ static struct tpm_inf_dev tpm_dev;
 
 static inline void tpm_data_out(unsigned char data, unsigned char offset)
 {
-	iowrite8(data, tpm_dev.data_base + offset);
+#ifdef CONFIG_HAS_IOPORT
+	if (tpm_dev.iotype == TPM_INF_IO_PORT)
+		outb(data, tpm_dev.data_regs + offset);
+	else
+#endif
+		writeb(data, tpm_dev.mem_base + tpm_dev.data_regs + offset);
 }
 
 static inline unsigned char tpm_data_in(unsigned char offset)
 {
-	return ioread8(tpm_dev.data_base + offset);
+#ifdef CONFIG_HAS_IOPORT
+	if (tpm_dev.iotype == TPM_INF_IO_PORT)
+		return inb(tpm_dev.data_regs + offset);
+#endif
+	return readb(tpm_dev.mem_base + tpm_dev.data_regs + offset);
 }
 
 static inline void tpm_config_out(unsigned char data, unsigned char offset)
 {
-	iowrite8(data, tpm_dev.config_base + offset);
+#ifdef CONFIG_HAS_IOPORT
+	if (tpm_dev.iotype == TPM_INF_IO_PORT)
+		outb(data, tpm_dev.config_port + offset);
+	else
+#endif
+		writeb(data, tpm_dev.mem_base + tpm_dev.index_off + offset);
 }
 
 static inline unsigned char tpm_config_in(unsigned char offset)
 {
-	return ioread8(tpm_dev.config_base + offset);
+#ifdef CONFIG_HAS_IOPORT
+	if (tpm_dev.iotype == TPM_INF_IO_PORT)
+		return inb(tpm_dev.config_port + offset);
+#endif
+	return readb(tpm_dev.mem_base + tpm_dev.index_off + offset);
 }
 
 /* TPM header definitions */
@@ -407,27 +424,16 @@ static int tpm_inf_pnp_probe(struct pnp_dev *dev,
 			goto err_last;
 		}
 		/* publish my base address and request region */
-		tpm_dev.data_base = ioport_map(tpm_dev.data_regs, tpm_dev.data_size);
-		if (!tpm_dev.data_base) {
-			rc = -EINVAL;
-			goto err_last;
-		}
 		if (request_region(tpm_dev.data_regs, tpm_dev.data_size,
 				   "tpm_infineon0") == NULL) {
 			rc = -EINVAL;
-			ioport_unmap(tpm_dev.config_base);
 			goto err_last;
-		}
-		tpm_dev.config_base = ioport_map(tpm_dev.config_port, tpm_dev.config_size);
-		if (!tpm_dev.config_base) {
-			rc = -EINVAL;
-			goto err_release_data_region;
 		}
 		if (request_region(tpm_dev.config_port, tpm_dev.config_size,
 				   "tpm_infineon0") == NULL) {
 			release_region(tpm_dev.data_regs, tpm_dev.data_size);
 			rc = -EINVAL;
-			goto err_release_data_region;
+			goto err_last;
 		}
 	} else if (pnp_mem_valid(dev, 0) &&
 		   !(pnp_mem_flags(dev, 0) & IORESOURCE_DISABLED)) {
@@ -447,8 +453,8 @@ static int tpm_inf_pnp_probe(struct pnp_dev *dev,
 			goto err_last;
 		}
 
-		tpm_dev.data_base = ioremap(tpm_dev.map_base, tpm_dev.map_size);
-		if (tpm_dev.data_base == NULL) {
+		tpm_dev.mem_base = ioremap(tpm_dev.map_base, tpm_dev.map_size);
+		if (tpm_dev.mem_base == NULL) {
 			release_mem_region(tpm_dev.map_base, tpm_dev.map_size);
 			rc = -EINVAL;
 			goto err_last;
@@ -461,7 +467,8 @@ static int tpm_inf_pnp_probe(struct pnp_dev *dev,
 		 * seem like they could be placed anywhere within the MMIO
 		 * region, but lets just put them at zero offset.
 		 */
-		tpm_dev.config_base = tpm_dev.data_base + TPM_ADDR;
+		tpm_dev.index_off = TPM_ADDR;
+		tpm_dev.data_regs = 0x0;
 	} else {
 		rc = -EINVAL;
 		goto err_last;
@@ -560,16 +567,10 @@ static int tpm_inf_pnp_probe(struct pnp_dev *dev,
 
 err_release_region:
 	if (tpm_dev.iotype == TPM_INF_IO_PORT) {
-		ioport_unmap(tpm_dev.config_base);
-		release_region(tpm_dev.config_port, tpm_dev.config_size);
-	}
-
-err_release_data_region:
-	if (tpm_dev.iotype == TPM_INF_IO_PORT) {
-		ioport_unmap(tpm_dev.data_base);
 		release_region(tpm_dev.data_regs, tpm_dev.data_size);
+		release_region(tpm_dev.config_port, tpm_dev.config_size);
 	} else {
-		iounmap(tpm_dev.data_base);
+		iounmap(tpm_dev.mem_base);
 		release_mem_region(tpm_dev.map_base, tpm_dev.map_size);
 	}
 
@@ -584,13 +585,11 @@ static void tpm_inf_pnp_remove(struct pnp_dev *dev)
 	tpm_chip_unregister(chip);
 
 	if (tpm_dev.iotype == TPM_INF_IO_PORT) {
-		ioport_unmap(tpm_dev.data_base);
 		release_region(tpm_dev.data_regs, tpm_dev.data_size);
-		ioport_unmap(tpm_dev.config_base);
 		release_region(tpm_dev.config_port,
 			       tpm_dev.config_size);
 	} else {
-		iounmap(tpm_dev.data_base);
+		iounmap(tpm_dev.mem_base);
 		release_mem_region(tpm_dev.map_base, tpm_dev.map_size);
 	}
 }
