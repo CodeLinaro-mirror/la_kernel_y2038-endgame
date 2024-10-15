@@ -150,7 +150,9 @@ struct audit_context {
 	kuid_t		    target_uid;
 	unsigned int	    target_sessionid;
 	struct lsm_prop	    target_ref;
-	char		    target_comm[TASK_COMM_LEN];
+	struct_group(_target_comm,
+		char	    target_comm[TASK_COMM_LEN];
+	);
 
 	struct audit_tree_refs *trees, *first_trees;
 	struct list_head killed_trees;
