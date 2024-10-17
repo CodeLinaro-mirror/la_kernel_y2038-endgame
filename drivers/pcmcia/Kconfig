@@ -19,7 +19,7 @@ if PCCARD
 
 config PCMCIA
 	tristate "16-bit PCMCIA support"
-	depends on HAS_IOMEM
+	depends on HAS_IOMEM && HAS_IOPORT
 	select CRC32
 	depends on X86_32 || ARCH_PXA || ARCH_SA1100 || ARCH_OMAP1 || \
 		   MIPS_ALCHEMY || PPC_PASEMI || COMPILE_TEST
