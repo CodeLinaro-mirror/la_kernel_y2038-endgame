@@ -1445,6 +1445,7 @@ config HAVE_ARCH_NVRAM_OPS
 
 config ISA_BUS_API
 	def_bool ISA
+	depends on HAS_IOPORT
 
 #
 # ABI hall of shame
