@@ -12,6 +12,8 @@ source "drivers/rapidio/Kconfig"
 
 config PC104
 	bool "PC/104 support" if EXPERT
+	depends on X86 || ARCH_S3C64XX || ARCH_IXP4XX || SH_SH2007 || COMPILE_TEST
+	depends on HAS_IOPORT
 	help
 	  Expose PC/104 form factor device drivers and options available for
 	  selection and configuration. Enable this option if your target

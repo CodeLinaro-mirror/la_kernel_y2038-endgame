@@ -1077,6 +1077,7 @@ config GPIO_TS5500
 
 config GPIO_WINBOND
 	tristate "Winbond Super I/O GPIO support"
+	depends on PC104
 	select ISA_BUS_API
 	help
 	  This option enables support for GPIOs found on Winbond Super I/O
@@ -1093,6 +1094,7 @@ config GPIO_WINBOND
 
 config GPIO_WS16C48
 	tristate "WinSystems WS16C48 GPIO support"
+	depends on PC104
 	select ISA_BUS_API
 	select REGMAP_IRQ
 	select REGMAP_MMIO
