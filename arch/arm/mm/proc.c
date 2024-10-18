@@ -442,6 +442,10 @@ __ADDRESSABLE(cpu_v7_dcache_clean_area);
 void cpu_v7_switch_mm(phys_addr_t pgd_phys, struct mm_struct *mm);
 /* Special switch_mm() callbacks to work around bugs in v7 */
 __ADDRESSABLE(cpu_v7_switch_mm);
+void cpu_v7_smc_switch_mm(phys_addr_t pgd_phys, struct mm_struct *mm);
+__ADDRESSABLE(cpu_v7_smc_switch_mm);
+void cpu_v7_hvc_switch_mm(phys_addr_t pgd_phys, struct mm_struct *mm);
+__ADDRESSABLE(cpu_v7_hvc_switch_mm);
 void cpu_v7_iciallu_switch_mm(phys_addr_t pgd_phys, struct mm_struct *mm);
 __ADDRESSABLE(cpu_v7_iciallu_switch_mm);
 void cpu_v7_bpiall_switch_mm(phys_addr_t pgd_phys, struct mm_struct *mm);
