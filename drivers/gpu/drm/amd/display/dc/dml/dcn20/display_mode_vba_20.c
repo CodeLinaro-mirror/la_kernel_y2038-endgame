@@ -1079,6 +1079,9 @@ static unsigned int CalculateVMAndRowBytes(
 	return PDEAndMetaPTEBytesFrame;
 }
 
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static void dml20_DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(
 		struct display_mode_lib *mode_lib)
 {
@@ -2707,6 +2710,7 @@ static void dml20_DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPer
 	}
 }
 }
+__diag_pop()
 
 static void dml20_DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
 {

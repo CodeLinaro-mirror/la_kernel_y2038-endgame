@@ -57,7 +57,6 @@ void dml32_recalculate(struct display_mode_lib *mode_lib)
 #endif
 	DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(mode_lib);
 }
-__diag_pop()
 
 static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(
 		struct display_mode_lib *mode_lib)
@@ -1648,6 +1647,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 	dml_print("DML::%s: --- END ---\n", __func__);
 #endif
 }
+__diag_pop()
 
 static void mode_support_configuration(struct vba_vars_st *v,
 				  struct display_mode_lib *mode_lib)
