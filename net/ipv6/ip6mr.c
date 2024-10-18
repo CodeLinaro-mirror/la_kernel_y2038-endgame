@@ -1417,7 +1417,7 @@ static struct pernet_operations ip6mr_net_ops = {
 	.exit_rtnl = ip6mr_net_exit_rtnl,
 };
 
-static const struct rtnl_msg_handler ip6mr_rtnl_msg_handlers[] __initconst_or_module = {
+static const struct rtnl_msg_handler ip6mr_rtnl_msg_handlers[] = {
 	{.owner = THIS_MODULE, .protocol = RTNL_FAMILY_IP6MR,
 	 .msgtype = RTM_GETROUTE,
 	 .doit = ip6mr_rtm_getroute, .dumpit = ip6mr_rtm_dumproute,
