@@ -10381,6 +10381,9 @@ static void CalculateStutterEfficiency(struct dml2_core_internal_scratch *scratc
 #endif
 }
 
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static bool dml_core_mode_programming(struct dml2_core_calcs_mode_programming_ex *in_out_params)
 {
 	const struct dml2_display_cfg *display_cfg = in_out_params->in_display_cfg;
@@ -12057,6 +12060,7 @@ static bool dml_core_mode_programming(struct dml2_core_calcs_mode_programming_ex
 #endif
 	return (in_out_params->mode_lib->mp.PrefetchAndImmediateFlipSupported);
 }
+__diag_pop()
 
 bool dml2_core_calcs_mode_programming_ex(struct dml2_core_calcs_mode_programming_ex *in_out_params)
 {

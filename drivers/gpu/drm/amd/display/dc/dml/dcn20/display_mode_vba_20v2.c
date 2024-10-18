@@ -3387,6 +3387,9 @@ static unsigned int TruncToValidBPP(
 	}
 }
 
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 void dml20v2_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *locals = &mode_lib->vba;
@@ -5229,3 +5232,4 @@ void dml20v2_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode
 				locals->OutputBppPerState[mode_lib->vba.VoltageLevel][k];
 	}
 }
+__diag_pop()
