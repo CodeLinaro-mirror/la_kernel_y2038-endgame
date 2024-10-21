@@ -1462,9 +1462,6 @@ static unsigned int CalculateVMAndRowBytes(
 	return PDEAndMetaPTEBytesFrame;
 }
 
-__diag_push()
-__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
-__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(
 		struct display_mode_lib *mode_lib)
 {
@@ -2807,7 +2804,6 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 			+ mode_lib->vba.SmallestVBlank)
 			/ mode_lib->vba.FrameTimeForMinFullDETBufferingTime * 100;
 }
-__diag_pop()
 
 static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
 {
@@ -3518,10 +3514,6 @@ static noinline void CalculatePrefetchSchedulePerPlane(
 			&mode_lib->vba.VUpdateWidthPix[k],
 			&mode_lib->vba.VReadyOffsetPix[k]);
 }
-
-__diag_push()
-__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
-__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 void dml21_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *locals = &mode_lib->vba;
@@ -5243,7 +5235,6 @@ void dml21_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 				locals->OutputBppPerState[mode_lib->vba.VoltageLevel][k];
 	}
 }
-__diag_pop()
 
 static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 		struct display_mode_lib *mode_lib,
