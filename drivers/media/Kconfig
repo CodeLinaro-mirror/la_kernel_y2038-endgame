@@ -9,8 +9,8 @@
 source "drivers/media/rc/Kconfig"
 source "drivers/media/cec/Kconfig"
 
-menuconfig MEDIA_SUPPORT
-	tristate "Multimedia support"
+config MEDIA_SUPPORT
+	def_tristate n
 	depends on HAS_IOMEM
 	help
 	  If you want to use media devices, including Webcams, Video grabber

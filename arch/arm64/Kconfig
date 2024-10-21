@@ -1531,7 +1531,7 @@ endchoice
 config NR_CPUS
 	int "Maximum number of CPUs (2-4096)"
 	range 2 4096
-	default "512"
+	default "256"
 
 config HOTPLUG_CPU
 	bool "Support for hot-pluggable CPUs"

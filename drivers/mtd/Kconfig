@@ -1,5 +1,5 @@
-menuconfig MTD
-	tristate "Memory Technology Device (MTD) support"
+config MTD
+	def_tristate n
 	imply NVMEM
 	help
 	  Memory Technology Devices are flash, RAM and similar chips, often
