@@ -2030,8 +2030,6 @@ static unsigned int CalculateVMAndRowBytes(
 	return PDEAndMetaPTEBytesFrame;
 }
 
-__diag_push()
-__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(struct display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
@@ -3311,7 +3309,6 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 			&v->Z8NumberOfStutterBurstsPerFrame,
 			&v->StutterPeriod);
 }
-__diag_pop()
 
 static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
 {
@@ -3872,8 +3869,6 @@ static void PatchDETBufferSizeInKByte(unsigned int NumberOfActivePlanes, unsigne
 }
 
 
-__diag_push()
-__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 void dml31_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
@@ -5787,7 +5782,6 @@ void dml31_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_l
 		v->maxMpcComb = MaximumMPCCombine;
 	}
 }
-__diag_pop()
 
 static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 		struct display_mode_lib *mode_lib,
@@ -7316,8 +7310,6 @@ static noinline_for_stack void UseMinimumDCFCLK(
 	double NormalEfficiency,  dummy2, dummy3;
 	double TotalMaxPrefetchFlipDPTERowBandwidth[DC__VOLTAGE_STATES][2];
 
-	return;
-
 	NormalEfficiency = v->PercentOfIdealFabricAndSDPPortBWReceivedAfterUrgLatency / 100.0;
 	for (i = 0; i < v->soc.num_states; ++i) {
 		for (j = 0; j <= 1; ++j) {
@@ -7502,8 +7494,6 @@ static void CalculateUnboundedRequestAndCompressedBufferSize(
 static bool UnboundedRequest(enum unbounded_requesting_policy UseUnboundedRequestingFinal, int TotalNumberOfActiveDPP, bool NoChroma, enum output_encoder_class Output)
 {
 	bool ret_val = false;
-
-	return false;
 
 	ret_val = (UseUnboundedRequestingFinal != dm_unbounded_requesting_disable && TotalNumberOfActiveDPP == 1 && NoChroma);
 	if (UseUnboundedRequestingFinal == dm_unbounded_requesting_edp_only && Output != dm_edp) {
