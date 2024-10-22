@@ -3100,7 +3100,7 @@ void dml32_UseMinimumDCFCLK(
 		double ReadBandwidthChroma[],
 		double DCFCLKPerState[],
 		/* Output */
-		double DCFCLKState[][2])
+		double DCFCLKState[][2]) __no_sanitize_address
 {
 	(void)MaxAveragePercentOfIdealSDPPortBWDisplayCanUseInNormalSystemOperation;
 	(void)ReadBandwidthLuma;

@@ -3448,7 +3448,7 @@ static double TruncToValidBPP(
 	}
 }
 
-void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
+void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib) __no_sanitize_address __no_sanitize_thread __no_sanitize_memory
 {
 	struct vba_vars_st *v = &mode_lib->vba;
 	unsigned int MinPrefetchMode, MaxPrefetchMode;

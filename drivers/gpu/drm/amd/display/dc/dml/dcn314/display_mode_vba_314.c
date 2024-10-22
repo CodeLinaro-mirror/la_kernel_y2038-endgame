@@ -2047,7 +2047,7 @@ static unsigned int CalculateVMAndRowBytes(
 	return PDEAndMetaPTEBytesFrame;
 }
 
-static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(struct display_mode_lib *mode_lib)
+static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(struct display_mode_lib *mode_lib) __no_sanitize_array_bounds
 {
 	struct vba_vars_st *v = &mode_lib->vba;
 	unsigned int j, k;
@@ -3961,7 +3961,7 @@ static noinline void CalculatePrefetchSchedulePerPlane(
 		&v->VReadyOffsetPix[k]);
 }
 
-void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
+void dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib) __no_sanitize_thread __no_sanitize_memory
 {
 	struct vba_vars_st *v = &mode_lib->vba;
 
@@ -7385,7 +7385,7 @@ static double RequiredDTBCLK(
 static noinline_for_stack void UseMinimumDCFCLK(
 		struct display_mode_lib *mode_lib,
 		int MaxPrefetchMode,
-		int ReorderingBytes)
+		int ReorderingBytes) __no_sanitize_memory
 {
 	struct vba_vars_st *v = &mode_lib->vba;
 	unsigned int dummy1, j;

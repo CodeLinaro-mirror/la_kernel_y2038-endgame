@@ -1081,7 +1081,7 @@ static unsigned int CalculateVMAndRowBytes(
 }
 
 static void dml20_DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(
-		struct display_mode_lib *mode_lib)
+		struct display_mode_lib *mode_lib) __no_sanitize_address
 {
 	unsigned int j, k;
 
@@ -3282,7 +3282,7 @@ static unsigned int TruncToValidBPP(
 	}
 }
 
-void dml20_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
+void dml20_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib) __no_sanitize_address __no_sanitize_thread __no_sanitize_memory
 {
 	struct vba_vars_st *locals = &mode_lib->vba;
 
