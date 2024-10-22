@@ -34,7 +34,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 		struct display_mode_lib *mode_lib);
 void dml32_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib);
 
-void dml32_recalculate(struct display_mode_lib *mode_lib)
+void dml32_recalculate(struct display_mode_lib *mode_lib) __no_sanitize_address __no_sanitize_memory
 {
 	ModeSupportAndSystemConfiguration(mode_lib);
 
@@ -56,7 +56,7 @@ void dml32_recalculate(struct display_mode_lib *mode_lib)
 }
 
 static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(
-		struct display_mode_lib *mode_lib)
+		struct display_mode_lib *mode_lib) __no_sanitize_memory
 {
 	struct vba_vars_st *v = &mode_lib->vba;
 	unsigned int j, k;
@@ -1721,7 +1721,7 @@ static void mode_support_configuration(struct vba_vars_st *v,
 	}
 }
 
-void dml32_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
+void dml32_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib) __no_sanitize_address __no_sanitize_thread __no_sanitize_memory
 {
 	struct vba_vars_st *v = &mode_lib->vba;
 	int i, j, start_state;

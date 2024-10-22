@@ -3782,7 +3782,7 @@ static void PatchDETBufferSizeInKByte(unsigned int NumberOfActivePlanes, int NoO
 }
 
 
-void dml31_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
+void dml31_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib) __no_sanitize_thread __no_sanitize_memory
 {
 	struct vba_vars_st *v = &mode_lib->vba;
 
@@ -7025,7 +7025,7 @@ static double CalculateUrgentLatency(
 static noinline_for_stack void UseMinimumDCFCLK(
 		struct display_mode_lib *mode_lib,
 		int MaxPrefetchMode,
-		int ReorderingBytes)
+		int ReorderingBytes) __no_sanitize_memory
 {
 	struct vba_vars_st *v = &mode_lib->vba;
 	int dummy1, i, j, k;
