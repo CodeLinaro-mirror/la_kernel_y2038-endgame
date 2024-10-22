@@ -6267,7 +6267,7 @@ static noinline_for_stack void set_calculate_prefetch_schedule_params(struct dis
 				CalculatePrefetchSchedule_params->Tno_bw = &mode_lib->ms.Tno_bw[k];
 }
 
-static void dml_prefetch_check(struct display_mode_lib_st *mode_lib) __no_sanitize_address __no_sanitize_thread __no_sanitize_memory
+static noinline_for_stack void dml_prefetch_check(struct display_mode_lib_st *mode_lib) __no_sanitize_address __no_sanitize_thread __no_sanitize_memory
 {
 	struct dml_core_mode_support_locals_st *s = &mode_lib->scratch.dml_core_mode_support_locals;
 	struct CalculatePrefetchSchedule_params_st *CalculatePrefetchSchedule_params = &mode_lib->scratch.CalculatePrefetchSchedule_params;
