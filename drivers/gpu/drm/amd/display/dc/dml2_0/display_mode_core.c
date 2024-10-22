@@ -71,7 +71,7 @@ static void CalculateVMRowAndSwath(
 	struct display_mode_lib_scratch_st *s,
 	struct CalculateVMRowAndSwath_params_st *p);
 
-static void CalculateOutputLink(
+static noinline void CalculateOutputLink(
 	dml_float_t PHYCLKPerState,
 	dml_float_t PHYCLKD18PerState,
 	dml_float_t PHYCLKD32PerState,
@@ -1592,7 +1592,7 @@ static dml_bool_t CalculatePrefetchSchedule(struct display_mode_lib_scratch_st *
 	return s->MyError;
 } // CalculatePrefetchSchedule
 
-static void CalculateBytePerPixelAndBlockSizes(
+static noinline void CalculateBytePerPixelAndBlockSizes(
 	enum dml_source_format_class SourcePixelFormat,
 	enum dml_swizzle_mode SurfaceTiling,
 
@@ -1799,7 +1799,7 @@ static void CalculatePrefetchMode(
 	}
 } // CalculatePrefetchMode
 
-static dml_float_t CalculateWriteBackDISPCLK(
+static noinline dml_float_t CalculateWriteBackDISPCLK(
 		enum dml_source_format_class WritebackPixelFormat,
 		dml_float_t PixelClock,
 		dml_float_t WritebackHRatio,
@@ -2690,7 +2690,7 @@ static dml_uint_t CalculateVMAndRowBytes(
 	return PDEAndMetaPTEBytesFrame;
 } // CalculateVMAndRowBytes
 
-static void PixelClockAdjustmentForProgressiveToInterlaceUnit(struct dml_display_cfg_st *display_cfg, dml_bool_t ptoi_supported)
+static noinline void PixelClockAdjustmentForProgressiveToInterlaceUnit(struct dml_display_cfg_st *display_cfg, dml_bool_t ptoi_supported)
 {
 	dml_uint_t num_active_planes = dml_get_num_active_planes(display_cfg);
 
@@ -4572,7 +4572,7 @@ static dml_float_t CalculateUrgentLatency(
 	return ret;
 }
 
-static dml_float_t RequiredDTBCLK(
+static noinline dml_float_t RequiredDTBCLK(
 		dml_bool_t DSCEnable,
 		dml_float_t PixelClock,
 		enum dml_output_format_class OutputFormat,
@@ -5016,7 +5016,7 @@ static void CalculateDETBufferSize(
 
 
 /// @brief Calculate the bound for return buffer sizing
-static void CalculateMaxDETAndMinCompressedBufferSize(
+static noinline void CalculateMaxDETAndMinCompressedBufferSize(
 		dml_uint_t  ConfigReturnBufferSizeInKByte,
 		dml_uint_t  ConfigReturnBufferSegmentSizeInKByte,
 		dml_uint_t  ROBBufferSizeInKByte,
@@ -5504,7 +5504,7 @@ static void CalculateOutputLink(
 }
 
 /// @brief Determine the ODM mode and number of DPP used per plane based on dispclk, dsc usage, odm usage policy
-static void CalculateODMMode(
+static noinline void CalculateODMMode(
 		dml_uint_t MaximumPixelsPerLinePerDSCUnit,
 		dml_uint_t HActive,
 		enum dml_output_encoder_class Output,
@@ -5634,7 +5634,7 @@ static dml_float_t CalculateRequiredDispclk(
 }
 
 /// @brief Determine DPPCLK if there only one DPP per plane, main factor is the pixel rate and DPP scaling parameter
-static void CalculateSinglePipeDPPCLKAndSCLThroughput(
+static noinline void CalculateSinglePipeDPPCLKAndSCLThroughput(
 		dml_float_t HRatio,
 		dml_float_t HRatioChroma,
 		dml_float_t VRatio,
@@ -5687,7 +5687,7 @@ static void CalculateSinglePipeDPPCLKAndSCLThroughput(
 /// @brief Calculate the actual dppclk freq
 /// @param DPPCLKUsingSingleDPP DppClk freq required if there is only 1 DPP per plane
 /// @param DPPPerSurface Number of DPP for each plane
-static void CalculateDPPCLK(
+static noinline void CalculateDPPCLK(
 		dml_uint_t NumberOfActiveSurfaces,
 		dml_float_t DISPCLKDPPCLKDSCCLKDownSpreading,
 		dml_float_t DISPCLKDPPCLKVCOSpeed,
@@ -5790,7 +5790,7 @@ dml_float_t dml_get_return_bw_mbps_vm_only(
 
 // Function: dml_get_return_bw_mbps
 // Megabyte per second
-dml_float_t dml_get_return_bw_mbps(
+noinline dml_float_t dml_get_return_bw_mbps(
 						const struct soc_bounding_box_st *soc,
 						dml_bool_t use_ideal_dram_bw_strobe,
 						dml_bool_t HostVMEnable,
@@ -5835,7 +5835,7 @@ dml_float_t dml_get_return_bw_mbps(
 
 // Function: dml_get_return_dram_bw_mbps
 // Megabyte per second
-static dml_float_t dml_get_return_dram_bw_mbps(
+static noinline dml_float_t dml_get_return_dram_bw_mbps(
 						const struct soc_bounding_box_st *soc,
 						dml_bool_t use_ideal_dram_bw_strobe,
 						dml_bool_t HostVMEnable,
@@ -6267,7 +6267,7 @@ static noinline_for_stack void set_calculate_prefetch_schedule_params(struct dis
 				CalculatePrefetchSchedule_params->Tno_bw = &mode_lib->ms.Tno_bw[k];
 }
 
-static void dml_prefetch_check(struct display_mode_lib_st *mode_lib) __no_sanitize_address __no_sanitize_thread __no_sanitize_memory
+static noinline /* keep this one */ void dml_prefetch_check(struct display_mode_lib_st *mode_lib) __no_sanitize_address __no_sanitize_thread __no_sanitize_memory
 {
 	struct dml_core_mode_support_locals_st *s = &mode_lib->scratch.dml_core_mode_support_locals;
 	struct CalculatePrefetchSchedule_params_st *CalculatePrefetchSchedule_params = &mode_lib->scratch.CalculatePrefetchSchedule_params;
@@ -6782,7 +6782,7 @@ static noinline_for_stack void set_vm_row_and_swath_parameters(struct display_mo
 }
 
 /// @brief The Mode Support function.
-dml_bool_t dml_core_mode_support(struct display_mode_lib_st *mode_lib) __no_sanitize_address __no_sanitize_thread __no_sanitize_memory
+ __attribute__((flatten)) dml_bool_t dml_core_mode_support(struct display_mode_lib_st *mode_lib) __no_sanitize_address __no_sanitize_thread __no_sanitize_memory
 {
 	struct dml_core_mode_support_locals_st *s = &mode_lib->scratch.dml_core_mode_support_locals;
 	struct UseMinimumDCFCLK_params_st *UseMinimumDCFCLK_params = &mode_lib->scratch.UseMinimumDCFCLK_params;
@@ -8193,7 +8193,7 @@ dml_bool_t dml_core_mode_support(struct display_mode_lib_st *mode_lib) __no_sani
 		} else {
 			dml_print("DML::%s: mode is NOT supported\n", __func__);
 			mode_lib->ms.support.ModeSupport[j] = false;
-			dml_print_mode_support(mode_lib, j);
+			//dml_print_mode_support(mode_lib, j);
 		}
 	}
 
@@ -8268,7 +8268,7 @@ dml_bool_t dml_core_mode_support(struct display_mode_lib_st *mode_lib) __no_sani
 } // dml_core_mode_support
 
 /// @brief This function calculates some parameters thats are needed ahead of the mode programming function all
-void dml_core_mode_support_partial(struct display_mode_lib_st *mode_lib)
+noinline void dml_core_mode_support_partial(struct display_mode_lib_st *mode_lib)
 {
 	CalculateMaxDETAndMinCompressedBufferSize(
 								mode_lib->ms.ip.config_return_buffer_size_in_kbytes,
