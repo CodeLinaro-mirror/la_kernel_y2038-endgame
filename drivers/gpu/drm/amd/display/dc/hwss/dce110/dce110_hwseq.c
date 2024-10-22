@@ -2065,13 +2065,13 @@ void dce110_enable_accelerated_mode(struct dc *dc, struct dc_state *context)
 }
 
 static uint32_t compute_pstate_blackout_duration(
-	struct bw_fixed blackout_duration,
+	bw_fixed blackout_duration,
 	const struct dc_stream_state *stream)
 {
 	uint32_t total_dest_line_time_ns;
 	uint32_t pstate_blackout_duration_ns;
 
-	pstate_blackout_duration_ns = 1000 * blackout_duration.value >> 24;
+	pstate_blackout_duration_ns = 1000 * blackout_duration >> 24;
 
 	total_dest_line_time_ns = 1000000UL *
 		(stream->timing.h_total * 10) /

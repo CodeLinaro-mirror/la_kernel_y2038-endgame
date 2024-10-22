@@ -96,8 +96,8 @@ static void calculate_bandwidth(
 	int32_t num_cursor_lines;
 
 	int32_t i, j, k;
-	struct bw_fixed *yclk;
-	struct bw_fixed *sclk;
+	bw_fixed *yclk;
+	bw_fixed *sclk;
 	bool d0_underlay_enable;
 	bool d1_underlay_enable;
 	bool fbc_enabled;
@@ -3059,17 +3059,17 @@ bool bw_calcs(struct dc_context *ctx,
 
 	if (data->number_of_displays != 0) {
 		uint8_t yclk_lvl;
-		struct bw_fixed high_sclk = vbios->high_sclk;
-		struct bw_fixed mid1_sclk = vbios->mid1_sclk;
-		struct bw_fixed mid2_sclk = vbios->mid2_sclk;
-		struct bw_fixed mid3_sclk = vbios->mid3_sclk;
-		struct bw_fixed mid4_sclk = vbios->mid4_sclk;
-		struct bw_fixed mid5_sclk = vbios->mid5_sclk;
-		struct bw_fixed mid6_sclk = vbios->mid6_sclk;
-		struct bw_fixed low_sclk = vbios->low_sclk;
-		struct bw_fixed high_yclk = vbios->high_yclk;
-		struct bw_fixed mid_yclk = vbios->mid_yclk;
-		struct bw_fixed low_yclk = vbios->low_yclk;
+		bw_fixed high_sclk = vbios->high_sclk;
+		bw_fixed mid1_sclk = vbios->mid1_sclk;
+		bw_fixed mid2_sclk = vbios->mid2_sclk;
+		bw_fixed mid3_sclk = vbios->mid3_sclk;
+		bw_fixed mid4_sclk = vbios->mid4_sclk;
+		bw_fixed mid5_sclk = vbios->mid5_sclk;
+		bw_fixed mid6_sclk = vbios->mid6_sclk;
+		bw_fixed low_sclk = vbios->low_sclk;
+		bw_fixed high_yclk = vbios->high_yclk;
+		bw_fixed mid_yclk = vbios->mid_yclk;
+		bw_fixed low_yclk = vbios->low_yclk;
 
 		if (ctx->dc->debug.bandwidth_calcs_trace) {
 			print_bw_calcs_dceip(ctx, dceip);
