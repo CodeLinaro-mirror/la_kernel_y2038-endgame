@@ -13,8 +13,8 @@ source "crypto/async_tx/Kconfig"
 #
 # Cryptographic API Configuration
 #
-config CRYPTO
-	def_tristate n
+menuconfig CRYPTO
+	tristate "Cryptographic API"
 	select CRYPTO_LIB_UTILS
 	help
 	  This option provides the core Cryptographic API.
