@@ -1984,7 +1984,7 @@ static unsigned int CalculateVMAndRowBytes(
 	return PDEAndMetaPTEBytesFrame;
 }
 
-static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(struct display_mode_lib *mode_lib)
+static void __no_sanitize_address DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(struct display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
 	unsigned int j, k;
@@ -3782,7 +3782,7 @@ static void PatchDETBufferSizeInKByte(unsigned int NumberOfActivePlanes, int NoO
 }
 
 
-void dml31_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib) __no_sanitize_thread __no_sanitize_memory
+void __no_sanitize_address __no_sanitize_thread __no_sanitize_memory dml31_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
 
@@ -7022,10 +7022,10 @@ static double CalculateUrgentLatency(
 	return ret;
 }
 
-static noinline_for_stack void UseMinimumDCFCLK(
+static noinline_for_stack void __no_sanitize_address __no_sanitize_memory UseMinimumDCFCLK(
 		struct display_mode_lib *mode_lib,
 		int MaxPrefetchMode,
-		int ReorderingBytes) __no_sanitize_memory
+		int ReorderingBytes)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
 	int dummy1, i, j, k;

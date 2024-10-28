@@ -7948,7 +7948,7 @@ __diag_push()
 __diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 __diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 
-static bool dml_core_mode_support(struct dml2_core_calcs_mode_support_ex *in_out_params) __no_sanitize_address __no_sanitize_thread __no_sanitize_memory
+static bool __no_sanitize_address __no_sanitize_thread __no_sanitize_memory dml_core_mode_support(struct dml2_core_calcs_mode_support_ex *in_out_params)
 {
 	struct dml2_core_internal_display_mode_lib *mode_lib = in_out_params->mode_lib;
 	const struct dml2_display_cfg *display_cfg = in_out_params->in_display_cfg;
@@ -10380,7 +10380,7 @@ static void CalculateStutterEfficiency(struct dml2_core_internal_scratch *scratc
 #endif
 }
 
-static bool dml_core_mode_programming(struct dml2_core_calcs_mode_programming_ex *in_out_params) __no_sanitize_address __no_sanitize_thread __no_sanitize_memory
+static bool __no_sanitize_address __no_sanitize_thread __no_sanitize_memory dml_core_mode_programming(struct dml2_core_calcs_mode_programming_ex *in_out_params)
 {
 	const struct dml2_display_cfg *display_cfg = in_out_params->in_display_cfg;
 	const struct dml2_mcg_min_clock_table *min_clk_table = in_out_params->min_clk_table;

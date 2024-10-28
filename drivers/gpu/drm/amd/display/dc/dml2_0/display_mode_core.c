@@ -6267,7 +6267,7 @@ static noinline_for_stack void set_calculate_prefetch_schedule_params(struct dis
 				CalculatePrefetchSchedule_params->Tno_bw = &mode_lib->ms.Tno_bw[k];
 }
 
-static noinline_for_stack void dml_prefetch_check(struct display_mode_lib_st *mode_lib) __no_sanitize_address __no_sanitize_thread __no_sanitize_memory
+static noinline_for_stack void __no_sanitize_address __no_sanitize_thread __no_sanitize_memory dml_prefetch_check(struct display_mode_lib_st *mode_lib)
 {
 	struct dml_core_mode_support_locals_st *s = &mode_lib->scratch.dml_core_mode_support_locals;
 	struct CalculatePrefetchSchedule_params_st *CalculatePrefetchSchedule_params = &mode_lib->scratch.CalculatePrefetchSchedule_params;
@@ -6782,7 +6782,7 @@ static noinline_for_stack void set_vm_row_and_swath_parameters(struct display_mo
 }
 
 /// @brief The Mode Support function.
-dml_bool_t dml_core_mode_support(struct display_mode_lib_st *mode_lib) __no_sanitize_address __no_sanitize_thread __no_sanitize_memory
+dml_bool_t __no_sanitize_address __no_sanitize_thread __no_sanitize_memory dml_core_mode_support(struct display_mode_lib_st *mode_lib)
 {
 	struct dml_core_mode_support_locals_st *s = &mode_lib->scratch.dml_core_mode_support_locals;
 	struct UseMinimumDCFCLK_params_st *UseMinimumDCFCLK_params = &mode_lib->scratch.UseMinimumDCFCLK_params;
@@ -8296,7 +8296,7 @@ void dml_core_mode_support_partial(struct display_mode_lib_st *mode_lib)
 } // dml_core_mode_support_partial
 
 /// @brief This is the mode programming function. It is assumed the display cfg is support at the given power state
-void dml_core_mode_programming(struct display_mode_lib_st *mode_lib, const struct dml_clk_cfg_st *clk_cfg) __no_sanitize_address __no_sanitize_thread __no_sanitize_memory
+void __no_sanitize_address __no_sanitize_thread __no_sanitize_memory dml_core_mode_programming(struct display_mode_lib_st *mode_lib, const struct dml_clk_cfg_st *clk_cfg)
 {
 	struct dml_core_mode_programming_locals_st *s = &mode_lib->scratch.dml_core_mode_programming_locals;
 	struct CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_params_st *CalculateWatermarks_params = &mode_lib->scratch.CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport_params;

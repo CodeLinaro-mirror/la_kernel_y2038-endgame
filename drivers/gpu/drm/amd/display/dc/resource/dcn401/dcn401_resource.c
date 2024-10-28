@@ -1855,7 +1855,7 @@ static uint32_t read_pipe_fuses(struct dc_context *ctx)
 }
 
 
-static bool dcn401_resource_construct(
+static bool __no_sanitize_thread dcn401_resource_construct(
 	uint8_t num_virtual_links,
 	struct dc *dc,
 	struct dcn401_resource_pool *pool)
