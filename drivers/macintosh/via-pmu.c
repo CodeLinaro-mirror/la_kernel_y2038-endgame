@@ -965,7 +965,6 @@ static const struct proc_ops pmu_options_proc_ops = {
 	.proc_release	= single_release,
 	.proc_write	= pmu_options_proc_write,
 };
-#endif
 
 #ifdef CONFIG_ADB
 /* Send an ADB command */
