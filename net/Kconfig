@@ -3,8 +3,8 @@
 # Network configuration
 #
 
-config NET
-	def_bool n
+menuconfig NET
+	bool "Networking support"
 	select NLATTR
 	select GENERIC_NET_UTILS
 	select BPF

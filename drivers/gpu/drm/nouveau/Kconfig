@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 config DRM_NOUVEAU
-	def_tristate n
+	tristate "Nouveau (NVIDIA) cards"
 	depends on DRM && PCI
 	depends on (ACPI_VIDEO && ACPI_WMI && MXM_WMI) || !(ACPI && X86)
 	depends on BACKLIGHT_CLASS_DEVICE

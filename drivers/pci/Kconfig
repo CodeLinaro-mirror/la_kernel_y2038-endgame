@@ -18,8 +18,8 @@ config FORCE_PCI
 config GENERIC_PCI_IOMAP
 	bool
 
-config PCI
-	def_bool y
+menuconfig PCI
+	bool "PCI support"
 	depends on HAVE_PCI
 	depends on MMU
 	help

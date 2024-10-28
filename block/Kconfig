@@ -2,8 +2,9 @@
 #
 # Block layer core configuration
 #
-config BLOCK
-       def_bool n
+menuconfig BLOCK
+       bool "Enable the block layer" if EXPERT
+       default y
        select FS_IOMAP
        select SBITMAP
        help

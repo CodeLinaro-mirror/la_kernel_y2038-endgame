@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 
 config DRM_AMDGPU
-	def_tristate y
+	tristate "AMD GPU"
 	depends on DRM && PCI
 	select FW_LOADER
 	select DRM_CLIENT
