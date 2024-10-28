@@ -516,6 +516,7 @@ static void CalculateSwathAndDETConfiguration(
 		unsigned int DETBufferSizeC[],
 		bool ViewportSizeSupportPerPlane[],
 		bool *ViewportSizeSupport);
+
 static void CalculateSwathWidth(
 		bool ForceSingleDPP,
 		int NumberOfActivePlanes,
@@ -596,7 +597,7 @@ void dml30_recalculate(struct display_mode_lib *mode_lib)
 	DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(mode_lib);
 }
 
-static unsigned int dscceComputeDelay(
+static noinline unsigned int dscceComputeDelay(
 		unsigned int bpc,
 		double BPP,
 		unsigned int sliceWidth,
@@ -1199,12 +1200,12 @@ static bool CalculatePrefetchSchedule(
 	return MyError;
 }
 
-static double RoundToDFSGranularityUp(double Clock, double VCOSpeed)
+static __always_inline double RoundToDFSGranularityUp(double Clock, double VCOSpeed)
 {
 	return VCOSpeed * 4 / dml_floor(VCOSpeed * 4 / Clock, 1);
 }
 
-static double RoundToDFSGranularityDown(double Clock, double VCOSpeed)
+static __always_inline double RoundToDFSGranularityDown(double Clock, double VCOSpeed)
 {
 	return VCOSpeed * 4 / dml_ceil(VCOSpeed * 4.0 / Clock, 1);
 }
@@ -1511,7 +1512,7 @@ static void CalculateDCCConfiguration(
 }
 
 
-static double CalculatePrefetchSourceLines(
+static noinline double CalculatePrefetchSourceLines(
 		struct display_mode_lib *mode_lib,
 		double VRatio,
 		double vtaps,
@@ -1558,7 +1559,7 @@ static double CalculatePrefetchSourceLines(
 	return *MaxNumSwath * SwathHeight + MaxPartialSwath;
 }
 
-static unsigned int CalculateVMAndRowBytes(
+static noinline unsigned int CalculateVMAndRowBytes(
 		struct display_mode_lib *mode_lib,
 		bool DCCEnable,
 		unsigned int BlockHeight256Bytes,
@@ -1744,7 +1745,7 @@ static unsigned int CalculateVMAndRowBytes(
 	return PDEAndMetaPTEBytesFrame;
 }
 
-static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(
+static void __no_sanitize_address __no_sanitize_thread __no_sanitize_memory DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(
 		struct display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
@@ -2875,7 +2876,7 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
 			&v->StutterPeriod);
 }
 
-static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
+static noinline void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
 {
 	// Display Pipe Configuration
 	double BytePerPixDETY[DC__NUM_DPP__MAX] = { 0 };
@@ -2951,7 +2952,7 @@ static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
 			&dummysinglestring);
 }
 
-void dml30_CalculateBytePerPixelAnd256BBlockSizes(
+noinline void dml30_CalculateBytePerPixelAnd256BBlockSizes(
 		enum source_format_class SourcePixelFormat,
 		enum dm_swizzle_mode SurfaceTiling,
 		unsigned int *BytePerPixelY,
@@ -3056,7 +3057,7 @@ static double CalculateTWait(
 	}
 }
 
-double dml30_CalculateWriteBackDISPCLK(
+noinline double dml30_CalculateWriteBackDISPCLK(
 		enum source_format_class WritebackPixelFormat,
 		double PixelClock,
 		double WritebackHRatio,
@@ -3076,7 +3077,7 @@ double dml30_CalculateWriteBackDISPCLK(
 	return dml_max3(DISPCLK_H, DISPCLK_V, DISPCLK_HB);
 }
 
-static double CalculateWriteBackDelay(
+static noinline double CalculateWriteBackDelay(
 		enum source_format_class WritebackPixelFormat,
 		double WritebackHRatio,
 		double WritebackVRatio,
@@ -3272,7 +3273,7 @@ static void CalculateFlipSchedule(
 	}
 }
 
-static double TruncToValidBPP(
+static noinline double TruncToValidBPP(
 		double LinkBitRate,
 		int Lanes,
 		long HTotal,
@@ -3364,7 +3365,7 @@ static double TruncToValidBPP(
 	}
 }
 
-void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib) __no_sanitize_address __no_sanitize_thread __no_sanitize_memory
+__no_sanitize_address __no_sanitize_thread __no_sanitize_memory void dml30_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
 	int MinPrefetchMode, MaxPrefetchMode;
@@ -5817,7 +5818,7 @@ static void CalculateStutterEfficiency(
 		*StutterPeriodOut = StutterPeriod;
 }
 
-static void CalculateSwathAndDETConfiguration(
+static noinline void CalculateSwathAndDETConfiguration(
 		bool ForceSingleDPP,
 		int NumberOfActivePlanes,
 		unsigned int DETBufferSizeInKByte,
@@ -6200,7 +6201,7 @@ static double CalculateExtraLatencyBytes(
 }
 
 
-static double CalculateUrgentLatency(
+static noinline double CalculateUrgentLatency(
 		double UrgentLatencyPixelDataOnly,
 		double UrgentLatencyPixelMixedWithVMData,
 		double UrgentLatencyVMDataOnly,
@@ -6218,7 +6219,7 @@ static double CalculateUrgentLatency(
 	return ret;
 }
 
-static noinline_for_stack void UseMinimumDCFCLK(
+static void __no_sanitize_address UseMinimumDCFCLK(
 		struct display_mode_lib *mode_lib,
 		struct vba_vars_st *v,
 		int MaxPrefetchMode,

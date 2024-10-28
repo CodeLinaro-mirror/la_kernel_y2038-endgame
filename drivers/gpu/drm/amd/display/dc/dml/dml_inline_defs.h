@@ -29,56 +29,56 @@
 #include "dcn_calc_math.h"
 #include "dml_logger.h"
 
-static inline double dml_min(double a, double b)
+static __always_inline double dml_min(double a, double b)
 {
 	return (double) dcn_bw_min2(a, b);
 }
 
-static inline double dml_min3(double a, double b, double c)
+static __always_inline double dml_min3(double a, double b, double c)
 {
 	return dml_min(dml_min(a, b), c);
 }
 
-static inline double dml_min4(double a, double b, double c, double d)
+static __always_inline double dml_min4(double a, double b, double c, double d)
 {
 	return dml_min(dml_min(a, b), dml_min(c, d));
 }
 
-static inline double dml_max(double a, double b)
+static __always_inline double dml_max(double a, double b)
 {
 	return (double) dcn_bw_max2(a, b);
 }
 
-static inline double dml_max3(double a, double b, double c)
+static __always_inline double dml_max3(double a, double b, double c)
 {
 	return dml_max(dml_max(a, b), c);
 }
 
-static inline double dml_max4(double a, double b, double c, double d)
+static __always_inline double dml_max4(double a, double b, double c, double d)
 {
 	return dml_max(dml_max(a, b), dml_max(c, d));
 }
 
-static inline double dml_max5(double a, double b, double c, double d, double e)
+static __always_inline double dml_max5(double a, double b, double c, double d, double e)
 {
 	return dml_max(dml_max4(a, b, c, d), e);
 }
 
-static inline double dml_ceil(double a, double granularity)
+static __always_inline double dml_ceil(double a, double granularity)
 {
 	if (granularity == 0)
 		return 0;
 	return (double) dcn_bw_ceil2(a, granularity);
 }
 
-static inline double dml_floor(double a, double granularity)
+static __always_inline double dml_floor(double a, double granularity)
 {
 	if (granularity == 0)
 		return 0;
 	return (double) dcn_bw_floor2(a, granularity);
 }
 
-static inline double dml_round(double a)
+static __always_inline double dml_round(double a)
 {
 	const double round_pt = 0.5;
 
@@ -86,7 +86,7 @@ static inline double dml_round(double a)
 }
 
 /* float
-static inline int dml_log2(float x)
+static __always_inline int dml_log2(float x)
 {
 	unsigned int ix = *((unsigned int *)&x);
 
@@ -94,43 +94,43 @@ static inline int dml_log2(float x)
 }*/
 
 /* double */
-static inline int dml_log2(double x)
+static __always_inline int dml_log2(double x)
 {
 	unsigned long long ix = *((unsigned long long *)&x);
 
 	return (int)((ix >> 52) & 0x7ff) - 1023;
 }
 
-static inline double dml_pow(double a, int exp)
+static __always_inline double dml_pow(double a, int exp)
 {
 	return (double) dcn_bw_pow(a, exp);
 }
 
-static inline double dml_fmod(double f, int val)
+static __always_inline double dml_fmod(double f, int val)
 {
 	return (double) dcn_bw_mod(f, val);
 }
 
-static inline double dml_ceil_2(double f)
+static __always_inline double dml_ceil_2(double f)
 {
 	return (double) dcn_bw_ceil2(f, 2);
 }
 
-static inline double dml_ceil_ex(double x, double granularity)
+static __always_inline double dml_ceil_ex(double x, double granularity)
 {
 	if (granularity == 0)
 		return 0;
 	return (double) dcn_bw_ceil2(x, granularity);
 }
 
-static inline double dml_floor_ex(double x, double granularity)
+static __always_inline double dml_floor_ex(double x, double granularity)
 {
 	if (granularity == 0)
 		return 0;
 	return (double) dcn_bw_floor2(x, granularity);
 }
 
-static inline unsigned int dml_round_to_multiple(unsigned int num,
+static __always_inline unsigned int dml_round_to_multiple(unsigned int num,
 						 unsigned int multiple,
 						 unsigned char up)
 {
@@ -149,7 +149,7 @@ static inline unsigned int dml_round_to_multiple(unsigned int num,
 	else
 		return (num - remainder);
 }
-static inline double dml_abs(double a)
+static __always_inline double dml_abs(double a)
 {
 	if (a > 0)
 		return a;
