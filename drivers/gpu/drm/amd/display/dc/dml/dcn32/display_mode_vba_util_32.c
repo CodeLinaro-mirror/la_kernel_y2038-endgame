@@ -3045,7 +3045,7 @@ double dml32_CalculateWriteBackDelay(
 	return CalculateWriteBackDelay;
 }
 
-void dml32_UseMinimumDCFCLK(
+void __no_sanitize_address dml32_UseMinimumDCFCLK(
 		enum dm_use_mall_for_pstate_change_mode UseMALLForPStateChange[],
 		bool DRRDisplay[],
 		bool SynchronizeDRRDisplaysForUCLKPStateChangeFinal,
@@ -3100,7 +3100,7 @@ void dml32_UseMinimumDCFCLK(
 		double ReadBandwidthChroma[],
 		double DCFCLKPerState[],
 		/* Output */
-		double DCFCLKState[][2]) __no_sanitize_address
+		double DCFCLKState[][2])
 {
 	(void)MaxAveragePercentOfIdealSDPPortBWDisplayCanUseInNormalSystemOperation;
 	(void)ReadBandwidthLuma;
