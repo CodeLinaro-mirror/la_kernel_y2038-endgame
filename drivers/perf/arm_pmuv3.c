@@ -804,6 +804,7 @@ static void armv8pmu_enable_user_access(struct arm_pmu *cpu_pmu)
 	u64 userenr = ARMV8_PMU_USERENR_ER | ARMV8_PMU_USERENR_UEN;
 	struct pmu_hw_events *cpuc = this_cpu_ptr(cpu_pmu->hw_events);
 
+#ifdef CONFIG_ARM64
 	if (is_pmuv3p9(cpu_pmu->pmuver)) {
 		u64 mask = 0;
 		for_each_set_bit(i, cpuc->used_mask, ARMPMU_MAX_HWEVENTS) {
@@ -811,7 +812,9 @@ static void armv8pmu_enable_user_access(struct arm_pmu *cpu_pmu)
 				mask |= BIT(i);
 		}
 		write_pmuacr(mask);
-	} else {
+	} else
+#endif
+	{
 		/* Clear any unused counters to avoid leaking their contents */
 		for_each_andnot_bit(i, cpu_pmu->cntr_mask, cpuc->used_mask,
 				    ARMPMU_MAX_HWEVENTS) {
