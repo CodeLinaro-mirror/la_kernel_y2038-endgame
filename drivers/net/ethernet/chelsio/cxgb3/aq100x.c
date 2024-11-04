@@ -119,8 +119,7 @@ static int aq100x_intr_handler(struct cphy *phy)
 
 static int aq100x_power_down(struct cphy *phy, int off)
 {
-	return mdio_set_flag(&phy->mdio, phy->mdio.prtad,
-			     MDIO_MMD_PMAPMD, MDIO_CTRL1,
+	return t3_mdio_set_flag(phy, MDIO_MMD_PMAPMD, MDIO_CTRL1,
 			     MDIO_CTRL1_LPOWER, off);
 }
 
@@ -130,8 +129,7 @@ static int aq100x_autoneg_enable(struct cphy *phy)
 
 	err = aq100x_power_down(phy, 0);
 	if (!err)
-		err = mdio_set_flag(&phy->mdio, phy->mdio.prtad,
-				    MDIO_MMD_AN, MDIO_CTRL1,
+		err = t3_mdio_set_flag(phy, MDIO_MMD_AN, MDIO_CTRL1,
 				    BMCR_ANENABLE | BMCR_ANRESTART, 1);
 
 	return err;
@@ -143,8 +141,7 @@ static int aq100x_autoneg_restart(struct cphy *phy)
 
 	err = aq100x_power_down(phy, 0);
 	if (!err)
-		err = mdio_set_flag(&phy->mdio, phy->mdio.prtad,
-				    MDIO_MMD_AN, MDIO_CTRL1,
+		err = t3_mdio_set_flag(phy, MDIO_MMD_AN, MDIO_CTRL1,
 				    BMCR_ANENABLE | BMCR_ANRESTART, 1);
 
 	return err;
@@ -193,8 +190,7 @@ static int aq100x_advertise(struct cphy *phy, unsigned int advertise_map)
 
 static int aq100x_set_loopback(struct cphy *phy, int mmd, int dir, int enable)
 {
-	return mdio_set_flag(&phy->mdio, phy->mdio.prtad,
-			     MDIO_MMD_PMAPMD, MDIO_CTRL1,
+	return t3_mdio_set_flag(phy, MDIO_MMD_PMAPMD, MDIO_CTRL1,
 			     BMCR_LOOPBACK, enable);
 }
 

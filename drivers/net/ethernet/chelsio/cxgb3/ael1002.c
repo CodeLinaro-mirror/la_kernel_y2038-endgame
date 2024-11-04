@@ -144,8 +144,7 @@ static int ael1002_power_down(struct cphy *phy, int enable)
 
 	err = t3_mdio_write(phy, MDIO_MMD_PMAPMD, MDIO_PMA_TXDIS, !!enable);
 	if (!err)
-		err = mdio_set_flag(&phy->mdio, phy->mdio.prtad,
-				    MDIO_MMD_PMAPMD, MDIO_CTRL1,
+		err = t3_mdio_set_flag(phy, MDIO_MMD_PMAPMD, MDIO_CTRL1,
 				    MDIO_CTRL1_LPOWER, enable);
 	return err;
 }

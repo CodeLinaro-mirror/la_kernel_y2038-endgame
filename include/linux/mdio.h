@@ -155,11 +155,7 @@ struct mdio_if_info {
 struct ethtool_cmd;
 struct ethtool_pauseparam;
 extern int mdio45_probe(struct mdio_if_info *mdio, int prtad);
-extern int mdio_set_flag(const struct mdio_if_info *mdio,
-			 int prtad, int devad, u16 addr, int mask,
-			 bool sense);
 extern int mdio45_links_ok(const struct mdio_if_info *mdio, u32 mmds);
-extern int mdio45_nway_restart(const struct mdio_if_info *mdio);
 extern void
 mdio45_ethtool_ksettings_get_npage(const struct mdio_if_info *mdio,
 				   struct ethtool_link_ksettings *cmd,

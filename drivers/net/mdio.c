@@ -52,37 +52,6 @@ int mdio45_probe(struct mdio_if_info *mdio, int prtad)
 EXPORT_SYMBOL(mdio45_probe);
 
 /**
- * mdio_set_flag - set or clear flag in an MDIO register
- * @mdio: MDIO interface
- * @prtad: PHY address
- * @devad: MMD address
- * @addr: Register address
- * @mask: Mask for flag (single bit set)
- * @sense: New value of flag
- *
- * This debounces changes: it does not write the register if the flag
- * already has the proper value.  Returns 0 on success, negative on error.
- */
-int mdio_set_flag(const struct mdio_if_info *mdio,
-		  int prtad, int devad, u16 addr, int mask,
-		  bool sense)
-{
-	int old_val = mdio->mdio_read(mdio->dev, prtad, devad, addr);
-	int new_val;
-
-	if (old_val < 0)
-		return old_val;
-	if (sense)
-		new_val = old_val | mask;
-	else
-		new_val = old_val & ~mask;
-	if (old_val == new_val)
-		return 0;
-	return mdio->mdio_write(mdio->dev, prtad, devad, addr, new_val);
-}
-EXPORT_SYMBOL(mdio_set_flag);
-
-/**
  * mdio45_links_ok - is link status up/OK
  * @mdio: MDIO interface
  * @mmd_mask: Mask for MMDs to check
@@ -127,23 +96,6 @@ int mdio45_links_ok(const struct mdio_if_info *mdio, u32 mmd_mask)
 	return true;
 }
 EXPORT_SYMBOL(mdio45_links_ok);
-
-/**
- * mdio45_nway_restart - restart auto-negotiation for this interface
- * @mdio: MDIO interface
- *
- * Returns 0 on success, negative on error.
- */
-int mdio45_nway_restart(const struct mdio_if_info *mdio)
-{
-	if (!(mdio->mmds & MDIO_DEVS_AN))
-		return -EOPNOTSUPP;
-
-	mdio_set_flag(mdio, mdio->prtad, MDIO_MMD_AN, MDIO_CTRL1,
-		      MDIO_AN_CTRL1_RESTART, true);
-	return 0;
-}
-EXPORT_SYMBOL(mdio45_nway_restart);
 
 static u32 mdio45_get_an(const struct mdio_if_info *mdio, u16 addr)
 {

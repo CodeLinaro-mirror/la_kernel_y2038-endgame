@@ -99,7 +99,18 @@ static inline void
 ef4_mdio_set_flag(struct ef4_nic *efx, int devad, int addr,
 		  int mask, bool state)
 {
-	mdio_set_flag(&efx->mdio, efx->mdio.prtad, devad, addr, mask, state);
+	int old_val = ef4_mdio_read(efx, devad, addr);
+	int new_val;
+
+	if (old_val < 0)
+		return;
+	if (state)
+		new_val = old_val | mask;
+	else
+		new_val = old_val & ~mask;
+	if (old_val == new_val)
+		return;
+	return ef4_mdio_write(efx, devad, addr, new_val);
 }
 
 /* Liveness self-test for MDIO PHYs */
