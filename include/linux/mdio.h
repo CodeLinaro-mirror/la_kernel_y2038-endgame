@@ -152,31 +152,7 @@ struct mdio_if_info {
 #define MDIO_SUPPORTS_C45		2
 #define MDIO_EMULATE_C22		4
 
-struct ethtool_cmd;
-struct ethtool_pauseparam;
 extern int mdio45_probe(struct mdio_if_info *mdio, int prtad);
-extern int mdio45_links_ok(const struct mdio_if_info *mdio, u32 mmds);
-extern void
-mdio45_ethtool_ksettings_get_npage(const struct mdio_if_info *mdio,
-				   struct ethtool_link_ksettings *cmd,
-				   u32 npage_adv, u32 npage_lpa);
-
-/**
- * mdio45_ethtool_ksettings_get - get settings for ETHTOOL_GLINKSETTINGS
- * @mdio: MDIO interface
- * @cmd: Ethtool request structure
- *
- * Since the CSRs for auto-negotiation using next pages are not fully
- * standardised, this function does not attempt to decode them.  Use
- * mdio45_ethtool_ksettings_get_npage() to specify advertisement bits
- * from next pages.
- */
-static inline void
-mdio45_ethtool_ksettings_get(const struct mdio_if_info *mdio,
-			     struct ethtool_link_ksettings *cmd)
-{
-	mdio45_ethtool_ksettings_get_npage(mdio, cmd, 0, 0);
-}
 
 extern int mdio_mii_ioctl(const struct mdio_if_info *mdio,
 			  struct mii_ioctl_data *mii_data, int cmd);
