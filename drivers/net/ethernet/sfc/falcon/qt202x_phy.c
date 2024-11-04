@@ -411,8 +411,7 @@ static int qt202x_phy_reconfigure(struct ef4_nic *efx)
 		 * or optical transceivers, varying somewhat between
 		 * firmware versions.  Only 'static mode' appears to
 		 * cover everything. */
-		mdio_set_flag(
-			&efx->mdio, efx->mdio.prtad, MDIO_MMD_PMAPMD,
+		ef4_mdio_set_flag(efx, MDIO_MMD_PMAPMD,
 			PMA_PMD_FTX_CTRL2_REG, 1 << PMA_PMD_FTX_STATIC_LBN,
 			efx->phy_mode & PHY_MODE_TX_DISABLED ||
 			efx->phy_mode & PHY_MODE_LOW_POWER ||

@@ -11,6 +11,7 @@
 #include <linux/delay.h>
 #include "net_driver.h"
 #include "mdio_10g.h"
+#include "phy.h"
 #include "workarounds.h"
 
 unsigned ef4_mdio_id_oui(u32 id)

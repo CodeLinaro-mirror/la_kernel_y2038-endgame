@@ -574,6 +574,25 @@ static inline int t3_mdio_write(struct cphy *phy, int mmd, int reg,
 				    reg, val);
 }
 
+static inline int t3_mdio_set_flag(struct cphy *phy,
+		  int devad, u16 addr, int mask, bool sense)
+{
+	int old_val;
+	int new_val;
+	int ret;
+
+	ret = t3_mdio_read(phy, devad, addr, &old_val);
+	if (ret)
+		return ret;
+	if (sense)
+		new_val = old_val | mask;
+	else
+		new_val = old_val & ~mask;
+	if (old_val == new_val)
+		return 0;
+	return t3_mdio_write(phy, devad, addr, new_val);
+}
+
 /* Convenience initializer */
 static inline void cphy_init(struct cphy *phy, struct adapter *adapter,
 			     int phy_addr, const struct cphy_ops *phy_ops,

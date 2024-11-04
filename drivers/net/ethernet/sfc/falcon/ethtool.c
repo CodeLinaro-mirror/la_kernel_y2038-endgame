@@ -9,6 +9,7 @@
 #include <linux/ethtool.h>
 #include <linux/rtnetlink.h>
 #include <linux/in.h>
+#include "mdio_10g.h"
 #include "net_driver.h"
 #include "workarounds.h"
 #include "selftest.h"
@@ -537,8 +538,14 @@ fail:
 static int ef4_ethtool_nway_reset(struct net_device *net_dev)
 {
 	struct ef4_nic *efx = netdev_priv(net_dev);
+	const struct mdio_if_info *mdio = &efx->mdio;
 
-	return mdio45_nway_restart(&efx->mdio);
+	if (!(mdio->mmds & MDIO_DEVS_AN))
+		return -EOPNOTSUPP;
+
+	ef4_mdio_set_flag(efx, MDIO_MMD_AN, MDIO_CTRL1,
+		      MDIO_AN_CTRL1_RESTART, true);
+	return 0;
 }
 
 /*
