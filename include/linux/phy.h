@@ -2190,30 +2190,11 @@ static inline struct phy_device *phy_find_first(struct mii_bus *bus)
 	for (_phydev = phy_find_first(_bus); _phydev;	\
 	     _phydev = phy_find_next(_bus, _phydev))
 
-#if IS_ENABLED(CONFIG_PHYLIB)
 int phy_start_cable_test(struct phy_device *phydev,
 			 struct netlink_ext_ack *extack);
 int phy_start_cable_test_tdr(struct phy_device *phydev,
 			     struct netlink_ext_ack *extack,
 			     const struct phy_tdr_config *config);
-#else
-static inline
-int phy_start_cable_test(struct phy_device *phydev,
-			 struct netlink_ext_ack *extack)
-{
-	NL_SET_ERR_MSG(extack, "Kernel not compiled with PHYLIB support");
-	return -EOPNOTSUPP;
-}
-static inline
-int phy_start_cable_test_tdr(struct phy_device *phydev,
-			     struct netlink_ext_ack *extack,
-			     const struct phy_tdr_config *config)
-{
-	NL_SET_ERR_MSG(extack, "Kernel not compiled with PHYLIB support");
-	return -EOPNOTSUPP;
-}
-#endif
-
 static inline void phy_device_reset(struct phy_device *phydev, int value)
 {
 	mdio_device_reset(&phydev->mdio, value);
