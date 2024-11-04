@@ -219,6 +219,41 @@ fail:
 }
 
 /**
+ * ixgbe_mdio45_probe - probe for an MDIO (clause 45) device
+ * @mdio: MDIO interface
+ * @prtad: Expected PHY address
+ *
+ * This sets @prtad and @mmds in the MDIO interface if successful.
+ * Returns 0 on success, negative on error.
+ */
+static int ixgbe_mdio45_probe(struct mdio_if_info *mdio, int prtad)
+{
+	int mmd, stat2, devs1, devs2;
+
+	/* Assume PHY must have at least one of PMA/PMD, WIS, PCS, PHY
+	 * XS or DTE XS; give up if none is present. */
+	for (mmd = 1; mmd <= 5; mmd++) {
+		/* Is this MMD present? */
+		stat2 = mdio->mdio_read(mdio->dev, prtad, mmd, MDIO_STAT2);
+		if (stat2 < 0 ||
+		    (stat2 & MDIO_STAT2_DEVPRST) != MDIO_STAT2_DEVPRST_VAL)
+			continue;
+
+		/* It should tell us about all the other MMDs */
+		devs1 = mdio->mdio_read(mdio->dev, prtad, mmd, MDIO_DEVS1);
+		devs2 = mdio->mdio_read(mdio->dev, prtad, mmd, MDIO_DEVS2);
+		if (devs1 < 0 || devs2 < 0)
+			continue;
+
+		mdio->prtad = prtad;
+		mdio->mmds = devs1 | (devs2 << 16);
+		return 0;
+	}
+
+	return -ENODEV;
+}
+
+/**
  *  ixgbe_probe_phy - Probe a single address for a PHY
  *  @hw: pointer to hardware structure
  *  @phy_addr: PHY address to probe
@@ -230,7 +265,7 @@ static bool ixgbe_probe_phy(struct ixgbe_hw *hw, u16 phy_addr)
 	u16 ext_ability = 0;
 
 	hw->phy.mdio.prtad = phy_addr;
-	if (mdio45_probe(&hw->phy.mdio, phy_addr) != 0)
+	if (ixgbe_mdio45_probe(&hw->phy.mdio, phy_addr) != 0)
 		return false;
 
 	if (ixgbe_get_phy_id(hw))
