@@ -92,6 +92,7 @@ config HNS3
 	tristate "Hisilicon Network Subsystem Support HNS3 (Framework)"
 	depends on PCI
 	depends on IOMMU_SUPPORT
+	select PHYLIB
 	select NET_DEVLINK
 	select PAGE_POOL
 	help
