@@ -152,8 +152,6 @@ struct mdio_if_info {
 #define MDIO_SUPPORTS_C45		2
 #define MDIO_EMULATE_C22		4
 
-extern int mdio45_probe(struct mdio_if_info *mdio, int prtad);
-
 extern int mdio_mii_ioctl(const struct mdio_if_info *mdio,
 			  struct mii_ioctl_data *mii_data, int cmd);
 

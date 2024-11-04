@@ -16,42 +16,6 @@ MODULE_AUTHOR("Copyright 2006-2009 Solarflare Communications Inc.");
 MODULE_LICENSE("GPL");
 
 /**
- * mdio45_probe - probe for an MDIO (clause 45) device
- * @mdio: MDIO interface
- * @prtad: Expected PHY address
- *
- * This sets @prtad and @mmds in the MDIO interface if successful.
- * Returns 0 on success, negative on error.
- */
-int mdio45_probe(struct mdio_if_info *mdio, int prtad)
-{
-	int mmd, stat2, devs1, devs2;
-
-	/* Assume PHY must have at least one of PMA/PMD, WIS, PCS, PHY
-	 * XS or DTE XS; give up if none is present. */
-	for (mmd = 1; mmd <= 5; mmd++) {
-		/* Is this MMD present? */
-		stat2 = mdio->mdio_read(mdio->dev, prtad, mmd, MDIO_STAT2);
-		if (stat2 < 0 ||
-		    (stat2 & MDIO_STAT2_DEVPRST) != MDIO_STAT2_DEVPRST_VAL)
-			continue;
-
-		/* It should tell us about all the other MMDs */
-		devs1 = mdio->mdio_read(mdio->dev, prtad, mmd, MDIO_DEVS1);
-		devs2 = mdio->mdio_read(mdio->dev, prtad, mmd, MDIO_DEVS2);
-		if (devs1 < 0 || devs2 < 0)
-			continue;
-
-		mdio->prtad = prtad;
-		mdio->mmds = devs1 | (devs2 << 16);
-		return 0;
-	}
-
-	return -ENODEV;
-}
-EXPORT_SYMBOL(mdio45_probe);
-
-/**
  * mdio_mii_ioctl - MII ioctl interface for MDIO (clause 22 or 45) PHYs
  * @mdio: MDIO interface
  * @mii_data: MII ioctl data structure
