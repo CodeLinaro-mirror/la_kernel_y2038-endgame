@@ -21,7 +21,6 @@ config R6040
 	tristate "RDC R6040 Fast Ethernet Adapter support"
 	depends on PCI
 	select CRC32
-	select MII
 	select PHYLIB
 	help
 	  This is a driver for the R6040 Fast Ethernet MACs found in the

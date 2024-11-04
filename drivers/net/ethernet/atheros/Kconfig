@@ -30,7 +30,6 @@ config ATL2
 	tristate "Atheros L2 Fast Ethernet support"
 	depends on PCI
 	select CRC32
-	select MII
 	help
 	  This driver supports the Atheros L2 fast ethernet adapter.
 
@@ -53,7 +52,6 @@ config ATL1E
 	tristate "Atheros L1E Gigabit Ethernet support"
 	depends on PCI
 	select CRC32
-	select MII
 	help
 	  This driver supports the Atheros L1E gigabit ethernet adapter.
 
@@ -64,7 +62,6 @@ config ATL1C
 	tristate "Atheros L1C Gigabit Ethernet support"
 	depends on PCI
 	select CRC32
-	select MII
 	help
 	  This driver supports the Atheros L1C gigabit ethernet adapter.
 

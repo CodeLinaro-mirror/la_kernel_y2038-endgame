@@ -79,7 +79,6 @@ config SMSC911X
 	tristate "SMSC LAN911x/LAN921x families embedded ethernet support"
 	depends on HAS_IOMEM
 	select CRC32
-	select MII
 	select PHYLIB
 	help
 	  Say Y here if you want support for SMSC LAN911x and LAN921x families

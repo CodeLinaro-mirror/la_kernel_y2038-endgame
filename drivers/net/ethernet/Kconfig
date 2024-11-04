@@ -141,7 +141,6 @@ source "drivers/net/ethernet/oki-semi/Kconfig"
 config ETHOC
 	tristate "OpenCores 10/100 Mbps Ethernet MAC support"
 	depends on HAS_IOMEM && HAS_DMA
-	select MII
 	select PHYLIB
 	select CRC32
 	select BITREVERSE

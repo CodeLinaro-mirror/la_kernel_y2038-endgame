@@ -4,7 +4,6 @@ config STMMAC_ETH
 	depends on HAS_IOMEM && HAS_DMA
 	depends on PTP_1588_CLOCK_OPTIONAL
 	depends on ETHTOOL_NETLINK
-	select MII
 	select PCS_XPCS
 	select PAGE_POOL
 	select PHYLINK
@@ -46,7 +45,6 @@ if STMMAC_PLATFORM
 config DWMAC_DWC_QOS_ETH
 	tristate "Support for snps,dwc-qos-ethernet.txt DT binding."
 	select CRC32
-	select MII
 	depends on OF && HAS_DMA
 	help
 	  Support for chips using the snps,dwc-qos-ethernet.txt DT binding.
