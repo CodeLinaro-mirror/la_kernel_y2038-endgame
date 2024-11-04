@@ -19,7 +19,6 @@ if NET_VENDOR_ARC
 config ARC_EMAC_CORE
 	tristate
 	depends on ARC || ARCH_ROCKCHIP || COMPILE_TEST
-	select MII
 	select PHYLIB
 	select CRC32
 
