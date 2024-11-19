@@ -13,7 +13,7 @@ config DRM_DISPLAY_HELPER
 	  DRM helpers for display adapters.
 
 config DRM_BRIDGE_CONNECTOR
-	tristate
+	bool
 	select DRM_DISPLAY_HDMI_AUDIO_HELPER
 	select DRM_DISPLAY_HDMI_CEC_HELPER
 	select DRM_DISPLAY_HDMI_STATE_HELPER
