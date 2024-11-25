@@ -1176,8 +1176,6 @@ static void autoconfig(struct uart_8250_port *up)
 		break;
 	}
 
-	rsa_autoconfig(up);
-
 	serial_out(up, UART_LCR, save_lcr);
 
 	port->fifosize = uart_config[up->port.type].fifo_size;
@@ -1189,7 +1187,6 @@ static void autoconfig(struct uart_8250_port *up)
 		/*
 		 * Reset the UART.
 		 */
-		rsa_reset(up);
 		serial8250_out_MCR(up, save_mcr);
 		serial8250_clear_fifos(up);
 		serial_in(up, UART_RX);
@@ -2090,9 +2087,6 @@ static void serial8250_startup_special(struct uart_port *port)
 				UART_DA830_PWREMU_MGMT_URRST |
 				UART_DA830_PWREMU_MGMT_FREE);
 		break;
-	case PORT_RSA:
-		rsa_enable(up);
-		break;
 	}
 }
 
@@ -2384,8 +2378,6 @@ void serial8250_do_shutdown(struct uart_port *port)
 	serial_port_out(port, UART_LCR,
 			serial_port_in(port, UART_LCR) & ~UART_LCR_SBC);
 	serial8250_clear_fifos(up);
-
-	rsa_disable(up);
 
 	/*
 	 * Read data port to reset things, and then unlink from
