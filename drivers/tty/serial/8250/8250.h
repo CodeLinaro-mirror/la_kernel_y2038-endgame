@@ -129,7 +129,6 @@ void serial8250_isa_init_ports(void);
 
 extern struct platform_device *serial8250_isa_devs;
 
-extern const struct uart_ops *univ8250_port_base_ops;
 extern struct uart_ops univ8250_port_ops;
 
 static inline int serial_in(struct uart_8250_port *up, int offset)
@@ -320,12 +319,6 @@ void serial8250_pnp_exit(void);
 #else
 static inline int serial8250_pnp_init(void) { return 0; }
 static inline void serial8250_pnp_exit(void) { }
-#endif
-
-#ifdef CONFIG_SERIAL_8250_RSA
-void univ8250_rsa_support(struct uart_ops *ops);
-#else
-static inline void univ8250_rsa_support(struct uart_ops *ops) { }
 #endif
 
 #ifdef CONFIG_SERIAL_8250_FINTEK

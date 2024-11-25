@@ -305,9 +305,6 @@ static void univ8250_release_irq(struct uart_8250_port *up)
 		serial_unlink_irq_chain(up);
 }
 
-const struct uart_ops *univ8250_port_base_ops = NULL;
-struct uart_ops univ8250_port_ops;
-
 static const struct uart_8250_ops univ8250_driver_ops = {
 	.setup_irq	= univ8250_setup_irq,
 	.release_irq	= univ8250_release_irq,
@@ -356,9 +353,6 @@ static struct uart_8250_port *serial8250_setup_port(int index)
 	up->port.port_id = index;
 
 	serial8250_init_port(up);
-	if (!univ8250_port_base_ops)
-		univ8250_port_base_ops = up->port.ops;
-	up->port.ops = &univ8250_port_ops;
 
 	timer_setup(&up->timer, serial8250_timeout, 0);
 
@@ -375,10 +369,6 @@ static __init void __serial8250_setup_ports(void)
 	 */
 	for (int i = 0; i < CONFIG_SERIAL_8250_NR_UARTS; i++)
 		serial8250_setup_port(i);
-
-	/* chain base port ops to support Remote Supervisor Adapter */
-	univ8250_port_ops = *univ8250_port_base_ops;
-	univ8250_rsa_support(&univ8250_port_ops);
 }
 
 void __init serial8250_setup_ports(void)

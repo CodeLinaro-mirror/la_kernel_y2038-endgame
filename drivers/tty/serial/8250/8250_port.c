@@ -718,75 +718,6 @@ static void serial8250_clear_IER(struct uart_8250_port *up)
 		serial_out(up, UART_IER, 0);
 }
 
-#ifdef CONFIG_SERIAL_8250_RSA
-/*
- * Attempts to turn on the RSA FIFO.  Returns zero on failure.
- * We set the port uart clock rate if we succeed.
- */
-static int __enable_rsa(struct uart_8250_port *up)
-{
-	unsigned char mode;
-	int result;
-
-	mode = serial_in(up, UART_RSA_MSR);
-	result = mode & UART_RSA_MSR_FIFO;
-
-	if (!result) {
-		serial_out(up, UART_RSA_MSR, mode | UART_RSA_MSR_FIFO);
-		mode = serial_in(up, UART_RSA_MSR);
-		result = mode & UART_RSA_MSR_FIFO;
-	}
-
-	if (result)
-		up->port.uartclk = SERIAL_RSA_BAUD_BASE * 16;
-
-	return result;
-}
-
-static void enable_rsa(struct uart_8250_port *up)
-{
-	if (up->port.type == PORT_RSA) {
-		if (up->port.uartclk != SERIAL_RSA_BAUD_BASE * 16) {
-			uart_port_lock_irq(&up->port);
-			__enable_rsa(up);
-			uart_port_unlock_irq(&up->port);
-		}
-		if (up->port.uartclk == SERIAL_RSA_BAUD_BASE * 16)
-			serial_out(up, UART_RSA_FRR, 0);
-	}
-}
-
-/*
- * Attempts to turn off the RSA FIFO.  Returns zero on failure.
- * It is unknown why interrupts were disabled in here.  However,
- * the caller is expected to preserve this behaviour by grabbing
- * the spinlock before calling this function.
- */
-static void disable_rsa(struct uart_8250_port *up)
-{
-	unsigned char mode;
-	int result;
-
-	if (up->port.type == PORT_RSA &&
-	    up->port.uartclk == SERIAL_RSA_BAUD_BASE * 16) {
-		uart_port_lock_irq(&up->port);
-
-		mode = serial_in(up, UART_RSA_MSR);
-		result = !(mode & UART_RSA_MSR_FIFO);
-
-		if (!result) {
-			serial_out(up, UART_RSA_MSR, mode & ~UART_RSA_MSR_FIFO);
-			mode = serial_in(up, UART_RSA_MSR);
-			result = !(mode & UART_RSA_MSR_FIFO);
-		}
-
-		if (result)
-			up->port.uartclk = SERIAL_RSA_BAUD_BASE_LO * 16;
-		uart_port_unlock_irq(&up->port);
-	}
-}
-#endif /* CONFIG_SERIAL_8250_RSA */
-
 /*
  * This is a quickie test to see how big the FIFO is.
  * It doesn't work at all the time, more's the pity.
@@ -1272,15 +1203,6 @@ static void autoconfig(struct uart_8250_port *up)
 		break;
 	}
 
-#ifdef CONFIG_SERIAL_8250_RSA
-	/*
-	 * Only probe for RSA ports if we got the region.
-	 */
-	if (port->type == PORT_16550A && up->probe & UART_PROBE_RSA &&
-	    __enable_rsa(up))
-		port->type = PORT_RSA;
-#endif
-
 	serial_out(up, UART_LCR, save_lcr);
 
 	port->fifosize = uart_config[up->port.type].fifo_size;
@@ -1294,10 +1216,6 @@ static void autoconfig(struct uart_8250_port *up)
 	/*
 	 * Reset the UART.
 	 */
-#ifdef CONFIG_SERIAL_8250_RSA
-	if (port->type == PORT_RSA)
-		serial_out(up, UART_RSA_FRR, 0);
-#endif
 	serial8250_out_MCR(up, save_mcr);
 	serial8250_clear_fifos(up);
 	serial_in(up, UART_RX);
@@ -2241,14 +2159,6 @@ int serial8250_do_startup(struct uart_port *port)
 				UART_DA830_PWREMU_MGMT_FREE);
 	}
 
-#ifdef CONFIG_SERIAL_8250_RSA
-	/*
-	 * If this is an RSA port, see if we can kick it up to the
-	 * higher speed clock.
-	 */
-	enable_rsa(up);
-#endif
-
 	/*
 	 * Clear the FIFO buffers and disable them.
 	 * (they will be reenabled in set_termios())
@@ -2515,13 +2425,6 @@ void serial8250_do_shutdown(struct uart_port *port)
 	serial_port_out(port, UART_LCR,
 			serial_port_in(port, UART_LCR) & ~UART_LCR_SBC);
 	serial8250_clear_fifos(up);
-
-#ifdef CONFIG_SERIAL_8250_RSA
-	/*
-	 * Reset the RSA board back to 115kbps compat mode.
-	 */
-	disable_rsa(up);
-#endif
 
 	/*
 	 * Read data port to reset things, and then unlink from
