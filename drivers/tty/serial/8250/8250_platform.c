@@ -32,8 +32,6 @@
 unsigned int share_irqs = SERIAL8250_SHARE_IRQS;
 unsigned int skip_txen_test;
 
-unsigned int nr_uarts = CONFIG_SERIAL_8250_RUNTIME_UARTS;
-
 #include <asm/serial.h>
 
 /*
@@ -290,11 +288,8 @@ static int __init serial8250_init(void)
 {
 	int ret;
 
-	if (nr_uarts == 0)
-		return -ENODEV;
-
 	serial8250_setup_ports();
-	if (!IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE))
+	if (nr_uarts > 0 && !IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE))
 		serial8250_isa_init_ports();
 
 	pr_info("Serial: 8250/16550 driver, %d ports, IRQ sharing %s\n",
@@ -375,8 +370,15 @@ MODULE_DESCRIPTION("Generic 8250/16x50 serial platform driver");
 module_param_hw(share_irqs, uint, other, 0644);
 MODULE_PARM_DESC(share_irqs, "Share IRQs with other non-8250/16x50 devices (unsafe)");
 
+/*
+ * Overriding this parameter changes the preset ISA style uarts
+ * that can be set up with setserial. Since Linux-6.5, this is no
+ * longer required to ports from DT or platform_data.
+ */
+unsigned int nr_uarts = ARRAY_SIZE(old_serial_port);
 module_param(nr_uarts, uint, 0644);
-MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" __MODULE_STRING(CONFIG_SERIAL_8250_NR_UARTS) ")");
+MODULE_PARM_DESC(nr_uarts, "Maximum number of ISA style UARTs supported. (1-"
+		 __MODULE_STRING(CONFIG_SERIAL_8250_NR_UARTS) ")");
 
 module_param(skip_txen_test, uint, 0644);
 MODULE_PARM_DESC(skip_txen_test, "Skip checking for the TXEN bug at init time");
