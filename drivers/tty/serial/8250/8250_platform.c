@@ -35,16 +35,28 @@ unsigned int skip_txen_test;
 #include <asm/serial.h>
 
 /*
- * SERIAL_PORT_DFNS tells us about built-in ports that have no
+ * old_serial_port tells us about built-in ports that have no
  * standard enumeration mechanism. Platforms that can find all
  * serial ports via mechanisms like ACPI or PCI need not supply it.
  */
-#ifndef SERIAL_PORT_DFNS
-#define SERIAL_PORT_DFNS
+
+/* Standard COM flags (except for COM4, because of the 8514 problem) */
+#ifdef CONFIG_SERIAL_8250_DETECT_IRQ
+#define STD_COMX_FLAGS (UPF_BOOT_AUTOCONF |	UPF_SKIP_TEST	| UPF_AUTO_IRQ)
+#define STD_COM4_FLAGS (UPF_BOOT_AUTOCONF |	0		| UPF_AUTO_IRQ)
+#else
+#define STD_COMX_FLAGS (UPF_BOOT_AUTOCONF |	UPF_SKIP_TEST	| 0		)
+#define STD_COM4_FLAGS (UPF_BOOT_AUTOCONF |	0		| 0		)
 #endif
 
 static const struct old_serial_port old_serial_port[] = {
-	SERIAL_PORT_DFNS /* defined in asm/serial.h */
+#ifdef CONFIG_SERIAL_8250_ISA
+	/* UART		CLK		PORT	IRQ	FLAGS			    */
+	{ .uart = 0,	BASE_BAUD,	0x3F8,	4,	STD_COMX_FLAGS	}, /* ttyS0 */
+	{ .uart = 0,	BASE_BAUD,	0x2F8,	3,	STD_COMX_FLAGS	}, /* ttyS1 */
+	{ .uart = 0,	BASE_BAUD,	0x3E8,	4,	STD_COMX_FLAGS	}, /* ttyS2 */
+	{ .uart = 0,	BASE_BAUD,	0x2E8,	3,	STD_COM4_FLAGS	}, /* ttyS3 */
+#endif
 };
 
 serial8250_isa_config_fn serial8250_isa_config;

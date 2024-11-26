@@ -51,6 +51,17 @@ config SERIAL_8250_DEPRECATED_OPTIONS
 	  If you did not notice yet and/or you have userspace from pre-3.7, it
 	  is safe (and recommended) to say N here.
 
+config SERIAL_8250_ISA
+	bool "Probe PC-style ISA 8250 ports at 0x2f8/0x3f8/0x2e8/0x3e8" if EXPERT
+	default (ALPHA || X86_32 || Q40 || JAILHOUSE_GUEST || !SERIAL_8250_PNP)
+	depends on X86 || ISA
+	help
+	  Old PC style serial ports are not discoverable other than poking
+	  at well-known I/O ports. Generally these are now discovered through
+	  one of the plug-and-play mechanisms (ACPI, ISAPNP, PNPBIOS), but
+	  machines that support none of those can still get the four
+	  default ports by enabling this.
+
 config SERIAL_8250_PNP
 	bool "8250/16550 PNP device support" if EXPERT
 	depends on SERIAL_8250 && PNP
@@ -314,6 +325,7 @@ config SERIAL_8250_SHARE_IRQ
 config SERIAL_8250_DETECT_IRQ
 	bool "Autodetect IRQ on standard ports (unsafe)"
 	depends on SERIAL_8250_EXTENDED
+	depends on SERIAL_8250_LEGACY
 	help
 	  Say Y here if you want the kernel to try to guess which IRQ
 	  to use for your serial port.

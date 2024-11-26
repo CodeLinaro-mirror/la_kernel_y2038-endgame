@@ -31,7 +31,7 @@ static void ce4100_power_off(void)
 	outb(0x4, 0xcf9);
 }
 
-#ifdef CONFIG_SERIAL_8250
+#ifdef CONFIG_SERIAL_8250_ISA
 
 static unsigned int mem_serial_in(struct uart_port *p, int offset)
 {
