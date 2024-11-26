@@ -148,7 +148,7 @@ static int __init jailhouse_pci_arch_init(void)
 	return 0;
 }
 
-#ifdef CONFIG_SERIAL_8250
+#ifdef CONFIG_SERIAL_8250_ISA
 static inline bool jailhouse_uart_enabled(unsigned int uart_nr)
 {
 	return setup_data.v2.flags & BIT(uart_nr);
@@ -189,11 +189,11 @@ static void __init jailhouse_serial_workaround(void)
 	if (setup_data.hdr.version > 1)
 		serial8250_set_isa_configurator(jailhouse_serial_fixup);
 }
-#else /* !CONFIG_SERIAL_8250 */
+#else /* !CONFIG_SERIAL_8250_ISA*/
 static inline void jailhouse_serial_workaround(void)
 {
 }
-#endif /* CONFIG_SERIAL_8250 */
+#endif /* CONFIG_SERIAL_8250_ISA */
 
 static void __init jailhouse_init_platform(void)
 {
