@@ -21,6 +21,7 @@
 #include <linux/console.h>
 #include <linux/sysrq.h>
 #include <linux/delay.h>
+#include <linux/once.h>
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
 #include <linux/tty.h>
@@ -340,7 +341,12 @@ static inline void serial8250_apply_quirks(struct uart_8250_port *up)
 	up->port.quirks |= skip_txen_test ? UPQ_NO_TXEN_TEST : 0;
 }
 
-struct uart_8250_port *serial8250_setup_port(int index)
+/*
+ * serial8250_setup_port() must be called before any uarts are added
+ * from any of the various methods. If none of the early methods are
+ * in use, it will be called from serial8250_init().
+ */
+static struct uart_8250_port *serial8250_setup_port(int index)
 {
 	struct uart_8250_port *up;
 
@@ -360,9 +366,26 @@ struct uart_8250_port *serial8250_setup_port(int index)
 
 	up->ops = &univ8250_driver_ops;
 
-	serial8250_set_defaults(up);
-
 	return up;
+}
+
+static __init void __serial8250_setup_ports(void)
+{
+	/*
+	 * Set up all possible uarts, regardless of the configured
+	 * initial ISA ports.
+	 */
+	for (int i = 0; i < CONFIG_SERIAL_8250_NR_UARTS; i++)
+		serial8250_setup_port(i);
+
+	/* chain base port ops to support Remote Supervisor Adapter */
+	univ8250_port_ops = *univ8250_port_base_ops;
+	univ8250_rsa_support(&univ8250_port_ops);
+}
+
+void __init serial8250_setup_ports(void)
+{
+	DO_ONCE(__serial8250_setup_ports);
 }
 
 void __init serial8250_register_ports(struct uart_driver *drv, struct device *dev)
@@ -417,7 +440,7 @@ static int univ8250_console_setup(struct console *co, char *options)
 	 * co->index as needed and increment nr_uarts accordingly.
 	 */
 	for (i = nr_uarts; i <= co->index; i++) {
-		up = serial8250_setup_port(i);
+		up = serial8250_get_port(i);
 		if (!up)
 			return -ENODEV;
 		nr_uarts++;
@@ -508,9 +531,7 @@ static struct console univ8250_console = {
 
 static int __init univ8250_console_init(void)
 {
-	if (nr_uarts == 0)
-		return -ENODEV;
-
+	serial8250_setup_ports();
 	serial8250_isa_init_ports();
 	register_console(&univ8250_console);
 	return 0;
@@ -544,7 +565,7 @@ int __init early_serial_setup(struct uart_port *port)
 	if (port->line >= ARRAY_SIZE(serial8250_ports) || nr_uarts == 0)
 		return -ENODEV;
 
-	serial8250_isa_init_ports();
+	serial8250_setup_ports();
 	p = &serial8250_ports[port->line].port;
 	p->iobase       = port->iobase;
 	p->membase      = port->membase;
@@ -706,7 +727,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
 		 * If the port is past the initial isa ports, initialize a new
 		 * port and increment nr_uarts accordingly.
 		 */
-		uart = serial8250_setup_port(nr_uarts);
+		uart = serial8250_get_port(nr_uarts);
 		if (!uart)
 			return -ENOSPC;
 		nr_uarts++;
