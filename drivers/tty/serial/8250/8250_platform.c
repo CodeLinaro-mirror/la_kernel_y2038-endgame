@@ -49,13 +49,12 @@ unsigned int skip_txen_test;
 #define STD_COM4_FLAGS (UPF_BOOT_AUTOCONF |	0		| 0		)
 #endif
 
-static const struct old_serial_port old_serial_port[] = {
+static struct uart_port old_serial_port[] __initdata = {
 #ifdef CONFIG_SERIAL_8250_ISA
-	/* UART		CLK		PORT	IRQ	FLAGS			    */
-	{ .uart = 0,	BASE_BAUD,	0x3F8,	4,	STD_COMX_FLAGS	}, /* ttyS0 */
-	{ .uart = 0,	BASE_BAUD,	0x2F8,	3,	STD_COMX_FLAGS	}, /* ttyS1 */
-	{ .uart = 0,	BASE_BAUD,	0x3E8,	4,	STD_COMX_FLAGS	}, /* ttyS2 */
-	{ .uart = 0,	BASE_BAUD,	0x2E8,	3,	STD_COM4_FLAGS	}, /* ttyS3 */
+	{ .iotype = UPIO_PORT, .uartclk = 1843200, .iobase = 0x3F8, .irq = 4, .flags = STD_COMX_FLAGS },
+	{ .iotype = UPIO_PORT, .uartclk = 1843200, .iobase = 0x2F8, .irq = 3, .flags = STD_COMX_FLAGS },
+	{ .iotype = UPIO_PORT, .uartclk = 1843200, .iobase = 0x3E8, .irq = 4, .flags = STD_COMX_FLAGS },
+	{ .iotype = UPIO_PORT, .uartclk = 1843200, .iobase = 0x2E8, .irq = 3, .flags = STD_COM4_FLAGS },
 #endif
 };
 
@@ -66,31 +65,63 @@ void serial8250_set_isa_configurator(serial8250_isa_config_fn v)
 }
 EXPORT_SYMBOL(serial8250_set_isa_configurator);
 
+/*
+ * early_serial_setup - early registration for 8250 ports
+ *
+ * Setup an 8250 port structure prior to console initialisation.  Use
+ * after console initialisation will cause undefined behaviour.
+ */
+int __init early_serial_setup(struct uart_port *port)
+{
+	struct uart_port *p;
+
+	if (port->line >= UART_NR || nr_uarts == 0)
+		return -ENODEV;
+
+	serial8250_setup_ports();
+	p = &serial8250_get_port(port->line)->port;
+	p->iobase       = port->iobase;
+	p->membase      = port->membase;
+	p->irq          = port->irq;
+	p->irqflags     = port->irqflags;
+	p->uartclk      = port->uartclk;
+	p->fifosize     = port->fifosize;
+	p->regshift     = port->regshift;
+	p->iotype       = port->iotype;
+	p->flags        = port->flags;
+	p->mapbase      = port->mapbase;
+	p->mapsize      = port->mapsize;
+	p->private_data = port->private_data;
+	p->type		= port->type;
+	p->line		= port->line;
+
+	serial8250_set_defaults(up_to_u8250p(p));
+
+	if (port->serial_in)
+		p->serial_in = port->serial_in;
+	if (port->serial_out)
+		p->serial_out = port->serial_out;
+	if (port->handle_irq)
+		p->handle_irq = port->handle_irq;
+
+	return 0;
+}
+
 void __init serial8250_isa_init_ports(void)
 {
-	int i, irqflag = 0;
+	int i;
 
 	if (nr_uarts > UART_NR)
 		nr_uarts = UART_NR;
 
-	if (share_irqs)
-		irqflag = IRQF_SHARED;
 
 	for (i = 0; i < ARRAY_SIZE(old_serial_port) && i < nr_uarts; i++) {
 		struct uart_8250_port *up = serial8250_get_port(i);
-		struct uart_port *port = &up->port;
 
-		port->iobase   = old_serial_port[i].port;
-		port->irq      = irq_canonicalize(old_serial_port[i].irq);
-		port->irqflags = 0;
-		port->uartclk  = old_serial_port[i].baud_base * 16;
-		port->flags    = old_serial_port[i].flags;
-		port->hub6     = 0;
-		port->membase  = old_serial_port[i].iomem_base;
-		port->iotype   = old_serial_port[i].io_type;
-		port->regshift = old_serial_port[i].iomem_reg_shift;
+		old_serial_port[i].line = i;
+		old_serial_port[i].irqflags = share_irqs ? IRQF_SHARED : 0;
 
-		port->irqflags |= irqflag;
+		early_serial_setup(&old_serial_port[i]);
 
 		serial8250_set_defaults(up);
 

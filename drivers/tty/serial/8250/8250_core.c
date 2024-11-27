@@ -540,48 +540,6 @@ struct uart_driver serial8250_reg = {
 	.cons			= SERIAL8250_CONSOLE,
 };
 
-/*
- * early_serial_setup - early registration for 8250 ports
- *
- * Setup an 8250 port structure prior to console initialisation.  Use
- * after console initialisation will cause undefined behaviour.
- */
-int __init early_serial_setup(struct uart_port *port)
-{
-	struct uart_port *p;
-
-	if (port->line >= ARRAY_SIZE(serial8250_ports) || nr_uarts == 0)
-		return -ENODEV;
-
-	serial8250_setup_ports();
-	p = &serial8250_ports[port->line].port;
-	p->iobase       = port->iobase;
-	p->membase      = port->membase;
-	p->irq          = port->irq;
-	p->irqflags     = port->irqflags;
-	p->uartclk      = port->uartclk;
-	p->fifosize     = port->fifosize;
-	p->regshift     = port->regshift;
-	p->iotype       = port->iotype;
-	p->flags        = port->flags;
-	p->mapbase      = port->mapbase;
-	p->mapsize      = port->mapsize;
-	p->private_data = port->private_data;
-	p->type		= port->type;
-	p->line		= port->line;
-
-	serial8250_set_defaults(up_to_u8250p(p));
-
-	if (port->serial_in)
-		p->serial_in = port->serial_in;
-	if (port->serial_out)
-		p->serial_out = port->serial_out;
-	if (port->handle_irq)
-		p->handle_irq = port->handle_irq;
-
-	return 0;
-}
-
 /**
  *	serial8250_suspend_port - suspend one serial port
  *	@line:  serial line number
