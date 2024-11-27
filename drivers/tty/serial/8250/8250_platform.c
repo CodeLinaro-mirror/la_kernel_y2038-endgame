@@ -13,7 +13,6 @@
 #include <linux/io.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
-#include <linux/once.h>
 #include <linux/platform_device.h>
 
 #include <linux/serial_8250.h>
@@ -57,24 +56,12 @@ void serial8250_set_isa_configurator(serial8250_isa_config_fn v)
 }
 EXPORT_SYMBOL(serial8250_set_isa_configurator);
 
-static void __init __serial8250_isa_init_ports(void)
+void __init serial8250_isa_init_ports(void)
 {
 	int i, irqflag = 0;
 
 	if (nr_uarts > UART_NR)
 		nr_uarts = UART_NR;
-
-	/*
-	 * Set up initial ISA ports based on nr_uart module param, or else
-	 * default to CONFIG_SERIAL_8250_RUNTIME_UARTS. Note that we do not
-	 * need to increase nr_uarts when setting up the initial ISA ports.
-	 */
-	for (i = 0; i < nr_uarts; i++)
-		serial8250_setup_port(i);
-
-	/* chain base port ops to support Remote Supervisor Adapter */
-	univ8250_port_ops = *univ8250_port_base_ops;
-	univ8250_rsa_support(&univ8250_port_ops);
 
 	if (share_irqs)
 		irqflag = IRQF_SHARED;
@@ -94,14 +81,13 @@ static void __init __serial8250_isa_init_ports(void)
 		port->regshift = old_serial_port[i].iomem_reg_shift;
 
 		port->irqflags |= irqflag;
+
+		serial8250_set_defaults(up);
+
+		/* Allow Intel CE4100 and jailhouse to override defaults */
 		if (serial8250_isa_config != NULL)
 			serial8250_isa_config(i, &up->port, &up->capabilities);
 	}
-}
-
-void __init serial8250_isa_init_ports(void)
-{
-	DO_ONCE(__serial8250_isa_init_ports);
 }
 
 /*
@@ -307,7 +293,9 @@ static int __init serial8250_init(void)
 	if (nr_uarts == 0)
 		return -ENODEV;
 
-	serial8250_isa_init_ports();
+	serial8250_setup_ports();
+	if (!IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE))
+		serial8250_isa_init_ports();
 
 	pr_info("Serial: 8250/16550 driver, %d ports, IRQ sharing %s\n",
 		nr_uarts, str_enabled_disabled(share_irqs));

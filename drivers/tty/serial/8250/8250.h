@@ -220,7 +220,7 @@ static inline bool serial8250_clear_THRI(struct uart_8250_port *up)
 	return true;
 }
 
-struct uart_8250_port *serial8250_setup_port(int index);
+void serial8250_setup_ports(void);
 struct uart_8250_port *serial8250_get_port(int line);
 
 void serial8250_rpm_get(struct uart_8250_port *p);
