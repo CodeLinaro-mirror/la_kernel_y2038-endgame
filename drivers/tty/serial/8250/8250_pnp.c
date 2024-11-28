@@ -482,7 +482,7 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
 		uart.port.type = PORT_8250_CIR;
 	}
 
-	dev_dbg(&dev->dev,
+	dev_info(&dev->dev,
 		 "Setup PNP port: port %#lx, mem %#llx, size %#llx, irq %u, type %u\n",
 		 uart.port.iobase, (unsigned long long)uart.port.mapbase,
 		 (unsigned long long)uart.port.mapsize, uart.port.irq, uart.port.iotype);
