@@ -681,6 +681,8 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
 		nr_uarts++;
 	}
 
+	WARN_ON(!up->port.dev);
+
 	/* Check if it is CIR already. We check this below again, see there why. */
 	if (uart->port.type == PORT_8250_CIR)
 		return -ENODEV;
