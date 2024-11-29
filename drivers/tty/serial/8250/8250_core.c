@@ -331,11 +331,6 @@ struct uart_8250_port *serial8250_get_port(int line)
 }
 EXPORT_SYMBOL_GPL(serial8250_get_port);
 
-static inline void serial8250_apply_quirks(struct uart_8250_port *up)
-{
-	up->port.quirks |= skip_txen_test ? UPQ_NO_TXEN_TEST : 0;
-}
-
 /*
  * serial8250_setup_port() must be called before any uarts are added
  * from any of the various methods. If none of the early methods are
@@ -374,29 +369,6 @@ static __init void __serial8250_setup_ports(void)
 void __init serial8250_setup_ports(void)
 {
 	DO_ONCE(__serial8250_setup_ports);
-}
-
-void __init serial8250_register_ports(struct uart_driver *drv, struct device *dev)
-{
-	int i;
-
-	for (i = 0; i < nr_uarts; i++) {
-		struct uart_8250_port *up = &serial8250_ports[i];
-
-		if (up->port.type == PORT_8250_CIR)
-			continue;
-
-		if (up->port.dev)
-			continue;
-
-		up->port.dev = dev;
-
-		if (uart_console_registered(&up->port))
-			pm_runtime_get_sync(up->port.dev);
-
-		serial8250_apply_quirks(up);
-		uart_add_one_port(drv, &up->port);
-	}
 }
 
 #ifdef CONFIG_SERIAL_8250_CONSOLE
@@ -852,18 +824,7 @@ void serial8250_unregister_port(int line)
 	}
 
 	uart_remove_one_port(&serial8250_reg, &uart->port);
-	if (serial8250_isa_devs) {
-		uart->port.flags &= ~UPF_BOOT_AUTOCONF;
-		uart->port.type = PORT_UNKNOWN;
-		uart->port.dev = &serial8250_isa_devs->dev;
-		uart->port.port_id = line;
-		uart->capabilities = 0;
-		serial8250_init_port(uart);
-		serial8250_apply_quirks(uart);
-		uart_add_one_port(&serial8250_reg, &uart->port);
-	} else {
-		uart->port.dev = NULL;
-	}
+	uart->port.dev = NULL;
 	mutex_unlock(&serial_mutex);
 }
 EXPORT_SYMBOL(serial8250_unregister_port);

@@ -14,6 +14,7 @@
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/platform_device.h>
+#include <linux/pm_runtime.h>
 
 #include <linux/serial_8250.h>
 
@@ -237,6 +238,36 @@ static int serial8250_probe_platform(struct platform_device *dev, struct plat_se
 }
 
 /*
+ * This "device" covers _all_ ISA 8250-compatible serial devices listed
+ * in the old_serial_port[] table as well as those from early_serial_setup().
+ */
+struct platform_device *serial8250_isa_devs;
+static int serial8250_register_ports(struct uart_driver *drv)
+{
+	int i;
+
+	for (i = 0; i < nr_uarts; i++) {
+		struct uart_8250_port *up = serial8250_get_port(i);
+
+		if (up->port.type == PORT_8250_CIR)
+			continue;
+
+		if (up->port.dev)
+			continue;
+
+		up->port.dev = &serial8250_isa_devs->dev;
+
+		if (uart_console_registered(&up->port) && up->port.dev)
+			pm_runtime_get_sync(up->port.dev);
+
+		serial8250_apply_quirks(up);
+		uart_add_one_port(drv, &up->port);
+	}
+
+	return 0;
+}
+
+/*
  * Register a set of serial devices attached to a platform device.
  * The list is terminated with a zero flags entry, which means we expect
  * all entries to have at least UPF_BOOT_AUTOCONF set.
@@ -258,7 +289,12 @@ static int serial8250_probe(struct platform_device *pdev)
 	if (has_acpi_companion(dev))
 		return serial8250_probe_acpi(pdev);
 
-	return 0;
+	/*
+	 * Any device not claimed by the PnP driver gets assigned
+	 * to serial8250_isa_devs here. This also includes any
+	 * platform specific ones that came through early_serial_setup().
+	 */
+	return serial8250_register_ports(&serial8250_reg);
 }
 
 /*
@@ -321,17 +357,16 @@ static struct platform_driver serial8250_isa_driver = {
 	},
 };
 
-/*
- * This "device" covers _all_ ISA 8250-compatible serial devices listed
- * in the table in include/asm/serial.h.
- */
-struct platform_device *serial8250_isa_devs;
-
 static int __init serial8250_init(void)
 {
 	int ret;
 
 	serial8250_setup_ports();
+
+	/*
+	 * pre-populate the usual ISA devices on x86, to ensure the
+	 * expected order between them.
+	 */
 	if (nr_uarts > 0 && !IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE))
 		serial8250_isa_init_ports();
 
@@ -347,6 +382,11 @@ static int __init serial8250_init(void)
 	if (ret)
 		goto out;
 
+	/*
+	 * The PnP driver finds the actually present devices on
+	 * most PCs, usually through ACPI. This overrides the devices
+	 * from serial8250_isa_init_ports().
+	 */
 	ret = serial8250_pnp_init();
 	if (ret)
 		goto unreg_uart_drv;
@@ -358,18 +398,16 @@ static int __init serial8250_init(void)
 	}
 
 	ret = platform_device_add(serial8250_isa_devs);
-	if (ret)
-		goto put_dev;
-
-	serial8250_register_ports(&serial8250_reg, &serial8250_isa_devs->dev);
+	if (ret) {
+		platform_device_put(serial8250_isa_devs);
+		goto unreg_pnp;
+	}
 
 	ret = platform_driver_register(&serial8250_isa_driver);
 	if (ret == 0)
-		goto out;
+		return 0;
 
-	platform_device_del(serial8250_isa_devs);
-put_dev:
-	platform_device_put(serial8250_isa_devs);
+	platform_device_unregister(serial8250_isa_devs);
 unreg_pnp:
 	serial8250_pnp_exit();
 unreg_uart_drv:
@@ -385,17 +423,8 @@ module_init(serial8250_init);
 
 static void __exit serial8250_exit(void)
 {
-	struct platform_device *isa_dev = serial8250_isa_devs;
-
-	/*
-	 * This tells serial8250_unregister_port() not to re-register
-	 * the ports (thereby making serial8250_isa_driver permanently
-	 * in use).
-	 */
-	serial8250_isa_devs = NULL;
-
 	platform_driver_unregister(&serial8250_isa_driver);
-	platform_device_unregister(isa_dev);
+	platform_device_unregister(serial8250_isa_devs);
 
 	serial8250_pnp_exit();
 

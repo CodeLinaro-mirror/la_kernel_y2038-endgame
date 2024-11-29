@@ -119,7 +119,6 @@ extern unsigned int skip_txen_test;
 #define SERIAL8250_PORT(_base, _irq) SERIAL8250_PORT_FLAGS(_base, _irq, 0)
 
 extern struct uart_driver serial8250_reg;
-void serial8250_register_ports(struct uart_driver *drv, struct device *dev);
 
 /* Legacy ISA bus related APIs */
 typedef void (*serial8250_isa_config_fn)(int, struct uart_port *, u32 *);
@@ -217,6 +216,11 @@ static inline bool serial8250_clear_THRI(struct uart_8250_port *up)
 	up->ier &= ~UART_IER_THRI;
 	serial_out(up, UART_IER, up->ier);
 	return true;
+}
+
+static inline void serial8250_apply_quirks(struct uart_8250_port *up)
+{
+	up->port.quirks |= skip_txen_test ? UPQ_NO_TXEN_TEST : 0;
 }
 
 void serial8250_setup_ports(void);
