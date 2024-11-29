@@ -39,6 +39,7 @@ void ibmasm_register_uart(struct service_processor *sp)
 	uart.port.flags		= UPF_SHARE_IRQ;
 	uart.port.iotype	= UPIO_MEM;
 	uart.port.membase	= iomem_base;
+	uart.port.dev		= sp->dev;
 
 	sp->serial_line = serial8250_register_8250_port(&uart);
 	if (sp->serial_line < 0) {

@@ -684,6 +684,8 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
 		nr_uarts++;
 	}
 
+	WARN_ON(!up->port.dev);
+
 	if (uart->port.type != PORT_8250_CIR) {
 		struct mctrl_gpios *gpios;
 

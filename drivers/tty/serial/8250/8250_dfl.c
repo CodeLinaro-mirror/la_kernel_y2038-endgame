@@ -116,6 +116,7 @@ static int dfl_uart_probe(struct dfl_device *dfl_dev)
 	uart.port.flags = UPF_IOREMAP;
 	uart.port.mapbase = dfl_dev->mmio_res.start;
 	uart.port.mapsize = resource_size(&dfl_dev->mmio_res);
+	uart.port.dev = dev;
 
 	ret = dfl_uart_get_params(dfl_dev, &uart);
 	if (ret < 0)

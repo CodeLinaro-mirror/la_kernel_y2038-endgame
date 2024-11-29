@@ -220,6 +220,7 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
 		uart.port.irq = mcb_get_irq(mdev);
 		uart.port.mapbase = (unsigned long) mem->start
 					    + data->offset[i];
+		uart.port.dev = &mdev->dev;
 
 		/* ok, register the port */
 		res = serial8250_register_8250_port(&uart);
