@@ -373,6 +373,8 @@ void __init serial8250_setup_ports(void)
 	DO_ONCE(__serial8250_setup_ports);
 }
 
+unsigned int nr_uarts;
+
 #ifdef CONFIG_SERIAL_8250_CONSOLE
 
 static void univ8250_console_write(struct console *co, const char *s,
@@ -757,7 +759,8 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
 		if (uart_console_registered(&uart->port))
 			pm_runtime_get_sync(uart->port.dev);
 
-		if (serial8250_isa_config != NULL)
+		if (IS_ENABLED(CONFIG_SERIAL_8250_ISA) &&
+		    serial8250_isa_config != NULL)
 			serial8250_isa_config(0, &uart->port,
 					&uart->capabilities);
 
@@ -822,5 +825,47 @@ void serial8250_unregister_port(int line)
 }
 EXPORT_SYMBOL(serial8250_unregister_port);
 
+static int __init serial8250_init(void)
+{
+	int ret;
+
+	serial8250_setup_ports();
+
+#ifdef CONFIG_SPARC
+	ret = sunserial_register_minors(&serial8250_reg, UART_NR);
+#else
+	serial8250_reg.nr = UART_NR;
+	ret = uart_register_driver(&serial8250_reg);
+#endif
+	if (ret)
+		goto out;
+
+	ret = serial8250_isa_init();
+	if (ret == 0)
+		return 0;
+
+#ifdef CONFIG_SPARC
+	sunserial_unregister_minors(&serial8250_reg, UART_NR);
+#else
+	uart_unregister_driver(&serial8250_reg);
+#endif
+out:
+	return ret;
+}
+module_init(serial8250_init);
+
+static void __exit serial8250_exit(void)
+{
+	serial8250_isa_exit();
+
+#ifdef CONFIG_SPARC
+	sunserial_unregister_minors(&serial8250_reg, UART_NR);
+#else
+	uart_unregister_driver(&serial8250_reg);
+#endif
+}
+module_exit(serial8250_exit);
+
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Generic 8250/16x50 serial driver");
+MODULE_ALIAS_CHARDEV_MAJOR(TTY_MAJOR);
