@@ -5,7 +5,7 @@
 
 obj-$(CONFIG_SERIAL_8250)		+= 8250.o
 8250-y					:= 8250_core.o
-8250-y					+= 8250_platform.o
+8250-$(CONFIG_SERIAL_8250_LEGACY_ISA)	+= 8250_isa.o
 8250-$(CONFIG_SERIAL_8250_PNP)		+= 8250_pnp.o
 
 obj-$(CONFIG_SERIAL_8250)		+= 8250_base.o
@@ -42,6 +42,7 @@ obj-$(CONFIG_SERIAL_8250_MT6577)	+= 8250_mtk.o
 obj-$(CONFIG_SERIAL_OF_PLATFORM)	+= 8250_of.o
 obj-$(CONFIG_SERIAL_8250_OMAP)		+= 8250_omap.o
 obj-$(CONFIG_SERIAL_8250_PARISC)	+= 8250_parisc.o
+obj-$(CONFIG_SERIAL_8250_PLATFORM)	+= 8250_platform.o
 obj-$(CONFIG_SERIAL_8250_PCI)		+= 8250_pci.o
 obj-$(CONFIG_SERIAL_8250_PCI1XXXX)	+= 8250_pci1xxxx.o
 obj-$(CONFIG_SERIAL_8250_PERICOM)	+= 8250_pericom.o

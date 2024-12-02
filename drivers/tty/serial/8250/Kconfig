@@ -55,12 +55,23 @@ config SERIAL_8250_ISA
 	bool "Probe PC-style ISA 8250 ports at 0x2f8/0x3f8/0x2e8/0x3e8" if EXPERT
 	default (ALPHA || X86_32 || Q40 || JAILHOUSE_GUEST || !SERIAL_8250_PNP)
 	depends on X86 || ISA
+	select SERIAL_8250_LEGACY_ISA
 	help
 	  Old PC style serial ports are not discoverable other than poking
 	  at well-known I/O ports. Generally these are now discovered through
 	  one of the plug-and-play mechanisms (ACPI, ISAPNP, PNPBIOS), but
 	  machines that support none of those can still get the four
 	  default ports by enabling this.
+
+config SERIAL_8250_LEGACY_ISA
+	bool
+	depends on SERIAL_8250_CONSOLE
+	default (MIPS && ATH25) || (MIPS && MIKROTIK_RB532) || (PARISC && SUPERIO)
+	help
+	  The legacy support is mainly used as part of SERIAL_8250_ISA,
+	  but there are a few other boards that hook into this through the
+	  early_serial_setup() helper to get the console up slightly earlier.
+	  New platforms should use earlycon for this purpose.
 
 config SERIAL_8250_PNP
 	bool "8250/16550 PNP device support" if EXPERT
@@ -172,6 +183,7 @@ config SERIAL_8250_HP300
 	tristate
 	depends on SERIAL_8250 && HP300
 	default SERIAL_8250
+	select SERIAL_8250_LEGACY_ISA
 
 config SERIAL_8250_CS
 	tristate "8250/16550 PCMCIA device support"
@@ -208,6 +220,22 @@ config SERIAL_8250_NR_UARTS
 	  to support.  This includes any ports discovered via ACPI or
 	  PCI enumeration and any ports that may be added at run-time
 	  via hot-plug, or any ISA multi-port serial cards.
+
+config SERIAL_8250_PLATFORM
+	tristate "Legacy probing for 8250 ports" if EXPERT
+	depends on SERIAL_8250
+	default (ARM && ATAGS) || MIPS || PPC_UDBG_16550 || SH || XTENSA || \
+		HISILICON_LPC || MFD_SM501 || SERIAL_8250_FOURPORT || \
+	        (RISCV && ACPI)
+	help
+	  The 8250 platform driver is used for devices that provided
+	  by a board specific definition rather than devicetree or
+	  ACPI firmware.  This includes older embedded devices that
+	  predate devicetree as well as multiport ISA cards and a few
+	  ACPI based server platform (RISC-V and HiSilicon arm64) that
+	  do not work with the normal PNP driver.
+
+	  New platforms should not need this driver.
 
 config SERIAL_8250_EXTENDED
 	bool "Extended 8250/16550 serial driver options"
@@ -302,7 +330,7 @@ config SERIAL_8250_PCI1XXXX
 
 config SERIAL_8250_SHARE_IRQ
 	bool "Support for sharing serial interrupts"
-	depends on SERIAL_8250_EXTENDED
+	depends on SERIAL_8250_LEGACY_ISA
 	help
 	  Some serial boards have hardware support which allows multiple dumb
 	  serial ports on the same board to share a single IRQ. To enable
@@ -310,8 +338,7 @@ config SERIAL_8250_SHARE_IRQ
 
 config SERIAL_8250_DETECT_IRQ
 	bool "Autodetect IRQ on standard ports (unsafe)"
-	depends on SERIAL_8250_EXTENDED
-	depends on SERIAL_8250_LEGACY
+	depends on SERIAL_8250_LEGACY_ISA
 	help
 	  Say Y here if you want the kernel to try to guess which IRQ
 	  to use for your serial port.

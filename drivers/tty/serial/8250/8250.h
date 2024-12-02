@@ -104,7 +104,6 @@ extern unsigned int nr_uarts;
 #define SERIAL8250_SHARE_IRQS 0
 #endif
 
-extern unsigned int share_irqs;
 extern unsigned int skip_txen_test;
 
 #define SERIAL8250_PORT_FLAGS(_base, _irq, _flags)		\
@@ -124,9 +123,11 @@ extern struct uart_driver serial8250_reg;
 typedef void (*serial8250_isa_config_fn)(int, struct uart_port *, u32 *);
 extern serial8250_isa_config_fn serial8250_isa_config;
 
+#ifdef CONFIG_SERIAL_8250_ISA
 void serial8250_isa_init_ports(void);
-
-extern struct platform_device *serial8250_isa_devs;
+#else
+static inline void serial8250_isa_init_ports(void) {}
+#endif
 
 extern struct uart_ops univ8250_port_ops;
 
@@ -220,7 +221,8 @@ static inline bool serial8250_clear_THRI(struct uart_8250_port *up)
 
 static inline void serial8250_apply_quirks(struct uart_8250_port *up)
 {
-	up->port.quirks |= skip_txen_test ? UPQ_NO_TXEN_TEST : 0;
+	if (IS_ENABLED(CONFIG_SERIAL_8250_ISA))
+		up->port.quirks |= skip_txen_test ? UPQ_NO_TXEN_TEST : 0;
 }
 
 void serial8250_setup_ports(void);
@@ -323,6 +325,14 @@ void serial8250_pnp_exit(void);
 #else
 static inline int serial8250_pnp_init(void) { return 0; }
 static inline void serial8250_pnp_exit(void) { }
+#endif
+
+#ifdef CONFIG_SERIAL_8250_LEGACY_ISA
+int serial8250_isa_init(void);
+void serial8250_isa_exit(void);
+#else
+static inline int serial8250_isa_init(void) { return serial8250_pnp_init(); }
+static inline void serial8250_isa_exit(void) { serial8250_pnp_exit(); }
 #endif
 
 #ifdef CONFIG_SERIAL_8250_FINTEK
