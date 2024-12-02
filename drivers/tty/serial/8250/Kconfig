@@ -257,19 +257,6 @@ config SERIAL_8250_ACCENT
 	  To compile this driver as a module, choose M here: the module
 	  will be called 8250_accent.
 
-config SERIAL_8250_ASPEED_VUART
-	tristate "Aspeed Virtual UART"
-	depends on SERIAL_8250
-	depends on OF
-	depends on MFD_SYSCON
-	depends on ARCH_ASPEED || COMPILE_TEST
-	select REGMAP
-	help
-	  If you want to use the virtual UART (VUART) device on Aspeed
-	  BMC platforms, enable this option. This enables the 16550A-
-	  compatible device on the local LPC bus, giving a UART device
-	  with no physical RS232 connections.
-
 config SERIAL_8250_BOCA
 	tristate "Support Boca cards"
 	depends on SERIAL_8250 != n && ISA && SERIAL_8250_MANY_PORTS
@@ -345,6 +332,19 @@ config SERIAL_8250_ACORN
 	  If you have an Atomwide Serial card or Serial Port card for an Acorn
 	  system, say Y to this option.  The driver can handle 1, 2, or 3 port
 	  cards.  If unsure, say N.
+
+config SERIAL_8250_ASPEED_VUART
+	tristate "Aspeed Virtual UART"
+	depends on SERIAL_8250
+	depends on OF
+	depends on MFD_SYSCON
+	depends on ARCH_ASPEED || COMPILE_TEST
+	select REGMAP
+	help
+	  If you want to use the virtual UART (VUART) device on Aspeed
+	  BMC platforms, enable this option. This enables the 16550A-
+	  compatible device on the local LPC bus, giving a UART device
+	  with no physical RS232 connections.
 
 config SERIAL_8250_BCM2835AUX
 	tristate "BCM2835 auxiliar mini UART support"
