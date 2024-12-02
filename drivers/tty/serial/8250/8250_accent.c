@@ -10,8 +10,8 @@
 #include "8250.h"
 
 static struct plat_serial8250_port accent_data[] = {
-	SERIAL8250_PORT(0x330, 4),
-	SERIAL8250_PORT(0x338, 4),
+	SERIAL8250_PORT_FLAGS(0x330, 4, UPF_SHARE_IRQ),
+	SERIAL8250_PORT_FLAGS(0x338, 4, UPF_SHARE_IRQ),
 	{ },
 };
 
