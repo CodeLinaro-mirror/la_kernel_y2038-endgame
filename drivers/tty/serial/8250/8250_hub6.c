@@ -13,7 +13,7 @@
 		.irq		= 3,					\
 		.uartclk	= 1843200,				\
 		.iotype		= UPIO_HUB6,				\
-		.flags		= UPF_BOOT_AUTOCONF,			\
+		.flags		= UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ,	\
 		.hub6		= (card) << 6 | (port) << 3 | 1,	\
 	}
 

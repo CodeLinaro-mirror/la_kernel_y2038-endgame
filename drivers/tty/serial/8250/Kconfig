@@ -348,7 +348,7 @@ config SERIAL_8250_ASPEED_VUART
 config SERIAL_8250_BCM2835AUX
 	tristate "BCM2835 auxiliar mini UART support"
 	depends on ARCH_BCM2835 || COMPILE_TEST
-	depends on SERIAL_8250 && SERIAL_8250_SHARE_IRQ
+	depends on SERIAL_8250
 	help
 	  Support for the BCM2835 auxiliar mini UART.
 
@@ -411,8 +411,6 @@ config SERIAL_8250_IOC3
 	tristate "SGI IOC3 8250 UART support"
 	depends on SERIAL_8250
 	depends on SGI_MFD_IOC3 || COMPILE_TEST
-	select SERIAL_8250_EXTENDED
-	select SERIAL_8250_SHARE_IRQ
 	help
 	  Enable this if you have a SGI Origin or Octane machine. This module
 	  provides basic serial support by directly driving the UART chip

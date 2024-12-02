@@ -195,9 +195,6 @@ static int serial8250_probe_platform(struct platform_device *dev, struct plat_se
 
 	memset(&uart, 0, sizeof(uart));
 
-	if (share_irqs)
-		irqflag = IRQF_SHARED;
-
 	for (i = 0; p && p->flags != 0; p++, i++) {
 		uart.port.iobase	= p->iobase;
 		uart.port.membase	= p->membase;

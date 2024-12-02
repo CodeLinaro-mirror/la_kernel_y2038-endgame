@@ -10,7 +10,7 @@
 #include "8250.h"
 
 #define SERIAL8250_FOURPORT(_base, _irq) \
-	SERIAL8250_PORT_FLAGS(_base, _irq, UPF_FOURPORT)
+	SERIAL8250_PORT_FLAGS(_base, _irq, UPF_FOURPORT | UPF_SHARE_IRQ)
 
 static struct plat_serial8250_port fourport_data[] = {
 	SERIAL8250_FOURPORT(0x1a0, 9),
