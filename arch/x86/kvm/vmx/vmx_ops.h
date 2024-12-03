@@ -172,11 +172,7 @@ static __always_inline u64 vmcs_read64(unsigned long field)
 	vmcs_check64(field);
 	if (kvm_is_using_evmcs())
 		return evmcs_read64(field);
-#ifdef CONFIG_X86_64
 	return __vmcs_readl(field);
-#else
-	return __vmcs_readl(field) | ((u64)__vmcs_readl(field+1) << 32);
-#endif
 }
 
 static __always_inline unsigned long vmcs_readl(unsigned long field)
@@ -249,9 +245,6 @@ static __always_inline void vmcs_write64(unsigned long field, u64 value)
 		return evmcs_write64(field, value);
 
 	__vmcs_writel(field, value);
-#ifndef CONFIG_X86_64
-	__vmcs_writel(field+1, value >> 32);
-#endif
 }
 
 static __always_inline void vmcs_writel(unsigned long field, unsigned long value)

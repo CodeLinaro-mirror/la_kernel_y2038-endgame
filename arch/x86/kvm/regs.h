@@ -68,11 +68,7 @@ int load_pdptrs(struct kvm_vcpu *vcpu, unsigned long cr3);
 
 static inline bool is_long_mode(struct kvm_vcpu *vcpu)
 {
-#ifdef CONFIG_X86_64
 	return !!(vcpu->arch.efer & EFER_LMA);
-#else
-	return false;
-#endif
 }
 
 static inline bool is_64_bit_mode(struct kvm_vcpu *vcpu)
@@ -89,25 +85,17 @@ static inline bool is_64_bit_mode(struct kvm_vcpu *vcpu)
 
 static inline bool is_64_bit_hypercall(struct kvm_vcpu *vcpu)
 {
-#ifdef CONFIG_X86_64
 	/*
 	 * If running with protected guest state, the CS register is not
 	 * accessible. The hypercall register values will have had to been
 	 * provided in 64-bit mode, so assume the guest is in 64-bit.
 	 */
 	return vcpu->arch.guest_state_protected || is_64_bit_mode(vcpu);
-#else
-	return false;
-#endif
 }
 
 static __always_inline unsigned long kvm_reg_mode_mask(struct kvm_vcpu *vcpu)
 {
-#ifdef CONFIG_X86_64
 	return is_64_bit_mode(vcpu) ? GENMASK(63, 0) : GENMASK(31, 0);
-#else
-	return GENMASK(31, 0);
-#endif
 }
 
 #define __BUILD_KVM_GPR_ACCESSORS(lname, uname)						\
@@ -142,7 +130,6 @@ BUILD_KVM_GPR_ACCESSORS(dx, RDX)
 BUILD_KVM_GPR_ACCESSORS(bp, RBP)
 BUILD_KVM_GPR_ACCESSORS(si, RSI)
 BUILD_KVM_GPR_ACCESSORS(di, RDI)
-#ifdef CONFIG_X86_64
 __BUILD_KVM_GPR_ACCESSORS(r8,  R8)
 __BUILD_KVM_GPR_ACCESSORS(r9,  R9)
 __BUILD_KVM_GPR_ACCESSORS(r10, R10)
@@ -151,7 +138,6 @@ __BUILD_KVM_GPR_ACCESSORS(r12, R12)
 __BUILD_KVM_GPR_ACCESSORS(r13, R13)
 __BUILD_KVM_GPR_ACCESSORS(r14, R14)
 __BUILD_KVM_GPR_ACCESSORS(r15, R15)
-#endif
 
 /*
  * Using the register cache from interrupt context is generally not allowed, as

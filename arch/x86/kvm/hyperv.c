@@ -2564,13 +2564,11 @@ int kvm_hv_hypercall(struct kvm_vcpu *vcpu)
 		return 1;
 	}
 
-#ifdef CONFIG_X86_64
 	if (is_64_bit_hypercall(vcpu)) {
 		hc.param = kvm_rcx_read_raw(vcpu);
 		hc.ingpa = kvm_rdx_read_raw(vcpu);
 		hc.outgpa = kvm_r8_read_raw(vcpu);
 	} else
-#endif
 	{
 		hc.param = ((u64)kvm_edx_read(vcpu) << 32) | kvm_eax_read(vcpu);
 		hc.ingpa = ((u64)kvm_ebx_read(vcpu) << 32) | kvm_ecx_read(vcpu);

@@ -321,11 +321,7 @@ typedef void (*fastop_t)(struct fastop *);
  * also uses _eip, RIP cannot be a register operand nor can it be an operand in
  * a ModRM or SIB byte.
  */
-#ifdef CONFIG_X86_64
 #define NR_EMULATOR_GPRS	16
-#else
-#define NR_EMULATOR_GPRS	8
-#endif
 
 /*
  * Distinguish between no prefix, REX, or in the future REX2.

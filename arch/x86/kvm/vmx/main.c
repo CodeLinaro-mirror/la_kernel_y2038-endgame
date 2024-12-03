@@ -1089,10 +1089,8 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
 	.pi_update_irte = vt_pi_update_irte,
 	.pi_start_bypass = vt_pi_start_bypass,
 
-#ifdef CONFIG_X86_64
 	.set_hv_timer = vt_op(set_hv_timer),
 	.cancel_hv_timer = vt_op(cancel_hv_timer),
-#endif
 
 	.setup_mce = vt_op(setup_mce),
 

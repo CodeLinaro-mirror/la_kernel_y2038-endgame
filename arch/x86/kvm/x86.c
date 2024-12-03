@@ -875,7 +875,6 @@ static inline bool kvm_vcpu_exit_request(struct kvm_vcpu *vcpu)
 	       kvm_request_pending(vcpu) || xfer_to_guest_mode_work_pending();
 }
 
-#ifdef CONFIG_X86_64
 struct pvclock_clock {
 	int vclock_mode;
 	u64 cycle_last;
@@ -994,10 +993,7 @@ static void kvm_get_time_scale(u64 scaled_hz, u64 base_hz,
 	*pmultiplier = div_frac(scaled_hz_u64, base32);
 }
 
-#ifdef CONFIG_X86_64
 static atomic_t kvm_guest_has_master_clock = ATOMIC_INIT(0);
-#endif
-
 static DEFINE_PER_CPU(unsigned long, cpu_tsc_khz);
 static unsigned long max_tsc_khz;
 
@@ -1093,16 +1089,13 @@ static u64 compute_guest_tsc(struct kvm_vcpu *vcpu, s64 kernel_ns)
 	return vcpu->arch.this_tsc_write + (delta_ns >= 0 ? tsc : -tsc);
 }
 
-#ifdef CONFIG_X86_64
 static inline bool gtod_is_based_on_tsc(int mode)
 {
 	return mode == VDSO_CLOCKMODE_TSC || mode == VDSO_CLOCKMODE_HVCLOCK;
 }
-#endif
 
 static void kvm_track_tsc_matching(struct kvm_vcpu *vcpu, bool new_generation)
 {
-#ifdef CONFIG_X86_64
 	struct kvm_arch *ka = &vcpu->kvm->arch;
 	struct pvclock_gtod_data *gtod = &pvclock_gtod_data;
 
@@ -1128,7 +1121,6 @@ static void kvm_track_tsc_matching(struct kvm_vcpu *vcpu, bool new_generation)
 	trace_kvm_track_tsc(vcpu->vcpu_id, ka->nr_vcpus_matched_tsc,
 			    atomic_read(&vcpu->kvm->online_vcpus),
 		            ka->use_master_clock, gtod->clock.vclock_mode);
-#endif
 }
 
 /*
@@ -1243,14 +1235,13 @@ static void kvm_vcpu_write_tsc_multiplier(struct kvm_vcpu *vcpu, u64 l1_multipli
 
 static inline bool kvm_check_tsc_unstable(void)
 {
-#ifdef CONFIG_X86_64
 	/*
 	 * TSC is marked unstable when we're running on Hyper-V,
 	 * 'TSC page' clocksource is good.
 	 */
 	if (pvclock_gtod_data.clock.vclock_mode == VDSO_CLOCKMODE_HVCLOCK)
 		return false;
-#endif
+
 	return check_tsc_unstable();
 }
 
@@ -1381,8 +1372,6 @@ void kvm_synchronize_tsc(struct kvm_vcpu *vcpu, u64 *user_value)
 	raw_spin_unlock_irqrestore(&kvm->arch.tsc_write_lock, flags);
 }
 
-#ifdef CONFIG_X86_64
-
 static bool kvm_snapshot_has_tsc(struct system_time_snapshot *snap,
 				 u64 *tsc_timestamp)
 {
@@ -1458,7 +1447,6 @@ static bool kvm_get_walltime_and_clockread(struct timespec64 *ts,
 	*ts = ktime_to_timespec64(snap.systime);
 	return true;
 }
-#endif
 
 /*
  *
@@ -1505,7 +1493,6 @@ static unsigned long get_cpu_tsc_khz(void);
 
 static void pvclock_update_vm_gtod_copy(struct kvm *kvm)
 {
-#ifdef CONFIG_X86_64
 	struct kvm_arch *ka = &kvm->arch;
 	int vclock_mode;
 	bool host_tsc_clocksource, vcpus_matched;
@@ -1553,7 +1540,6 @@ static void pvclock_update_vm_gtod_copy(struct kvm *kvm)
 	vclock_mode = pvclock_gtod_data.clock.vclock_mode;
 	trace_kvm_update_master_clock(ka->use_master_clock, vclock_mode,
 					vcpus_matched);
-#endif
 }
 
 static void kvm_make_mclock_inprogress_request(struct kvm *kvm)
@@ -5566,10 +5552,8 @@ static bool emulator_get_segment(struct x86_emulate_ctxt *ctxt, u16 *selector,
 		var.limit >>= 12;
 	set_desc_limit(desc, var.limit);
 	set_desc_base(desc, (unsigned long)var.base);
-#ifdef CONFIG_X86_64
 	if (base3)
 		*base3 = var.base >> 32;
-#endif
 	desc->type = var.type;
 	desc->s = var.s;
 	desc->dpl = var.dpl;
@@ -5591,9 +5575,7 @@ static void emulator_set_segment(struct x86_emulate_ctxt *ctxt, u16 selector,
 
 	var.selector = selector;
 	var.base = get_desc_base(desc);
-#ifdef CONFIG_X86_64
 	var.base |= ((u64)base3) << 32;
-#endif
 	var.limit = get_desc_limit(desc);
 	if (desc->g)
 		var.limit = (var.limit << 12) | 0xfff;
@@ -6632,7 +6614,6 @@ static void tsc_khz_changed(void *data)
 	__this_cpu_write(cpu_tsc_khz, khz);
 }
 
-#ifdef CONFIG_X86_64
 static void kvm_hyperv_tsc_notifier(void)
 {
 	struct kvm *kvm;
@@ -6660,7 +6641,6 @@ static void kvm_hyperv_tsc_notifier(void)
 
 	mutex_unlock(&kvm_lock);
 }
-#endif
 
 static void __kvmclock_cpufreq_notifier(struct cpufreq_freqs *freq, int cpu)
 {
@@ -6792,7 +6772,6 @@ static void kvm_timer_init(void)
 	}
 }
 
-#ifdef CONFIG_X86_64
 static void pvclock_gtod_update_fn(struct work_struct *work)
 {
 	struct kvm *kvm;
@@ -6846,7 +6825,6 @@ static int pvclock_gtod_notify(struct notifier_block *nb, unsigned long unused,
 static struct notifier_block pvclock_gtod_notifier = {
 	.notifier_call = pvclock_gtod_notify,
 };
-#endif
 
 void kvm_setup_xss_caps(void)
 {
@@ -7065,12 +7043,11 @@ int kvm_x86_vendor_init(struct kvm_x86_init_ops *ops)
 
 	if (pi_inject_timer == -1)
 		pi_inject_timer = housekeeping_enabled(HK_TYPE_TIMER);
-#ifdef CONFIG_X86_64
+
 	pvclock_gtod_register_notifier(&pvclock_gtod_notifier);
 
 	if (hypervisor_is_type(X86_HYPER_MS_HYPERV))
 		set_hv_tscchange_cb(kvm_hyperv_tsc_notifier);
-#endif
 
 	__kvm_register_perf_callbacks(ops->handle_intel_pt_intr,
 				      enable_mediated_pmu ? kvm_handle_guest_mediated_pmi : NULL);
@@ -7113,10 +7090,8 @@ void kvm_x86_vendor_exit(void)
 {
 	kvm_unregister_perf_callbacks();
 
-#ifdef CONFIG_X86_64
 	if (hypervisor_is_type(X86_HYPER_MS_HYPERV))
 		clear_hv_tscchange_cb();
-#endif
 	kvm_lapic_exit();
 
 	if (!boot_cpu_has(X86_FEATURE_CONSTANT_TSC)) {
@@ -7124,11 +7099,9 @@ void kvm_x86_vendor_exit(void)
 					    CPUFREQ_TRANSITION_NOTIFIER);
 		cpuhp_remove_state_nocalls(CPUHP_AP_X86_KVM_CLK_ONLINE);
 	}
-#ifdef CONFIG_X86_64
 	pvclock_gtod_unregister_notifier(&pvclock_gtod_notifier);
 	irq_work_sync(&pvclock_irq_work);
 	cancel_work_sync(&pvclock_gtod_work);
-#endif
 	kvm_x86_call(hardware_unsetup)();
 	kvm_destroy_user_return_msrs();
 	kvm_mmu_vendor_module_exit();
@@ -7143,7 +7116,6 @@ void kvm_x86_vendor_exit(void)
 }
 EXPORT_SYMBOL_FOR_KVM_INTERNAL(kvm_x86_vendor_exit);
 
-#ifdef CONFIG_X86_64
 static int kvm_pv_clock_pairing(struct kvm_vcpu *vcpu, gpa_t paddr,
 			        unsigned long clock_type)
 {
@@ -7178,7 +7150,6 @@ static int kvm_pv_clock_pairing(struct kvm_vcpu *vcpu, gpa_t paddr,
 
 	return ret;
 }
-#endif
 
 /*
  * kvm_pv_kick_cpu_op:  Kick a vcpu.
@@ -7332,11 +7303,9 @@ int ____kvm_emulate_hypercall(struct kvm_vcpu *vcpu, int cpl,
 		kvm_sched_yield(vcpu, a1);
 		ret = 0;
 		break;
-#ifdef CONFIG_X86_64
 	case KVM_HC_CLOCK_PAIRING:
 		ret = kvm_pv_clock_pairing(vcpu, a0, a1);
 		break;
-#endif
 	case KVM_HC_SEND_IPI:
 		if (!guest_pv_has(vcpu, KVM_FEATURE_PV_SEND_IPI))
 			break;

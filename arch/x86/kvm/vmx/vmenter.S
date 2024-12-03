@@ -23,15 +23,10 @@
 SYM_FUNC_START(__vmx_vcpu_run)
 	push %_ASM_BP
 	mov  %_ASM_SP, %_ASM_BP
-#ifdef CONFIG_X86_64
 	push %r15
 	push %r14
 	push %r13
 	push %r12
-#else
-	push %edi
-	push %esi
-#endif
 	push %_ASM_BX
 
 	/* Save @vmx for SPEC_CTRL handling */
@@ -65,10 +60,8 @@ SYM_FUNC_START(__vmx_vcpu_run)
 	 */
 	LOAD_REGS %_ASM_DI, VMX_vcpu_arch_regs, \
 		  %_ASM_AX, %_ASM_CX, %_ASM_DX, %_ASM_BX, %_ASM_BP, %_ASM_SI
-#ifdef CONFIG_X86_64
 	LOAD_REGS %_ASM_DI, VMX_vcpu_arch_regs, \
 		  %r8, %r9, %r10, %r11, %r12, %r13, %r14, %r15
-#endif
 	/* Load guest RDI.  This kills the @vmx pointer! */
 	LOAD_REGS %_ASM_DI, VMX_vcpu_arch_regs, %_ASM_DI
 
@@ -132,10 +125,8 @@ SYM_INNER_LABEL_ALIGN(vmx_vmexit, SYM_L_GLOBAL)
 	STORE_REGS %_ASM_DI, VMX_vcpu_arch_regs, \
 		   %_ASM_AX, %_ASM_CX, %_ASM_DX, %_ASM_BX, %_ASM_BP, %_ASM_SI
 	POP_REGS   %_ASM_DI, VMX_vcpu_arch_regs, %_ASM_DI
-#ifdef CONFIG_X86_64
 	STORE_REGS %_ASM_DI, VMX_vcpu_arch_regs, \
 		   %r8, %r9, %r10, %r11, %r12, %r13, %r14, %r15
-#endif
 
 	/* Clear return value to indicate VM-Exit (as opposed to VM-Fail). */
 	xor %ebx, %ebx
@@ -152,9 +143,7 @@ SYM_INNER_LABEL_ALIGN(vmx_vmexit, SYM_L_GLOBAL)
 	 * value.
 	 */
 	CLEAR_REGS %eax, %ecx, %edx, %ebp, %esi, %edi
-#ifdef CONFIG_X86_64
 	CLEAR_REGS %r8d, %r9d, %r10d, %r11d, %r12d, %r13d, %r14d, %r15d
-#endif
 
 	/*
 	 * IMPORTANT: RSB filling and SPEC_CTRL handling must be done before
@@ -198,15 +187,10 @@ SYM_INNER_LABEL_ALIGN(vmx_vmexit, SYM_L_GLOBAL)
 
 	/* ... and then the callee-save registers */
 	pop %_ASM_BX
-#ifdef CONFIG_X86_64
 	pop %r12
 	pop %r13
 	pop %r14
 	pop %r15
-#else
-	pop %esi
-	pop %edi
-#endif
 	pop %_ASM_BP
 	RET
 
@@ -238,14 +222,12 @@ SYM_FUNC_START(vmread_error_trampoline)
 	push %_ASM_AX
 	push %_ASM_CX
 	push %_ASM_DX
-#ifdef CONFIG_X86_64
 	push %rdi
 	push %rsi
 	push %r8
 	push %r9
 	push %r10
 	push %r11
-#endif
 
 	/* Load @field and @fault to arg1 and arg2 respectively. */
 	mov 3*WORD_SIZE(%_ASM_BP), %_ASM_ARG2
@@ -256,14 +238,12 @@ SYM_FUNC_START(vmread_error_trampoline)
 	/* Zero out @fault, which will be popped into the result register. */
 	_ASM_MOV $0, 3*WORD_SIZE(%_ASM_BP)
 
-#ifdef CONFIG_X86_64
 	pop %r11
 	pop %r10
 	pop %r9
 	pop %r8
 	pop %rsi
 	pop %rdi
-#endif
 	pop %_ASM_DX
 	pop %_ASM_CX
 	pop %_ASM_AX

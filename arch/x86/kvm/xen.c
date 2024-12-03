@@ -68,7 +68,6 @@ static int kvm_xen_shared_info_init(struct kvm *kvm)
 	BUILD_BUG_ON(offsetof(struct compat_shared_info, arch.wc_sec_hi) != 0x924);
 	BUILD_BUG_ON(offsetof(struct pvclock_vcpu_time_info, version) != 0);
 
-#ifdef CONFIG_X86_64
 	/* Paranoia checks on the 64-bit struct layout */
 	BUILD_BUG_ON(offsetof(struct shared_info, wc) != 0xc00);
 	BUILD_BUG_ON(offsetof(struct shared_info, wc_sec_hi) != 0xc0c);
@@ -78,9 +77,7 @@ static int kvm_xen_shared_info_init(struct kvm *kvm)
 
 		wc_sec_hi = &shinfo->wc_sec_hi;
 		wc = &shinfo->wc;
-	} else
-#endif
-	{
+	} else {
 		struct compat_shared_info *shinfo = gpc->khva;
 
 		wc_sec_hi = &shinfo->arch.wc_sec_hi;
@@ -230,8 +227,7 @@ static void kvm_xen_start_timer(struct kvm_vcpu *vcpu, u64 guest_abs,
 		if (r)
 			break;
 
-		if (!IS_ENABLED(CONFIG_64BIT) ||
-		    !kvm_get_monotonic_and_clockread(&kernel_now, &host_tsc)) {
+		if (!kvm_get_monotonic_and_clockread(&kernel_now, &host_tsc)) {
 			/*
 			 * Don't fall back to get_kvmclock_ns() because it's
 			 * broken; it has a systemic error in its results
@@ -342,7 +338,6 @@ static void kvm_xen_update_runstate_guest(struct kvm_vcpu *v, bool atomic)
 	BUILD_BUG_ON(offsetof(struct vcpu_runstate_info, state) != 0);
 	BUILD_BUG_ON(offsetof(struct compat_vcpu_runstate_info, state) != 0);
 	BUILD_BUG_ON(sizeof(struct compat_vcpu_runstate_info) != 0x2c);
-#ifdef CONFIG_X86_64
 	/*
 	 * The 64-bit structure has 4 bytes of padding before 'state_entry_time'
 	 * so each subsequent field is shifted by 4, and it's 4 bytes longer.
@@ -352,7 +347,6 @@ static void kvm_xen_update_runstate_guest(struct kvm_vcpu *v, bool atomic)
 	BUILD_BUG_ON(offsetof(struct vcpu_runstate_info, time) !=
 		     offsetof(struct compat_vcpu_runstate_info, time) + 4);
 	BUILD_BUG_ON(sizeof(struct vcpu_runstate_info) != 0x2c + 4);
-#endif
 	/*
 	 * The state field is in the same place at the start of both structs,
 	 * and is the same size (int) as vx->current_runstate.
@@ -526,13 +520,11 @@ static void kvm_xen_update_runstate_guest(struct kvm_vcpu *v, bool atomic)
 					sizeof(uint64_t) - 1 - user_len1;
 		}
 
-#ifdef CONFIG_X86_64
 		/*
 		 * Don't leak kernel memory through the padding in the 64-bit
 		 * version of the struct.
 		 */
 		memset(&rs, 0, offsetof(struct vcpu_runstate_info, state_entry_time));
-#endif
 	}
 
 	/*
@@ -779,22 +771,18 @@ int kvm_xen_hvm_set_attr(struct kvm *kvm, struct kvm_xen_hvm_attr *data)
 
 	switch (data->type) {
 	case KVM_XEN_ATTR_TYPE_LONG_MODE:
-		if (!IS_ENABLED(CONFIG_64BIT) && data->u.long_mode) {
-			r = -EINVAL;
-		} else {
-			mutex_lock(&kvm->arch.xen.xen_lock);
-			kvm->arch.xen.long_mode = !!data->u.long_mode;
+		mutex_lock(&kvm->arch.xen.xen_lock);
+		kvm->arch.xen.long_mode = !!data->u.long_mode;
 
-			/*
-			 * Re-initialize shared_info to put the wallclock in the
-			 * correct place. Whilst it's not necessary to do this
-			 * unless the mode is actually changed, it does no harm
-			 * to make the call anyway.
-			 */
-			r = kvm->arch.xen.shinfo_cache.active ?
-				kvm_xen_shared_info_init(kvm) : 0;
-			mutex_unlock(&kvm->arch.xen.xen_lock);
-		}
+		/*
+		 * Re-initialize shared_info to put the wallclock in the
+		 * correct place. Whilst it's not necessary to do this
+		 * unless the mode is actually changed, it does no harm
+		 * to make the call anyway.
+		 */
+		r = kvm->arch.xen.shinfo_cache.active ?
+			kvm_xen_shared_info_init(kvm) : 0;
+		mutex_unlock(&kvm->arch.xen.xen_lock);
 		break;
 
 	case KVM_XEN_ATTR_TYPE_SHARED_INFO:
@@ -1525,7 +1513,7 @@ static bool kvm_xen_schedop_poll(struct kvm_vcpu *vcpu, bool is_64bit,
 	    !(vcpu->kvm->arch.xen.hvm_config.flags & KVM_XEN_HVM_CONFIG_EVTCHN_SEND))
 		return false;
 
-	if (IS_ENABLED(CONFIG_64BIT) && !is_64bit) {
+	if (!is_64bit) {
 		struct compat_sched_poll sp32;
 
 		/* Sanity check that the compat struct definition is correct */
@@ -1743,7 +1731,6 @@ int kvm_xen_hypercall(struct kvm_vcpu *vcpu)
 		params[5] = kvm_ebp_read(vcpu);
 	}
 	else {
-#ifdef CONFIG_X86_64
 		input = (u64)kvm_rax_read_raw(vcpu);
 		params[0] = (u64)kvm_rdi_read_raw(vcpu);
 		params[1] = (u64)kvm_rsi_read_raw(vcpu);
@@ -1751,10 +1738,8 @@ int kvm_xen_hypercall(struct kvm_vcpu *vcpu)
 		params[3] = (u64)kvm_r10_read_raw(vcpu);
 		params[4] = (u64)kvm_r8_read_raw(vcpu);
 		params[5] = (u64)kvm_r9_read_raw(vcpu);
-#else
 		KVM_BUG_ON(1, vcpu->kvm);
 		return -EIO;
-#endif
 	}
 	cpl = kvm_x86_call(get_cpl)(vcpu);
 	trace_kvm_xen_hypercall(cpl, input, params[0], params[1], params[2],

@@ -269,12 +269,6 @@ static void invalidate_registers(struct x86_emulate_ctxt *ctxt)
 #define EFLAGS_MASK (X86_EFLAGS_OF|X86_EFLAGS_SF|X86_EFLAGS_ZF|X86_EFLAGS_AF|\
 		     X86_EFLAGS_PF|X86_EFLAGS_CF)
 
-#ifdef CONFIG_X86_64
-#define ON64(x...) x
-#else
-#define ON64(x...)
-#endif
-
 #define EM_ASM_START(op) \
 static int em_##op(struct x86_emulate_ctxt *ctxt) \
 { \
@@ -320,7 +314,7 @@ static int em_##op(struct x86_emulate_ctxt *ctxt) \
 	case 1: __EM_ASM_1(op##b, al); break; \
 	case 2: __EM_ASM_1(op##w, ax); break; \
 	case 4: __EM_ASM_1(op##l, eax); break; \
-	ON64(case 8: __EM_ASM_1(op##q, rax); break;) \
+	case 8: __EM_ASM_1(op##q, rax); break; \
 	EM_ASM_END
 
 /* 1-operand, using "c" (src2) */
@@ -329,7 +323,7 @@ static int em_##op(struct x86_emulate_ctxt *ctxt) \
 	case 1: __EM_ASM_1(op##b, cl); break; \
 	case 2: __EM_ASM_1(op##w, cx); break; \
 	case 4: __EM_ASM_1(op##l, ecx); break; \
-	ON64(case 8: __EM_ASM_1(op##q, rcx); break;) \
+	case 8: __EM_ASM_1(op##q, rcx); break; \
 	EM_ASM_END
 
 /* 1-operand, using "c" (src2) with exception */
@@ -338,7 +332,7 @@ static int em_##op(struct x86_emulate_ctxt *ctxt) \
 	case 1: __EM_ASM_1_EX(op##b, cl); break; \
 	case 2: __EM_ASM_1_EX(op##w, cx); break; \
 	case 4: __EM_ASM_1_EX(op##l, ecx); break; \
-	ON64(case 8: __EM_ASM_1_EX(op##q, rcx); break;) \
+	case 8: __EM_ASM_1_EX(op##q, rcx); break; \
 	EM_ASM_END
 
 /* 2-operand, using "a" (dst), "d" (src) */
@@ -347,7 +341,7 @@ static int em_##op(struct x86_emulate_ctxt *ctxt) \
 	case 1: __EM_ASM_2(op##b, al, dl); break; \
 	case 2: __EM_ASM_2(op##w, ax, dx); break; \
 	case 4: __EM_ASM_2(op##l, eax, edx); break; \
-	ON64(case 8: __EM_ASM_2(op##q, rax, rdx); break;) \
+	case 8: __EM_ASM_2(op##q, rax, rdx); break; \
 	EM_ASM_END
 
 /* 2-operand, reversed */
@@ -356,7 +350,7 @@ static int em_##op(struct x86_emulate_ctxt *ctxt) \
 	case 1: __EM_ASM_2(op##b, dl, al); break; \
 	case 2: __EM_ASM_2(op##w, dx, ax); break; \
 	case 4: __EM_ASM_2(op##l, edx, eax); break; \
-	ON64(case 8: __EM_ASM_2(op##q, rdx, rax); break;) \
+	case 8: __EM_ASM_2(op##q, rdx, rax); break; \
 	EM_ASM_END
 
 /* 2-operand, word only (no byte op) */
@@ -365,7 +359,7 @@ static int em_##op(struct x86_emulate_ctxt *ctxt) \
 	case 1: break; \
 	case 2: __EM_ASM_2(op##w, ax, dx); break; \
 	case 4: __EM_ASM_2(op##l, eax, edx); break; \
-	ON64(case 8: __EM_ASM_2(op##q, rax, rdx); break;) \
+	case 8: __EM_ASM_2(op##q, rax, rdx); break; \
 	EM_ASM_END
 
 /* 2-operand, using "a" (dst) and CL (src2) */
@@ -374,7 +368,7 @@ static int em_##op(struct x86_emulate_ctxt *ctxt) \
 	case 1: __EM_ASM_2(op##b, al, cl); break; \
 	case 2: __EM_ASM_2(op##w, ax, cl); break; \
 	case 4: __EM_ASM_2(op##l, eax, cl); break; \
-	ON64(case 8: __EM_ASM_2(op##q, rax, cl); break;) \
+	case 8: __EM_ASM_2(op##q, rax, cl); break; \
 	EM_ASM_END
 
 /* 3-operand, using "a" (dst), "d" (src) and CL (src2) */
@@ -383,7 +377,7 @@ static int em_##op(struct x86_emulate_ctxt *ctxt) \
 	case 1: break; \
 	case 2: __EM_ASM_3(op##w, ax, dx, cl); break; \
 	case 4: __EM_ASM_3(op##l, eax, edx, cl); break; \
-	ON64(case 8: __EM_ASM_3(op##q, rax, rdx, cl); break;) \
+	case 8: __EM_ASM_3(op##q, rax, rdx, cl); break; \
 	EM_ASM_END
 
 static int em_salc(struct x86_emulate_ctxt *ctxt)
@@ -1441,7 +1435,6 @@ static int get_descriptor_ptr(struct x86_emulate_ctxt *ctxt,
 
 	addr = dt.address + index * 8;
 
-#ifdef CONFIG_X86_64
 	if (addr >> 32 != 0) {
 		u64 efer = 0;
 
@@ -1449,7 +1442,6 @@ static int get_descriptor_ptr(struct x86_emulate_ctxt *ctxt,
 		if (!(efer & EFER_LMA))
 			addr &= (u32)-1;
 	}
-#endif
 
 	*desc_addr_p = addr;
 	return X86EMUL_CONTINUE;
@@ -2375,7 +2367,6 @@ static int em_syscall(struct x86_emulate_ctxt *ctxt)
 
 	*reg_write(ctxt, VCPU_REGS_RCX) = ctxt->_eip;
 	if (efer & EFER_LMA) {
-#ifdef CONFIG_X86_64
 		*reg_write(ctxt, VCPU_REGS_R11) = ctxt->eflags;
 
 		ops->get_msr(ctxt,
@@ -2386,7 +2377,6 @@ static int em_syscall(struct x86_emulate_ctxt *ctxt)
 		ops->get_msr(ctxt, MSR_SYSCALL_MASK, &msr_data);
 		ctxt->eflags &= ~msr_data;
 		ctxt->eflags |= X86_EFLAGS_FIXED;
-#endif
 	} else {
 		/* legacy mode */
 		ops->get_msr(ctxt, MSR_STAR, &msr_data);
@@ -2551,9 +2541,7 @@ static bool emulator_io_port_access_allowed(struct x86_emulate_ctxt *ctxt,
 	if (desc_limit_scaled(&tr_seg) < 103)
 		return false;
 	base = get_desc_base(&tr_seg);
-#ifdef CONFIG_X86_64
 	base |= ((u64)base3) << 32;
-#endif
 	r = ops->read_std(ctxt, base + 102, &io_bitmap_ptr, 2, NULL, true);
 	if (r != X86EMUL_CONTINUE)
 		return false;
@@ -2588,7 +2576,6 @@ static void string_registers_quirk(struct x86_emulate_ctxt *ctxt)
 	 * Intel CPUs mask the counter and pointers in quite strange
 	 * manner when ECX is zero due to REP-string optimizations.
 	 */
-#ifdef CONFIG_X86_64
 	u32 eax, ebx, ecx, edx;
 
 	if (ctxt->ad_bytes != 4)
@@ -2610,7 +2597,6 @@ static void string_registers_quirk(struct x86_emulate_ctxt *ctxt)
 	case 0xab:	/* stosd/w */
 		*reg_rmw(ctxt, VCPU_REGS_RDI) &= (u32)-1;
 	}
-#endif
 }
 
 static void save_state_to_tss16(struct x86_emulate_ctxt *ctxt,
@@ -3617,11 +3603,9 @@ static int em_lahf(struct x86_emulate_ctxt *ctxt)
 static int em_bswap(struct x86_emulate_ctxt *ctxt)
 {
 	switch (ctxt->op_bytes) {
-#ifdef CONFIG_X86_64
 	case 8:
 		asm("bswap %0" : "+r"(ctxt->dst.val));
 		break;
-#endif
 	default:
 		asm("bswap %0" : "+r"(*(u32 *)&ctxt->dst.val));
 		break;
@@ -4888,12 +4872,10 @@ int x86_decode_insn(struct x86_emulate_ctxt *ctxt, void *insn, int insn_len, int
 	case X86EMUL_MODE_PROT32:
 		def_op_bytes = def_ad_bytes = 4;
 		break;
-#ifdef CONFIG_X86_64
 	case X86EMUL_MODE_PROT64:
 		def_op_bytes = 4;
 		def_ad_bytes = 8;
 		break;
-#endif
 	default:
 		return EMULATION_FAILED;
 	}

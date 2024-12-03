@@ -37,15 +37,10 @@
 SYM_FUNC_START(__svm_vcpu_run)
 	push %_ASM_BP
 	mov  %_ASM_SP, %_ASM_BP
-#ifdef CONFIG_X86_64
 	push %r15
 	push %r14
 	push %r13
 	push %r12
-#else
-	push %edi
-	push %esi
-#endif
 	push %_ASM_BX
 
 	/*
@@ -94,10 +89,8 @@ SYM_FUNC_START(__svm_vcpu_run)
 	 */
 	LOAD_REGS %_ASM_DI, SVM_vcpu_arch_regs, \
 		  %_ASM_CX, %_ASM_DX, %_ASM_BX, %_ASM_BP, %_ASM_SI
-#ifdef CONFIG_X86_64
 	LOAD_REGS %_ASM_DI, SVM_vcpu_arch_regs, \
 		  %r8, %r9, %r10, %r11, %r12, %r13, %r14, %r15
-#endif
 	LOAD_REGS %_ASM_DI, SVM_vcpu_arch_regs, %_ASM_DI
 
 	/* Clobbers EFLAGS.ZF */
@@ -115,10 +108,8 @@ SYM_FUNC_START(__svm_vcpu_run)
 	 */
 	STORE_REGS %_ASM_AX, SVM_vcpu_arch_regs, \
 		   %_ASM_CX, %_ASM_DX, %_ASM_BX, %_ASM_BP, %_ASM_SI, %_ASM_DI
-#ifdef CONFIG_X86_64
 	STORE_REGS %_ASM_AX, SVM_vcpu_arch_regs, \
 		   %r8, %r9, %r10, %r11, %r12, %r13, %r14, %r15
-#endif
 
 	/* @svm can stay in RDI from now on.  */
 	mov %_ASM_AX, %_ASM_DI
@@ -161,24 +152,17 @@ SYM_FUNC_START(__svm_vcpu_run)
 	 * during VM-Exit.
 	 */
 	CLEAR_REGS %ecx, %edx, %ebx, %ebp, %esi, %edi
-#ifdef CONFIG_X86_64
 	CLEAR_REGS %r8d, %r9d, %r10d, %r11d, %r12d, %r13d, %r14d, %r15d
-#endif
 
 	/* "Pop" @enter_flags.  */
 	pop %_ASM_BX
 
 	pop %_ASM_BX
 
-#ifdef CONFIG_X86_64
 	pop %r12
 	pop %r13
 	pop %r14
 	pop %r15
-#else
-	pop %esi
-	pop %edi
-#endif
 	pop %_ASM_BP
 	RET
 
