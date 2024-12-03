@@ -786,7 +786,6 @@ static void vt_write_tsc_multiplier(struct kvm_vcpu *vcpu)
 	vmx_write_tsc_multiplier(vcpu);
 }
 
-#ifdef CONFIG_X86_64
 static int vt_set_hv_timer(struct kvm_vcpu *vcpu, u64 guest_deadline_tsc,
 			      bool *expired)
 {
@@ -805,7 +804,6 @@ static void vt_cancel_hv_timer(struct kvm_vcpu *vcpu)
 
 	vmx_cancel_hv_timer(vcpu);
 }
-#endif
 
 static void vt_setup_mce(struct kvm_vcpu *vcpu)
 {
@@ -986,10 +984,8 @@ struct kvm_x86_ops vt_x86_ops __initdata = {
 	.pi_update_irte = vmx_pi_update_irte,
 	.pi_start_bypass = vmx_pi_start_bypass,
 
-#ifdef CONFIG_X86_64
 	.set_hv_timer = vt_op(set_hv_timer),
 	.cancel_hv_timer = vt_op(cancel_hv_timer),
-#endif
 
 	.setup_mce = vt_op(setup_mce),
 

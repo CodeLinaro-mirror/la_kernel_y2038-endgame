@@ -166,7 +166,6 @@ static void enter_smm_save_seg_32(struct kvm_vcpu *vcpu,
 	state->flags = enter_smm_get_segment_flags(&seg);
 }
 
-#ifdef CONFIG_X86_64
 static void enter_smm_save_seg_64(struct kvm_vcpu *vcpu,
 				  struct kvm_smm_seg_state_64 *state,
 				  int n)
@@ -179,7 +178,6 @@ static void enter_smm_save_seg_64(struct kvm_vcpu *vcpu,
 	state->limit = seg.limit;
 	state->base = seg.base;
 }
-#endif
 
 static void enter_smm_save_state_32(struct kvm_vcpu *vcpu,
 				    struct kvm_smram_state_32 *smram)
@@ -224,7 +222,6 @@ static void enter_smm_save_state_32(struct kvm_vcpu *vcpu,
 	smram->int_shadow = kvm_x86_call(get_interrupt_shadow)(vcpu);
 }
 
-#ifdef CONFIG_X86_64
 static void enter_smm_save_state_64(struct kvm_vcpu *vcpu,
 				    struct kvm_smram_state_64 *smram)
 {
@@ -274,7 +271,6 @@ static void enter_smm_save_state_64(struct kvm_vcpu *vcpu,
 	    kvm_msr_read(vcpu, MSR_KVM_INTERNAL_GUEST_SSP, &smram->ssp))
 		kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
 }
-#endif
 
 void enter_smm(struct kvm_vcpu *vcpu)
 {
@@ -287,11 +283,9 @@ void enter_smm(struct kvm_vcpu *vcpu)
 
 	memset(smram.bytes, 0, sizeof(smram.bytes));
 
-#ifdef CONFIG_X86_64
 	if (guest_cpu_cap_has(vcpu, X86_FEATURE_LM))
 		enter_smm_save_state_64(vcpu, &smram.smram64);
 	else
-#endif
 		enter_smm_save_state_32(vcpu, &smram.smram32);
 
 	/*
@@ -357,11 +351,9 @@ void enter_smm(struct kvm_vcpu *vcpu)
 	kvm_set_segment(vcpu, &ds, VCPU_SREG_GS);
 	kvm_set_segment(vcpu, &ds, VCPU_SREG_SS);
 
-#ifdef CONFIG_X86_64
 	if (guest_cpu_cap_has(vcpu, X86_FEATURE_LM))
 		if (kvm_x86_call(set_efer)(vcpu, 0))
 			goto error;
-#endif
 
 	vcpu->arch.cpuid_dynamic_bits_dirty = true;
 	kvm_mmu_reset_context(vcpu);
@@ -399,8 +391,6 @@ static int rsm_load_seg_32(struct kvm_vcpu *vcpu,
 	return X86EMUL_CONTINUE;
 }
 
-#ifdef CONFIG_X86_64
-
 static int rsm_load_seg_64(struct kvm_vcpu *vcpu,
 			   const struct kvm_smm_seg_state_64 *state,
 			   int n)
@@ -414,7 +404,6 @@ static int rsm_load_seg_64(struct kvm_vcpu *vcpu,
 	kvm_set_segment(vcpu, &desc, n);
 	return X86EMUL_CONTINUE;
 }
-#endif
 
 static int rsm_enter_protected_mode(struct kvm_vcpu *vcpu,
 				    u64 cr0, u64 cr3, u64 cr4)
@@ -512,7 +501,6 @@ static int rsm_load_state_32(struct x86_emulate_ctxt *ctxt,
 	return r;
 }
 
-#ifdef CONFIG_X86_64
 static int rsm_load_state_64(struct x86_emulate_ctxt *ctxt,
 			     const struct kvm_smram_state_64 *smstate)
 {
@@ -568,7 +556,6 @@ static int rsm_load_state_64(struct x86_emulate_ctxt *ctxt,
 
 	return X86EMUL_CONTINUE;
 }
-#endif
 
 int emulator_leave_smm(struct x86_emulate_ctxt *ctxt)
 {
@@ -594,7 +581,6 @@ int emulator_leave_smm(struct x86_emulate_ctxt *ctxt)
 	 * CR0/CR3/CR4/EFER.  It's all a bit more complicated if the vCPU
 	 * supports long mode.
 	 */
-#ifdef CONFIG_X86_64
 	if (guest_cpu_cap_has(vcpu, X86_FEATURE_LM)) {
 		struct kvm_segment cs_desc;
 		unsigned long cr4;
@@ -610,14 +596,12 @@ int emulator_leave_smm(struct x86_emulate_ctxt *ctxt)
 		cs_desc.s = cs_desc.g = cs_desc.present = 1;
 		kvm_set_segment(vcpu, &cs_desc, VCPU_SREG_CS);
 	}
-#endif
 
 	/* For the 64-bit case, this will clear EFER.LMA.  */
 	cr0 = kvm_read_cr0(vcpu);
 	if (cr0 & X86_CR0_PE)
 		kvm_set_cr0(vcpu, cr0 & ~(X86_CR0_PG | X86_CR0_PE));
 
-#ifdef CONFIG_X86_64
 	if (guest_cpu_cap_has(vcpu, X86_FEATURE_LM)) {
 		unsigned long cr4, efer;
 
@@ -630,7 +614,6 @@ int emulator_leave_smm(struct x86_emulate_ctxt *ctxt)
 		efer = 0;
 		__kvm_emulate_msr_write(vcpu, MSR_EFER, efer);
 	}
-#endif
 
 	/*
 	 * FIXME: When resuming L2 (a.k.a. guest mode), the transition to guest
@@ -642,11 +625,9 @@ int emulator_leave_smm(struct x86_emulate_ctxt *ctxt)
 	if (kvm_x86_call(leave_smm)(vcpu, &smram))
 		return X86EMUL_UNHANDLEABLE;
 
-#ifdef CONFIG_X86_64
 	if (guest_cpu_cap_has(vcpu, X86_FEATURE_LM))
 		ret = rsm_load_state_64(ctxt, &smram.smram64);
 	else
-#endif
 		ret = rsm_load_state_32(ctxt, &smram.smram32);
 
 	/*

@@ -107,11 +107,9 @@ bool tdp_enabled = false;
 
 static bool __ro_after_init tdp_mmu_allowed;
 
-#ifdef CONFIG_X86_64
 bool __read_mostly tdp_mmu_enabled = true;
 module_param_named(tdp_mmu, tdp_mmu_enabled, bool, 0444);
 EXPORT_SYMBOL_FOR_KVM_INTERNAL(tdp_mmu_enabled);
-#endif
 
 static int max_huge_page_level __read_mostly;
 static int tdp_root_level __read_mostly;
@@ -333,7 +331,6 @@ static int is_cpuid_PSE36(void)
 	return 1;
 }
 
-#ifdef CONFIG_X86_64
 static void __set_spte(u64 *sptep, u64 spte)
 {
 	KVM_MMU_WARN_ON(is_ept_ve_possible(spte));
@@ -356,122 +353,6 @@ static u64 __get_spte_lockless(u64 *sptep)
 {
 	return READ_ONCE(*sptep);
 }
-#else
-union split_spte {
-	struct {
-		u32 spte_low;
-		u32 spte_high;
-	};
-	u64 spte;
-};
-
-static void count_spte_clear(u64 *sptep, u64 spte)
-{
-	struct kvm_mmu_page *sp =  sptep_to_sp(sptep);
-
-	if (is_shadow_present_pte(spte))
-		return;
-
-	/* Ensure the spte is completely set before we increase the count */
-	smp_wmb();
-	sp->clear_spte_count++;
-}
-
-static void __set_spte(u64 *sptep, u64 spte)
-{
-	union split_spte *ssptep, sspte;
-
-	ssptep = (union split_spte *)sptep;
-	sspte = (union split_spte)spte;
-
-	ssptep->spte_high = sspte.spte_high;
-
-	/*
-	 * If we map the spte from nonpresent to present, We should store
-	 * the high bits firstly, then set present bit, so cpu can not
-	 * fetch this spte while we are setting the spte.
-	 */
-	smp_wmb();
-
-	WRITE_ONCE(ssptep->spte_low, sspte.spte_low);
-}
-
-static void __update_clear_spte_fast(u64 *sptep, u64 spte)
-{
-	union split_spte *ssptep, sspte;
-
-	ssptep = (union split_spte *)sptep;
-	sspte = (union split_spte)spte;
-
-	WRITE_ONCE(ssptep->spte_low, sspte.spte_low);
-
-	/*
-	 * If we map the spte from present to nonpresent, we should clear
-	 * present bit firstly to avoid vcpu fetch the old high bits.
-	 */
-	smp_wmb();
-
-	ssptep->spte_high = sspte.spte_high;
-	count_spte_clear(sptep, spte);
-}
-
-static u64 __update_clear_spte_slow(u64 *sptep, u64 spte)
-{
-	union split_spte *ssptep, sspte, orig;
-
-	ssptep = (union split_spte *)sptep;
-	sspte = (union split_spte)spte;
-
-	/* xchg acts as a barrier before the setting of the high bits */
-	orig.spte_low = xchg(&ssptep->spte_low, sspte.spte_low);
-	orig.spte_high = ssptep->spte_high;
-	ssptep->spte_high = sspte.spte_high;
-	count_spte_clear(sptep, spte);
-
-	return orig.spte;
-}
-
-/*
- * The idea using the light way get the spte on x86_32 guest is from
- * gup_get_pte (mm/gup.c).
- *
- * An spte tlb flush may be pending, because they are coalesced and
- * we are running out of the MMU lock.  Therefore
- * we need to protect against in-progress updates of the spte.
- *
- * Reading the spte while an update is in progress may get the old value
- * for the high part of the spte.  The race is fine for a present->non-present
- * change (because the high part of the spte is ignored for non-present spte),
- * but for a present->present change we must reread the spte.
- *
- * All such changes are done in two steps (present->non-present and
- * non-present->present), hence it is enough to count the number of
- * present->non-present updates: if it changed while reading the spte,
- * we might have hit the race.  This is done using clear_spte_count.
- */
-static u64 __get_spte_lockless(u64 *sptep)
-{
-	struct kvm_mmu_page *sp =  sptep_to_sp(sptep);
-	union split_spte spte, *orig = (union split_spte *)sptep;
-	int count;
-
-retry:
-	count = sp->clear_spte_count;
-	smp_rmb();
-
-	spte.spte_low = orig->spte_low;
-	smp_rmb();
-
-	spte.spte_high = orig->spte_high;
-	smp_rmb();
-
-	if (unlikely(spte.spte_low != orig->spte_low ||
-	      count != sp->clear_spte_count))
-		goto retry;
-
-	return spte.spte;
-}
-#endif
 
 /* Rules for using mmu_spte_set:
  * Set the sptep from nonpresent to present.
@@ -4214,7 +4095,6 @@ static int mmu_alloc_special_roots(struct kvm_vcpu *vcpu)
 	if (!pae_root)
 		return -ENOMEM;
 
-#ifdef CONFIG_X86_64
 	pml4_root = (void *)get_zeroed_page(GFP_KERNEL_ACCOUNT);
 	if (!pml4_root)
 		goto err_pml4;
@@ -4224,7 +4104,6 @@ static int mmu_alloc_special_roots(struct kvm_vcpu *vcpu)
 		if (!pml5_root)
 			goto err_pml5;
 	}
-#endif
 
 	mmu->pae_root = pae_root;
 	mmu->pml4_root = pml4_root;
@@ -4232,13 +4111,11 @@ static int mmu_alloc_special_roots(struct kvm_vcpu *vcpu)
 
 	return 0;
 
-#ifdef CONFIG_X86_64
 err_pml5:
 	free_page((unsigned long)pml4_root);
 err_pml4:
 	free_page((unsigned long)pae_root);
 	return -ENOMEM;
-#endif
 }
 
 static bool is_unsync_root(hpa_t root)
@@ -4843,11 +4720,6 @@ int kvm_handle_page_fault(struct kvm_vcpu *vcpu, u64 error_code,
 	int r = 1;
 	u32 flags = vcpu->arch.apf.host_apf_flags;
 
-#ifndef CONFIG_X86_64
-	/* A 64-bit CR2 should be impossible on 32-bit KVM. */
-	if (WARN_ON_ONCE(fault_address >> 32))
-		return -EFAULT;
-#endif
 	/*
 	 * Legacy #PF exception only have a 32-bit error code.  Simply drop the
 	 * upper bits as KVM doesn't use them for #PF (because they are never
@@ -4881,7 +4753,6 @@ int kvm_handle_page_fault(struct kvm_vcpu *vcpu, u64 error_code,
 }
 EXPORT_SYMBOL_FOR_KVM_INTERNAL(kvm_handle_page_fault);
 
-#ifdef CONFIG_X86_64
 static int kvm_tdp_mmu_page_fault(struct kvm_vcpu *vcpu,
 				  struct kvm_page_fault *fault)
 {
@@ -4915,14 +4786,11 @@ out_unlock:
 	read_unlock(&vcpu->kvm->mmu_lock);
 	return r;
 }
-#endif
 
 int kvm_tdp_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
 {
-#ifdef CONFIG_X86_64
 	if (tdp_mmu_enabled)
 		return kvm_tdp_mmu_page_fault(vcpu, fault);
-#endif
 
 	return direct_page_fault(vcpu, fault);
 }
@@ -6598,9 +6466,7 @@ void kvm_configure_mmu(bool enable_tdp, int tdp_forced_root_level,
 	tdp_root_level = tdp_forced_root_level;
 	max_tdp_level = tdp_max_root_level;
 
-#ifdef CONFIG_X86_64
 	tdp_mmu_enabled = tdp_mmu_allowed && tdp_enabled;
-#endif
 	/*
 	 * max_huge_page_level reflects KVM's MMU capabilities irrespective
 	 * of kernel support, e.g. KVM may be capable of using 1GB pages when
@@ -7725,13 +7591,8 @@ static bool kvm_mmu_sp_dirty_logging_enabled(struct kvm *kvm,
 static void kvm_recover_nx_huge_pages(struct kvm *kvm,
 				      const enum kvm_mmu_type mmu_type)
 {
-#ifdef CONFIG_X86_64
 	const bool is_tdp_mmu = mmu_type == KVM_TDP_MMU;
 	spinlock_t *tdp_mmu_pages_lock = &kvm->arch.tdp_mmu_pages_lock;
-#else
-	const bool is_tdp_mmu = false;
-	spinlock_t *tdp_mmu_pages_lock = NULL;
-#endif
 	unsigned long to_zap = nx_huge_pages_to_zap(kvm, mmu_type);
 	struct list_head *nx_huge_pages;
 	struct kvm_mmu_page *sp;

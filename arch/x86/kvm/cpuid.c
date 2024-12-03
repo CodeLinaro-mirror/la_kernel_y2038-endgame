@@ -1148,7 +1148,7 @@ void kvm_initialize_cpu_caps(void)
 		F(3DNOW),
 	);
 
-	if (!tdp_enabled && IS_ENABLED(CONFIG_X86_64))
+	if (!tdp_enabled)
 		kvm_cpu_cap_set(X86_FEATURE_GBPAGES);
 
 	kvm_cpu_cap_init(CPUID_8000_0007_EDX,
