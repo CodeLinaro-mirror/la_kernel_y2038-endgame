@@ -224,7 +224,7 @@ config SERIAL_8250_EXTENDED
 
 config SERIAL_8250_MANY_PORTS
 	bool "Support more than 4 legacy serial ports"
-	depends on SERIAL_8250_EXTENDED
+	depends on ISA && SERIAL_8250 != n && SERIAL_8250_EXTENDED
 	help
 	  Say Y here if you have dumb serial boards other than the four
 	  standard COM 1/2/3/4 ports. This may happen if you have an AST
@@ -235,13 +235,14 @@ config SERIAL_8250_MANY_PORTS
 	  say N here to save some memory. You can also say Y if you have an
 	  "intelligent" multiport card such as Digiboards, etc.
 
+if SERIAL_8250_MANY_PORTS
+
 #
 # Multi-port serial cards
 #
 
 config SERIAL_8250_FOURPORT
 	tristate "Support Fourport cards"
-	depends on SERIAL_8250 != n && ISA && SERIAL_8250_MANY_PORTS
 	help
 	  Say Y here if you have an AST FourPort serial board.
 
@@ -250,7 +251,6 @@ config SERIAL_8250_FOURPORT
 
 config SERIAL_8250_ACCENT
 	tristate "Support Accent cards"
-	depends on SERIAL_8250 != n && ISA && SERIAL_8250_MANY_PORTS
 	help
 	  Say Y here if you have an Accent Async serial board.
 
@@ -259,7 +259,6 @@ config SERIAL_8250_ACCENT
 
 config SERIAL_8250_BOCA
 	tristate "Support Boca cards"
-	depends on SERIAL_8250 != n && ISA && SERIAL_8250_MANY_PORTS
 	help
 	  Say Y here if you have a Boca serial board.  Please read the Boca
 	  mini-HOWTO, available from <https://www.tldp.org/docs.html#howto>
@@ -269,7 +268,6 @@ config SERIAL_8250_BOCA
 
 config SERIAL_8250_EXAR_ST16C554
 	tristate "Support Exar ST16C554/554D Quad UART"
-	depends on SERIAL_8250 != n && ISA && SERIAL_8250_MANY_PORTS
 	help
 	  The Uplogix Envoy TU301 uses this Exar Quad UART.  If you are
 	  tinkering with your Envoy TU301, or have a machine with this UART,
@@ -280,12 +278,13 @@ config SERIAL_8250_EXAR_ST16C554
 
 config SERIAL_8250_HUB6
 	tristate "Support Hub6 cards"
-	depends on SERIAL_8250 != n && ISA && SERIAL_8250_MANY_PORTS
 	help
 	  Say Y here if you have a HUB6 serial board.
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called 8250_hub6.
+
+endif
 
 config SERIAL_8250_PCI1XXXX
 	tristate "Microchip 8250 based serial port"
