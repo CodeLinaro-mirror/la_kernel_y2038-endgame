@@ -44,19 +44,19 @@ static const char version[] =
  * Note that the data port accesses are treated a little differently, and
  * always accessed via the insX/outsX functions.
  */
-static inline u32 NE_PTR(u32 addr)
+static inline void __iomem *NE_PTR(void __iomem *addr)
 {
-	if (addr & 1)
+	if ((uintptr_t)addr & 1)
 		return addr - 1 + NE2000_ODDOFFSET;
 	return addr;
 }
 
-static inline u32 NE_DATA_PTR(u32 addr)
+static inline void __iomem *NE_DATA_PTR(void __iomem *addr)
 {
 	return addr;
 }
 
-void ei_outb(u32 val, u32 addr)
+void ei_outb(u32 val, void __iomem *addr)
 {
 	NE2000_BYTE *rp;
 
@@ -65,7 +65,7 @@ void ei_outb(u32 val, u32 addr)
 }
 
 #define	ei_inb	ei_inb
-u8 ei_inb(u32 addr)
+u8 ei_inb(void __iomem *addr)
 {
 	NE2000_BYTE *rp, val;
 
@@ -74,7 +74,7 @@ u8 ei_inb(u32 addr)
 	return (u8) (RSWAP(val) & 0xff);
 }
 
-void ei_insb(u32 addr, void *vbuf, int len)
+void ei_insb(void __iomem *addr, void *vbuf, int len)
 {
 	NE2000_BYTE *rp, val;
 	u8 *buf;
@@ -87,7 +87,7 @@ void ei_insb(u32 addr, void *vbuf, int len)
 	}
 }
 
-void ei_insw(u32 addr, void *vbuf, int len)
+void ei_insw(void __iomem *addr, void *vbuf, int len)
 {
 	volatile u16 *rp;
 	u16 w, *buf;
@@ -100,7 +100,7 @@ void ei_insw(u32 addr, void *vbuf, int len)
 	}
 }
 
-void ei_outsb(u32 addr, const void *vbuf, int len)
+void ei_outsb(void __iomem *addr, const void *vbuf, int len)
 {
 	NE2000_BYTE *rp, val;
 	u8 *buf;
@@ -113,7 +113,7 @@ void ei_outsb(u32 addr, const void *vbuf, int len)
 	}
 }
 
-void ei_outsw(u32 addr, const void *vbuf, int len)
+void ei_outsw(void __iomem *addr, const void *vbuf, int len)
 {
 	volatile u16 *rp;
 	u16 w, *buf;
@@ -128,12 +128,12 @@ void ei_outsw(u32 addr, const void *vbuf, int len)
 
 #else /* !NE2000_ODDOFFSET */
 
-#define	ei_inb		inb
-#define	ei_outb		outb
-#define	ei_insb		insb
-#define	ei_insw		insw
-#define	ei_outsb	outsb
-#define	ei_outsw	outsw
+#define	ei_inb		readb
+#define	ei_outb		writeb
+#define	ei_insb		readsb
+#define	ei_insw		readsw
+#define	ei_outsb	writesb
+#define	ei_outsw	writesw
 
 #endif /* !NE2000_ODDOFFSET */
 
@@ -149,7 +149,7 @@ void ei_outsw(u32 addr, const void *vbuf, int len)
 static void mcf8390_reset_8390(struct net_device *dev)
 {
 	unsigned long reset_start_time = jiffies;
-	u32 addr = dev->base_addr;
+	void __iomem *addr = ei_local->mem;
 	struct ei_device *ei_local = netdev_priv(dev);
 
 	netif_dbg(ei_local, hw, dev, "resetting the 8390 t=%ld...\n", jiffies);
@@ -190,7 +190,7 @@ static void mcf8390_get_8390_hdr(struct net_device *dev,
 				 struct e8390_pkt_hdr *hdr, int ring_page)
 {
 	struct ei_device *ei_local = netdev_priv(dev);
-	u32 addr = dev->base_addr;
+	void __iomem *addr = ei_local->mem;
 
 	if (ei_local->dmaing) {
 		mcf8390_dmaing_err(__func__, dev, ei_local);
@@ -225,7 +225,7 @@ static void mcf8390_block_input(struct net_device *dev, int count,
 				struct sk_buff *skb, int ring_offset)
 {
 	struct ei_device *ei_local = netdev_priv(dev);
-	u32 addr = dev->base_addr;
+	void __iomem *addr = ei_local->mem;
 	char *buf = skb->data;
 
 	if (ei_local->dmaing) {
@@ -255,7 +255,7 @@ static void mcf8390_block_output(struct net_device *dev, int count,
 				 const int start_page)
 {
 	struct ei_device *ei_local = netdev_priv(dev);
-	u32 addr = dev->base_addr;
+	void __iomem *addr = ei_local->mem;
 	unsigned long dma_start;
 
 	/* Make sure we transfer all bytes if 16bit IO writes */
@@ -318,7 +318,7 @@ static int mcf8390_init(struct net_device *dev)
 	};
 	struct ei_device *ei_local = netdev_priv(dev);
 	unsigned char SA_prom[32];
-	u32 addr = dev->base_addr;
+	void __iomem *addr = ei_local->mem;
 	int start_page, stop_page;
 	int i, ret;
 
@@ -403,7 +403,8 @@ static int mcf8390_init(struct net_device *dev)
 static int mcf8390_probe(struct platform_device *pdev)
 {
 	struct net_device *dev;
-	struct resource *mem;
+	struct ei_device *ei_local;
+	void __iomem *mem;
 	resource_size_t msize;
 	int ret, irq;
 
@@ -411,15 +412,11 @@ static int mcf8390_probe(struct platform_device *pdev)
 	if (irq < 0)
 		return -ENXIO;
 
-	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (mem == NULL) {
-		dev_err(&pdev->dev, "no memory address specified?\n");
+	mem = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(mem)) {
+		dev_err(&pdev->dev, "failed to map resource\n");
 		return -ENXIO;
 	}
-	msize = resource_size(mem);
-	if (!request_mem_region(mem->start, msize, pdev->name))
-		return -EBUSY;
-
 	dev = ____alloc_ei_netdev(0);
 	if (dev == NULL) {
 		release_mem_region(mem->start, msize);
@@ -430,25 +427,20 @@ static int mcf8390_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, dev);
 
 	dev->irq = irq;
-	dev->base_addr = mem->start;
+	ei_local->mem = mem;
 
 	ret = mcf8390_init(dev);
-	if (ret) {
-		release_mem_region(mem->start, msize);
+	if (ret)
 		free_netdev(dev);
-		return ret;
-	}
-	return 0;
+
+	return ret;
 }
 
 static void mcf8390_remove(struct platform_device *pdev)
 {
 	struct net_device *dev = platform_get_drvdata(pdev);
-	struct resource *mem;
 
 	unregister_netdev(dev);
-	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	release_mem_region(mem->start, resource_size(mem));
 	free_netdev(dev);
 }
 
