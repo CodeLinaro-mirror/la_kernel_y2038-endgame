@@ -3,8 +3,6 @@
 #define __HEAD_BOOKE_H__
 
 #include <asm/ptrace.h>	/* for STACK_FRAME_REGS_MARKER */
-#include <asm/kvm_asm.h>
-#include <asm/kvm_booke_hv_asm.h>
 #include <asm/thread_info.h>	/* for THREAD_SHIFT */
 
 #ifdef __ASSEMBLY__
@@ -52,7 +50,6 @@ END_BTB_FLUSH_SECTION
 	stw	r13, THREAD_NORMSAVE(2)(r10);				     \
 	mfcr	r13;			/* save CR in r13 for now	   */\
 	mfspr	r11, SPRN_SRR1;		                                     \
-	DO_KVM	BOOKE_INTERRUPT_##intno SPRN_SRR1;			     \
 	andi.	r11, r11, MSR_PR;	/* check whether user or kernel    */\
 	LOAD_REG_IMMEDIATE(r11, MSR_KERNEL);				\
 	mtmsr	r11;							\
@@ -114,25 +111,7 @@ END_BTB_FLUSH_SECTION
 
 .macro SYSCALL_ENTRY trapno intno srr1
 	mfspr	r10, SPRN_SPRG_THREAD
-#ifdef CONFIG_KVM_BOOKE_HV
-BEGIN_FTR_SECTION
-	mtspr	SPRN_SPRG_WSCRATCH0, r10
-	stw	r11, THREAD_NORMSAVE(0)(r10)
-	stw	r13, THREAD_NORMSAVE(2)(r10)
-	mfcr	r13			/* save CR in r13 for now	   */
-	mfspr	r11, SPRN_SRR1
-	mtocrf	0x80, r11	/* check MSR[GS] without clobbering reg */
-	bf	3, 1975f
-	b	kvmppc_handler_\intno\()_\srr1
-1975:
-	mr	r12, r13
-	lwz	r13, THREAD_NORMSAVE(2)(r10)
-FTR_SECTION_ELSE
 	mfcr	r12
-ALT_FTR_SECTION_END_IFSET(CPU_FTR_EMB_HV)
-#else
-	mfcr	r12
-#endif
 	mfspr	r9, SPRN_SRR1
 	BOOKE_CLEAR_BTB(r11)
 	mr	r11, r1
@@ -198,7 +177,6 @@ ALT_FTR_SECTION_END_IFSET(CPU_FTR_EMB_HV)
 	stw	r11,GPR11(r8);						     \
 	stw	r9,_CCR(r8);		/* save CR on stack		   */\
 	mfspr	r11,exc_level_srr1;	/* check whether user or kernel    */\
-	DO_KVM	BOOKE_INTERRUPT_##intno exc_level_srr1;		             \
 	BOOKE_CLEAR_BTB(r10)						\
 	andi.	r11,r11,MSR_PR;						     \
 	LOAD_REG_IMMEDIATE(r11, MSR_KERNEL & ~(MSR_ME|MSR_DE|MSR_CE));	\
@@ -271,23 +249,6 @@ ALT_FTR_SECTION_END_IFSET(CPU_FTR_EMB_HV)
 #define MCHECK_EXCEPTION_PROLOG(trapno) \
 		EXC_LEVEL_EXCEPTION_PROLOG(MC, trapno+4, MACHINE_CHECK, \
 			SPRN_MCSRR0, SPRN_MCSRR1)
-
-/*
- * Guest Doorbell -- this is a bit odd in that uses GSRR0/1 despite
- * being delivered to the host.  This exception can only happen
- * inside a KVM guest -- so we just handle up to the DO_KVM rather
- * than try to fit this into one of the existing prolog macros.
- */
-#define GUEST_DOORBELL_EXCEPTION \
-	START_EXCEPTION(GuestDoorbell);					     \
-	mtspr	SPRN_SPRG_WSCRATCH0, r10;	/* save one register */	     \
-	mfspr	r10, SPRN_SPRG_THREAD;					     \
-	stw	r11, THREAD_NORMSAVE(0)(r10);				     \
-	mfspr	r11, SPRN_SRR1;		                                     \
-	stw	r13, THREAD_NORMSAVE(2)(r10);				     \
-	mfcr	r13;			/* save CR in r13 for now	   */\
-	DO_KVM	BOOKE_INTERRUPT_GUEST_DBELL SPRN_GSRR1;			     \
-	trap
 
 /*
  * Exception vectors.
