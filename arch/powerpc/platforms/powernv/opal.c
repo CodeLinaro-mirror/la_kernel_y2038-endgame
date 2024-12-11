@@ -667,7 +667,7 @@ void __noreturn pnv_platform_error_reboot(struct pt_regs *regs, const char *msg)
 	 *    extract context and state at the time of the error.
 	 */
 
-	panic(msg);
+	panic("%s", msg);
 }
 
 int opal_machine_check(struct pt_regs *regs)
