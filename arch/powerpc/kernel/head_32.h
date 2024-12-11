@@ -168,20 +168,10 @@ _ASM_NOKPROBE_SYMBOL(\name\()_virt)
 /*
  * Exception vectors.
  */
-#ifdef CONFIG_PPC_BOOK3S
-#define	START_EXCEPTION(n, label)		\
-	__HEAD;					\
-	. = n;					\
-	DO_KVM n;				\
-label:
-
-#else
 #define	START_EXCEPTION(n, label)		\
 	__HEAD;					\
 	. = n;					\
 label:
-
-#endif
 
 #define EXCEPTION(n, label, hdlr)		\
 	START_EXCEPTION(n, label)		\
