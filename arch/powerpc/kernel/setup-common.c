@@ -659,7 +659,7 @@ static __init void probe_machine(void)
 	seq_buf_puts(&ppc_hw_desc, ppc_md.name);
 
 	// Set the generic hardware description shown in oopses
-	dump_stack_set_arch_desc(ppc_hw_desc.buffer);
+	dump_stack_set_arch_desc("%s", ppc_hw_desc.buffer);
 
 	pr_info("Hardware name: %s\n", ppc_hw_desc.buffer);
 }
