@@ -793,7 +793,7 @@ struct kvm_vcpu_arch {
 	struct machine_check_event mce_evt; /* Valid if trap == 0x200 */
 
 	struct kvm_vcpu_arch_shared *shared;
-#if defined(CONFIG_PPC_BOOK3S_64) && defined(CONFIG_KVM_BOOK3S_PR_POSSIBLE)
+#ifdef CONFIG_KVM_BOOK3S_PR_POSSIBLE
 	bool shared_big_endian;
 #endif
 	unsigned long magic_page_pa; /* phys addr to map the magic page to */

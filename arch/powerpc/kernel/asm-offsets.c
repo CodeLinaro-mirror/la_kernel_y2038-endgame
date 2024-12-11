@@ -147,9 +147,6 @@ int main(void)
 	OFFSET(THREAD_USED_SPE, thread_struct, used_spe);
 #endif /* CONFIG_SPE */
 #endif /* CONFIG_PPC64 */
-#ifdef CONFIG_KVM_BOOK3S_32_HANDLER
-	OFFSET(THREAD_KVM_SVCPU, thread_struct, kvm_shadow_vcpu);
-#endif
 #if defined(CONFIG_KVM) && defined(CONFIG_BOOKE)
 	OFFSET(THREAD_KVM_VCPU, thread_struct, kvm_vcpu);
 #endif
@@ -401,7 +398,7 @@ int main(void)
 	OFFSET(VCPU_SHARED, kvm_vcpu, arch.shared);
 	OFFSET(VCPU_SHARED_MSR, kvm_vcpu_arch_shared, msr);
 	OFFSET(VCPU_SHADOW_MSR, kvm_vcpu, arch.shadow_msr);
-#if defined(CONFIG_PPC_BOOK3S_64) && defined(CONFIG_KVM_BOOK3S_PR_POSSIBLE)
+#ifdef CONFIG_KVM_BOOK3S_PR_POSSIBLE
 	OFFSET(VCPU_SHAREDBE, kvm_vcpu, arch.shared_big_endian);
 #endif
 
@@ -511,19 +508,13 @@ int main(void)
 	OFFSET(VCPU_TAR_TM, kvm_vcpu, arch.tar_tm);
 #endif
 
-#ifdef CONFIG_PPC_BOOK3S_64
 #ifdef CONFIG_KVM_BOOK3S_PR_POSSIBLE
 	OFFSET(PACA_SVCPU, paca_struct, shadow_vcpu);
 # define SVCPU_FIELD(x, f)	DEFINE(x, offsetof(struct paca_struct, shadow_vcpu.f))
 #else
 # define SVCPU_FIELD(x, f)
 #endif
-# define HSTATE_FIELD(x, f)	DEFINE(x, offsetof(struct paca_struct, kvm_hstate.f))
-#else	/* 32-bit */
-# define SVCPU_FIELD(x, f)	DEFINE(x, offsetof(struct kvmppc_book3s_shadow_vcpu, f))
-# define HSTATE_FIELD(x, f)	DEFINE(x, offsetof(struct kvmppc_book3s_shadow_vcpu, hstate.f))
-#endif
-
+#define HSTATE_FIELD(x, f)	DEFINE(x, offsetof(struct paca_struct, kvm_hstate.f))
 	SVCPU_FIELD(SVCPU_CR, cr);
 	SVCPU_FIELD(SVCPU_XER, xer);
 	SVCPU_FIELD(SVCPU_CTR, ctr);
@@ -547,14 +538,9 @@ int main(void)
 	SVCPU_FIELD(SVCPU_FAULT_DAR, fault_dar);
 	SVCPU_FIELD(SVCPU_LAST_INST, last_inst);
 	SVCPU_FIELD(SVCPU_SHADOW_SRR1, shadow_srr1);
-#ifdef CONFIG_PPC_BOOK3S_32
-	SVCPU_FIELD(SVCPU_SR, sr);
-#endif
-#ifdef CONFIG_PPC64
 	SVCPU_FIELD(SVCPU_SLB, slb);
 	SVCPU_FIELD(SVCPU_SLB_MAX, slb_max);
 	SVCPU_FIELD(SVCPU_SHADOW_FSCR, shadow_fscr);
-#endif
 
 	HSTATE_FIELD(HSTATE_HOST_R1, host_r1);
 	HSTATE_FIELD(HSTATE_HOST_R2, host_r2);
@@ -601,12 +587,9 @@ int main(void)
 	OFFSET(KVM_SPLIT_NAPPED, kvm_split_mode, napped);
 #endif /* CONFIG_KVM_BOOK3S_HV_POSSIBLE */
 
-#ifdef CONFIG_PPC_BOOK3S_64
 	HSTATE_FIELD(HSTATE_CFAR, cfar);
 	HSTATE_FIELD(HSTATE_PPR, ppr);
 	HSTATE_FIELD(HSTATE_HOST_FSCR, host_fscr);
-#endif /* CONFIG_PPC_BOOK3S_64 */
-
 #else /* CONFIG_PPC_BOOK3S */
 	OFFSET(VCPU_CR, kvm_vcpu, arch.regs.ccr);
 	OFFSET(VCPU_XER, kvm_vcpu, arch.regs.xer);

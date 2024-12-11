@@ -951,7 +951,7 @@ static inline void kvmppc_mmu_flush_icache(kvm_pfn_t pfn)
  */
 static inline bool kvmppc_shared_big_endian(struct kvm_vcpu *vcpu)
 {
-#if defined(CONFIG_PPC_BOOK3S_64) && defined(CONFIG_KVM_BOOK3S_PR_POSSIBLE)
+#if defined(CONFIG_KVM_BOOK3S_PR_POSSIBLE)
 	/* Only Book3S_64 PR supports bi-endian for now */
 	return vcpu->arch.shared_big_endian;
 #elif defined(CONFIG_PPC_BOOK3S_64) && defined(__LITTLE_ENDIAN__)
