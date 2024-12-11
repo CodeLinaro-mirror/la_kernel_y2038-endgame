@@ -30,7 +30,6 @@
 #include <asm/asm-offsets.h>
 #include <asm/ptrace.h>
 #include <asm/bug.h>
-#include <asm/kvm_book3s_asm.h>
 #include <asm/feature-fixups.h>
 #include <asm/interrupt.h>
 
@@ -860,10 +859,6 @@ END_MMU_FTR_SECTION_IFCLR(MMU_FTR_HPTE_TABLE)
 	mtspr	SPRN_SRR1,r4
 	rfi
 #endif /* CONFIG_SMP */
-
-#ifdef CONFIG_KVM_BOOK3S_HANDLER
-#include "../kvm/book3s_rmhandlers.S"
-#endif
 
 /*
  * Load stuff into the MMU.  Intended to be called with
