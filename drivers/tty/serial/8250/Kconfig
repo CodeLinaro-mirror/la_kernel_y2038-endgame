@@ -48,7 +48,6 @@ config SERIAL_8250_ISA
 
 config SERIAL_8250_LEGACY_ISA
 	bool
-	depends on SERIAL_8250_CONSOLE
 	default (MIPS && ATH25) || (MIPS && MIKROTIK_RB532) || (PARISC && SUPERIO)
 	help
 	  The legacy support is mainly used as part of SERIAL_8250_ISA,
