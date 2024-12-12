@@ -26,7 +26,7 @@
 		.flags		= UPF_BOOT_AUTOCONF,	\
 	}
 
-static struct serial8250_platform_data a20r_data[] = {
+static struct plat_serial8250_port a20r_data[] = {
 	PORT(0x3f8, 4),
 	PORT(0x2f8, 3),
 	{ },

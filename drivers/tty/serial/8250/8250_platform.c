@@ -152,7 +152,7 @@ static int serial8250_probe_acpi(struct platform_device *pdev)
 	return 0;
 }
 
-static int serial8250_probe_platform(struct platform_device *dev, struct serial8250_platform_data *p)
+static int serial8250_probe_platform(struct platform_device *dev, struct plat_serial8250_port *p)
 {
 	int ret, i;
 
@@ -210,7 +210,7 @@ static int serial8250_probe_platform(struct platform_device *dev, struct serial8
 static int serial8250_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
-	struct serial8250_platform_data *p;
+	struct plat_serial8250_port *p;
 
 	p = dev_get_platdata(dev);
 	if (p)

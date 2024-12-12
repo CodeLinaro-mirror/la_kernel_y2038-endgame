@@ -86,7 +86,7 @@ static unsigned long __init uart_get_clk_rate(struct clk *clk)
 
 static void __init uart_complete(
 	struct platform_device *orion_uart,
-	struct serial8250_platform_data *data,
+	struct plat_serial8250_port *data,
 	struct resource *resources,
 	void __iomem *membase,
 	resource_size_t mapbase,
@@ -106,7 +106,7 @@ static void __init uart_complete(
 /*****************************************************************************
  * UART0
  ****************************************************************************/
-static struct serial8250_platform_data orion_uart0_data[] = {
+static struct plat_serial8250_port orion_uart0_data[] = {
 	{
 		.flags		= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF,
 		.iotype		= UPIO_MEM,
@@ -134,7 +134,7 @@ void __init orion_uart0_init(void __iomem *membase,
 /*****************************************************************************
  * UART1
  ****************************************************************************/
-static struct serial8250_platform_data orion_uart1_data[] = {
+static struct plat_serial8250_port orion_uart1_data[] = {
 	{
 		.flags		= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF,
 		.iotype		= UPIO_MEM,
@@ -162,7 +162,7 @@ void __init orion_uart1_init(void __iomem *membase,
 /*****************************************************************************
  * UART2
  ****************************************************************************/
-static struct serial8250_platform_data orion_uart2_data[] = {
+static struct plat_serial8250_port orion_uart2_data[] = {
 	{
 		.flags		= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF,
 		.iotype		= UPIO_MEM,
@@ -190,7 +190,7 @@ void __init orion_uart2_init(void __iomem *membase,
 /*****************************************************************************
  * UART3
  ****************************************************************************/
-static struct serial8250_platform_data orion_uart3_data[] = {
+static struct plat_serial8250_port orion_uart3_data[] = {
 	{
 		.flags		= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF,
 		.iotype		= UPIO_MEM,

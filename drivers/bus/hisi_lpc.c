@@ -525,7 +525,7 @@ static int hisi_lpc_acpi_add_child(struct acpi_device *child, void *data)
 					.id = PLATFORM_DEVID_AUTO,
 					.res = res,
 					.num_res = num_res,
-					.data = (struct serial8250_platform_data []) {
+					.data = (struct plat_serial8250_port []) {
 						{
 							.iobase = res->start,
 							.uartclk = 1843200,
@@ -534,7 +534,7 @@ static int hisi_lpc_acpi_add_child(struct acpi_device *child, void *data)
 						},
 						{}
 					},
-					.size_data =  2 * sizeof(struct serial8250_platform_data),
+					.size_data =  2 * sizeof(struct plat_serial8250_port),
 				},
 			},
 		},

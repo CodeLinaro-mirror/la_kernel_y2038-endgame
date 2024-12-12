@@ -562,7 +562,7 @@ static struct gpiod_hog ams_delta_gpio_hogs[] = {
 	{},
 };
 
-static struct serial8250_platform_data ams_delta_modem_ports[];
+static struct plat_serial8250_port ams_delta_modem_ports[];
 
 /*
  * Obtain MODEM IRQ GPIO descriptor using its hardware pin
@@ -763,7 +763,7 @@ static void modem_pm(struct uart_port *port, unsigned int state, unsigned old)
 			 state ? "dis" : "en", ret);
 }
 
-static struct serial8250_platform_data ams_delta_modem_ports[] = {
+static struct plat_serial8250_port ams_delta_modem_ports[] = {
 	{
 		.membase	= IOMEM(MODEM_VIRT),
 		.mapbase	= MODEM_PHYS,

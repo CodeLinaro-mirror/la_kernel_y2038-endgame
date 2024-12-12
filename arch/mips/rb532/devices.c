@@ -210,7 +210,7 @@ static struct platform_device rb532_wdt = {
 	.num_resources	= ARRAY_SIZE(rb532_wdt_res),
 };
 
-static struct serial8250_platform_data rb532_uart_res[] = {
+static struct plat_serial8250_port rb532_uart_res[] = {
 	{
 		.type           = PORT_16550A,
 		.mapbase        = REGBASE + UART0BASE,

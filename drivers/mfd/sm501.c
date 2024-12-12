@@ -775,7 +775,7 @@ static int sm501_register_usbhost(struct sm501_devdata *sm,
 }
 
 static void sm501_setup_uart_data(struct sm501_devdata *sm,
-				  struct serial8250_platform_data *uart_data,
+				  struct plat_serial8250_port *uart_data,
 				  unsigned int offset)
 {
 	uart_data->membase = sm->regs + offset;
@@ -790,10 +790,10 @@ static void sm501_setup_uart_data(struct sm501_devdata *sm,
 static int sm501_register_uart(struct sm501_devdata *sm, int devices)
 {
 	struct platform_device *pdev;
-	struct serial8250_platform_data *uart_data;
+	struct plat_serial8250_port *uart_data;
 
 	pdev = sm501_create_subdev(sm, "serial8250", 0,
-				   sizeof(struct serial8250_platform_data) * 3);
+				   sizeof(struct plat_serial8250_port) * 3);
 	if (!pdev)
 		return -ENOMEM;
 
