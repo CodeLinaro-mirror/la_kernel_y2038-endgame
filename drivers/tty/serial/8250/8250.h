@@ -96,7 +96,6 @@ struct serial8250_config {
 /* Module parameters */
 #define UART_NR	CONFIG_SERIAL_8250_NR_UARTS
 
-extern unsigned int nr_uarts;
 
 #define SERIAL8250_PORT_FLAGS(_base, _irq, _flags)		\
 	{							\

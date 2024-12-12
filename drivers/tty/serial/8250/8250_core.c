@@ -373,7 +373,7 @@ void __init serial8250_setup_ports(void)
 	DO_ONCE(__serial8250_setup_ports);
 }
 
-unsigned int nr_uarts;
+static unsigned int nr_uarts;
 
 #ifdef CONFIG_SERIAL_8250_CONSOLE
 
