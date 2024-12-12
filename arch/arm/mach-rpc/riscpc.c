@@ -140,7 +140,7 @@ static struct platform_device kbd_device = {
 	.resource		= iomd_kart_resources,
 };
 
-static struct serial8250_platform_data serial_platform_data[] = {
+static struct plat_serial8250_port serial_platform_data[] = {
 	{
 		.mapbase	= 0x03010fe0,
 		.irq		= IRQ_SERIALPORT,

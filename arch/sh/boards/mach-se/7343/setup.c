@@ -69,7 +69,7 @@ static struct platform_device nor_flash_device = {
 
 #define ST16C2550C_FLAGS (UPF_BOOT_AUTOCONF | UPF_IOREMAP)
 
-static struct serial8250_platform_data serial_platform_data[] = {
+static struct plat_serial8250_port serial_platform_data[] = {
 	[0] = {
 		.iotype		= UPIO_MEM,
 		.mapbase	= 0x16000000,
