@@ -54,6 +54,7 @@ static struct uart_port old_serial_port[] __initdata = {
 	{ .iotype = UPIO_PORT, .uartclk = 1843200, .iobase = 0x2E8, .irq = 3, .flags = STD_COM4_FLAGS },
 #endif
 };
+static unsigned int nr_uarts = ARRAY_SIZE(old_serial_port);
 
 serial8250_isa_config_fn serial8250_isa_config;
 void serial8250_set_isa_configurator(serial8250_isa_config_fn v)
@@ -272,7 +273,6 @@ MODULE_PARM_DESC(share_irqs, "Share IRQs with other non-8250/16x50 devices (unsa
  * that can be set up with setserial. Since Linux-6.5, this is no
  * longer required to ports from DT or platform_data.
  */
-unsigned int nr_uarts = ARRAY_SIZE(old_serial_port);
 module_param(nr_uarts, uint, 0644);
 MODULE_PARM_DESC(nr_uarts, "Maximum number of ISA style UARTs supported. (1-"
 		 __MODULE_STRING(CONFIG_SERIAL_8250_NR_UARTS) ")");
