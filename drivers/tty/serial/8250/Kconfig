@@ -36,6 +36,7 @@ config SERIAL_8250
 
 config SERIAL_8250_ISA
 	bool "Probe PC-style ISA 8250 ports at 0x2f8/0x3f8/0x2e8/0x3e8" if EXPERT
+	depends on SERIAL_8250
 	default (ALPHA || X86_32 || Q40 || JAILHOUSE_GUEST || !SERIAL_8250_PNP)
 	depends on X86 || ISA
 	select SERIAL_8250_LEGACY_ISA
@@ -48,6 +49,7 @@ config SERIAL_8250_ISA
 
 config SERIAL_8250_LEGACY_ISA
 	bool
+	depends on SERIAL_8250
 	default (MIPS && ATH25) || (MIPS && MIKROTIK_RB532) || (PARISC && SUPERIO)
 	help
 	  The legacy support is mainly used as part of SERIAL_8250_ISA,
