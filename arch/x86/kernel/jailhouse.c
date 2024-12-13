@@ -148,7 +148,7 @@ static int __init jailhouse_pci_arch_init(void)
 	return 0;
 }
 
-#ifdef CONFIG_SERIAL_8250_ISA
+#if IS_BUILTIN(CONFIG_SERIAL_8250) && IS_ENABLED(CONFIG_SERIAL_8250_ISA)
 static inline bool jailhouse_uart_enabled(unsigned int uart_nr)
 {
 	return setup_data.v2.flags & BIT(uart_nr);
