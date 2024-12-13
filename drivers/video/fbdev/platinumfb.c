@@ -684,16 +684,13 @@ static int __init platinumfb_init(void)
 
 	return 0;
 }
+module_init(platinumfb_init);
 
 static void __exit platinumfb_exit(void)
 {
 	platform_driver_unregister(&platinum_driver);
 }
+module_exit(platinumfb_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("framebuffer driver for Apple Platinum video");
-module_init(platinumfb_init);
-
-#ifdef MODULE
-module_exit(platinumfb_exit);
-#endif

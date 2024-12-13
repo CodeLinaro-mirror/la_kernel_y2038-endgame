@@ -518,12 +518,12 @@ int __init chips_init(void)
 
 	return pci_register_driver(&chipsfb_driver);
 }
-
 module_init(chips_init);
 
 static void __exit chipsfb_exit(void)
 {
 	pci_unregister_driver(&chipsfb_driver);
 }
+module_exit(chipsfb_exit);
 
 MODULE_LICENSE("GPL");
