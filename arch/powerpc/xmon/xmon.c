@@ -1066,7 +1066,7 @@ cmds(struct pt_regs *excp)
 				break;
 			case 'z':
 				if (xmon_is_ro) {
-					printf(xmon_ro_msg);
+					printf("%s", xmon_ro_msg);
 					break;
 				}
 				memzcan();
@@ -1134,7 +1134,7 @@ cmds(struct pt_regs *excp)
 			break;
 		case 'p':
 			if (xmon_is_ro) {
-				printf(xmon_ro_msg);
+				printf("%s", xmon_ro_msg);
 				break;
 			}
 			proccall();
@@ -1509,7 +1509,7 @@ bpt_cmds(void)
 		static const char badaddr[] = "Only kernel addresses are permitted for breakpoints\n";
 		int mode;
 		if (xmon_is_ro) {
-			printf(xmon_ro_msg);
+			printf("%s", xmon_ro_msg);
 			break;
 		}
 		if (!ppc_breakpoint_available()) {
@@ -1531,7 +1531,7 @@ bpt_cmds(void)
 		dabr[i].enabled = 0;
 		if (scanhex(&dabr[i].address)) {
 			if (!is_kernel_addr(dabr[i].address)) {
-				printf(badaddr);
+				printf("%s", badaddr);
 				break;
 			}
 			dabr[i].address &= ~HW_BRK_TYPE_DABR;
@@ -1544,7 +1544,7 @@ bpt_cmds(void)
 
 	case 'i':	/* bi - hardware instr breakpoint */
 		if (xmon_is_ro) {
-			printf(xmon_ro_msg);
+			printf("%s", xmon_ro_msg);
 			break;
 		}
 		if (!cpu_has_feature(CPU_FTR_ARCH_207S)) {
@@ -1602,7 +1602,7 @@ bpt_cmds(void)
 		termch = cmd;
 		cmd = skipbl();
 		if (cmd == '?') {
-			printf(breakpoint_help_string);
+			printf("%s", breakpoint_help_string);
 			break;
 		}
 		termch = cmd;
@@ -1862,7 +1862,7 @@ static void excprint(struct pt_regs *fp)
 	if (trap == INTERRUPT_PROGRAM)
 		print_bug_trap(fp);
 
-	printf(linux_banner);
+	printf("%s", linux_banner);
 }
 
 static void prregs(struct pt_regs *fp)
@@ -1977,7 +1977,7 @@ static void
 write_spr(int n, unsigned long val)
 {
 	if (xmon_is_ro) {
-		printf(xmon_ro_msg);
+		printf("%s", xmon_ro_msg);
 		return;
 	}
 
@@ -2245,7 +2245,7 @@ mwrite(unsigned long adrs, void *buf, int size)
 	n = 0;
 
 	if (xmon_is_ro) {
-		printf(xmon_ro_msg);
+		printf("%s", xmon_ro_msg);
 		return n;
 	}
 
@@ -2398,7 +2398,7 @@ memex(void)
 	scanhex((void *)&adrs);
 	cmd = skipbl();
 	if (cmd == '?') {
-		printf(memex_help_string);
+		printf("%s", memex_help_string);
 		return;
 	} else {
 		termch = cmd;
@@ -2530,7 +2530,7 @@ memex(void)
 				adrs += n;
 				break;
 			case '?':
-				printf(memex_subcmd_help_string);
+				printf("%s", memex_subcmd_help_string);
 				break;
 			}
 		}
@@ -3141,14 +3141,14 @@ memops(int cmd)
 	switch( cmd ){
 	case 'm':
 		if (xmon_is_ro) {
-			printf(xmon_ro_msg);
+			printf("%s", xmon_ro_msg);
 			break;
 		}
 		memmove((void *)mdest, (void *)msrc, mcount);
 		break;
 	case 's':
 		if (xmon_is_ro) {
-			printf(xmon_ro_msg);
+			printf("%s", xmon_ro_msg);
 			break;
 		}
 		memset((void *)mdest, mval, mcount);
