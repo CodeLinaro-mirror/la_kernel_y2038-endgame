@@ -954,14 +954,12 @@ static void dpu_kms_mdp_snapshot(struct msm_disp_state *disp_state, struct msm_k
 	/* dump CTL sub-blocks HW regs info */
 	for (i = 0; i < cat->ctl_count; i++)
 		msm_disp_snapshot_add_block(disp_state, cat->ctl[i].len,
-				dpu_kms->mmio + cat->ctl[i].base, "%s",
-				cat->ctl[i].name);
+				dpu_kms->mmio + cat->ctl[i].base, cat->ctl[i].name);
 
 	/* dump DSPP sub-blocks HW regs info */
 	for (i = 0; i < cat->dspp_count; i++) {
 		base = dpu_kms->mmio + cat->dspp[i].base;
-		msm_disp_snapshot_add_block(disp_state, cat->dspp[i].len, base,
-					    "%s", cat->dspp[i].name);
+		msm_disp_snapshot_add_block(disp_state, cat->dspp[i].len, base, cat->dspp[i].name);
 
 		if (cat->dspp[i].sblk && cat->dspp[i].sblk->pcc.len > 0)
 			msm_disp_snapshot_add_block(disp_state, cat->dspp[i].sblk->pcc.len,
@@ -973,14 +971,13 @@ static void dpu_kms_mdp_snapshot(struct msm_disp_state *disp_state, struct msm_k
 	/* dump INTF sub-blocks HW regs info */
 	for (i = 0; i < cat->intf_count; i++)
 		msm_disp_snapshot_add_block(disp_state, cat->intf[i].len,
-				dpu_kms->mmio + cat->intf[i].base, "%s",
-				cat->intf[i].name);
+				dpu_kms->mmio + cat->intf[i].base, cat->intf[i].name);
 
 	/* dump PP sub-blocks HW regs info */
 	for (i = 0; i < cat->pingpong_count; i++) {
 		base = dpu_kms->mmio + cat->pingpong[i].base;
 		msm_disp_snapshot_add_block(disp_state, cat->pingpong[i].len, base,
-					    "%s", cat->pingpong[i].name);
+					    cat->pingpong[i].name);
 
 		/* TE2 sub-block has length of 0, so will not print it */
 
@@ -994,8 +991,7 @@ static void dpu_kms_mdp_snapshot(struct msm_disp_state *disp_state, struct msm_k
 	/* dump SSPP sub-blocks HW regs info */
 	for (i = 0; i < cat->sspp_count; i++) {
 		base = dpu_kms->mmio + cat->sspp[i].base;
-		msm_disp_snapshot_add_block(disp_state, cat->sspp[i].len, base,
-					    "%s", cat->sspp[i].name);
+		msm_disp_snapshot_add_block(disp_state, cat->sspp[i].len, base, cat->sspp[i].name);
 
 		if (cat->sspp[i].sblk && cat->sspp[i].sblk->scaler_blk.len > 0)
 			msm_disp_snapshot_add_block(disp_state, cat->sspp[i].sblk->scaler_blk.len,
@@ -1013,14 +1009,12 @@ static void dpu_kms_mdp_snapshot(struct msm_disp_state *disp_state, struct msm_k
 	/* dump LM sub-blocks HW regs info */
 	for (i = 0; i < cat->mixer_count; i++)
 		msm_disp_snapshot_add_block(disp_state, cat->mixer[i].len,
-				dpu_kms->mmio + cat->mixer[i].base,
-				"%s", cat->mixer[i].name);
+				dpu_kms->mmio + cat->mixer[i].base, cat->mixer[i].name);
 
 	/* dump WB sub-blocks HW regs info */
 	for (i = 0; i < cat->wb_count; i++)
 		msm_disp_snapshot_add_block(disp_state, cat->wb[i].len,
-				dpu_kms->mmio + cat->wb[i].base, "%s",
-				cat->wb[i].name);
+				dpu_kms->mmio + cat->wb[i].base, cat->wb[i].name);
 
 	if (dpu_kms->catalog->mdss_ver->core_major_ver >= 8) {
 		msm_disp_snapshot_add_block(disp_state, MDP_PERIPH_TOP0,
@@ -1041,8 +1035,7 @@ static void dpu_kms_mdp_snapshot(struct msm_disp_state *disp_state, struct msm_k
 	/* dump DSC sub-blocks HW regs info */
 	for (i = 0; i < cat->dsc_count; i++) {
 		base = dpu_kms->mmio + cat->dsc[i].base;
-		msm_disp_snapshot_add_block(disp_state, cat->dsc[i].len, base,
-					    "%s", cat->dsc[i].name);
+		msm_disp_snapshot_add_block(disp_state, cat->dsc[i].len, base, cat->dsc[i].name);
 
 		if (cat->mdss_ver->core_major_ver >= 7) {
 			struct dpu_dsc_blk enc = cat->dsc[i].sblk->enc;
@@ -1057,8 +1050,7 @@ static void dpu_kms_mdp_snapshot(struct msm_disp_state *disp_state, struct msm_k
 
 	if (cat->cdm)
 		msm_disp_snapshot_add_block(disp_state, cat->cdm->len,
-					    dpu_kms->mmio + cat->cdm->base,
-					    "%s", cat->cdm->name);
+					    dpu_kms->mmio + cat->cdm->base, cat->cdm->name);
 
 	for (i = 0; i < dpu_kms->catalog->vbif_count; i++) {
 		const struct dpu_vbif_cfg *vbif = &dpu_kms->catalog->vbif[i];
