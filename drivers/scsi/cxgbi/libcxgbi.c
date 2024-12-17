@@ -3086,7 +3086,7 @@ static int __init libcxgbi_init_module(void)
 	return 0;
 }
 
-static void __exit libcxgbi_exit_module(void)
+static void libcxgbi_exit_module(void)
 {
 	cxgbi_device_unregister_all(0xFF);
 	put_page(rsvd_page);
