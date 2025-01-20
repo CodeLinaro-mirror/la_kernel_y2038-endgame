@@ -1152,7 +1152,7 @@ static void __ghes_panic(struct ghes *ghes,
 	if (!panic_timeout)
 		pr_emerg("%s but panic disabled\n", msg);
 
-	panic(msg);
+	panic("%s", msg);
 }
 
 static int ghes_proc(struct ghes *ghes)

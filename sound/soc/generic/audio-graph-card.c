@@ -189,6 +189,7 @@ static int graph_link_init(struct simple_util_priv *priv,
 		dai_link->ops	= priv->ops;
 
 	ret = simple_util_set_dailink_name(priv, dai_link, name);
+	ret = simple_util_set_dailink_name(dev, dai_link, "%s", name);
 end:
 	return graph_ret(priv, ret);
 }
