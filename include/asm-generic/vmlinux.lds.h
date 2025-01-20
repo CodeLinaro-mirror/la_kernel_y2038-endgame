@@ -602,10 +602,10 @@
 		*(.text.asan.* .text.tsan.*)				\
 		*(.text.unknown .text.unknown.*)			\
 		TEXT_SPLIT						\
-		TEXT_UNLIKELY						\
 		. = ALIGN(PAGE_SIZE);					\
 		TEXT_HOT						\
 		*(TEXT_MAIN .text.fixup)				\
+		TEXT_UNLIKELY						\
 		NOINSTR_TEXT						\
 		*(.ref.text)
 
