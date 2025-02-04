@@ -550,6 +550,7 @@ void kvm_notify_acked_gsi(struct kvm *kvm, int gsi)
 		if (kian->gsi == gsi)
 			kian->irq_acked(kian);
 }
+EXPORT_SYMBOL_GPL(kvm_notify_acked_gsi);
 
 void kvm_notify_acked_irq(struct kvm *kvm, unsigned irqchip, unsigned pin)
 {
@@ -563,6 +564,7 @@ void kvm_notify_acked_irq(struct kvm *kvm, unsigned irqchip, unsigned pin)
 		kvm_notify_acked_gsi(kvm, gsi);
 	srcu_read_unlock(&kvm->irq_srcu, idx);
 }
+EXPORT_SYMBOL_GPL(kvm_notify_acked_irq);
 
 void kvm_register_irq_ack_notifier(struct kvm *kvm,
 				   struct kvm_irq_ack_notifier *kian)
@@ -572,6 +574,7 @@ void kvm_register_irq_ack_notifier(struct kvm *kvm,
 	mutex_unlock(&kvm->irq_lock);
 	kvm_arch_post_irq_ack_notifier_list_update(kvm);
 }
+EXPORT_SYMBOL_GPL(kvm_register_irq_ack_notifier);
 
 void kvm_unregister_irq_ack_notifier(struct kvm *kvm,
 				    struct kvm_irq_ack_notifier *kian)
@@ -582,6 +585,7 @@ void kvm_unregister_irq_ack_notifier(struct kvm *kvm,
 	synchronize_srcu_expedited(&kvm->irq_srcu);
 	kvm_arch_post_irq_ack_notifier_list_update(kvm);
 }
+EXPORT_SYMBOL_GPL(kvm_unregister_irq_ack_notifier);
 
 /*
  * shutdown any irqfd's that match fd+gsi
@@ -703,6 +707,7 @@ bool kvm_notify_irqfd_resampler(struct kvm *kvm,
 
 	return false;
 }
+EXPORT_SYMBOL_GPL(kvm_notify_irqfd_resampler);
 
 /*
  * create a host-wide workqueue for issuing deferred shutdown requests

@@ -5,9 +5,9 @@
 
 ccflags-y += -I $(src)
 
-include $(srctree)/virt/kvm/Makefile.kvm
+# include $(srctree)/virt/kvm/Makefile.kvm
 
-obj-$(CONFIG_KVM) += kvm.o
+obj-$(CONFIG_KVM) += kvm.o # kvm-core.o
 obj-$(CONFIG_KVM) += hyp/
 
 CFLAGS_sys_regs.o += -Wno-override-init
@@ -43,5 +43,5 @@ $(obj)/hyp-constants.s: $(src)/hyp/hyp-constants.c FORCE
 $(obj)/hyp_constants.h: $(obj)/hyp-constants.s FORCE
 	$(call if_changed_rule,gen_hyp_constants)
 
-obj-kvm := $(addprefix $(obj)/, $(kvm-y))
+obj-kvm := $(addprefix $(obj)/, $(kvm-y) $(kvm-core-y))
 $(obj-kvm): $(obj)/hyp_constants.h

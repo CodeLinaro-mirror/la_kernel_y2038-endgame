@@ -2422,7 +2422,7 @@ static void elf_hwcap_fixup(void)
 #endif /* CONFIG_COMPAT */
 }
 
-#ifdef CONFIG_KVM
+#if IS_ENABLED(CONFIG_KVM)
 static bool is_kvm_protected_mode(const struct arm64_cpu_capabilities *entry, int __unused)
 {
 	return kvm_get_mode() == KVM_MODE_PROTECTED;
@@ -2604,7 +2604,7 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
 		.matches = has_32bit_el0,
 		ARM64_CPUID_FIELDS(ID_AA64PFR0_EL1, EL0, AARCH32)
 	},
-#ifdef CONFIG_KVM
+#if IS_ENABLED(CONFIG_KVM)
 	{
 		.desc = "32-bit EL1 Support",
 		.capability = ARM64_HAS_32BIT_EL1,

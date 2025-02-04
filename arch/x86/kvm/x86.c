@@ -14434,3 +14434,6 @@ static void __exit kvm_x86_exit(void)
 	WARN_ON_ONCE(static_branch_unlikely(&kvm_has_noapic_vcpu));
 }
 module_exit(kvm_x86_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("Kernel-based Virtual Machine driver for Linux");

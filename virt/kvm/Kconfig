@@ -2,7 +2,7 @@
 # KVM common configuration items and defaults
 
 config KVM_COMMON
-       bool
+       tristate
        select EVENTFD
        select INTERVAL_TREE
        select PREEMPT_NOTIFIERS
