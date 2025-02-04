@@ -5,6 +5,7 @@
 
 menuconfig FB
 	tristate "Support for frame buffer device drivers"
+	depends on MMU
 	select FB_CORE
 	select FB_NOTIFY
 	help

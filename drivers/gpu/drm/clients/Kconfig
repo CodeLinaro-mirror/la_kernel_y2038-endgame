@@ -30,7 +30,7 @@ menu "Supported DRM clients"
 
 config DRM_FBDEV_EMULATION
 	bool "Enable legacy fbdev support for your modesetting driver"
-	depends on DRM_CLIENT_SELECTION
+	depends on DRM_CLIENT_SELECTION && MMU
 	select DRM_CLIENT
 	select DRM_CLIENT_SETUP
 	select FRAMEBUFFER_CONSOLE_DETECT_PRIMARY if FRAMEBUFFER_CONSOLE
