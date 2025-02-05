@@ -124,6 +124,7 @@ int kvm_arch_vcpu_should_kick(struct kvm_vcpu *vcpu)
 {
 	return kvm_vcpu_exiting_guest_mode(vcpu) == IN_GUEST_MODE;
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_should_kick);
 
 int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
 			    struct kvm_enable_cap *cap)
@@ -188,6 +189,7 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
 
 	return r;
 }
+EXPORT_SYMBOL_GPL(kvm_vm_ioctl_enable_cap);
 
 static int kvm_arm_default_max_vcpus(void)
 {
@@ -258,17 +260,20 @@ err_unshare_kvm:
 	kvm_unshare_hyp(kvm, kvm + 1);
 	return ret;
 }
+EXPORT_SYMBOL_GPL(kvm_arch_init_vm);
 
 vm_fault_t kvm_arch_vcpu_fault(struct kvm_vcpu *vcpu, struct vm_fault *vmf)
 {
 	return VM_FAULT_SIGBUS;
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_fault);
 
 void kvm_arch_create_vm_debugfs(struct kvm *kvm)
 {
 	kvm_sys_regs_create_debugfs(kvm);
 	kvm_s2_ptdump_create_debugfs(kvm);
 }
+EXPORT_SYMBOL_GPL(kvm_arch_create_vm_debugfs);
 
 static void kvm_destroy_mpidr_data(struct kvm *kvm)
 {
@@ -310,6 +315,7 @@ void kvm_arch_destroy_vm(struct kvm *kvm)
 
 	kvm_arm_teardown_hypercalls(kvm);
 }
+EXPORT_SYMBOL_GPL(kvm_arch_destroy_vm);
 
 static bool kvm_has_full_ptr_auth(void)
 {
@@ -477,12 +483,14 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
 
 	return r;
 }
+EXPORT_SYMBOL_GPL(kvm_vm_ioctl_check_extension);
 
 long kvm_arch_dev_ioctl(struct file *filp,
 			unsigned int ioctl, unsigned long arg)
 {
 	return -EINVAL;
 }
+EXPORT_SYMBOL_GPL(kvm_arch_dev_ioctl);
 
 struct kvm *kvm_arch_alloc_vm(void)
 {
@@ -493,6 +501,7 @@ struct kvm *kvm_arch_alloc_vm(void)
 
 	return kvzalloc(sz, GFP_KERNEL_ACCOUNT);
 }
+EXPORT_SYMBOL_GPL(kvm_arch_alloc_vm);
 
 int kvm_arch_vcpu_precreate(struct kvm *kvm, unsigned int id)
 {
@@ -504,6 +513,7 @@ int kvm_arch_vcpu_precreate(struct kvm *kvm, unsigned int id)
 
 	return 0;
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_precreate);
 
 int kvm_arch_vcpu_create(struct kvm_vcpu *vcpu)
 {
@@ -550,10 +560,12 @@ int kvm_arch_vcpu_create(struct kvm_vcpu *vcpu)
 
 	return err;
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_create);
 
 void kvm_arch_vcpu_postcreate(struct kvm_vcpu *vcpu)
 {
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_postcreate);
 
 void kvm_arch_vcpu_destroy(struct kvm_vcpu *vcpu)
 {
@@ -566,16 +578,19 @@ void kvm_arch_vcpu_destroy(struct kvm_vcpu *vcpu)
 	kvm_vgic_vcpu_destroy(vcpu);
 	kvm_arm_vcpu_destroy(vcpu);
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_destroy);
 
 void kvm_arch_vcpu_blocking(struct kvm_vcpu *vcpu)
 {
 
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_blocking);
 
 void kvm_arch_vcpu_unblocking(struct kvm_vcpu *vcpu)
 {
 
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_unblocking);
 
 static void vcpu_set_pauth_traps(struct kvm_vcpu *vcpu)
 {
@@ -707,6 +722,7 @@ nommu:
 	if (!cpumask_test_cpu(cpu, vcpu->kvm->arch.supported_cpus))
 		vcpu_set_on_unsupported_cpu(vcpu);
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_load);
 
 void kvm_arch_vcpu_put(struct kvm_vcpu *vcpu)
 {
@@ -729,6 +745,7 @@ void kvm_arch_vcpu_put(struct kvm_vcpu *vcpu)
 	vcpu_clear_on_unsupported_cpu(vcpu);
 	vcpu->cpu = -1;
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_put);
 
 static void __kvm_arm_vcpu_power_off(struct kvm_vcpu *vcpu)
 {
@@ -743,11 +760,13 @@ void kvm_arm_vcpu_power_off(struct kvm_vcpu *vcpu)
 	__kvm_arm_vcpu_power_off(vcpu);
 	spin_unlock(&vcpu->arch.mp_state_lock);
 }
+EXPORT_SYMBOL_GPL(kvm_arm_vcpu_power_off);
 
 bool kvm_arm_vcpu_stopped(struct kvm_vcpu *vcpu)
 {
 	return READ_ONCE(vcpu->arch.mp_state.mp_state) == KVM_MP_STATE_STOPPED;
 }
+EXPORT_SYMBOL_GPL(kvm_arm_vcpu_stopped);
 
 static void kvm_arm_vcpu_suspend(struct kvm_vcpu *vcpu)
 {
@@ -768,6 +787,7 @@ int kvm_arch_vcpu_ioctl_get_mpstate(struct kvm_vcpu *vcpu,
 
 	return 0;
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_ioctl_get_mpstate);
 
 int kvm_arch_vcpu_ioctl_set_mpstate(struct kvm_vcpu *vcpu,
 				    struct kvm_mp_state *mp_state)
@@ -794,6 +814,7 @@ int kvm_arch_vcpu_ioctl_set_mpstate(struct kvm_vcpu *vcpu,
 
 	return ret;
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_ioctl_set_mpstate);
 
 /**
  * kvm_arch_vcpu_runnable - determine if the vcpu can be scheduled
@@ -809,17 +830,20 @@ int kvm_arch_vcpu_runnable(struct kvm_vcpu *v)
 	return ((irq_lines || kvm_vgic_vcpu_pending_irq(v))
 		&& !kvm_arm_vcpu_stopped(v) && !v->arch.pause);
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_runnable);
 
 bool kvm_arch_vcpu_in_kernel(struct kvm_vcpu *vcpu)
 {
 	return vcpu_mode_priv(vcpu);
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_in_kernel);
 
 #ifdef CONFIG_GUEST_PERF_EVENTS
 unsigned long kvm_arch_vcpu_get_ip(struct kvm_vcpu *vcpu)
 {
 	return *vcpu_pc(vcpu);
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_get_ip);
 #endif
 
 static void kvm_init_mpidr_data(struct kvm *kvm)
@@ -951,11 +975,13 @@ int kvm_arch_vcpu_run_pid_change(struct kvm_vcpu *vcpu)
 
 	return ret;
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_run_pid_change);
 
 bool kvm_arch_intc_initialized(struct kvm *kvm)
 {
 	return vgic_initialized(kvm);
 }
+EXPORT_SYMBOL_GPL(kvm_arch_intc_initialized);
 
 void kvm_arm_halt_guest(struct kvm *kvm)
 {
@@ -966,6 +992,7 @@ void kvm_arm_halt_guest(struct kvm *kvm)
 		vcpu->arch.pause = true;
 	kvm_make_all_cpus_request(kvm, KVM_REQ_SLEEP);
 }
+EXPORT_SYMBOL_GPL(kvm_arm_halt_guest);
 
 void kvm_arm_resume_guest(struct kvm *kvm)
 {
@@ -977,6 +1004,7 @@ void kvm_arm_resume_guest(struct kvm *kvm)
 		__kvm_vcpu_wake_up(vcpu);
 	}
 }
+EXPORT_SYMBOL_GPL(kvm_arm_resume_guest);
 
 static void kvm_vcpu_sleep(struct kvm_vcpu *vcpu)
 {
@@ -1889,6 +1917,7 @@ long kvm_arch_vcpu_ioctl(struct file *filp,
 
 	return r;
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vcpu_ioctl);
 
 long kvm_arch_vcpu_unlocked_ioctl(struct file *filp, unsigned int ioctl,
 				  unsigned long arg)
@@ -1900,6 +1929,7 @@ void kvm_arch_sync_dirty_log(struct kvm *kvm, struct kvm_memory_slot *memslot)
 {
 
 }
+EXPORT_SYMBOL_GPL(kvm_arch_sync_dirty_log);
 
 static int kvm_vm_ioctl_set_device_addr(struct kvm *kvm,
 					struct kvm_arm_device_addr *dev_addr)
@@ -2007,6 +2037,7 @@ int kvm_arch_vm_ioctl(struct file *filp, unsigned int ioctl, unsigned long arg)
 		return -EINVAL;
 	}
 }
+EXPORT_SYMBOL_GPL(kvm_arch_vm_ioctl);
 
 static unsigned long nvhe_percpu_size(void)
 {

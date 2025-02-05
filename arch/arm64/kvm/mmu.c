@@ -2399,6 +2399,7 @@ void kvm_arch_commit_memory_region(struct kvm *kvm,
 		kvm_mmu_free_memory_cache(&kvm->arch.mmu.split_page_cache);
 	}
 }
+EXPORT_SYMBOL_GPL(kvm_arch_commit_memory_region);
 
 int kvm_arch_prepare_memory_region(struct kvm *kvm,
 				   const struct kvm_memory_slot *old,
@@ -2475,14 +2476,17 @@ int kvm_arch_prepare_memory_region(struct kvm *kvm,
 	mmap_read_unlock(current->mm);
 	return ret;
 }
+EXPORT_SYMBOL_GPL(kvm_arch_prepare_memory_region);
 
 void kvm_arch_free_memslot(struct kvm *kvm, struct kvm_memory_slot *slot)
 {
 }
+EXPORT_SYMBOL_GPL(kvm_arch_free_memslot);
 
 void kvm_arch_memslots_updated(struct kvm *kvm, u64 gen)
 {
 }
+EXPORT_SYMBOL_GPL(kvm_arch_memslots_updated);
 
 void kvm_arch_flush_shadow_memslot(struct kvm *kvm,
 				   struct kvm_memory_slot *slot)
@@ -2495,6 +2499,7 @@ void kvm_arch_flush_shadow_memslot(struct kvm *kvm,
 	kvm_nested_s2_unmap(kvm, true);
 	write_unlock(&kvm->mmu_lock);
 }
+EXPORT_SYMBOL_GPL(kvm_arch_flush_shadow_memslot);
 
 /*
  * See note at ARMv7 ARM B1.14.4 (TL;DR: S/W ops are not easily virtualized).
