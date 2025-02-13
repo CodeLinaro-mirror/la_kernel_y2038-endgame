@@ -98,6 +98,7 @@ SYM_CODE_START(primary_entry)
 	 * accesses (MMU disabled), invalidate those tables again to
 	 * remove any speculatively loaded cache lines.
 	 */
+#if 0
 	cbnz	x19, 0f
 	dmb     sy
 	mov	x1, x0				// end of used region
@@ -105,7 +106,6 @@ SYM_CODE_START(primary_entry)
 	adr_l	x2, dcache_inval_poc
 	blr	x2
 	b	1f
-
 	/*
 	 * If we entered with the MMU and caches on, clean the ID mapped part
 	 * of the primary boot code to the PoC so we can safely execute it with
@@ -115,6 +115,7 @@ SYM_CODE_START(primary_entry)
 	adr_l	x1, __idmap_text_end
 	adr_l	x2, dcache_clean_poc
 	blr	x2
+#endif
 
 1:	mov	x0, x19
 	bl	init_kernel_el			// w0=cpu_boot_mode

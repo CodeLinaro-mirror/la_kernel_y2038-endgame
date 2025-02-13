@@ -249,7 +249,7 @@ asmlinkage void __init early_map_kernel(u64 boot_status, phys_addr_t fdt)
 	void *fdt_mapped = map_fdt(fdt);
 
 	/* Clear BSS and the initial page tables */
-	memset(__bss_start, 0, (char *)init_pg_end - (char *)__bss_start);
+	//memset(__bss_start, 0, (char *)init_pg_end - (char *)__bss_start);
 
 	/* Parse the command line for CPU feature overrides */
 	chosen = fdt_path_offset(fdt_mapped, chosen_str);
