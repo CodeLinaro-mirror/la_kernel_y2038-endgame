@@ -35,6 +35,7 @@ config ARCH_ALPINE
 
 config ARCH_APPLE
 	bool "Apple Silicon SoC family"
+	depends on SMP
 	select APPLE_AIC
 	select APPLE_PMGR_PWRSTATE if PM
 	help

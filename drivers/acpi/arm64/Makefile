@@ -8,4 +8,4 @@ obj-$(CONFIG_ACPI_MPAM) 	+= mpam.o
 obj-$(CONFIG_ACPI_PROCESSOR_IDLE) += cpuidle.o
 obj-$(CONFIG_ARM_AMBA)		+= amba.o
 obj-y				+= dma.o init.o
-obj-y				+= thermal_cpufreq.o
+obj-$(CONFIG_ARM_SMCCC_SOC_ID)	+= thermal_cpufreq.o

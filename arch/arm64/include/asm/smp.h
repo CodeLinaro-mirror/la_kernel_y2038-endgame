@@ -29,7 +29,11 @@
 #include <linux/cpumask.h>
 #include <linux/thread_info.h>
 
+#if NR_CPUS > 1
 #define raw_smp_processor_id() (current_thread_info()->cpu)
+#elif defined(CONFIG_SMP)
+#define raw_smp_processor_id() (0)
+#endif
 
 /*
  * Logical CPU mapping.
@@ -42,12 +46,15 @@ static inline void set_cpu_logical_map(unsigned int cpu, u64 hwid)
 	__cpu_logical_map[cpu] = hwid;
 }
 
+#ifdef CONFIG_SMP
+
 struct seq_file;
 
 /*
  * Discover the set of possible CPUs and determine their
  * SMP operations.
  */
+
 extern void smp_init_cpus(void);
 
 enum ipi_msg_type {
@@ -122,6 +129,7 @@ static inline void __noreturn cpu_park_loop(void)
 	}
 }
 
+
 static inline void update_cpu_boot_status(int val)
 {
 	WRITE_ONCE(secondary_data.status, val);
@@ -154,6 +162,32 @@ bool cpus_are_stuck_in_kernel(void);
 
 extern void crash_smp_send_stop(void);
 extern bool smp_crash_stop_failed(void);
+
+#else
+static inline void smp_init_cpus(void) {}
+static inline void __noreturn cpu_panic_kernel(void)
+{
+	panic("no SMP");
+}
+static inline void __noreturn cpu_die_early(void)
+{
+	panic("no SMP");
+}
+static inline void __noreturn cpu_park_loop(void)
+{
+	panic("no SMP");
+}
+
+static inline bool cpus_are_stuck_in_kernel(void)
+{
+	return false;
+}
+
+static inline bool smp_crash_stop_failed(void)
+{
+	return false;
+}
+#endif
 
 #endif /* ifndef __ASSEMBLER__ */
 

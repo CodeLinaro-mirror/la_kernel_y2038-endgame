@@ -276,6 +276,7 @@ config ACPI_PROCESSOR_CSTATE
 config ACPI_PROCESSOR_IDLE
 	bool
 	select CPU_IDLE
+	select ARM_PSCI_FW if ARM64
 
 config ACPI_MCFG
 	bool

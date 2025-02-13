@@ -137,7 +137,9 @@ EXPORT_SYMBOL(arch_hibernation_header_save);
 
 int arch_hibernation_header_restore(void *addr)
 {
+#ifdef CONFIG_SMP
 	int ret;
+#endif
 	struct arch_hibernate_hdr_invariants invariants;
 	struct arch_hibernate_hdr *hdr = addr;
 
@@ -156,11 +158,13 @@ int arch_hibernation_header_restore(void *addr)
 		return -EINVAL;
 	}
 
+#ifdef CONFIG_SMP
 	ret = bringup_hibernate_cpu(sleep_cpu);
 	if (ret) {
 		sleep_cpu = -EINVAL;
 		return ret;
 	}
+#endif
 
 	resume_hdr = *hdr;
 
@@ -474,10 +478,14 @@ int __nocfi swsusp_arch_resume(void)
 
 int hibernate_resume_nonboot_cpu_disable(void)
 {
+#ifdef CONFIG_SMP
 	if (sleep_cpu < 0) {
 		pr_err("Failing to resume from hibernate on an unknown CPU.\n");
 		return -ENODEV;
 	}
 
 	return freeze_secondary_cpus(sleep_cpu);
+#else
+	return 0;
+#endif
 }

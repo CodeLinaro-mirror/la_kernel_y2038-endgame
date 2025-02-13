@@ -498,11 +498,13 @@ static int gicv5_lpi_irq_retrigger(struct irq_data *data)
 						true);
 }
 
+#ifdef CONFIG_SMP
 static void gicv5_ipi_send_single(struct irq_data *d, unsigned int cpu)
 {
 	/* Mark the LPI pending */
 	irq_chip_retrigger_hierarchy(d);
 }
+#endif
 
 static bool gicv5_ppi_irq_is_level(irq_hw_number_t hwirq)
 {
@@ -561,6 +563,7 @@ static const struct irq_chip gicv5_lpi_irq_chip = {
 				  IRQCHIP_MASK_ON_SUSPEND,
 };
 
+#ifdef CONFIG_SMP
 static const struct irq_chip gicv5_ipi_irq_chip = {
 	.name			= "GICv5-IPI",
 	.irq_mask		= irq_chip_mask_parent,
@@ -573,6 +576,7 @@ static const struct irq_chip gicv5_ipi_irq_chip = {
 	.flags			= IRQCHIP_SKIP_SET_WAKE	  |
 				  IRQCHIP_MASK_ON_SUSPEND,
 };
+#endif
 
 static __always_inline int gicv5_irq_domain_translate(struct irq_domain *d,
 						      struct irq_fwspec *fwspec,
@@ -836,6 +840,7 @@ void __init gicv5_free_lpi_domain(void)
 	gicv5_global_data.lpi_domain = NULL;
 }
 
+#ifdef CONFIG_SMP
 static int gicv5_irq_ipi_domain_alloc(struct irq_domain *domain, unsigned int virq,
 				      unsigned int nr_irqs, void *arg)
 {
@@ -893,6 +898,7 @@ static const struct irq_domain_ops gicv5_irq_ipi_domain_ops = {
 	.alloc	= gicv5_irq_ipi_domain_alloc,
 	.free	= gicv5_irq_ipi_domain_free,
 };
+#endif
 
 static void handle_irq_per_domain(u32 hwirq)
 {
@@ -974,7 +980,9 @@ static void gicv5_cpu_enable_interrupts(void)
 	write_sysreg_s(cr0, SYS_ICC_CR0_EL1);
 }
 
+#ifdef CONFIG_SMP
 static int base_ipi_virq;
+#endif
 
 static int gicv5_starting_cpu(unsigned int cpu)
 {
@@ -989,6 +997,7 @@ static int gicv5_starting_cpu(unsigned int cpu)
 
 static void __init gicv5_smp_init(void)
 {
+#ifdef CONFIG_SMP
 	unsigned int num_ipis = GICV5_IPIS_PER_CPU * nr_cpu_ids;
 
 	cpuhp_setup_state_nocalls(CPUHP_AP_IRQ_GIC_STARTING,
@@ -1001,6 +1010,7 @@ static void __init gicv5_smp_init(void)
 		return;
 
 	set_smp_ipi_range_percpu(base_ipi_virq, GICV5_IPIS_PER_CPU, nr_cpu_ids);
+#endif
 }
 
 static void __init gicv5_free_domains(void)
@@ -1042,6 +1052,7 @@ static int __init gicv5_init_domains(struct fwnode_handle *handle)
 		irq_domain_update_bus_token(d, DOMAIN_BUS_WIRED);
 	}
 
+#ifdef CONFIG_SMP
 	if (!WARN(!gicv5_global_data.lpi_domain,
 		  "LPI domain uninitialized, can't set up IPIs")) {
 		d = irq_domain_create_hierarchy(gicv5_global_data.lpi_domain,
@@ -1055,6 +1066,7 @@ static int __init gicv5_init_domains(struct fwnode_handle *handle)
 		}
 		gicv5_global_data.ipi_domain = d;
 	}
+#endif
 	gicv5_global_data.fwnode = handle;
 
 	return 0;

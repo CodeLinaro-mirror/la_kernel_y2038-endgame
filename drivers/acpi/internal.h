@@ -90,7 +90,7 @@ int acpi_passive_trip_temp(struct acpi_device *adev, int *ret_temp);
 int acpi_hot_trip_temp(struct acpi_device *adev, int *ret_temp);
 int acpi_critical_trip_temp(struct acpi_device *adev, int *ret_temp);
 
-#ifdef CONFIG_ARM64
+#if defined(CONFIG_ARM64) && defined(CONFIG_ARM_SMCCC_SOC_ID)
 int acpi_arch_thermal_cpufreq_pctg(void);
 #else
 static inline int acpi_arch_thermal_cpufreq_pctg(void)

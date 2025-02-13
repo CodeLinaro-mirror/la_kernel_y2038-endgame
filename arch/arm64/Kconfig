@@ -130,7 +130,6 @@ config ARM64
 	select ARM_GIC_V3
 	select ARM_GIC_V3_ITS if PCI
 	select ARM_GIC_V5
-	select ARM_PSCI_FW
 	select BUILDTIME_TABLE_SORT
 	select CLONE_BACKWARDS
 	select COMMON_CLK
@@ -147,7 +146,7 @@ config ARM64
 	select FUNCTION_ALIGNMENT_8B if DYNAMIC_FTRACE_WITH_CALL_OPS
 	select GENERIC_ALLOCATOR
 	select GENERIC_ARCH_TOPOLOGY
-	select GENERIC_CLOCKEVENTS_BROADCAST
+	select GENERIC_CLOCKEVENTS_BROADCAST if SMP
 	select GENERIC_CPU_AUTOPROBE
 	select GENERIC_CPU_CACHE_MAINTENANCE
 	select GENERIC_CPU_DEVICES
@@ -156,7 +155,7 @@ config ARM64
 	select GENERIC_IDLE_POLL_SETUP
 	select GENERIC_IOREMAP
 	select GENERIC_IRQ_ENTRY
-	select GENERIC_IRQ_IPI
+	select GENERIC_IRQ_IPI if SMP
 	select GENERIC_IRQ_KEXEC_CLEAR_VM_FORWARD
 	select GENERIC_IRQ_PROBE
 	select GENERIC_IRQ_SHOW
@@ -201,7 +200,7 @@ config ARM64
 	select HAVE_ARCH_VMAP_STACK
 	select HAVE_ARM_SMCCC
 	select HAVE_ASM_MODVERSIONS
-	select HAVE_EBPF_JIT
+	select HAVE_EBPF_JIT if HAVE_ARM_SMCCC_DISCOVERY
 	select HAVE_C_RECORDMCOUNT
 	select HAVE_CMPXCHG_DOUBLE
 	select HAVE_CMPXCHG_LOCAL
@@ -384,7 +383,25 @@ config GENERIC_CALIBRATE_DELAY
 	def_bool y
 
 config SMP
-	def_bool y
+	bool "Symmetric Multi-Processing"
+	default y
+	select ARM_PSCI_FW
+	help
+	  This enables support for systems with more than one CPU. If you have
+	  a system with only one CPU, say N. If you have a system with more
+	  than one CPU, say Y.
+
+	  If you say N here, the kernel will run on uni- and multiprocessor
+	  machines, but will use only one CPU of a multiprocessor machine. If
+	  you say Y here, the kernel will run on many, but not all,
+	  uniprocessor machines. On a uniprocessor machine, the kernel
+	  will run faster if you say N here.
+
+	  See also <file:Documentation/arch/x86/i386/IO-APIC.rst>,
+	  <file:Documentation/admin-guide/lockup-watchdogs.rst> and the SMP-HOWTO available at
+	  <http://tldp.org/HOWTO/SMP-HOWTO.html>.
+
+	  If you don't know what to do here, say Y.
 
 config KERNEL_MODE_NEON
 	def_bool y
@@ -1528,12 +1545,13 @@ config CPU_LITTLE_ENDIAN
 endchoice
 
 config NR_CPUS
-	int "Maximum number of CPUs (2-4096)"
-	range 2 4096
+	int "Maximum number of CPUs (1-4096)" if SMP
+	range 1 4096
+	default "1" if !SMP
 	default "512"
 
 config HOTPLUG_CPU
-	bool "Support for hot-pluggable CPUs"
+	bool "Support for hot-pluggable CPUs" if SMP
 	select GENERIC_IRQ_MIGRATION
 	help
 	  Say Y here to experiment with turning CPUs off and on.  CPUs
@@ -1541,7 +1559,7 @@ config HOTPLUG_CPU
 
 # Common NUMA Features
 config NUMA
-	bool "NUMA Memory Allocation and Scheduler Support"
+	bool "NUMA Memory Allocation and Scheduler Support" if SMP
 	select GENERIC_ARCH_NUMA
 	select OF_NUMA
 	select HAVE_SETUP_PER_CPU_AREA
@@ -1581,6 +1599,7 @@ config CC_HAVE_SHADOW_CALL_STACK
 config PARAVIRT
 	bool "Enable paravirtualization code"
 	select HAVE_PV_STEAL_CLOCK_GEN
+	depends on HAVE_ARM_SMCCC_DISCOVERY
 	help
 	  This changes the kernel so it can modify itself when it is run
 	  under a hypervisor, potentially improving performance significantly
@@ -1588,6 +1607,7 @@ config PARAVIRT
 
 config PARAVIRT_TIME_ACCOUNTING
 	bool "Paravirtual steal time accounting"
+	depends on HAVE_ARM_SMCCC_DISCOVERY
 	select PARAVIRT
 	help
 	  Select this option to enable fine granularity task steal time
@@ -1636,10 +1656,12 @@ config TRANS_TABLE
 config XEN_DOM0
 	def_bool y
 	depends on XEN
+	depends on HAVE_ARM_SMCCC_DISCOVERY
 
 config XEN
 	bool "Xen guest support on ARM64"
 	depends on ARM64 && OF
+	depends on HAVE_ARM_SMCCC_DISCOVERY
 	select SWIOTLB_XEN
 	select PARAVIRT
 	help
@@ -2359,7 +2381,7 @@ menu "Boot options"
 
 config ARM64_ACPI_PARKING_PROTOCOL
 	bool "Enable support for the ARM64 ACPI parking protocol"
-	depends on ACPI
+	depends on ACPI && SMP
 	help
 	  Enable support for the ARM64 ACPI parking protocol. If disabled
 	  the kernel will not allow booting through the ARM64 ACPI parking

@@ -24,6 +24,7 @@
 #include <asm/page.h>
 #include <asm/sections.h>
 #include <asm/trans_pgd.h>
+#include <asm/smp.h>
 
 /**
  * kexec_image_info - For debugging output.
