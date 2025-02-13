@@ -1808,6 +1808,7 @@ static bool gic_enable_quirk_hip06_07(void *data)
 
 static bool gic_enable_quirk_nvidia_t241(void *data)
 {
+#ifdef CONFIG_HAVE_ARM_SMCCC_DISCOVERY
 	s32 soc_id = arm_smccc_get_soc_id_version();
 	unsigned long chip_bmask = 0;
 	phys_addr_t phys;
@@ -1837,6 +1838,9 @@ static bool gic_enable_quirk_nvidia_t241(void *data)
 	}
 	static_branch_enable(&gic_nvidia_t241_erratum);
 	return true;
+#else
+	return false;
+#endif
 }
 
 static bool gic_enable_quirk_asr8601(void *data)
@@ -2028,12 +2032,13 @@ static int __init gic_init_bases(phys_addr_t dist_phys_base,
 
 	gic_data.has_rss = !!(typer & GICD_TYPER_RSS);
 
+#if 0
 	if (typer & GICD_TYPER_MBIS) {
 		err = mbi_init(handle, gic_data.domain);
 		if (err)
 			pr_err("Failed to initialize MBIs\n");
 	}
-
+#endif
 	set_handle_irq(gic_handle_irq);
 
 	gic_update_rdist_properties();
