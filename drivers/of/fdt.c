@@ -461,7 +461,9 @@ phys_addr_t initial_boot_params_pa __ro_after_init;
 
 #ifdef CONFIG_OF_EARLY_FLATTREE
 
+#if 0
 static u32 of_fdt_crc32;
+#endif
 
 /*
  * fdt_reserve_elfcorehdr() - reserves memory for elf core header
@@ -1105,9 +1107,11 @@ int __init early_init_dt_scan_chosen(char *cmdline)
 		/* try to clear seed so it won't be found. */
 		fdt_nop_property(initial_boot_params, node, "rng-seed");
 
+#if 0
 		/* update CRC check value */
 		of_fdt_crc32 = crc32_be(~0, initial_boot_params,
 				fdt_totalsize(initial_boot_params));
+#endif
 	}
 
 	/* Retrieve command line */
@@ -1205,8 +1209,10 @@ bool __init early_init_dt_verify(void *dt_virt, phys_addr_t dt_phys)
 	/* Setup flat device-tree pointer */
 	initial_boot_params = dt_virt;
 	initial_boot_params_pa = dt_phys;
+#if 0
 	of_fdt_crc32 = crc32_be(~0, initial_boot_params,
 				fdt_totalsize(initial_boot_params));
+#endif
 
 	/* Initialize {size,address}-cells info */
 	early_init_dt_scan_root();
@@ -1285,7 +1291,9 @@ void __init unflatten_device_tree(void)
 			pr_err("invalid size in dtb_empty_root\n");
 			return;
 		}
+#if 0
 		of_fdt_crc32 = crc32_be(~0, fdt, fdt_totalsize(fdt));
+#endif
 		fdt = copy_device_tree(fdt);
 	}
 
@@ -1325,11 +1333,13 @@ static int __init of_fdt_raw_init(void)
 	if (!initial_boot_params)
 		return 0;
 
+#if 0
 	if (of_fdt_crc32 != crc32_be(~0, initial_boot_params,
 				     fdt_totalsize(initial_boot_params))) {
 		pr_warn("not creating '/sys/firmware/fdt': CRC check failed\n");
 		return 0;
 	}
+#endif
 	bin_attr_fdt.private = initial_boot_params;
 	bin_attr_fdt.size = fdt_totalsize(initial_boot_params);
 	return sysfs_create_bin_file(firmware_kobj, &bin_attr_fdt);
