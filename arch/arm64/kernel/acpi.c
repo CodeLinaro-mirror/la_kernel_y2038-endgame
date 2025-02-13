@@ -107,6 +107,7 @@ void __init __acpi_unmap_table(void __iomem *map, unsigned long size)
 	early_memunmap(map, size);
 }
 
+#ifdef CONFIG_ARM_PSCI_FW
 bool __init acpi_psci_present(void)
 {
 	return acpi_gbl_FADT.arm_boot_flags & ACPI_FADT_PSCI_COMPLIANT;
@@ -117,6 +118,7 @@ bool acpi_psci_use_hvc(void)
 {
 	return acpi_gbl_FADT.arm_boot_flags & ACPI_FADT_PSCI_USE_HVC;
 }
+#endif
 
 /*
  * acpi_fadt_sanity_check() - Check FADT presence and carry out sanity

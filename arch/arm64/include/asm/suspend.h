@@ -37,8 +37,13 @@ struct sleep_stack_data {
 
 extern unsigned long *sleep_save_stash;
 
+#ifndef CONFIG_CPU_PM
+static inline int cpu_suspend(unsigned long arg, int (*fn)(unsigned long)) { return 0; }
+static inline void cpu_resume(void) { }
+#else
 extern int cpu_suspend(unsigned long arg, int (*fn)(unsigned long));
 extern void cpu_resume(void);
+#endif
 int __cpu_suspend_enter(struct sleep_stack_data *state);
 void __cpu_suspend_exit(void);
 void _cpu_resume(void);

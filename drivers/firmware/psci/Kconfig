@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 config ARM_PSCI_FW
-	bool
+	bool "PSCI firmware"
+	depends on HAVE_ARM_SMCCC
 
 config ARM_PSCI_CHECKER
 	bool "ARM PSCI checker"

@@ -7,6 +7,7 @@
 #include <linux/memblock.h>
 #include <linux/numa.h>
 
+#if NR_CPUS > 1
 /* These are not inline because of header tangles. */
 #ifdef CONFIG_CPUMASK_OFFSTACK
 /**
@@ -166,3 +167,4 @@ unsigned int cpumask_any_distribute(const struct cpumask *srcp)
 	return next;
 }
 EXPORT_SYMBOL(cpumask_any_distribute);
+#endif

@@ -49,6 +49,7 @@ config AIROHA_CPU_PM_DOMAIN
 	tristate "Airoha CPU power domain"
 	default ARCH_AIROHA
 	depends on ARCH_AIROHA || COMPILE_TEST
+	depends on HAVE_ARM_SMCCC_DISCOVERY
 	depends on HAVE_ARM_SMCCC
 	depends on PM
 	select PM_GENERIC_DOMAINS
