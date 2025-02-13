@@ -81,6 +81,8 @@ static inline size_t __must_check arch_get_random_longs(unsigned long *v, size_t
 
 static inline size_t __must_check arch_get_random_seed_longs(unsigned long *v, size_t max_longs)
 {
+	return 0;
+
 	if (!max_longs)
 		return 0;
 

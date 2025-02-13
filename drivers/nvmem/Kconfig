@@ -119,7 +119,7 @@ config NVMEM_AIROHA_SMC_EFUSES
 	tristate "Airoha SMC eFuse support"
 	depends on ARM64
 	depends on ARCH_AIROHA || COMPILE_TEST
-	depends on HAVE_ARM_SMCCC
+	depends on HAVE_ARM_SMCCC_DISCOVERY
 	default ARCH_AIROHA
 	help
 	  Say y here to enable support for reading eFuses on Airoha AN7581
