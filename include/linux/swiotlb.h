@@ -38,7 +38,6 @@ struct scatterlist;
 #define IO_TLB_DEFAULT_SIZE (64UL << 20)
 #endif
 
-unsigned long swiotlb_size_or_default(void);
 void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
 	int (*remap)(void *tlb, unsigned long nslabs));
 int swiotlb_init_late(size_t size, gfp_t gfp_mask,
@@ -192,7 +191,9 @@ bool is_swiotlb_active(struct device *dev);
 void __init swiotlb_adjust_size(unsigned long size);
 phys_addr_t default_swiotlb_base(void);
 phys_addr_t default_swiotlb_limit(void);
+unsigned long swiotlb_size_or_default(void);
 #else
+
 static inline void swiotlb_init(bool addressing_limited, unsigned int flags)
 {
 }
@@ -241,6 +242,12 @@ static inline phys_addr_t default_swiotlb_limit(void)
 {
 	return 0;
 }
+
+static inline unsigned long swiotlb_size_or_default(void)
+{
+	return 0;
+}
+
 #endif /* CONFIG_SWIOTLB */
 
 phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t phys,

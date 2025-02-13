@@ -383,7 +383,8 @@ bool page_alloc_available __ro_after_init;
 void __init mem_init(void)
 {
 	page_alloc_available = true;
-	swiotlb_update_mem_attributes();
+	if (IS_ENABLED(CONFIG_SWIOTLB))
+		swiotlb_update_mem_attributes();
 }
 
 void free_initmem(void)
