@@ -196,6 +196,8 @@ static enum mitigation_state spectre_v2_get_cpu_fw_mitigation_state(void)
 
 bool has_spectre_v2(const struct arm64_cpu_capabilities *entry, int scope)
 {
+	return false;
+
 	WARN_ON(scope != SCOPE_LOCAL_CPU || preemptible());
 
 	if (spectre_v2_get_cpu_hw_mitigation_state() == SPECTRE_UNAFFECTED)
@@ -268,6 +270,8 @@ static enum mitigation_state spectre_v2_enable_fw_mitigation(void)
 	bp_hardening_cb_t cb;
 	enum mitigation_state state;
 
+	return SPECTRE_UNAFFECTED;
+
 	state = spectre_v2_get_cpu_fw_mitigation_state();
 	if (state != SPECTRE_MITIGATED)
 		return state;
@@ -300,6 +304,8 @@ static enum mitigation_state spectre_v2_enable_fw_mitigation(void)
 void spectre_v2_enable_mitigation(const struct arm64_cpu_capabilities *__unused)
 {
 	enum mitigation_state state;
+
+	return;
 
 	WARN_ON(preemptible());
 
@@ -502,6 +508,8 @@ bool has_spectre_v4(const struct arm64_cpu_capabilities *cap, int scope)
 {
 	enum mitigation_state state;
 
+	return false;
+
 	WARN_ON(scope != SCOPE_LOCAL_CPU || preemptible());
 
 	state = spectre_v4_get_cpu_hw_mitigation_state();
@@ -531,6 +539,8 @@ bool try_emulate_el1_ssbs(struct pt_regs *regs, u32 instr)
 static enum mitigation_state spectre_v4_enable_hw_mitigation(void)
 {
 	enum mitigation_state state;
+
+	return SPECTRE_UNAFFECTED;
 
 	/*
 	 * If the system is mitigated but this CPU doesn't have SSBS, then
@@ -571,6 +581,8 @@ void __init spectre_v4_patch_fw_mitigation_enable(struct alt_instr *alt,
 						  __le32 *origptr,
 						  __le32 *updptr, int nr_inst)
 {
+	return;
+
 	BUG_ON(nr_inst != 1); /* Branch -> NOP */
 
 	if (spectre_v4_mitigations_off())
@@ -593,6 +605,8 @@ void __init smccc_patch_fw_mitigation_conduit(struct alt_instr *alt,
 {
 	u32 insn;
 
+	return;
+
 	BUG_ON(nr_inst != 1); /* NOP -> HVC/SMC */
 
 	switch (arm_smccc_1_1_get_conduit()) {
@@ -612,6 +626,8 @@ void __init smccc_patch_fw_mitigation_conduit(struct alt_instr *alt,
 static enum mitigation_state spectre_v4_enable_fw_mitigation(void)
 {
 	enum mitigation_state state;
+
+	return SPECTRE_UNAFFECTED;
 
 	state = spectre_v4_get_cpu_fw_mitigation_state();
 	if (state != SPECTRE_MITIGATED)
@@ -633,6 +649,8 @@ static enum mitigation_state spectre_v4_enable_fw_mitigation(void)
 void spectre_v4_enable_mitigation(const struct arm64_cpu_capabilities *__unused)
 {
 	enum mitigation_state state;
+
+	return;
 
 	WARN_ON(preemptible());
 
@@ -973,6 +991,9 @@ static u8 max_bhb_k;
 bool is_spectre_bhb_affected(const struct arm64_cpu_capabilities *entry,
 			     int scope)
 {
+
+	return false;
+
 	WARN_ON(scope != SCOPE_LOCAL_CPU || preemptible());
 
 	if (supports_csv2p3(scope))

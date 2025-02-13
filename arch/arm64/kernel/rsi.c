@@ -140,6 +140,8 @@ static int realm_ioremap_hook(phys_addr_t phys, size_t size, pgprot_t *prot)
 
 void __init arm64_rsi_init(void)
 {
+	return;
+
 	if (arm_smccc_1_1_get_conduit() != SMCCC_CONDUIT_SMC)
 		return;
 	if (!rsi_version_matches())
