@@ -387,7 +387,8 @@ config PM_GENERIC_DOMAINS_OF
 	depends on PM_GENERIC_DOMAINS && OF
 
 config CPU_PM
-	bool
+	bool "CPU power management" if ARM64
+	default ARM64
 
 config ENERGY_MODEL
 	bool "Energy Model for devices with DVFS (CPUs, GPUs, etc)"
