@@ -109,9 +109,7 @@ module_param(allow_unsafe_mappings, bool, 0444);
  */
 
 DEFINE_MUTEX(kvm_lock);
-EXPORT_SYMBOL_GPL(kvm_lock);
 LIST_HEAD(vm_list);
-EXPORT_SYMBOL_GPL(vm_list);
 
 static struct kmem_cache *kvm_vcpu_cache;
 
@@ -269,7 +267,6 @@ bool kvm_make_vcpus_request_mask(struct kvm *kvm, unsigned int req,
 
 	return called;
 }
-EXPORT_SYMBOL_GPL(kvm_make_vcpus_request_mask);
 
 bool kvm_make_all_cpus_request(struct kvm *kvm, unsigned int req)
 {
@@ -327,7 +324,6 @@ void kvm_flush_remote_tlbs_range(struct kvm *kvm, gfn_t gfn, u64 nr_pages)
 	 */
 	kvm_flush_remote_tlbs(kvm);
 }
-EXPORT_SYMBOL_GPL(kvm_flush_remote_tlbs_range);
 
 void kvm_flush_remote_tlbs_memslot(struct kvm *kvm,
 				   const struct kvm_memory_slot *memslot)
@@ -342,7 +338,6 @@ void kvm_flush_remote_tlbs_memslot(struct kvm *kvm,
 	lockdep_assert_held(&kvm->slots_lock);
 	kvm_flush_remote_tlbs_range(kvm, memslot->base_gfn, memslot->npages);
 }
-EXPORT_SYMBOL_GPL(kvm_flush_remote_tlbs_memslot);
 
 static void kvm_flush_shadow_all(struct kvm *kvm)
 {
@@ -405,19 +400,16 @@ int __kvm_mmu_topup_memory_cache(struct kvm_mmu_memory_cache *mc, int capacity, 
 	}
 	return 0;
 }
-EXPORT_SYMBOL_GPL(__kvm_mmu_topup_memory_cache);
 
 int kvm_mmu_topup_memory_cache(struct kvm_mmu_memory_cache *mc, int min)
 {
 	return __kvm_mmu_topup_memory_cache(mc, KVM_ARCH_NR_OBJS_PER_MEMORY_CACHE, min);
 }
-EXPORT_SYMBOL_GPL(kvm_mmu_topup_memory_cache);
 
 int kvm_mmu_memory_cache_nr_free_objects(struct kvm_mmu_memory_cache *mc)
 {
 	return mc->nobjs;
 }
-EXPORT_SYMBOL_GPL(kvm_mmu_memory_cache_nr_free_objects);
 
 void kvm_mmu_free_memory_cache(struct kvm_mmu_memory_cache *mc)
 {
@@ -433,7 +425,6 @@ void kvm_mmu_free_memory_cache(struct kvm_mmu_memory_cache *mc)
 	mc->objects = NULL;
 	mc->capacity = 0;
 }
-EXPORT_SYMBOL_GPL(kvm_mmu_free_memory_cache);
 
 void *kvm_mmu_memory_cache_alloc(struct kvm_mmu_memory_cache *mc)
 {
@@ -446,7 +437,6 @@ void *kvm_mmu_memory_cache_alloc(struct kvm_mmu_memory_cache *mc)
 	BUG_ON(!p);
 	return p;
 }
-EXPORT_SYMBOL_GPL(kvm_mmu_memory_cache_alloc);
 #endif
 
 static void kvm_vcpu_init(struct kvm_vcpu *vcpu, struct kvm *kvm, unsigned id)
@@ -701,7 +691,6 @@ void kvm_mmu_invalidate_begin(struct kvm *kvm)
 		kvm->mmu_invalidate_range_end = INVALID_GPA;
 	}
 }
-EXPORT_SYMBOL_GPL(kvm_mmu_invalidate_begin);
 
 void kvm_mmu_invalidate_range_add(struct kvm *kvm, gfn_t start, gfn_t end)
 {
@@ -728,7 +717,6 @@ void kvm_mmu_invalidate_range_add(struct kvm *kvm, gfn_t start, gfn_t end)
 			max(kvm->mmu_invalidate_range_end, end);
 	}
 }
-EXPORT_SYMBOL_GPL(kvm_mmu_invalidate_range_add);
 
 bool kvm_mmu_unmap_gfn_range(struct kvm *kvm, struct kvm_gfn_range *range)
 {
@@ -811,7 +799,6 @@ void kvm_mmu_invalidate_end(struct kvm *kvm)
 	 */
 	WARN_ON_ONCE(kvm->mmu_invalidate_range_start == INVALID_GPA);
 }
-EXPORT_SYMBOL_GPL(kvm_mmu_invalidate_end);
 
 static void kvm_mmu_notifier_invalidate_range_end(struct mmu_notifier *mn,
 					const struct mmu_notifier_range *range)
@@ -2804,7 +2791,6 @@ unsigned long gfn_to_hva_memslot_prot(struct kvm_memory_slot *slot,
 
 	return hva;
 }
-EXPORT_SYMBOL_GPL(gfn_to_hva_memslot_prot);
 
 unsigned long gfn_to_hva_prot(struct kvm *kvm, gfn_t gfn, bool *writable)
 {
@@ -3603,7 +3589,6 @@ void kvm_sigset_activate(struct kvm_vcpu *vcpu)
 	 */
 	sigprocmask(SIG_SETMASK, &vcpu->sigset, &current->real_blocked);
 }
-EXPORT_SYMBOL_GPL(kvm_sigset_activate);
 
 void kvm_sigset_deactivate(struct kvm_vcpu *vcpu)
 {
@@ -3613,7 +3598,6 @@ void kvm_sigset_deactivate(struct kvm_vcpu *vcpu)
 	sigprocmask(SIG_SETMASK, &current->real_blocked, NULL);
 	sigemptyset(&current->real_blocked);
 }
-EXPORT_SYMBOL_GPL(kvm_sigset_deactivate);
 
 static void grow_halt_poll_ns(struct kvm_vcpu *vcpu)
 {
@@ -3709,7 +3693,6 @@ bool kvm_vcpu_block(struct kvm_vcpu *vcpu)
 
 	return waited;
 }
-EXPORT_SYMBOL_GPL(kvm_vcpu_block);
 
 static inline void update_halt_poll_stats(struct kvm_vcpu *vcpu, ktime_t start,
 					  ktime_t end, bool success)
@@ -6048,7 +6031,6 @@ int kvm_io_bus_register_dev(struct kvm *kvm, enum kvm_bus bus_idx, gpa_t addr,
 
 	return 0;
 }
-EXPORT_SYMBOL_GPL(kvm_io_bus_register_dev);
 
 int kvm_io_bus_unregister_dev(struct kvm *kvm, enum kvm_bus bus_idx,
 			      struct kvm_io_device *dev)
@@ -6097,7 +6079,6 @@ int kvm_io_bus_unregister_dev(struct kvm *kvm, enum kvm_bus bus_idx,
 	kfree(bus);
 	return 0;
 }
-EXPORT_SYMBOL_GPL(kvm_io_bus_unregister_dev);
 
 struct kvm_io_device *kvm_io_bus_get_dev(struct kvm *kvm, enum kvm_bus bus_idx,
 					 gpa_t addr)
@@ -6512,13 +6493,10 @@ void __kvm_register_perf_callbacks(unsigned int (*pt_intr_handler)(void),
 
 	perf_register_guest_info_callbacks(&kvm_guest_cbs);
 }
-EXPORT_SYMBOL_GPL(kvm_register_perf_callbacks);
-
 void kvm_unregister_perf_callbacks(void)
 {
 	perf_unregister_guest_info_callbacks(&kvm_guest_cbs);
 }
-EXPORT_SYMBOL_GPL(kvm_unregister_perf_callbacks);
 #endif
 
 int kvm_init(unsigned vcpu_size, unsigned vcpu_align, struct module *module)

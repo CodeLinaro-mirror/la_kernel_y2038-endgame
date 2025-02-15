@@ -149,7 +149,6 @@ void kvm_clear_async_pf_completion_queue(struct kvm_vcpu *vcpu)
 
 	vcpu->async_pf.queued = 0;
 }
-EXPORT_SYMBOL_GPL(kvm_clear_async_pf_completion_queue);
 
 void kvm_check_async_pf_completion(struct kvm_vcpu *vcpu)
 {
@@ -172,7 +171,6 @@ void kvm_check_async_pf_completion(struct kvm_vcpu *vcpu)
 		kvm_flush_and_free_async_pf_work(work);
 	}
 }
-EXPORT_SYMBOL_GPL(kvm_check_async_pf_completion);
 
 /*
  * Try to schedule a job to handle page fault asynchronously. Returns 'true' on
@@ -214,7 +212,6 @@ bool kvm_setup_async_pf(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
 
 	return true;
 }
-EXPORT_SYMBOL_GPL(kvm_setup_async_pf);
 
 int kvm_async_pf_wakeup_all(struct kvm_vcpu *vcpu)
 {
@@ -242,4 +239,3 @@ int kvm_async_pf_wakeup_all(struct kvm_vcpu *vcpu)
 	vcpu->async_pf.queued++;
 	return 0;
 }
-EXPORT_SYMBOL_GPL(kvm_async_pf_wakeup_all);

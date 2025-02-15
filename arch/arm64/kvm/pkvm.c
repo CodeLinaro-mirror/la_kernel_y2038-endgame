@@ -240,7 +240,6 @@ int pkvm_init_host_vm(struct kvm *kvm)
 	return 0;
 }
 
-#if 0 /* no second module_init */
 static void __init _kvm_host_prot_finalize(void *arg)
 {
 	int *err = arg;
@@ -285,7 +284,6 @@ static int __init finalize_pkvm(void)
 	return ret;
 }
 device_initcall_sync(finalize_pkvm);
-#endif
 
 static u64 __pkvm_mapping_start(struct pkvm_mapping *m)
 {

@@ -71,7 +71,7 @@ PI_EXPORT_SYM(__initdata_begin);
 PI_EXPORT_SYM(__initdata_end);
 PI_EXPORT_SYM(_data);
 
-#if IS_ENABLED(CONFIG_KVM)
+#ifdef CONFIG_KVM
 
 /*
  * KVM nVHE code has its own symbol namespace prefixed with __kvm_nvhe_, to

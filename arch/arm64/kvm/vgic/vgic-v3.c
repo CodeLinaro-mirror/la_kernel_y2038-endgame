@@ -785,7 +785,6 @@ int vgic_v3_map_resources(struct kvm *kvm)
 DEFINE_STATIC_KEY_FALSE(vgic_v3_cpuif_trap);
 DEFINE_STATIC_KEY_FALSE(vgic_v3_has_v2_compat);
 
-#if IS_BUILTIN(CONFIG_KVM)
 static int __init early_group0_trap_cfg(char *buf)
 {
 	return kstrtobool(buf, &group0_trap);
@@ -809,7 +808,6 @@ static int __init early_gicv4_enable(char *buf)
 	return kstrtobool(buf, &gicv4_enable);
 }
 early_param("kvm-arm.vgic_v4_enable", early_gicv4_enable);
-#endif
 
 static const struct midr_range broken_seis[] = {
 	MIDR_ALL_VERSIONS(MIDR_APPLE_M1_ICESTORM),

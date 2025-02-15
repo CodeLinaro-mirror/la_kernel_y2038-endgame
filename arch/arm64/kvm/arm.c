@@ -2992,7 +2992,6 @@ out_err:
 	return err;
 }
 
-#if IS_BUILTIN(CONFIG_KVM)
 static int __init early_kvm_mode_cfg(char *arg)
 {
 	if (!arg)
@@ -3060,7 +3059,6 @@ static int __init early_kvm_wfe_trap_policy_cfg(char *arg)
 	return early_kvm_wfx_trap_policy_cfg(arg, &kvm_wfe_trap_policy);
 }
 early_param("kvm-arm.wfe_trap_policy", early_kvm_wfe_trap_policy_cfg);
-#endif
 
 enum kvm_mode kvm_get_mode(void)
 {

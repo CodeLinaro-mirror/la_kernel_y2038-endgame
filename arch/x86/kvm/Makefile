@@ -3,7 +3,7 @@
 ccflags-y += -I $(srctree)/arch/x86/kvm
 ccflags-$(CONFIG_KVM_WERROR) += -Werror
 
-#include $(srctree)/virt/kvm/Makefile.kvm
+include $(srctree)/virt/kvm/Makefile.kvm
 
 kvm-y			+= x86.o emulate.o irq.o lapic.o cpuid.o pmu.o mtrr.o \
 			   debugfs.o mmu/mmu.o mmu/page_track.o mmu/spte.o \

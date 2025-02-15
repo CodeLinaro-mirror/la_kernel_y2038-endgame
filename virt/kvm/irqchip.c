@@ -44,7 +44,6 @@ int kvm_irq_map_chip_pin(struct kvm *kvm, unsigned irqchip, unsigned pin)
 	irq_rt = srcu_dereference(kvm->irq_routing, &kvm->irq_srcu);
 	return irq_rt->chip[irqchip][pin];
 }
-EXPORT_SYMBOL_GPL(kvm_irq_map_chip_pin);
 
 int kvm_send_userspace_msi(struct kvm *kvm, struct kvm_msi *msi)
 {
@@ -96,7 +95,6 @@ int kvm_set_irq(struct kvm *kvm, int irq_source_id, u32 irq, int level,
 
 	return ret;
 }
-EXPORT_SYMBOL_GPL(kvm_set_irq);
 
 static void free_irq_routing_table(struct kvm_irq_routing_table *rt)
 {
@@ -237,7 +235,6 @@ out:
 
 	return r;
 }
-EXPORT_SYMBOL_GPL(kvm_set_irq_routing);
 
 /*
  * Allocate empty IRQ routing by default so that additional setup isn't needed
