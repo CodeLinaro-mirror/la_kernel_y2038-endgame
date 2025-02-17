@@ -7,6 +7,7 @@ if ARM
 config ARCH_TEGRA_2x_SOC
 	bool "Enable support for Tegra20 family"
 	default ARCH_TEGRA
+	depends on COMMON_CLK
 	select ARCH_NEEDS_CPU_IDLE_COUPLED if SMP
 	select ARM_ERRATA_720789
 	select ARM_ERRATA_754327 if SMP
@@ -26,6 +27,7 @@ config ARCH_TEGRA_2x_SOC
 config ARCH_TEGRA_3x_SOC
 	bool "Enable support for Tegra30 family"
 	default ARCH_TEGRA
+	depends on COMMON_CLK
 	select ARM_ERRATA_754322
 	select ARM_ERRATA_764369 if SMP
 	select MIGHT_HAVE_CACHE_L2X0
@@ -42,6 +44,7 @@ config ARCH_TEGRA_3x_SOC
 config ARCH_TEGRA_114_SOC
 	bool "Enable support for Tegra114 family"
 	default ARCH_TEGRA
+	depends on COMMON_CLK
 	select ARM_ERRATA_798181 if SMP
 	select HAVE_ARM_ARCH_TIMER
 	select PINCTRL_TEGRA114
@@ -55,6 +58,7 @@ config ARCH_TEGRA_114_SOC
 config ARCH_TEGRA_124_SOC
 	bool "Enable support for Tegra124 family"
 	default ARCH_TEGRA
+	depends on COMMON_CLK
 	select HAVE_ARM_ARCH_TIMER
 	select PINCTRL_TEGRA124
 	select SOC_TEGRA_FLOWCTRL
@@ -72,6 +76,7 @@ if ARM64
 config ARCH_TEGRA_132_SOC
 	bool "NVIDIA Tegra132 SoC"
 	default ARCH_TEGRA
+	depends on COMMON_CLK
 	select PINCTRL_TEGRA124
 	select SOC_TEGRA_FLOWCTRL
 	select SOC_TEGRA_PMC
@@ -84,6 +89,7 @@ config ARCH_TEGRA_132_SOC
 config ARCH_TEGRA_210_SOC
 	bool "NVIDIA Tegra210 SoC"
 	default ARCH_TEGRA
+	depends on COMMON_CLK
 	select PINCTRL_TEGRA210
 	select SOC_TEGRA_FLOWCTRL
 	select SOC_TEGRA_PMC
@@ -106,6 +112,7 @@ config ARCH_TEGRA_186_SOC
 	default ARCH_TEGRA
 	depends on !CPU_BIG_ENDIAN
 	select PINCTRL_TEGRA186
+	depends on COMMON_CLK
 	select MAILBOX
 	select SOC_TEGRA_PMC
 	help
@@ -120,6 +127,7 @@ config ARCH_TEGRA_194_SOC
 	bool "NVIDIA Tegra194 SoC"
 	default ARCH_TEGRA
 	depends on !CPU_BIG_ENDIAN
+	depends on COMMON_CLK
 	select MAILBOX
 	select PINCTRL_TEGRA194
 	select SOC_TEGRA_PMC
@@ -130,6 +138,7 @@ config ARCH_TEGRA_234_SOC
 	bool "NVIDIA Tegra234 SoC"
 	default ARCH_TEGRA
 	depends on !CPU_BIG_ENDIAN
+	depends on COMMON_CLK
 	select MAILBOX
 	select PINCTRL_TEGRA234
 	select SOC_TEGRA_PMC
@@ -139,6 +148,7 @@ config ARCH_TEGRA_234_SOC
 config ARCH_TEGRA_238_SOC
 	bool "NVIDIA Tegra238 SoC"
 	default ARCH_TEGRA
+	depends on COMMON_CLK
 	depends on !CPU_BIG_ENDIAN
 	select MAILBOX
 	select SOC_TEGRA_PMC
@@ -155,6 +165,7 @@ config ARCH_TEGRA_264_SOC
 	bool "NVIDIA Tegra264 SoC"
 	default ARCH_TEGRA
 	depends on !CPU_BIG_ENDIAN
+	depends on COMMON_CLK
 	select MAILBOX
 	select SOC_TEGRA_PMC
 	help
@@ -174,6 +185,7 @@ config SOC_TEGRA_FLOWCTRL
 config SOC_TEGRA_PMC
 	bool
 	depends on PM
+	depends on COMMON_CLK
 	select GENERIC_PINCONF
 	select IRQ_DOMAIN_HIERARCHY
 	select PM_OPP

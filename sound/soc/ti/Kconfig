@@ -184,7 +184,8 @@ config SND_SOC_DAVINCI_EVM
 
 config SND_SOC_J721E_EVM
 	tristate "SoC Audio support for j721e EVM"
-	depends on ARCH_K3 || COMPILE_TEST && COMMON_CLK
+	depends on ARCH_K3 || COMPILE_TEST
+	depends on COMMON_CLK
 	depends on I2C
 	select SND_SOC_PCM3168A_I2C
 	select SND_SOC_DAVINCI_MCASP

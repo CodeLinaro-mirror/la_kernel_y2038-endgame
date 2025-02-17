@@ -411,7 +411,7 @@ config ARM_GT_INITIAL_PRESCALER_VAL
 config ARM_TIMER_SP804
 	bool "Support for Dual Timer SP804 module"
 	depends on ARM || ARM64 || COMPILE_TEST
-	depends on GENERIC_SCHED_CLOCK && HAVE_CLK
+	depends on GENERIC_SCHED_CLOCK
 	select CLKSRC_MMIO
 	select TIMER_OF if OF
 
