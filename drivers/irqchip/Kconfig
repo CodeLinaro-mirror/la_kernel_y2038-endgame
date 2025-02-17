@@ -7,7 +7,8 @@ config IRQCHIP
 
 config ARM_GIC
 	bool "ARM CICv2"
-	default ARM64 || ARM
+	depends on ARM64 || ARM
+	default y
 	depends on OF
 	select IRQ_DOMAIN_HIERARCHY
 	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
@@ -38,12 +39,14 @@ config ARM_GIC_V3
 	bool
 	select IRQ_DOMAIN_HIERARCHY
 	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
-	select HAVE_ARM_SMCCC_DISCOVERY if SMP
-	select HAVE_ARM_SMCCC_DISCOVERY
+	select HAVE_ARM_SMCCC_DISCOVERY if SMP && ARM_PSCI_FW
 	select IRQ_MSI_IOMMU
 
 config ARM_GIC_ITS_PARENT
 	bool
+
+config ARM_GIC_V3_MBI
+	def_bool ARM_GIC_V3 && MSI
 
 config ARM_GIC_V3_ITS
 	bool

@@ -8,6 +8,7 @@
 config VFIO_CDX
 	tristate "VFIO support for CDX bus devices"
 	depends on CDX_BUS
+	depends on GENERIC_MSI_IRQ
 	select EVENTFD
 	help
 	  Driver to enable VFIO support for the devices on CDX bus.
