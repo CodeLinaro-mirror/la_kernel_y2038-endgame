@@ -76,7 +76,7 @@ config ARCH_BCM2835
 
 config ARCH_BCM_IPROC
 	bool "Broadcom iProc SoC Family"
-	select COMMON_CLK_IPROC
+	select COMMON_CLK_IPROC if COMMON_CLK
 	select GPIOLIB
 	select PINCTRL
 	help
@@ -137,7 +137,7 @@ config ARCH_CIX
 
 config ARCH_EXYNOS
 	bool "Samsung Exynos SoC family"
-	select COMMON_CLK_SAMSUNG
+	select COMMON_CLK_SAMSUNG if COMMON_CLK
 	select CLKSRC_EXYNOS_MCT
 	select EXYNOS_PM_DOMAINS if PM_GENERIC_DOMAINS
 	select EXYNOS_PMU
@@ -236,9 +236,9 @@ config ARCH_MMP
 
 config ARCH_MVEBU
 	bool "Marvell EBU SoC Family"
-	select ARMADA_AP806_SYSCON
-	select ARMADA_CP110_SYSCON
-	select ARMADA_37XX_CLK
+	select ARMADA_AP806_SYSCON if COMMON_CLK
+	select ARMADA_CP110_SYSCON if COMMON_CLK
+	select ARMADA_37XX_CLK if COMMON_CLK
 	select GPIOLIB
 	select GPIOLIB_IRQCHIP
 	select MVEBU_GICP
@@ -377,7 +377,7 @@ config ARCH_STM32
 	select ARM_SCMI_PROTOCOL
 	select REGULATOR
 	select REGULATOR_ARM_SCMI
-	select COMMON_CLK_SCMI
+	select COMMON_CLK_SCMI if COMMON_CLK
 	select STM32_FIREWALL
 	help
 	  This enables support for ARMv8 based STMicroelectronics

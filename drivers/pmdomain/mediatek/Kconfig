@@ -48,6 +48,7 @@ config AIROHA_CPU_PM_DOMAIN
 	default ARCH_AIROHA
 	depends on HAVE_ARM_SMCCC_DISCOVERY
 	depends on HAVE_ARM_SMCCC
+	depends on COMMON_CLK
 	depends on PM
 	select PM_GENERIC_DOMAINS
 	help

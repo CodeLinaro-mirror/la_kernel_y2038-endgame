@@ -29,6 +29,9 @@ static void amba_register_dummy_clk(void)
 {
 	struct clk *amba_dummy_clk;
 
+	if (!IS_ENABLED(CONFIG_COMMON_CLK))
+		return;
+
 	amba_dummy_clk = clk_register_fixed_rate(NULL, "apb_pclk", NULL, 0, 0);
 	clk_register_clkdev(amba_dummy_clk, "apb_pclk", NULL);
 }

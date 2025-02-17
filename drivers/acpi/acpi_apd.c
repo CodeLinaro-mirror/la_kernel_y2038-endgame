@@ -40,7 +40,7 @@ struct apd_private_data {
 	const struct apd_device_desc *dev_desc;
 };
 
-#if defined(CONFIG_X86_AMD_PLATFORM_DEVICE) || defined(CONFIG_ARM64)
+#if defined(CONFIG_X86_AMD_PLATFORM_DEVICE) || (defined(CONFIG_ARM64) && defined(CONFIG_COMMON_CLK))
 #define APD_ADDR(desc)	((unsigned long)&desc)
 
 static int acpi_apd_setup(struct apd_private_data *pdata)
@@ -141,7 +141,7 @@ static const struct apd_device_desc fch_misc_desc = {
 };
 #endif /* CONFIG_X86_AMD_PLATFORM_DEVICE */
 
-#ifdef CONFIG_ARM64
+#if defined(CONFIG_ARM64) && defined(CONFIG_COMMON_CLK)
 static const struct apd_device_desc xgene_i2c_desc = {
 	.setup = acpi_apd_setup,
 	.fixed_clk_rate = 100000000,
@@ -242,7 +242,7 @@ static const struct acpi_device_id acpi_apd_device_ids[] = {
 	{ "AMDI0022", APD_ADDR(cz_uart_desc) },
 	{ "HYGO0010", APD_ADDR(wt_i2c_desc) },
 #endif
-#ifdef CONFIG_ARM64
+#if defined(CONFIG_ARM64) && defined(CONFIG_COMMON_CLK)
 	{ "APMC0D0F", APD_ADDR(xgene_i2c_desc) },
 	{ "BRCM900D", APD_ADDR(vulcan_spi_desc) },
 	{ "CAV900D",  APD_ADDR(vulcan_spi_desc) },

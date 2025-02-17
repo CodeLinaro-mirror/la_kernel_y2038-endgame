@@ -201,6 +201,7 @@ config MFD_AC100
 	tristate "X-Powers AC100"
 	select MFD_CORE
 	depends on SUNXI_RSB
+	depends on COMMON_CLK
 	help
 	  If you say Y here you get support for the X-Powers AC100 audio codec
 	  IC.

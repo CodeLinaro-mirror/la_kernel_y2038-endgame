@@ -39,7 +39,6 @@ config TEGRA124_EMC
 	tristate "NVIDIA Tegra124 External Memory Controller driver"
 	default ARCH_TEGRA_124_SOC
 	depends on ARCH_TEGRA_124_SOC || COMPILE_TEST
-	select TEGRA124_CLK_EMC if ARCH_TEGRA
 	select PM_OPP
 	help
 	  This driver is for the External Memory Controller (EMC) found on
@@ -54,6 +53,7 @@ config TEGRA210_EMC_TABLE
 config TEGRA210_EMC
 	tristate "NVIDIA Tegra210 External Memory Controller driver"
 	depends on ARCH_TEGRA_210_SOC || COMPILE_TEST
+	depends on COMMON_CLK
 	select TEGRA210_EMC_TABLE
 	help
 	  This driver is for the External Memory Controller (EMC) found on
