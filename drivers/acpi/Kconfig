@@ -576,6 +576,7 @@ config ACPI_PCC
 
 config ACPI_FFH
 	bool "ACPI FFH Address Space"
+	depends on !ARM64 || ARM_PSCI_FW
 	default n
 	help
 	  The FFH(Fixed Function Hardware) Address Space also referred as FFH
