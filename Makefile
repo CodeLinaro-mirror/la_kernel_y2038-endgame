@@ -668,11 +668,15 @@ ifdef building_out_of_srctree
 
 ifdef KBUILD_EXTMOD
 print_env_for_makefile = \
+	echo "export ARCH = ${ARCH}"; \
+	echo "export CROSS_COMPILE = $(CROSS_COMPILE)"; \
 	echo "export KBUILD_OUTPUT = $(objtree)"; \
 	echo "export KBUILD_EXTMOD = $(realpath $(srcroot))" ; \
 	echo "export KBUILD_EXTMOD_OUTPUT = $(CURDIR)"
 else
 print_env_for_makefile = \
+	echo "export ARCH = ${ARCH}"; \
+	echo "export CROSS_COMPILE = $(CROSS_COMPILE)"; \
 	echo "export KBUILD_OUTPUT = $(CURDIR)"
 endif
 
