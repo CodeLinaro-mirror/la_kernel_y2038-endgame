@@ -108,7 +108,6 @@ static const struct platform_device_id at91_twi_devtypes[] = {
 	}
 };
 
-#if defined(CONFIG_OF)
 static struct at91_twi_pdata at91sam9x5_config = {
 	.clk_max_div = 7,
 	.clk_offset = 4,
@@ -178,7 +177,6 @@ static const struct of_device_id atmel_twi_dt_ids[] = {
 	}
 };
 MODULE_DEVICE_TABLE(of, atmel_twi_dt_ids);
-#endif
 
 static struct at91_twi_pdata *at91_twi_get_driver_data(
 					struct platform_device *pdev)
