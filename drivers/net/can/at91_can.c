@@ -1012,7 +1012,6 @@ static const struct attribute_group at91_sysfs_attr_group = {
 	.attrs = at91_sysfs_attrs,
 };
 
-#if defined(CONFIG_OF)
 static const struct of_device_id at91_can_dt_ids[] = {
 	{
 		.compatible = "atmel,at91sam9x5-can",
@@ -1025,7 +1024,6 @@ static const struct of_device_id at91_can_dt_ids[] = {
 	}
 };
 MODULE_DEVICE_TABLE(of, at91_can_dt_ids);
-#endif
 
 static const struct at91_devtype_data *at91_can_get_driver_data(struct platform_device *pdev)
 {
