@@ -188,6 +188,16 @@ extern phys_addr_t __phys_addr_symbol(unsigned long x);
 #define virt_to_page(vaddr)	(pfn_to_page(virt_to_pfn(vaddr)))
 #define page_to_virt(page)	(pfn_to_virt(page_to_pfn(page)))
 
+static inline phys_addr_t virt_to_phys(const volatile void *x)
+{
+	return __virt_to_phys((unsigned long)x);
+}
+
+static inline void *phys_to_virt(phys_addr_t x)
+{
+	return (void *)__pa(x);
+}
+
 #define sym_to_pfn(x)           __phys_to_pfn(__pa_symbol(x))
 
 unsigned long kaslr_offset(void);

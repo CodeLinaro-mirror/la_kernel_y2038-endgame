@@ -117,6 +117,16 @@ extern int page_is_ram(unsigned long pfn);
 # define __pa(x)	__virt_to_phys((unsigned long)(x))
 # define __va(x)	((void *)__phys_to_virt((unsigned long)(x)))
 
+static inline unsigned long virt_to_phys(volatile void *address)
+{
+	return __virt_to_phys((unsigned long)address);
+}
+
+static inline void *phys_to_virt(unsigned long address)
+{
+	return (void *)__phys_to_virt(address);
+}
+
 static inline unsigned long virt_to_pfn(const void *vaddr)
 {
 	return phys_to_pfn(__pa(vaddr));

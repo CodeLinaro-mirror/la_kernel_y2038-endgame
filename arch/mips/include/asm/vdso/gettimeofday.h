@@ -17,6 +17,7 @@
 #include <asm/clocksource.h>
 #include <asm/unistd.h>
 #include <asm/vdso.h>
+#include <asm/io.h>
 
 #define VDSO_HAS_CLOCK_GETRES		1
 
