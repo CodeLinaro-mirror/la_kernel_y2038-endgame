@@ -1229,21 +1229,6 @@ extern void ioport_unmap(void __iomem *p);
 #endif
 #endif
 
-#ifndef xlate_dev_mem_ptr
-#define xlate_dev_mem_ptr xlate_dev_mem_ptr
-static inline void *xlate_dev_mem_ptr(phys_addr_t addr)
-{
-	return __va(addr);
-}
-#endif
-
-#ifndef unxlate_dev_mem_ptr
-#define unxlate_dev_mem_ptr unxlate_dev_mem_ptr
-static inline void unxlate_dev_mem_ptr(phys_addr_t phys, void *addr)
-{
-}
-#endif
-
 #ifndef memset_io
 /**
  * memset_io -	Set a range of I/O memory to a constant value
