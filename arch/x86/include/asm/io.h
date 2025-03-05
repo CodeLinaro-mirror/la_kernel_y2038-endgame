@@ -113,44 +113,6 @@ build_mmio_write(__writeq, "q", u64, "r", )
 extern int valid_phys_addr_range(phys_addr_t addr, size_t size);
 extern int valid_mmap_phys_addr_range(unsigned long pfn, size_t size);
 
-/**
- *	virt_to_phys	-	map virtual addresses to physical
- *	@address: address to remap
- *
- *	The returned physical address is the physical (CPU) mapping for
- *	the memory address given. It is only valid to use this function on
- *	addresses directly mapped or allocated via kmalloc.
- *
- *	This function does not give bus mappings for DMA transfers. In
- *	almost all conceivable cases a device driver should not be using
- *	this function
- */
-
-static inline phys_addr_t virt_to_phys(volatile void *address)
-{
-	return __pa(address);
-}
-#define virt_to_phys virt_to_phys
-
-/**
- *	phys_to_virt	-	map physical address to virtual
- *	@address: address to remap
- *
- *	The returned virtual address is a current CPU mapping for
- *	the memory address given. It is only valid to use this function on
- *	addresses that have a kernel mapping
- *
- *	This function does not handle bus mappings for DMA transfers. In
- *	almost all conceivable cases a device driver should not be using
- *	this function
- */
-
-static inline void *phys_to_virt(phys_addr_t address)
-{
-	return __va(address);
-}
-#define phys_to_virt phys_to_virt
-
 /*
  * ISA I/O bus memory addresses are 1:1 with the physical address.
  * However, we truncate the address to unsigned int to avoid undesirable

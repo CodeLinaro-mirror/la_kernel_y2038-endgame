@@ -260,6 +260,16 @@ static inline unsigned long __phys_addr(unsigned long x, bool is_31bit)
 #define phys_to_folio(phys)	page_folio(phys_to_page(phys))
 #define folio_to_phys(page)	pfn_to_phys(folio_pfn(folio))
 
+static inline unsigned long virt_to_phys(volatile void *address)
+{
+	return __phys_addr(address, false);
+}
+
+static inline void *phys_to_virt(unsigned long address)
+{
+	return (void *)address + __identity_base;
+}
+
 static inline void *pfn_to_virt(unsigned long pfn)
 {
 	return __va(pfn_to_phys(pfn));

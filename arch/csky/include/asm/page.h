@@ -70,6 +70,16 @@ extern unsigned long va_pa_offset;
 
 #define __pa_symbol(x)	__pa(RELOC_HIDE((unsigned long)(x), 0))
 
+static inline unsigned long virt_to_phys(volatile void *address)
+{
+	return __pa((unsigned long)address);
+}
+
+static inline void *phys_to_virt(unsigned long address)
+{
+	return __va(address);
+}
+
 static inline unsigned long virt_to_pfn(const void *kaddr)
 {
 	return __pa(kaddr) >> PAGE_SHIFT;

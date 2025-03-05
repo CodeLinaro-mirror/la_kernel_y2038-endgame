@@ -22,6 +22,8 @@
 #include <asm/highmem.h>
 #endif
 
+#include <asm/pgtable-bits.h>
+
 /*
  * Regarding 32-bit MIPS huge page support (and the tradeoff it entails):
  *

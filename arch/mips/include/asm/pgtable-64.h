@@ -25,6 +25,8 @@
 #include <asm-generic/pgtable-nop4d.h>
 #endif
 
+#include <asm/pgtable-bits.h>
+
 /*
  * Each address space has 2 4K pages as its page directory, giving 1024
  * (== PTRS_PER_PGD) 8 byte pointers to pmd tables. Each pmd table is a

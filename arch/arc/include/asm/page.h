@@ -115,6 +115,16 @@ extern int pfn_valid(unsigned long pfn);
 #define __pa(vaddr)  		((unsigned long)(vaddr))
 #define __va(paddr)  		((void *)((unsigned long)(paddr)))
 
+static inline unsigned long virt_to_phys(volatile void *address)
+{
+	return (unsigned long)address;
+}
+
+static inline void *phys_to_virt(unsigned long address)
+{
+	return (void *)address;
+}
+
 /*
  * Use virt_to_pfn with caution:
  * If used in pte or paddr related macros, it could cause truncation

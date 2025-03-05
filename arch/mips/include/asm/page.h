@@ -179,7 +179,54 @@ static inline unsigned long ___pa(unsigned long x)
 }
 #define __pa(x)		___pa((unsigned long)(x))
 #define __va(x)		((void *)((unsigned long)(x) + PAGE_OFFSET - PHYS_OFFSET))
-#include <asm/io.h>
+
+/*
+ *     virt_to_phys    -       map virtual addresses to physical
+ *     @address: address to remap
+ *
+ *     The returned physical address is the physical (CPU) mapping for
+ *     the memory address given. It is only valid to use this function on
+ *     addresses directly mapped or allocated via kmalloc.
+ *
+ *     This function does not give bus mappings for DMA transfers. In
+ *     almost all conceivable cases a device driver should not be using
+ *     this function
+ */
+static inline unsigned long __virt_to_phys_nodebug(volatile const void *address)
+{
+	return __pa(address);
+}
+
+#ifdef CONFIG_DEBUG_VIRTUAL
+extern phys_addr_t __virt_to_phys(volatile const void *x);
+#else
+#define __virt_to_phys(x)	__virt_to_phys_nodebug(x)
+#endif
+
+#define virt_to_phys virt_to_phys
+static inline phys_addr_t virt_to_phys(const volatile void *x)
+{
+	return __virt_to_phys(x);
+}
+
+static inline void *phys_to_virt(unsigned long address)
+{
+	return __va(address);
+}
+
+/*
+ * ISA I/O bus memory addresses are 1:1 with the physical address.
+ */
+static inline unsigned long isa_virt_to_bus(volatile void *address)
+{
+	return virt_to_phys(address);
+}
+
+static inline void *isa_bus_to_virt(unsigned long address)
+{
+	return phys_to_virt(address);
+}
+
 
 /*
  * RELOC_HIDE was originally added by 6007b903dfe5f1d13e0c711ac2894bdd4a61b1ad

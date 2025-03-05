@@ -52,6 +52,42 @@ static inline void copy_user_page(void *to, void *from, unsigned long vaddr,
 #define __va(x)			((void *)((unsigned long)(x)+PAGE_OFFSET))
 #endif
 
+/**
+ *	virt_to_phys	-	map virtual addresses to physical
+ *	@address: address to remap
+ *
+ *	The returned physical address is the physical (CPU) mapping for
+ *	the memory address given. It is only valid to use this function on
+ *	addresses directly mapped or allocated via kmalloc.
+ *
+ *	This function does not give bus mappings for DMA transfers. In
+ *	almost all conceivable cases a device driver should not be using
+ *	this function
+ */
+
+static inline phys_addr_t virt_to_phys(volatile void *address)
+{
+	return __phys_addr((unsigned long)address);
+}
+
+/**
+ *	phys_to_virt	-	map physical address to virtual
+ *	@address: address to remap
+ *
+ *	The returned virtual address is a current CPU mapping for
+ *	the memory address given. It is only valid to use this function on
+ *	addresses that have a kernel mapping
+ *
+ *	This function does not handle bus mappings for DMA transfers. In
+ *	almost all conceivable cases a device driver should not be using
+ *	this function
+ */
+
+static inline void *phys_to_virt(phys_addr_t address)
+{
+	return __va(address);
+}
+
 #define __boot_va(x)		__va(x)
 #define __boot_pa(x)		__pa(x)
 

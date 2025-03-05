@@ -171,6 +171,16 @@ static inline unsigned long ___pa(unsigned long va)
 #define page_to_virt(page)	__va(page_to_pfn(page) << PAGE_SHIFT)
 #define virt_addr_valid(kaddr)	pfn_valid(__pa(kaddr) >> PAGE_SHIFT)
 
+static inline unsigned long virt_to_phys(volatile void *address)
+{
+	return __pa((unsigned long)address);
+}
+
+static inline void *phys_to_virt(unsigned long address)
+{
+	return __va(address);
+}
+
 #endif /* __ASSEMBLER__ */
 
 #include <asm-generic/memory_model.h>
