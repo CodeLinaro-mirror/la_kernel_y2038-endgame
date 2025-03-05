@@ -20,11 +20,10 @@
 
 #ifdef __KERNEL__
 
-#include <linux/string.h>
 #include <linux/types.h>
 #include <asm/byteorder.h>
-#include <asm/page.h>
 #include <asm-generic/pci_iomap.h>
+#include <asm/pgtable-types.h>
 
 /*
  * ISA I/O bus memory addresses are 1:1 with the physical address.

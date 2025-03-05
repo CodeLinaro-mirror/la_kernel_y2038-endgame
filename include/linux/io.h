@@ -10,7 +10,6 @@
 #include <linux/types.h>
 #include <linux/init.h>
 #include <asm/io.h>
-#include <asm/page.h>
 
 struct device;
 
