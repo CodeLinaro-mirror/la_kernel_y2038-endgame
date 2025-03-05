@@ -80,6 +80,24 @@ static inline bool should_stop_iteration(void)
 }
 
 /*
+ * s390 returns the swapped lowcore page here
+ * x86 maps both RAM and MMIO ranges, everything
+ * else just returns the linear mapped RAM.
+ */
+#ifndef xlate_dev_mem_ptr
+static inline void *xlate_dev_mem_ptr(phys_addr_t addr)
+{
+	return phys_to_virt(addr);
+}
+#endif
+
+#ifndef unxlate_dev_mem_ptr
+static inline void unxlate_dev_mem_ptr(phys_addr_t phys, void *addr)
+{
+}
+#endif
+
+/*
  * This funcion reads the *physical* memory. The f_pos points directly to the
  * memory location.
  */
@@ -133,11 +151,6 @@ static ssize_t read_mem(struct file *file, char __user *buf,
 			/* Show zeros for restricted memory. */
 			remaining = clear_user(buf, sz);
 		} else {
-			/*
-			 * On ia64 if a page has been mapped somewhere as
-			 * uncached, then it must also be accessed uncached
-			 * by the kernel or data corruption may occur.
-			 */
 			ptr = xlate_dev_mem_ptr(p);
 			if (!ptr)
 				goto failed;
