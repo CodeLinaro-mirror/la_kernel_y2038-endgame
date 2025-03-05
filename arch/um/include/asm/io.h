@@ -2,6 +2,7 @@
 #ifndef _ASM_UM_IO_H
 #define _ASM_UM_IO_H
 #include <linux/types.h>
+#include <asm/page.h>
 
 /* get emulated iomem (if desired) */
 #include <asm-generic/logic_io.h>

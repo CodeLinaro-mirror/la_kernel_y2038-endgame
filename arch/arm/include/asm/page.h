@@ -11,11 +11,9 @@
 
 #ifndef __ASSEMBLY__
 
-#ifndef CONFIG_MMU
+#include <asm/pgtable-types.h>
 
-#include <asm/page-nommu.h>
-
-#else
+#ifdef CONFIG_MMU
 
 #include <asm/glue.h>
 
@@ -162,13 +160,8 @@ extern void copy_page(void *to, const void *from);
 #define __HAVE_ARCH_GATE_AREA 1
 #endif
 
-#ifdef CONFIG_ARM_LPAE
-#include <asm/pgtable-3level-types.h>
-#else
-#include <asm/pgtable-2level-types.h>
-#ifdef CONFIG_VMAP_STACK
+#if !defined(CONFIG_ARM_LPAE) && defined(CONFIG_VMAP_STACK)
 #define ARCH_PAGE_TABLE_SYNC_MASK	PGTBL_PMD_MODIFIED
-#endif
 #endif
 
 #endif /* CONFIG_MMU */
