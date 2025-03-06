@@ -42,6 +42,15 @@ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
 }
 EXPORT_SYMBOL(ioremap_prot);
 
+void __iomem *ioremap_cache(phys_addr_t addr, size_t size)
+{
+	if (pfn_is_map_memory(__phys_to_pfn(addr)))
+		return (void __iomem *)__phys_to_virt(addr);
+
+	return ioremap_prot(addr, size, __pgprot(PROT_NORMAL));
+}
+EXPORT_SYMBOL(ioremap_cache);
+
 /*
  * Must be called after early_fixmap_init
  */

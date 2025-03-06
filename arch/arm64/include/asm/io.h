@@ -292,13 +292,7 @@ int arm64_ioremap_prot_hook_register(const ioremap_prot_hook_t hook);
 #include <asm-generic/io.h>
 
 #define ioremap_cache ioremap_cache
-static inline void __iomem *ioremap_cache(phys_addr_t addr, size_t size)
-{
-	if (pfn_is_map_memory(__phys_to_pfn(addr)))
-		return (void __iomem *)__phys_to_virt(addr);
-
-	return ioremap_prot(addr, size, __pgprot(PROT_NORMAL));
-}
+void __iomem *ioremap_cache(phys_addr_t addr, size_t size);
 
 /*
  * More restrictive address range checking than the default implementation
