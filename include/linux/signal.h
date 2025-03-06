@@ -91,67 +91,107 @@ static inline int sigismember(sigset_t *set, int _sig)
 
 #endif /* __HAVE_ARCH_SIG_BITOPS */
 
+#define sigmask(sig)	(1UL << ((sig) - 1))
+
+#ifndef __HAVE_ARCH_SIG_SETOPS
+
+#if _NSIG_WORDS == 4
 static inline int sigisemptyset(sigset_t *set)
 {
-	switch (_NSIG_WORDS) {
-	case 4:
-		return (set->sig[3] | set->sig[2] |
-			set->sig[1] | set->sig[0]) == 0;
-	case 2:
-		return (set->sig[1] | set->sig[0]) == 0;
-	case 1:
-		return set->sig[0] == 0;
-	default:
-		BUILD_BUG();
-		return 0;
-	}
+	return (set->sig[3] | set->sig[2] |
+		set->sig[1] | set->sig[0]) == 0;
 }
 
 static inline int sigequalsets(const sigset_t *set1, const sigset_t *set2)
 {
-	switch (_NSIG_WORDS) {
-	case 4:
-		return	(set1->sig[3] == set2->sig[3]) &&
-			(set1->sig[2] == set2->sig[2]) &&
-			(set1->sig[1] == set2->sig[1]) &&
-			(set1->sig[0] == set2->sig[0]);
-	case 2:
-		return	(set1->sig[1] == set2->sig[1]) &&
-			(set1->sig[0] == set2->sig[0]);
-	case 1:
-		return	set1->sig[0] == set2->sig[0];
-	}
-	return 0;
+	return	(set1->sig[3] == set2->sig[3]) &&
+		(set1->sig[2] == set2->sig[2]) &&
+		(set1->sig[1] == set2->sig[1]) &&
+		(set1->sig[0] == set2->sig[0]);
 }
-
-#define sigmask(sig)	(1UL << ((sig) - 1))
-
-#ifndef __HAVE_ARCH_SIG_SETOPS
 
 #define _SIG_SET_BINOP(name, op)					\
 static inline void name(sigset_t *r, const sigset_t *a, const sigset_t *b) \
 {									\
 	unsigned long a0, a1, a2, a3, b0, b1, b2, b3;			\
 									\
-	switch (_NSIG_WORDS) {						\
-	case 4:								\
-		a3 = a->sig[3]; a2 = a->sig[2];				\
-		b3 = b->sig[3]; b2 = b->sig[2];				\
-		r->sig[3] = op(a3, b3);					\
-		r->sig[2] = op(a2, b2);					\
-		fallthrough;						\
-	case 2:								\
-		a1 = a->sig[1]; b1 = b->sig[1];				\
-		r->sig[1] = op(a1, b1);					\
-		fallthrough;						\
-	case 1:								\
-		a0 = a->sig[0]; b0 = b->sig[0];				\
-		r->sig[0] = op(a0, b0);					\
-		break;							\
-	default:							\
-		BUILD_BUG();						\
-	}								\
+	a3 = a->sig[3]; a2 = a->sig[2];					\
+	b3 = b->sig[3]; b2 = b->sig[2];					\
+	r->sig[3] = op(a3, b3);						\
+	r->sig[2] = op(a2, b2);						\
+	a1 = a->sig[1]; b1 = b->sig[1];					\
+	r->sig[1] = op(a1, b1);						\
+	a0 = a->sig[0]; b0 = b->sig[0];					\
+	r->sig[0] = op(a0, b0);						\
 }
+
+#define _SIG_SET_OP(name, op)						\
+static inline void name(sigset_t *set)					\
+{									\
+	set->sig[3] = op(set->sig[3]);					\
+	set->sig[2] = op(set->sig[2]);					\
+	set->sig[1] = op(set->sig[1]);					\
+	set->sig[0] = op(set->sig[0]);					\
+}
+
+#elif _NSIG_WORDS == 2
+static inline int sigisemptyset(sigset_t *set)
+{
+	return (set->sig[1] | set->sig[0]) == 0;
+}
+
+static inline int sigequalsets(const sigset_t *set1, const sigset_t *set2)
+{
+	return	(set1->sig[1] == set2->sig[1]) &&
+		(set1->sig[0] == set2->sig[0]);
+}
+
+#define _SIG_SET_BINOP(name, op)					\
+static inline void name(sigset_t *r, const sigset_t *a, const sigset_t *b) \
+{									\
+	unsigned long a0, a1, b0, b1;					\
+									\
+	a1 = a->sig[1]; b1 = b->sig[1];					\
+	r->sig[1] = op(a1, b1);						\
+	a0 = a->sig[0]; b0 = b->sig[0];					\
+	r->sig[0] = op(a0, b0);						\
+}
+
+#define _SIG_SET_OP(name, op)						\
+static inline void name(sigset_t *set)					\
+{									\
+	set->sig[1] = op(set->sig[1]);					\
+	set->sig[0] = op(set->sig[0]);					\
+}
+
+#elif _NSIG_WORDS == 1
+static inline int sigisemptyset(sigset_t *set)
+{
+	return set->sig[0] == 0;
+}
+
+static inline int sigequalsets(const sigset_t *set1, const sigset_t *set2)
+{
+	return	set1->sig[0] == set2->sig[0];
+}
+
+#define _SIG_SET_BINOP(name, op)					\
+static inline void name(sigset_t *r, const sigset_t *a, const sigset_t *b) \
+{									\
+	unsigned long a0, b0;						\
+									\
+	a0 = a->sig[0]; b0 = b->sig[0];					\
+	r->sig[0] = op(a0, b0);						\
+}
+
+#define _SIG_SET_OP(name, op)						\
+static inline void name(sigset_t *set)					\
+{									\
+	set->sig[0] = op(set->sig[0]);					\
+}
+
+#endif
+
 
 #define _sig_or(x,y)	((x) | (y))
 _SIG_SET_BINOP(sigorsets, _sig_or)
@@ -162,57 +202,24 @@ _SIG_SET_BINOP(sigandsets, _sig_and)
 #define _sig_andn(x,y)	((x) & ~(y))
 _SIG_SET_BINOP(sigandnsets, _sig_andn)
 
-#undef _SIG_SET_BINOP
-#undef _sig_or
-#undef _sig_and
-#undef _sig_andn
-
-#define _SIG_SET_OP(name, op)						\
-static inline void name(sigset_t *set)					\
-{									\
-	switch (_NSIG_WORDS) {						\
-	case 4:	set->sig[3] = op(set->sig[3]);				\
-		set->sig[2] = op(set->sig[2]);				\
-		fallthrough;						\
-	case 2:	set->sig[1] = op(set->sig[1]);				\
-		fallthrough;						\
-	case 1:	set->sig[0] = op(set->sig[0]);				\
-		    break;						\
-	default:							\
-		BUILD_BUG();						\
-	}								\
-}
-
 #define _sig_not(x)	(~(x))
 _SIG_SET_OP(signotset, _sig_not)
 
+#undef _SIG_SET_BINOP
 #undef _SIG_SET_OP
+#undef _sig_or
+#undef _sig_and
+#undef _sig_andn
 #undef _sig_not
 
 static inline void sigemptyset(sigset_t *set)
 {
-	switch (_NSIG_WORDS) {
-	default:
-		memset(set, 0, sizeof(sigset_t));
-		break;
-	case 2: set->sig[1] = 0;
-		fallthrough;
-	case 1:	set->sig[0] = 0;
-		break;
-	}
+	*set = (sigset_t) {};
 }
 
 static inline void sigfillset(sigset_t *set)
 {
-	switch (_NSIG_WORDS) {
-	default:
-		memset(set, -1, sizeof(sigset_t));
-		break;
-	case 2: set->sig[1] = -1;
-		fallthrough;
-	case 1:	set->sig[0] = -1;
-		break;
-	}
+	*set = (sigset_t) { .sig = { [0 ... _NSIG_WORDS - 1] = -1UL } };
 }
 
 /* Some extensions for manipulating the low 32 signals in particular.  */
@@ -234,28 +241,14 @@ static inline int sigtestsetmask(sigset_t *set, unsigned long mask)
 
 static inline void siginitset(sigset_t *set, unsigned long mask)
 {
+	sigemptyset(set);
 	set->sig[0] = mask;
-	switch (_NSIG_WORDS) {
-	default:
-		memset(&set->sig[1], 0, sizeof(long)*(_NSIG_WORDS-1));
-		break;
-	case 2: set->sig[1] = 0;
-		break;
-	case 1: ;
-	}
 }
 
 static inline void siginitsetinv(sigset_t *set, unsigned long mask)
 {
+	sigfillset(set);
 	set->sig[0] = ~mask;
-	switch (_NSIG_WORDS) {
-	default:
-		memset(&set->sig[1], -1, sizeof(long)*(_NSIG_WORDS-1));
-		break;
-	case 2: set->sig[1] = -1;
-		break;
-	case 1: ;
-	}
 }
 
 #endif /* __HAVE_ARCH_SIG_SETOPS */
