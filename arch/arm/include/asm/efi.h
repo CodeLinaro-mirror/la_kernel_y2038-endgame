@@ -8,7 +8,6 @@
 
 #include <asm/cacheflush.h>
 #include <asm/cachetype.h>
-#include <asm/early_ioremap.h>
 #include <asm/fixmap.h>
 #include <asm/highmem.h>
 #include <asm/mach/map.h>

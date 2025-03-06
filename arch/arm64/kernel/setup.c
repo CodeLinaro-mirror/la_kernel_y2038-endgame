@@ -40,6 +40,7 @@
 #include <asm/cputype.h>
 #include <asm/daifflags.h>
 #include <asm/elf.h>
+#include <asm/early_ioremap.h>
 #include <asm/cpufeature.h>
 #include <asm/cpu_ops.h>
 #include <asm/kasan.h>

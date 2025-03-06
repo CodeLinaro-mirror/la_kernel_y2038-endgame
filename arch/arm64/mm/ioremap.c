@@ -2,6 +2,7 @@
 
 #include <linux/mm.h>
 #include <linux/io.h>
+#include <asm/early_ioremap.h>
 
 static ioremap_prot_hook_t ioremap_prot_hook;
 
