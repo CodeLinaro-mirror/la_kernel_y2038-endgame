@@ -7,12 +7,14 @@
 #include <linux/efi.h>
 #include <linux/font.h>
 #include <linux/io.h>
+#include <linux/pgtable.h>
 #include <linux/kernel.h>
 #include <linux/serial_core.h>
 #include <linux/sysfb.h>
 #include <linux/string.h>
 
 #include <asm/early_ioremap.h>
+#include <asm/page.h>
 
 static const struct console *earlycon_console __initdata;
 static const struct font_desc *font;
