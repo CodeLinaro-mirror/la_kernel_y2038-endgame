@@ -9,15 +9,12 @@
 #define __ASM_IO_H
 
 #include <linux/types.h>
-#include <linux/pgtable.h>
+#include <linux/build_bug.h>
 
 #include <asm/byteorder.h>
 #include <asm/barrier.h>
-#include <asm/memory.h>
-#include <asm/early_ioremap.h>
-#include <asm/alternative.h>
-#include <asm/cpufeature.h>
-#include <asm/rsi.h>
+#include <asm/page-def.h>
+#include <asm/pgtable-types.h>
 
 /*
  * Generic IO read/write.  These perform native-endian accesses.
