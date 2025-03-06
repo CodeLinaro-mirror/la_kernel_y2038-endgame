@@ -11,7 +11,7 @@
 #ifndef __ASSEMBLER__
 
 #include <linux/types.h>
-#include <asm/insn.h>
+#include <asm/insn-def.h>
 
 #define HAVE_JUMP_LABEL_BATCH
 #define JUMP_LABEL_NOP_SIZE		AARCH64_INSN_SIZE
