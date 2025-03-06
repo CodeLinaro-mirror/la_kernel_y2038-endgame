@@ -57,6 +57,14 @@ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
 EXPORT_SYMBOL(ioremap_prot);
 #endif
 
+#ifndef ioremap
+void __iomem *ioremap(phys_addr_t phys_addr, size_t size)
+{
+	return ioremap_prot(phys_addr, size, __pgprot(_PAGE_IOREMAP));
+}
+EXPORT_SYMBOL(ioremap);
+#endif
+
 void generic_iounmap(volatile void __iomem *addr)
 {
 	void *vaddr = (void *)((unsigned long)addr & PAGE_MASK);
@@ -71,4 +79,24 @@ void iounmap(volatile void __iomem *addr)
 	generic_iounmap(addr);
 }
 EXPORT_SYMBOL(iounmap);
+#endif
+
+#ifdef CONFIG_PCI
+/*
+ * The PCI specifications (Rev 3.0, 3.2.5 "Transaction Ordering and
+ * Posting") mandate non-posted configuration transactions. This default
+ * implementation attempts to use the ioremap_np() API to provide this
+ * on arches that support it, and falls back to ioremap() on those that
+ * don't. Overriding this function is deprecated; arches that properly
+ * support non-posted accesses should implement ioremap_np() instead, which
+ * this default implementation can then use to return mappings compliant with
+ * the PCI specification.
+ */
+#ifndef pci_remap_cfgspace
+void __iomem *pci_remap_cfgspace(phys_addr_t offset, size_t size)
+{
+	return ioremap_np(offset, size) ?: ioremap(offset, size);
+}
+EXPORT_SYMBOL_GPL(pci_remap_cfgspace);
+#endif
 #endif
