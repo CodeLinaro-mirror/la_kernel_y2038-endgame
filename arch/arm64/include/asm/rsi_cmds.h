@@ -11,6 +11,7 @@
 #include <asm/memory.h>
 
 #include <asm/rsi_smc.h>
+#include <asm/memory.h>
 
 #define RSI_GRANULE_SHIFT		12
 #define RSI_GRANULE_SIZE		(_AC(1, UL) << RSI_GRANULE_SHIFT)

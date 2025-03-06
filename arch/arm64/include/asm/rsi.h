@@ -23,6 +23,13 @@ static inline bool is_realm_world(void)
 	return static_branch_unlikely(&rsi_present);
 }
 
+static inline bool arm64_is_protected_mmio(phys_addr_t phys_addr, size_t size)
+{
+	if (unlikely(is_realm_world()))
+		return arm64_rsi_is_protected(phys_addr, size);
+	return false;
+}
+
 static inline int rsi_set_memory_range(phys_addr_t start, phys_addr_t end,
 				       enum ripas state, unsigned long flags)
 {

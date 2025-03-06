@@ -303,11 +303,4 @@ extern bool arch_memremap_can_ram_remap(resource_size_t offset, size_t size,
 					unsigned long flags);
 #define arch_memremap_can_ram_remap arch_memremap_can_ram_remap
 
-static inline bool arm64_is_protected_mmio(phys_addr_t phys_addr, size_t size)
-{
-	if (unlikely(is_realm_world()))
-		return arm64_rsi_is_protected(phys_addr, size);
-	return false;
-}
-
 #endif	/* __ASM_IO_H */
