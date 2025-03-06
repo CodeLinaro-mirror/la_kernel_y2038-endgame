@@ -22,6 +22,7 @@
 #include <linux/sysfb.h>
 
 #include <asm/efi.h>
+#include <asm/early_ioremap.h>
 
 unsigned long __initdata primary_display_table = EFI_INVALID_TABLE_ADDR;
 

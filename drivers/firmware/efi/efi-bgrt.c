@@ -15,6 +15,7 @@
 #include <linux/acpi.h>
 #include <linux/efi.h>
 #include <linux/efi-bgrt.h>
+#include <asm/early_ioremap.h>
 
 struct acpi_table_bgrt bgrt_tab;
 size_t bgrt_image_size;
