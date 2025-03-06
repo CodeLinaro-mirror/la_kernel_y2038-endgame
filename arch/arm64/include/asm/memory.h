@@ -167,10 +167,7 @@
 #include <linux/compiler.h>
 #include <linux/mmdebug.h>
 #include <linux/types.h>
-#include <asm/boot.h>
-#include <asm/bug.h>
 #include <asm/sections.h>
-#include <asm/sysreg.h>
 
 static inline u64 __pure read_tcr(void)
 {
