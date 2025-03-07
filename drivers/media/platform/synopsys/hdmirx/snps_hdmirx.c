@@ -394,7 +394,7 @@ static int hdmirx_get_detected_timings(struct snps_hdmirx_dev *hdmirx_dev,
 	u32 val, tmdsqpclk_freq, pix_clk;
 	unsigned int num_retries = 0;
 	u32 field_type, deframer_st;
-	u64 tmp_data, tmds_clk;
+	u64 tmds_clk;
 	bool is_dvi_mode;
 	int ret;
 
@@ -416,9 +416,7 @@ retry:
 
 	tmdsqpclk_freq = hdmirx_readl(hdmirx_dev, CMU_TMDSQPCLK_FREQ);
 	tmds_clk = tmdsqpclk_freq * 4 * 1000;
-	tmp_data = tmds_clk * 24;
-	do_div(tmp_data, hdmirx_dev->color_depth);
-	pix_clk = tmp_data;
+	pix_clk = div_u64(tmds_clk * 24, hdmirx_dev->color_depth);
 	bt->pixelclock = pix_clk;
 
 	if (hdmirx_dev->pix_fmt == HDMIRX_YUV420)
