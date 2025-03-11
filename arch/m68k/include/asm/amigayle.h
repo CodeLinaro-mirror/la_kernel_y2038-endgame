@@ -59,13 +59,11 @@ struct GAYLE {
 
 #define gayle_attribute ((volatile u_char *)(GAYLE_ATTRIBUTE))
 
-#if 0
-#define gayle_inb(a) readb( GAYLE_IO+(a)+(((a)&1)*GAYLE_ODD) )
-#define gayle_outb(v,a) writeb( v, GAYLE_IO+(a)+(((a)&1)*GAYLE_ODD) )
+#define gayle_inb(a) in_8( GAYLE_IO+(a)+(((a)&1)*GAYLE_ODD) )
+#define gayle_outb(v,a) out_8( v, GAYLE_IO+(a)+(((a)&1)*GAYLE_ODD) )
 
-#define gayle_inw(a) readw( GAYLE_IO+(a) )
-#define gayle_outw(v,a) writew( v, GAYLE_IO+(a) )
-#endif
+#define gayle_inw(a) in_be16( GAYLE_IO+(a) )
+#define gayle_outw(v,a) out_be16( v, GAYLE_IO+(a) )
 
 /* GAYLE_CARDSTATUS bit def */
 

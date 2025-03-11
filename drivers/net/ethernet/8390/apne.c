@@ -41,9 +41,14 @@
 #include <asm/amigayle.h>
 #include <asm/amipcmcia.h>
 
-#include "8390.h"
-
-/* ---- No user-serviceable parts below ---- */
+#define ei_inb(addr)		gayle_inb(addr)
+#define ei_inb_p(addr)		gayle_inb(addr)
+#define ei_inw(addr)		gayle_inw(addr)
+#define ei_inw_p(addr)		gayle_inw(addr)
+#define ei_outb(val, addr)	gayle_outb((val), (addr))
+#define ei_outb_p(val, addr)	gayle_outb((val), (addr))
+#define ei_outw(val, addr)	gayle_outw((val), (addr))
+#define ei_outw_p(val, addr)	gayle_outw((val), (addr))
 
 #define DRV_NAME "apne"
 
@@ -69,9 +74,9 @@
 #define NESM_START_PG	0x40	/* First page of TX buffer */
 #define NESM_STOP_PG	0x80	/* Last page +1 of RX ring */
 
+#include "8390.h"
 
 static int apne_probe1(struct net_device *dev, int ioaddr);
-
 static void apne_reset_8390(struct net_device *dev);
 static void apne_get_8390_hdr(struct net_device *dev, struct e8390_pkt_hdr *hdr,
 			  int ring_page);
@@ -108,11 +113,9 @@ static int init_pcmcia(void);
 static const char version[] =
     "apne.c:v1.1 7/10/98 Alain Malek (Alain.Malek@cryogen.ch)\n";
 
-static int apne_owned;	/* signal if card already owned */
+#include "lib8390.c"
 
-static u32 apne_msg_enable;
-module_param_named(msg_enable, apne_msg_enable, uint, 0444);
-MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
+static int apne_owned;	/* signal if card already owned */
 
 static struct net_device * __init apne_probe(void)
 {
@@ -141,11 +144,11 @@ static struct net_device * __init apne_probe(void)
 		return ERR_PTR(-ENODEV);
 	}
 
-	dev = alloc_ei_netdev();
+	dev = ____alloc_ei_netdev(0);
 	if (!dev)
 		return ERR_PTR(-ENOMEM);
 	ei_local = netdev_priv(dev);
-	ei_local->msg_enable = apne_msg_enable;
+	ei_local->msg_enable = msg_enable;
 
 	/* disable pcmcia irq for readtuple */
 	pcmcia_disable_irq();
@@ -191,6 +194,20 @@ static struct net_device * __init apne_probe(void)
 	return ERR_PTR(err);
 }
 
+static const struct net_device_ops apne_netdev_ops = {
+	.ndo_open		= __ei_open,
+	.ndo_stop		= __ei_close,
+	.ndo_start_xmit		= __ei_start_xmit,
+	.ndo_tx_timeout		= __ei_tx_timeout,
+	.ndo_get_stats		= __ei_get_stats,
+	.ndo_set_rx_mode	= __ei_set_multicast_list,
+	.ndo_validate_addr	= eth_validate_addr,
+	.ndo_set_mac_address 	= eth_mac_addr,
+#ifdef CONFIG_NET_POLL_CONTROLLER
+	.ndo_poll_controller	= __ei_poll,
+#endif
+};
+
 static int __init apne_probe1(struct net_device *dev, int ioaddr)
 {
     int i;
@@ -203,7 +220,7 @@ static int __init apne_probe1(struct net_device *dev, int ioaddr)
 #endif
     static unsigned version_printed;
 
-    if ((apne_msg_enable & NETIF_MSG_DRV) && (version_printed++ == 0))
+    if ((msg_enable & NETIF_MSG_DRV) && (version_printed++ == 0))
 		netdev_info(dev, version);
 
     netdev_info(dev, "PCMCIA NE*000 ethercard probe");
@@ -211,15 +228,15 @@ static int __init apne_probe1(struct net_device *dev, int ioaddr)
     /* Reset card. Who knows what dain-bramaged state it was left in. */
     {	unsigned long reset_start_time = jiffies;
 
-	outb(inb(ioaddr + NE_RESET), ioaddr + NE_RESET);
+	ei_outb(ei_inb(ioaddr + NE_RESET), ioaddr + NE_RESET);
 
-	while ((inb(ioaddr + NE_EN0_ISR) & ENISR_RESET) == 0)
+	while ((ei_inb(ioaddr + NE_EN0_ISR) & ENISR_RESET) == 0)
 		if (time_after(jiffies, reset_start_time + 2*HZ/100)) {
 			pr_cont(" not found (no reset ack).\n");
 			return -ENODEV;
 		}
 
-	outb(0xff, ioaddr + NE_EN0_ISR);		/* Ack all intr. */
+	ei_outb(0xff, ioaddr + NE_EN0_ISR);		/* Ack all intr. */
     }
 
 #ifndef MANUAL_HWADDR0
@@ -245,13 +262,13 @@ static int __init apne_probe1(struct net_device *dev, int ioaddr)
 	    {E8390_RREAD+E8390_START, NE_CMD},
 	};
 	for (i = 0; i < ARRAY_SIZE(program_seq); i++) {
-	    outb(program_seq[i].value, ioaddr + program_seq[i].offset);
+	    ei_outb(program_seq[i].value, ioaddr + program_seq[i].offset);
 	}
 
     }
     for(i = 0; i < 32 /*sizeof(SA_prom)*/; i+=2) {
-	SA_prom[i] = inb(ioaddr + NE_DATAPORT);
-	SA_prom[i+1] = inb(ioaddr + NE_DATAPORT);
+	SA_prom[i] = ei_inb(ioaddr + NE_DATAPORT);
+	SA_prom[i+1] = ei_inb(ioaddr + NE_DATAPORT);
 	if (SA_prom[i] != SA_prom[i+1])
 	    wordlength = 1;
     }
@@ -267,7 +284,7 @@ static int __init apne_probe1(struct net_device *dev, int ioaddr)
 
     if (wordlength == 2) {
 	/* We must set the 8390 for word mode. */
-	outb(0x49, ioaddr + NE_EN0_DCFG);
+	ei_outb(0x49, ioaddr + NE_EN0_DCFG);
 	start_page = NESM_START_PG;
 	stop_page = NESM_STOP_PG;
     } else {
@@ -294,7 +311,7 @@ static int __init apne_probe1(struct net_device *dev, int ioaddr)
 #else
     wordlength = 2;
     /* We must set the 8390 for word mode. */
-    outb(0x49, ioaddr + NE_EN0_DCFG);
+    ei_outb(0x49, ioaddr + NE_EN0_DCFG);
     start_page = NESM_START_PG;
     stop_page = NESM_STOP_PG;
 
@@ -309,7 +326,7 @@ static int __init apne_probe1(struct net_device *dev, int ioaddr)
 
     dev->base_addr = ioaddr;
     dev->irq = IRQ_AMIGA_PORTS;
-    dev->netdev_ops = &ei_netdev_ops;
+    dev->netdev_ops = &apne_netdev_ops;
 
     /* Install the Interrupt handler */
     i = request_irq(dev->irq, apne_interrupt, IRQF_SHARED, DRV_NAME, dev);
@@ -333,7 +350,7 @@ static int __init apne_probe1(struct net_device *dev, int ioaddr)
     ei_status.block_output = &apne_block_output;
     ei_status.get_8390_hdr = &apne_get_8390_hdr;
 
-    NS8390_init(dev, 0);
+    __NS8390_init(dev, 0);
 
     pcmcia_ack_int(pcmcia_get_intreq());		/* ack PCMCIA int req */
     pcmcia_enable_irq();
@@ -355,18 +372,18 @@ apne_reset_8390(struct net_device *dev)
 
     netif_dbg(ei_local, hw, dev, "resetting the 8390 t=%ld...\n", jiffies);
 
-    outb(inb(NE_BASE + NE_RESET), NE_BASE + NE_RESET);
+    ei_outb(ei_inb(NE_BASE + NE_RESET), NE_BASE + NE_RESET);
 
     ei_status.txing = 0;
     ei_status.dmaing = 0;
 
     /* This check _should_not_ be necessary, omit eventually. */
-    while ((inb(NE_BASE+NE_EN0_ISR) & ENISR_RESET) == 0)
+    while ((ei_inb(NE_BASE+NE_EN0_ISR) & ENISR_RESET) == 0)
 	if (time_after(jiffies, reset_start_time + 2*HZ/100)) {
 		netdev_err(dev, "ne_reset_8390() did not complete.\n");
 		break;
 	}
-    outb(ENISR_RESET, NE_BASE + NE_EN0_ISR);	/* Ack intr. */
+    ei_outb(ENISR_RESET, NE_BASE + NE_EN0_ISR);	/* Ack intr. */
 }
 
 /* Grab the 8390 specific header. Similar to the block_input routine, but
@@ -391,25 +408,25 @@ apne_get_8390_hdr(struct net_device *dev, struct e8390_pkt_hdr *hdr, int ring_pa
     }
 
     ei_status.dmaing |= 0x01;
-    outb(E8390_NODMA+E8390_PAGE0+E8390_START, nic_base+ NE_CMD);
-    outb(ENISR_RDC, nic_base + NE_EN0_ISR);
-    outb(sizeof(struct e8390_pkt_hdr), nic_base + NE_EN0_RCNTLO);
-    outb(0, nic_base + NE_EN0_RCNTHI);
-    outb(0, nic_base + NE_EN0_RSARLO);		/* On page boundary */
-    outb(ring_page, nic_base + NE_EN0_RSARHI);
-    outb(E8390_RREAD+E8390_START, nic_base + NE_CMD);
+    ei_outb(E8390_NODMA+E8390_PAGE0+E8390_START, nic_base+ NE_CMD);
+    ei_outb(ENISR_RDC, nic_base + NE_EN0_ISR);
+    ei_outb(sizeof(struct e8390_pkt_hdr), nic_base + NE_EN0_RCNTLO);
+    ei_outb(0, nic_base + NE_EN0_RCNTHI);
+    ei_outb(0, nic_base + NE_EN0_RSARLO);		/* On page boundary */
+    ei_outb(ring_page, nic_base + NE_EN0_RSARHI);
+    ei_outb(E8390_RREAD+E8390_START, nic_base + NE_CMD);
 
     if (ei_status.word16) {
         ptrs = (short*)hdr;
         for(cnt = 0; cnt < (sizeof(struct e8390_pkt_hdr)>>1); cnt++)
-            *ptrs++ = inw(NE_BASE + NE_DATAPORT);
+            *ptrs++ = ei_inw(NE_BASE + NE_DATAPORT);
     } else {
         ptrc = (char*)hdr;
         for(cnt = 0; cnt < sizeof(struct e8390_pkt_hdr); cnt++)
-            *ptrc++ = inb(NE_BASE + NE_DATAPORT);
+            *ptrc++ = ei_inb(NE_BASE + NE_DATAPORT);
     }
 
-    outb(ENISR_RDC, nic_base + NE_EN0_ISR);	/* Ack intr. */
+    ei_outb(ENISR_RDC, nic_base + NE_EN0_ISR);	/* Ack intr. */
     ei_status.dmaing &= ~0x01;
 
     le16_to_cpus(&hdr->count);
@@ -437,27 +454,27 @@ apne_block_input(struct net_device *dev, int count, struct sk_buff *skb, int rin
 	return;
     }
     ei_status.dmaing |= 0x01;
-    outb(E8390_NODMA+E8390_PAGE0+E8390_START, nic_base+ NE_CMD);
-    outb(ENISR_RDC, nic_base + NE_EN0_ISR);
-    outb(count & 0xff, nic_base + NE_EN0_RCNTLO);
-    outb(count >> 8, nic_base + NE_EN0_RCNTHI);
-    outb(ring_offset & 0xff, nic_base + NE_EN0_RSARLO);
-    outb(ring_offset >> 8, nic_base + NE_EN0_RSARHI);
-    outb(E8390_RREAD+E8390_START, nic_base + NE_CMD);
+    ei_outb(E8390_NODMA+E8390_PAGE0+E8390_START, nic_base+ NE_CMD);
+    ei_outb(ENISR_RDC, nic_base + NE_EN0_ISR);
+    ei_outb(count & 0xff, nic_base + NE_EN0_RCNTLO);
+    ei_outb(count >> 8, nic_base + NE_EN0_RCNTHI);
+    ei_outb(ring_offset & 0xff, nic_base + NE_EN0_RSARLO);
+    ei_outb(ring_offset >> 8, nic_base + NE_EN0_RSARHI);
+    ei_outb(E8390_RREAD+E8390_START, nic_base + NE_CMD);
     if (ei_status.word16) {
       ptrs = (short*)buf;
       for (cnt = 0; cnt < (count>>1); cnt++)
-        *ptrs++ = inw(NE_BASE + NE_DATAPORT);
+        *ptrs++ = ei_inw(NE_BASE + NE_DATAPORT);
       if (count & 0x01) {
-	buf[count-1] = inb(NE_BASE + NE_DATAPORT);
+	buf[count-1] = ei_inb(NE_BASE + NE_DATAPORT);
       }
     } else {
       ptrc = buf;
       for (cnt = 0; cnt < count; cnt++)
-        *ptrc++ = inb(NE_BASE + NE_DATAPORT);
+        *ptrc++ = ei_inb(NE_BASE + NE_DATAPORT);
     }
 
-    outb(ENISR_RDC, nic_base + NE_EN0_ISR);	/* Ack intr. */
+    ei_outb(ENISR_RDC, nic_base + NE_EN0_ISR);	/* Ack intr. */
     ei_status.dmaing &= ~0x01;
 }
 
@@ -486,38 +503,38 @@ apne_block_output(struct net_device *dev, int count,
     }
     ei_status.dmaing |= 0x01;
     /* We should already be in page 0, but to be safe... */
-    outb(E8390_PAGE0+E8390_START+E8390_NODMA, nic_base + NE_CMD);
+    ei_outb(E8390_PAGE0+E8390_START+E8390_NODMA, nic_base + NE_CMD);
 
-    outb(ENISR_RDC, nic_base + NE_EN0_ISR);
+    ei_outb(ENISR_RDC, nic_base + NE_EN0_ISR);
 
    /* Now the normal output. */
-    outb(count & 0xff, nic_base + NE_EN0_RCNTLO);
-    outb(count >> 8,   nic_base + NE_EN0_RCNTHI);
-    outb(0x00, nic_base + NE_EN0_RSARLO);
-    outb(start_page, nic_base + NE_EN0_RSARHI);
+    ei_outb(count & 0xff, nic_base + NE_EN0_RCNTLO);
+    ei_outb(count >> 8,   nic_base + NE_EN0_RCNTHI);
+    ei_outb(0x00, nic_base + NE_EN0_RSARLO);
+    ei_outb(start_page, nic_base + NE_EN0_RSARHI);
 
-    outb(E8390_RWRITE+E8390_START, nic_base + NE_CMD);
+    ei_outb(E8390_RWRITE+E8390_START, nic_base + NE_CMD);
     if (ei_status.word16) {
         ptrs = (short*)buf;
         for (cnt = 0; cnt < count>>1; cnt++)
-            outw(*ptrs++, NE_BASE+NE_DATAPORT);
+            ei_outw(*ptrs++, NE_BASE+NE_DATAPORT);
     } else {
         ptrc = (char*)buf;
         for (cnt = 0; cnt < count; cnt++)
-	    outb(*ptrc++, NE_BASE + NE_DATAPORT);
+	    ei_outb(*ptrc++, NE_BASE + NE_DATAPORT);
     }
 
     dma_start = jiffies;
 
-    while ((inb(NE_BASE + NE_EN0_ISR) & ENISR_RDC) == 0)
+    while ((ei_inb(NE_BASE + NE_EN0_ISR) & ENISR_RDC) == 0)
 	if (time_after(jiffies, dma_start + 2*HZ/100)) {	/* 20ms */
 		netdev_warn(dev, "timeout waiting for Tx RDC.\n");
 		apne_reset_8390(dev);
-		NS8390_init(dev,1);
+		__NS8390_init(dev,1);
 		break;
 	}
 
-    outb(ENISR_RDC, nic_base + NE_EN0_ISR);	/* Ack intr. */
+    ei_outb(ENISR_RDC, nic_base + NE_EN0_ISR);	/* Ack intr. */
     ei_status.dmaing &= ~0x01;
 }
 
@@ -534,10 +551,10 @@ static irqreturn_t apne_interrupt(int irq, void *dev_id)
         pcmcia_ack_int(pcmcia_intreq);
         return IRQ_NONE;
     }
-    if (apne_msg_enable & NETIF_MSG_INTR)
+    if (msg_enable & NETIF_MSG_INTR)
 	pr_debug("pcmcia intreq = %x\n", pcmcia_intreq);
     pcmcia_disable_irq();			/* to get rid of the sti() within ei_interrupt */
-    ei_interrupt(irq, dev_id);
+    __ei_interrupt(irq, dev_id);
     pcmcia_ack_int(pcmcia_get_intreq());
     pcmcia_enable_irq();
     return IRQ_HANDLED;
