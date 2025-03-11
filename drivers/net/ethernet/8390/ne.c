@@ -33,9 +33,8 @@
 
 /* Routines for the NatSemi-based designs (NE[12]000). */
 
-static const char version1[] =
-"ne.c:v1.10 9/23/94 Donald Becker (becker@scyld.com)\n";
-static const char version2[] =
+static const char version[] =
+"ne.c:v1.10 9/23/94 Donald Becker (becker@scyld.com)\n"
 "Last modified Nov 1, 2000 by Paul Gortmaker\n";
 
 
@@ -52,9 +51,14 @@ static const char version2[] =
 #include <linux/platform_device.h>
 #include <net/Space.h>
 
+#define ei_inb(_p)	inb(_p)
+#define ei_outb(_v, _p)	outb(_v, _p)
+#define ei_inb_p(_p)	inb_p(_p)
+#define ei_outb_p(_v, _p) outb_p(_v, _p)
+
 #include <asm/io.h>
 
-#include "8390.h"
+#include "lib8390.c"
 
 #define DRV_NAME "ne"
 
@@ -76,11 +80,9 @@ static u32 ne_msg_enable;
 module_param_hw_array(io, int, ioport, NULL, 0);
 module_param_hw_array(irq, int, irq, NULL, 0);
 module_param_array(bad, int, NULL, 0);
-module_param_named(msg_enable, ne_msg_enable, uint, 0444);
 MODULE_PARM_DESC(io, "I/O base address(es),required");
 MODULE_PARM_DESC(irq, "IRQ number(s)");
 MODULE_PARM_DESC(bad, "Accept card(s) with bad signatures");
-MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
 MODULE_DESCRIPTION("NE1000/NE2000 ISA/PnP Ethernet driver");
 MODULE_LICENSE("GPL");
 #endif /* MODULE */
@@ -287,6 +289,20 @@ static int __init ne_probe_isapnp(struct net_device *dev)
 	return -ENODEV;
 }
 
+static const struct net_device_ops ne_netdev_ops = {
+	.ndo_open		= __ei_open,
+	.ndo_stop		= __ei_close,
+	.ndo_start_xmit		= __ei_start_xmit,
+	.ndo_tx_timeout		= __ei_tx_timeout,
+	.ndo_get_stats		= __ei_get_stats,
+	.ndo_set_rx_mode	= __ei_set_multicast_list,
+	.ndo_validate_addr	= eth_validate_addr,
+	.ndo_set_mac_address 	= eth_mac_addr,
+#ifdef CONFIG_NET_POLL_CONTROLLER
+	.ndo_poll_controller	= __ei_poll,
+#endif
+};
+
 static int __init ne_probe1(struct net_device *dev, unsigned long ioaddr)
 {
 	int i;
@@ -325,7 +341,7 @@ static int __init ne_probe1(struct net_device *dev, unsigned long ioaddr)
 	}
 
 	if ((ne_msg_enable & NETIF_MSG_DRV) && (version_printed++ == 0))
-		netdev_info(dev, "%s%s", version1, version2);
+		netdev_info(dev, "%s", version);
 
 	netdev_info(dev, "NE*000 ethercard probe at %#3lx:", ioaddr);
 
@@ -361,7 +377,7 @@ static int __init ne_probe1(struct net_device *dev, unsigned long ioaddr)
 	}
 
 	/* Read the 16 bytes of station address PROM.
-	   We must first initialize registers, similar to NS8390p_init(eifdev, 0).
+	   We must first initialize registers, similar to __NS8390_init(eifdev, 0).
 	   We can't reliably read the SAPROM address without this.
 	   (I learned the hard way!). */
 	{
@@ -491,7 +507,7 @@ static int __init ne_probe1(struct net_device *dev, unsigned long ioaddr)
 
 	/* Snarf the interrupt now.  There's no point in waiting since we cannot
 	   share and the board will usually be enabled. */
-	ret = request_irq(dev->irq, eip_interrupt, 0, name, dev);
+	ret = request_irq(dev->irq, __ei_interrupt, 0, name, dev);
 	if (ret) {
 		pr_cont(" unable to get IRQ %d (errno=%d).\n", dev->irq, ret);
 		goto err_out;
@@ -522,8 +538,7 @@ static int __init ne_probe1(struct net_device *dev, unsigned long ioaddr)
 	ei_status.get_8390_hdr = &ne_get_8390_hdr;
 	ei_status.priv = 0;
 
-	dev->netdev_ops = &eip_netdev_ops;
-	NS8390p_init(dev, 0);
+	__NS8390_init(dev, 0);
 
 	ei_local->msg_enable = ne_msg_enable;
 	ret = register_netdev(dev);
@@ -770,7 +785,7 @@ retry:
 		if (time_after(jiffies, dma_start + 2*HZ/100)) {		/* 20ms */
 			netdev_warn(dev, "timeout waiting for Tx RDC.\n");
 			ne_reset_8390(dev);
-			NS8390p_init(dev, 1);
+			__NS8390_init(dev, 1);
 			break;
 		}
 
@@ -784,9 +799,10 @@ static int __init ne_drv_probe(struct platform_device *pdev)
 	int err, this_dev = pdev->id;
 	struct resource *res;
 
-	dev = alloc_eip_netdev();
+	dev = ____alloc_ei_netdev(0);
 	if (!dev)
 		return -ENOMEM;
+	dev->netdev_ops = &ne_netdev_ops;
 
 	/* ne.c doesn't populate resources in platform_device, but
 	 * rbtx4927_ne_init and rbtx4938_ne_init do register devices
@@ -883,7 +899,7 @@ static int ne_drv_resume(struct platform_device *pdev)
 		if (idev)
 			pnp_start_dev(idev);
 		ne_reset_8390(dev);
-		NS8390p_init(dev, 1);
+		__NS8390_init(dev, 1);
 		netif_device_attach(dev);
 	}
 	return 0;
@@ -956,9 +972,10 @@ struct net_device * __init ne_probe(int unit)
 	}
 
 	/* Get irq, io from kernel command line */
-	dev = alloc_eip_netdev();
+	dev = ____alloc_ei_netdev(0);
 	if (!dev)
 		return ERR_PTR(-ENOMEM);
+	dev->netdev_ops = &ne_netdev_ops;
 
 	sprintf(dev->name, "eth%d", unit);
 	netdev_boot_setup_check(dev);

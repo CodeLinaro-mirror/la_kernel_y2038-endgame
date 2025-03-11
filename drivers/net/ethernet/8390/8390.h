@@ -27,7 +27,6 @@ struct e8390_pkt_hdr {
 
 #ifdef CONFIG_NET_POLL_CONTROLLER
 void ei_poll(struct net_device *dev);
-void eip_poll(struct net_device *dev);
 #endif
 
 
@@ -47,24 +46,6 @@ struct net_device *__alloc_ei_netdev(int size);
 static inline struct net_device *alloc_ei_netdev(void)
 {
 	return __alloc_ei_netdev(0);
-}
-
-/* With I/O delay form */
-void NS8390p_init(struct net_device *dev, int startp);
-int eip_open(struct net_device *dev);
-int eip_close(struct net_device *dev);
-irqreturn_t eip_interrupt(int irq, void *dev_id);
-void eip_tx_timeout(struct net_device *dev, unsigned int txqueue);
-netdev_tx_t eip_start_xmit(struct sk_buff *skb, struct net_device *dev);
-void eip_set_multicast_list(struct net_device *dev);
-struct net_device_stats *eip_get_stats(struct net_device *dev);
-
-extern const struct net_device_ops eip_netdev_ops;
-
-struct net_device *__alloc_eip_netdev(int size);
-static inline struct net_device *alloc_eip_netdev(void)
-{
-	return __alloc_eip_netdev(0);
 }
 
 /* You have one of these per-board */
