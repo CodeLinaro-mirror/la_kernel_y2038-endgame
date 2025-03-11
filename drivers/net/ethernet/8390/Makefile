@@ -10,6 +10,7 @@ obj-$(CONFIG_AX88796) += ax88796.o
 obj-$(CONFIG_HYDRA) += hydra.o
 obj-$(CONFIG_MCF8390) += mcf8390.o
 obj-$(CONFIG_NE2000) += ne.o
+obj-$(CONFIG_ATARI_ETHERNEC) += ethernec.o
 obj-$(CONFIG_NE2K_PCI) += ne2k-pci.o 8390.o
 obj-$(CONFIG_PCMCIA_AXNET) += axnet_cs.o 8390.o
 obj-$(CONFIG_PCMCIA_PCNET) += pcnet_cs.o 8390.o

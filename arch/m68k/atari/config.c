@@ -774,7 +774,7 @@ static struct resource rtl8019_resources[] = {
 };
 
 static struct platform_device rtl8019_device = {
-	.name		= "ne",
+	.name		= "ethernec",
 	.id		= -1,
 	.num_resources	= ARRAY_SIZE(rtl8019_resources),
 	.resource	= rtl8019_resources,
