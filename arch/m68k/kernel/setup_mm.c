@@ -100,9 +100,7 @@ void (*mach_l2_flush) (int);
 #endif
 #if defined(CONFIG_ISA) && defined(MULTI_ISA)
 int isa_type;
-int isa_sex;
 EXPORT_SYMBOL(isa_type);
-EXPORT_SYMBOL(isa_sex);
 #endif
 
 #define MASK_256K 0xfffc0000
@@ -356,18 +354,10 @@ void __init setup_arch(char **cmdline_p)
 #if defined(CONFIG_ISA) && defined(MULTI_ISA)
 	if (MACH_IS_Q40) {
 		isa_type = ISA_TYPE_Q40;
-		isa_sex = 0;
 	}
-#ifdef CONFIG_AMIGA_PCMCIA
-	if (MACH_IS_AMIGA && AMIGAHW_PRESENT(PCMCIA)) {
-		isa_type = ISA_TYPE_AG;
-		isa_sex = 1;
-	}
-#endif
 #ifdef CONFIG_ATARI_ROM_ISA
 	if (MACH_IS_ATARI) {
 		isa_type = ISA_TYPE_ENEC;
-		isa_sex = 0;
 	}
 #endif
 #endif

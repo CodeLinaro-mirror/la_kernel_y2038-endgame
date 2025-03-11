@@ -37,7 +37,7 @@ config AMIGA_PCMCIA
 
 config ISA
 	bool
-	depends on Q40 || AMIGA_PCMCIA
+	depends on Q40
 	default y
 	help
 	  Find out whether you have ISA slots on your motherboard.  ISA is the
