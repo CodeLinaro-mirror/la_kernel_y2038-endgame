@@ -127,14 +127,7 @@ static inline void isa_delay(void)
 #define outsb   isa_outsb
 #define outsw   isa_outsw
 #define outsl   isa_outsl
-#define readb   isa_readb
-#define readw   isa_readw
-#define writeb  isa_writeb
-#define writew  isa_writew
 #endif  /* CONFIG_ISA */
-
-#define readl(addr)      in_le32(addr)
-#define writel(val,addr) out_le32((addr),(val))
 
 #define readsb(port, buf, nr)     raw_insb((port), (u8 *)(buf), (nr))
 #define readsw(port, buf, nr)     raw_insw((port), (u16 *)(buf), (nr))
@@ -152,13 +145,5 @@ static inline void isa_delay(void)
 #endif /* __KERNEL__ */
 
 #define __ARCH_HAS_NO_PAGE_ZERO_MAPPED		1
-
-#define readb_relaxed(addr)	readb(addr)
-#define readw_relaxed(addr)	readw(addr)
-#define readl_relaxed(addr)	readl(addr)
-
-#define writeb_relaxed(b, addr)	writeb(b, addr)
-#define writew_relaxed(b, addr)	writew(b, addr)
-#define writel_relaxed(b, addr)	writel(b, addr)
 
 #endif /* _M68K_IO_MM_H */
