@@ -98,10 +98,6 @@ EXPORT_SYMBOL(mach_heartbeat);
 #ifdef CONFIG_M68K_L2_CACHE
 void (*mach_l2_flush) (int);
 #endif
-#if defined(CONFIG_ISA) && defined(MULTI_ISA)
-int isa_type;
-EXPORT_SYMBOL(isa_type);
-#endif
 
 #define MASK_256K 0xfffc0000
 
@@ -348,18 +344,6 @@ void __init setup_arch(char **cmdline_p)
 	if (MACH_IS_SUN3X) {
 		dvma_init();
 	}
-#endif
-
-/* set ISA defs early as possible */
-#if defined(CONFIG_ISA) && defined(MULTI_ISA)
-	if (MACH_IS_Q40) {
-		isa_type = ISA_TYPE_Q40;
-	}
-#ifdef CONFIG_ATARI_ROM_ISA
-	if (MACH_IS_ATARI) {
-		isa_type = ISA_TYPE_ENEC;
-	}
-#endif
 #endif
 }
 
