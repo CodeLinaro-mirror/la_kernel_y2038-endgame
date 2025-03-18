@@ -851,6 +851,7 @@ endmenu
 
 config CCW
 	def_bool y
+	select SLAB_DMA
 
 config HAVE_PNETID
 	tristate

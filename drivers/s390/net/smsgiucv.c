@@ -59,7 +59,7 @@ static void smsg_message_pending(struct iucv_path *path,
 	unsigned char sender[9];
 	int rc, i;
 
-	buffer = kmalloc(msg->length + 1, GFP_ATOMIC | GFP_DMA);
+	buffer = kmalloc(msg->length + 1, GFP_ATOMIC | GFP_DMA); // XXXX
 	if (!buffer) {
 		iucv_message_reject(path, msg);
 		return;

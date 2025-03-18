@@ -134,7 +134,7 @@ static int do_core_configure(sclp_cmdw_t cmd)
 	 * Use kmalloc to have a minimum alignment of 8 bytes and ensure sccb
 	 * is not going to cross a page boundary.
 	 */
-	sccb = kzalloc_obj(*sccb, GFP_KERNEL | GFP_DMA);
+	sccb = kzalloc_obj(*sccb, GFP_KERNEL | GFP_DMA); // XXX
 	if (!sccb)
 		return -ENOMEM;
 	sccb->header.length = sizeof(*sccb);

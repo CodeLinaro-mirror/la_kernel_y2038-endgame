@@ -693,7 +693,7 @@ int ccw_device_stlck(struct ccw_device *cdev)
 		if (!cdev->private->options.force)
 			return -EINVAL;
 	}
-	buffer = kzalloc(64, GFP_DMA | GFP_KERNEL);
+	buffer = kzalloc(64, GFP_DMA | GFP_KERNEL); // XXXX
 	if (!buffer)
 		return -ENOMEM;
 	init_completion(&data.done);

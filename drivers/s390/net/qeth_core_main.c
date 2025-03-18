@@ -935,7 +935,7 @@ static struct qeth_cmd_buffer *qeth_alloc_cmd(struct qeth_channel *channel,
 		return NULL;
 
 	iob->data = kzalloc(ALIGN(length, 8) + ccws * sizeof(struct ccw1),
-			    GFP_KERNEL | GFP_DMA);
+			    GFP_KERNEL | GFP_DMA); // XXXX
 	if (!iob->data) {
 		kfree(iob);
 		return NULL;
@@ -1837,8 +1837,8 @@ static enum qeth_discipline_id qeth_vm_detect_layer(struct qeth_card *card)
 	if (rc)
 		goto out;
 
-	request = kzalloc_obj(*request, GFP_KERNEL | GFP_DMA);
-	response = kzalloc_obj(*response, GFP_KERNEL | GFP_DMA);
+	request = kzalloc_obj(*request, GFP_KERNEL | GFP_DMA); // XXX
+	response = kzalloc_obj(*response, GFP_KERNEL | GFP_DMA); // XXX
 	if (!request || !response) {
 		rc = -ENOMEM;
 		goto out;
@@ -4956,8 +4956,8 @@ int qeth_vm_request_mac(struct qeth_card *card)
 
 	QETH_CARD_TEXT(card, 2, "vmreqmac");
 
-	request = kzalloc_obj(*request, GFP_KERNEL | GFP_DMA);
-	response = kzalloc_obj(*response, GFP_KERNEL | GFP_DMA);
+	request = kzalloc_obj(*request, GFP_KERNEL | GFP_DMA); // XXX
+	response = kzalloc_obj(*response, GFP_KERNEL | GFP_DMA); // XXX
 	if (!request || !response) {
 		rc = -ENOMEM;
 		goto out;

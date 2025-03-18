@@ -146,13 +146,13 @@ struct raw3270_request *raw3270_request_alloc(size_t size)
 	struct raw3270_request *rq;
 
 	/* Allocate request structure */
-	rq = kzalloc_obj(*rq, GFP_KERNEL | GFP_DMA);
+	rq = kzalloc_obj(*rq, GFP_KERNEL | GFP_DMA); // XXX
 	if (!rq)
 		return ERR_PTR(-ENOMEM);
 
 	/* alloc output buffer. */
 	if (size > 0) {
-		rq->buffer = kmalloc(size, GFP_KERNEL | GFP_DMA);
+		rq->buffer = kmalloc(size, GFP_KERNEL | GFP_DMA); // XXXX
 		if (!rq->buffer) {
 			kfree(rq);
 			return ERR_PTR(-ENOMEM);
@@ -813,7 +813,7 @@ struct raw3270 __init *raw3270_setup_console(void)
 	if (IS_ERR(cdev))
 		return ERR_CAST(cdev);
 
-	rp = kzalloc_obj(*rp, GFP_KERNEL | GFP_DMA);
+	rp = kzalloc_obj(*rp, GFP_KERNEL | GFP_DMA); // XXX
 	ascebc = kzalloc(256, GFP_KERNEL);
 	rc = raw3270_setup_device(cdev, rp, ascebc);
 	if (rc)
@@ -858,7 +858,7 @@ static struct raw3270 *raw3270_create_device(struct ccw_device *cdev)
 	char *ascebc;
 	int rc;
 
-	rp = kzalloc_obj(*rp, GFP_KERNEL | GFP_DMA);
+	rp = kzalloc_obj(*rp, GFP_KERNEL | GFP_DMA); // XXX
 	if (!rp)
 		return ERR_PTR(-ENOMEM);
 	ascebc = kmalloc(256, GFP_KERNEL);

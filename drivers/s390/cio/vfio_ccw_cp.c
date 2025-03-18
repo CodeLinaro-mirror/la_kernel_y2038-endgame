@@ -324,7 +324,7 @@ static struct ccwchain *ccwchain_alloc(struct channel_program *cp, int len)
 	if (!chain)
 		return NULL;
 
-	chain->ch_ccw = kzalloc_objs(*chain->ch_ccw, len, GFP_DMA | GFP_KERNEL);
+	chain->ch_ccw = kzalloc_objs(*chain->ch_ccw, len, GFP_DMA | GFP_KERNEL); // XXX
 	if (!chain->ch_ccw)
 		goto out_err;
 
@@ -530,7 +530,7 @@ static dma64_t *get_guest_idal(struct ccw1 *ccw, struct channel_program *cp, int
 	int idaw_mask = ~(idaw_size - 1);
 	int i, ret;
 
-	idaws = kzalloc_objs(*idaws, idaw_nr, GFP_DMA | GFP_KERNEL);
+	idaws = kzalloc_objs(*idaws, idaw_nr, GFP_DMA | GFP_KERNEL); // XXX
 	if (!idaws)
 		return ERR_PTR(-ENOMEM);
 

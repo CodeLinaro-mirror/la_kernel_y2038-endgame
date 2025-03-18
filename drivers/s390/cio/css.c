@@ -202,7 +202,7 @@ struct subchannel *css_alloc_subchannel(struct subchannel_id schid,
 	if (ret < 0)
 		return ERR_PTR(ret);
 
-	sch = kzalloc_obj(*sch, GFP_KERNEL | GFP_DMA);
+	sch = kzalloc_obj(*sch, GFP_KERNEL | GFP_DMA); // XXX
 	if (!sch)
 		return ERR_PTR(-ENOMEM);
 
