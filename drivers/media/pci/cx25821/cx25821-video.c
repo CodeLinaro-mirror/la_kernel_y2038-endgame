@@ -727,7 +727,7 @@ int cx25821_video_register(struct cx25821_dev *dev)
 				      V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		q->io_modes = VB2_MMAP | VB2_USERPTR | VB2_DMABUF;
 		q->io_modes |= is_output ? VB2_WRITE : VB2_READ;
-		q->gfp_flags = GFP_DMA32;
+		q->gfp_flags = GFP_DMA32; // XXXX
 		q->min_queued_buffers = 2;
 		q->drv_priv = chan;
 		q->buf_struct_size = sizeof(struct cx25821_buffer);

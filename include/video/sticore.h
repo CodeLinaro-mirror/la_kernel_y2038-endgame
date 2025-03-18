@@ -48,7 +48,7 @@ struct device;
 #define sti_font_y(sti) (PTR_STI(sti->font)->height)
 
 #ifdef CONFIG_64BIT
-#define STI_LOWMEM	(GFP_KERNEL | GFP_DMA)
+#define STI_LOWMEM	(GFP_KERNEL | GFP_DMA) // XXXX
 #else
 #define STI_LOWMEM	(GFP_KERNEL)
 #endif

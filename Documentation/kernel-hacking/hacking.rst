@@ -316,10 +316,6 @@ kmalloc() takes an extra flag word. Important values:
     from interrupt context. You should **really** have a good
     out-of-memory error-handling strategy.
 
-``GFP_DMA``
-    Allocate ISA DMA lower than 16MB. If you don't know what that is you
-    don't need it. Very unreliable.
-
 If you see a sleeping function called from invalid context warning
 message, then maybe you called a sleeping allocation function from
 interrupt context without ``GFP_ATOMIC``. You should really fix that.

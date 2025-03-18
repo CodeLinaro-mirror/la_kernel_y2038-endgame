@@ -336,11 +336,6 @@ opzioni. Le opzioni più importanti sono:
     contesto d'interruzione. Dovreste avere **davvero** una buona strategia
     per la gestione degli errori in caso di mancanza di memoria.
 
-``GFP_DMA``
-    Alloca memoria per il DMA sul bus ISA nello spazio d'indirizzamento
-    inferiore ai 16MB. Se non sapete cos'è allora non vi serve.
-    Molto inaffidabile.
-
 Se vedete un messaggio d'avviso per una funzione dormiente che viene chiamata
 da un contesto errato, allora probabilmente avete usato una funzione
 d'allocazione dormiente da un contesto d'interruzione senza ``GFP_ATOMIC``.

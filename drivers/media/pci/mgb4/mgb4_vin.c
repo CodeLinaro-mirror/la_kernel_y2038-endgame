@@ -997,7 +997,7 @@ struct mgb4_vin_dev *mgb4_vin_create(struct mgb4_dev *mgbdev, int id)
 	vindev->queue.buf_struct_size = sizeof(struct mgb4_frame_buffer);
 	vindev->queue.ops = &queue_ops;
 	vindev->queue.mem_ops = &vb2_dma_sg_memops;
-	vindev->queue.gfp_flags = GFP_DMA32;
+	vindev->queue.gfp_flags = GFP_DMA32; // XXXX
 	vindev->queue.timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
 	vindev->queue.min_queued_buffers = 2;
 	vindev->queue.drv_priv = vindev;

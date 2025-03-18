@@ -2416,7 +2416,7 @@ static int dwc2_alloc_split_dma_aligned_buf(struct dwc2_hsotg *hsotg,
 
 	if (!qh->dw_align_buf) {
 		qh->dw_align_buf = kmem_cache_alloc(hsotg->unaligned_cache,
-						    GFP_ATOMIC | GFP_DMA);
+						    GFP_ATOMIC | GFP_DMA); // XXXX
 		if (!qh->dw_align_buf)
 			return -ENOMEM;
 	}

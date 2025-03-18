@@ -174,7 +174,7 @@ static int mchp48l640_write_page(struct mtd_info *mtd, loff_t to, size_t len,
 	int ret;
 	int cmdlen;
 
-	cmd = kmalloc((3 + len), GFP_KERNEL | GFP_DMA);
+	cmd = kmalloc((3 + len), GFP_KERNEL | GFP_DMA); // XXXX
 	if (!cmd)
 		return -ENOMEM;
 
@@ -248,7 +248,7 @@ static int mchp48l640_read_page(struct mtd_info *mtd, loff_t from, size_t len,
 	int ret;
 	int cmdlen;
 
-	cmd = kmalloc((3 + len), GFP_KERNEL | GFP_DMA);
+	cmd = kmalloc((3 + len), GFP_KERNEL | GFP_DMA); // XXXX
 	if (!cmd)
 		return -ENOMEM;
 

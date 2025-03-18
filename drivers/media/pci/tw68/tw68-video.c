@@ -947,7 +947,7 @@ int tw68_video_init2(struct tw68_dev *dev, int video_nr)
 	dev->vidq.ops = &tw68_video_qops;
 	dev->vidq.mem_ops = &vb2_dma_sg_memops;
 	dev->vidq.drv_priv = dev;
-	dev->vidq.gfp_flags = __GFP_DMA32 | __GFP_KSWAPD_RECLAIM;
+	dev->vidq.gfp_flags = __GFP_DMA32 | __GFP_KSWAPD_RECLAIM; // XXXX
 	dev->vidq.buf_struct_size = sizeof(struct tw68_buf);
 	dev->vidq.lock = &dev->lock;
 	dev->vidq.min_queued_buffers = 2;

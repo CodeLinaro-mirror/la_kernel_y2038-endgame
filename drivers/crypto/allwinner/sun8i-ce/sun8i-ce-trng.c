@@ -38,7 +38,7 @@ static int sun8i_ce_trng_read(struct hwrng *rng, void *data, size_t max, bool wa
 	todo = max + 32;
 	todo -= todo % 32;
 
-	d = kzalloc(todo, GFP_KERNEL | GFP_DMA);
+	d = kzalloc(todo, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!d)
 		return -ENOMEM;
 

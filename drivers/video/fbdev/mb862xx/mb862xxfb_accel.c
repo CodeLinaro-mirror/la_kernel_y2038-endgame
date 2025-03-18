@@ -237,7 +237,7 @@ static void mb86290fb_imageblit(struct fb_info *info,
 		return;
 	}
 
-	cmd = kmalloc_array(cmdlen, 4, GFP_DMA);
+	cmd = kmalloc_array(cmdlen, 4, GFP_DMA); // XXXX
 	if (!cmd)
 		return cfb_imageblit(info, image);
 	cmdfn(cmd, step, dx, dy, width, height, fgcolor, bgcolor, image, info);

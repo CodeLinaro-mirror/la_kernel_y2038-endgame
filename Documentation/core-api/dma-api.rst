@@ -577,7 +577,7 @@ see dma_map_single() for details.
 
 The gfp parameter allows the caller to specify the ``GFP_`` flags (see
 kmalloc()) for the allocation, but rejects flags used to specify a memory
-zone such as GFP_DMA or GFP_HIGHMEM.
+zone such GFP_HIGHMEM.
 
 Before giving the memory to the device, dma_sync_single_for_device() needs
 to be called, and before reading memory written by the device,
@@ -646,7 +646,7 @@ see dma_map_single() for details.
 
 The gfp parameter allows the caller to specify the ``GFP_`` flags (see
 kmalloc()) for the allocation, but rejects flags used to specify a memory
-zone such as GFP_DMA or GFP_HIGHMEM.
+zone such as GFP_HIGHMEM.
 
 The attrs argument must be either 0 or DMA_ATTR_ALLOC_SINGLE_PAGES.
 

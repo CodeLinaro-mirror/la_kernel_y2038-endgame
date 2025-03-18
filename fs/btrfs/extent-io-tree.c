@@ -151,7 +151,7 @@ static struct extent_state *alloc_extent_state(gfp_t mask)
 	 * drop the unsupported bits
 	 */
 	mask &= ~(__GFP_DMA32|__GFP_HIGHMEM);
-	state = kmem_cache_alloc(extent_state_cache, mask);
+	state = kmem_cache_alloc(extent_state_cache, mask); // XXXX
 	if (!state)
 		return state;
 	state->state = 0;

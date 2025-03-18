@@ -1984,7 +1984,7 @@ static int gr_ep_init(struct gr_udc *dev, int num, int is_in, u32 maxplimit)
 		if (!_req)
 			return -ENOMEM;
 
-		buf = devm_kzalloc(dev->dev, PAGE_SIZE, GFP_DMA | GFP_ATOMIC);
+		buf = devm_kzalloc(dev->dev, PAGE_SIZE, GFP_DMA | GFP_ATOMIC); // XXXX
 		if (!buf) {
 			gr_free_request(&ep->ep, _req);
 			return -ENOMEM;

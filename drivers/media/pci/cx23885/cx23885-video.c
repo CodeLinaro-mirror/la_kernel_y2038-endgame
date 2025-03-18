@@ -1319,7 +1319,7 @@ int cx23885_video_register(struct cx23885_dev *dev)
 	q = &dev->vb2_vidq;
 	q->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	q->io_modes = VB2_MMAP | VB2_USERPTR | VB2_DMABUF | VB2_READ;
-	q->gfp_flags = GFP_DMA32;
+	q->gfp_flags = GFP_DMA32; // XXXX
 	q->min_queued_buffers = 2;
 	q->drv_priv = dev;
 	q->buf_struct_size = sizeof(struct cx23885_buffer);
@@ -1336,7 +1336,7 @@ int cx23885_video_register(struct cx23885_dev *dev)
 	q = &dev->vb2_vbiq;
 	q->type = V4L2_BUF_TYPE_VBI_CAPTURE;
 	q->io_modes = VB2_MMAP | VB2_USERPTR | VB2_DMABUF | VB2_READ;
-	q->gfp_flags = GFP_DMA32;
+	q->gfp_flags = GFP_DMA32; // XXXX
 	q->min_queued_buffers = 2;
 	q->drv_priv = dev;
 	q->buf_struct_size = sizeof(struct cx23885_buffer);

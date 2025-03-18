@@ -30,7 +30,7 @@
 /* Not more than 2GB */
 #define KEXEC_CONTROL_MEMORY_LIMIT (1UL<<31)
 
-/* Allocate control page with GFP_DMA */
+/* Allocate control page with GFP_DMA */ // XXXX
 #define KEXEC_CONTROL_MEMORY_GFP (GFP_DMA | __GFP_NORETRY)
 
 /* Maximum address we can use for the crash control pages */

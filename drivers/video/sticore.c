@@ -454,7 +454,7 @@ static int sti_init_glob_cfg(struct sti_struct *sti, unsigned long rom_address,
 
 	size = sizeof(struct sti_all_data) + sti->sti_mem_request - 256;
 
-	sti->sti_data = kzalloc(size, STI_LOWMEM);
+	sti->sti_data = kzalloc(size, STI_LOWMEM); // XXXX
 	if (!sti->sti_data)
 		return -ENOMEM;
 
@@ -540,7 +540,7 @@ sti_select_fbfont(struct sti_cooked_rom *cooked_rom, const char *fbfont_name)
 	size = bpc * fbfont->charcount;
 	size += sizeof(struct sti_rom_font);
 
-	nf = kzalloc(size, STI_LOWMEM);
+	nf = kzalloc(size, STI_LOWMEM); // XXXX
 	if (!nf)
 		return NULL;
 
@@ -718,7 +718,7 @@ void sti_font_convert_bytemode(struct sti_struct *sti, struct sti_cooked_font *f
 		return;
 
 	old_font = f->raw_ptr;
-	n = kcalloc(4, size, STI_LOWMEM);
+	n = kcalloc(4, size, STI_LOWMEM); // XXXX
 	f->raw_ptr = n;
 	if (!n)
 		return;
@@ -758,7 +758,7 @@ static struct sti_rom *sti_get_bmode_rom (unsigned long address)
 	sti_bmode_rom_copy(address + BMODE_LAST_ADDR_OFFS, sizeof(size), &size);
 
 	size = (size+3) / 4;
-	raw = kmalloc(size, STI_LOWMEM);
+	raw = kmalloc(size, STI_LOWMEM); // XXXX
 	if (raw) {
 		sti_bmode_rom_copy(address, size, raw);
 		memmove (&raw->res004, &raw->type[0], 0x3c);
@@ -792,7 +792,7 @@ static struct sti_rom *sti_get_wmode_rom(unsigned long address)
 	/* read the ROM size directly from the struct in ROM */
 	size = gsc_readl(address + offsetof(struct sti_rom,last_addr));
 
-	raw = kmalloc(size, STI_LOWMEM);
+	raw = kmalloc(size, STI_LOWMEM); // XXXX
 	if (raw)
 		sti_rom_copy(address, size, raw);
 

@@ -277,7 +277,7 @@ static int empress_init(struct saa7134_dev *dev)
 	q->io_modes = VB2_MMAP | VB2_DMABUF | VB2_READ;
 	q->drv_priv = &dev->ts_q;
 	q->ops = &saa7134_empress_qops;
-	q->gfp_flags = GFP_DMA32;
+	q->gfp_flags = GFP_DMA32; // XXXX
 	q->mem_ops = &vb2_dma_sg_memops;
 	q->buf_struct_size = sizeof(struct saa7134_buf);
 	q->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;

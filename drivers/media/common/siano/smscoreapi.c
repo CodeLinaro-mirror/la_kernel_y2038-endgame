@@ -786,7 +786,7 @@ static int smscore_init_ir(struct smscore_device_t *coredev)
 		else {
 			buffer = kmalloc(sizeof(struct sms_msg_data2) +
 						SMS_DMA_ALIGNMENT,
-						GFP_KERNEL | coredev->gfp_buf_flags);
+						GFP_KERNEL | coredev->gfp_buf_flags); // XXXX
 			if (buffer) {
 				struct sms_msg_data2 *msg =
 				(struct sms_msg_data2 *)
@@ -927,7 +927,7 @@ static int smscore_load_firmware_family2(struct smscore_device_t *coredev,
 	}
 
 	/* PAGE_SIZE buffer shall be enough and dma aligned */
-	msg = kmalloc(PAGE_SIZE, GFP_KERNEL | coredev->gfp_buf_flags);
+	msg = kmalloc(PAGE_SIZE, GFP_KERNEL | coredev->gfp_buf_flags); // XXXX
 	if (!msg)
 		return -ENOMEM;
 
