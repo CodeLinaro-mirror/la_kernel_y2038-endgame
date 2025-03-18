@@ -130,8 +130,7 @@ int spl2sw_rx_descs_init(struct spl2sw_common *comm)
 
 	for (i = 0; i < RX_DESC_QUEUE_NUM; i++) {
 		comm->rx_skb_info[i] = kzalloc_objs(*rx_skbinfo,
-						    comm->rx_desc_num[i],
-						    GFP_KERNEL | GFP_DMA);
+						    comm->rx_desc_num[i]);
 		if (!comm->rx_skb_info[i])
 			goto mem_alloc_fail;
 
