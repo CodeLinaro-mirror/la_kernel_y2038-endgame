@@ -779,7 +779,7 @@ static struct Scsi_Host *aha1542_hw_init(const struct scsi_host_template *tpnt,
 	if (aha1542->bios_translation == BIOS_TRANSLATION_25563)
 		shost_printk(KERN_INFO, sh, "Using extended bios translation\n");
 
-	if (dma_set_mask_and_coherent(pdev, DMA_BIT_MASK(24)) < 0)
+	if (dma_set_mask_and_coherent(pdev, DMA_BIT_MASK(24)) < 0) // YYYY
 		goto unregister;
 
 	aha1542->mb = dma_alloc_coherent(pdev,

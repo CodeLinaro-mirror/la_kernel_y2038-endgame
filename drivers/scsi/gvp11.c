@@ -328,7 +328,7 @@ static int gvp11_probe(struct zorro_dev *z, const struct zorro_device_id *ent)
 	default_dma_xfer_mask = ent->driver_data;
 
 	if (dma_set_mask_and_coherent(&z->dev,
-		TO_DMA_MASK(default_dma_xfer_mask))) {
+		TO_DMA_MASK(default_dma_xfer_mask))) { // YYYY
 		dev_warn(&z->dev, "cannot use DMA mask %llx\n",
 			 TO_DMA_MASK(default_dma_xfer_mask));
 		return -ENODEV;

@@ -1247,7 +1247,7 @@ static int sis_chip_create(struct snd_card *card,
 	if (rc)
 		return rc;
 
-	rc = dma_set_mask(&pci->dev, DMA_BIT_MASK(30));
+	rc = dma_set_mask(&pci->dev, DMA_BIT_MASK(30)); // YYYY
 	if (rc < 0) {
 		dev_err(&pci->dev, "architecture does not support 30-bit PCI busmaster DMA");
 		return -ENXIO;
