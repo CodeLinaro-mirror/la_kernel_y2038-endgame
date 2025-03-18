@@ -105,7 +105,7 @@ kalmia_init_and_get_ethernet_addr(struct usbnet *dev, u8 *ethernet_addr)
 	char *usb_buf;
 	int status;
 
-	usb_buf = kmalloc(buflen, GFP_DMA | GFP_KERNEL);
+	usb_buf = kmalloc(buflen, GFP_KERNEL);
 	if (!usb_buf)
 		return -ENOMEM;
 
