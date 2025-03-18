@@ -2049,7 +2049,7 @@ static struct parport *__parport_pc_probe_port(unsigned long int base,
 			return NULL;
 		dev = &pdev->dev;
 
-		ret = dma_coerce_mask_and_coherent(dev, DMA_BIT_MASK(24));
+		ret = dma_coerce_mask_and_coherent(dev, DMA_BIT_MASK(24)); // YYYY
 		if (ret) {
 			dev_err(dev, "Unable to set coherent dma mask: disabling DMA\n");
 			dma = PARPORT_DMA_NONE;

@@ -277,7 +277,7 @@ static int iris_probe(struct platform_device *pdev)
 
 	dma_mask = core->iris_platform_data->dma_mask;
 
-	ret = dma_set_mask_and_coherent(dev, dma_mask);
+	ret = dma_set_mask_and_coherent(dev, dma_mask); // 0xdfffffff
 	if (ret)
 		goto err_vdev_unreg_enc;
 

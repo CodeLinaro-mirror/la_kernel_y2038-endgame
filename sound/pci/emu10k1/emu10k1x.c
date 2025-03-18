@@ -855,7 +855,7 @@ static int snd_emu10k1x_create(struct snd_card *card,
 	if (err < 0)
 		return err;
 
-	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(28)) < 0) {
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(28)) < 0) { // YYYY
 		dev_err(card->dev, "error to set 28bit mask DMA\n");
 		return -ENXIO;
 	}

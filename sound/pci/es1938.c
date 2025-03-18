@@ -1512,7 +1512,7 @@ static int snd_es1938_create(struct snd_card *card,
 	if (err < 0)
 		return err;
         /* check, if we can restrict PCI DMA transfers to 24 bits */
-	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(24))) {
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(24))) { // YYYY
 		dev_err(card->dev,
 			"architecture does not support 24bit PCI busmaster DMA\n");
                 return -ENXIO;

@@ -418,7 +418,7 @@ static int venus_probe(struct platform_device *pdev)
 			return ret;
 	}
 
-	ret = dma_set_mask_and_coherent(dev, core->res->dma_mask);
+	ret = dma_set_mask_and_coherent(dev, core->res->dma_mask); // 0xdfffffff
 	if (ret)
 		goto err_core_put;
 

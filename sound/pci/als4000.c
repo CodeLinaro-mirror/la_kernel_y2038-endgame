@@ -827,7 +827,7 @@ static int __snd_card_als4000_probe(struct pci_dev *pci,
 		return err;
 
 	/* check, if we can restrict PCI DMA transfers to 24 bits */
-	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(24))) {
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(24))) { // YYYY
 		dev_err(&pci->dev, "architecture does not support 24bit PCI busmaster DMA\n");
 		return -ENXIO;
 	}

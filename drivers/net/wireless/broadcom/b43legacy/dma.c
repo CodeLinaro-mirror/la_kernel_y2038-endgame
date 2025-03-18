@@ -759,7 +759,7 @@ int b43legacy_dma_init(struct b43legacy_wldev *dev)
 	enum b43legacy_dmatype type = b43legacy_engine_type(dev);
 	int err;
 
-	err = dma_set_mask_and_coherent(dev->dev->dma_dev, DMA_BIT_MASK(type));
+	err = dma_set_mask_and_coherent(dev->dev->dma_dev, DMA_BIT_MASK(type)); // YYYY may be 30
 	if (err) {
 #ifdef CONFIG_B43LEGACY_PIO
 		b43legacywarn(dev->wl, "DMA for this device not supported. "

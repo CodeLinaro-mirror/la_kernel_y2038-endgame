@@ -716,9 +716,9 @@ sa1111_configure_smc(struct sa1111 *sachip, int sdram, unsigned int drac,
 	 * Chip Specification Update, June 2000, Erratum #7).
 	 */
 	if (sachip->dev->dma_mask)
-		*sachip->dev->dma_mask &= sa1111_dma_mask[drac >> 2];
+		*sachip->dev->dma_mask &= sa1111_dma_mask[drac >> 2]; // YYYY
 
-	sachip->dev->coherent_dma_mask &= sa1111_dma_mask[drac >> 2];
+	sachip->dev->coherent_dma_mask &= sa1111_dma_mask[drac >> 2]; // YYYY
 }
 #endif
 

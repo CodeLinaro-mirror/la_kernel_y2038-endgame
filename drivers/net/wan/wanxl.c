@@ -574,8 +574,8 @@ static int wanxl_pci_init_one(struct pci_dev *pdev,
 	 * and pray pci_alloc_consistent() will use this info. It should
 	 * work on most platforms
 	 */
-	if (dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(28)) ||
-	    dma_set_mask(&pdev->dev, DMA_BIT_MASK(28))) {
+	if (dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(28)) || // YYYY
+	    dma_set_mask(&pdev->dev, DMA_BIT_MASK(28))) { // YYYY
 		pr_err("No usable DMA configuration\n");
 		pci_disable_device(pdev);
 		return -EIO;

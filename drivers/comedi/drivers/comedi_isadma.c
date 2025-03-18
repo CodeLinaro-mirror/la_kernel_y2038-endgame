@@ -178,7 +178,7 @@ struct comedi_isadma *comedi_isadma_alloc(struct comedi_device *dev,
 			goto no_dma;
 		/* Need 24-bit mask for ISA DMA. */
 		if (dma_coerce_mask_and_coherent(dev->class_dev,
-						 DMA_BIT_MASK(24))) {
+						 DMA_BIT_MASK(24))) { // YYYY
 			goto no_dma;
 		}
 		dma->dev = dev->class_dev;

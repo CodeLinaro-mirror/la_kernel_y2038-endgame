@@ -2584,7 +2584,7 @@ static int snd_es1968_create(struct snd_card *card,
 	if (err < 0)
 		return err;
 	/* check, if we can restrict PCI DMA transfers to 28 bits */
-	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(28))) {
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(28))) { // YYYY
 		dev_err(card->dev,
 			"architecture does not support 28bit PCI busmaster DMA\n");
 		return -ENXIO;

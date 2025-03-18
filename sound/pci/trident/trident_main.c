@@ -3475,7 +3475,7 @@ int snd_trident_create(struct snd_card *card,
 	if (err < 0)
 		return err;
 	/* check, if we can restrict PCI DMA transfers to 30 bits */
-	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(30))) {
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(30))) { // YYYY
 		dev_err(card->dev,
 			"architecture does not support 30bit PCI busmaster DMA\n");
 		return -ENXIO;

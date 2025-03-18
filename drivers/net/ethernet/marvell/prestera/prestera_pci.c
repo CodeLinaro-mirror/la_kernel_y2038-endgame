@@ -851,7 +851,7 @@ static int prestera_pci_probe(struct pci_dev *pdev,
 		goto err_pci_request_regions;
 	}
 
-	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(30));
+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(30)); // YYYY
 	if (err) {
 		dev_err(&pdev->dev, "fail to set DMA mask\n");
 		goto err_dma_mask;

@@ -1055,7 +1055,7 @@ int b43_dma_init(struct b43_wldev *dev)
 	enum b43_dmatype type = b43_engine_type(dev);
 	int err;
 
-	err = dma_set_mask_and_coherent(dev->dev->dma_dev, DMA_BIT_MASK(type));
+	err = dma_set_mask_and_coherent(dev->dev->dma_dev, DMA_BIT_MASK(type)); // YYYY may be 30
 	if (err) {
 		b43err(dev->wl, "The machine/kernel does not support "
 		       "the required %u-bit DMA mask\n", type);

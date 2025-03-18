@@ -600,7 +600,7 @@ static int snd_als300_create(struct snd_card *card,
 	if (err < 0)
 		return err;
 
-	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(28))) {
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(28))) { // YYYY
 		dev_err(card->dev, "error setting 28bit DMA mask\n");
 		return -ENXIO;
 	}

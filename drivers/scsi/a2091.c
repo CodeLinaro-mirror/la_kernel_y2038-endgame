@@ -205,7 +205,7 @@ static int a2091_probe(struct zorro_dev *z, const struct zorro_device_id *ent)
 	wd33c93_regs wdregs;
 	struct a2091_hostdata *hdata;
 
-	if (dma_set_mask_and_coherent(&z->dev, DMA_BIT_MASK(24))) {
+	if (dma_set_mask_and_coherent(&z->dev, DMA_BIT_MASK(24))) { // YYYY
 		dev_warn(&z->dev, "cannot use 24 bit DMA\n");
 		return -ENODEV;
 	}

@@ -1563,7 +1563,7 @@ static int _aac_reset_adapter(struct aac_dev *aac, int forced, u8 reset_type)
 
 	if (quirks & AAC_QUIRK_31BIT && !retval) {
 		dmamask = DMA_BIT_MASK(31);
-		retval = dma_set_coherent_mask(&aac->pdev->dev, dmamask);
+		retval = dma_set_coherent_mask(&aac->pdev->dev, dmamask); // YYYY
 	}
 
 	if (retval)

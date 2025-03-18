@@ -124,7 +124,7 @@ static int byt_acpi_probe(struct snd_sof_dev *sdev)
 	sdev->num_cores = chip->cores_num;
 
 	/* DSP DMA can only access low 31 bits of host memory */
-	ret = dma_coerce_mask_and_coherent(sdev->dev, DMA_BIT_MASK(31));
+	ret = dma_coerce_mask_and_coherent(sdev->dev, DMA_BIT_MASK(31)); // YYYY
 	if (ret < 0) {
 		dev_err(sdev->dev, "error: failed to set DMA mask %d\n", ret);
 		return ret;
