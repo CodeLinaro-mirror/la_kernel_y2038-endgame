@@ -61,21 +61,21 @@ static int vfio_ccw_mdev_init_dev(struct vfio_device *vdev)
 		goto out_free_private;
 
 	private->io_region = kmem_cache_zalloc(vfio_ccw_io_region,
-					       GFP_KERNEL | GFP_DMA);
+					       GFP_KERNEL | GFP_DMA); // XXXX
 	if (!private->io_region)
 		goto out_free_cp;
 
-	private->cmd_region = kmem_cache_zalloc(vfio_ccw_cmd_region,
+	private->cmd_region = kmem_cache_zalloc(vfio_ccw_cmd_region, // XXXX
 						GFP_KERNEL | GFP_DMA);
 	if (!private->cmd_region)
 		goto out_free_io;
 
-	private->schib_region = kmem_cache_zalloc(vfio_ccw_schib_region,
+	private->schib_region = kmem_cache_zalloc(vfio_ccw_schib_region, // XXXX
 						  GFP_KERNEL | GFP_DMA);
 	if (!private->schib_region)
 		goto out_free_cmd;
 
-	private->crw_region = kmem_cache_zalloc(vfio_ccw_crw_region,
+	private->crw_region = kmem_cache_zalloc(vfio_ccw_crw_region, // XXXX
 						GFP_KERNEL | GFP_DMA);
 	if (!private->crw_region)
 		goto out_free_schib;

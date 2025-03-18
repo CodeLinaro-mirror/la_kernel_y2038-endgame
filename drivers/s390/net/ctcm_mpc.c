@@ -647,7 +647,7 @@ static void ctcmpc_send_sweep_resp(struct channel *rch)
 
 	CTCM_PR_DEBUG("%s: ch=0x%p id=%s\n", __func__, rch, rch->id);
 
-	sweep_skb = __dev_alloc_skb(MPC_BUFSIZE_DEFAULT, GFP_ATOMIC | GFP_DMA);
+	sweep_skb = __dev_alloc_skb(MPC_BUFSIZE_DEFAULT, GFP_ATOMIC | GFP_DMA); // XXXX
 	if (sweep_skb == NULL) {
 		CTCM_DBF_TEXT_(MPC_ERROR, CTC_DBF_ERROR,
 			"%s(%s): sweep_skb allocation ERROR\n",
@@ -944,7 +944,7 @@ void mpc_channel_action(struct channel *ch, int direction, int action)
 			dev_kfree_skb_any(ch->xid_skb);
 
 		ch->xid_skb = __dev_alloc_skb(MPC_BUFSIZE_DEFAULT,
-					GFP_ATOMIC | GFP_DMA);
+					GFP_ATOMIC | GFP_DMA); // XXXX
 		if (ch->xid_skb == NULL) {
 			CTCM_DBF_TEXT_(MPC_ERROR, CTC_DBF_ERROR,
 				"%s(%s): Couldn't alloc ch xid_skb\n",
@@ -1275,7 +1275,7 @@ struct mpc_group *ctcmpc_init_mpc_group(struct ctcm_priv *priv)
 	fsm_settimer(grp->fsm, &grp->timer);
 
 	grp->xid_skb =
-		 __dev_alloc_skb(MPC_BUFSIZE_DEFAULT, GFP_ATOMIC | GFP_DMA);
+		 __dev_alloc_skb(MPC_BUFSIZE_DEFAULT, GFP_ATOMIC | GFP_DMA); // XXXX
 	if (grp->xid_skb == NULL) {
 		kfree_fsm(grp->fsm);
 		kfree(grp);
@@ -1295,7 +1295,7 @@ struct mpc_group *ctcmpc_init_mpc_group(struct ctcm_priv *priv)
 	skb_put_data(grp->xid_skb, "VTAM", 4);
 
 	grp->rcvd_xid_skb =
-		__dev_alloc_skb(MPC_BUFSIZE_DEFAULT, GFP_ATOMIC|GFP_DMA);
+		__dev_alloc_skb(MPC_BUFSIZE_DEFAULT, GFP_ATOMIC|GFP_DMA); // XXXX
 	if (grp->rcvd_xid_skb == NULL) {
 		kfree_fsm(grp->fsm);
 		dev_kfree_skb(grp->xid_skb);

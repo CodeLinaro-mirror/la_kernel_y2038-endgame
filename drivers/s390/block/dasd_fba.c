@@ -119,7 +119,7 @@ dasd_fba_check_characteristics(struct dasd_device *device)
 	int readonly, rc;
 
 	if (!private) {
-		private = kzalloc(sizeof(*private), GFP_KERNEL | GFP_DMA);
+		private = kzalloc(sizeof(*private), GFP_KERNEL | GFP_DMA); // XXXX
 		if (!private) {
 			dev_warn(&device->cdev->dev,
 				 "Allocating memory for private DASD "
@@ -499,7 +499,7 @@ static struct dasd_ccw_req *dasd_fba_build_cp_regular(
 		dst = bvec_virt(&bv);
 		if (dasd_page_cache) {
 			char *copy = kmem_cache_alloc(dasd_page_cache,
-						      GFP_DMA | __GFP_NOWARN);
+						      GFP_DMA | __GFP_NOWARN); // XXXX
 			if (copy && rq_data_dir(req) == WRITE)
 				memcpy(copy + bv.bv_offset, dst, bv.bv_len);
 			if (copy)

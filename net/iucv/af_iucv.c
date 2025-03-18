@@ -629,7 +629,7 @@ vm_bind:
 		memcpy(iucv->src_user_id, iucv_userid, 8);
 		sk->sk_state = IUCV_BOUND;
 		iucv->transport = AF_IUCV_TRANS_IUCV;
-		sk->sk_allocation |= GFP_DMA;
+		sk->sk_allocation |= GFP_DMA; // XXXX
 		if (!iucv->msglimit)
 			iucv->msglimit = IUCV_QUEUELEN_DEFAULT;
 		goto done_unlock;
@@ -655,7 +655,7 @@ static int iucv_sock_autobind(struct sock *sk)
 
 	memcpy(iucv->src_user_id, iucv_userid, 8);
 	iucv->transport = AF_IUCV_TRANS_IUCV;
-	sk->sk_allocation |= GFP_DMA;
+	sk->sk_allocation |= GFP_DMA; // XXXX
 
 	write_lock_bh(&iucv_sk_list.lock);
 	__iucv_auto_name(iucv);
@@ -1120,7 +1120,7 @@ static struct sk_buff *alloc_iucv_recv_skb(unsigned long len)
 		linear = PAGE_SIZE - headroom;
 	}
 	skb = alloc_skb_with_frags(headroom + linear, len - linear,
-				   0, &err, GFP_ATOMIC | GFP_DMA);
+				   0, &err, GFP_ATOMIC | GFP_DMA); // XXXX
 	WARN_ONCE(!skb,
 		  "alloc of recv iucv skb len=%lu failed with errcode=%d\n",
 		  len, err);
@@ -1643,7 +1643,7 @@ static int iucv_callback_connreq(struct iucv_path *path,
 	niucv = iucv_sk(nsk);
 	iucv_sock_init(nsk, sk);
 	niucv->transport = AF_IUCV_TRANS_IUCV;
-	nsk->sk_allocation |= GFP_DMA;
+	nsk->sk_allocation |= GFP_DMA; // XXXX
 
 	/* Set the new iucv_sock */
 	memcpy(niucv->dst_name, ipuser + 8, 8);
@@ -1719,7 +1719,7 @@ static void iucv_callback_rx(struct iucv_path *path, struct iucv_message *msg)
 	goto out_unlock;
 
 save_message:
-	save_msg = kzalloc(sizeof(struct sock_msg_q), GFP_ATOMIC | GFP_DMA);
+	save_msg = kzalloc(sizeof(struct sock_msg_q), GFP_ATOMIC | GFP_DMA); // XXXX
 	if (!save_msg)
 		goto out_unlock;
 	save_msg->path = path;

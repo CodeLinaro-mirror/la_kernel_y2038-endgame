@@ -482,7 +482,7 @@ tape_alloc_device(void)
 		DBF_EXCEPTION(2, "ti:no mem\n");
 		return ERR_PTR(-ENOMEM);
 	}
-	device->modeset_byte = kmalloc(1, GFP_KERNEL | GFP_DMA);
+	device->modeset_byte = kmalloc(1, GFP_KERNEL | GFP_DMA); // XXXX
 	if (device->modeset_byte == NULL) {
 		DBF_EXCEPTION(2, "ti:no mem\n");
 		kfree(device);
@@ -686,7 +686,7 @@ tape_alloc_request(int cplength, int datasize)
 	/* allocate channel program */
 	if (cplength > 0) {
 		request->cpaddr = kcalloc(cplength, sizeof(struct ccw1),
-					  GFP_ATOMIC | GFP_DMA);
+					  GFP_ATOMIC | GFP_DMA); // XXXX
 		if (request->cpaddr == NULL) {
 			DBF_EXCEPTION(1, "cqra nomem\n");
 			kfree(request);
@@ -695,7 +695,7 @@ tape_alloc_request(int cplength, int datasize)
 	}
 	/* alloc small kernel buffer */
 	if (datasize > 0) {
-		request->cpdata = kzalloc(datasize, GFP_KERNEL | GFP_DMA);
+		request->cpdata = kzalloc(datasize, GFP_KERNEL | GFP_DMA); // XXXX
 		if (request->cpdata == NULL) {
 			DBF_EXCEPTION(1, "cqra nomem\n");
 			kfree(request->cpaddr);

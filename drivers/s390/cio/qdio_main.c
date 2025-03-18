@@ -965,7 +965,7 @@ int qdio_allocate(struct ccw_device *cdev, unsigned int no_input_qs,
 	if (!irq_ptr)
 		return -ENOMEM;
 
-	irq_ptr->ccw = kmalloc(sizeof(*irq_ptr->ccw), GFP_KERNEL | GFP_DMA);
+	irq_ptr->ccw = kmalloc(sizeof(*irq_ptr->ccw), GFP_KERNEL | GFP_DMA); // XXXX
 	if (!irq_ptr->ccw)
 		goto err_ccw;
 
@@ -991,7 +991,7 @@ int qdio_allocate(struct ccw_device *cdev, unsigned int no_input_qs,
 		goto err_chsc;
 
 	/* qdr is used in ccw1.cda which is u32 */
-	irq_ptr->qdr = (struct qdr *) get_zeroed_page(GFP_KERNEL | GFP_DMA);
+	irq_ptr->qdr = (struct qdr *) get_zeroed_page(GFP_KERNEL | GFP_DMA); // XXXX
 	if (!irq_ptr->qdr)
 		goto err_qdr;
 

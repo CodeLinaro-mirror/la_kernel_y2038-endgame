@@ -931,7 +931,7 @@ static int cub_alloc(struct channel_subsystem *css)
 	int i;
 
 	for (i = 0; i < CSS_NUM_CUB_PAGES; i++) {
-		css->cub[i] = (void *)get_zeroed_page(GFP_KERNEL | GFP_DMA);
+		css->cub[i] = (void *)get_zeroed_page(GFP_KERNEL | GFP_DMA); // XXXX
 		if (!css->cub[i])
 			return -ENOMEM;
 	}

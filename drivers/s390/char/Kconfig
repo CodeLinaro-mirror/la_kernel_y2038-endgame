@@ -46,6 +46,7 @@ config SCLP_TTY
 	def_bool y
 	prompt "Support for SCLP line mode terminal"
 	depends on S390 && TTY
+	select SLAB_DMA
 	help
 	  Include support for IBM SCLP line-mode terminals.
 
@@ -154,6 +155,7 @@ config MONWRITER
 	def_tristate m
 	prompt "API for writing z/VM monitor service records"
 	depends on S390
+	select SLAB_DMA
 	help
 	  Character device driver for writing z/VM monitor service records
 

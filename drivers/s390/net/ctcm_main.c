@@ -381,7 +381,7 @@ static void ccw_unit_check(struct channel *ch, __u8 sense)
 int ctcm_ch_alloc_buffer(struct channel *ch)
 {
 	clear_normalized_cda(&ch->ccw[1]);
-	ch->trans_skb = __dev_alloc_skb(ch->max_bufsize, GFP_ATOMIC | GFP_DMA);
+	ch->trans_skb = __dev_alloc_skb(ch->max_bufsize, GFP_ATOMIC | GFP_DMA); // XXXX
 	if (ch->trans_skb == NULL) {
 		CTCM_DBF_TEXT_(ERROR, CTC_DBF_ERROR,
 			"%s(%s): %s trans_skb allocation error",
@@ -515,7 +515,7 @@ static int ctcm_transmit_skb(struct channel *ch, struct sk_buff *skb)
 	 */
 	hi = ((unsigned long)skb_tail_pointer(skb) + LL_HEADER_LENGTH) >> 31;
 	if (hi) {
-		nskb = alloc_skb(skb->len, GFP_ATOMIC | GFP_DMA);
+		nskb = alloc_skb(skb->len, GFP_ATOMIC | GFP_DMA); // XXXX
 		if (!nskb) {
 			refcount_dec(&skb->users);
 			skb_pull(skb, LL_HEADER_LENGTH + 2);
@@ -615,7 +615,7 @@ static void ctcmpc_send_sweep_req(struct channel *rch)
 		grp->sweep_req_pend_num = grp->active_channels[CTCM_READ];
 	}
 
-	sweep_skb = __dev_alloc_skb(MPC_BUFSIZE_DEFAULT, GFP_ATOMIC|GFP_DMA);
+	sweep_skb = __dev_alloc_skb(MPC_BUFSIZE_DEFAULT, GFP_ATOMIC|GFP_DMA); // XXXX
 
 	if (sweep_skb == NULL)	{
 		/* rc = -ENOMEM; */
@@ -699,7 +699,7 @@ static int ctcmpc_transmit_skb(struct channel *ch, struct sk_buff *skb)
 	 */
 	hi = ((unsigned long)skb->tail + TH_HEADER_LENGTH) >> 31;
 	if (hi) {
-		nskb = __dev_alloc_skb(skb->len, GFP_ATOMIC | GFP_DMA);
+		nskb = __dev_alloc_skb(skb->len, GFP_ATOMIC | GFP_DMA); // XXXX
 		if (!nskb) {
 			goto nomem_exit;
 		} else {
@@ -895,7 +895,7 @@ static netdev_tx_t ctcmpc_tx(struct sk_buff *skb, struct net_device *dev)
 		CTCM_D3_DUMP((char *)skb->data, min_t(int, 32, skb->len));
 
 		len =  skb->len + TH_HEADER_LENGTH + PDU_HEADER_LENGTH;
-		newskb = __dev_alloc_skb(len, GFP_ATOMIC | GFP_DMA);
+		newskb = __dev_alloc_skb(len, GFP_ATOMIC | GFP_DMA); // XXXX
 
 		if (!newskb) {
 			CTCM_DBF_TEXT_(MPC_TRACE, CTC_DBF_ERROR,
@@ -1327,7 +1327,7 @@ static int add_channel(struct ccw_device *cdev, enum ctcm_channel_types type,
 	} else
 		ccw_num = 8;
 
-	ch->ccw = kcalloc(ccw_num, sizeof(struct ccw1), GFP_KERNEL | GFP_DMA);
+	ch->ccw = kcalloc(ccw_num, sizeof(struct ccw1), GFP_KERNEL | GFP_DMA); // XXXX
 	if (ch->ccw == NULL)
 					goto nomem_return;
 

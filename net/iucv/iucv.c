@@ -378,7 +378,7 @@ static int iucv_query_maxconn(void)
 	void *param;
 	int ccode;
 
-	param = kzalloc(sizeof(union iucv_param), GFP_KERNEL | GFP_DMA);
+	param = kzalloc(sizeof(union iucv_param), GFP_KERNEL | GFP_DMA); // XXXX
 	if (!param)
 		return -ENOMEM;
 	ccode = __iucv_query_maxconn(param, &max_pathid);
@@ -621,18 +621,18 @@ static int iucv_cpu_prepare(unsigned int cpu)
 {
 	/* Note: GFP_DMA used to get memory below 2G */
 	iucv_irq_data[cpu] = kmalloc_node(sizeof(struct iucv_irq_data),
-			     GFP_KERNEL|GFP_DMA, cpu_to_node(cpu));
+			     GFP_KERNEL|GFP_DMA, cpu_to_node(cpu)); // XXXX
 	if (!iucv_irq_data[cpu])
 		goto out_free;
 
 	/* Allocate parameter blocks. */
 	iucv_param[cpu] = kmalloc_node(sizeof(union iucv_param),
-			  GFP_KERNEL|GFP_DMA, cpu_to_node(cpu));
+			  GFP_KERNEL|GFP_DMA, cpu_to_node(cpu)); // XXXX
 	if (!iucv_param[cpu])
 		goto out_free;
 
 	iucv_param_irq[cpu] = kmalloc_node(sizeof(union iucv_param),
-			  GFP_KERNEL|GFP_DMA, cpu_to_node(cpu));
+			  GFP_KERNEL|GFP_DMA, cpu_to_node(cpu)); // XXXX
 	if (!iucv_param_irq[cpu])
 		goto out_free;
 

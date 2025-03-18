@@ -692,7 +692,7 @@ static struct ccw_device * io_subchannel_allocate_dev(struct subchannel *sch)
 		goto err_cdev;
 	}
 	cdev->private = kzalloc(sizeof(struct ccw_device_private),
-				GFP_KERNEL | GFP_DMA);
+				GFP_KERNEL | GFP_DMA); // XXXX
 	if (!cdev->private) {
 		ret = -ENOMEM;
 		goto err_priv;
@@ -1060,7 +1060,7 @@ static int io_subchannel_probe(struct subchannel *sch)
 	if (rc)
 		goto out_schedule;
 	/* Allocate I/O subchannel private data. */
-	io_priv = kzalloc(sizeof(*io_priv), GFP_KERNEL | GFP_DMA);
+	io_priv = kzalloc(sizeof(*io_priv), GFP_KERNEL | GFP_DMA); // XXXX
 	if (!io_priv)
 		goto out_schedule;
 
@@ -1644,7 +1644,7 @@ struct ccw_device * __init ccw_device_create_console(struct ccw_driver *drv)
 	if (IS_ERR(sch))
 		return ERR_CAST(sch);
 
-	io_priv = kzalloc(sizeof(*io_priv), GFP_KERNEL | GFP_DMA);
+	io_priv = kzalloc(sizeof(*io_priv), GFP_KERNEL | GFP_DMA); // XXXX
 	if (!io_priv)
 		goto err_priv;
 	io_priv->dma_area = dma_alloc_coherent(&sch->dev,

@@ -120,17 +120,17 @@ static struct alias_lcu *_allocate_lcu(struct dasd_uid *uid)
 	lcu = kzalloc(sizeof(*lcu), GFP_KERNEL);
 	if (!lcu)
 		return ERR_PTR(-ENOMEM);
-	lcu->uac = kzalloc(sizeof(*(lcu->uac)), GFP_KERNEL | GFP_DMA);
+	lcu->uac = kzalloc(sizeof(*(lcu->uac)), GFP_KERNEL | GFP_DMA); // XXXX
 	if (!lcu->uac)
 		goto out_err1;
-	lcu->rsu_cqr = kzalloc(sizeof(*lcu->rsu_cqr), GFP_KERNEL | GFP_DMA);
+	lcu->rsu_cqr = kzalloc(sizeof(*lcu->rsu_cqr), GFP_KERNEL | GFP_DMA); // XXXX
 	if (!lcu->rsu_cqr)
 		goto out_err2;
 	lcu->rsu_cqr->cpaddr = kzalloc(sizeof(struct ccw1),
-				       GFP_KERNEL | GFP_DMA);
+				       GFP_KERNEL | GFP_DMA); // XXXX
 	if (!lcu->rsu_cqr->cpaddr)
 		goto out_err3;
-	lcu->rsu_cqr->data = kzalloc(16, GFP_KERNEL | GFP_DMA);
+	lcu->rsu_cqr->data = kzalloc(16, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!lcu->rsu_cqr->data)
 		goto out_err4;
 

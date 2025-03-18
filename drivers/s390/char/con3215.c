@@ -670,12 +670,12 @@ static struct raw3215_info *raw3215_alloc_info(void)
 {
 	struct raw3215_info *info;
 
-	info = kzalloc(sizeof(struct raw3215_info), GFP_KERNEL | GFP_DMA);
+	info = kzalloc(sizeof(struct raw3215_info), GFP_KERNEL | GFP_DMA); // XXXX
 	if (!info)
 		return NULL;
 
-	info->buffer = kzalloc(RAW3215_BUFFER_SIZE, GFP_KERNEL | GFP_DMA);
-	info->inbuf = kzalloc(RAW3215_INBUF_SIZE, GFP_KERNEL | GFP_DMA);
+	info->buffer = kzalloc(RAW3215_BUFFER_SIZE, GFP_KERNEL | GFP_DMA); // XXXX
+	info->inbuf = kzalloc(RAW3215_INBUF_SIZE, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!info->buffer || !info->inbuf) {
 		kfree(info->inbuf);
 		kfree(info->buffer);
@@ -916,7 +916,7 @@ static int __init con3215_init(void)
 	/* allocate 3215 request structures */
 	raw3215_freelist = NULL;
 	for (i = 0; i < NR_3215_REQ; i++) {
-		req = kzalloc(sizeof(struct raw3215_req), GFP_KERNEL | GFP_DMA);
+		req = kzalloc(sizeof(struct raw3215_req), GFP_KERNEL | GFP_DMA); // XXXX
 		if (!req)
 			return -ENOMEM;
 		req->next = raw3215_freelist;

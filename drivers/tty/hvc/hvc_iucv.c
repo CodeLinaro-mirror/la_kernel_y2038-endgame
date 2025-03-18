@@ -159,7 +159,7 @@ static struct iucv_tty_buffer *alloc_tty_buffer(size_t size, gfp_t flags)
 
 	if (size > 0) {
 		bufp->msg.length = MSG_SIZE(size);
-		bufp->mbuf = kmalloc(bufp->msg.length, flags | GFP_DMA);
+		bufp->mbuf = kmalloc(bufp->msg.length, flags | GFP_DMA); // XXXX
 		if (!bufp->mbuf) {
 			mempool_free(bufp, hvc_iucv_mempool);
 			return NULL;
@@ -242,7 +242,7 @@ static ssize_t hvc_iucv_write(struct hvc_iucv_private *priv,
 	if (!rb->mbuf) { /* message not yet received ... */
 		/* allocate mem to store msg data; if no memory is available
 		 * then leave the buffer on the list and re-try later */
-		rb->mbuf = kmalloc(rb->msg.length, GFP_ATOMIC | GFP_DMA);
+		rb->mbuf = kmalloc(rb->msg.length, GFP_ATOMIC | GFP_DMA); // XXXX
 		if (!rb->mbuf)
 			return -ENOMEM;
 

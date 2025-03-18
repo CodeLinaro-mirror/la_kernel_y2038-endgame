@@ -3,6 +3,7 @@ config IUCV
 	depends on S390
 	def_tristate y if S390
 	prompt "IUCV support (S390 - z/VM only)"
+	select SLAB_DMA
 	help
 	  Select this option if you want to use inter-user communication
 	  under VM or VIF. If you run on z/VM, say "Y" to enable a fast

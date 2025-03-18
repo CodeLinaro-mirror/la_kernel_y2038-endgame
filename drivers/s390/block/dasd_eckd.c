@@ -907,7 +907,7 @@ static int dasd_eckd_read_conf_lpm(struct dasd_device *device,
 		ret = -EOPNOTSUPP;
 		goto out_error;
 	}
-	rcd_buf = kzalloc(DASD_ECKD_RCD_DATA_SIZE, GFP_KERNEL | GFP_DMA);
+	rcd_buf = kzalloc(DASD_ECKD_RCD_DATA_SIZE, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!rcd_buf) {
 		ret = -ENOMEM;
 		goto out_error;
@@ -1468,7 +1468,7 @@ static int dasd_eckd_pe_handler(struct dasd_device *device,
 {
 	struct pe_handler_work_data *data;
 
-	data = kzalloc(sizeof(*data), GFP_ATOMIC | GFP_DMA);
+	data = kzalloc(sizeof(*data), GFP_ATOMIC | GFP_DMA); // XXXX
 	if (!data) {
 		if (mutex_trylock(&dasd_pe_handler_mutex)) {
 			data = pe_handler_worker;
@@ -2070,7 +2070,7 @@ dasd_eckd_check_characteristics(struct dasd_device *device)
 			 "The DASD is not operating in multipath mode\n");
 	}
 	if (!private) {
-		private = kzalloc(sizeof(*private), GFP_KERNEL | GFP_DMA);
+		private = kzalloc(sizeof(*private), GFP_KERNEL | GFP_DMA); // XXXX
 		if (!private) {
 			dev_warn(&device->cdev->dev,
 				 "Allocating memory for private DASD data "
@@ -3492,7 +3492,7 @@ static int dasd_eckd_check_device_format(struct dasd_device *base,
 	trkcount = cdata->expect.stop_unit - cdata->expect.start_unit + 1;
 	fmt_buffer_size = trkcount * rpt_max * sizeof(struct eckd_count);
 
-	fmt_buffer = kzalloc(fmt_buffer_size, GFP_KERNEL | GFP_DMA);
+	fmt_buffer = kzalloc(fmt_buffer_size, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!fmt_buffer)
 		return -ENOMEM;
 
@@ -4065,7 +4065,7 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_single(
 		dst = bvec_virt(&bv);
 		if (dasd_page_cache) {
 			char *copy = kmem_cache_alloc(dasd_page_cache,
-						      GFP_DMA | __GFP_NOWARN);
+						      GFP_DMA | __GFP_NOWARN); // XXXX
 			if (copy && rq_data_dir(req) == WRITE)
 				memcpy(copy + bv.bv_offset, dst, bv.bv_len);
 			if (copy)
@@ -5397,8 +5397,8 @@ static int dasd_symm_io(struct dasd_device *device, void __user *argp)
 		goto out;
 	}
 	/* alloc I/O data area */
-	psf_data = kzalloc(usrparm.psf_data_len, GFP_KERNEL | GFP_DMA);
-	rssd_result = kzalloc(usrparm.rssd_result_len, GFP_KERNEL | GFP_DMA);
+	psf_data = kzalloc(usrparm.psf_data_len, GFP_KERNEL | GFP_DMA); // XXXX
+	rssd_result = kzalloc(usrparm.rssd_result_len, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!psf_data || !rssd_result) {
 		rc = -ENOMEM;
 		goto out_free;
@@ -5951,7 +5951,7 @@ static int dasd_eckd_query_host_access(struct dasd_device *device,
 				"Could not allocate read message buffer request");
 		return PTR_ERR(cqr);
 	}
-	host_access = kzalloc(sizeof(*host_access), GFP_KERNEL | GFP_DMA);
+	host_access = kzalloc(sizeof(*host_access), GFP_KERNEL | GFP_DMA); // XXXX
 	if (!host_access) {
 		dasd_sfree_request(cqr, device);
 		DBF_EVENT_DEVID(DBF_WARNING, device->cdev, "%s",
@@ -6913,17 +6913,17 @@ dasd_eckd_init(void)
 
 	ASCEBC(dasd_eckd_discipline.ebcname, 4);
 	dasd_reserve_req = kmalloc(sizeof(*dasd_reserve_req),
-				   GFP_KERNEL | GFP_DMA);
+				   GFP_KERNEL | GFP_DMA); // XXXX
 	if (!dasd_reserve_req)
 		return -ENOMEM;
 	dasd_vol_info_req = kmalloc(sizeof(*dasd_vol_info_req),
-				    GFP_KERNEL | GFP_DMA);
+				    GFP_KERNEL | GFP_DMA); // XXXX
 	if (!dasd_vol_info_req) {
 		kfree(dasd_reserve_req);
 		return -ENOMEM;
 	}
 	pe_handler_worker = kmalloc(sizeof(*pe_handler_worker),
-				    GFP_KERNEL | GFP_DMA);
+				    GFP_KERNEL | GFP_DMA); // XXXX
 	if (!pe_handler_worker) {
 		kfree(dasd_reserve_req);
 		kfree(dasd_vol_info_req);

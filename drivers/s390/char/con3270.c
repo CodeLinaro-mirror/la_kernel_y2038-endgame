@@ -982,7 +982,7 @@ static void tty3270_resize(struct raw3270_view *view,
 	}
 
 	prompt_sz = tty3270_input_size(new_cols);
-	new_input = kzalloc(prompt_sz, GFP_KERNEL | GFP_DMA);
+	new_input = kzalloc(prompt_sz, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!new_input)
 		return;
 	new_prompt = kzalloc(prompt_sz, GFP_KERNEL);
@@ -1128,7 +1128,7 @@ tty3270_create_view(int index, struct tty3270 **newtp)
 	}
 
 	prompt_sz = tty3270_input_size(tp->view.cols);
-	tp->input = kzalloc(prompt_sz, GFP_KERNEL | GFP_DMA);
+	tp->input = kzalloc(prompt_sz, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!tp->input) {
 		rc = -ENOMEM;
 		goto out_free_converted_line;

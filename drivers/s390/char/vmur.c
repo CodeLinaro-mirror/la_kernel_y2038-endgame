@@ -226,7 +226,7 @@ static struct ccw1 *alloc_chan_prog(const char __user *ubuf, int rec_count,
 	 * records plus a NOP.
 	 */
 	cpa = kcalloc(rec_count + 1, sizeof(struct ccw1),
-		      GFP_KERNEL | GFP_DMA);
+		      GFP_KERNEL | GFP_DMA); // XXXX
 	if (!cpa)
 		return ERR_PTR(-ENOMEM);
 
@@ -234,7 +234,7 @@ static struct ccw1 *alloc_chan_prog(const char __user *ubuf, int rec_count,
 		cpa[i].cmd_code = WRITE_CCW_CMD;
 		cpa[i].flags = CCW_FLAG_CC | CCW_FLAG_SLI;
 		cpa[i].count = reclen;
-		kbuf = kmalloc(reclen, GFP_KERNEL | GFP_DMA);
+		kbuf = kmalloc(reclen, GFP_KERNEL | GFP_DMA); // XXXX
 		if (!kbuf) {
 			free_chan_prog(cpa);
 			return ERR_PTR(-ENOMEM);
@@ -606,7 +606,7 @@ static int verify_uri_device(struct urdev *urd)
 	char *buf;
 	int rc;
 
-	fcb = kmalloc(sizeof(*fcb), GFP_KERNEL | GFP_DMA);
+	fcb = kmalloc(sizeof(*fcb), GFP_KERNEL | GFP_DMA); // XXXX
 	if (!fcb)
 		return -ENOMEM;
 
@@ -665,7 +665,7 @@ static int get_uri_file_reclen(struct urdev *urd)
 	struct file_control_block *fcb;
 	int rc;
 
-	fcb = kmalloc(sizeof(*fcb), GFP_KERNEL | GFP_DMA);
+	fcb = kmalloc(sizeof(*fcb), GFP_KERNEL | GFP_DMA); // XXXX
 	if (!fcb)
 		return -ENOMEM;
 	rc = diag_read_next_file_info(fcb, 0);
