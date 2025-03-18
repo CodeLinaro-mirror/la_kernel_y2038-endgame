@@ -46,7 +46,7 @@ static struct cdnsp_segment *cdnsp_segment_alloc(struct cdnsp_device *pdev,
 	}
 
 	if (max_packet) {
-		seg->bounce_buf = kzalloc(max_packet, flags | GFP_DMA);
+		seg->bounce_buf = kzalloc(max_packet, flags | GFP_DMA); // XXXX
 		if (!seg->bounce_buf)
 			goto free_dma;
 	}

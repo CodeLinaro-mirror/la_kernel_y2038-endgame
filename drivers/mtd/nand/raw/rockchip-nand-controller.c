@@ -1061,7 +1061,7 @@ static int rk_nfc_attach_chip(struct nand_chip *chip)
 	new_page_len = mtd->writesize + mtd->oobsize;
 	if (nfc->page_buf && new_page_len > nfc->page_buf_size) {
 		buf = krealloc(nfc->page_buf, new_page_len,
-			       GFP_KERNEL | GFP_DMA);
+			       GFP_KERNEL | GFP_DMA); // XXXX
 		if (!buf)
 			return -ENOMEM;
 		nfc->page_buf = buf;
@@ -1071,7 +1071,7 @@ static int rk_nfc_attach_chip(struct nand_chip *chip)
 	new_oob_len = ecc->steps * NFC_MAX_OOB_PER_STEP;
 	if (nfc->oob_buf && new_oob_len > nfc->oob_buf_size) {
 		buf = krealloc(nfc->oob_buf, new_oob_len,
-			       GFP_KERNEL | GFP_DMA);
+			       GFP_KERNEL | GFP_DMA); // XXXX
 		if (!buf) {
 			kfree(nfc->page_buf);
 			nfc->page_buf = NULL;
@@ -1082,14 +1082,14 @@ static int rk_nfc_attach_chip(struct nand_chip *chip)
 	}
 
 	if (!nfc->page_buf) {
-		nfc->page_buf = kzalloc(new_page_len, GFP_KERNEL | GFP_DMA);
+		nfc->page_buf = kzalloc(new_page_len, GFP_KERNEL | GFP_DMA); // XXXX
 		if (!nfc->page_buf)
 			return -ENOMEM;
 		nfc->page_buf_size = new_page_len;
 	}
 
 	if (!nfc->oob_buf) {
-		nfc->oob_buf = kzalloc(new_oob_len, GFP_KERNEL | GFP_DMA);
+		nfc->oob_buf = kzalloc(new_oob_len, GFP_KERNEL | GFP_DMA); // XXXX
 		if (!nfc->oob_buf) {
 			kfree(nfc->page_buf);
 			nfc->page_buf = NULL;

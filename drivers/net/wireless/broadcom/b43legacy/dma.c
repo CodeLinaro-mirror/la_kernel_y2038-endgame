@@ -435,7 +435,7 @@ static int setup_rx_descbuffer(struct b43legacy_dmaring *ring,
 				 ring->rx_buffersize, 0);
 	if (b43legacy_dma_mapping_error(ring, dmaaddr, ring->rx_buffersize, 0)) {
 		/* ugh. try to realloc in zone_dma */
-		gfp_flags |= GFP_DMA;
+		gfp_flags |= GFP_DMA; // XXXX
 
 		dev_kfree_skb_any(skb);
 
@@ -642,7 +642,7 @@ struct b43legacy_dmaring *b43legacy_setup_dmaring(struct b43legacy_wldev *dev,
 			kfree(ring->txhdr_cache);
 			ring->txhdr_cache = kcalloc(nr_slots,
 					sizeof(struct b43legacy_txhdr_fw3),
-					GFP_KERNEL | GFP_DMA);
+					GFP_KERNEL | GFP_DMA); // XXXX
 			if (!ring->txhdr_cache)
 				goto err_kfree_meta;
 
@@ -979,7 +979,7 @@ static int dma_tx_fragment(struct b43legacy_dmaring *ring,
 	meta->dmaaddr = map_descbuffer(ring, skb->data, skb->len, 1);
 	/* create a bounce buffer in zone_dma on mapping failure. */
 	if (b43legacy_dma_mapping_error(ring, meta->dmaaddr, skb->len, 1)) {
-		bounce_skb = alloc_skb(skb->len, GFP_KERNEL | GFP_DMA);
+		bounce_skb = alloc_skb(skb->len, GFP_KERNEL | GFP_DMA); // XXXX
 		if (!bounce_skb) {
 			ring->current_slot = old_top_slot;
 			ring->used_slots = old_used_slots;

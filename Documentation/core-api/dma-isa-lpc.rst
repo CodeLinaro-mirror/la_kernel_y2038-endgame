@@ -38,9 +38,6 @@ The DMA-able address space is the lowest 16 MB of _physical_ memory.
 Also the transfer block may not cross page boundaries (which are 64
 or 128 KiB depending on which channel you use).
 
-In order to allocate a piece of memory that satisfies all these
-requirements you pass the flag GFP_DMA to kmalloc.
-
 Unfortunately the memory available for ISA DMA is scarce so unless you
 allocate the memory during boot-up it's a good idea to also pass
 __GFP_RETRY_MAYFAIL and __GFP_NOWARN to make the allocator try a bit harder.

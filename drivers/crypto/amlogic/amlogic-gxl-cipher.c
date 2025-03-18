@@ -119,7 +119,7 @@ static int meson_cipher(struct skcipher_request *areq)
 	 * The 2 first structures store key
 	 * The third stores IV
 	 */
-	bkeyiv = kzalloc(48, GFP_KERNEL | GFP_DMA);
+	bkeyiv = kzalloc(48, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!bkeyiv)
 		return -ENOMEM;
 
@@ -363,7 +363,7 @@ int meson_aes_setkey(struct crypto_skcipher *tfm, const u8 *key,
 	}
 	kfree_sensitive(op->key);
 	op->keylen = keylen;
-	op->key = kmemdup(key, keylen, GFP_KERNEL | GFP_DMA);
+	op->key = kmemdup(key, keylen, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!op->key)
 		return -ENOMEM;
 

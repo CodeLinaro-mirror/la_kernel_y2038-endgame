@@ -501,7 +501,7 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
 
 	byte_for_channel = DIV_ROUND_UP(ch->scan_type.realbits +
 					ch->scan_type.shift, 8);
-	outdata = kmalloc(byte_for_channel, GFP_DMA | GFP_KERNEL);
+	outdata = kmalloc(byte_for_channel, GFP_DMA | GFP_KERNEL); // XXXX
 	if (!outdata)
 		return -ENOMEM;
 

@@ -171,8 +171,8 @@ query_segment_type (struct dcss_segment *seg)
 	struct qout64 *qout;
 	struct qin64 *qin;
 
-	qin = kmalloc(sizeof(*qin), GFP_KERNEL | GFP_DMA);
-	qout = kmalloc(sizeof(*qout), GFP_KERNEL | GFP_DMA);
+	qin = kmalloc(sizeof(*qin), GFP_KERNEL | GFP_DMA); // XXXX
+	qout = kmalloc(sizeof(*qout), GFP_KERNEL | GFP_DMA); // XXXX
 	if ((qin == NULL) || (qout == NULL)) {
 		rc = -ENOMEM;
 		goto out_free;
@@ -302,7 +302,7 @@ __segment_load (char *name, int do_nonshared, unsigned long *addr, unsigned long
 
 	start_addr = end_addr = 0;
 	segtype = -1;
-	seg = kmalloc(sizeof(*seg), GFP_KERNEL | GFP_DMA);
+	seg = kmalloc(sizeof(*seg), GFP_KERNEL | GFP_DMA); // XXXX
 	if (seg == NULL) {
 		rc = -ENOMEM;
 		goto out;

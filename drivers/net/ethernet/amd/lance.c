@@ -551,19 +551,19 @@ static int __init lance_probe1(struct net_device *dev, int ioaddr, int irq, int 
 	dev->base_addr = ioaddr;
 	/* Make certain the data structures used by the LANCE are aligned and DMAble. */
 
-	lp = kzalloc(sizeof(*lp), GFP_DMA | GFP_KERNEL);
+	lp = kzalloc(sizeof(*lp), GFP_DMA | GFP_KERNEL); // XXXX
 	if (!lp)
 		return -ENOMEM;
 	if (lance_debug > 6) printk(" (#0x%05lx)", (unsigned long)lp);
 	dev->ml_priv = lp;
 	lp->name = chipname;
 	lp->rx_buffs = (unsigned long)kmalloc_array(RX_RING_SIZE, PKT_BUF_SZ,
-						    GFP_DMA | GFP_KERNEL);
+						    GFP_DMA | GFP_KERNEL); // XXXX
 	if (!lp->rx_buffs)
 		goto out_lp;
 	if (lance_need_isa_bounce_buffers) {
 		lp->tx_bounce_buffs = kmalloc_array(TX_RING_SIZE, PKT_BUF_SZ,
-						    GFP_DMA | GFP_KERNEL);
+						    GFP_DMA | GFP_KERNEL); // XXXX
 		if (!lp->tx_bounce_buffs)
 			goto out_rx;
 	} else
@@ -876,12 +876,12 @@ lance_init_ring(struct net_device *dev, gfp_t gfp)
 		struct sk_buff *skb;
 		void *rx_buff;
 
-		skb = alloc_skb(PKT_BUF_SZ, GFP_DMA | gfp);
+		skb = alloc_skb(PKT_BUF_SZ, GFP_DMA | gfp); // XXXX
 		lp->rx_skbuff[i] = skb;
 		if (skb)
 			rx_buff = skb->data;
 		else
-			rx_buff = kmalloc(PKT_BUF_SZ, GFP_DMA | gfp);
+			rx_buff = kmalloc(PKT_BUF_SZ, GFP_DMA | gfp); // XXXX
 		if (!rx_buff)
 			lp->rx_ring[i].base = 0;
 		else

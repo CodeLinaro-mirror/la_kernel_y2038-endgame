@@ -665,8 +665,8 @@ static int dmatest_func(void *data)
 	src->gfp_flags = GFP_KERNEL;
 	dst->gfp_flags = GFP_KERNEL;
 	if (params->nobounce) {
-		src->gfp_flags = GFP_DMA;
-		dst->gfp_flags = GFP_DMA;
+		src->gfp_flags = GFP_DMA; // XXXX
+		dst->gfp_flags = GFP_DMA; // XXXX
 	}
 
 	if (dmatest_alloc_test_data(src, buf_size, align) < 0)

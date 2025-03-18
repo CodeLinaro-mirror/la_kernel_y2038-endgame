@@ -1193,7 +1193,7 @@ static int rnandc_alloc_dma_buf(struct rnandc *rnandc,
 	if (!rnandc->buf) {
 		rnandc->buf_sz = max_len;
 		rnandc->buf = devm_kmalloc(rnandc->dev, max_len,
-					   GFP_KERNEL | GFP_DMA);
+					   GFP_KERNEL | GFP_DMA); // XXXX
 		if (!rnandc->buf)
 			return -ENOMEM;
 	}

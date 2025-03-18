@@ -1101,7 +1101,7 @@ static void pl011_dma_startup(struct uart_amba_port *uap)
 	if (!uap->dmatx.chan)
 		return;
 
-	uap->dmatx.buf = kmalloc(PL011_DMA_BUFFER_SIZE, GFP_KERNEL | __GFP_DMA);
+	uap->dmatx.buf = kmalloc(PL011_DMA_BUFFER_SIZE, GFP_KERNEL | __GFP_DMA); // XXXX
 	if (!uap->dmatx.buf) {
 		uap->port.fifosize = uap->fifosize;
 		return;

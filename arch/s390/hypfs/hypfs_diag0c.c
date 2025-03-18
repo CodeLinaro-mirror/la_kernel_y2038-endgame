@@ -41,7 +41,7 @@ static void *diag0c_store(unsigned int *count)
 		goto fail_unlock_cpus;
 	/* Note: Diag 0c needs 8 byte alignment and real storage */
 	diag0c_data = kzalloc(struct_size(diag0c_data, entry, cpu_count),
-			      GFP_KERNEL | GFP_DMA);
+			      GFP_KERNEL | GFP_DMA); // XXXX
 	if (!diag0c_data)
 		goto fail_kfree_cpu_vec;
 	i = 0;

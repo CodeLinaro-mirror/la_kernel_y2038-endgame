@@ -39,7 +39,7 @@ static void *vb2_vmalloc_alloc(struct vb2_buffer *vb, struct device *dev,
 {
 	struct vb2_vmalloc_buf *buf;
 
-	buf = kzalloc(sizeof(*buf), GFP_KERNEL | vb->vb2_queue->gfp_flags);
+	buf = kzalloc(sizeof(*buf), GFP_KERNEL | vb->vb2_queue->gfp_flags); // XXXX
 	if (!buf)
 		return ERR_PTR(-ENOMEM);
 

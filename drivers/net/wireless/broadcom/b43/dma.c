@@ -609,7 +609,7 @@ static int setup_rx_descbuffer(struct b43_dmaring *ring,
 
 		dev_kfree_skb_any(skb);
 
-		skb = __dev_alloc_skb(ring->rx_buffersize, gfp_flags);
+		skb = __dev_alloc_skb(ring->rx_buffersize, gfp_flags); // XXXX
 		if (unlikely(!skb))
 			return -ENOMEM;
 		b43_poison_rx_buffer(ring, skb);
@@ -906,7 +906,7 @@ struct b43_dmaring *b43_setup_dmaring(struct b43_wldev *dev,
 			kfree(ring->txhdr_cache);
 			ring->txhdr_cache = kcalloc(ring->nr_slots / TX_SLOTS_PER_FRAME,
 						    b43_txhdr_size(dev),
-						    GFP_KERNEL | GFP_DMA);
+						    GFP_KERNEL | GFP_DMA); // XXXX
 			if (!ring->txhdr_cache)
 				goto err_kfree_meta;
 
@@ -1247,7 +1247,7 @@ static int dma_tx_fragment(struct b43_dmaring *ring,
 	/* create a bounce buffer in zone_dma on mapping failure. */
 	if (b43_dma_mapping_error(ring, meta->dmaaddr, skb->len, 1)) {
 		priv_info->bouncebuffer = kmemdup(skb->data, skb->len,
-						  GFP_ATOMIC | GFP_DMA);
+						  GFP_ATOMIC | GFP_DMA); // XXXX
 		if (!priv_info->bouncebuffer) {
 			ring->current_slot = old_top_slot;
 			ring->used_slots = old_used_slots;

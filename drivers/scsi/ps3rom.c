@@ -352,7 +352,7 @@ static int ps3rom_probe(struct ps3_system_bus_device *_dev)
 	}
 
 	dev->bounce_size = BOUNCE_SIZE;
-	dev->bounce_buf = kmalloc(BOUNCE_SIZE, GFP_DMA);
+	dev->bounce_buf = kmalloc(BOUNCE_SIZE, GFP_DMA); // XXXX
 	if (!dev->bounce_buf)
 		return -ENOMEM;
 

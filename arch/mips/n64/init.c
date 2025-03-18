@@ -119,7 +119,7 @@ static int __init n64_platform_init(void)
 	platform_device_register_simple("n64joy", -1, res, 1);
 
 	/* The framebuffer needs 64-byte alignment */
-	orig = kzalloc(W * H * 2 + 63, GFP_DMA | GFP_KERNEL);
+	orig = kzalloc(W * H * 2 + 63, GFP_DMA | GFP_KERNEL); // XXXX
 	if (!orig)
 		return -ENOMEM;
 	phys = virt_to_phys(orig);

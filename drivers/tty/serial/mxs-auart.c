@@ -907,7 +907,7 @@ static int mxs_auart_dma_init(struct mxs_auart_port *s)
 		goto err_out;
 	s->rx_dma_chan = chan;
 
-	s->rx_dma_buf = kzalloc(UART_XMIT_SIZE, GFP_KERNEL | GFP_DMA);
+	s->rx_dma_buf = kzalloc(UART_XMIT_SIZE, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!s->rx_dma_buf)
 		goto err_out;
 
@@ -917,7 +917,7 @@ static int mxs_auart_dma_init(struct mxs_auart_port *s)
 		goto err_out;
 	s->tx_dma_chan = chan;
 
-	s->tx_dma_buf = kzalloc(UART_XMIT_SIZE, GFP_KERNEL | GFP_DMA);
+	s->tx_dma_buf = kzalloc(UART_XMIT_SIZE, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!s->tx_dma_buf)
 		goto err_out;
 

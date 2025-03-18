@@ -1355,12 +1355,12 @@ static int gpmi_alloc_dma_buffer(struct gpmi_nand_data *this)
 	 *     is called after.
 	 */
 	this->data_buffer_dma = kzalloc(mtd->writesize ?: PAGE_SIZE,
-					GFP_DMA | GFP_KERNEL);
+					GFP_DMA | GFP_KERNEL); // XXXX
 	if (this->data_buffer_dma == NULL)
 		goto error_alloc;
 
 	this->auxiliary_virt = dma_alloc_coherent(dev, geo->auxiliary_size,
-					&this->auxiliary_phys, GFP_DMA);
+					&this->auxiliary_phys, GFP_DMA); // XXXX
 	if (!this->auxiliary_virt)
 		goto error_alloc;
 

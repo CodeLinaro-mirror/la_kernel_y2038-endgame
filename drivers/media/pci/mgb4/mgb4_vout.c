@@ -805,7 +805,7 @@ struct mgb4_vout_dev *mgb4_vout_create(struct mgb4_dev *mgbdev, int id)
 	voutdev->queue.buf_struct_size = sizeof(struct mgb4_frame_buffer);
 	voutdev->queue.ops = &queue_ops;
 	voutdev->queue.mem_ops = &vb2_dma_sg_memops;
-	voutdev->queue.gfp_flags = GFP_DMA32;
+	voutdev->queue.gfp_flags = GFP_DMA32; // XXXX
 	voutdev->queue.timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
 	voutdev->queue.min_queued_buffers = 2;
 	voutdev->queue.drv_priv = voutdev;

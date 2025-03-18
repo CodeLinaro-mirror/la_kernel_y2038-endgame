@@ -1728,7 +1728,7 @@ static int _regmap_raw_write_impl(struct regmap *map, unsigned int reg,
 				return -ENOMEM;
 
 			async->work_buf = kzalloc(map->format.buf_size,
-						  GFP_KERNEL | GFP_DMA);
+						  GFP_KERNEL | GFP_DMA); // XXXX
 			if (!async->work_buf) {
 				kfree(async);
 				return -ENOMEM;

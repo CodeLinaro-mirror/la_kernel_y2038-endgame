@@ -175,12 +175,6 @@ hardware.  It consists of flags which may be bitwise-ored together:
 				transfers.
   PARPORT_MODE_ECP		The hardware can assist with ECP
 				transfers.
-  PARPORT_MODE_DMA		The hardware can use DMA, so you might
-				want to pass ISA DMA-able memory
-				(i.e. memory allocated using the
-				GFP_DMA flag with kmalloc) to the
-				low-level driver in order to take
-				advantage of it.
   ============================= ===============================================
 
 There may be other flags in ``modes`` as well.

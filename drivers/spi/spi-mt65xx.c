@@ -1064,7 +1064,7 @@ static int mtk_spi_mem_exec_op(struct spi_mem *mem,
 
 	tx_size = max_t(u32, tx_size, 32);
 
-	tx_tmp_buf = kzalloc(tx_size, GFP_KERNEL | GFP_DMA);
+	tx_tmp_buf = kzalloc(tx_size, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!tx_tmp_buf) {
 		mdata->use_spimem = false;
 		return -ENOMEM;
@@ -1100,7 +1100,7 @@ static int mtk_spi_mem_exec_op(struct spi_mem *mem,
 	if (op->data.dir == SPI_MEM_DATA_IN) {
 		if (!IS_ALIGNED((size_t)op->data.buf.in, 4)) {
 			rx_tmp_buf = kzalloc(op->data.nbytes,
-					     GFP_KERNEL | GFP_DMA);
+					     GFP_KERNEL | GFP_DMA); // XXXX
 			if (!rx_tmp_buf) {
 				ret = -ENOMEM;
 				goto unmap_tx_dma;

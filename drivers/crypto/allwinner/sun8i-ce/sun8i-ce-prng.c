@@ -42,7 +42,7 @@ int sun8i_ce_prng_seed(struct crypto_rng *tfm, const u8 *seed,
 		ctx->seed = NULL;
 	}
 	if (!ctx->seed)
-		ctx->seed = kmalloc(slen, GFP_KERNEL | GFP_DMA);
+		ctx->seed = kmalloc(slen, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!ctx->seed)
 		return -ENOMEM;
 
@@ -80,7 +80,7 @@ int sun8i_ce_prng_generate(struct crypto_rng *tfm, const u8 *src,
 	todo = dlen + ctx->slen + PRNG_DATA_SIZE * 2;
 	todo -= todo % PRNG_DATA_SIZE;
 
-	d = kzalloc(todo, GFP_KERNEL | GFP_DMA);
+	d = kzalloc(todo, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!d) {
 		err = -ENOMEM;
 		goto err_mem;

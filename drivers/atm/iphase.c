@@ -1989,7 +1989,7 @@ static int tx_init(struct atm_dev *dev)
        	{
 	    struct cpcs_trailer *cpcs;
  
-       	    cpcs = kmalloc(sizeof(*cpcs), GFP_KERNEL|GFP_DMA);
+       	    cpcs = kmalloc(sizeof(*cpcs), GFP_KERNEL|GFP_DMA); // XXXX
             if(!cpcs) {                
 		printk(KERN_ERR DEV_LABEL " couldn't get freepage\n"); 
 		goto err_free_tx_bufs;

@@ -19,7 +19,7 @@ static int sigmadsp_write_i2c(void *control_data,
 	uint8_t *buf;
 	int ret;
 
-	buf = kzalloc(2 + len, GFP_KERNEL | GFP_DMA);
+	buf = kzalloc(2 + len, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!buf)
 		return -ENOMEM;
 

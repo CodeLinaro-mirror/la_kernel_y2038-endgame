@@ -3108,7 +3108,7 @@ static int vdev_init(struct bttv *btv, struct video_device *vfd,
 	q->io_modes = VB2_MMAP | VB2_USERPTR | VB2_READ | VB2_DMABUF;
 	q->mem_ops = &vb2_dma_sg_memops;
 	q->drv_priv = btv;
-	q->gfp_flags = __GFP_DMA32;
+	q->gfp_flags = __GFP_DMA32; // XXXX
 	q->buf_struct_size = sizeof(struct bttv_buffer);
 	q->lock = &btv->lock;
 	q->min_queued_buffers = 2;

@@ -359,7 +359,7 @@ static struct mmc_test_mem *mmc_test_alloc_mem(unsigned long min_sz,
 	while (max_page_cnt) {
 		struct page *page;
 		unsigned int order;
-		gfp_t flags = GFP_KERNEL | GFP_DMA | __GFP_NOWARN |
+		gfp_t flags = GFP_KERNEL | GFP_DMA | __GFP_NOWARN | // XXXX
 				__GFP_NORETRY;
 
 		order = get_order(max_seg_page_cnt << PAGE_SHIFT);

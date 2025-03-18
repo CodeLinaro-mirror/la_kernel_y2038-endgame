@@ -286,7 +286,7 @@ static int cx18_stream_init(struct cx18 *cx, int type)
 		s->vidq.mem_ops = &vb2_vmalloc_memops;
 		s->vidq.timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
 		s->vidq.min_queued_buffers = 2;
-		s->vidq.gfp_flags = GFP_DMA32;
+		s->vidq.gfp_flags = GFP_DMA32; // XXXX
 		s->vidq.dev = &cx->pci_dev->dev;
 		s->vidq.lock = &cx->serialize_lock;
 

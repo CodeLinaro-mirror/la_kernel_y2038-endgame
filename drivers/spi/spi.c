@@ -1398,7 +1398,7 @@ static int spi_map_msg(struct spi_controller *ctlr, struct spi_message *msg)
 
 		if (max_tx) {
 			tmp = krealloc(ctlr->dummy_tx, max_tx,
-				       GFP_KERNEL | GFP_DMA | __GFP_ZERO);
+				       GFP_KERNEL | GFP_DMA | __GFP_ZERO); // XXXX
 			if (!tmp)
 				return -ENOMEM;
 			ctlr->dummy_tx = tmp;
@@ -1406,7 +1406,7 @@ static int spi_map_msg(struct spi_controller *ctlr, struct spi_message *msg)
 
 		if (max_rx) {
 			tmp = krealloc(ctlr->dummy_rx, max_rx,
-				       GFP_KERNEL | GFP_DMA);
+				       GFP_KERNEL | GFP_DMA); // XXXX
 			if (!tmp)
 				return -ENOMEM;
 			ctlr->dummy_rx = tmp;
@@ -4851,7 +4851,7 @@ int spi_write_then_read(struct spi_device *spi,
 	 */
 	if ((n_tx + n_rx) > SPI_BUFSIZ || !mutex_trylock(&lock)) {
 		local_buf = kmalloc(max((unsigned)SPI_BUFSIZ, n_tx + n_rx),
-				    GFP_KERNEL | GFP_DMA);
+				    GFP_KERNEL | GFP_DMA); // XXXX
 		if (!local_buf)
 			return -ENOMEM;
 	} else {

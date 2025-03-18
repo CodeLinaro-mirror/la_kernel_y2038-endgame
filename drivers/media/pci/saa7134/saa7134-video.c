@@ -1706,7 +1706,7 @@ int saa7134_video_init1(struct saa7134_dev *dev)
 		q->io_modes |= VB2_USERPTR;
 	q->drv_priv = &dev->video_q;
 	q->ops = &vb2_qops;
-	q->gfp_flags = GFP_DMA32;
+	q->gfp_flags = GFP_DMA32; // XXXX
 	q->mem_ops = &vb2_dma_sg_memops;
 	q->buf_struct_size = sizeof(struct saa7134_buf);
 	q->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
@@ -1725,7 +1725,7 @@ int saa7134_video_init1(struct saa7134_dev *dev)
 		q->io_modes |= VB2_USERPTR;
 	q->drv_priv = &dev->vbi_q;
 	q->ops = &saa7134_vbi_qops;
-	q->gfp_flags = GFP_DMA32;
+	q->gfp_flags = GFP_DMA32; // XXXX
 	q->mem_ops = &vb2_dma_sg_memops;
 	q->buf_struct_size = sizeof(struct saa7134_buf);
 	q->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;

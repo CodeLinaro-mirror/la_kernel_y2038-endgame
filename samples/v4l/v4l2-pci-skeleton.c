@@ -832,7 +832,7 @@ static int skeleton_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	 * Since this driver can only do 32-bit DMA we must make sure that
 	 * the vb2 core will allocate the buffers in 32-bit DMA memory.
 	 */
-	q->gfp_flags = GFP_DMA32;
+	q->gfp_flags = GFP_DMA32; // XXXX
 	ret = vb2_queue_init(q);
 	if (ret)
 		goto free_hdl;

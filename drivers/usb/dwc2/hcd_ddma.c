@@ -69,7 +69,7 @@ static int dwc2_desc_list_alloc(struct dwc2_hsotg *hsotg, struct dwc2_qh *qh,
 	qh->desc_list_sz = sizeof(struct dwc2_dma_desc) *
 						dwc2_max_desc_num(qh);
 
-	qh->desc_list = kmem_cache_zalloc(desc_cache, flags | GFP_DMA);
+	qh->desc_list = kmem_cache_zalloc(desc_cache, flags | GFP_DMA); // XXXX
 	if (!qh->desc_list)
 		return -ENOMEM;
 
@@ -117,7 +117,7 @@ static int dwc2_frame_list_alloc(struct dwc2_hsotg *hsotg, gfp_t mem_flags)
 		return 0;
 
 	hsotg->frame_list_sz = 4 * FRLISTEN_64_SIZE;
-	hsotg->frame_list = kzalloc(hsotg->frame_list_sz, GFP_ATOMIC | GFP_DMA);
+	hsotg->frame_list = kzalloc(hsotg->frame_list_sz, GFP_ATOMIC | GFP_DMA); // XXXX
 	if (!hsotg->frame_list)
 		return -ENOMEM;
 

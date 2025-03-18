@@ -2329,7 +2329,7 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index,
 
 	descriptor = &rx->ring_cpu_ptr[index];
 	buffer_info = &rx->buffer_info[index];
-	skb = __netdev_alloc_skb(netdev, buffer_length, gfp);
+	skb = __netdev_alloc_skb(netdev, buffer_length, gfp); // XXXX
 	if (!skb)
 		return -ENOMEM;
 	dma_ptr = dma_map_single(dev, skb->data, buffer_length, DMA_FROM_DEVICE);

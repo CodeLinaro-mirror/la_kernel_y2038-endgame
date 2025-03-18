@@ -413,7 +413,7 @@ u32 au1xxx_dbdma_ring_alloc(u32 chanid, int entries)
 	 * slabs of memory.
 	 */
 	desc_base = (u32)kmalloc_array(entries, sizeof(au1x_ddma_desc_t),
-				       GFP_KERNEL|GFP_DMA);
+				       GFP_KERNEL|GFP_DMA); // XXXXX
 	if (desc_base == 0)
 		return 0;
 

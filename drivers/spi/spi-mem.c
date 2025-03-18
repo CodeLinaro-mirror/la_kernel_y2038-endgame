@@ -443,7 +443,7 @@ int spi_mem_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
 	 * we're guaranteed that this buffer is DMA-able, as required by the
 	 * SPI layer.
 	 */
-	tmpbuf = kzalloc(tmpbufsize, GFP_KERNEL | GFP_DMA);
+	tmpbuf = kzalloc(tmpbufsize, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!tmpbuf)
 		return -ENOMEM;
 

@@ -623,7 +623,7 @@ static int mtk_iommu_v1_probe(struct platform_device *pdev)
 
 	/* Protect memory. HW will access here while translation fault.*/
 	protect = devm_kcalloc(dev, 2, MTK_PROTECT_PA_ALIGN,
-			       GFP_KERNEL | GFP_DMA);
+			       GFP_KERNEL | GFP_DMA); // XXXX
 	if (!protect)
 		return -ENOMEM;
 	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);

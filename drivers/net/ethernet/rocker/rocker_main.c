@@ -193,7 +193,7 @@ static int rocker_dma_test_offset(const struct rocker *rocker,
 	int err;
 
 	alloc = kzalloc(ROCKER_TEST_DMA_BUF_SIZE * 2 + offset,
-			GFP_KERNEL | GFP_DMA);
+			GFP_KERNEL | GFP_DMA); // XXXX
 	if (!alloc)
 		return -ENOMEM;
 	buf = alloc + offset;
@@ -499,7 +499,7 @@ static int rocker_dma_ring_bufs_alloc(const struct rocker *rocker,
 		dma_addr_t dma_handle;
 		char *buf;
 
-		buf = kzalloc(buf_size, GFP_KERNEL | GFP_DMA);
+		buf = kzalloc(buf_size, GFP_KERNEL | GFP_DMA); // XXXX
 		if (!buf) {
 			err = -ENOMEM;
 			goto rollback;

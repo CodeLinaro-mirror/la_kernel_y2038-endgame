@@ -161,7 +161,7 @@ static int prestera_sdma_rx_skb_alloc(struct prestera_sdma *sdma,
 	struct sk_buff *skb;
 	dma_addr_t dma;
 
-	skb = alloc_skb(PRESTERA_SDMA_BUFF_SIZE_MAX, GFP_DMA | GFP_ATOMIC);
+	skb = alloc_skb(PRESTERA_SDMA_BUFF_SIZE_MAX, GFP_DMA | GFP_ATOMIC); // XXXX
 	if (!skb)
 		return -ENOMEM;
 
