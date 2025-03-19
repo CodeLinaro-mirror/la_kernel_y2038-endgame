@@ -1168,6 +1168,18 @@ config ZONE_DMA
 	bool "Support DMA zone" if ARCH_HAS_ZONE_DMA_SET
 	default y if ARM64 || X86
 
+config DMA_MASK_24
+	bool
+
+config DMA_MASK_28
+	bool
+
+config DMA_MASK_30
+	bool
+
+config DMA_MASK_31
+	bool
+
 config ZONE_DMA32
 	bool "Support DMA32 zone" if ARCH_HAS_ZONE_DMA_SET
 	depends on !X86_32

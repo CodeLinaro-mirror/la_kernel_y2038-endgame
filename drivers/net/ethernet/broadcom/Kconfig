@@ -22,6 +22,8 @@ if NET_VENDOR_BROADCOM
 config B44
 	tristate "Broadcom 440x/47xx ethernet support"
 	depends on SSB_POSSIBLE && HAS_DMA
+	depends on BCM47XX || ZONE_DMA || COMPILE_TEST
+	select DMA_MASK_30 if ZONE_DMA
 	select SSB
 	select MII
 	select PHYLIB
@@ -125,6 +127,7 @@ config TIGON3
 	depends on PTP_1588_CLOCK_OPTIONAL
 	select CRC32
 	select PHYLIB
+	select DMA_MASK_30 if ZONE_DMA # only ASIC_REV_57766
 	help
 	  This driver supports Broadcom Tigon3 based gigabit Ethernet cards.
 

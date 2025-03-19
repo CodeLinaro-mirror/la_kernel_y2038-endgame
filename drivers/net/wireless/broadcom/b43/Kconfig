@@ -2,7 +2,9 @@
 config B43
 	tristate "Broadcom 43xx wireless support (mac80211 stack)"
 	depends on (BCMA_POSSIBLE || SSB_POSSIBLE) && MAC80211 && HAS_DMA
+	depends on ZONE_DMA
 	select BCMA if B43_BCMA
+	select DMA_MASK_30
 	select SSB if B43_SSB
 	select FW_LOADER
 	select CORDIC

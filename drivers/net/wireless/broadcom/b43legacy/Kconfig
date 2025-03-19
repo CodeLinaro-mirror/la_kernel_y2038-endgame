@@ -75,6 +75,7 @@ config B43LEGACY_DMA_AND_PIO_MODE
 	bool "DMA + PIO"
 	select B43LEGACY_DMA
 	select B43LEGACY_PIO
+	select DMA_MASK_30 if ZONE_DMA
 	help
 	  Include both, Direct Memory Access (DMA) and Programmed I/O (PIO)
 	  data transfer modes. The mode actually used is selectable through
@@ -86,6 +87,7 @@ config B43LEGACY_DMA_AND_PIO_MODE
 config B43LEGACY_DMA_MODE
 	bool "DMA (Direct Memory Access) only"
 	select B43LEGACY_DMA
+	select DMA_MASK_30 if ZONE_DMA
 	help
 	  Only include Direct Memory Access (DMA).
 	  This reduces the size of the driver module, by omitting the PIO code.

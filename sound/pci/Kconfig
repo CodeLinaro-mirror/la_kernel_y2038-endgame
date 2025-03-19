@@ -23,6 +23,7 @@ config SND_AD1889
 
 config SND_ALS300
 	tristate "Avance Logic ALS300/ALS300+"
+	select DMA_MASK_28
 	select SND_PCM
 	select SND_AC97_CODEC
 	select SND_OPL3_LIB
@@ -37,6 +38,7 @@ config SND_ALS4000
 	tristate "Avance Logic ALS4000"
 	depends on ISA_DMA_API
 	depends on HAS_IOPORT
+	select DMA_MASK_24
 	select SND_OPL3_LIB
 	select SND_MPU401_UART
 	select SND_PCM
@@ -50,6 +52,7 @@ config SND_ALS4000
 
 config SND_ALI5451
 	tristate "ALi M5451 PCI Audio Controller"
+	select DMA_MASK_31
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
 	depends on ZONE_DMA && HAS_IOPORT
@@ -155,6 +158,7 @@ config SND_AW2
 
 config SND_AZT3328
 	tristate "Aztech AZF3328 / PCI168"
+	select DMA_MASK_24
 	select SND_OPL3_LIB
 	select SND_MPU401_UART
 	select SND_PCM
@@ -211,6 +215,7 @@ config SND_CA0106
 config SND_CMIPCI
 	tristate "C-Media 8338, 8738, 8768, 8770"
 	depends on HAS_IOPORT
+	select DMA_MASK_24
 	select SND_OPL3_LIB
 	select SND_MPU401_UART
 	select SND_PCM
@@ -289,6 +294,7 @@ config SND_CS5530
 	tristate "CS5530 Audio"
 	depends on ISA_DMA_API && (X86_32 || COMPILE_TEST)
 	depends on !M68K
+	select DMA_MASK_24
 	select SND_SB16_DSP
 	help
 	  Say Y here to include support for audio on Cyrix/NatSemi CS5530 chips.
@@ -473,6 +479,7 @@ config SND_INDIGODJX
 
 config SND_EMU10K1
 	tristate "Emu10k1 (SB Live!, Audigy, E-MU APS/0404/1010/1212/1616/1820)"
+	select DMA_MASK_28
 	select FW_LOADER
 	select SND_HWDEP
 	select SND_RAWMIDI
@@ -535,6 +542,7 @@ config SND_ENS1371
 
 config SND_ES1938
 	tristate "ESS ES1938/1946/1969 (Solo-1)"
+	select DMA_MASK_24
 	select SND_OPL3_LIB
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
@@ -548,6 +556,7 @@ config SND_ES1938
 
 config SND_ES1968
 	tristate "ESS ES1968/1978 (Maestro-1/2/2E)"
+	select DMA_MASK_28
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
 	depends on ZONE_DMA && HAS_IOPORT
@@ -635,6 +644,7 @@ config SND_HDSPM
 
 config SND_ICE1712
 	tristate "ICEnsemble ICE1712 (Envy24)"
+	select DMA_MASK_28
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
 	select BITREVERSE
@@ -726,6 +736,7 @@ config SND_LX6464ES
 
 config SND_MAESTRO3
 	tristate "ESS Allegro/Maestro3"
+	select DMA_MASK_28
 	select SND_AC97_CODEC
 	depends on ZONE_DMA && HAS_IOPORT
 	help
@@ -835,6 +846,7 @@ config SND_SE6X
 config SND_SIS7019
 	tristate "SiS 7019 Audio Accelerator"
 	depends on X86_32
+	select DMA_MASK_30
 	select SND_AC97_CODEC
 	depends on ZONE_DMA
 	help
@@ -845,6 +857,7 @@ config SND_SIS7019
 
 config SND_SONICVIBES
 	tristate "S3 SonicVibes"
+	select DMA_MASK_24
 	select SND_OPL3_LIB
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
@@ -858,6 +871,7 @@ config SND_SONICVIBES
 
 config SND_TRIDENT
 	tristate "Trident 4D-Wave DX/NX; SiS 7018"
+	select DMA_MASK_30
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
 	depends on ZONE_DMA && HAS_IOPORT

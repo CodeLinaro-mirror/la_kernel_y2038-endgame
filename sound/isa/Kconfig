@@ -24,6 +24,7 @@ menuconfig SND_ISA
 	depends on ISA || COMPILE_TEST
 	depends on ISA_DMA_API
 	depends on HAS_IOPORT
+	select DMA_MASK_24
 	default y
 	help
 	  Support for sound devices connected via the ISA bus.

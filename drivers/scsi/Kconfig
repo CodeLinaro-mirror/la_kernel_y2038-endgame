@@ -421,6 +421,7 @@ config SCSI_AHA152X
 config SCSI_AHA1542
 	tristate "Adaptec AHA1542 support"
 	depends on ISA && SCSI && ISA_DMA_API
+	select DMA_MASK_24
 	help
 	  This is support for a SCSI host adapter.  It is explained in section
 	  3.4 of the SCSI-HOWTO, available from
@@ -448,6 +449,7 @@ config SCSI_AHA1740
 config SCSI_AACRAID
 	tristate "Adaptec AACRAID support"
 	depends on SCSI && PCI
+	select DMA_MASK_31 if ZONE_DMA
 	help
 	  This driver supports a variety of Dell, HP, Adaptec, IBM and
 	  ICP storage products. For a list of supported products, refer
@@ -477,6 +479,7 @@ config SCSI_ADVANSYS
 	depends on SCSI
 	depends on (ISA || EISA || PCI) && HAS_IOPORT
 	depends on ISA_DMA_API || !ISA
+	select DMA_MASK_24
 	help
 	  This is a driver for all SCSI host adapters manufactured by
 	  AdvanSys. It is documented in the kernel source in
@@ -1305,6 +1308,7 @@ config A3000_SCSI
 config A2091_SCSI
 	tristate "A2091/A590 WD33C93A support"
 	depends on ZORRO && SCSI
+	select DMA_MASK_24
 	help
 	  If you have a Commodore A2091 SCSI controller, say Y. Otherwise,
 	  say N.
@@ -1315,6 +1319,7 @@ config A2091_SCSI
 config GVP11_SCSI
 	tristate "GVP Series II WD33C93A support"
 	depends on ZORRO && SCSI
+	select DMA_MASK_24
 	help
 	  If you have a Great Valley Products Series II SCSI controller,
 	  answer Y. Also say Y if you have a later model of GVP SCSI
