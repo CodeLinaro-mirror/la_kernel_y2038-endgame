@@ -2089,7 +2089,7 @@ static int et131x_init_recv(struct et131x_adapter *adapter)
 
 	/* Setup each RFD */
 	for (rfdct = 0; rfdct < rx_ring->num_rfd; rfdct++) {
-		rfd = kzalloc_obj(*rfd, GFP_ATOMIC | GFP_DMA); // XXXX
+		rfd = kzalloc_obj(*rfd);
 		if (!rfd)
 			return -ENOMEM;
 
@@ -2357,8 +2357,7 @@ static int et131x_tx_dma_memory_alloc(struct et131x_adapter *adapter)
 	struct tx_ring *tx_ring = &adapter->tx_ring;
 
 	/* Allocate memory for the TCB's (Transmit Control Block) */
-	tx_ring->tcb_ring = kzalloc_objs(struct tcb, NUM_TCB,
-					 GFP_KERNEL | GFP_DMA); // XXXX
+	tx_ring->tcb_ring = kzalloc_objs(struct tcb, NUM_TCB);
 	if (!tx_ring->tcb_ring)
 		return -ENOMEM;
 
