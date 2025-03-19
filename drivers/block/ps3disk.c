@@ -426,7 +426,7 @@ static int ps3disk_probe(struct ps3_system_bus_device *_dev)
 	spin_lock_init(&priv->lock);
 
 	dev->bounce_size = BOUNCE_SIZE;
-	dev->bounce_buf = kmalloc(BOUNCE_SIZE, GFP_DMA); // XXXX
+	dev->bounce_buf = kmalloc(BOUNCE_SIZE, GFP_KERNEL);
 	if (!dev->bounce_buf) {
 		error = -ENOMEM;
 		goto fail_free_priv;
