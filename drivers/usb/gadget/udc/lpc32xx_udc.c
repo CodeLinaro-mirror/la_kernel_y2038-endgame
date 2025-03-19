@@ -922,7 +922,7 @@ static struct lpc32xx_usbd_dd_gad *udc_dd_alloc(struct lpc32xx_udc *udc)
 	dma_addr_t			dma;
 	struct lpc32xx_usbd_dd_gad	*dd;
 
-	dd = dma_pool_alloc(udc->dd_cache, GFP_ATOMIC | GFP_DMA, &dma);
+	dd = dma_pool_alloc(udc->dd_cache, GFP_ATOMIC, &dma);
 	if (dd)
 		dd->this_dma = dma;
 
@@ -3079,8 +3079,7 @@ static int lpc32xx_udc_probe(struct platform_device *pdev)
 	isp1301_udc_configure(udc);
 	/* Allocate memory for the UDCA */
 	udc->udca_v_base = dma_alloc_coherent(&pdev->dev, UDCA_BUFF_SIZE,
-					      &dma_handle,
-					      (GFP_KERNEL | GFP_DMA));
+					      &dma_handle, GFP_KERNEL);
 	if (!udc->udca_v_base) {
 		dev_err(udc->dev, "error getting UDCA region\n");
 		retval = -ENOMEM;

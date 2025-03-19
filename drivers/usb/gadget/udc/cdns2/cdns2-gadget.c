@@ -127,8 +127,7 @@ static int cdns2_alloc_tr_segment(struct cdns2_endpoint *pep)
 
 	if (!ring->trbs) {
 		ring->trbs = dma_pool_alloc(pdev->eps_dma_pool,
-					    GFP_DMA32 | GFP_ATOMIC,
-					    &ring->dma);
+					    GFP_ATOMIC, &ring->dma);
 		if (!ring->trbs)
 			return -ENOMEM;
 	}
@@ -2341,7 +2340,7 @@ static int cdns2_gadget_start(struct cdns2_device *pdev)
 
 	/* Allocate memory for setup packet buffer. */
 	buf = dma_alloc_coherent(pdev->dev, 8, &pdev->ep0_preq.request.dma,
-				 GFP_DMA);
+				 GFP_KERNEL);
 	pdev->ep0_preq.request.buf = buf;
 
 	if (!pdev->ep0_preq.request.buf) {

@@ -141,7 +141,7 @@ static int vpu_core_restore(struct vpu_core *core)
 
 static int __vpu_alloc_dma(struct device *dev, struct vpu_buffer *buf)
 {
-	gfp_t gfp = GFP_KERNEL | GFP_DMA32;
+	gfp_t gfp = GFP_KERNEL;
 
 	if (!buf->length)
 		return 0;

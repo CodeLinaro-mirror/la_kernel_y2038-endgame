@@ -601,8 +601,7 @@ static int tegra_bpmp_get_firmware_tag_old(struct tegra_bpmp *bpmp, char *tag,
 	if (size != TAG_SZ)
 		return -EINVAL;
 
-	virt = dma_alloc_coherent(bpmp->dev, TAG_SZ, &phys,
-				  GFP_KERNEL | GFP_DMA32);
+	virt = dma_alloc_coherent(bpmp->dev, TAG_SZ, &phys, GFP_KERNEL);
 	if (!virt)
 		return -ENOMEM;
 

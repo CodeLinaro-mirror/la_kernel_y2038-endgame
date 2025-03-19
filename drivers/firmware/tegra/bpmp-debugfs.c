@@ -598,12 +598,12 @@ static int debugfs_show(struct seq_file *m, void *p)
 		return -ENOENT;
 
 	namevirt = dma_alloc_coherent(bpmp->dev, namesize, &namephys,
-				      GFP_KERNEL | GFP_DMA32);
+				      GFP_KERNEL);
 	if (!namevirt)
 		return -ENOMEM;
 
 	datavirt = dma_alloc_coherent(bpmp->dev, datasize, &dataphys,
-				      GFP_KERNEL | GFP_DMA32);
+				      GFP_KERNEL);
 	if (!datavirt) {
 		err = -ENOMEM;
 		goto free_namebuf;
@@ -649,12 +649,12 @@ static ssize_t debugfs_store(struct file *file, const char __user *buf,
 		return -ENOENT;
 
 	namevirt = dma_alloc_coherent(bpmp->dev, namesize, &namephys,
-				      GFP_KERNEL | GFP_DMA32);
+				      GFP_KERNEL);
 	if (!namevirt)
 		return -ENOMEM;
 
 	datavirt = dma_alloc_coherent(bpmp->dev, datasize, &dataphys,
-				      GFP_KERNEL | GFP_DMA32);
+				      GFP_KERNEL);
 	if (!datavirt) {
 		err = -ENOMEM;
 		goto free_namebuf;
@@ -748,8 +748,7 @@ static int bpmp_populate_debugfs_shmem(struct tegra_bpmp *bpmp)
 	void *virt;
 	int err;
 
-	virt = dma_alloc_coherent(bpmp->dev, sz, &phys,
-				  GFP_KERNEL | GFP_DMA32);
+	virt = dma_alloc_coherent(bpmp->dev, sz, &phys, GFP_KERNEL);
 	if (!virt)
 		return -ENOMEM;
 

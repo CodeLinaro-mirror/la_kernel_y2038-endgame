@@ -53,9 +53,10 @@ minimum allocation length may be as big as a page, so you should
 consolidate your requests for coherent memory as much as possible.
 The simplest way to do that is to use the dma_pool calls (see below).
 
-The flag parameter allows the caller to specify the ``GFP_`` flags (see
-kmalloc()) for the allocation (the implementation may ignore flags that affect
-the location of the returned memory, like GFP_DMA).
+The flag parameter allows the caller to specify the ``GFP_`` flags
+(see kmalloc()) for the allocation.  The memory zone (``GFP_DMA``,
+``GFP_DMA32`` or ``GFM_HIGHMEM``) is ignored and instead picked based
+on the device dma_mask.
 
 ::
 
