@@ -113,7 +113,8 @@ config PCI200SYN
 
 config WANXL
 	tristate "SBE Inc. wanXL support"
-	depends on HDLC && PCI
+	depends on HDLC && PCI && ZONE_DMA
+	select DMA_MASK_28
 	help
 	  Driver for wanXL PCI cards by SBE Inc.
 

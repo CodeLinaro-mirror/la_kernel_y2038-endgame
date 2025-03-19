@@ -66,6 +66,7 @@ config PARPORT_SERIAL
 config PARPORT_PC_FIFO
 	bool "Use FIFO/DMA if available"
 	depends on PARPORT_PC
+	select DMA_MASK_24 if ZONE_DMA && ISA_DMA_API
 	help
 	  Many parallel port chipsets provide hardware that can speed up
 	  printing. Say Y here if you want to take advantage of that.

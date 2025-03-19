@@ -40,6 +40,8 @@ if SND_SOC_SOF_ACPI
 config SND_SOC_SOF_BAYTRAIL
 	tristate "SOF support for Baytrail, Braswell and Cherrytrail"
 	default SND_SOC_SOF_ACPI
+	depends on ZONE_DMA
+	select DMA_MASK_31
 	select SND_SOC_SOF_IPC3
 	select SND_SOC_SOF_INTEL_COMMON
 	select SND_SOC_SOF_INTEL_ATOM_HIFI_EP
@@ -61,6 +63,8 @@ config SND_SOC_SOF_BAYTRAIL
 config SND_SOC_SOF_BROADWELL
 	tristate "SOF support for Broadwell"
 	default SND_SOC_SOF_ACPI
+	depends on ZONE_DMA
+	select DMA_MASK_31
 	select SND_SOC_SOF_IPC3
 	select SND_SOC_SOF_INTEL_COMMON
 	select SND_SOC_SOF_INTEL_HIFI_EP_IPC
@@ -86,6 +90,8 @@ if SND_SOC_SOF_PCI
 config SND_SOC_SOF_MERRIFIELD
 	tristate "SOF support for Tangier/Merrifield"
 	default SND_SOC_SOF_PCI
+	depends on ZONE_DMA
+	select DMA_MASK_31
 	select SND_SOC_SOF_PCI_DEV
 	select SND_SOC_SOF_IPC3
 	select SND_SOC_SOF_INTEL_ATOM_HIFI_EP

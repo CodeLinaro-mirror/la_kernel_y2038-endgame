@@ -22,6 +22,7 @@ source "drivers/block/rnull/Kconfig"
 config BLK_DEV_FD
 	tristate "Normal floppy disk support"
 	depends on ARCH_MAY_HAVE_PC_FDC
+	select DMA_MASK_24
 	help
 	  If you want to use the floppy disk drive(s) of your PC under Linux,
 	  say Y. Information about this driver, especially important for IBM

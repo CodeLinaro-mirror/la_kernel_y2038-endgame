@@ -1349,6 +1349,7 @@ config COMEDI_DAS08
 
 config COMEDI_ISADMA
 	tristate
+	select DMA_MASK_24
 
 config COMEDI_NI_LABPC
 	tristate

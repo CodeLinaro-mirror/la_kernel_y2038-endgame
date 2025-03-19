@@ -18,7 +18,9 @@ config PRESTERA
 config PRESTERA_PCI
 	tristate "PCI interface driver for Marvell Prestera Switch ASICs family"
 	depends on PCI && HAS_IOMEM && PRESTERA
+	depends on ZONE_DMA
 	default PRESTERA
+	select DMA_MASK_30
 	help
 	  This is implementation of PCI interface support for Marvell Prestera
 	  Switch ASICs family.

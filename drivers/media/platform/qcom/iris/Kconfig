@@ -3,6 +3,8 @@ config VIDEO_QCOM_IRIS
 	depends on VIDEO_DEV
 	depends on ARCH_QCOM || COMPILE_TEST
 	depends on QCOM_SMEM || QCOM_SMEM=n
+	depends on ZONE_DMA
+	select DMA_MASK_31 # technically 0xdfffffff
 	select V4L2_MEM2MEM_DEV
 	select QCOM_MDT_LOADER
 	select QCOM_SCM
