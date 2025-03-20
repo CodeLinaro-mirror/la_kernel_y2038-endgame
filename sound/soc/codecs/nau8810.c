@@ -205,7 +205,7 @@ static int nau8810_eq_put(struct snd_kcontrol *kcontrol,
 	__be16 *tmp;
 
 	data = kmemdup(ucontrol->value.bytes.data,
-		params->max, GFP_KERNEL | GFP_DMA);
+		params->max, GFP_KERNEL | GFP_SPI_DMA);
 	if (!data)
 		return -ENOMEM;
 

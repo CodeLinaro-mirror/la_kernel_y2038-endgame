@@ -87,7 +87,7 @@ static struct ssp_msg *ssp_create_msg(u8 cmd, u16 len, u16 opt, u32 data)
 	h.data = cpu_to_le32(data);
 
 	msg->buffer = kzalloc(SSP_HEADER_SIZE_ALIGNED + len,
-			      GFP_KERNEL | GFP_DMA);
+			      GFP_KERNEL | GFP_SPI_DMA);
 	if (!msg->buffer) {
 		kfree(msg);
 		return NULL;
@@ -375,7 +375,7 @@ int ssp_irq_msg(struct ssp_data *data)
 			 * but the slave should not send such ones - it is to
 			 * check but let's handle this
 			 */
-			buffer = kmalloc(length, GFP_KERNEL | GFP_DMA);
+			buffer = kmalloc(length, GFP_KERNEL | GFP_SPI_DMA);
 			if (!buffer) {
 				ret = -ENOMEM;
 				goto _unlock;
@@ -420,7 +420,7 @@ _unlock:
 		mutex_unlock(&data->pending_lock);
 		break;
 	case SSP_HUB2AP_WRITE:
-		buffer = kzalloc(length, GFP_KERNEL | GFP_DMA);
+		buffer = kzalloc(length, GFP_KERNEL | GFP_SPI_DMA);
 		if (!buffer)
 			return -ENOMEM;
 

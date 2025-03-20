@@ -67,7 +67,7 @@ static int rmi_spi_manage_pools(struct rmi_spi_xport *rmi_spi, int len)
 
 	tmp = rmi_spi->rx_buf;
 	buf = devm_kcalloc(&spi->dev, buf_size, 2,
-				GFP_KERNEL | GFP_DMA);
+				GFP_KERNEL | GFP_SPI_DMA);
 	if (!buf)
 		return -ENOMEM;
 

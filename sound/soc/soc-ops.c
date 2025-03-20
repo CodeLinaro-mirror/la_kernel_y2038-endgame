@@ -573,7 +573,7 @@ int snd_soc_bytes_put(struct snd_kcontrol *kcontrol,
 	len = params->num_regs * component->val_bytes;
 
 	void *data __free(kfree) = kmemdup(ucontrol->value.bytes.data, len,
-					   GFP_KERNEL | GFP_DMA);
+					   GFP_KERNEL | GFP_SPI_DMA);
 	if (!data)
 		return -ENOMEM;
 

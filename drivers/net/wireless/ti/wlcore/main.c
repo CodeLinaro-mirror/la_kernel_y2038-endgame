@@ -6453,7 +6453,7 @@ struct ieee80211_hw *wlcore_alloc_hw(size_t priv_size, u32 aggr_buf_size,
 	}
 
 	wl->mbox_size = mbox_size;
-	wl->mbox = kmalloc(wl->mbox_size, GFP_KERNEL | GFP_DMA);
+	wl->mbox = kmalloc(wl->mbox_size, GFP_KERNEL | GFP_SPI_DMA);
 	if (!wl->mbox) {
 		ret = -ENOMEM;
 		goto err_fwlog;

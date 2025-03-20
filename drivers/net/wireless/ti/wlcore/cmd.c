@@ -172,7 +172,7 @@ int wlcore_cmd_wait_for_event_or_timeout(struct wl1271 *wl,
 
 	*timeout = false;
 
-	events_vector = kmalloc(sizeof(*events_vector), GFP_KERNEL | GFP_DMA);
+	events_vector = kmalloc(sizeof(*events_vector), GFP_KERNEL);
 	if (!events_vector)
 		return -ENOMEM;
 

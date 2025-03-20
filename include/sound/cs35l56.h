@@ -382,7 +382,7 @@ static inline int cs35l56_init_config_for_spi(struct cs35l56_base *cs35l56,
 {
 	cs35l56->spi_payload_buf = devm_kzalloc(&spi->dev,
 						sizeof(*cs35l56->spi_payload_buf),
-						GFP_KERNEL | GFP_DMA);
+						GFP_KERNEL | GFP_SPI_DMA);
 	if (!cs35l56->spi_payload_buf)
 		return -ENOMEM;
 

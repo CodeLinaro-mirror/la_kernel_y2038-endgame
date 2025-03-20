@@ -150,7 +150,7 @@ static int tas571x_reg_write_multiword(struct i2c_client *client,
 	int ret;
 	size_t send_size = 1 + len * sizeof(uint32_t);
 
-	buf = kzalloc(send_size, GFP_KERNEL | GFP_DMA);
+	buf = kzalloc(send_size, GFP_KERNEL | GFP_SPI_DMA);
 	if (!buf)
 		return -ENOMEM;
 	buf[0] = reg;
@@ -183,7 +183,7 @@ static int tas571x_reg_read_multiword(struct i2c_client *client,
 	unsigned int recv_size = len * sizeof(uint32_t);
 	int ret;
 
-	recv_buf = kzalloc(recv_size, GFP_KERNEL | GFP_DMA);
+	recv_buf = kzalloc(recv_size, GFP_KERNEL | GFP_DMA); // XXXX
 	if (!recv_buf)
 		return -ENOMEM;
 

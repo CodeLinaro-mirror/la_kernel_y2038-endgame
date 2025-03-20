@@ -1373,7 +1373,7 @@ int wm_adsp_compr_set_params(struct snd_soc_component *component,
 		  compr->size.fragment_size, compr->size.fragments);
 
 	size = wm_adsp_compr_frag_words(compr) * sizeof(*compr->raw_buf);
-	compr->raw_buf = kmalloc(size, GFP_DMA | GFP_KERNEL);
+	compr->raw_buf = kmalloc(size, GFP_SPI_DMA | GFP_KERNEL);
 	if (!compr->raw_buf)
 		return -ENOMEM;
 

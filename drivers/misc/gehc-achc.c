@@ -225,7 +225,7 @@ static int ezport_flash_transfer(struct spi_device *spi, u32 address,
 	if (ret < 0)
 		return ret;
 
-	command = kmalloc(4, GFP_KERNEL | GFP_DMA);
+	command = kmalloc(4, GFP_KERNEL | GFP_SPI_DMA);
 	if (!command)
 		return -ENOMEM;
 
@@ -255,7 +255,7 @@ static int ezport_flash_compare(struct spi_device *spi, u32 address,
 	u8 *buffer;
 	int ret;
 
-	buffer = kmalloc(payload_size + 5, GFP_KERNEL | GFP_DMA);
+	buffer = kmalloc(payload_size + 5, GFP_KERNEL | GFP_SPI_DMA);
 	if (!buffer)
 		return -ENOMEM;
 

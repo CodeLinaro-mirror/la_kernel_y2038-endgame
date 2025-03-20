@@ -4739,7 +4739,7 @@ int madera_eq_coeff_put(struct snd_kcontrol *kcontrol,
 
 	len = params->num_regs * regmap_get_val_bytes(madera->regmap);
 
-	data = kmemdup(ucontrol->value.bytes.data, len, GFP_KERNEL | GFP_DMA);
+	data = kmemdup(ucontrol->value.bytes.data, len, GFP_KERNEL | GFP_SPI_DMA);
 	if (!data)
 		return -ENOMEM;
 
