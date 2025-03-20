@@ -257,6 +257,7 @@ config ASUS_WMI
 	depends on HOTPLUG_PCI
 	depends on ACPI_VIDEO || ACPI_VIDEO = n
 	depends on SERIO_I8042 || SERIO_I8042 = n
+	depends on ZONE_DMA
 	select INPUT_SPARSEKMAP
 	select LEDS_CLASS
 	select NEW_LEDS
