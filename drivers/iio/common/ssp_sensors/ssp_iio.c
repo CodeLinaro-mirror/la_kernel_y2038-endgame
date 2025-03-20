@@ -27,7 +27,7 @@ int ssp_common_buffer_postenable(struct iio_dev *indio_dev)
 	/* the allocation is made in post because scan size is known in this
 	 * moment
 	 * */
-	spd->buffer = kmalloc(indio_dev->scan_bytes, GFP_KERNEL | GFP_DMA);
+	spd->buffer = kmalloc(indio_dev->scan_bytes, GFP_KERNEL | GFP_SPI_DMA);
 	if (!spd->buffer)
 		return -ENOMEM;
 

@@ -1775,7 +1775,7 @@ void wsm_txed(struct cw1200_common *priv, u8 *data)
 void wsm_buf_init(struct wsm_buf *buf)
 {
 	BUG_ON(buf->begin);
-	buf->begin = kmalloc(FWLOAD_BLOCK_SIZE, GFP_KERNEL | GFP_DMA);
+	buf->begin = kmalloc(FWLOAD_BLOCK_SIZE, GFP_KERNEL | GFP_SPI_DMA);
 	buf->end = buf->begin ? &buf->begin[FWLOAD_BLOCK_SIZE] : buf->begin;
 	wsm_buf_reset(buf);
 }
@@ -1804,7 +1804,7 @@ static int wsm_buf_reserve(struct wsm_buf *buf, size_t extra_size)
 
 	size = round_up(size, FWLOAD_BLOCK_SIZE);
 
-	tmp = krealloc(buf->begin, size, GFP_KERNEL | GFP_DMA);
+	tmp = krealloc(buf->begin, size, GFP_KERNEL | GFP_SPI_DMA);
 	if (!tmp) {
 		wsm_buf_deinit(buf);
 		return -ENOMEM;

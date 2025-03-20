@@ -1017,7 +1017,7 @@ static int nau8825_biq_coeff_put(struct snd_kcontrol *kcontrol,
 		return -EINVAL;
 
 	data = kmemdup(ucontrol->value.bytes.data,
-		params->max, GFP_KERNEL | GFP_DMA);
+		params->max, GFP_KERNEL | GFP_SPI_DMA);
 	if (!data)
 		return -ENOMEM;
 

@@ -398,14 +398,14 @@ static int wm0010_firmware_load(const char *name, struct snd_soc_component *comp
 		xfer->component = component;
 		list_add_tail(&xfer->list, &xfer_list);
 
-		out = kzalloc(len, GFP_KERNEL | GFP_DMA);
+		out = kzalloc(len, GFP_KERNEL | GFP_SPI_DMA);
 		if (!out) {
 			ret = -ENOMEM;
 			goto abort;
 		}
 		xfer->t.rx_buf = out;
 
-		img = kzalloc(len, GFP_KERNEL | GFP_DMA);
+		img = kzalloc(len, GFP_KERNEL | GFP_SPI_DMA);
 		if (!img) {
 			ret = -ENOMEM;
 			goto abort;
@@ -494,12 +494,12 @@ static int wm0010_stage2_load(struct snd_soc_component *component)
 
 	/* Copy to local buffer first as vmalloc causes problems for dma */
 	u32 *img __free(kfree) =
-		kmemdup(&fw->data[0], fw->size, GFP_KERNEL | GFP_DMA);
+		kmemdup(&fw->data[0], fw->size, GFP_KERNEL | GFP_SPI_DMA);
 	if (!img)
 		return -ENOMEM;
 
 	u8 *out __free(kfree) =
-		kzalloc(fw->size, GFP_KERNEL | GFP_DMA);
+		kzalloc(fw->size, GFP_KERNEL | GFP_SPI_DMA);
 	if (!out)
 		return -ENOMEM;
 
@@ -618,11 +618,11 @@ static int wm0010_boot(struct snd_soc_component *component)
 
 		ret = -ENOMEM;
 		len = pll_rec.length + 8;
-		out = kzalloc(len, GFP_KERNEL | GFP_DMA);
+		out = kzalloc(len, GFP_KERNEL | GFP_SPI_DMA);
 		if (!out)
 			goto abort;
 
-		img_swap = kzalloc(len, GFP_KERNEL | GFP_DMA);
+		img_swap = kzalloc(len, GFP_KERNEL | GFP_SPI_DMA);
 		if (!img_swap)
 			goto abort_out;
 
