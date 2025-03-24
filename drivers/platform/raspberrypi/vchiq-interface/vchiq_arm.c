@@ -1355,7 +1355,7 @@ void vchiq_platform_conn_state_changed(struct vchiq_state *state,
 		 state->id);
 	arm_state->ka_thread = kthread_create(&vchiq_keepalive_thread_func,
 					      (void *)state,
-					      threadname);
+					      "%s", threadname);
 	if (IS_ERR(arm_state->ka_thread)) {
 		dev_err(state->dev, "suspend: Couldn't create thread %s\n",
 			threadname);
