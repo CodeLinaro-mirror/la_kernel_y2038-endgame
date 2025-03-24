@@ -1297,7 +1297,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
 
 	dma_set_mask_and_coherent(dev, iommu->rk_ops->dma_bit_mask);
 
-	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
+	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, "%s", dev_name(dev));
 	if (err)
 		goto err_pm_disable;
 
