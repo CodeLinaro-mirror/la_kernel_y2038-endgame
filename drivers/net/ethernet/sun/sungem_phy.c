@@ -30,7 +30,8 @@
 #include <linux/ethtool.h>
 #include <linux/delay.h>
 #include <linux/of.h>
-#include <linux/sungem_phy.h>
+
+#include "sungem_phy.h"
 
 /* Link modes of the BCM5400 PHY */
 static const int phy_BCM5400_link_table[8][3] = {
@@ -1195,7 +1196,3 @@ fail:
 	phy->advertising = 0;
 	return -ENODEV;
 }
-
-EXPORT_SYMBOL(sungem_phy_probe);
-MODULE_DESCRIPTION("PHY drivers for the sungem Ethernet MAC driver");
-MODULE_LICENSE("GPL");

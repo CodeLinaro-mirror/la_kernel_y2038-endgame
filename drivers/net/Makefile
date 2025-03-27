@@ -69,7 +69,6 @@ obj-$(CONFIG_PPPOL2TP) += ppp/
 obj-$(CONFIG_PPTP) += ppp/
 obj-$(CONFIG_SLIP) += slip/
 obj-$(CONFIG_SLHC) += slip/
-obj-$(CONFIG_SUNGEM_PHY) += sungem_phy.o
 obj-$(CONFIG_WAN) += wan/
 obj-$(CONFIG_WLAN) += wireless/
 obj-$(CONFIG_IEEE802154) += ieee802154/

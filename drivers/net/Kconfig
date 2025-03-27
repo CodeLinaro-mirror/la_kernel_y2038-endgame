@@ -502,9 +502,6 @@ config MHI_NET
 
 endif # NET_CORE
 
-config SUNGEM_PHY
-	tristate
-
 source "drivers/net/arcnet/Kconfig"
 
 source "drivers/atm/Kconfig"

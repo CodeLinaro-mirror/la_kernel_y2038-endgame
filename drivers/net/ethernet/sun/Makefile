@@ -7,6 +7,7 @@ obj-$(CONFIG_HAPPYMEAL) += sunhme.o
 obj-$(CONFIG_SUNQE) += sunqe.o
 obj-$(CONFIG_SUNBMAC) += sunbmac.o
 obj-$(CONFIG_SUNGEM) += sungem.o
+sungem-objs := sungem_main.o sungem_phy.o
 obj-$(CONFIG_CASSINI) += cassini.o
 obj-$(CONFIG_SUNVNET_COMMON) += sunvnet_common.o
 obj-$(CONFIG_SUNVNET) += sunvnet.o
