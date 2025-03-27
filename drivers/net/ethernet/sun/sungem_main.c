@@ -57,7 +57,7 @@
 #include <asm/pmac_feature.h>
 #endif
 
-#include <linux/sungem_phy.h>
+#include "sungem_phy.h"
 #include "sungem.h"
 
 #define STRIP_FCS
