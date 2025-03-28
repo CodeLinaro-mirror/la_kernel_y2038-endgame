@@ -62,6 +62,9 @@
 # MODULE_DEVICE_TABLE (symbol name)
 / __mod_device_table__/d
 
+# prefixed symbols from objtool
+/ __pfx_/d
+
 # ---------------------------------------------------------------------------
 # Ignored suffixes
 #  (do not forget '$' after each pattern)
