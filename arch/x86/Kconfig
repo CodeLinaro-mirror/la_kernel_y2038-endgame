@@ -2474,7 +2474,7 @@ config MITIGATION_PAGE_TABLE_ISOLATION
 config MITIGATION_RETPOLINE
 	bool "Avoid speculative indirect branches in kernel"
 	select OBJTOOL if HAVE_OBJTOOL
-	depends on GCC_VERSION >= 70100 || !COMPILE_TEST
+	depends on !COMPILE_TEST
 	default y
 	help
 	  Compile kernel with the retpoline compiler options to guard against
