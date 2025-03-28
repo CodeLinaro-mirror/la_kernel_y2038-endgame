@@ -1064,7 +1064,8 @@ static int mtk_spi_mem_exec_op(struct spi_mem *mem,
 
 	tx_size = max_t(u32, tx_size, 32);
 
-	tx_tmp_buf = kzalloc(tx_size, GFP_KERNEL | GFP_DMA); // XXXX
+	tx_tmp_buf = dma_alloc_noncoherent(mdata->dev, tx_size,
+			&mdata->tx_dma, DMA_TO_DEVICE, GFP_KERNEL);
 	if (!tx_tmp_buf) {
 		mdata->use_spimem = false;
 		return -ENOMEM;
@@ -1090,32 +1091,31 @@ static int mtk_spi_mem_exec_op(struct spi_mem *mem,
 		       op->data.buf.out,
 		       op->data.nbytes);
 
-	mdata->tx_dma = dma_map_single(mdata->dev, tx_tmp_buf,
-				       tx_size, DMA_TO_DEVICE);
-	if (dma_mapping_error(mdata->dev, mdata->tx_dma)) {
-		ret = -ENOMEM;
-		goto err_exit;
-	}
+	dma_sync_single_for_device(mdata->dev, mdata->tx_dma, tx_size,
+				   DMA_TO_DEVICE);
 
 	if (op->data.dir == SPI_MEM_DATA_IN) {
 		if (!IS_ALIGNED((size_t)op->data.buf.in, 4)) {
-			rx_tmp_buf = kzalloc(op->data.nbytes,
-					     GFP_KERNEL | GFP_DMA); // XXXX
+			rx_tmp_buf = dma_alloc_noncoherent(mdata->dev,
+					   op->data.nbytes, &mdata->rx_dma,
+					   DMA_FROM_DEVICE, GFP_KERNEL);
 			if (!rx_tmp_buf) {
 				ret = -ENOMEM;
-				goto unmap_tx_dma;
+				goto err_exit;
 			}
+			dma_sync_single_for_device(mdata->dev, mdata->rx_dma,
+						   op->data.nbytes,
+						   DMA_FROM_DEVICE);
 		} else {
 			rx_tmp_buf = op->data.buf.in;
-		}
-
-		mdata->rx_dma = dma_map_single(mdata->dev,
+			mdata->rx_dma = dma_map_single(mdata->dev,
 					       rx_tmp_buf,
 					       op->data.nbytes,
 					       DMA_FROM_DEVICE);
-		if (dma_mapping_error(mdata->dev, mdata->rx_dma)) {
-			ret = -ENOMEM;
-			goto kfree_rx_tmp_buf;
+			if (dma_mapping_error(mdata->dev, mdata->rx_dma)) {
+				ret = -ENOMEM;
+				goto err_exit;
+			}
 		}
 	}
 
@@ -1143,20 +1143,18 @@ static int mtk_spi_mem_exec_op(struct spi_mem *mem,
 
 unmap_rx_dma:
 	if (op->data.dir == SPI_MEM_DATA_IN) {
-		dma_unmap_single(mdata->dev, mdata->rx_dma,
-				 op->data.nbytes, DMA_FROM_DEVICE);
-		if (!IS_ALIGNED((size_t)op->data.buf.in, 4))
+		if (IS_ALIGNED((size_t)op->data.buf.in, 4)) {
+			dma_unmap_single(mdata->dev, mdata->rx_dma,
+					 op->data.nbytes, DMA_FROM_DEVICE);
+		} else {
 			memcpy(op->data.buf.in, rx_tmp_buf, op->data.nbytes);
+			dma_free_noncoherent(mdata->dev, op->data.nbytes,
+					     rx_tmp_buf, mdata->rx_dma,
+					     DMA_FROM_DEVICE);
+		}
 	}
-kfree_rx_tmp_buf:
-	if (op->data.dir == SPI_MEM_DATA_IN &&
-	    !IS_ALIGNED((size_t)op->data.buf.in, 4))
-		kfree(rx_tmp_buf);
-unmap_tx_dma:
-	dma_unmap_single(mdata->dev, mdata->tx_dma,
-			 tx_size, DMA_TO_DEVICE);
 err_exit:
-	kfree(tx_tmp_buf);
+	dma_free_noncoherent(mdata->dev, tx_size, tx_tmp_buf, mdata->tx_dma, DMA_TO_DEVICE);
 	mdata->use_spimem = false;
 
 	return ret;
