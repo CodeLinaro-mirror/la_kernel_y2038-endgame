@@ -1128,35 +1128,24 @@ static int sh_msiof_request_dma(struct sh_msiof_spi_priv *p)
 	if (!ctlr->dma_rx)
 		goto free_tx_chan;
 
-	p->tx_dma_page = (void *)__get_free_page(GFP_KERNEL | GFP_DMA);
+	tx_dev = ctlr->dma_tx->device->dev;
+	p->tx_dma_page = dma_alloc_noncoherent(tx_dev, PAGE_SIZE, &p->tx_dma_addr,
+					       DMA_TO_DEVICE, GFP_KERNEL);
 	if (!p->tx_dma_page)
 		goto free_rx_chan;
 
-	p->rx_dma_page = (void *)__get_free_page(GFP_KERNEL | GFP_DMA);
+	rx_dev = ctlr->dma_rx->device->dev;
+	p->rx_dma_page = dma_alloc_noncoherent(rx_dev, PAGE_SIZE, &p->rx_dma_addr,
+					       DMA_FROM_DEVICE, GFP_KERNEL);
 	if (!p->rx_dma_page)
 		goto free_tx_page;
-
-	tx_dev = ctlr->dma_tx->device->dev;
-	p->tx_dma_addr = dma_map_single(tx_dev, p->tx_dma_page, PAGE_SIZE,
-					DMA_TO_DEVICE);
-	if (dma_mapping_error(tx_dev, p->tx_dma_addr))
-		goto free_rx_page;
-
-	rx_dev = ctlr->dma_rx->device->dev;
-	p->rx_dma_addr = dma_map_single(rx_dev, p->rx_dma_page, PAGE_SIZE,
-					DMA_FROM_DEVICE);
-	if (dma_mapping_error(rx_dev, p->rx_dma_addr))
-		goto unmap_tx_page;
 
 	dev_info(dev, "DMA available");
 	return 0;
 
-unmap_tx_page:
-	dma_unmap_single(tx_dev, p->tx_dma_addr, PAGE_SIZE, DMA_TO_DEVICE);
-free_rx_page:
-	free_page((unsigned long)p->rx_dma_page);
 free_tx_page:
-	free_page((unsigned long)p->tx_dma_page);
+	dma_free_noncoherent(tx_dev, PAGE_SIZE, p->tx_dma_page, p->tx_dma_addr,
+			     DMA_TO_DEVICE);
 free_rx_chan:
 	dma_release_channel(ctlr->dma_rx);
 free_tx_chan:
@@ -1172,12 +1161,10 @@ static void sh_msiof_release_dma(struct sh_msiof_spi_priv *p)
 	if (!ctlr->dma_tx)
 		return;
 
-	dma_unmap_single(ctlr->dma_rx->device->dev, p->rx_dma_addr, PAGE_SIZE,
-			 DMA_FROM_DEVICE);
-	dma_unmap_single(ctlr->dma_tx->device->dev, p->tx_dma_addr, PAGE_SIZE,
-			 DMA_TO_DEVICE);
-	free_page((unsigned long)p->rx_dma_page);
-	free_page((unsigned long)p->tx_dma_page);
+	dma_free_noncoherent(ctlr->dma_tx->device->dev, PAGE_SIZE, p->tx_dma_page,
+			     p->tx_dma_addr, DMA_TO_DEVICE);
+	dma_free_noncoherent(ctlr->dma_rx->device->dev, PAGE_SIZE, p->rx_dma_page,
+			     p->rx_dma_addr, DMA_FROM_DEVICE);
 	dma_release_channel(ctlr->dma_rx);
 	dma_release_channel(ctlr->dma_tx);
 }
