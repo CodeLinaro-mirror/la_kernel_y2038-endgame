@@ -29,7 +29,6 @@ static struct resword {
 
 	// According to rth, c99 defines "_Bool", "__restrict", "__restrict__", "restrict".  KAO
 	{ "_Bool", BOOL_KEYW },
-	{ "bool", BOOL_KEYW },
 	{ "__restrict", RESTRICT_KEYW },
 	{ "__restrict__", RESTRICT_KEYW },
 	{ "restrict", RESTRICT_KEYW },
