@@ -65,6 +65,9 @@
 # prefixed symbols from objtool
 / __pfx_/d
 
+# causes overlong symbols
+/ _GLOBAL__sub_/d
+
 # ---------------------------------------------------------------------------
 # Ignored suffixes
 #  (do not forget '$' after each pattern)
