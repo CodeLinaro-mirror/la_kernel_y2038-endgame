@@ -345,7 +345,7 @@ static void dw_mipi_dsi2_phy_ratio_cfg(struct dw_mipi_dsi2 *dsi2)
 	 */
 	tmp = DIV_ROUND_CLOSEST_ULL(phy_hsclk << 16, sys_clk);
 	regmap_write(dsi2->regmap, DSI2_PHY_SYS_RATIO_MAN_CFG,
-		     PHY_SYS_RATIO(tmp));
+		     PHY_SYS_RATIO(tmp & GENMASK(16, 0)));
 }
 
 static void dw_mipi_dsi2_lp2hs_or_hs2lp_cfg(struct dw_mipi_dsi2 *dsi2)
