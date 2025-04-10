@@ -37,7 +37,7 @@ static inline int pa_pxp_offset_valid(u8 bus, u8 devfn, int offset)
 		return offset < 4096;
 }
 
-static void volatile __iomem *pa_pxp_cfg_addr(struct pci_controller *hose,
+static void __iomem *pa_pxp_cfg_addr(struct pci_controller *hose,
 				       u8 bus, u8 devfn, int offset)
 {
 	return hose->cfg_data + PA_PXP_CFA(bus, devfn, offset);
@@ -59,7 +59,7 @@ static int workaround_5945(struct pci_bus *bus, unsigned int devfn,
 			   int offset, int len, u32 *val)
 {
 	struct pci_controller *hose;
-	void volatile __iomem *addr, *dummy;
+	void __iomem *addr, *dummy;
 	int byte;
 	u32 tmp;
 
@@ -157,7 +157,7 @@ static int pa_pxp_read_config(struct pci_bus *bus, unsigned int devfn,
 			      int offset, int len, u32 *val)
 {
 	struct pci_controller *hose;
-	void volatile __iomem *addr;
+	void __iomem *addr;
 
 	hose = pci_bus_to_host(bus);
 	if (!hose)
@@ -196,7 +196,7 @@ static int pa_pxp_write_config(struct pci_bus *bus, unsigned int devfn,
 			       int offset, int len, u32 val)
 {
 	struct pci_controller *hose;
-	void volatile __iomem *addr;
+	void __iomem *addr;
 
 	hose = pci_bus_to_host(bus);
 	if (!hose)

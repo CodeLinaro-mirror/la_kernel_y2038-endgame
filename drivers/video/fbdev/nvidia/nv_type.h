@@ -152,25 +152,25 @@ struct nvidia_par {
 	int wc_cookie;
 	struct nvidia_i2c_chan chan[3];
 
-	volatile u32 __iomem *REGS;
-	volatile u32 __iomem *PCRTC0;
-	volatile u32 __iomem *PCRTC;
-	volatile u32 __iomem *PRAMDAC0;
-	volatile u32 __iomem *PFB;
-	volatile u32 __iomem *PFIFO;
-	volatile u32 __iomem *PGRAPH;
-	volatile u32 __iomem *PEXTDEV;
-	volatile u32 __iomem *PTIMER;
-	volatile u32 __iomem *PMC;
-	volatile u32 __iomem *PRAMIN;
-	volatile u32 __iomem *FIFO;
-	volatile u32 __iomem *CURSOR;
-	volatile u8 __iomem *PCIO0;
-	volatile u8 __iomem *PCIO;
-	volatile u8 __iomem *PVIO;
-	volatile u8 __iomem *PDIO0;
-	volatile u8 __iomem *PDIO;
-	volatile u32 __iomem *PRAMDAC;
+	u32 __iomem *REGS;
+	u32 __iomem *PCRTC0;
+	u32 __iomem *PCRTC;
+	u32 __iomem *PRAMDAC0;
+	u32 __iomem *PFB;
+	u32 __iomem *PFIFO;
+	u32 __iomem *PGRAPH;
+	u32 __iomem *PEXTDEV;
+	u32 __iomem *PTIMER;
+	u32 __iomem *PMC;
+	u32 __iomem *PRAMIN;
+	u32 __iomem *FIFO;
+	u32 __iomem *CURSOR;
+	u8 __iomem *PCIO0;
+	u8 __iomem *PCIO;
+	u8 __iomem *PVIO;
+	u8 __iomem *PDIO0;
+	u8 __iomem *PDIO;
+	u32 __iomem *PRAMDAC;
 };
 
 #endif				/* __NV_TYPE_H__ */

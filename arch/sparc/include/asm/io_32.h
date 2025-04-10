@@ -16,14 +16,14 @@
  * This is why we have no bus number argument to ioremap().
  */
 void __iomem *ioremap(phys_addr_t offset, size_t size);
-void iounmap(volatile void __iomem *addr);
+void iounmap(void __iomem *addr);
 
 #include <asm-generic/io.h>
 
-static inline void _memset_io(volatile void __iomem *dst,
+static inline void _memset_io(void __iomem *dst,
                               int c, __kernel_size_t n)
 {
-	volatile void __iomem *d = dst;
+	void __iomem *d = dst;
 
 	while (n--) {
 		writeb(c, d);
@@ -31,7 +31,7 @@ static inline void _memset_io(volatile void __iomem *dst,
 	}
 }
 
-static inline void _memcpy_fromio(void *dst, const volatile void __iomem *src,
+static inline void _memcpy_fromio(void *dst, const void __iomem *src,
                                   __kernel_size_t n)
 {
 	char *d = dst;
@@ -43,11 +43,11 @@ static inline void _memcpy_fromio(void *dst, const volatile void __iomem *src,
 	}
 }
 
-static inline void _memcpy_toio(volatile void __iomem *dst, const void *src,
+static inline void _memcpy_toio(void __iomem *dst, const void *src,
                                 __kernel_size_t n)
 {
 	const char *s = src;
-	volatile void __iomem *d = dst;
+	void __iomem *d = dst;
 
 	while (n--) {
 		char tmp = *s++;

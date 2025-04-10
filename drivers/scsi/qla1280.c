@@ -425,7 +425,7 @@ static void qla1280_error_entry(struct scsi_qla_host *, struct response *,
 				struct list_head *);
 static uint16_t qla1280_get_nvram_word(struct scsi_qla_host *, uint32_t);
 static uint16_t qla1280_nvram_request(struct scsi_qla_host *, uint32_t);
-static uint16_t qla1280_debounce_register(volatile uint16_t __iomem *);
+static uint16_t qla1280_debounce_register(uint16_t __iomem *);
 static request_t *qla1280_req_pkt(struct scsi_qla_host *);
 static int qla1280_check_for_dead_scsi_bus(struct scsi_qla_host *,
 					   unsigned int);
@@ -3825,7 +3825,7 @@ qla1280_abort_isp(struct scsi_qla_host *ha)
  *      register value.
  */
 static u16
-qla1280_debounce_register(volatile u16 __iomem * addr)
+qla1280_debounce_register(u16 __iomem * addr)
 {
 	volatile u16 ret;
 	volatile u16 ret2;

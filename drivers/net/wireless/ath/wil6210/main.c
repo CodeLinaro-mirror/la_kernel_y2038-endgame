@@ -138,11 +138,11 @@ enum {
  * should be used - {read|write}l would swap bytes to provide
  * little endian on PCI value in host endianness.
  */
-void wil_memcpy_fromio_32(void *dst, const volatile void __iomem *src,
+void wil_memcpy_fromio_32(void *dst, const void __iomem *src,
 			  size_t count)
 {
 	u32 *d = dst;
-	const volatile u32 __iomem *s = src;
+	const u32 __iomem *s = src;
 
 	for (; count >= 4; count -= 4)
 		*d++ = __raw_readl(s++);
@@ -155,10 +155,10 @@ void wil_memcpy_fromio_32(void *dst, const volatile void __iomem *src,
 	}
 }
 
-void wil_memcpy_toio_32(volatile void __iomem *dst, const void *src,
+void wil_memcpy_toio_32(void __iomem *dst, const void *src,
 			size_t count)
 {
-	volatile u32 __iomem *d = dst;
+	u32 __iomem *d = dst;
 	const u32 *s = src;
 
 	for (; count >= 4; count -= 4)

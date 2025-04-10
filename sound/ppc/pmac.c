@@ -179,7 +179,7 @@ static inline void snd_pmac_dma_run(struct pmac_stream *rec, int status)
 static int snd_pmac_pcm_prepare(struct snd_pmac *chip, struct pmac_stream *rec, struct snd_pcm_substream *subs)
 {
 	int i;
-	volatile struct dbdma_cmd __iomem *cp;
+	struct dbdma_cmd __iomem *cp;
 	struct snd_pcm_runtime *runtime = subs->runtime;
 	int rate_index;
 	long offset;
@@ -243,7 +243,7 @@ static int snd_pmac_pcm_prepare(struct snd_pmac *chip, struct pmac_stream *rec, 
 static int snd_pmac_pcm_trigger(struct snd_pmac *chip, struct pmac_stream *rec,
 				struct snd_pcm_substream *subs, int cmd)
 {
-	volatile struct dbdma_cmd __iomem *cp;
+	struct dbdma_cmd __iomem *cp;
 	int i, command;
 
 	switch (cmd) {
@@ -294,7 +294,7 @@ static snd_pcm_uframes_t snd_pmac_pcm_pointer(struct snd_pmac *chip,
 
 #if 1 /* hmm.. how can we get the current dma pointer?? */
 	int stat;
-	volatile struct dbdma_cmd __iomem *cp = &rec->cmd.cmds[rec->cur_period];
+	struct dbdma_cmd __iomem *cp = &rec->cmd.cmds[rec->cur_period];
 	stat = le16_to_cpu(cp->xfer_status);
 	if (stat & (ACTIVE|DEAD)) {
 		count = in_le16(&cp->res_count);
@@ -377,7 +377,7 @@ static snd_pcm_uframes_t snd_pmac_capture_pointer(struct snd_pcm_substream *subs
  * 'next_cmd' field will already point back to the original loop of blocks.
  */
 static inline void snd_pmac_pcm_dead_xfer(struct pmac_stream *rec,
-					  volatile struct dbdma_cmd __iomem *cp)
+					  struct dbdma_cmd __iomem *cp)
 {
 	unsigned short req, res ;
 	unsigned int phy ;
@@ -426,7 +426,7 @@ static inline void snd_pmac_pcm_dead_xfer(struct pmac_stream *rec,
  */
 static void snd_pmac_pcm_update(struct snd_pmac *chip, struct pmac_stream *rec)
 {
-	volatile struct dbdma_cmd __iomem *cp;
+	struct dbdma_cmd __iomem *cp;
 	int c;
 	int stat;
 

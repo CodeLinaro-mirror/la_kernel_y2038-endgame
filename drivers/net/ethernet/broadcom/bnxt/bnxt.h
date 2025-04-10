@@ -2883,8 +2883,7 @@ bnxt_init_ext_bd(struct bnxt *bp, struct bnxt_tx_ring_info *txr,
 	return txbd1;
 }
 
-static inline void bnxt_writeq(struct bnxt *bp, u64 val,
-			       volatile void __iomem *addr)
+static inline void bnxt_writeq(struct bnxt *bp, u64 val, void __iomem *addr)
 {
 #if BITS_PER_LONG == 32
 	spin_lock(&bp->db_lock);
@@ -2896,7 +2895,7 @@ static inline void bnxt_writeq(struct bnxt *bp, u64 val,
 }
 
 static inline void bnxt_writeq_relaxed(struct bnxt *bp, u64 val,
-				       volatile void __iomem *addr)
+				       void __iomem *addr)
 {
 #if BITS_PER_LONG == 32
 	spin_lock(&bp->db_lock);

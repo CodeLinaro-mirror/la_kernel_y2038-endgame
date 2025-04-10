@@ -142,7 +142,7 @@ struct osd_info {
 	/* Relative base address (relative to start of decoder memory) */
 	u32 video_rbase;
 	/* Mapped base address */
-	volatile char __iomem *video_vbase;
+	char __iomem *video_vbase;
 	/* Buffer size */
 	u32 video_buffer_size;
 

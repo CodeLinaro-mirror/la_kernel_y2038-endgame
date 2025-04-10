@@ -45,12 +45,12 @@
 #include <asm/special_insns.h>
 
 #define build_mmio_read(name, size, type, reg, barrier) \
-static inline type name(const volatile void __iomem *addr) \
+static inline type name(const void __iomem *addr) \
 { type ret; asm volatile("mov" size " %1,%0":reg (ret) \
 :"m" (*(volatile type __force *)addr) barrier); return ret; }
 
 #define build_mmio_write(name, size, type, reg, barrier) \
-static inline void name(type val, volatile void __iomem *addr) \
+static inline void name(type val, void __iomem *addr) \
 { asm volatile("mov" size " %0,%1": :reg (val), \
 "m" (*(volatile type __force *)addr) barrier); }
 
@@ -118,7 +118,7 @@ extern int valid_mmap_phys_addr_range(unsigned long pfn, size_t size);
  * However, we truncate the address to unsigned int to avoid undesirable
  * promotions in legacy drivers.
  */
-static inline unsigned int isa_virt_to_bus(volatile void *address)
+static inline unsigned int isa_virt_to_bus(void *address)
 {
 	return (unsigned int)virt_to_phys(address);
 }
@@ -157,14 +157,14 @@ void *arch_memremap_wb(phys_addr_t phys_addr, size_t size, unsigned long flags);
 void __iomem *ioremap(resource_size_t offset, unsigned long size);
 #define ioremap ioremap
 
-extern void iounmap(volatile void __iomem *addr);
+extern void iounmap(void __iomem *addr);
 #define iounmap iounmap
 
 #ifdef __KERNEL__
 
-void memcpy_fromio(void *, const volatile void __iomem *, size_t);
-void memcpy_toio(volatile void __iomem *, const void *, size_t);
-void memset_io(volatile void __iomem *, int, size_t);
+void memcpy_fromio(void *, const void __iomem *, size_t);
+void memcpy_toio(void __iomem *, const void *, size_t);
+void memset_io(void __iomem *, int, size_t);
 
 #define memcpy_fromio memcpy_fromio
 #define memcpy_toio memcpy_toio

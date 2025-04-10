@@ -155,47 +155,47 @@ static inline uint32_t make_handle(uint16_t x, uint16_t y)
  * I/O register
 */
 
-static inline u8 rd_reg_byte(const volatile u8 __iomem *addr)
+static inline u8 rd_reg_byte(const u8 __iomem *addr)
 {
 	return readb(addr);
 }
 
-static inline u16 rd_reg_word(const volatile __le16 __iomem *addr)
+static inline u16 rd_reg_word(const __le16 __iomem *addr)
 {
 	return readw(addr);
 }
 
-static inline u32 rd_reg_dword(const volatile __le32 __iomem *addr)
+static inline u32 rd_reg_dword(const __le32 __iomem *addr)
 {
 	return readl(addr);
 }
 
-static inline u8 rd_reg_byte_relaxed(const volatile u8 __iomem *addr)
+static inline u8 rd_reg_byte_relaxed(const u8 __iomem *addr)
 {
 	return readb_relaxed(addr);
 }
 
-static inline u16 rd_reg_word_relaxed(const volatile __le16 __iomem *addr)
+static inline u16 rd_reg_word_relaxed(const __le16 __iomem *addr)
 {
 	return readw_relaxed(addr);
 }
 
-static inline u32 rd_reg_dword_relaxed(const volatile __le32 __iomem *addr)
+static inline u32 rd_reg_dword_relaxed(const __le32 __iomem *addr)
 {
 	return readl_relaxed(addr);
 }
 
-static inline void wrt_reg_byte(volatile u8 __iomem *addr, u8 data)
+static inline void wrt_reg_byte(u8 __iomem *addr, u8 data)
 {
 	return writeb(data, addr);
 }
 
-static inline void wrt_reg_word(volatile __le16 __iomem *addr, u16 data)
+static inline void wrt_reg_word(__le16 __iomem *addr, u16 data)
 {
 	return writew(data, addr);
 }
 
-static inline void wrt_reg_dword(volatile __le32 __iomem *addr, u32 data)
+static inline void wrt_reg_dword(__le32 __iomem *addr, u32 data)
 {
 	return writel(data, addr);
 }

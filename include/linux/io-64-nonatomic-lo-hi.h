@@ -5,9 +5,9 @@
 #include <linux/io.h>
 #include <asm-generic/int-ll64.h>
 
-static inline __u64 lo_hi_readq(const volatile void __iomem *addr)
+static inline __u64 lo_hi_readq(const void __iomem *addr)
 {
-	const volatile u32 __iomem *p = addr;
+	const u32 __iomem *p = addr;
 	u32 low, high;
 
 	low = readl(p);
@@ -16,15 +16,15 @@ static inline __u64 lo_hi_readq(const volatile void __iomem *addr)
 	return low + ((u64)high << 32);
 }
 
-static inline void lo_hi_writeq(__u64 val, volatile void __iomem *addr)
+static inline void lo_hi_writeq(__u64 val, void __iomem *addr)
 {
 	writel(val, addr);
 	writel(val >> 32, addr + 4);
 }
 
-static inline __u64 lo_hi_readq_relaxed(const volatile void __iomem *addr)
+static inline __u64 lo_hi_readq_relaxed(const void __iomem *addr)
 {
-	const volatile u32 __iomem *p = addr;
+	const u32 __iomem *p = addr;
 	u32 low, high;
 
 	low = readl_relaxed(p);
@@ -33,7 +33,7 @@ static inline __u64 lo_hi_readq_relaxed(const volatile void __iomem *addr)
 	return low + ((u64)high << 32);
 }
 
-static inline void lo_hi_writeq_relaxed(__u64 val, volatile void __iomem *addr)
+static inline void lo_hi_writeq_relaxed(__u64 val, void __iomem *addr)
 {
 	writel_relaxed(val, addr);
 	writel_relaxed(val >> 32, addr + 4);

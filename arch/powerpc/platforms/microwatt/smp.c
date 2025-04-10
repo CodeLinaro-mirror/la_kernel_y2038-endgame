@@ -42,7 +42,7 @@ static struct smp_ops_t microwatt_smp_ops = {
 
 void __init microwatt_init_smp(void)
 {
-	volatile unsigned char __iomem *syscon;
+	unsigned char __iomem *syscon;
 	int ncpus;
 	int timeout;
 

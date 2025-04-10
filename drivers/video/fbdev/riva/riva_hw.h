@@ -104,7 +104,7 @@ typedef unsigned int   U032;
 /*
  * Raster OPeration. Windows style ROP3.
  */
-typedef volatile struct
+typedef struct
 {
     U032 reserved00[4];
 #ifdef __BIG_ENDIAN
@@ -119,7 +119,7 @@ typedef volatile struct
 /*
  * 8X8 Monochrome pattern.
  */
-typedef volatile struct
+typedef struct
 {
     U032 reserved00[4];
 #ifdef __BIG_ENDIAN
@@ -138,7 +138,7 @@ typedef volatile struct
 /*
  * Scissor clip rectangle.
  */
-typedef volatile struct
+typedef struct
 {
     U032 reserved00[4];
 #ifdef __BIG_ENDIAN
@@ -154,7 +154,7 @@ typedef volatile struct
 /*
  * 2D filled rectangle.
  */
-typedef volatile struct
+typedef struct
 {
     U032 reserved00[4];
 #ifdef __BIG_ENDIAN
@@ -172,7 +172,7 @@ typedef volatile struct
 /*
  * 2D screen-screen BLT.
  */
-typedef volatile struct
+typedef struct
 {
     U032 reserved00[4];
 #ifdef __BIG_ENDIAN
@@ -189,7 +189,7 @@ typedef volatile struct
 /*
  * 2D pixel BLT.
  */
-typedef volatile struct
+typedef struct
 {
     U032 reserved00[4];
 #ifdef __BIG_ENDIAN
@@ -208,7 +208,7 @@ typedef volatile struct
 /*
  * Filled rectangle combined with monochrome expand.  Useful for glyphs.
  */
-typedef volatile struct
+typedef struct
 {
     U032 reserved00[4];
 #ifdef __BIG_ENDIAN
@@ -274,7 +274,7 @@ typedef volatile struct
 /*
  * 3D textured, Z buffered triangle.
  */
-typedef volatile struct
+typedef struct
 {
     U032 reserved00[4];
 #ifdef __BIG_ENDIAN
@@ -304,7 +304,7 @@ typedef volatile struct
     float TextureS;
     float TextureT;
 } RivaTexturedTriangle03;
-typedef volatile struct
+typedef struct
 {
     U032 reserved00[4];
 #ifdef __BIG_ENDIAN
@@ -342,7 +342,7 @@ typedef volatile struct
 /*
  * 2D line.
  */
-typedef volatile struct
+typedef struct
 {
     U032 reserved00[4];
 #ifdef __BIG_ENDIAN
@@ -377,7 +377,7 @@ typedef volatile struct
 /*
  * 2D/3D surfaces
  */
-typedef volatile struct
+typedef struct
 {
     U032 reserved00[4];
 #ifdef __BIG_ENDIAN
@@ -389,7 +389,7 @@ typedef volatile struct
     U032 reserved01[0x0BE];
     U032 Offset;
 } RivaSurface;
-typedef volatile struct
+typedef struct
 {
     U032 reserved00[4];
 #ifdef __BIG_ENDIAN
@@ -441,24 +441,24 @@ typedef struct _riva_hw_inst
     /*
      * Non-FIFO registers.
      */
-    volatile U032 __iomem *PCRTC0;
-    volatile U032 __iomem *PCRTC;
-    volatile U032 __iomem *PRAMDAC0;
-    volatile U032 __iomem *PFB;
-    volatile U032 __iomem *PFIFO;
-    volatile U032 __iomem *PGRAPH;
-    volatile U032 __iomem *PEXTDEV;
-    volatile U032 __iomem *PTIMER;
-    volatile U032 __iomem *PMC;
-    volatile U032 __iomem *PRAMIN;
-    volatile U032 __iomem *FIFO;
-    volatile U032 __iomem *CURSOR;
-    volatile U008 __iomem *PCIO0;
-    volatile U008 __iomem *PCIO;
-    volatile U008 __iomem *PVIO;
-    volatile U008 __iomem *PDIO0;
-    volatile U008 __iomem *PDIO;
-    volatile U032 __iomem *PRAMDAC;
+    U032 __iomem *PCRTC0;
+    U032 __iomem *PCRTC;
+    U032 __iomem *PRAMDAC0;
+    U032 __iomem *PFB;
+    U032 __iomem *PFIFO;
+    U032 __iomem *PGRAPH;
+    U032 __iomem *PEXTDEV;
+    U032 __iomem *PTIMER;
+    U032 __iomem *PMC;
+    U032 __iomem *PRAMIN;
+    U032 __iomem *FIFO;
+    U032 __iomem *CURSOR;
+    U008 __iomem *PCIO0;
+    U008 __iomem *PCIO;
+    U008 __iomem *PVIO;
+    U008 __iomem *PDIO0;
+    U008 __iomem *PDIO;
+    U032 __iomem *PRAMDAC;
     /*
      * Common chip functions.
      */

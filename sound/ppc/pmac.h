@@ -59,7 +59,7 @@ struct pmac_stream {
 	int nperiods, cur_period;
 
 	struct pmac_dbdma cmd;
-	volatile struct dbdma_regs __iomem *dma;
+	struct dbdma_regs __iomem *dma;
 
 	struct snd_pcm_substream *substream;
 
@@ -113,7 +113,7 @@ struct snd_pmac {
 	int format;			/* current format */
 
 	spinlock_t reg_lock;
-	volatile struct awacs_regs __iomem *awacs;
+	struct awacs_regs __iomem *awacs;
 	int awacs_reg[8]; /* register cache */
 	unsigned int hp_stat_mask;
 

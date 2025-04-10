@@ -51,7 +51,7 @@ static inline unsigned char MISCin(struct riva_par *par)
 static Bool 
 riva_is_connected(struct riva_par *par, Bool second)
 {
-	volatile U032 __iomem *PRAMDAC = par->riva.PRAMDAC0;
+	U032 __iomem *PRAMDAC = par->riva.PRAMDAC0;
 	U032 reg52C, reg608;
 	Bool present;
 
@@ -315,22 +315,14 @@ void
 riva_common_setup(struct riva_par *par)
 {
 	par->riva.EnableIRQ = 0;
-	par->riva.PRAMDAC0 =
-		(volatile U032 __iomem *)(par->ctrl_base + 0x00680000);
-	par->riva.PFB =
-		(volatile U032 __iomem *)(par->ctrl_base + 0x00100000);
-	par->riva.PFIFO =
-		(volatile U032 __iomem *)(par->ctrl_base + 0x00002000);
-	par->riva.PGRAPH =
-		(volatile U032 __iomem *)(par->ctrl_base + 0x00400000);
-	par->riva.PEXTDEV =
-		(volatile U032 __iomem *)(par->ctrl_base + 0x00101000);
-	par->riva.PTIMER =
-		(volatile U032 __iomem *)(par->ctrl_base + 0x00009000);
-	par->riva.PMC =
-		(volatile U032 __iomem *)(par->ctrl_base + 0x00000000);
-	par->riva.FIFO =
-		(volatile U032 __iomem *)(par->ctrl_base + 0x00800000);
+	par->riva.PRAMDAC0 = (U032 __iomem *)(par->ctrl_base + 0x00680000);
+	par->riva.PFB = (U032 __iomem *)(par->ctrl_base + 0x00100000);
+	par->riva.PFIFO = (U032 __iomem *)(par->ctrl_base + 0x00002000);
+	par->riva.PGRAPH = (U032 __iomem *)(par->ctrl_base + 0x00400000);
+	par->riva.PEXTDEV = (U032 __iomem *)(par->ctrl_base + 0x00101000);
+	par->riva.PTIMER = (U032 __iomem *)(par->ctrl_base + 0x00009000);
+	par->riva.PMC = (U032 __iomem *)(par->ctrl_base + 0x00000000);
+	par->riva.FIFO = (U032 __iomem *)(par->ctrl_base + 0x00800000);
 	par->riva.PCIO0 = par->ctrl_base + 0x00601000;
 	par->riva.PDIO0 = par->ctrl_base + 0x00681000;
 	par->riva.PVIO = par->ctrl_base + 0x000C0000;

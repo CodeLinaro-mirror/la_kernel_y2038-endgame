@@ -11,14 +11,14 @@
 #include <asm/io.h>
 #include <asm/pmac_feature.h>
 
-extern u8 real_readb(volatile u8 __iomem  *addr);
-extern void real_writeb(u8 data, volatile u8 __iomem *addr);
+extern u8 real_readb(u8 __iomem  *addr);
+extern void real_writeb(u8 data, u8 __iomem *addr);
 
 #define	SCC_TXRDY	4
 #define SCC_RXRDY	1
 
-static volatile u8 __iomem *sccc;
-static volatile u8 __iomem *sccd;
+static u8 __iomem *sccc;
+static u8 __iomem *sccd;
 
 static void udbg_scc_putc(char c)
 {
@@ -174,8 +174,8 @@ static void udbg_real_scc_putc(char c)
 
 void __init udbg_init_pmac_realmode(void)
 {
-	sccc = (volatile u8 __iomem *)0x80013020ul;
-	sccd = (volatile u8 __iomem *)0x80013030ul;
+	sccc = (u8 __iomem *)0x80013020ul;
+	sccd = (u8 __iomem *)0x80013030ul;
 
 	udbg_putc = udbg_real_scc_putc;
 	udbg_getc = NULL;

@@ -1626,8 +1626,9 @@ struct aac_dev
 			char __iomem *bar1;
 		} src;
 	} regs;
-	volatile void __iomem *base, *dbg_base_mapped;
-	volatile struct rx_inbound __iomem *IndexRegs;
+	void __iomem *base;
+	void __iomem *dbg_base_mapped;
+	struct rx_inbound __iomem *IndexRegs;
 	u32			OIMR; /* Mask Register Cache */
 	/*
 	 *	AIF thread states

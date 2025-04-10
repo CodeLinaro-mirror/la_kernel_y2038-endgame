@@ -64,9 +64,9 @@ static void string_memcpy_toio(volatile void __iomem *to, const void *from, size
 	rep_movs((void *)to, (const void *) from, n);
 }
 
-static void unrolled_memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
+static void unrolled_memcpy_fromio(void *to, const void __iomem *from, size_t n)
 {
-	const volatile char __iomem *in = from;
+	const char __iomem *in = from;
 	char *out = to;
 	int i;
 
@@ -74,9 +74,9 @@ static void unrolled_memcpy_fromio(void *to, const volatile void __iomem *from, 
 		out[i] = readb(&in[i]);
 }
 
-static void unrolled_memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
+static void unrolled_memcpy_toio(void __iomem *to, const void *from, size_t n)
 {
-	volatile char __iomem *out = to;
+	char __iomem *out = to;
 	const char *in = from;
 	int i;
 
@@ -84,16 +84,16 @@ static void unrolled_memcpy_toio(volatile void __iomem *to, const void *from, si
 		writeb(in[i], &out[i]);
 }
 
-static void unrolled_memset_io(volatile void __iomem *a, int b, size_t c)
+static void unrolled_memset_io(void __iomem *a, int b, size_t c)
 {
-	volatile char __iomem *mem = a;
+	char __iomem *mem = a;
 	int i;
 
 	for (i = 0; i < c; ++i)
 		writeb(b, &mem[i]);
 }
 
-void memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
+void memcpy_fromio(void *to, const void __iomem *from, size_t n)
 {
 	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO))
 		unrolled_memcpy_fromio(to, from, n);
@@ -102,7 +102,7 @@ void memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
 }
 EXPORT_SYMBOL(memcpy_fromio);
 
-void memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
+void memcpy_toio(void __iomem *to, const void *from, size_t n)
 {
 	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO))
 		unrolled_memcpy_toio(to, from, n);
@@ -111,7 +111,7 @@ void memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
 }
 EXPORT_SYMBOL(memcpy_toio);
 
-void memset_io(volatile void __iomem *a, int b, size_t c)
+void memset_io(void __iomem *a, int b, size_t c)
 {
 	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO)) {
 		unrolled_memset_io(a, b, c);

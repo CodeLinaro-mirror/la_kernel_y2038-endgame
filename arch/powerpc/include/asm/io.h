@@ -91,7 +91,7 @@ extern bool isa_io_special;
 /* -mprefixed can generate offsets beyond range, fall back hack */
 #ifdef CONFIG_PPC_KERNEL_PREFIXED
 #define DEF_MMIO_IN_X(name, size, insn)				\
-static inline u##size name(const volatile u##size __iomem *addr)	\
+static inline u##size name(const u##size __iomem *addr)	\
 {									\
 	u##size ret;							\
 	__asm__ __volatile__("sync;"#insn" %0,0,%1;twi 0,%0,0;isync"	\
@@ -100,7 +100,7 @@ static inline u##size name(const volatile u##size __iomem *addr)	\
 }
 
 #define DEF_MMIO_OUT_X(name, size, insn)				\
-static inline void name(volatile u##size __iomem *addr, u##size val)	\
+static inline void name(u##size __iomem *addr, u##size val)	\
 {									\
 	__asm__ __volatile__("sync;"#insn" %1,0,%0"			\
 		: : "r" (addr), "r" (val) : "memory");			\
@@ -108,7 +108,7 @@ static inline void name(volatile u##size __iomem *addr, u##size val)	\
 }
 
 #define DEF_MMIO_IN_D(name, size, insn)				\
-static inline u##size name(const volatile u##size __iomem *addr)	\
+static inline u##size name(const u##size __iomem *addr)	\
 {									\
 	u##size ret;							\
 	__asm__ __volatile__("sync;"#insn" %0,0(%1);twi 0,%0,0;isync"\
@@ -117,7 +117,7 @@ static inline u##size name(const volatile u##size __iomem *addr)	\
 }
 
 #define DEF_MMIO_OUT_D(name, size, insn)				\
-static inline void name(volatile u##size __iomem *addr, u##size val)	\
+static inline void name(u##size __iomem *addr, u##size val)	\
 {									\
 	__asm__ __volatile__("sync;"#insn" %1,0(%0)"			\
 		: : "b" (addr), "r" (val) : "memory");	\
@@ -125,7 +125,7 @@ static inline void name(volatile u##size __iomem *addr, u##size val)	\
 }
 #else
 #define DEF_MMIO_IN_X(name, size, insn)				\
-static inline u##size name(const volatile u##size __iomem *addr)	\
+static inline u##size name(const u##size __iomem *addr)	\
 {									\
 	u##size ret;							\
 	__asm__ __volatile__("sync;"#insn" %0,%y1;twi 0,%0,0;isync"	\
@@ -134,7 +134,7 @@ static inline u##size name(const volatile u##size __iomem *addr)	\
 }
 
 #define DEF_MMIO_OUT_X(name, size, insn)				\
-static inline void name(volatile u##size __iomem *addr, u##size val)	\
+static inline void name(u##size __iomem *addr, u##size val)	\
 {									\
 	__asm__ __volatile__("sync;"#insn" %1,%y0"			\
 		: "=Z" (*addr) : "r" (val) : "memory");			\
@@ -142,7 +142,7 @@ static inline void name(volatile u##size __iomem *addr, u##size val)	\
 }
 
 #define DEF_MMIO_IN_D(name, size, insn)				\
-static inline u##size name(const volatile u##size __iomem *addr)	\
+static inline u##size name(const u##size __iomem *addr)	\
 {									\
 	u##size ret;							\
 	__asm__ __volatile__("sync;"#insn"%U1%X1 %0,%1;twi 0,%0,0;isync"\
@@ -151,7 +151,7 @@ static inline u##size name(const volatile u##size __iomem *addr)	\
 }
 
 #define DEF_MMIO_OUT_D(name, size, insn)				\
-static inline void name(volatile u##size __iomem *addr, u##size val)	\
+static inline void name(u##size __iomem *addr, u##size val)	\
 {									\
 	__asm__ __volatile__("sync;"#insn"%U0%X0 %1,%0"			\
 		: "=m<>" (*addr) : "r" (val) : "memory");	\
@@ -192,12 +192,12 @@ DEF_MMIO_OUT_D(out_be64, 64, std);
 DEF_MMIO_IN_D(in_be64, 64, ld);
 
 /* There is no asm instructions for 64 bits reverse loads and stores */
-static inline u64 in_le64(const volatile u64 __iomem *addr)
+static inline u64 in_le64(const u64 __iomem *addr)
 {
 	return swab64(in_be64(addr));
 }
 
-static inline void out_le64(volatile u64 __iomem *addr, u64 val)
+static inline void out_le64(u64 __iomem *addr, u64 val)
 {
 	out_be64(addr, swab64(val));
 }
@@ -206,12 +206,12 @@ DEF_MMIO_OUT_D(out_le64, 64, std);
 DEF_MMIO_IN_D(in_le64, 64, ld);
 
 /* There is no asm instructions for 64 bits reverse loads and stores */
-static inline u64 in_be64(const volatile u64 __iomem *addr)
+static inline u64 in_be64(const u64 __iomem *addr)
 {
 	return swab64(in_le64(addr));
 }
 
-static inline void out_be64(volatile u64 __iomem *addr, u64 val)
+static inline void out_be64(u64 __iomem *addr, u64 val)
 {
 	out_le64(addr, swab64(val));
 }
@@ -222,21 +222,21 @@ static inline void out_be64(volatile u64 __iomem *addr, u64 val)
 /*
  * Low level IO stream instructions are defined out of line for now
  */
-extern void _insb(const volatile u8 __iomem *addr, void *buf, long count);
-extern void _outsb(volatile u8 __iomem *addr,const void *buf,long count);
-extern void _insw(const volatile u16 __iomem *addr, void *buf, long count);
-extern void _outsw(volatile u16 __iomem *addr, const void *buf, long count);
-extern void _insl(const volatile u32 __iomem *addr, void *buf, long count);
-extern void _outsl(volatile u32 __iomem *addr, const void *buf, long count);
+extern void _insb(const u8 __iomem *addr, void *buf, long count);
+extern void _outsb(u8 __iomem *addr,const void *buf,long count);
+extern void _insw(const u16 __iomem *addr, void *buf, long count);
+extern void _outsw(u16 __iomem *addr, const void *buf, long count);
+extern void _insl(const u32 __iomem *addr, void *buf, long count);
+extern void _outsl(u32 __iomem *addr, const void *buf, long count);
 
 /*
  * memset_io, memcpy_toio, memcpy_fromio base implementations are out of line
  */
 
-extern void _memset_io(volatile void __iomem *addr, int c, unsigned long n);
-extern void _memcpy_fromio(void *dest, const volatile void __iomem *src,
+extern void _memset_io(void __iomem *addr, int c, unsigned long n);
+extern void _memcpy_fromio(void *dest, const void __iomem *src,
 			   unsigned long n);
-extern void _memcpy_toio(volatile void __iomem *dest, const void *src,
+extern void _memcpy_toio(void __iomem *dest, const void *src,
 			 unsigned long n);
 
 /*
@@ -261,14 +261,14 @@ extern void _memcpy_toio(volatile void __iomem *dest, const void *src,
 #include <asm/eeh.h>
 #endif
 
-#define _IO_PORT(port)	((volatile void __iomem *)(_IO_BASE + (port)))
+#define _IO_PORT(port)	((void __iomem *)(_IO_BASE + (port)))
 
 #ifdef __powerpc64__
 /*
  * Real mode versions of raw accessors. Those instructions are only supposed
  * to be used in hypervisor real mode as per the architecture spec.
  */
-static inline void __raw_rm_writeb(u8 val, volatile void __iomem *paddr)
+static inline void __raw_rm_writeb(u8 val, void __iomem *paddr)
 {
 	__asm__ __volatile__(".machine push;   \
 			      .machine power6; \
@@ -277,7 +277,7 @@ static inline void __raw_rm_writeb(u8 val, volatile void __iomem *paddr)
 		: : "r" (val), "r" (paddr) : "memory");
 }
 
-static inline void __raw_rm_writew(u16 val, volatile void __iomem *paddr)
+static inline void __raw_rm_writew(u16 val, void __iomem *paddr)
 {
 	__asm__ __volatile__(".machine push;   \
 			      .machine power6; \
@@ -286,7 +286,7 @@ static inline void __raw_rm_writew(u16 val, volatile void __iomem *paddr)
 		: : "r" (val), "r" (paddr) : "memory");
 }
 
-static inline void __raw_rm_writel(u32 val, volatile void __iomem *paddr)
+static inline void __raw_rm_writel(u32 val, void __iomem *paddr)
 {
 	__asm__ __volatile__(".machine push;   \
 			      .machine power6; \
@@ -295,7 +295,7 @@ static inline void __raw_rm_writel(u32 val, volatile void __iomem *paddr)
 		: : "r" (val), "r" (paddr) : "memory");
 }
 
-static inline void __raw_rm_writeq(u64 val, volatile void __iomem *paddr)
+static inline void __raw_rm_writeq(u64 val, void __iomem *paddr)
 {
 	__asm__ __volatile__(".machine push;   \
 			      .machine power6; \
@@ -304,12 +304,12 @@ static inline void __raw_rm_writeq(u64 val, volatile void __iomem *paddr)
 		: : "r" (val), "r" (paddr) : "memory");
 }
 
-static inline void __raw_rm_writeq_be(u64 val, volatile void __iomem *paddr)
+static inline void __raw_rm_writeq_be(u64 val, void __iomem *paddr)
 {
 	__raw_rm_writeq((__force u64)cpu_to_be64(val), paddr);
 }
 
-static inline u8 __raw_rm_readb(volatile void __iomem *paddr)
+static inline u8 __raw_rm_readb(void __iomem *paddr)
 {
 	u8 ret;
 	__asm__ __volatile__(".machine push;   \
@@ -320,7 +320,7 @@ static inline u8 __raw_rm_readb(volatile void __iomem *paddr)
 	return ret;
 }
 
-static inline u16 __raw_rm_readw(volatile void __iomem *paddr)
+static inline u16 __raw_rm_readw(void __iomem *paddr)
 {
 	u16 ret;
 	__asm__ __volatile__(".machine push;   \
@@ -331,7 +331,7 @@ static inline u16 __raw_rm_readw(volatile void __iomem *paddr)
 	return ret;
 }
 
-static inline u32 __raw_rm_readl(volatile void __iomem *paddr)
+static inline u32 __raw_rm_readl(void __iomem *paddr)
 {
 	u32 ret;
 	__asm__ __volatile__(".machine push;   \
@@ -342,7 +342,7 @@ static inline u32 __raw_rm_readl(volatile void __iomem *paddr)
 	return ret;
 }
 
-static inline u64 __raw_rm_readq(volatile void __iomem *paddr)
+static inline u64 __raw_rm_readq(void __iomem *paddr)
 {
 	u64 ret;
 	__asm__ __volatile__(".machine push;   \
@@ -496,133 +496,133 @@ __do_out_asm(_rec_outl, "stwbrx")
 				_memcpy_fromio(dst, src, n)
 #endif /* !CONFIG_EEH */
 
-static inline u8 readb(const volatile void __iomem *addr)
+static inline u8 readb(const void __iomem *addr)
 {
 	return __do_readb(addr);
 }
 #define readb readb
 
-static inline u16 readw(const volatile void __iomem *addr)
+static inline u16 readw(const void __iomem *addr)
 {
 	return __do_readw(addr);
 }
 #define readw readw
 
-static inline u32 readl(const volatile void __iomem *addr)
+static inline u32 readl(const void __iomem *addr)
 {
 	return __do_readl(addr);
 }
 #define readl readl
 
-static inline u16 readw_be(const volatile void __iomem *addr)
+static inline u16 readw_be(const void __iomem *addr)
 {
 	return __do_readw_be(addr);
 }
 
-static inline u32 readl_be(const volatile void __iomem *addr)
+static inline u32 readl_be(const void __iomem *addr)
 {
 	return __do_readl_be(addr);
 }
 
-static inline void writeb(u8 val, volatile void __iomem *addr)
+static inline void writeb(u8 val, void __iomem *addr)
 {
 	out_8(addr, val);
 }
 #define writeb writeb
 
-static inline void writew(u16 val, volatile void __iomem *addr)
+static inline void writew(u16 val, void __iomem *addr)
 {
 	out_le16(addr, val);
 }
 #define writew writew
 
-static inline void writel(u32 val, volatile void __iomem *addr)
+static inline void writel(u32 val, void __iomem *addr)
 {
 	out_le32(addr, val);
 }
 #define writel writel
 
-static inline void writew_be(u16 val, volatile void __iomem *addr)
+static inline void writew_be(u16 val, void __iomem *addr)
 {
 	out_be16(addr, val);
 }
 
-static inline void writel_be(u32 val, volatile void __iomem *addr)
+static inline void writel_be(u32 val, void __iomem *addr)
 {
 	out_be32(addr, val);
 }
 
-static inline void readsb(const volatile void __iomem *a, void *b, unsigned long c)
+static inline void readsb(const void __iomem *a, void *b, unsigned long c)
 {
 	__do_readsb(a, b, c);
 }
 #define readsb readsb
 
-static inline void readsw(const volatile void __iomem *a, void *b, unsigned long c)
+static inline void readsw(const void __iomem *a, void *b, unsigned long c)
 {
 	__do_readsw(a, b, c);
 }
 #define readsw readsw
 
-static inline void readsl(const volatile void __iomem *a, void *b, unsigned long c)
+static inline void readsl(const void __iomem *a, void *b, unsigned long c)
 {
 	__do_readsl(a, b, c);
 }
 #define readsl readsl
 
-static inline void writesb(volatile void __iomem *a, const void *b, unsigned long c)
+static inline void writesb(void __iomem *a, const void *b, unsigned long c)
 {
 	__do_writesb(a, b, c);
 }
 #define writesb writesb
 
-static inline void writesw(volatile void __iomem *a, const void *b, unsigned long c)
+static inline void writesw(void __iomem *a, const void *b, unsigned long c)
 {
 	__do_writesw(a, b, c);
 }
 #define writesw writesw
 
-static inline void writesl(volatile void __iomem *a, const void *b, unsigned long c)
+static inline void writesl(void __iomem *a, const void *b, unsigned long c)
 {
 	__do_writesl(a, b, c);
 }
 #define writesl writesl
 
-static inline void memset_io(volatile void __iomem *a, int c, unsigned long n)
+static inline void memset_io(void __iomem *a, int c, unsigned long n)
 {
 	_memset_io(a, c, n);
 }
 #define memset_io memset_io
 
-static inline void memcpy_fromio(void *d, const volatile void __iomem *s, unsigned long n)
+static inline void memcpy_fromio(void *d, const void __iomem *s, unsigned long n)
 {
 	__do_memcpy_fromio(d, s, n);
 }
 #define memcpy_fromio memcpy_fromio
 
-static inline void memcpy_toio(volatile void __iomem *d, const void *s, unsigned long n)
+static inline void memcpy_toio(void __iomem *d, const void *s, unsigned long n)
 {
 	_memcpy_toio(d, s, n);
 }
 #define memcpy_toio memcpy_toio
 
 #ifdef __powerpc64__
-static inline u64 readq(const volatile void __iomem *addr)
+static inline u64 readq(const void __iomem *addr)
 {
 	return __do_readq(addr);
 }
 
-static inline u64 readq_be(const volatile void __iomem *addr)
+static inline u64 readq_be(const void __iomem *addr)
 {
 	return __do_readq_be(addr);
 }
 
-static inline void writeq(u64 val, volatile void __iomem *addr)
+static inline void writeq(u64 val, void __iomem *addr)
 {
 	out_le64(addr, val);
 }
 
-static inline void writeq_be(u64 val, volatile void __iomem *addr)
+static inline void writeq_be(u64 val, void __iomem *addr)
 {
 	out_be64(addr, val);
 }
@@ -874,7 +874,7 @@ extern void __iomem *__ioremap_caller(phys_addr_t, unsigned long size,
  *	almost all conceivable cases a device driver should not be using
  *	this function
  */
-static inline unsigned long virt_to_phys(const volatile void * address)
+static inline unsigned long virt_to_phys(const void * address)
 {
 	WARN_ON(IS_ENABLED(CONFIG_DEBUG_VIRTUAL) && !virt_addr_valid(address));
 
@@ -908,7 +908,7 @@ static inline void * phys_to_virt(unsigned long address)
  */
 #ifdef CONFIG_PPC32
 
-static inline unsigned long virt_to_bus(volatile void * address)
+static inline unsigned long virt_to_bus(void * address)
 {
         if (address == NULL)
 		return 0;
@@ -962,7 +962,7 @@ static inline void * bus_to_virt(unsigned long address)
 #include <asm-generic/io.h>
 
 #ifdef __powerpc64__
-static inline void __raw_writeq_be(unsigned long v, volatile void __iomem *addr)
+static inline void __raw_writeq_be(unsigned long v, void __iomem *addr)
 {
 	__raw_writeq((__force unsigned long)cpu_to_be64(v), addr);
 }

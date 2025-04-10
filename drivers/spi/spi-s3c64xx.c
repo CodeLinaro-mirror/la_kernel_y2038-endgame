@@ -437,7 +437,7 @@ static bool s3c64xx_spi_can_dma(struct spi_controller *host,
 	return false;
 }
 
-static void s3c64xx_iowrite8_32_rep(volatile void __iomem *addr,
+static void s3c64xx_iowrite8_32_rep(void __iomem *addr,
 				    const void *buffer, unsigned int count)
 {
 	if (count) {
@@ -449,7 +449,7 @@ static void s3c64xx_iowrite8_32_rep(volatile void __iomem *addr,
 	}
 }
 
-static void s3c64xx_iowrite16_32_rep(volatile void __iomem *addr,
+static void s3c64xx_iowrite16_32_rep(void __iomem *addr,
 				     const void *buffer, unsigned int count)
 {
 	if (count) {

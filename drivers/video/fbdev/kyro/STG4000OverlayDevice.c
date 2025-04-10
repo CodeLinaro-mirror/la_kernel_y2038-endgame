@@ -76,7 +76,7 @@ typedef struct _OVRL_SRC_DEST {
 static u32 ovlWidth, ovlHeight, ovlStride;
 static int ovlLinear;
 
-void ResetOverlayRegisters(volatile STG4000REG __iomem *pSTGReg)
+void ResetOverlayRegisters(STG4000REG __iomem *pSTGReg)
 {
 	u32 tmp;
 
@@ -137,7 +137,7 @@ void ResetOverlayRegisters(volatile STG4000REG __iomem *pSTGReg)
 
 }
 
-int CreateOverlaySurface(volatile STG4000REG __iomem *pSTGReg,
+int CreateOverlaySurface(STG4000REG __iomem *pSTGReg,
 			 u32 inWidth,
 			 u32 inHeight,
 			 int bLinear,
@@ -239,7 +239,7 @@ int CreateOverlaySurface(volatile STG4000REG __iomem *pSTGReg,
 	return 0;
 }
 
-int SetOverlayBlendMode(volatile STG4000REG __iomem *pSTGReg,
+int SetOverlayBlendMode(STG4000REG __iomem *pSTGReg,
 			OVRL_BLEND_MODE mode,
 			u32 ulAlpha, u32 ulColorKey)
 {
@@ -285,7 +285,7 @@ int SetOverlayBlendMode(volatile STG4000REG __iomem *pSTGReg,
 	return 0;
 }
 
-void EnableOverlayPlane(volatile STG4000REG __iomem *pSTGReg)
+void EnableOverlayPlane(STG4000REG __iomem *pSTGReg)
 {
 	u32 tmp;
 	/* Enable Overlay */
@@ -314,7 +314,7 @@ static u32 Overlap(u32 ulBits, u32 ulPattern)
 
 }
 
-int SetOverlayViewPort(volatile STG4000REG __iomem *pSTGReg,
+int SetOverlayViewPort(STG4000REG __iomem *pSTGReg,
 		       u32 left, u32 top,
 		       u32 right, u32 bottom)
 {

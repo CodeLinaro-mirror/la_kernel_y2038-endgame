@@ -1194,10 +1194,8 @@ void wil_hex_dump_misc(const char *prefix_str, int prefix_type, int rowsize,
 }
 #endif /* defined(CONFIG_DYNAMIC_DEBUG) */
 
-void wil_memcpy_fromio_32(void *dst, const volatile void __iomem *src,
-			  size_t count);
-void wil_memcpy_toio_32(volatile void __iomem *dst, const void *src,
-			size_t count);
+void wil_memcpy_fromio_32(void *dst, const void __iomem *src, size_t count);
+void wil_memcpy_toio_32(void __iomem *dst, const void *src, size_t count);
 int wil_mem_access_lock(struct wil6210_priv *wil);
 void wil_mem_access_unlock(struct wil6210_priv *wil);
 

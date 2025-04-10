@@ -424,7 +424,7 @@ static int aac_rx_deliver_message(struct fib * fib)
 	struct aac_queue *q = &dev->queues->queue[AdapNormCmdQueue];
 	u32 Index;
 	u64 addr;
-	volatile void __iomem *device;
+	void __iomem *device;
 
 	unsigned long count = 10000000L; /* 50 seconds */
 	atomic_inc(&q->numpending);

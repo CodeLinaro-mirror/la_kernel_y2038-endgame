@@ -47,7 +47,7 @@ void __iomem *__ioremap_caller(phys_addr_t addr, unsigned long size,
  * Unmap an IO region and remove it from vmalloc'd list.
  * Access to IO memory should be serialized by driver.
  */
-void iounmap(volatile void __iomem *token)
+void iounmap(void __iomem *token)
 {
 	if (!slab_is_available())
 		return;

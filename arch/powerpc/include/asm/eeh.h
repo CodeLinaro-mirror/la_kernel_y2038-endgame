@@ -294,7 +294,7 @@ struct pci_bus *eeh_pe_bus_get_nolock(struct eeh_pe *pe);
 
 void eeh_show_enabled(void);
 int __init eeh_init(struct eeh_ops *ops);
-int eeh_check_failure(const volatile void __iomem *token);
+int eeh_check_failure(const void __iomem *token);
 int eeh_dev_check_failure(struct eeh_dev *edev);
 void eeh_addr_cache_init(void);
 void eeh_probe_device(struct pci_dev *pdev);
@@ -336,7 +336,7 @@ static inline bool eeh_enabled(void)
 
 static inline void eeh_show_enabled(void) { }
 
-static inline int eeh_check_failure(const volatile void __iomem *token)
+static inline int eeh_check_failure(const void __iomem *token)
 {
 	return 0;
 }
@@ -362,7 +362,7 @@ void pseries_eeh_init_edev_recursive(struct pci_dn *pdn);
 /*
  * MMIO read/write operations with EEH support.
  */
-static inline u8 eeh_readb(const volatile void __iomem *addr)
+static inline u8 eeh_readb(const void __iomem *addr)
 {
 	u8 val = in_8(addr);
 	if (EEH_POSSIBLE_ERROR(val, u8))
@@ -370,7 +370,7 @@ static inline u8 eeh_readb(const volatile void __iomem *addr)
 	return val;
 }
 
-static inline u16 eeh_readw(const volatile void __iomem *addr)
+static inline u16 eeh_readw(const void __iomem *addr)
 {
 	u16 val = in_le16(addr);
 	if (EEH_POSSIBLE_ERROR(val, u16))
@@ -378,7 +378,7 @@ static inline u16 eeh_readw(const volatile void __iomem *addr)
 	return val;
 }
 
-static inline u32 eeh_readl(const volatile void __iomem *addr)
+static inline u32 eeh_readl(const void __iomem *addr)
 {
 	u32 val = in_le32(addr);
 	if (EEH_POSSIBLE_ERROR(val, u32))
@@ -386,7 +386,7 @@ static inline u32 eeh_readl(const volatile void __iomem *addr)
 	return val;
 }
 
-static inline u64 eeh_readq(const volatile void __iomem *addr)
+static inline u64 eeh_readq(const void __iomem *addr)
 {
 	u64 val = in_le64(addr);
 	if (EEH_POSSIBLE_ERROR(val, u64))
@@ -394,7 +394,7 @@ static inline u64 eeh_readq(const volatile void __iomem *addr)
 	return val;
 }
 
-static inline u16 eeh_readw_be(const volatile void __iomem *addr)
+static inline u16 eeh_readw_be(const void __iomem *addr)
 {
 	u16 val = in_be16(addr);
 	if (EEH_POSSIBLE_ERROR(val, u16))
@@ -402,7 +402,7 @@ static inline u16 eeh_readw_be(const volatile void __iomem *addr)
 	return val;
 }
 
-static inline u32 eeh_readl_be(const volatile void __iomem *addr)
+static inline u32 eeh_readl_be(const void __iomem *addr)
 {
 	u32 val = in_be32(addr);
 	if (EEH_POSSIBLE_ERROR(val, u32))
@@ -410,7 +410,7 @@ static inline u32 eeh_readl_be(const volatile void __iomem *addr)
 	return val;
 }
 
-static inline u64 eeh_readq_be(const volatile void __iomem *addr)
+static inline u64 eeh_readq_be(const void __iomem *addr)
 {
 	u64 val = in_be64(addr);
 	if (EEH_POSSIBLE_ERROR(val, u64))
@@ -419,7 +419,7 @@ static inline u64 eeh_readq_be(const volatile void __iomem *addr)
 }
 
 static inline void eeh_memcpy_fromio(void *dest, const
-				     volatile void __iomem *src,
+				     void __iomem *src,
 				     unsigned long n)
 {
 	_memcpy_fromio(dest, src, n);
@@ -432,7 +432,7 @@ static inline void eeh_memcpy_fromio(void *dest, const
 }
 
 /* in-string eeh macros */
-static inline void eeh_readsb(const volatile void __iomem *addr, void * buf,
+static inline void eeh_readsb(const void __iomem *addr, void * buf,
 			      int ns)
 {
 	_insb(addr, buf, ns);
@@ -440,7 +440,7 @@ static inline void eeh_readsb(const volatile void __iomem *addr, void * buf,
 		eeh_check_failure(addr);
 }
 
-static inline void eeh_readsw(const volatile void __iomem *addr, void * buf,
+static inline void eeh_readsw(const void __iomem *addr, void * buf,
 			      int ns)
 {
 	_insw(addr, buf, ns);
@@ -448,7 +448,7 @@ static inline void eeh_readsw(const volatile void __iomem *addr, void * buf,
 		eeh_check_failure(addr);
 }
 
-static inline void eeh_readsl(const volatile void __iomem *addr, void * buf,
+static inline void eeh_readsl(const void __iomem *addr, void * buf,
 			      int nl)
 {
 	_insl(addr, buf, nl);

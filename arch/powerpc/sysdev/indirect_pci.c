@@ -19,7 +19,7 @@ int __indirect_read_config(struct pci_controller *hose,
 			   unsigned char bus_number, unsigned int devfn,
 			   int offset, int len, u32 *val)
 {
-	volatile void __iomem *cfg_data;
+	void __iomem *cfg_data;
 	u8 cfg_type = 0;
 	u32 bus_no, reg;
 
@@ -85,7 +85,7 @@ int indirect_write_config(struct pci_bus *bus, unsigned int devfn,
 			  int offset, int len, u32 val)
 {
 	struct pci_controller *hose = pci_bus_to_host(bus);
-	volatile void __iomem *cfg_data;
+	void __iomem *cfg_data;
 	u8 cfg_type = 0;
 	u32 bus_no, reg;
 

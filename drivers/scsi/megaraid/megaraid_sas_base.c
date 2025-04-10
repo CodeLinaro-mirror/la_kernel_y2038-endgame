@@ -254,7 +254,7 @@ static inline void
 megasas_init_ctrl_params(struct megasas_instance *instance);
 
 u32 megasas_readl(struct megasas_instance *instance,
-		  const volatile void __iomem *addr)
+		  const void __iomem *addr)
 {
 	u32 i = 0, ret_val;
 	/*

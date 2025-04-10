@@ -13,7 +13,7 @@
  *	Returns 1 on a match.
  */
 
-int check_signature(const volatile void __iomem *io_addr,
+int check_signature(const void __iomem *io_addr,
 			const unsigned char *signature, int length)
 {
 	while (length--) {

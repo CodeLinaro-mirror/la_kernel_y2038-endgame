@@ -107,7 +107,7 @@ static const struct fb_fix_screeninfo vga16fb_fix = {
    suitable instruction is the x86 bitwise OR.  The following
    read-modify-write routine should optimize to one such bitwise
    OR. */
-static inline void rmw(volatile char __iomem *p)
+static inline void rmw(char __iomem *p)
 {
 	readb(p);
 	writeb(1, p);

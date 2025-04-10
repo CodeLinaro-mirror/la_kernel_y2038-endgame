@@ -54,9 +54,9 @@ static inline void nsp32_mmio_write1(unsigned long base,
 				     unsigned int  index,
 				     unsigned char val)
 {
-	volatile unsigned char *ptr;
+	void __iomem *ptr;
 
-	ptr = (unsigned char *)(base + NSP32_MMIO_OFFSET + index);
+	ptr = (void __iomem *)(base + NSP32_MMIO_OFFSET + index);
 
 	writeb(val, ptr);
 }
@@ -64,9 +64,9 @@ static inline void nsp32_mmio_write1(unsigned long base,
 static inline unsigned char nsp32_mmio_read1(unsigned long base,
 					     unsigned int  index)
 {
-	volatile unsigned char *ptr;
+	void __iomem *ptr;
 
-	ptr = (unsigned char *)(base + NSP32_MMIO_OFFSET + index);
+	ptr = (void __iomem *)(base + NSP32_MMIO_OFFSET + index);
 
 	return readb(ptr);
 }
@@ -75,9 +75,9 @@ static inline void nsp32_mmio_write2(unsigned long  base,
 				     unsigned int   index,
 				     unsigned short val)
 {
-	volatile unsigned short *ptr;
+	void __iomem *ptr;
 
-	ptr = (unsigned short *)(base + NSP32_MMIO_OFFSET + index);
+	ptr = (void __iomem *)(base + NSP32_MMIO_OFFSET + index);
 
 	writew(cpu_to_le16(val), ptr);
 }
@@ -85,9 +85,9 @@ static inline void nsp32_mmio_write2(unsigned long  base,
 static inline unsigned short nsp32_mmio_read2(unsigned long base,
 					      unsigned int  index)
 {
-	volatile unsigned short *ptr;
+	void __iomem *ptr;
 
-	ptr = (unsigned short *)(base + NSP32_MMIO_OFFSET + index);
+	ptr = (void __iomem *)(base + NSP32_MMIO_OFFSET + index);
 
 	return le16_to_cpu(readw(ptr));
 }
@@ -96,9 +96,9 @@ static inline void nsp32_mmio_write4(unsigned long base,
 				     unsigned int  index,
 				     unsigned long val)
 {
-	volatile unsigned long *ptr;
+	void __iomem *ptr;
 
-	ptr = (unsigned long *)(base + NSP32_MMIO_OFFSET + index);
+	ptr = (void __iomem *)(base + NSP32_MMIO_OFFSET + index);
 
 	writel(cpu_to_le32(val), ptr);
 }
@@ -106,9 +106,9 @@ static inline void nsp32_mmio_write4(unsigned long base,
 static inline unsigned long nsp32_mmio_read4(unsigned long base,
 					     unsigned int  index)
 {
-	volatile unsigned long *ptr;
+	void __iomem *ptr;
 
-	ptr = (unsigned long *)(base + NSP32_MMIO_OFFSET + index);
+	ptr = (void __iomem *)(base + NSP32_MMIO_OFFSET + index);
 
 	return le32_to_cpu(readl(ptr));
 }
@@ -176,10 +176,11 @@ static inline void nsp32_index_write4(unsigned int  base,
 static inline unsigned char nsp32_mmio_index_read1(unsigned long base,
 						   unsigned int reg)
 {
-	volatile unsigned short *index_ptr, *data_ptr;
+	void __iomem *index_ptr;
+	void __iomem *data_ptr;
 
-	index_ptr = (unsigned short *)(base + NSP32_MMIO_OFFSET + INDEX_REG);
-	data_ptr  = (unsigned short *)(base + NSP32_MMIO_OFFSET + DATA_REG_LOW);
+	index_ptr = (void __iomem *)(base + NSP32_MMIO_OFFSET + INDEX_REG);
+	data_ptr  = (void __iomem *)(base + NSP32_MMIO_OFFSET + DATA_REG_LOW);
 
 	writeb(reg, index_ptr);
 	return readb(data_ptr);
@@ -189,10 +190,11 @@ static inline void nsp32_mmio_index_write1(unsigned long base,
 					   unsigned int  reg,
 					   unsigned char val)
 {
-	volatile unsigned short *index_ptr, *data_ptr;
+	void __iomem *index_ptr;
+	void __iomem *data_ptr;
 
-	index_ptr = (unsigned short *)(base + NSP32_MMIO_OFFSET + INDEX_REG);
-	data_ptr  = (unsigned short *)(base + NSP32_MMIO_OFFSET + DATA_REG_LOW);
+	index_ptr = (void __iomem *)(base + NSP32_MMIO_OFFSET + INDEX_REG);
+	data_ptr  = (void __iomem *)(base + NSP32_MMIO_OFFSET + DATA_REG_LOW);
 
 	writeb(reg, index_ptr);
 	writeb(val, data_ptr );
@@ -201,10 +203,11 @@ static inline void nsp32_mmio_index_write1(unsigned long base,
 static inline unsigned short nsp32_mmio_index_read2(unsigned long base,
 						    unsigned int  reg)
 {
-	volatile unsigned short *index_ptr, *data_ptr;
+	void __iomem *index_ptr;
+	void __iomem *data_ptr;
 
-	index_ptr = (unsigned short *)(base + NSP32_MMIO_OFFSET + INDEX_REG);
-	data_ptr  = (unsigned short *)(base + NSP32_MMIO_OFFSET + DATA_REG_LOW);
+	index_ptr = (void __iomem *)(base + NSP32_MMIO_OFFSET + INDEX_REG);
+	data_ptr  = (void __iomem *)(base + NSP32_MMIO_OFFSET + DATA_REG_LOW);
 
 	writeb(reg, index_ptr);
 	return le16_to_cpu(readw(data_ptr));
@@ -214,10 +217,11 @@ static inline void nsp32_mmio_index_write2(unsigned long  base,
 					   unsigned int   reg,
 					   unsigned short val)
 {
-	volatile unsigned short *index_ptr, *data_ptr;
+	void __iomem *index_ptr;
+	void __iomem *data_ptr;
 
-	index_ptr = (unsigned short *)(base + NSP32_MMIO_OFFSET + INDEX_REG);
-	data_ptr  = (unsigned short *)(base + NSP32_MMIO_OFFSET + DATA_REG_LOW);
+	index_ptr = (void __iomem *)(base + NSP32_MMIO_OFFSET + INDEX_REG);
+	data_ptr  = (void __iomem *)(base + NSP32_MMIO_OFFSET + DATA_REG_LOW);
 
 	writeb(reg,              index_ptr);
 	writew(cpu_to_le16(val), data_ptr );

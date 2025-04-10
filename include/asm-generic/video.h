@@ -42,7 +42,7 @@ static inline bool video_is_primary_device(struct device *dev)
  */
 
 #ifndef fb_readb
-static inline u8 fb_readb(const volatile void __iomem *addr)
+static inline u8 fb_readb(const void __iomem *addr)
 {
 	return __raw_readb(addr);
 }
@@ -50,7 +50,7 @@ static inline u8 fb_readb(const volatile void __iomem *addr)
 #endif
 
 #ifndef fb_readw
-static inline u16 fb_readw(const volatile void __iomem *addr)
+static inline u16 fb_readw(const void __iomem *addr)
 {
 	return __raw_readw(addr);
 }
@@ -58,7 +58,7 @@ static inline u16 fb_readw(const volatile void __iomem *addr)
 #endif
 
 #ifndef fb_readl
-static inline u32 fb_readl(const volatile void __iomem *addr)
+static inline u32 fb_readl(const void __iomem *addr)
 {
 	return __raw_readl(addr);
 }
@@ -67,7 +67,7 @@ static inline u32 fb_readl(const volatile void __iomem *addr)
 
 #ifndef fb_readq
 #if defined(__raw_readq)
-static inline u64 fb_readq(const volatile void __iomem *addr)
+static inline u64 fb_readq(const void __iomem *addr)
 {
 	return __raw_readq(addr);
 }
@@ -76,7 +76,7 @@ static inline u64 fb_readq(const volatile void __iomem *addr)
 #endif
 
 #ifndef fb_writeb
-static inline void fb_writeb(u8 b, volatile void __iomem *addr)
+static inline void fb_writeb(u8 b, void __iomem *addr)
 {
 	__raw_writeb(b, addr);
 }
@@ -84,7 +84,7 @@ static inline void fb_writeb(u8 b, volatile void __iomem *addr)
 #endif
 
 #ifndef fb_writew
-static inline void fb_writew(u16 b, volatile void __iomem *addr)
+static inline void fb_writew(u16 b, void __iomem *addr)
 {
 	__raw_writew(b, addr);
 }
@@ -92,7 +92,7 @@ static inline void fb_writew(u16 b, volatile void __iomem *addr)
 #endif
 
 #ifndef fb_writel
-static inline void fb_writel(u32 b, volatile void __iomem *addr)
+static inline void fb_writel(u32 b, void __iomem *addr)
 {
 	__raw_writel(b, addr);
 }
@@ -101,7 +101,7 @@ static inline void fb_writel(u32 b, volatile void __iomem *addr)
 
 #ifndef fb_writeq
 #if defined(__raw_writeq)
-static inline void fb_writeq(u64 b, volatile void __iomem *addr)
+static inline void fb_writeq(u64 b, void __iomem *addr)
 {
 	__raw_writeq(b, addr);
 }
@@ -110,7 +110,7 @@ static inline void fb_writeq(u64 b, volatile void __iomem *addr)
 #endif
 
 #ifndef fb_memcpy_fromio
-static inline void fb_memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
+static inline void fb_memcpy_fromio(void *to, const void __iomem *from, size_t n)
 {
 	memcpy_fromio(to, from, n);
 }
@@ -118,7 +118,7 @@ static inline void fb_memcpy_fromio(void *to, const volatile void __iomem *from,
 #endif
 
 #ifndef fb_memcpy_toio
-static inline void fb_memcpy_toio(volatile void __iomem *to, const void *from, size_t n)
+static inline void fb_memcpy_toio(void __iomem *to, const void *from, size_t n)
 {
 	memcpy_toio(to, from, n);
 }
@@ -126,7 +126,7 @@ static inline void fb_memcpy_toio(volatile void __iomem *to, const void *from, s
 #endif
 
 #ifndef fb_memset
-static inline void fb_memset_io(volatile void __iomem *addr, int c, size_t n)
+static inline void fb_memset_io(void __iomem *addr, int c, size_t n)
 {
 	memset_io(addr, c, n);
 }

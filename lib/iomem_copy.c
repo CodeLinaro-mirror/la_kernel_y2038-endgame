@@ -18,7 +18,7 @@
  *
  * Set a range of I/O memory to a given value.
  */
-void memset_io(volatile void __iomem *addr, int val, size_t count)
+void memset_io(void __iomem *addr, int val, size_t count)
 {
 	long qc = (u8)val;
 
@@ -59,7 +59,7 @@ EXPORT_SYMBOL(memset_io);
  *
  * Copy a block of data from I/O memory.
  */
-void memcpy_fromio(void *dst, const volatile void __iomem *src, size_t count)
+void memcpy_fromio(void *dst, const void __iomem *src, size_t count)
 {
 	while (count && !IS_ALIGNED((long)src, sizeof(long))) {
 		*(u8 *)dst = __raw_readb(src);
@@ -101,7 +101,7 @@ EXPORT_SYMBOL(memcpy_fromio);
  *
  * Copy a block of data to I/O memory.
  */
-void memcpy_toio(volatile void __iomem *dst, const void *src, size_t count)
+void memcpy_toio(void __iomem *dst, const void *src, size_t count)
 {
 	while (count && !IS_ALIGNED((long)dst, sizeof(long))) {
 		__raw_writeb(*(u8 *)src, dst);

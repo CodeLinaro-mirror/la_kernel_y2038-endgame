@@ -37,7 +37,7 @@
 #define IVTV_FW_ENC_SIZE		(376836)
 #define IVTV_FW_DEC_SIZE		(256*1024)
 
-static int load_fw_direct(const char *fn, volatile u8 __iomem *mem, struct ivtv *itv, long size)
+static int load_fw_direct(const char *fn, u8 __iomem *mem, struct ivtv *itv, long size)
 {
 	const struct firmware *fw = NULL;
 	int retries = 3;
@@ -45,7 +45,7 @@ static int load_fw_direct(const char *fn, volatile u8 __iomem *mem, struct ivtv 
 retry:
 	if (retries && request_firmware(&fw, fn, &itv->pdev->dev) == 0) {
 		int i;
-		volatile u32 __iomem *dst = (volatile u32 __iomem *)mem;
+		u32 __iomem *dst = (u32 __iomem *)mem;
 		const u32 *src = (const u32 *)fw->data;
 
 		if (fw->size != size) {
@@ -163,7 +163,7 @@ static int ivtv_firmware_copy(struct ivtv *itv)
 	return 0;
 }
 
-static volatile struct ivtv_mailbox __iomem *ivtv_search_mailbox(const volatile u8 __iomem *mem, u32 size)
+static struct ivtv_mailbox __iomem *ivtv_search_mailbox(const u8 __iomem *mem, u32 size)
 {
 	int i;
 
@@ -174,7 +174,7 @@ static volatile struct ivtv_mailbox __iomem *ivtv_search_mailbox(const volatile 
 		    readl(mem + i + 4)  == 0x34567812 &&
 		    readl(mem + i + 8)  == 0x56781234 &&
 		    readl(mem + i + 12) == 0x78123456) {
-			return (volatile struct ivtv_mailbox __iomem *)(mem + i + 16);
+			return (struct ivtv_mailbox __iomem *)(mem + i + 16);
 		}
 	}
 	return NULL;
@@ -233,7 +233,7 @@ void ivtv_init_mpeg_decoder(struct ivtv *itv)
 {
 	u32 data[CX2341X_MBOX_MAX_DATA];
 	long readbytes;
-	volatile u8 __iomem *mem_offset;
+	u8 __iomem *mem_offset;
 
 	data[0] = 0;
 	data[1] = itv->cxhdl.width;	/* YUV source width */

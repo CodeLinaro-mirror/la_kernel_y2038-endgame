@@ -51,8 +51,8 @@ struct uart_pmac_port {
 	unsigned char			parity_mask;
 	unsigned char			prev_status;
 
-	volatile u8			__iomem *control_reg;
-	volatile u8			__iomem *data_reg;
+	u8				__iomem *control_reg;
+	u8				__iomem *data_reg;
 
 	unsigned char			irq_name[8];
 };
