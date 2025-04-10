@@ -122,7 +122,7 @@ EXPORT_SYMBOL(ioremap);
 /*
  * Complementary to ioremap().
  */
-void iounmap(volatile void __iomem *virtual)
+void iounmap(void __iomem *virtual)
 {
 	unsigned long vaddr = (unsigned long) virtual & PAGE_MASK;
 	struct resource *res;

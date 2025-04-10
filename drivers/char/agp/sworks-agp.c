@@ -36,7 +36,7 @@ struct serverworks_page_map {
 
 static struct _serverworks_private {
 	struct pci_dev *svrwrks_dev;	/* device one */
-	volatile u8 __iomem *registers;
+	u8 __iomem *registers;
 	struct serverworks_page_map **gatt_pages;
 	int num_tables;
 	struct serverworks_page_map scratch_dir;
@@ -269,7 +269,7 @@ static int serverworks_configure(void)
 	/* Get the memory mapped registers */
 	pci_read_config_dword(agp_bridge->dev, serverworks_private.mm_addr_ofs, &temp);
 	temp = (temp & PCI_BASE_ADDRESS_MEM_MASK);
-	serverworks_private.registers = (volatile u8 __iomem *) ioremap(temp, 4096);
+	serverworks_private.registers = ioremap(temp, 4096);
 	if (!serverworks_private.registers) {
 		dev_err(&agp_bridge->dev->dev, "can't ioremap(%#x)\n", temp);
 		return -ENOMEM;

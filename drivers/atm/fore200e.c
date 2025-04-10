@@ -233,7 +233,7 @@ fore200e_spin(int msecs)
 
 
 static int
-fore200e_poll(struct fore200e* fore200e, volatile u32* addr, u32 val, int msecs)
+fore200e_poll(struct fore200e* fore200e, u32* addr, u32 val, int msecs)
 {
     unsigned long timeout = jiffies + msecs_to_jiffies(msecs);
     int           ok;
@@ -257,7 +257,7 @@ fore200e_poll(struct fore200e* fore200e, volatile u32* addr, u32 val, int msecs)
 
 
 static int
-fore200e_io_poll(struct fore200e* fore200e, volatile u32 __iomem *addr, u32 val, int msecs)
+fore200e_io_poll(struct fore200e* fore200e, u32 __iomem *addr, u32 val, int msecs)
 {
     unsigned long timeout = jiffies + msecs_to_jiffies(msecs);
     int           ok;
@@ -431,7 +431,7 @@ fore200e_shutdown(struct fore200e* fore200e)
 
 #ifdef CONFIG_PCI
 
-static u32 fore200e_pca_read(volatile u32 __iomem *addr)
+static u32 fore200e_pca_read(u32 __iomem *addr)
 {
     /* on big-endian hosts, the board is configured to convert
        the endianess of slave RAM accesses  */
@@ -439,7 +439,7 @@ static u32 fore200e_pca_read(volatile u32 __iomem *addr)
 }
 
 
-static void fore200e_pca_write(u32 val, volatile u32 __iomem *addr)
+static void fore200e_pca_write(u32 val, u32 __iomem *addr)
 {
     /* on big-endian hosts, the board is configured to convert
        the endianess of slave RAM accesses  */
@@ -630,12 +630,12 @@ static const struct fore200e_bus fore200e_pci_ops = {
 
 #ifdef CONFIG_SBUS
 
-static u32 fore200e_sba_read(volatile u32 __iomem *addr)
+static u32 fore200e_sba_read(u32 __iomem *addr)
 {
     return sbus_readl(addr);
 }
 
-static void fore200e_sba_write(u32 val, volatile u32 __iomem *addr)
+static void fore200e_sba_write(u32 val, u32 __iomem *addr)
 {
     sbus_writel(val, addr);
 }

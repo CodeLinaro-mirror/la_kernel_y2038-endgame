@@ -80,7 +80,7 @@ volatile u32 i,count=0; \
     for(i=0;i<X;i++) count++; \
 }
 
-static u32 InitSDRAMRegisters(volatile STG4000REG __iomem *pSTGReg,
+static u32 InitSDRAMRegisters(STG4000REG __iomem *pSTGReg,
 			      u32 dwSubSysID, u32 dwRevID)
 {
 	static const u8 adwSDRAMArgCfg0[] = { 0xa0, 0x80, 0xa0, 0xa0, 0xa0 };
@@ -238,7 +238,7 @@ u32 ProgramClock(u32 refClock,
 	return (ulBestClk);
 }
 
-int SetCoreClockPLL(volatile STG4000REG __iomem *pSTGReg, struct pci_dev *pDev)
+int SetCoreClockPLL(STG4000REG __iomem *pSTGReg, struct pci_dev *pDev)
 {
 	u32 F, R, P;
 	u16 core_pll = 0, sub;

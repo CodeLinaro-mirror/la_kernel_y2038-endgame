@@ -50,8 +50,8 @@ enum {
 };
 
 struct offb_par {
-	volatile void __iomem *cmap_adr;
-	volatile void __iomem *cmap_data;
+	void __iomem *cmap_adr;
+	void __iomem *cmap_data;
 	int cmap_type;
 	int blanked;
 	u32 pseudo_palette[16];

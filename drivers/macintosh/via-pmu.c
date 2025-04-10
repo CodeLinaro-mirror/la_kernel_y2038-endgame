@@ -151,8 +151,8 @@ static int pmu_kind = PMU_UNKNOWN;
 static int pmu_fully_inited;
 static int pmu_has_adb;
 #ifdef CONFIG_PPC_PMAC
-static volatile unsigned char __iomem *via1;
-static volatile unsigned char __iomem *via2;
+static unsigned char __iomem *via1;
+static unsigned char __iomem *via2;
 static struct device_node *vias;
 static struct device_node *gpio_node;
 #endif

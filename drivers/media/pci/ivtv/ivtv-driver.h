@@ -197,7 +197,7 @@ struct ivtv_api_cache {
 };
 
 struct ivtv_mailbox_data {
-	volatile struct ivtv_mailbox __iomem *mbox;
+	struct ivtv_mailbox __iomem *mbox;
 	/* Bits 0-2 are for the encoder mailboxes, 0-1 are for the decoder mailboxes.
 	   If the bit is set, then the corresponding mailbox is in use by the driver. */
 	unsigned long busy;
@@ -611,9 +611,9 @@ struct ivtv {
 	struct v4l2_subdev *sd_audio;	/* controlling audio subdev */
 	struct v4l2_subdev *sd_muxer;	/* controlling audio muxer subdev */
 	resource_size_t base_addr;      /* PCI resource base address */
-	volatile void __iomem *enc_mem; /* pointer to mapped encoder memory */
-	volatile void __iomem *dec_mem; /* pointer to mapped decoder memory */
-	volatile void __iomem *reg_mem; /* pointer to mapped registers */
+	void __iomem *enc_mem;		/* pointer to mapped encoder memory */
+	void __iomem *dec_mem;		/* pointer to mapped decoder memory */
+	void __iomem *reg_mem;		/* pointer to mapped registers */
 	struct ivtv_options options;	/* user options */
 
 	struct v4l2_device v4l2_dev;

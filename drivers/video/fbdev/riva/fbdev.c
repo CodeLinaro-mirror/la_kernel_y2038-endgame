@@ -1487,7 +1487,7 @@ static void rivafb_imageblit(struct fb_info *info,
 	struct riva_par *par = info->par;
 	u32 fgx = 0, bgx = 0, width, tmp;
 	u8 *cdat = (u8 *) image->data;
-	volatile u32 __iomem *d;
+	u32 __iomem *d;
 	int i, size;
 
 	if ((info->flags & FBINFO_HWACCEL_DISABLED) || image->depth != 1) {

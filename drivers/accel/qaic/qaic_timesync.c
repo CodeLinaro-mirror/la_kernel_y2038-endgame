@@ -95,12 +95,12 @@ struct qts_resp {
 };
 
 #ifdef readq
-static u64 read_qtimer(const volatile void __iomem *addr)
+static u64 read_qtimer(const void __iomem *addr)
 {
 	return readq(addr);
 }
 #else
-static u64 read_qtimer(const volatile void __iomem *addr)
+static u64 read_qtimer(const void __iomem *addr)
 {
 	u64 low, high;
 

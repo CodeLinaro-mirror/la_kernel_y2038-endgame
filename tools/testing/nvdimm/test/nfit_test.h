@@ -217,7 +217,7 @@ void *__wrap_memremap(resource_size_t offset, size_t size,
 void __wrap_devm_memunmap(struct device *dev, void *addr);
 void __iomem *__wrap_ioremap(resource_size_t offset, unsigned long size);
 void __iomem *__wrap_ioremap_wc(resource_size_t offset, unsigned long size);
-void __wrap_iounmap(volatile void __iomem *addr);
+void __wrap_iounmap(void __iomem *addr);
 void __wrap_memunmap(void *addr);
 struct resource *__wrap___request_region(struct resource *parent,
 		resource_size_t start, resource_size_t n, const char *name,

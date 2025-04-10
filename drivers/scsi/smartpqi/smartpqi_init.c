@@ -3956,7 +3956,7 @@ static inline void pqi_configure_legacy_intx(struct pqi_ctrl_info *ctrl_info, bo
 {
 	u32 intx_mask;
 	struct pqi_device_registers __iomem *pqi_registers;
-	volatile void __iomem *register_addr;
+	void __iomem *register_addr;
 
 	pqi_registers = ctrl_info->pqi_registers;
 

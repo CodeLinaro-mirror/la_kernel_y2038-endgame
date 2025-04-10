@@ -287,7 +287,7 @@ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
 }
 EXPORT_SYMBOL(ioremap_prot);
 
-void iounmap(volatile void __iomem *addr)
+void iounmap(void __iomem *addr)
 {
 	if (static_branch_likely(&have_mio))
 		generic_iounmap(addr);

@@ -494,7 +494,7 @@ static void dbdma_save(struct macio_chip *macio, struct dbdma_regs *save)
 
 	/* Save state & config of DBDMA channels */
 	for (i = 0; i < 13; i++) {
-		volatile struct dbdma_regs __iomem * chan = (void __iomem *)
+		struct dbdma_regs __iomem * chan = (void __iomem *)
 			(macio->base + ((0x8000+i*0x100)>>2));
 		save[i].cmdptr_hi = in_le32(&chan->cmdptr_hi);
 		save[i].cmdptr = in_le32(&chan->cmdptr);
@@ -510,7 +510,7 @@ static void dbdma_restore(struct macio_chip *macio, struct dbdma_regs *save)
 
 	/* Save state & config of DBDMA channels */
 	for (i = 0; i < 13; i++) {
-		volatile struct dbdma_regs __iomem * chan = (void __iomem *)
+		struct dbdma_regs __iomem * chan = (void __iomem *)
 			(macio->base + ((0x8000+i*0x100)>>2));
 		out_le32(&chan->control, (ACTIVE|DEAD|WAKE|FLUSH|PAUSE|RUN)<<16);
 		while (in_le32(&chan->status) & ACTIVE)
@@ -2611,7 +2611,7 @@ static void __init probe_one_macio(const char *name, const char *compat, int typ
 {
 	struct device_node*	node;
 	int			i;
-	volatile u32 __iomem	*base;
+	u32 __iomem		*base;
 	const __be32		*addrp;
 	const u32		*revp;
 	phys_addr_t		addr;

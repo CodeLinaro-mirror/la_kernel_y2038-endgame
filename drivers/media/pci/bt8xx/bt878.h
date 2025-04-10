@@ -103,7 +103,7 @@ struct bt878 {
 	unsigned char revision;
 	unsigned int irq;
 	unsigned long bt878_adr;
-	volatile void __iomem *bt878_mem; /* function 1 */
+	void __iomem *bt878_mem; /* function 1 */
 
 	volatile u32 finished_block;
 	volatile u32 last_block;

@@ -442,7 +442,7 @@ static int bt878_probe(struct pci_dev *dev, const struct pci_device_id *pci_id)
 	       bt->irq, lat, bt->bt878_adr);
 
 #ifdef __sparc__
-	bt->bt878_mem = (unsigned char *) bt->bt878_adr;
+	bt->bt878_mem = (unsigned char __iomem *) bt->bt878_adr;
 #else
 	bt->bt878_mem = ioremap(bt->bt878_adr, 0x1000);
 #endif

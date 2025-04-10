@@ -2741,7 +2741,7 @@ int megasas_adp_reset_wait_for_ready(struct megasas_instance *instance,
 int megasas_irqpoll(struct irq_poll *irqpoll, int budget);
 void megasas_dump_fusion_io(struct scsi_cmnd *scmd);
 u32 megasas_readl(struct megasas_instance *instance,
-		  const volatile void __iomem *addr);
+		  const void __iomem *addr);
 struct megasas_cmd *megasas_get_cmd(struct megasas_instance *instance);
 void megasas_return_cmd(struct megasas_instance *instance,
 			struct megasas_cmd *cmd);

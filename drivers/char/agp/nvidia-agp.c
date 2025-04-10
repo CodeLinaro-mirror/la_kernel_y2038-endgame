@@ -29,7 +29,7 @@ static struct _nvidia_private {
 	struct pci_dev *dev_1;
 	struct pci_dev *dev_2;
 	struct pci_dev *dev_3;
-	volatile u32 __iomem *aperture;
+	u32 __iomem *aperture;
 	int num_active_entries;
 	off_t pg_offset;
 	u32 wbc_mask;
@@ -155,8 +155,7 @@ static int nvidia_configure(void)
 
 	/* map aperture */
 	apbase_phys = pci_resource_start(agp_bridge->dev, AGP_APERTURE_BAR);
-	nvidia_private.aperture =
-		(volatile u32 __iomem *) ioremap(apbase_phys, 33 * PAGE_SIZE);
+	nvidia_private.aperture = ioremap(apbase_phys, 33 * PAGE_SIZE);
 
 	if (!nvidia_private.aperture)
 		return -ENOMEM;

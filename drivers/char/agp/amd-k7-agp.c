@@ -29,7 +29,7 @@ struct amd_page_map {
 };
 
 static struct _amd_irongate_private {
-	volatile u8 __iomem *registers;
+	u8 __iomem *registers;
 	struct amd_page_map **gatt_pages;
 	int num_tables;
 } amd_irongate_private;
@@ -216,7 +216,7 @@ static int amd_irongate_configure(void)
 	if (!amd_irongate_private.registers) {
 		/* Get the memory mapped registers */
 		reg = pci_resource_start(agp_bridge->dev, AMD_MMBASE_BAR);
-		amd_irongate_private.registers = (volatile u8 __iomem *) ioremap(reg, 4096);
+		amd_irongate_private.registers = ioremap(reg, 4096);
 		if (!amd_irongate_private.registers)
 			return -ENOMEM;
 	}

@@ -453,7 +453,7 @@ EXPORT_SYMBOL(ioremap_prot);
  *
  * Caller must ensure there is only one unmapping for the same pointer.
  */
-void iounmap(volatile void __iomem *addr)
+void iounmap(void __iomem *addr)
 {
 	struct vm_struct *p, *o;
 
@@ -475,8 +475,7 @@ void iounmap(volatile void __iomem *addr)
 
 	mmiotrace_iounmap(addr);
 
-	addr = (volatile void __iomem *)
-		(PAGE_MASK & (unsigned long __force)addr);
+	addr = (void __iomem *)(PAGE_MASK & (unsigned long __force)addr);
 
 	/* Use the vm area unlocked, assuming the caller
 	   ensures there isn't another iounmap for the same address

@@ -172,7 +172,7 @@ static int get_mailbox(struct ivtv *itv, struct ivtv_mailbox_data *mbdata, int f
 	return -ENODEV;
 }
 
-static void write_mailbox(volatile struct ivtv_mailbox __iomem *mbox, int cmd, int args, u32 data[])
+static void write_mailbox(struct ivtv_mailbox __iomem *mbox, int cmd, int args, u32 data[])
 {
 	int i;
 
@@ -200,7 +200,7 @@ static void clear_all_mailboxes(struct ivtv *itv, struct ivtv_mailbox_data *mbda
 static int ivtv_api_call(struct ivtv *itv, int cmd, int args, u32 data[])
 {
 	struct ivtv_mailbox_data *mbdata = (cmd >= 128) ? &itv->enc_mbox : &itv->dec_mbox;
-	volatile struct ivtv_mailbox __iomem *mbox;
+	struct ivtv_mailbox __iomem *mbox;
 	int api_timeout = msecs_to_jiffies(1000);
 	int flags, mb, i;
 	unsigned long then;
@@ -358,7 +358,7 @@ int ivtv_vapi(struct ivtv *itv, int cmd, int args, ...)
 void ivtv_api_get_data(struct ivtv_mailbox_data *mbdata, int mb,
 		       int argc, u32 data[])
 {
-	volatile u32 __iomem *p = mbdata->mbox[mb].data;
+	u32 __iomem *p = mbdata->mbox[mb].data;
 	int i;
 	for (i = 0; i < argc; i++, p++)
 		data[i] = readl(p);

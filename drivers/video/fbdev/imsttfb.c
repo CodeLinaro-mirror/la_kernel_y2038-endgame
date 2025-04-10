@@ -402,7 +402,7 @@ static void imsttfb_remove(struct pci_dev *pdev);
 /*
  * Register access
  */
-static inline u32 read_reg_le32(volatile u32 __iomem *base, int regindex)
+static inline u32 read_reg_le32(u32 __iomem *base, int regindex)
 {
 #ifdef __powerpc__
 	return in_le32(base + regindex);
@@ -411,7 +411,7 @@ static inline u32 read_reg_le32(volatile u32 __iomem *base, int regindex)
 #endif
 }
 
-static inline void write_reg_le32(volatile u32 __iomem *base, int regindex, u32 val)
+static inline void write_reg_le32(u32 __iomem *base, int regindex, u32 val)
 {
 #ifdef __powerpc__
 	out_le32(base + regindex, val);

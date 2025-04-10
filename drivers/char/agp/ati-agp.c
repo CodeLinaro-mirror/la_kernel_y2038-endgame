@@ -48,7 +48,7 @@ struct ati_page_map {
 };
 
 static struct _ati_generic_private {
-	volatile u8 __iomem *registers;
+	u8 __iomem *registers;
 	struct ati_page_map **gatt_pages;
 	int num_tables;
 } ati_generic_private;
@@ -196,7 +196,7 @@ static void ati_cleanup(void)
 		temp = ((temp & ~(0x0000000f)) | previous_size->size_value);
 		pci_write_config_dword(agp_bridge->dev, ATI_RS300_APSIZE, temp);
 	}
-	iounmap((volatile u8 __iomem *)ati_generic_private.registers);
+	iounmap(ati_generic_private.registers);
 }
 
 
@@ -207,7 +207,7 @@ static int ati_configure(void)
 
 	/* Get the memory mapped registers */
 	reg = pci_resource_start(agp_bridge->dev, ATI_GART_MMBASE_BAR);
-	ati_generic_private.registers = (volatile u8 __iomem *) ioremap(reg, 4096);
+	ati_generic_private.registers = ioremap(reg, 4096);
 
 	if (!ati_generic_private.registers)
 		return -ENOMEM;

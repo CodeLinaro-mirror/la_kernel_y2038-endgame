@@ -396,8 +396,8 @@ static int nvidia_calc_regs(struct fb_info *info)
 		i = 32;
 
 	if (par->Architecture >= NV_ARCH_10)
-		par->CURSOR = (volatile u32 __iomem *)(info->screen_base +
-						       par->CursorStart);
+		par->CURSOR = (u32 __iomem *)(info->screen_base +
+					      par->CursorStart);
 
 	if (info->var.sync & FB_SYNC_HOR_HIGH_ACT)
 		state->misc_output &= ~0x40;
@@ -1202,8 +1202,7 @@ static int nvidia_set_fbinfo(struct fb_info *info)
 	return nvidiafb_check_var(&info->var, info);
 }
 
-static u32 nvidia_get_chipset(struct pci_dev *pci_dev,
-			      volatile u32 __iomem *REGS)
+static u32 nvidia_get_chipset(struct pci_dev *pci_dev, u32 __iomem *REGS)
 {
 	u32 id = (pci_dev->vendor << 16) | pci_dev->device;
 
@@ -1282,7 +1281,7 @@ static int nvidiafb_probe(struct pci_dev *pd, const struct pci_device_id *ent)
 	struct fb_info *info;
 	unsigned short cmd;
 	int ret;
-	volatile u32 __iomem *REGS;
+	u32 __iomem *REGS;
 	int Chipset;
 	u32 Architecture;
 

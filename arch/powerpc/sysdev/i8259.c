@@ -12,7 +12,7 @@
 #include <asm/io.h>
 #include <asm/i8259.h>
 
-static volatile void __iomem *pci_intack; /* RO, gives us the irq vector */
+static void __iomem *pci_intack; /* RO, gives us the irq vector */
 
 static unsigned char cached_8259[2] = { 0xff, 0xff };
 #define cached_A1 (cached_8259[0])

@@ -599,7 +599,7 @@ static int spear_mtd_read(struct mtd_info *mtd, loff_t from, size_t len,
  * implementation detail and not part of the API. Not mentioning the comment
  * stating that _memcpy_toio() should be optimized.
  */
-static void spear_smi_memcpy_toio_b(volatile void __iomem *dest,
+static void spear_smi_memcpy_toio_b(void __iomem *dest,
 				    const void *src, size_t len)
 {
 	const unsigned char *from = src;

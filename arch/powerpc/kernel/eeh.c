@@ -585,7 +585,7 @@ EXPORT_SYMBOL_GPL(eeh_dev_check_failure);
  *
  * Note this routine is safe to call in an interrupt context.
  */
-int eeh_check_failure(const volatile void __iomem *token)
+int eeh_check_failure(const void __iomem *token)
 {
 	unsigned long addr;
 	struct eeh_dev *edev;

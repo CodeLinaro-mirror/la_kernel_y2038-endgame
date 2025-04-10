@@ -446,12 +446,12 @@ static inline void t4_write_reg(struct adapter *adapter, u32 reg_addr, u32 val)
 }
 
 #ifndef readq
-static inline u64 readq(const volatile void __iomem *addr)
+static inline u64 readq(const void __iomem *addr)
 {
 	return readl(addr) + ((u64)readl(addr + 4) << 32);
 }
 
-static inline void writeq(u64 val, volatile void __iomem *addr)
+static inline void writeq(u64 val, void __iomem *addr)
 {
 	writel(val, addr);
 	writel(val >> 32, addr + 4);

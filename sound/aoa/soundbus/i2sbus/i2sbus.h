@@ -44,7 +44,7 @@ struct pcm_info {
 	int current_period;
 	u32 frame_count;
 	struct dbdma_command_mem dbdma_ring;
-	volatile struct dbdma_regs __iomem *dbdma;
+	struct dbdma_regs __iomem *dbdma;
 	struct completion *stop_completion;
 };
 
@@ -58,7 +58,7 @@ struct i2sbus_dev {
 	struct soundbus_dev sound;
 	struct macio_dev *macio;
 	struct i2sbus_control *control;
-	volatile struct i2s_interface_regs __iomem *intfregs;
+	struct i2s_interface_regs __iomem *intfregs;
 
 	struct resource resources[3];
 	struct resource *allocated_resource[3];

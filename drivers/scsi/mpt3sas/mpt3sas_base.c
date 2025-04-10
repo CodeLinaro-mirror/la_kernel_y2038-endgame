@@ -4104,8 +4104,7 @@ mpt3sas_base_free_smid(struct MPT3SAS_ADAPTER *ioc, u16 smid)
  * in one transfer.
  */
 static inline void
-_base_mpi_ep_writeq(__u64 b, volatile void __iomem *addr,
-					spinlock_t *writeq_lock)
+_base_mpi_ep_writeq(__u64 b, void __iomem *addr, spinlock_t *writeq_lock)
 {
 	unsigned long flags;
 
@@ -4127,7 +4126,7 @@ _base_mpi_ep_writeq(__u64 b, volatile void __iomem *addr,
  */
 #if defined(writeq) && defined(CONFIG_64BIT)
 static inline void
-_base_writeq(__u64 b, volatile void __iomem *addr, spinlock_t *writeq_lock)
+_base_writeq(__u64 b, void __iomem *addr, spinlock_t *writeq_lock)
 {
 	wmb();
 	__raw_writeq(b, addr);
@@ -4135,7 +4134,7 @@ _base_writeq(__u64 b, volatile void __iomem *addr, spinlock_t *writeq_lock)
 }
 #else
 static inline void
-_base_writeq(__u64 b, volatile void __iomem *addr, spinlock_t *writeq_lock)
+_base_writeq(__u64 b, void __iomem *addr, spinlock_t *writeq_lock)
 {
 	_base_mpi_ep_writeq(b, addr, writeq_lock);
 }

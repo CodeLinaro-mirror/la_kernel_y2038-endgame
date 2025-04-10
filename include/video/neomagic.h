@@ -92,7 +92,7 @@
 
 /* --------------------------------------------------------------------- */
 
-typedef volatile struct {
+typedef struct {
 	__u32 bltStat;
 	__u32 bltCntl;
 	__u32 xpColor;

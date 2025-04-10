@@ -770,9 +770,9 @@ typedef enum fore200e_state {
 /* PCA-200E registers */
 
 typedef struct fore200e_pca_regs {
-    volatile u32 __iomem * hcr;    /* address of host control register        */
-    volatile u32 __iomem * imr;    /* address of host interrupt mask register */
-    volatile u32 __iomem * psr;    /* address of PCI specific register        */
+    u32 __iomem * hcr;    /* address of host control register        */
+    u32 __iomem * imr;    /* address of host interrupt mask register */
+    u32 __iomem * psr;    /* address of PCI specific register        */
 } fore200e_pca_regs_t;
 
 
@@ -803,8 +803,8 @@ typedef struct fore200e_bus {
     int                  descr_alignment;     /* tpd/rpd/rbd DMA alignment requirement  */
     int                  buffer_alignment;    /* rx buffers DMA alignment requirement   */
     int                  status_alignment;    /* status words DMA alignment requirement */
-    u32                  (*read)(volatile u32 __iomem *);
-    void                 (*write)(u32, volatile u32 __iomem *);
+    u32                  (*read)(u32 __iomem *);
+    void                 (*write)(u32, u32 __iomem *);
     int                  (*configure)(struct fore200e*); 
     int                  (*map)(struct fore200e*); 
     void                 (*reset)(struct fore200e*);

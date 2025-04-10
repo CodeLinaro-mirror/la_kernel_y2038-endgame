@@ -965,127 +965,127 @@ enum  velocity_owner {
  */
 
 struct mac_regs {
-	volatile u8 PAR[6];		/* 0x00 */
-	volatile u8 RCR;
-	volatile u8 TCR;
+	u8 PAR[6];		/* 0x00 */
+	u8 RCR;
+	u8 TCR;
 
-	volatile __le32 CR0Set;		/* 0x08 */
-	volatile __le32 CR0Clr;		/* 0x0C */
+	__le32 CR0Set;		/* 0x08 */
+	__le32 CR0Clr;		/* 0x0C */
 
-	volatile u8 MARCAM[8];		/* 0x10 */
+	u8 MARCAM[8];		/* 0x10 */
 
-	volatile __le32 DecBaseHi;	/* 0x18 */
-	volatile __le16 DbfBaseHi;	/* 0x1C */
-	volatile __le16 reserved_1E;
+	__le32 DecBaseHi;	/* 0x18 */
+	__le16 DbfBaseHi;	/* 0x1C */
+	__le16 reserved_1E;
 
-	volatile __le16 ISRCTL;		/* 0x20 */
-	volatile u8 TXESR;
-	volatile u8 RXESR;
+	__le16 ISRCTL;		/* 0x20 */
+	u8 TXESR;
+	u8 RXESR;
 
-	volatile __le32 ISR;		/* 0x24 */
-	volatile __le32 IMR;
+	__le32 ISR;		/* 0x24 */
+	__le32 IMR;
 
-	volatile __le32 TDStatusPort;	/* 0x2C */
+	__le32 TDStatusPort;	/* 0x2C */
 
-	volatile __le16 TDCSRSet;	/* 0x30 */
-	volatile u8 RDCSRSet;
-	volatile u8 reserved_33;
-	volatile __le16 TDCSRClr;
-	volatile u8 RDCSRClr;
-	volatile u8 reserved_37;
+	__le16 TDCSRSet;	/* 0x30 */
+	u8 RDCSRSet;
+	u8 reserved_33;
+	__le16 TDCSRClr;
+	u8 RDCSRClr;
+	u8 reserved_37;
 
-	volatile __le32 RDBaseLo;	/* 0x38 */
-	volatile __le16 RDIdx;		/* 0x3C */
-	volatile u8 TQETMR;		/* 0x3E, VT3216 and above only */
-	volatile u8 RQETMR;		/* 0x3F, VT3216 and above only */
+	__le32 RDBaseLo;	/* 0x38 */
+	__le16 RDIdx;		/* 0x3C */
+	u8 TQETMR;		/* 0x3E, VT3216 and above only */
+	u8 RQETMR;		/* 0x3F, VT3216 and above only */
 
-	volatile __le32 TDBaseLo[4];	/* 0x40 */
+	__le32 TDBaseLo[4];	/* 0x40 */
 
-	volatile __le16 RDCSize;	/* 0x50 */
-	volatile __le16 TDCSize;	/* 0x52 */
-	volatile __le16 TDIdx[4];	/* 0x54 */
-	volatile __le16 tx_pause_timer;	/* 0x5C */
-	volatile __le16 RBRDU;		/* 0x5E */
+	__le16 RDCSize;	/* 0x50 */
+	__le16 TDCSize;	/* 0x52 */
+	__le16 TDIdx[4];	/* 0x54 */
+	__le16 tx_pause_timer;	/* 0x5C */
+	__le16 RBRDU;		/* 0x5E */
 
-	volatile __le32 FIFOTest0;	/* 0x60 */
-	volatile __le32 FIFOTest1;	/* 0x64 */
+	__le32 FIFOTest0;	/* 0x60 */
+	__le32 FIFOTest1;	/* 0x64 */
 
-	volatile u8 CAMADDR;		/* 0x68 */
-	volatile u8 CAMCR;		/* 0x69 */
-	volatile u8 GFTEST;		/* 0x6A */
-	volatile u8 FTSTCMD;		/* 0x6B */
+	u8 CAMADDR;		/* 0x68 */
+	u8 CAMCR;		/* 0x69 */
+	u8 GFTEST;		/* 0x6A */
+	u8 FTSTCMD;		/* 0x6B */
 
-	volatile u8 MIICFG;		/* 0x6C */
-	volatile u8 MIISR;
-	volatile u8 PHYSR0;
-	volatile u8 PHYSR1;
-	volatile u8 MIICR;
-	volatile u8 MIIADR;
-	volatile __le16 MIIDATA;
+	u8 MIICFG;		/* 0x6C */
+	u8 MIISR;
+	u8 PHYSR0;
+	u8 PHYSR1;
+	u8 MIICR;
+	u8 MIIADR;
+	__le16 MIIDATA;
 
-	volatile __le16 SoftTimer0;	/* 0x74 */
-	volatile __le16 SoftTimer1;
+	__le16 SoftTimer0;	/* 0x74 */
+	__le16 SoftTimer1;
 
-	volatile u8 CFGA;		/* 0x78 */
-	volatile u8 CFGB;
-	volatile u8 CFGC;
-	volatile u8 CFGD;
+	u8 CFGA;		/* 0x78 */
+	u8 CFGB;
+	u8 CFGC;
+	u8 CFGD;
 
-	volatile __le16 DCFG;		/* 0x7C */
-	volatile __le16 MCFG;
+	__le16 DCFG;		/* 0x7C */
+	__le16 MCFG;
 
-	volatile u8 TBIST;		/* 0x80 */
-	volatile u8 RBIST;
-	volatile u8 PMCPORT;
-	volatile u8 STICKHW;
+	u8 TBIST;		/* 0x80 */
+	u8 RBIST;
+	u8 PMCPORT;
+	u8 STICKHW;
 
-	volatile u8 MIBCR;		/* 0x84 */
-	volatile u8 reserved_85;
-	volatile u8 rev_id;
-	volatile u8 PORSTS;
+	u8 MIBCR;		/* 0x84 */
+	u8 reserved_85;
+	u8 rev_id;
+	u8 PORSTS;
 
-	volatile __le32 MIBData;	/* 0x88 */
+	__le32 MIBData;	/* 0x88 */
 
-	volatile __le16 EEWrData;
+	__le16 EEWrData;
 
-	volatile u8 reserved_8E;
-	volatile u8 BPMDWr;
-	volatile u8 BPCMD;
-	volatile u8 BPMDRd;
+	u8 reserved_8E;
+	u8 BPMDWr;
+	u8 BPCMD;
+	u8 BPMDRd;
 
-	volatile u8 EECHKSUM;		/* 0x92 */
-	volatile u8 EECSR;
+	u8 EECHKSUM;		/* 0x92 */
+	u8 EECSR;
 
-	volatile __le16 EERdData;	/* 0x94 */
-	volatile u8 EADDR;
-	volatile u8 EMBCMD;
+	__le16 EERdData;	/* 0x94 */
+	u8 EADDR;
+	u8 EMBCMD;
 
 
-	volatile u8 JMPSR0;		/* 0x98 */
-	volatile u8 JMPSR1;
-	volatile u8 JMPSR2;
-	volatile u8 JMPSR3;
-	volatile u8 CHIPGSR;		/* 0x9C */
-	volatile u8 TESTCFG;
-	volatile u8 DEBUG;
-	volatile u8 CHIPGCR;
+	u8 JMPSR0;		/* 0x98 */
+	u8 JMPSR1;
+	u8 JMPSR2;
+	u8 JMPSR3;
+	u8 CHIPGSR;		/* 0x9C */
+	u8 TESTCFG;
+	u8 DEBUG;
+	u8 CHIPGCR;
 
-	volatile __le16 WOLCRSet;	/* 0xA0 */
-	volatile u8 PWCFGSet;
-	volatile u8 WOLCFGSet;
+	__le16 WOLCRSet;	/* 0xA0 */
+	u8 PWCFGSet;
+	u8 WOLCFGSet;
 
-	volatile __le16 WOLCRClr;	/* 0xA4 */
-	volatile u8 PWCFGCLR;
-	volatile u8 WOLCFGClr;
+	__le16 WOLCRClr;	/* 0xA4 */
+	u8 PWCFGCLR;
+	u8 WOLCFGClr;
 
-	volatile __le16 WOLSRSet;	/* 0xA8 */
-	volatile __le16 reserved_AA;
+	__le16 WOLSRSet;	/* 0xA8 */
+	__le16 reserved_AA;
 
-	volatile __le16 WOLSRClr;	/* 0xAC */
-	volatile __le16 reserved_AE;
+	__le16 WOLSRClr;	/* 0xAC */
+	__le16 reserved_AE;
 
-	volatile __le16 PatternCRC[8];	/* 0xB0 */
-	volatile __le32 ByteMask[4][4];	/* 0xC0 */
+	__le16 PatternCRC[8];	/* 0xB0 */
+	__le32 ByteMask[4][4];	/* 0xC0 */
 };
 
 

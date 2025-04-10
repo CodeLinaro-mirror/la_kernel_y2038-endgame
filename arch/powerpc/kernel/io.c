@@ -24,7 +24,7 @@
 /* See definition in io.h */
 bool isa_io_special;
 
-void _insb(const volatile u8 __iomem *port, void *buf, long count)
+void _insb(const u8 __iomem *port, void *buf, long count)
 {
 	u8 *tbuf = buf;
 	u8 tmp;
@@ -42,7 +42,7 @@ void _insb(const volatile u8 __iomem *port, void *buf, long count)
 }
 EXPORT_SYMBOL(_insb);
 
-void _outsb(volatile u8 __iomem *port, const void *buf, long count)
+void _outsb(u8 __iomem *port, const void *buf, long count)
 {
 	const u8 *tbuf = buf;
 
@@ -57,7 +57,7 @@ void _outsb(volatile u8 __iomem *port, const void *buf, long count)
 }
 EXPORT_SYMBOL(_outsb);
 
-void _insw(const volatile u16 __iomem *port, void *buf, long count)
+void _insw(const u16 __iomem *port, void *buf, long count)
 {
 	u16 *tbuf = buf;
 	u16 tmp;
@@ -75,7 +75,7 @@ void _insw(const volatile u16 __iomem *port, void *buf, long count)
 }
 EXPORT_SYMBOL(_insw);
 
-void _outsw(volatile u16 __iomem *port, const void *buf, long count)
+void _outsw(u16 __iomem *port, const void *buf, long count)
 {
 	const u16 *tbuf = buf;
 
@@ -90,7 +90,7 @@ void _outsw(volatile u16 __iomem *port, const void *buf, long count)
 }
 EXPORT_SYMBOL(_outsw);
 
-void _insl(const volatile u32 __iomem *port, void *buf, long count)
+void _insl(const u32 __iomem *port, void *buf, long count)
 {
 	u32 *tbuf = buf;
 	u32 tmp;
@@ -108,7 +108,7 @@ void _insl(const volatile u32 __iomem *port, void *buf, long count)
 }
 EXPORT_SYMBOL(_insl);
 
-void _outsl(volatile u32 __iomem *port, const void *buf, long count)
+void _outsl(u32 __iomem *port, const void *buf, long count)
 {
 	const u32 *tbuf = buf;
 
@@ -126,7 +126,7 @@ EXPORT_SYMBOL(_outsl);
 #define IO_CHECK_ALIGN(v,a) ((((unsigned long)(v)) & ((a) - 1)) == 0)
 
 notrace void
-_memset_io(volatile void __iomem *addr, int c, unsigned long n)
+_memset_io(void __iomem *addr, int c, unsigned long n)
 {
 	void *p = (void __force *)addr;
 	u32 lc = c;
@@ -153,7 +153,7 @@ _memset_io(volatile void __iomem *addr, int c, unsigned long n)
 }
 EXPORT_SYMBOL(_memset_io);
 
-void _memcpy_fromio(void *dest, const volatile void __iomem *src,
+void _memcpy_fromio(void *dest, const void __iomem *src,
 		    unsigned long n)
 {
 	void *vsrc = (void __force *) src;
@@ -184,7 +184,7 @@ void _memcpy_fromio(void *dest, const volatile void __iomem *src,
 }
 EXPORT_SYMBOL(_memcpy_fromio);
 
-void _memcpy_toio(volatile void __iomem *dest, const void *src, unsigned long n)
+void _memcpy_toio(void __iomem *dest, const void *src, unsigned long n)
 {
 	void *vdest = (void __force *) dest;
 

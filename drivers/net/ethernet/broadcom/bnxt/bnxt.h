@@ -2834,8 +2834,7 @@ static inline u32 bnxt_tx_avail(struct bnxt *bp,
 	return bp->tx_ring_size - (used & bp->tx_ring_mask);
 }
 
-static inline void bnxt_writeq(struct bnxt *bp, u64 val,
-			       volatile void __iomem *addr)
+static inline void bnxt_writeq(struct bnxt *bp, u64 val, void __iomem *addr)
 {
 #if BITS_PER_LONG == 32
 	spin_lock(&bp->db_lock);
@@ -2847,7 +2846,7 @@ static inline void bnxt_writeq(struct bnxt *bp, u64 val,
 }
 
 static inline void bnxt_writeq_relaxed(struct bnxt *bp, u64 val,
-				       volatile void __iomem *addr)
+				       void __iomem *addr)
 {
 #if BITS_PER_LONG == 32
 	spin_lock(&bp->db_lock);

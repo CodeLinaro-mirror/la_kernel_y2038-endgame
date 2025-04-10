@@ -16,10 +16,10 @@ MODULE_FIRMWARE(WIL_FW_NAME_TALYN);
 MODULE_FIRMWARE(WIL_BRD_NAME_TALYN);
 
 static
-void wil_memset_toio_32(volatile void __iomem *dst, u32 val,
+void wil_memset_toio_32(void __iomem *dst, u32 val,
 			size_t count)
 {
-	volatile u32 __iomem *d = dst;
+	u32 __iomem *d = dst;
 
 	for (count += 4; count > 4; count -= 4)
 		__raw_writel(val, d++);

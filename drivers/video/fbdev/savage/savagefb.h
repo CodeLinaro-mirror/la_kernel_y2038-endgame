@@ -182,7 +182,7 @@ struct savagefb_i2c_chan {
 	struct savagefb_par *par;
 	struct i2c_adapter adapter;
 	struct i2c_algo_bit_data algo;
-	volatile u8 __iomem *ioaddr;
+	u8 __iomem *ioaddr;
 	u32   reg;
 };
 
@@ -221,7 +221,7 @@ struct savagefb_par {
 		u32           len;
 	} mmio;
 
-	volatile u32  __iomem *bci_base;
+	u32  __iomem *bci_base;
 	unsigned int  bci_ptr;
 	u32           cob_offset;
 	u32           cob_size;
