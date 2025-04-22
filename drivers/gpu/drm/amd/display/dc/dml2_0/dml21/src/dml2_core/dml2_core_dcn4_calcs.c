@@ -7303,7 +7303,7 @@ static void calculate_pstate_keepout_dst_lines(
 	}
 }
 
-static noinline_for_stack void dml_core_ms_prefetch_check(struct dml2_core_internal_display_mode_lib *mode_lib,
+static __no_sanitize_address __no_sanitize_thread __no_sanitize_memory noinline_for_stack void dml_core_ms_prefetch_check(struct dml2_core_internal_display_mode_lib *mode_lib,
 	const struct dml2_display_cfg *display_cfg)
 {
 	struct dml2_core_calcs_mode_support_locals *s = &mode_lib->scratch.dml_core_mode_support_locals;
