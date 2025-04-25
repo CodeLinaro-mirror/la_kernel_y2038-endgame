@@ -1457,7 +1457,7 @@ config HIGHMEM
 
 config X86_PAE
 	bool "PAE (Physical Address Extension) Support"
-	depends on X86_32 && X86_HAVE_PAE
+	depends on X86_32 && X86_CMOV
 	select PHYS_ADDR_T_64BIT
 	help
 	  PAE is required for NX support, and furthermore enables
