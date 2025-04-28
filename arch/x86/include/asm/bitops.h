@@ -240,184 +240,18 @@ arch_test_bit_acquire(unsigned long nr, const volatile unsigned long *addr)
 					  variable_test_bit(nr, addr);
 }
 
-static __always_inline __attribute_const__ unsigned long variable__ffs(unsigned long word)
-{
-	asm("tzcnt %1,%0"
-		: "=r" (word)
-		: ASM_INPUT_RM (word));
-	return word;
-}
-
-/**
- * __ffs - find first set bit in word
- * @word: The word to search
- *
- * Undefined if no bit exists, so code should check against 0 first.
- */
-#define __ffs(word)				\
-	(__builtin_constant_p(word) ?		\
-	 (unsigned long)__builtin_ctzl(word) :	\
-	 variable__ffs(word))
-
-static __always_inline __attribute_const__ unsigned long variable_ffz(unsigned long word)
-{
-	return variable__ffs(~word);
-}
-
-/**
- * ffz - find first zero bit in word
- * @word: The word to search
- *
- * Undefined if no zero exists, so code should check against ~0UL first.
- */
-#define ffz(word)				\
-	(__builtin_constant_p(word) ?		\
-	 (unsigned long)__builtin_ctzl(~word) :	\
-	 variable_ffz(word))
-
-/*
- * __fls: find last set bit in word
- * @word: The word to search
- *
- * Undefined if no set bit exists, so code should check against 0 first.
- */
-static __always_inline __attribute_const__ unsigned long __fls(unsigned long word)
-{
-	if (__builtin_constant_p(word))
-		return BITS_PER_LONG - 1 - __builtin_clzl(word);
-
-	asm("bsr %1,%0"
-	    : "=r" (word)
-	    : ASM_INPUT_RM (word));
-	return word;
-}
-
 #undef ADDR
 
-#ifdef __KERNEL__
-static __always_inline __attribute_const__ int variable_ffs(int x)
-{
-	int r;
-
-#ifdef CONFIG_X86_64
-	/*
-	 * AMD64 says BSFL won't clobber the dest reg if x==0; Intel64 says the
-	 * dest reg is undefined if x==0, but their CPU architect says its
-	 * value is written to set it to the same as before, except that the
-	 * top 32 bits will be cleared.
-	 *
-	 * We cannot do this on 32 bits because at the very least some
-	 * 486 CPUs did not behave this way.
-	 */
-	asm("bsfl %1,%0"
-	    : "=r" (r)
-	    : ASM_INPUT_RM (x), "0" (-1));
-#elif defined(CONFIG_X86_CMOV)
-	asm("bsfl %1,%0\n\t"
-	    "cmovzl %2,%0"
-	    : "=&r" (r) : "rm" (x), "r" (-1));
-#else
-	asm("bsfl %1,%0\n\t"
-	    "jnz 1f\n\t"
-	    "movl $-1,%0\n"
-	    "1:" : "=r" (r) : "rm" (x));
-#endif
-	return r + 1;
-}
-
-/**
- * ffs - find first set bit in word
- * @x: the word to search
- *
- * This is defined the same way as the libc and compiler builtin ffs
- * routines, therefore differs in spirit from the other bitops.
- *
- * ffs(value) returns 0 if value is 0 or the position of the first
- * set bit if value is nonzero. The first (least significant) bit
- * is at position 1.
- */
-#define ffs(x) (__builtin_constant_p(x) ? __builtin_ffs(x) : variable_ffs(x))
-
-/**
- * fls - find last set bit in word
- * @x: the word to search
- *
- * This is defined in a similar way as the libc and compiler builtin
- * ffs, but returns the position of the most significant set bit.
- *
- * fls(value) returns 0 if value is 0 or the position of the last
- * set bit if value is nonzero. The last (most significant) bit is
- * at position 32.
- */
-static __always_inline __attribute_const__ int fls(unsigned int x)
-{
-	int r;
-
-	if (__builtin_constant_p(x))
-		return x ? 32 - __builtin_clz(x) : 0;
-
-#ifdef CONFIG_X86_64
-	/*
-	 * AMD64 says BSRL won't clobber the dest reg if x==0; Intel64 says the
-	 * dest reg is undefined if x==0, but their CPU architect says its
-	 * value is written to set it to the same as before, except that the
-	 * top 32 bits will be cleared.
-	 *
-	 * We cannot do this on 32 bits because at the very least some
-	 * 486 CPUs did not behave this way.
-	 */
-	asm("bsrl %1,%0"
-	    : "=r" (r)
-	    : ASM_INPUT_RM (x), "0" (-1));
-#elif defined(CONFIG_X86_CMOV)
-	asm("bsrl %1,%0\n\t"
-	    "cmovzl %2,%0"
-	    : "=&r" (r) : "rm" (x), "rm" (-1));
-#else
-	asm("bsrl %1,%0\n\t"
-	    "jnz 1f\n\t"
-	    "movl $-1,%0\n"
-	    "1:" : "=r" (r) : "rm" (x));
-#endif
-	return r + 1;
-}
-
-/**
- * fls64 - find last set bit in a 64-bit word
- * @x: the word to search
- *
- * This is defined in a similar way as the libc and compiler builtin
- * ffsll, but returns the position of the most significant set bit.
- *
- * fls64(value) returns 0 if value is 0 or the position of the last
- * set bit if value is nonzero. The last (most significant) bit is
- * at position 64.
- */
-#ifdef CONFIG_X86_64
-static __always_inline __attribute_const__ int fls64(__u64 x)
-{
-	int bitpos = -1;
-
-	if (__builtin_constant_p(x))
-		return x ? 64 - __builtin_clzll(x) : 0;
-	/*
-	 * AMD64 says BSRQ won't clobber the dest reg if x==0; Intel64 says the
-	 * dest reg is undefined if x==0, but their CPU architect says its
-	 * value is written to set it to the same as before.
-	 */
-	asm("bsrq %1,%q0"
-	    : "+r" (bitpos)
-	    : ASM_INPUT_RM (x));
-	return bitpos + 1;
-}
-#else
+#include <asm-generic/bitops/__ffs.h>
+#include <asm-generic/bitops/ffz.h>
+#include <asm-generic/bitops/builtin-fls.h>
+#include <asm-generic/bitops/__fls.h>
 #include <asm-generic/bitops/fls64.h>
-#endif
+
 
 #include <asm-generic/bitops/sched.h>
-
+#include <asm-generic/bitops/builtin-ffs.h>
 #include <asm/arch_hweight.h>
-
 #include <asm-generic/bitops/const_hweight.h>
 
 #include <asm-generic/bitops/instrumented-atomic.h>
@@ -428,5 +262,4 @@ static __always_inline __attribute_const__ int fls64(__u64 x)
 
 #include <asm-generic/bitops/ext2-atomic-setbit.h>
 
-#endif /* __KERNEL__ */
 #endif /* _ASM_X86_BITOPS_H */
