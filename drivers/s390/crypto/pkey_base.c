@@ -340,7 +340,7 @@ void pkey_handler_request_modules(void)
 		rcu_read_unlock();
 		if (!found) {
 			pr_debug("request_module(%s)\n", pkey_handler_modules[i]);
-			request_module(pkey_handler_modules[i]);
+			request_module("%s", pkey_handler_modules[i]);
 		}
 	}
 #endif

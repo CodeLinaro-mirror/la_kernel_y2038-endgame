@@ -329,7 +329,7 @@ static int __init dax_attach(void)
 	if (ret)
 		goto class_error;
 
-	if (device_create(&cl, NULL, first, NULL, dax_name) == NULL) {
+	if (device_create(&cl, NULL, first, NULL, "%s", dax_name) == NULL) {
 		dax_err("device_create failed");
 		ret = -ENXIO;
 		goto device_error;

@@ -137,7 +137,8 @@ static int skl_int3472_register_clock(struct int3472_discrete_device *int3472)
 		goto out_free_init_name;
 	}
 
-	int3472->clock.cl = clkdev_create(int3472->clock.clk, NULL, int3472->sensor_name);
+	int3472->clock.cl = clkdev_create(int3472->clock.clk, NULL, "%s",
+					  int3472->sensor_name);
 	if (!int3472->clock.cl) {
 		ret = -ENOMEM;
 		goto err_unregister_clk;
