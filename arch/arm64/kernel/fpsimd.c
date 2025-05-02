@@ -671,6 +671,7 @@ static inline void fpsimd_to_sve(struct task_struct *task)
 	__fpsimd_to_sve(sst, fst, vq);
 }
 
+#ifdef CONFIG_ARM64_SVE
 /*
  * Transfer the SVE state in task->thread.sve_state to
  * task->thread.uw.fpsimd_state.
@@ -700,6 +701,7 @@ static inline void sve_to_fpsimd(struct task_struct *task)
 		fst->vregs[i] = arm64_le128_to_cpu(*p);
 	}
 }
+#endif
 
 static inline void __fpsimd_zero_vregs(struct user_fpsimd_state *fpsimd)
 {
