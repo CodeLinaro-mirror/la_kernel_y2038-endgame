@@ -1726,7 +1726,7 @@ out_destroy_cache:
 	return ret;
 }
 
-static void __exit fcloop_exit(void)
+static void fcloop_exit(void)
 {
 	struct fcloop_lport *lport;
 	struct fcloop_nport *nport;
