@@ -160,21 +160,292 @@ static void opal_lpc_outsl(unsigned long p, const void *b, unsigned long c)
 	while(c--)
 		__opal_lpc_outl(*(ptr++), p);
 }
+/*
+ * Read/write from/to an (offsettable) iomem cookie. It might be a PIO
+ * access or a MMIO access, these functions don't care. The info is
+ * encoded in the hardware mapping set up by the mapping functions
+ * (or the cookie itself, depending on implementation and hw).
+ *
+ * The generic routines don't assume any hardware mappings, and just
+ * encode the PIO/MMIO as part of the cookie. They coldly assume that
+ * the MMIO IO mappings are not in the low address range.
+ *
+ */
 
-static const struct ppc_pci_io opal_lpc_io = {
-	.inb	= opal_lpc_inb,
-	.inw	= opal_lpc_inw,
-	.inl	= opal_lpc_inl,
-	.outb	= opal_lpc_outb,
-	.outw	= opal_lpc_outw,
-	.outl	= opal_lpc_outl,
-	.insb	= opal_lpc_insb,
-	.insw	= opal_lpc_insw,
-	.insl	= opal_lpc_insl,
-	.outsb	= opal_lpc_outsb,
-	.outsw	= opal_lpc_outsw,
-	.outsl	= opal_lpc_outsl,
-};
+/*
+ * Ugly macros are a way of life.
+ */
+#define IO_COND(addr, is_pio, is_mmio) do {			\
+	unsigned long port = (unsigned long __force)addr;	\
+	if (port < _IO_BASE || port >= FULL_IO_SIZE ||		\
+	    !isa_io_special) {					\
+		is_mmio;					\
+	} else {						\
+		is_pio;						\
+	}							\
+} while (0)
+
+/*
+ * Here and below, we apply __no_kmsan_checks to functions reading data from
+ * hardware, to ensure that KMSAN marks their return values as initialized.
+ */
+__no_kmsan_checks
+unsigned int ioread8(const void __iomem *addr)
+{
+	IO_COND(addr, return opal_lpc_inb(port), return readb(addr));
+	return 0xff;
+}
+__no_kmsan_checks
+unsigned int ioread16(const void __iomem *addr)
+{
+	IO_COND(addr, return opal_lpc_inw(port), return readw(addr));
+	return 0xffff;
+}
+
+#define pio_read16be(port) swab16(opal_lpc_inw(port))
+__no_kmsan_checks
+unsigned int ioread16be(const void __iomem *addr)
+{
+	IO_COND(addr, return pio_read16be(port), return readw_be(addr));
+	return 0xffff;
+}
+__no_kmsan_checks
+unsigned int ioread32(const void __iomem *addr)
+{
+	IO_COND(addr, return opal_lpc_inl(port), return readl(addr));
+	return 0xffffffff;
+}
+
+#define opal_lpc_inl_be(port) swab32(opal_lpc_inl(port))
+__no_kmsan_checks
+unsigned int ioread32be(const void __iomem *addr)
+{
+	IO_COND(addr, return opal_lpc_inl_be(port), return readl_be(addr));
+	return 0xffffffff;
+}
+EXPORT_SYMBOL(ioread8);
+EXPORT_SYMBOL(ioread16);
+EXPORT_SYMBOL(ioread16be);
+EXPORT_SYMBOL(ioread32);
+EXPORT_SYMBOL(ioread32be);
+
+static u64 opal_lpc_inq_lo_hi(unsigned long port)
+{
+	u64 lo, hi;
+
+	lo = opal_lpc_inl(port);
+	hi = opal_lpc_inl(port + sizeof(u32));
+
+	return lo | (hi << 32);
+}
+
+static u64 opal_lpc_inq_hi_lo(unsigned long port)
+{
+	u64 lo, hi;
+
+	hi = opal_lpc_inl(port + sizeof(u32));
+	lo = opal_lpc_inl(port);
+
+	return lo | (hi << 32);
+}
+
+static u64 opal_lpc_inq_be_lo_hi(unsigned long port)
+{
+	u64 lo, hi;
+
+	lo = opal_lpc_inl_be(port + sizeof(u32));
+	hi = opal_lpc_inl_be(port);
+
+	return lo | (hi << 32);
+}
+
+static u64 opal_lpc_inq_be_hi_lo(unsigned long port)
+{
+	u64 lo, hi;
+
+	hi = opal_lpc_inl_be(port);
+	lo = opal_lpc_inl_be(port + sizeof(u32));
+
+	return lo | (hi << 32);
+}
+
+__no_kmsan_checks
+u64 __ioread64_lo_hi(const void __iomem *addr)
+{
+	IO_COND(addr, return opal_lpc_inq_lo_hi(port), return readq(addr));
+	return 0xffffffffffffffffULL;
+}
+
+__no_kmsan_checks
+u64 __ioread64_hi_lo(const void __iomem *addr)
+{
+	IO_COND(addr, return opal_lpc_inq_hi_lo(port), return readq(addr));
+	return 0xffffffffffffffffULL;
+}
+
+__no_kmsan_checks
+u64 __ioread64be_lo_hi(const void __iomem *addr)
+{
+	IO_COND(addr, return opal_lpc_inq_be_lo_hi(port),
+		return readq_be(addr));
+	return 0xffffffffffffffffULL;
+}
+
+__no_kmsan_checks
+u64 __ioread64be_hi_lo(const void __iomem *addr)
+{
+	IO_COND(addr, return opal_lpc_inq_be_hi_lo(port),
+		return readq_be(addr));
+	return 0xffffffffffffffffULL;
+}
+
+EXPORT_SYMBOL(__ioread64_lo_hi);
+EXPORT_SYMBOL(__ioread64_hi_lo);
+EXPORT_SYMBOL(__ioread64be_lo_hi);
+EXPORT_SYMBOL(__ioread64be_hi_lo);
+
+void iowrite8(u8 val, void __iomem *addr)
+{
+	/* Make sure uninitialized memory isn't copied to devices. */
+	kmsan_check_memory(&val, sizeof(val));
+	IO_COND(addr, opal_lpc_outb(val,port), writeb(val, addr));
+}
+void iowrite16(u16 val, void __iomem *addr)
+{
+	/* Make sure uninitialized memory isn't copied to devices. */
+	kmsan_check_memory(&val, sizeof(val));
+	IO_COND(addr, opal_lpc_outw(val,port), writew(val, addr));
+}
+#define pio_write16be(val,port) opal_lpc_outw(swab16(val),port)
+void iowrite16be(u16 val, void __iomem *addr)
+{
+	/* Make sure uninitialized memory isn't copied to devices. */
+	kmsan_check_memory(&val, sizeof(val));
+	IO_COND(addr, pio_write16be(val,port), writew_be(val, addr));
+}
+void iowrite32(u32 val, void __iomem *addr)
+{
+	/* Make sure uninitialized memory isn't copied to devices. */
+	kmsan_check_memory(&val, sizeof(val));
+	IO_COND(addr, opal_lpc_outl(val,port), writel(val, addr));
+}
+#define pio_write32be(val,port) opal_lpc_outl(swab32(val),port)
+void iowrite32be(u32 val, void __iomem *addr)
+{
+	/* Make sure uninitialized memory isn't copied to devices. */
+	kmsan_check_memory(&val, sizeof(val));
+	IO_COND(addr, pio_write32be(val,port), writel_be(val, addr));
+}
+EXPORT_SYMBOL(iowrite8);
+EXPORT_SYMBOL(iowrite16);
+EXPORT_SYMBOL(iowrite16be);
+EXPORT_SYMBOL(iowrite32);
+EXPORT_SYMBOL(iowrite32be);
+
+static void opal_lpc_outq_lo_hi(u64 val, unsigned long port)
+{
+	opal_lpc_outl(val, port);
+	opal_lpc_outl(val >> 32, port + sizeof(u32));
+}
+
+static void opal_lpc_outq_hi_lo(u64 val, unsigned long port)
+{
+	opal_lpc_outl(val >> 32, port + sizeof(u32));
+	opal_lpc_outl(val, port);
+}
+
+static void opal_lpc_outq_be_lo_hi(u64 val, unsigned long port)
+{
+	pio_write32be(val, port + sizeof(u32));
+	pio_write32be(val >> 32, port);
+}
+
+static void opal_lpc_outq_be_hi_lo(u64 val, unsigned long port)
+{
+	pio_write32be(val >> 32, port);
+	pio_write32be(val, port + sizeof(u32));
+}
+
+void __iowrite64_lo_hi(u64 val, void __iomem *addr)
+{
+	/* Make sure uninitialized memory isn't copied to devices. */
+	kmsan_check_memory(&val, sizeof(val));
+	IO_COND(addr, opal_lpc_outq_lo_hi(val, port),
+		writeq(val, addr));
+}
+
+void __iowrite64_hi_lo(u64 val, void __iomem *addr)
+{
+	/* Make sure uninitialized memory isn't copied to devices. */
+	kmsan_check_memory(&val, sizeof(val));
+	IO_COND(addr, opal_lpc_outq_hi_lo(val, port),
+		writeq(val, addr));
+}
+
+void __iowrite64be_lo_hi(u64 val, void __iomem *addr)
+{
+	/* Make sure uninitialized memory isn't copied to devices. */
+	kmsan_check_memory(&val, sizeof(val));
+	IO_COND(addr, opal_lpc_outq_be_lo_hi(val, port),
+		writeq_be(val, addr));
+}
+
+void __iowrite64be_hi_lo(u64 val, void __iomem *addr)
+{
+	/* Make sure uninitialized memory isn't copied to devices. */
+	kmsan_check_memory(&val, sizeof(val));
+	IO_COND(addr, opal_lpc_outq_be_hi_lo(val, port),
+		writeq_be(val, addr));
+}
+
+EXPORT_SYMBOL(__iowrite64_lo_hi);
+EXPORT_SYMBOL(__iowrite64_hi_lo);
+EXPORT_SYMBOL(__iowrite64be_lo_hi);
+EXPORT_SYMBOL(__iowrite64be_hi_lo);
+
+void ioread8_rep(const void __iomem *addr, void *dst, unsigned long count)
+{
+	IO_COND(addr, opal_lpc_insb(port,dst,count), readsb(addr, dst, count));
+	/* KMSAN must treat values read from devices as initialized. */
+	kmsan_unpoison_memory(dst, count);
+}
+void ioread16_rep(const void __iomem *addr, void *dst, unsigned long count)
+{
+	IO_COND(addr, opal_lpc_insw(port,dst,count), readsw(addr, dst, count));
+	/* KMSAN must treat values read from devices as initialized. */
+	kmsan_unpoison_memory(dst, count * 2);
+}
+void ioread32_rep(const void __iomem *addr, void *dst, unsigned long count)
+{
+	IO_COND(addr, opal_lpc_insl(port,dst,count), readsl(addr, dst, count));
+	/* KMSAN must treat values read from devices as initialized. */
+	kmsan_unpoison_memory(dst, count * 4);
+}
+EXPORT_SYMBOL(ioread8_rep);
+EXPORT_SYMBOL(ioread16_rep);
+EXPORT_SYMBOL(ioread32_rep);
+
+void iowrite8_rep(void __iomem *addr, const void *src, unsigned long count)
+{
+	/* Make sure uninitialized memory isn't copied to devices. */
+	kmsan_check_memory(src, count);
+	IO_COND(addr, opal_lpc_outsb(port, src, count), writesb(addr, src, count));
+}
+void iowrite16_rep(void __iomem *addr, const void *src, unsigned long count)
+{
+	/* Make sure uninitialized memory isn't copied to devices. */
+	kmsan_check_memory(src, count * 2);
+	IO_COND(addr, opal_lpc_outsw(port, src, count), writesw(addr, src, count));
+}
+void iowrite32_rep(void __iomem *addr, const void *src, unsigned long count)
+{
+	/* Make sure uninitialized memory isn't copied to devices. */
+	kmsan_check_memory(src, count * 4);
+	IO_COND(addr, opal_lpc_outsl(port, src,count), writesl(addr, src, count));
+}
+EXPORT_SYMBOL(iowrite8_rep);
+EXPORT_SYMBOL(iowrite16_rep);
+EXPORT_SYMBOL(iowrite32_rep);
 
 #ifdef CONFIG_DEBUG_FS
 struct lpc_debugfs_entry {
@@ -412,7 +683,6 @@ void __init opal_lpc_init(void)
 			opal_lpc_chip_id);
 
 		/* Setup special IO ops */
-		ppc_pci_io = opal_lpc_io;
 		isa_io_special = true;
 	}
 }

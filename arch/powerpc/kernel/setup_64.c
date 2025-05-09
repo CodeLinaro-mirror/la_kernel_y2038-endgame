@@ -889,11 +889,6 @@ unsigned long memory_block_size_bytes(void)
 }
 #endif
 
-#ifdef CONFIG_PPC_INDIRECT_PIO
-struct ppc_pci_io ppc_pci_io;
-EXPORT_SYMBOL(ppc_pci_io);
-#endif
-
 #ifdef CONFIG_HARDLOCKUP_DETECTOR_PERF
 u64 hw_nmi_get_sample_period(int watchdog_thresh)
 {

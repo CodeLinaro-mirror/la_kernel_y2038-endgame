@@ -180,7 +180,6 @@ config PPC_BOOK3S_IDLE
 
 config PPC_INDIRECT_PIO
 	bool
-	select GENERIC_IOMAP
 
 source "drivers/cpufreq/Kconfig"
 
