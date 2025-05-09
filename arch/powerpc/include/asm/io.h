@@ -262,6 +262,7 @@ extern void _memcpy_toio(void __iomem *dest, const void *src,
 #endif
 
 #define _IO_PORT(port)	((void __iomem *)(_IO_BASE + (port)))
+#define PCI_IOBASE _IO_PORT(0)
 
 #ifdef __powerpc64__
 /*
@@ -460,12 +461,12 @@ __do_out_asm(_rec_outl, "stwbrx")
 #define __do_inw(port)		_rec_inw(port)
 #define __do_inl(port)		_rec_inl(port)
 #else /* CONFIG_PPC32 */
-#define __do_outb(val, port)	writeb(val,_IO_PORT(port));
-#define __do_outw(val, port)	writew(val,_IO_PORT(port));
-#define __do_outl(val, port)	writel(val,_IO_PORT(port));
-#define __do_inb(port)		readb(_IO_PORT(port));
-#define __do_inw(port)		readw(_IO_PORT(port));
-#define __do_inl(port)		readl(_IO_PORT(port));
+#define __do_outb(val, port)	iowrite8(val,_IO_PORT(port))
+#define __do_outw(val, port)	iowrite16(val,_IO_PORT(port))
+#define __do_outl(val, port)	iowrite32(val,_IO_PORT(port))
+#define __do_inb(port)		ioread8(_IO_PORT(port))
+#define __do_inw(port)		ioread16(_IO_PORT(port))
+#define __do_inl(port)		ioread32(_IO_PORT(port))
 #endif /* !CONFIG_PPC32 */
 
 #ifdef CONFIG_EEH
@@ -481,12 +482,21 @@ __do_out_asm(_rec_outl, "stwbrx")
 #define __do_writesw(a, b, n)	_outsw(a, (b), (n))
 #define __do_writesl(a, b, n)	_outsl(a, (b), (n))
 
+#ifndef CONFIG_PPC_POWERNV
 #define __do_insb(p, b, n)	readsb(_IO_PORT(p), (b), (n))
 #define __do_insw(p, b, n)	readsw(_IO_PORT(p), (b), (n))
 #define __do_insl(p, b, n)	readsl(_IO_PORT(p), (b), (n))
 #define __do_outsb(p, b, n)	writesb(_IO_PORT(p),(b),(n))
 #define __do_outsw(p, b, n)	writesw(_IO_PORT(p),(b),(n))
 #define __do_outsl(p, b, n)	writesl(_IO_PORT(p),(b),(n))
+#else
+#define __do_insb(p, b, n)	ioread8_rep(_IO_PORT(p), (b), (n))
+#define __do_insw(p, b, n)	ioread16_rep(_IO_PORT(p), (b), (n))
+#define __do_insl(p, b, n)	ioread32_rep(_IO_PORT(p), (b), (n))
+#define __do_outsb(p, b, n)	iowrite8_rep(_IO_PORT(p),(b),(n))
+#define __do_outsw(p, b, n)	iowrite16_rep(_IO_PORT(p),(b),(n))
+#define __do_outsl(p, b, n)	iowrite32_rep(_IO_PORT(p),(b),(n))
+#endif
 
 #ifdef CONFIG_EEH
 #define __do_memcpy_fromio(dst, src, n)	\
@@ -628,61 +638,19 @@ static inline void writeq_be(u64 val, void __iomem *addr)
 }
 #endif /* __powerpc64__ */
 
-#ifdef CONFIG_PPC_INDIRECT_PIO
-#define DEF_PCI_HOOK(x)	x
-#else
-#define DEF_PCI_HOOK(x)	NULL
-#endif
-
-/* Structure containing all the hooks */
-extern struct ppc_pci_io {
-
-#define DEF_PCI_AC_RET(name, ret, at, al)	ret (*name) at;
-#define DEF_PCI_AC_NORET(name, at, al)		void (*name) at;
-
-#include <asm/io-defs.h>
-
-#undef DEF_PCI_AC_RET
-#undef DEF_PCI_AC_NORET
-
-} ppc_pci_io;
-
-/* The inline wrappers */
-#define DEF_PCI_AC_RET(name, ret, at, al)			\
-static inline ret name at					\
-{								\
-	if (DEF_PCI_HOOK(ppc_pci_io.name) != NULL)		\
-		return ppc_pci_io.name al;			\
-	return __do_##name al;					\
-}
-
-#define DEF_PCI_AC_NORET(name, at, al)		\
-static inline void name at					\
-{								\
-	if (DEF_PCI_HOOK(ppc_pci_io.name) != NULL)		\
-		ppc_pci_io.name al;				\
-	else							\
-		__do_##name al;					\
-}
-
-#include <asm/io-defs.h>
-
-#undef DEF_PCI_AC_RET
-#undef DEF_PCI_AC_NORET
-
 // Signal to asm-generic/io.h that we have implemented these.
-#define inb inb
-#define inw inw
-#define inl inl
-#define outb outb
-#define outw outw
-#define outl outl
-#define insb insb
-#define insw insw
-#define insl insl
-#define outsb outsb
-#define outsw outsw
-#define outsl outsl
+#define inb __do_inb
+#define inw __do_inw
+#define inl __do_inl
+#define outb __do_outb
+#define outw __do_outw
+#define outl __do_outl
+#define insb __do_insb 
+#define insw __do_insw
+#define insl __do_insl
+#define outsb __do_outsb
+#define outsw __do_outsw
+#define outsl __do_outsl
 #ifdef __powerpc64__
 #define readq	readq
 #define writeq	writeq
@@ -700,7 +668,7 @@ static inline void name at					\
 #define writel_relaxed(v, addr)	writel(v, addr)
 #define writeq_relaxed(v, addr)	writeq(v, addr)
 
-#ifndef CONFIG_GENERIC_IOMAP
+#ifndef CONFIG_PPC_POWERNV
 /*
  * Here comes the implementation of the IOMAP interfaces.
  */
@@ -749,6 +717,54 @@ void pci_iounmap(struct pci_dev *dev, void __iomem *addr);
 #define pci_iounmap pci_iounmap
 void __iomem *ioport_map(unsigned long port, unsigned int len);
 #define ioport_map ioport_map
+#else
+
+extern unsigned int ioread8(const void __iomem *);
+#define ioread8 ioread8
+extern unsigned int ioread16(const void __iomem *);
+#define ioread16 ioread16
+extern unsigned int ioread16be(const void __iomem *);
+#define ioread16be ioread16be
+extern unsigned int ioread32(const void __iomem *);
+#define ioread32 ioread32
+extern unsigned int ioread32be(const void __iomem *);
+#define ioread32be ioread32be
+
+extern u64 __ioread64_lo_hi(const void __iomem *addr);
+extern u64 __ioread64_hi_lo(const void __iomem *addr);
+extern u64 __ioread64be_lo_hi(const void __iomem *addr);
+extern u64 __ioread64be_hi_lo(const void __iomem *addr);
+
+extern void iowrite8(u8, void __iomem *);
+#define iowrite8 iowrite8
+extern void iowrite16(u16, void __iomem *);
+#define iowrite16 iowrite16
+extern void iowrite16be(u16, void __iomem *);
+#define iowrite16be iowrite16be
+extern void iowrite32(u32, void __iomem *);
+#define iowrite32 iowrite32
+extern void iowrite32be(u32, void __iomem *);
+#define iowrite32be iowrite32be
+
+extern void __iowrite64_lo_hi(u64 val, void __iomem *addr);
+extern void __iowrite64_hi_lo(u64 val, void __iomem *addr);
+extern void __iowrite64be_lo_hi(u64 val, void __iomem *addr);
+extern void __iowrite64be_hi_lo(u64 val, void __iomem *addr);
+
+extern void ioread8_rep(const void __iomem *port, void *buf, unsigned long count);
+#define ioread8_rep ioread8_rep
+extern void ioread16_rep(const void __iomem *port, void *buf, unsigned long count);
+#define ioread16_rep ioread16_rep
+extern void ioread32_rep(const void __iomem *port, void *buf, unsigned long count);
+#define ioread32_rep ioread32_rep
+
+extern void iowrite8_rep(void __iomem *port, const void *buf, unsigned long count);
+#define iowrite8_rep iowrite8_rep
+extern void iowrite16_rep(void __iomem *port, const void *buf, unsigned long count);
+#define iowrite16_rep iowrite16_rep
+extern void iowrite32_rep(void __iomem *port, const void *buf, unsigned long count);
+#define iowrite32_rep iowrite32_rep
+
 #endif
 
 static inline void iosync(void)
@@ -778,7 +794,6 @@ static inline void iosync(void)
 #define outw_p(val, port)       (udelay(1), outw((val), (port)))
 #define inl_p(port)             inl(port)
 #define outl_p(val, port)       (udelay(1), outl((val), (port)))
-
 
 #define IO_SPACE_LIMIT ~(0UL)
 
@@ -837,30 +852,6 @@ int early_ioremap_range(unsigned long ea, phys_addr_t pa,
 
 extern void __iomem *__ioremap_caller(phys_addr_t, unsigned long size,
 				      pgprot_t prot, void *caller);
-
-/*
- * When CONFIG_PPC_INDIRECT_PIO is set, we use the generic iomap implementation
- * which needs some additional definitions here. They basically allow PIO
- * space overall to be 1GB. This will work as long as we never try to use
- * iomap to map MMIO below 1GB which should be fine on ppc64
- */
-#define HAVE_ARCH_PIO_SIZE		1
-#define PIO_OFFSET			0x00000000UL
-#define PIO_MASK			(FULL_IO_SIZE - 1)
-#define PIO_RESERVED			(FULL_IO_SIZE)
-
-#define mmio_read16be(addr)		readw_be(addr)
-#define mmio_read32be(addr)		readl_be(addr)
-#define mmio_read64be(addr)		readq_be(addr)
-#define mmio_write16be(val, addr)	writew_be(val, addr)
-#define mmio_write32be(val, addr)	writel_be(val, addr)
-#define mmio_write64be(val, addr)	writeq_be(val, addr)
-#define mmio_insb(addr, dst, count)	readsb(addr, dst, count)
-#define mmio_insw(addr, dst, count)	readsw(addr, dst, count)
-#define mmio_insl(addr, dst, count)	readsl(addr, dst, count)
-#define mmio_outsb(addr, src, count)	writesb(addr, src, count)
-#define mmio_outsw(addr, src, count)	writesw(addr, src, count)
-#define mmio_outsl(addr, src, count)	writesl(addr, src, count)
 
 /**
  *	virt_to_phys	-	map virtual addresses to physical
