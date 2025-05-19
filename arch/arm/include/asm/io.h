@@ -78,7 +78,7 @@ static __no_kasan_or_inline u16 __raw_readw(const volatile void __iomem *addr)
 static inline void __raw_writew(u16 val, volatile void __iomem *addr)
 {
 	asm volatile("strh %1, %0"
-		     : : "Q" (*(volatile u16 __force *)addr), "r" (val));
+		     : : "Qo" (*(volatile u16 __force *)addr), "r" (val));
 }
 
 #define __raw_readw __raw_readw
@@ -87,7 +87,7 @@ static inline u16 __raw_readw(const volatile void __iomem *addr)
 	u16 val;
 	asm volatile("ldrh %0, %1"
 		     : "=r" (val)
-		     : "Q" (*(volatile u16 __force *)addr));
+		     : "Qo" (*(volatile u16 __force *)addr));
 	return val;
 }
 #endif
