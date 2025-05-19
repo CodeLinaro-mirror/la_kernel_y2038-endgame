@@ -4,6 +4,8 @@
 #include <libfdt.h>
 #include "misc.h"
 
+#undef memcpy
+
 #if defined(CONFIG_ARM_ATAG_DTB_COMPAT_CMDLINE_EXTEND)
 #define do_extend_cmdline 1
 #else
