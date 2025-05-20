@@ -4,6 +4,7 @@
 #define ADF_GEN2_PFVF_H
 
 #include <linux/types.h>
+#include "adf_common_drv.h"
 #include "adf_accel_devices.h"
 #include "adf_common_drv.h"
 
