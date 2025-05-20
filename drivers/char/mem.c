@@ -256,12 +256,6 @@ static ssize_t write_mem(struct file *file, const char __user *buf,
 	return written;
 }
 
-int __weak phys_mem_access_prot_allowed(struct file *file,
-	unsigned long pfn, unsigned long size, pgprot_t *vma_prot)
-{
-	return 1;
-}
-
 #ifndef __HAVE_PHYS_MEM_ACCESS_PROT
 
 /*
@@ -392,10 +386,6 @@ static int mmap_mem_prepare(struct vm_area_desc *desc)
 
 	if (!range_is_allowed(desc->pgoff, size))
 		return -EPERM;
-
-	if (!phys_mem_access_prot_allowed(file, desc->pgoff, size,
-					  &desc->page_prot))
-		return -EINVAL;
 
 	desc->page_prot = phys_mem_access_prot(file, desc->pgoff,
 					       size,
