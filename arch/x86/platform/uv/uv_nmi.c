@@ -1087,7 +1087,7 @@ void __init uv_nmi_setup(void)
 void __init uv_nmi_setup_hubless(void)
 {
 	uv_nmi_setup_common(false);
-	pch_base = xlate_dev_mem_ptr(PCH_PCR_GPIO_1_BASE);
+	pch_base = memremap(PCH_PCR_GPIO_1_BASE, SZ_4K, MEMREMAP_WB);
 	nmi_debug("UV: PCH base:%p from 0x%lx, GPP_D_0\n",
 		pch_base, PCH_PCR_GPIO_1_BASE);
 	if (uv_pch_init_enable)
