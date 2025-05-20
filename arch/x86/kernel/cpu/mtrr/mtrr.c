@@ -515,26 +515,6 @@ void arch_phys_wc_del(int handle)
 }
 EXPORT_SYMBOL(arch_phys_wc_del);
 
-/*
- * arch_phys_wc_index - translates arch_phys_wc_add's return value
- * @handle: Return value from arch_phys_wc_add
- *
- * This will turn the return value from arch_phys_wc_add into an mtrr
- * index suitable for debugging.
- *
- * Note: There is no legitimate use for this function, except possibly
- * in printk line.  Alas there is an illegitimate use in some ancient
- * drm ioctls.
- */
-int arch_phys_wc_index(int handle)
-{
-	if (handle < MTRR_TO_PHYS_WC_OFFSET)
-		return -1;
-	else
-		return handle - MTRR_TO_PHYS_WC_OFFSET;
-}
-EXPORT_SYMBOL_GPL(arch_phys_wc_index);
-
 int __initdata changed_by_mtrr_cleanup;
 
 /**

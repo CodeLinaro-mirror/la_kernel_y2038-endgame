@@ -307,9 +307,6 @@ extern bool is_early_ioremap_ptep(pte_t *ptep);
 #undef PCI_IOBASE
 
 #ifdef CONFIG_MTRR
-extern int __must_check arch_phys_wc_index(int handle);
-#define arch_phys_wc_index arch_phys_wc_index
-
 extern int __must_check arch_phys_wc_add(unsigned long base,
 					 unsigned long size);
 extern void arch_phys_wc_del(int handle);
