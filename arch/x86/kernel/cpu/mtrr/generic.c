@@ -1017,6 +1017,7 @@ static void generic_set_mtrr(unsigned int reg, unsigned long base,
 	local_irq_restore(flags);
 }
 
+#ifdef CONFIG_X86_32
 int generic_validate_add_page(unsigned long base, unsigned long size,
 			      unsigned int type)
 {
@@ -1054,6 +1055,7 @@ int generic_validate_add_page(unsigned long base, unsigned long size,
 	}
 	return 0;
 }
+#endif
 
 static int generic_have_wrcomb(void)
 {
@@ -1062,18 +1064,22 @@ static int generic_have_wrcomb(void)
 	return config & MTRR_CAP_WC;
 }
 
+#ifdef CONFIG_X86_32
 int positive_have_wrcomb(void)
 {
 	return 1;
 }
+#endif
 
 /*
  * Generic structure...
  */
 const struct mtrr_ops generic_mtrr_ops = {
 	.get			= generic_get_mtrr,
+#ifdef CONFIG_X86_32
 	.get_free_region	= generic_get_free_region,
 	.set			= generic_set_mtrr,
 	.validate_add_page	= generic_validate_add_page,
 	.have_wrcomb		= generic_have_wrcomb,
+#endif
 };

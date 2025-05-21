@@ -1679,6 +1679,7 @@ config MATH_EMULATION
 config MTRR
 	def_bool y
 	prompt "MTRR (Memory Type Range Register) support" if EXPERT
+	depends on X86_32
 	help
 	  On Intel P6 family processors (Pentium Pro, Pentium II and later)
 	  the Memory Type Range Registers (MTRRs) may be used to control
@@ -1744,8 +1745,7 @@ config MTRR_SANITIZER_SPARE_REG_NR_DEFAULT
 
 config X86_PAT
 	def_bool y
-	prompt "x86 PAT support" if EXPERT
-	depends on MTRR
+	prompt "x86 PAT support" if EXPERT && X86_32
 	select ARCH_USES_PG_ARCH_2
 	help
 	  Use PAT attributes to setup page level cache control.

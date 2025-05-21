@@ -53,6 +53,7 @@ static_assert(X86_MEMTYPE_WB == MTRR_TYPE_WRBACK);
 
 u32 num_var_ranges;
 
+#ifdef CONFIG_X86_32
 unsigned int mtrr_usage_table[MTRR_MAX_VAR_RANGES];
 DEFINE_MUTEX(mtrr_mutex);
 
@@ -90,15 +91,6 @@ static int have_wrcomb(void)
 		pci_dev_put(dev);
 	}
 	return mtrr_if->have_wrcomb ? mtrr_if->have_wrcomb() : 0;
-}
-
-static void __init init_table(void)
-{
-	int i, max;
-
-	max = num_var_ranges;
-	for (i = 0; i < max; i++)
-		mtrr_usage_table[i] = 1;
 }
 
 struct set_mtrr_data {
@@ -514,8 +506,18 @@ void arch_phys_wc_del(int handle)
 	}
 }
 EXPORT_SYMBOL(arch_phys_wc_del);
+#endif
 
 int __initdata changed_by_mtrr_cleanup;
+
+static void __init init_table(void)
+{
+	int i, max;
+
+	max = num_var_ranges;
+	for (i = 0; i < max; i++)
+		mtrr_usage_table[i] = 1;
+}
 
 /**
  * mtrr_bp_init - initialize MTRRs on the boot CPU
@@ -526,7 +528,6 @@ int __initdata changed_by_mtrr_cleanup;
 void __init mtrr_bp_init(void)
 {
 	bool generic_mtrrs = cpu_feature_enabled(X86_FEATURE_MTRR);
-	const char *why = "(not available)";
 	unsigned long config, dummy;
 
 	phys_hi_rsvd = GENMASK(31, boot_cpu_data.x86_phys_bits - 32);
@@ -543,35 +544,45 @@ void __init mtrr_bp_init(void)
 		return;
 	}
 
+#ifdef CONFIG_X86_32
 	if (generic_mtrrs)
 		mtrr_if = &generic_mtrr_ops;
 	else
 		mtrr_set_if();
+#endif
 
-	if (mtrr_enabled()) {
-		/* Get the number of variable MTRR ranges. */
-		if (mtrr_if == &generic_mtrr_ops)
-			rdmsr(MSR_MTRRcap, config, dummy);
-		else
-			config = mtrr_if->var_regs;
-		num_var_ranges = config & MTRR_CAP_VCNT;
-
-		init_table();
-		if (mtrr_if == &generic_mtrr_ops) {
-			/* BIOS may override */
-			if (get_mtrr_state()) {
-				memory_caching_control |= CACHE_MTRR;
-				changed_by_mtrr_cleanup = mtrr_cleanup();
-				mtrr_build_map();
-			} else {
-				mtrr_if = NULL;
-				why = "by BIOS";
-			}
-		}
+	if (!mtrr_enabled()) {
+		pr_info("MTRRs disabled (not available)\n");
+		return;
 	}
 
-	if (!mtrr_enabled())
-		pr_info("MTRRs disabled %s\n", why);
+#ifdef CONFIG_X86_32
+	/* Get the number of variable MTRR ranges. */
+	if (mtrr_if != &generic_mtrr_ops)
+		config = mtrr_if->var_regs;
+	else
+#endif
+		rdmsr(MSR_MTRRcap, config, dummy);
+	num_var_ranges = config & MTRR_CAP_VCNT;
+
+	init_table();
+#ifdef CONFIG_X86_32
+	if (mtrr_if != &generic_mtrr_ops)
+		return;
+#endif
+
+	/* BIOS may override */
+	if (!get_mtrr_state()) {
+#ifdef CONFIG_X86_32
+		mtrr_if = NULL;
+#endif
+		pr_info("MTRRs disabled by BIOS\n");
+		return;
+	}
+
+	memory_caching_control |= CACHE_MTRR;
+	changed_by_mtrr_cleanup = mtrr_cleanup();
+	mtrr_build_map();
 }
 
 /**

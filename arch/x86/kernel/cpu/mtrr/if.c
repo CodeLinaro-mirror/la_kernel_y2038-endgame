@@ -32,7 +32,7 @@ const char *mtrr_attrib_to_str(int x)
 	return (x <= 6) ? mtrr_strings[x] : "?";
 }
 
-#ifdef CONFIG_PROC_FS
+#if defined(CONFIG_X86_32) && defined(CONFIG_PROC_FS)
 
 static int
 mtrr_file_add(unsigned long base, unsigned long size,
