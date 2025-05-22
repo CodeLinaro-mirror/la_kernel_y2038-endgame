@@ -27,7 +27,7 @@ static struct resource system_rom_resource = {
 	.name	= "System ROM",
 	.start	= 0xf0000,
 	.end	= 0xfffff,
-	.flags	= IORESOURCE_BUSY | IORESOURCE_READONLY | IORESOURCE_MEM
+	.flags	= IORESOURCE_READONLY | IORESOURCE_MEM
 };
 
 static struct resource extension_rom_resource = {
