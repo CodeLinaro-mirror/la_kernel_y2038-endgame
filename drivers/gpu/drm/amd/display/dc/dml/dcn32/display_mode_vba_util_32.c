@@ -2920,6 +2920,9 @@ double dml32_CalculateWriteBackDelay(
 	return CalculateWriteBackDelay;
 }
 
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 void __no_sanitize_address dml32_UseMinimumDCFCLK(
 		enum dm_use_mall_for_pstate_change_mode UseMALLForPStateChange[],
 		bool DRRDisplay[],
@@ -3148,6 +3151,7 @@ void __no_sanitize_address dml32_UseMinimumDCFCLK(
 		}
 	}
 }
+__diag_pop()
 
 unsigned int dml32_CalculateExtraLatencyBytes(unsigned int ReorderingBytes,
 		unsigned int TotalNumberOfActiveDPP,

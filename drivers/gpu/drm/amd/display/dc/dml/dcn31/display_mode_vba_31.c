@@ -7022,6 +7022,9 @@ static double CalculateUrgentLatency(
 	return ret;
 }
 
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static noinline_for_stack void __no_sanitize_address __no_sanitize_memory UseMinimumDCFCLK(
 		struct display_mode_lib *mode_lib,
 		int MaxPrefetchMode,
@@ -7182,6 +7185,7 @@ static noinline_for_stack void __no_sanitize_address __no_sanitize_memory UseMin
 		}
 	}
 }
+__diag_pop();
 
 static void CalculateUnboundedRequestAndCompressedBufferSize(
 		unsigned int DETBufferSizeInKByte,
