@@ -469,7 +469,7 @@ int fat_alloc_clusters(struct inode *inode, int *cluster, int nr_cluster)
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
 	const struct fatent_operations *ops = sbi->fatent_ops;
 	struct fat_entry fatent, prev_ent;
-	struct buffer_head *bhs[MAX_BUF_PER_PAGE];
+	struct buffer_head *bhs[2];
 	int i, count, err, nr_bhs, idx_clus;
 
 	BUG_ON(nr_cluster > (MAX_BUF_PER_PAGE / 2));	/* fixed limit */
@@ -557,7 +557,7 @@ int fat_free_clusters(struct inode *inode, int cluster)
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
 	const struct fatent_operations *ops = sbi->fatent_ops;
 	struct fat_entry fatent;
-	struct buffer_head *bhs[MAX_BUF_PER_PAGE];
+	struct buffer_head *bhs[2];
 	int i, err, nr_bhs;
 	int first_cl = cluster, dirty_fsinfo = 0;
 

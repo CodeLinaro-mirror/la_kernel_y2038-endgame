@@ -1213,7 +1213,7 @@ static int fat_add_new_entries(struct inode *dir, void *slots, int nr_slots,
 {
 	struct super_block *sb = dir->i_sb;
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
-	struct buffer_head *bhs[MAX_BUF_PER_PAGE];
+	struct buffer_head *bhs[2];
 	sector_t blknr, start_blknr, last_blknr;
 	unsigned long size, copy;
 	int err, i, n, offset, cluster[2];
