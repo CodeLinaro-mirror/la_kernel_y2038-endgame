@@ -7382,6 +7382,8 @@ static double RequiredDTBCLK(
 	}
 }
 
+__diag_push()
+__diag_ignore_all("-Wframe-larger-than=", "this exceeds 2048 bytes")
 static noinline_for_stack void __no_sanitize_address __no_sanitize_memory UseMinimumDCFCLK(
 		struct display_mode_lib *mode_lib,
 		int MaxPrefetchMode,
@@ -7544,6 +7546,7 @@ static noinline_for_stack void __no_sanitize_address __no_sanitize_memory UseMin
 		}
 	}
 }
+__diag_pop();
 
 static void CalculateUnboundedRequestAndCompressedBufferSize(
 		unsigned int DETBufferSizeInKByte,

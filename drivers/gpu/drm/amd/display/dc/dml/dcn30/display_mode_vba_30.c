@@ -6527,6 +6527,8 @@ static double RequiredDTBCLK(
 	}
 }
 
+__diag_push()
+__diag_ignore_all("-Wframe-larger-than=", "this exceeds 2048 bytes")
 static void __no_sanitize_address UseMinimumDCFCLK(
 		struct display_mode_lib *mode_lib,
 		struct vba_vars_st *v,
@@ -6665,4 +6667,5 @@ static void __no_sanitize_address UseMinimumDCFCLK(
 		}
 	}
 }
+__diag_pop();
 
