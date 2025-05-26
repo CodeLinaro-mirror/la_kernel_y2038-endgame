@@ -1920,7 +1920,7 @@ static void vcap_api_next_lookup_basic_test(struct kunit *test)
 
 static void vcap_api_next_lookup_advanced_test(struct kunit *test)
 {
-	struct vcap_admin admin[] = {
+	static struct vcap_admin admin[] = {
 	{
 		.vtype = VCAP_TYPE_IS0,
 		.vinst = 0,
@@ -2189,7 +2189,7 @@ static void vcap_api_filter_keylist_test(struct kunit *test)
 
 static void vcap_api_rule_chain_path_test(struct kunit *test)
 {
-	struct vcap_admin admin1 = {
+	static struct vcap_admin admin1 = {
 		.vtype = VCAP_TYPE_IS0,
 		.vinst = 0,
 		.first_cid = 1000000,
