@@ -757,8 +757,9 @@ static int parse_elf_property(const char *data, size_t *off, size_t datasz,
 #define NOTE_DATA_SZ SZ_1K
 #define NOTE_NAME_SZ (sizeof(NN_GNU_PROPERTY_TYPE_0))
 
-static int parse_elf_properties(struct file *f, const struct elf_phdr *phdr,
-				struct arch_elf_state *arch)
+static noinline_for_stack int
+parse_elf_properties(struct file *f, const struct elf_phdr *phdr,
+		     struct arch_elf_state *arch)
 {
 	union {
 		struct elf_note nhdr;
