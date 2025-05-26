@@ -22,7 +22,29 @@ KBUILD_CFLAGS += -Wmissing-declarations
 KBUILD_CFLAGS += -Wmissing-prototypes
 
 ifneq ($(CONFIG_FRAME_WARN),0)
-KBUILD_CFLAGS += -Wframe-larger-than=$(CONFIG_FRAME_WARN)
+# Warn about excessive stack usage, which can be caused by either
+# badly written kernel code, or the compiler optimizing code badly.
+# Kept as low as possible to still allow clean release builds but
+# catch regressions early, using experimentally found heuristics:
+# Default stack frame warning limit is 1024 bytes for 32-bit targets,
+# When building for 64-bit or when KASAN is enabled, a little more
+# space is needed for larger data structures skipped optimizations
+FRAME_WARN := $(CONFIG_FRAME_WARN) + 0
+ifneq ($(CONFIG_64BIT)$(CONFIG_KASAN),)
+FRAME_WARN += + 256
+endif
+# KMSAN needs even more space on the stack than KASAN, similarly
+# when KASAN_STACK is enabled, extra guard areas are allocated around
+# large variables, so these go on top of the earlier size
+ifneq ($(CONFIG_KMSAN)$(CONFIG_KASAN_STACK),)
+FRAME_WARN += + 256
+endif
+# When W=1 is set, set the limit 25% lower than the normal limit,
+# expecting to get a few dozen warnings about the top stack users
+ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
+FRAME_WARN := (($(FRAME_WARN)) * 3 / 4)
+endif
+KBUILD_CFLAGS += -Wframe-larger-than=$(shell echo $$(($(FRAME_WARN))))
 endif
 
 KBUILD_CPPFLAGS-$(CONFIG_WERROR) += -Werror
