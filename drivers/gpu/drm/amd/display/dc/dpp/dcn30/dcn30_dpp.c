@@ -1222,6 +1222,9 @@ static void dpp3_program_shaper_lutb_settings(
 }
 
 
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static bool dpp3_program_shaper(struct dpp *dpp_base,
 				const struct pwl_params *params)
 {
@@ -1261,6 +1264,7 @@ static bool dpp3_program_shaper(struct dpp *dpp_base,
 	return true;
 
 }
+__diag_pop()
 
 static enum dc_lut_mode get3dlut_config(
 			struct dpp *dpp_base,

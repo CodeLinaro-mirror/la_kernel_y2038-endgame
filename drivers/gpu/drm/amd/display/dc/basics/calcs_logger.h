@@ -180,6 +180,9 @@ static void print_bw_calcs_vbios(struct dc_context *ctx, const struct bw_calcs_v
 
 }
 
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static void print_bw_calcs_data(struct dc_context *ctx, struct bw_calcs_data *data)
 {
 
@@ -573,6 +576,6 @@ static void print_bw_calcs_data(struct dc_context *ctx, struct bw_calcs_data *da
 					i, bw_fixed_to_int(data->dmif_required_sclk_for_urgent_latency[i]));
 	}
 }
-;
+__diag_pop();
 
 #endif /* _CALCS_CALCS_LOGGER_H_ */
