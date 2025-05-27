@@ -2001,6 +2001,9 @@ static unsigned int CalculateVMAndRowBytes(
 	return PDEAndMetaPTEBytesFrame;
 }
 
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static void __no_sanitize_address __no_sanitize_thread __no_sanitize_memory DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(struct display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
@@ -3280,6 +3283,7 @@ static void __no_sanitize_address __no_sanitize_thread __no_sanitize_memory DISP
 			&v->Z8NumberOfStutterBurstsPerFrame,
 			&v->StutterPeriod);
 }
+__diag_pop()
 
 static void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
 {
@@ -3875,6 +3879,9 @@ static noinline void CalculatePrefetchSchedulePerPlane(
 		&v->VReadyOffsetPix[k]);
 }
 
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 void __no_sanitize_address __no_sanitize_thread __no_sanitize_memory dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
 {
 	struct vba_vars_st *v = &mode_lib->vba;
@@ -5633,6 +5640,7 @@ void __no_sanitize_address __no_sanitize_thread __no_sanitize_memory dml314_Mode
 		v->maxMpcComb = MaximumMPCCombine;
 	}
 }
+__diag_pop()
 
 static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 		struct display_mode_lib *mode_lib,
@@ -7111,7 +7119,7 @@ static double CalculateUrgentLatency(
 
 __diag_push()
 __diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
-__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 8, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static noinline_for_stack void __no_sanitize_address __no_sanitize_memory UseMinimumDCFCLK(
 		struct display_mode_lib *mode_lib,
 		int MaxPrefetchMode,

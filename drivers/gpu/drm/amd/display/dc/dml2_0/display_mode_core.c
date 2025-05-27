@@ -6782,6 +6782,9 @@ static noinline_for_stack void set_vm_row_and_swath_parameters(struct display_mo
 }
 
 /// @brief The Mode Support function.
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 dml_bool_t __no_sanitize_address __no_sanitize_thread __no_sanitize_memory dml_core_mode_support(struct display_mode_lib_st *mode_lib)
 {
 	struct dml_core_mode_support_locals_st *s = &mode_lib->scratch.dml_core_mode_support_locals;
@@ -8266,6 +8269,7 @@ dml_bool_t __no_sanitize_address __no_sanitize_thread __no_sanitize_memory dml_c
 
 	return mode_lib->ms.support.ModeIsSupported;
 } // dml_core_mode_support
+__diag_pop()
 
 /// @brief This function calculates some parameters thats are needed ahead of the mode programming function all
 void dml_core_mode_support_partial(struct display_mode_lib_st *mode_lib)

@@ -607,6 +607,9 @@ static void dcn321_get_optimal_dcfclk_fclk_for_uclk(unsigned int uclk_mts,
  * -clocks levels with passed clk_table entries from Clk Mgr as reported by PM FW for different
  *  clocks (which might differ for certain dGPU SKU of the same ASIC)
  */
+__diag_push()
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(clang, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 void dcn321_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_params)
 {
 	dc_assert_fp_enabled();
@@ -928,4 +931,5 @@ void dcn321_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_p
 		}
 	}
 }
+__diag_pop()
 

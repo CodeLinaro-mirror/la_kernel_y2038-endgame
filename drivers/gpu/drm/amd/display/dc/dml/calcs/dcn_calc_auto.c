@@ -118,6 +118,9 @@ void scaler_settings_calculation(struct dcn_bw_internal_vars *v)
 	}
 }
 
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 {
 	int i;
@@ -1014,6 +1017,8 @@ void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 	}
 	v->max_phyclk = v->phyclk_per_state[v->voltage_level];
 }
+__diag_pop()
+
 void display_pipe_configuration(struct dcn_bw_internal_vars *v)
 {
 	int j;

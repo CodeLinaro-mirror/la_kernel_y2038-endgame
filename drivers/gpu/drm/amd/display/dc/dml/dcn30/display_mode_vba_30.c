@@ -1745,6 +1745,9 @@ static noinline unsigned int CalculateVMAndRowBytes(
 	return PDEAndMetaPTEBytesFrame;
 }
 
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static void __no_sanitize_address __no_sanitize_thread __no_sanitize_memory DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(
 		struct display_mode_lib *mode_lib)
 {
@@ -2875,6 +2878,7 @@ static void __no_sanitize_address __no_sanitize_thread __no_sanitize_memory DISP
 			&v->StutterEfficiency,
 			&v->StutterPeriod);
 }
+__diag_pop()
 
 static noinline void DisplayPipeConfiguration(struct display_mode_lib *mode_lib)
 {
@@ -3273,6 +3277,9 @@ static void CalculateFlipSchedule(
 	}
 }
 
+__diag_push()
+__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static noinline double TruncToValidBPP(
 		double LinkBitRate,
 		int Lanes,
@@ -4947,6 +4954,7 @@ __no_sanitize_address __no_sanitize_thread __no_sanitize_memory void dml30_ModeS
 		v->maxMpcComb = MaximumMPCCombine;
 	}
 }
+__diag_pop()
 
 static void CalculateWatermarksAndDRAMSpeedChangeSupport(
 		struct display_mode_lib *mode_lib,
@@ -6221,7 +6229,7 @@ static noinline double CalculateUrgentLatency(
 
 __diag_push()
 __diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
-__diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(GCC, 8, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static void __no_sanitize_address UseMinimumDCFCLK(
 		struct display_mode_lib *mode_lib,
 		struct vba_vars_st *v,
