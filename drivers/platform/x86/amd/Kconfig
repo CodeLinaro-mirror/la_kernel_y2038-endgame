@@ -36,6 +36,7 @@ config AMD_WBRF
 config AMD_ISP_PLATFORM
 	tristate "AMD ISP4 platform driver"
 	depends on I2C && X86_64 && ACPI
+	depends on m
 	help
 	  Platform driver for AMD platforms containing image signal processor
 	  gen 4. Provides camera sensor module board information to allow
