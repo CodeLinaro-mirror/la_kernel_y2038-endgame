@@ -776,7 +776,7 @@ static const u64 rc[WHIRLPOOL_ROUNDS] = {
  * The core Whirlpool transform.
  */
 
-static __no_kmsan_checks void wp512_process_buffer(struct wp512_ctx *wctx,
+static __disable_sanitizer_instrumentation void wp512_process_buffer(struct wp512_ctx *wctx,
 						   const u8 *buffer) {
 	int i, r;
 	u64 K[8];        /* the round key */
