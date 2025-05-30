@@ -208,8 +208,9 @@ config SYSFB
 	select SCREEN_INFO
 
 config SYSFB_SIMPLEFB
-	bool "Mark VGA/VBE/EFI FB as generic system framebuffer (deprecated)"
+	bool "Mark VGA/VBE/EFI FB as generic system framebuffer (deprecated)" if FB_SIMPLE || DRM_SIMPLEDRM
 	depends on X86 || EFI
+	depends on !(DRM_EFIDRM || DRM_VESADRM)
 	select SYSFB
 	help
 	  Firmware often provides initial graphics framebuffers so the BIOS,
