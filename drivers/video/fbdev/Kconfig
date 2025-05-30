@@ -426,6 +426,7 @@ config FB_UVESA
 config FB_VESA
 	bool "VESA VGA graphics support"
 	depends on (FB = y) && X86
+	depends on !DRM_VESADRM || COMPILE_TEST
 	select APERTURE_HELPERS
 	select FB_IOMEM_HELPERS
 	select SYSFB
@@ -438,6 +439,7 @@ config FB_VESA
 config FB_EFI
 	bool "EFI-based Framebuffer Support"
 	depends on (FB = y) && !IA64 && EFI
+	depends on !DRM_EFIDRM || COMPILE_TEST
 	select APERTURE_HELPERS
 	select DRM_PANEL_ORIENTATION_QUIRKS
 	select FB_IOMEM_HELPERS
