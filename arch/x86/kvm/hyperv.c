@@ -1789,8 +1789,9 @@ int kvm_hv_get_msr_common(struct kvm_vcpu *vcpu, u32 msr, u64 *pdata, bool host)
 		return kvm_hv_get_msr(vcpu, msr, pdata, host);
 }
 
-static void sparse_set_to_vcpu_mask(struct kvm *kvm, u64 *sparse_banks,
-				    u64 valid_bank_mask, unsigned long *vcpu_mask)
+static noinline_for_stack void
+sparse_set_to_vcpu_mask(struct kvm *kvm, u64 *sparse_banks,
+			u64 valid_bank_mask, unsigned long *vcpu_mask)
 {
 	struct kvm_hv *hv = to_kvm_hv(kvm);
 	bool has_mismatch = atomic_read(&hv->num_mismatched_vp_indexes);
