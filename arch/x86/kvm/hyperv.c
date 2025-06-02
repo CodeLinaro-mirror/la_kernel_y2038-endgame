@@ -1999,14 +1999,85 @@ out_flush_all:
 	return -ENOSPC;
 }
 
-static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+static noinline_for_stack void
+kvm_hv_tlb_flush_cpus_guest(struct kvm_vcpu *vcpu, bool all_cpus,
+			    u64 valid_bank_mask, u64 *tlb_flush_entries, int count)
+{
+	struct kvm *kvm = vcpu->kvm;
+	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+	struct kvm_vcpu *v;
+	struct kvm_vcpu_hv_tlb_flush_fifo *tlb_flush_fifo;
+	u64 *sparse_banks = hv_vcpu->sparse_banks;
+	DECLARE_BITMAP(vcpu_mask, KVM_MAX_VCPUS);
+	unsigned long i;
+
+	bitmap_zero(vcpu_mask, KVM_MAX_VCPUS);
+
+	kvm_for_each_vcpu(i, v, kvm) {
+		struct kvm_vcpu_hv *hv_v;
+		hv_v = to_hv_vcpu(v);
+
+		/*
+		 * The following check races with nested vCPUs entering/exiting
+		 * and/or migrating between L1's vCPUs, however the only case when
+		 * KVM *must* flush the TLB is when the target L2 vCPU keeps
+		 * running on the same L1 vCPU from the moment of the request until
+		 * kvm_hv_flush_tlb() returns. TLB is fully flushed in all other
+		 * cases, e.g. when the target L2 vCPU migrates to a different L1
+		 * vCPU or when the corresponding L1 vCPU temporary switches to a
+		 * different L2 vCPU while the request is being processed.
+		 */
+		if (!hv_v || hv_v->nested.vm_id != hv_vcpu->nested.vm_id)
+			continue;
+
+		if (!all_cpus &&
+		    !hv_is_vp_in_sparse_set(hv_v->nested.vp_id, valid_bank_mask,
+					    sparse_banks))
+			continue;
+
+		__set_bit(i, vcpu_mask);
+		tlb_flush_fifo = kvm_hv_get_tlb_flush_fifo(v, true);
+		hv_tlb_flush_enqueue(v, tlb_flush_fifo,
+				     tlb_flush_entries, count);
+	}
+
+	kvm_make_vcpus_request_mask(kvm, KVM_REQ_HV_TLB_FLUSH, vcpu_mask);
+}
+
+static noinline_for_stack void
+kvm_hv_tlb_flush_cpus(struct kvm_vcpu *vcpu, bool all_cpus,
+		      u64 valid_bank_mask,
+		      u64 *tlb_flush_entries, int count)
+{
+	struct kvm *kvm = vcpu->kvm;
+	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+	struct kvm_vcpu *v;
+	struct kvm_vcpu_hv_tlb_flush_fifo *tlb_flush_fifo;
+	u64 *sparse_banks = hv_vcpu->sparse_banks;
+	DECLARE_BITMAP(vcpu_mask, KVM_MAX_VCPUS);
+	unsigned long i;
+
+	sparse_set_to_vcpu_mask(kvm, sparse_banks, valid_bank_mask, vcpu_mask);
+
+	for_each_set_bit(i, vcpu_mask, KVM_MAX_VCPUS) {
+		v = kvm_get_vcpu(kvm, i);
+		if (!v)
+			continue;
+		tlb_flush_fifo = kvm_hv_get_tlb_flush_fifo(v, false);
+		hv_tlb_flush_enqueue(v, tlb_flush_fifo,
+				     tlb_flush_entries, count);
+	}
+
+	kvm_make_vcpus_request_mask(kvm, KVM_REQ_HV_TLB_FLUSH, vcpu_mask);
+}
+
+static noinline u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
 {
 	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
 	u64 *sparse_banks = hv_vcpu->sparse_banks;
 	struct kvm *kvm = vcpu->kvm;
 	struct hv_tlb_flush_ex flush_ex;
 	struct hv_tlb_flush flush;
-	DECLARE_BITMAP(vcpu_mask, KVM_MAX_VCPUS);
 	struct kvm_vcpu_hv_tlb_flush_fifo *tlb_flush_fifo;
 	/*
 	 * Normally, there can be no more than 'KVM_HV_TLB_FLUSH_FIFO_SIZE'
@@ -2141,51 +2212,12 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
 
 		kvm_make_all_cpus_request(kvm, KVM_REQ_HV_TLB_FLUSH);
 	} else if (!is_guest_mode(vcpu)) {
-		sparse_set_to_vcpu_mask(kvm, sparse_banks, valid_bank_mask, vcpu_mask);
 
-		for_each_set_bit(i, vcpu_mask, KVM_MAX_VCPUS) {
-			v = kvm_get_vcpu(kvm, i);
-			if (!v)
-				continue;
-			tlb_flush_fifo = kvm_hv_get_tlb_flush_fifo(v, false);
-			hv_tlb_flush_enqueue(v, tlb_flush_fifo,
-					     tlb_flush_entries, hc->rep_cnt);
-		}
-
-		kvm_make_vcpus_request_mask(kvm, KVM_REQ_HV_TLB_FLUSH, vcpu_mask);
+		kvm_hv_tlb_flush_cpus(vcpu, all_cpus, valid_bank_mask, tlb_flush_entries, hc->rep_cnt);
 	} else {
-		struct kvm_vcpu_hv *hv_v;
 
-		bitmap_zero(vcpu_mask, KVM_MAX_VCPUS);
 
-		kvm_for_each_vcpu(i, v, kvm) {
-			hv_v = to_hv_vcpu(v);
-
-			/*
-			 * The following check races with nested vCPUs entering/exiting
-			 * and/or migrating between L1's vCPUs, however the only case when
-			 * KVM *must* flush the TLB is when the target L2 vCPU keeps
-			 * running on the same L1 vCPU from the moment of the request until
-			 * kvm_hv_flush_tlb() returns. TLB is fully flushed in all other
-			 * cases, e.g. when the target L2 vCPU migrates to a different L1
-			 * vCPU or when the corresponding L1 vCPU temporary switches to a
-			 * different L2 vCPU while the request is being processed.
-			 */
-			if (!hv_v || hv_v->nested.vm_id != hv_vcpu->nested.vm_id)
-				continue;
-
-			if (!all_cpus &&
-			    !hv_is_vp_in_sparse_set(hv_v->nested.vp_id, valid_bank_mask,
-						    sparse_banks))
-				continue;
-
-			__set_bit(i, vcpu_mask);
-			tlb_flush_fifo = kvm_hv_get_tlb_flush_fifo(v, true);
-			hv_tlb_flush_enqueue(v, tlb_flush_fifo,
-					     tlb_flush_entries, hc->rep_cnt);
-		}
-
-		kvm_make_vcpus_request_mask(kvm, KVM_REQ_HV_TLB_FLUSH, vcpu_mask);
+		kvm_hv_tlb_flush_cpus_guest(vcpu, all_cpus, valid_bank_mask, tlb_flush_entries, hc->rep_cnt);
 	}
 
 ret_success:
