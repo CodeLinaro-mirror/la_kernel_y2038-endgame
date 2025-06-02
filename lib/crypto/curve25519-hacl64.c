@@ -474,7 +474,7 @@ static __always_inline void point_copy(u64 *output, u64 *input)
 	memcpy(output + 5, input + 5, 5 * sizeof(*input));
 }
 
-static __always_inline void addanddouble_fmonty(u64 *pp, u64 *ppq, u64 *p,
+static noinline void addanddouble_fmonty(u64 *pp, u64 *ppq, u64 *p,
 						u64 *pq, u64 *qmqp)
 {
 	u64 *qx = qmqp;
@@ -562,7 +562,7 @@ ladder_smallloop_cmult_small_loop_double_step(u64 *nq, u64 *nqpq, u64 *nq2,
 	ladder_smallloop_cmult_small_loop_step(nq2, nqpq2, nq, nqpq, q, byt1);
 }
 
-static __always_inline void
+static noinline void
 ladder_smallloop_cmult_small_loop(u64 *nq, u64 *nqpq, u64 *nq2, u64 *nqpq2,
 				  u64 *q, u8 byt, u32 i)
 {
@@ -585,7 +585,7 @@ static __always_inline void ladder_bigloop_cmult_big_loop(u8 *n1, u64 *nq,
 	}
 }
 
-static void ladder_cmult(u64 *result, u8 *n1, u64 *q)
+static __no_kmsan_checks void ladder_cmult(u64 *result, u8 *n1, u64 *q)
 {
 	u64 point_buf[40] = { 0 };
 	u64 *nq = point_buf;
@@ -754,7 +754,7 @@ static __always_inline void format_scalar_of_point(u8 *scalar, u64 *point)
 	format_fcontract(scalar, sc);
 }
 
-void curve25519_generic(u8 mypublic[CURVE25519_KEY_SIZE],
+void __no_kmsan_checks curve25519_generic(u8 mypublic[CURVE25519_KEY_SIZE],
 			const u8 secret[CURVE25519_KEY_SIZE],
 			const u8 basepoint[CURVE25519_KEY_SIZE])
 {
