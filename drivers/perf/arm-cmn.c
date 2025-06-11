@@ -2247,7 +2247,8 @@ static enum cmn_node_type arm_cmn_subtype(enum cmn_node_type type)
 	}
 }
 
-static int arm_cmn_discover(struct arm_cmn *cmn, unsigned int rgn_offset)
+static noinline_for_stack int arm_cmn_discover(struct arm_cmn *cmn,
+					       unsigned int rgn_offset)
 {
 	void __iomem *cfg_region, __iomem *xp_region;
 	struct arm_cmn_node cfg, *dn;
