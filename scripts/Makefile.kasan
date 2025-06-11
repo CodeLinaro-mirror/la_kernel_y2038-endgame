@@ -46,6 +46,8 @@ CFLAGS_KASAN := $(call cc-option, -fsanitize=kernel-address \
 		$(call cc-option, -fsanitize=kernel-address \
 		-mllvm -asan-mapping-offset=$(KASAN_SHADOW_OFFSET)))
 
+CFLAGS_KASAN += $(call cc-option, -finline-max-stacksize=128)
+
 # The minimum supported `rustc` version has a minimum supported LLVM
 # version late enough that we can assume support for -asan-mapping-offset.
 RUSTFLAGS_KASAN := -Zsanitizer=kernel-address \
