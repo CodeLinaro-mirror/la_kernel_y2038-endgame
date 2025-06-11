@@ -1835,8 +1835,9 @@ err:
 	return ret;
 }
 
-static int check_extent_overbig(struct btree_trans *trans, struct btree_iter *iter,
-				struct bkey_s_c k)
+static noinline_for_stack int
+check_extent_overbig(struct btree_trans *trans, struct btree_iter *iter,
+		     struct bkey_s_c k)
 {
 	struct bch_fs *c = trans->c;
 	struct bkey_ptrs_c ptrs = bch2_bkey_ptrs_c(k);
@@ -1857,12 +1858,11 @@ static int check_extent_overbig(struct btree_trans *trans, struct btree_iter *it
 	return 0;
 }
 
-static int check_extent(struct btree_trans *trans, struct btree_iter *iter,
-			struct bkey_s_c k,
-			struct inode_walker *inode,
-			struct snapshots_seen *s,
-			struct extent_ends *extent_ends,
-			struct disk_reservation *res)
+static noinline_for_stack int
+check_extent(struct btree_trans *trans, struct btree_iter *iter,
+	     struct bkey_s_c k, struct inode_walker *inode,
+	     struct snapshots_seen *s, struct extent_ends *extent_ends,
+	     struct disk_reservation *res)
 {
 	struct bch_fs *c = trans->c;
 	struct printbuf buf = PRINTBUF;
