@@ -101,7 +101,7 @@ static void test_adding_element(struct kunit *test)
 static void test_gs_parsing(struct kunit *test)
 {
 	struct kvmppc_gs_elem *gse;
-	struct kvmppc_gs_parser gsp = { 0 };
+	struct kvmppc_gs_parser *gsp;
 	struct kvmppc_gs_buff *gsb;
 	size_t size = 0x1000;
 	u64 tmp1, tmp2;
@@ -112,14 +112,16 @@ static void test_gs_parsing(struct kunit *test)
 	tmp1 = 0xdeadbeefull;
 	kvmppc_gse_put_u64(gsb, KVMPPC_GSID_GPR(0), tmp1);
 
-	KUNIT_EXPECT_GE(test, kvmppc_gse_parse(&gsp, gsb), 0);
+	gsp = kvmppc_gse_parse(gsb);
+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, gsp);
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_GPR(0));
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_GPR(0));
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, gse);
 
 	tmp2 = kvmppc_gse_get_u64(gse);
 	KUNIT_EXPECT_EQ(test, tmp2, 0xdeadbeefull);
 
+	kfree(gsp);
 	kvmppc_gsb_free(gsb);
 }
 
@@ -261,23 +263,23 @@ static int test1_fill_info(struct kvmppc_gs_buff *gsb,
 static int test1_refresh_info(struct kvmppc_gs_msg *gsm,
 			      struct kvmppc_gs_buff *gsb)
 {
-	struct kvmppc_gs_parser gsp = { 0 };
+	struct kvmppc_gs_parser *gsp;
 	struct kvmppc_gs_msg_test1_data *data = gsm->data;
 	struct kvmppc_gs_elem *gse;
-	int rc;
 
-	rc = kvmppc_gse_parse(&gsp, gsb);
-	if (rc < 0)
-		return rc;
+	gsp = kvmppc_gse_parse(gsb);
+	if (IS_ERR(gsp))
+		return PTR_ERR(gsp);
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_GPR(0));
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_GPR(0));
 	if (gse)
 		data->a = kvmppc_gse_get_u64(gse);
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_CR);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_CR);
 	if (gse)
 		data->b = kvmppc_gse_get_u32(gse);
 
+	kfree(gsp);
 	return 0;
 }
 
@@ -373,34 +375,35 @@ static int test_hostwide_fill_info(struct kvmppc_gs_buff *gsb,
 static int test_hostwide_refresh_info(struct kvmppc_gs_msg *gsm,
 				      struct kvmppc_gs_buff *gsb)
 {
-	struct kvmppc_gs_parser gsp = { 0 };
+	struct kvmppc_gs_parser *gsp;
 	struct kvmppc_gs_msg_test_hostwide_data *data = gsm->data;
 	struct kvmppc_gs_elem *gse;
-	int rc;
 
-	rc = kvmppc_gse_parse(&gsp, gsb);
-	if (rc < 0)
-		return rc;
+	gsp = kvmppc_gse_parse(gsb);
+	if (IS_ERR(gsp))
+		return PTR_ERR(gsp);;
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_L0_GUEST_HEAP);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_L0_GUEST_HEAP);
 	if (gse)
 		data->guest_heap = kvmppc_gse_get_u64(gse);
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_L0_GUEST_HEAP_MAX);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_L0_GUEST_HEAP_MAX);
 	if (gse)
 		data->guest_heap_max = kvmppc_gse_get_u64(gse);
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_SIZE);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_SIZE);
 	if (gse)
 		data->guest_pgtable_size = kvmppc_gse_get_u64(gse);
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_SIZE_MAX);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_SIZE_MAX);
 	if (gse)
 		data->guest_pgtable_size_max = kvmppc_gse_get_u64(gse);
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_RECLAIM);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_RECLAIM);
 	if (gse)
 		data->guest_pgtable_reclaim = kvmppc_gse_get_u64(gse);
+
+	kfree(gsp);
 
 	return 0;
 }
@@ -454,7 +457,7 @@ static void test_gs_hostwide_msg(struct kunit *test)
 static void test_gs_hostwide_counters(struct kunit *test)
 {
 	struct kvmppc_gs_msg_test_hostwide_data test_data;
-	struct kvmppc_gs_parser gsp = { 0 };
+	struct kvmppc_gs_parser *gsp;
 
 	struct kvmppc_gs_msg *gsm;
 	struct kvmppc_gs_buff *gsb;
@@ -488,35 +491,36 @@ static void test_gs_hostwide_counters(struct kunit *test)
 	KUNIT_ASSERT_EQ(test, rc, 0);
 
 	/* Parse the guest state buffer is successful */
-	rc = kvmppc_gse_parse(&gsp, gsb);
-	KUNIT_ASSERT_EQ(test, rc, 0);
+	gsp = kvmppc_gse_parse(gsb);
+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, gsp);
 
 	/* Parse the GSB and get the counters */
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_L0_GUEST_HEAP);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_L0_GUEST_HEAP);
 	KUNIT_ASSERT_NOT_NULL_MSG(test, gse, "L0 Heap counter missing");
 	kunit_info(test, "Guest Heap Size=%llu bytes",
 		   kvmppc_gse_get_u64(gse));
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_L0_GUEST_HEAP_MAX);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_L0_GUEST_HEAP_MAX);
 	KUNIT_ASSERT_NOT_NULL_MSG(test, gse, "L0 Heap counter max missing");
 	kunit_info(test, "Guest Heap Size Max=%llu bytes",
 		   kvmppc_gse_get_u64(gse));
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_SIZE);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_SIZE);
 	KUNIT_ASSERT_NOT_NULL_MSG(test, gse, "L0 page-table size missing");
 	kunit_info(test, "Guest Page-table Size=%llu bytes",
 		   kvmppc_gse_get_u64(gse));
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_SIZE_MAX);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_SIZE_MAX);
 	KUNIT_ASSERT_NOT_NULL_MSG(test, gse, "L0 page-table size-max missing");
 	kunit_info(test, "Guest Page-table Size Max=%llu bytes",
 		   kvmppc_gse_get_u64(gse));
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_RECLAIM);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_RECLAIM);
 	KUNIT_ASSERT_NOT_NULL_MSG(test, gse, "L0 page-table reclaim size missing");
 	kunit_info(test, "Guest Page-table Reclaim Size=%llu bytes",
 		   kvmppc_gse_get_u64(gse));
 
+	kfree(gsp);
 	kvmppc_gsm_free(gsm);
 	kvmppc_gsb_free(gsb);
 }

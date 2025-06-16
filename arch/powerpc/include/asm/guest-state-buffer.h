@@ -559,7 +559,7 @@ kvmppc_gse_next(const struct kvmppc_gs_elem *gse, int *remaining)
 
 int __kvmppc_gse_put(struct kvmppc_gs_buff *gsb, u16 iden, u16 size,
 		     const void *data);
-int kvmppc_gse_parse(struct kvmppc_gs_parser *gsp, struct kvmppc_gs_buff *gsb);
+struct kvmppc_gs_parser *kvmppc_gse_parse(struct kvmppc_gs_buff *gsb);
 
 /**
  * kvmppc_gse_put_be32() - add a be32 guest state element to a buffer
