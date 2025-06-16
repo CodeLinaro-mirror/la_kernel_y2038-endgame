@@ -3563,7 +3563,7 @@ static bool mas_wr_walk(struct ma_wr_state *wr_mas)
 	return true;
 }
 
-static void mas_wr_walk_index(struct ma_wr_state *wr_mas)
+static noinline void mas_wr_walk_index(struct ma_wr_state *wr_mas)
 {
 	struct ma_state *mas = wr_mas->mas;
 
@@ -4063,7 +4063,7 @@ static inline void mas_wr_append(struct ma_wr_state *wr_mas,
  *
  * This is where split, rebalance end up.
  */
-static void mas_wr_bnode(struct ma_wr_state *wr_mas)
+static noinline void mas_wr_bnode(struct ma_wr_state *wr_mas)
 {
 	struct maple_big_node b_node;
 
