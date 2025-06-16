@@ -297,24 +297,35 @@ EXPORT_SYMBOL_GPL(__kvmppc_gse_put);
 
 /**
  * kvmppc_gse_parse() - create a parse map from a guest state buffer
- * @gsp: guest state parser
  * @gsb: guest state buffer
+ *
+ * Returns a filled kvmppc_gs_parser structure on success, or an error
+ * pointer on failure.
  */
-int kvmppc_gse_parse(struct kvmppc_gs_parser *gsp, struct kvmppc_gs_buff *gsb)
+struct kvmppc_gs_parser *kvmppc_gse_parse(struct kvmppc_gs_buff *gsb)
 {
+	struct kvmppc_gs_parser *gsp;
 	struct kvmppc_gs_elem *curr;
 	int rem, i;
 
+	gsp = kzalloc(sizeof(*gsp), GFP_KERNEL);
+	if (!gsp)
+		return ERR_PTR(-ENOMEM);
+
 	kvmppc_gsb_for_each_elem(i, curr, gsb, rem) {
 		if (kvmppc_gse_len(curr) !=
-		    kvmppc_gsid_size(kvmppc_gse_iden(curr)))
-			return -EINVAL;
+		    kvmppc_gsid_size(kvmppc_gse_iden(curr))) {
+			kfree(gsp);
+			return ERR_PTR(-EINVAL);
+		}
 		kvmppc_gsp_insert(gsp, kvmppc_gse_iden(curr), curr);
 	}
 
-	if (kvmppc_gsb_nelems(gsb) != i)
-		return -EINVAL;
-	return 0;
+	if (kvmppc_gsb_nelems(gsb) != i) {
+		kfree(gsp);
+		return ERR_PTR(-EINVAL);
+	}
+	return gsp;
 }
 EXPORT_SYMBOL_GPL(kvmppc_gse_parse);
 

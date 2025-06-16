@@ -66,7 +66,6 @@ static DEFINE_SPINLOCK(lock_l0_stats);
 /* GSB related structs needed to talk to L0 */
 static struct kvmppc_gs_msg *gsm_l0_stats;
 static struct kvmppc_gs_buff *gsb_l0_stats;
-static struct kvmppc_gs_parser gsp_l0_stats;
 
 static struct attribute *kvmppc_pmu_events_attr[] = {
 	KVMPPC_PMU_EVENT_ATTR(host_heap, KVMPPC_EVENT_HOST_HEAP),
@@ -105,6 +104,7 @@ static const struct attribute_group *kvmppc_pmu_attr_groups[] = {
  */
 static int kvmppc_update_l0_stats(void)
 {
+	struct kvmppc_gs_parser *gsp;
 	int rc;
 
 	/* With HOST_WIDE flags guestid and vcpuid will be ignored */
@@ -113,9 +113,10 @@ static int kvmppc_update_l0_stats(void)
 		goto out;
 
 	/* Parse the guest state buffer is successful */
-	rc = kvmppc_gse_parse(&gsp_l0_stats, gsb_l0_stats);
+	gsp = kvmppc_gse_parse(gsb_l0_stats);
 	if (rc)
 		goto out;
+	kfree(gsp);
 
 	/* Update the l0 returned stats*/
 	memset(&l0_stats, 0, sizeof(l0_stats));
@@ -272,36 +273,41 @@ static int hostwide_fill_info(struct kvmppc_gs_buff *gsb,
 static int hostwide_refresh_info(struct kvmppc_gs_msg *gsm,
 				 struct kvmppc_gs_buff *gsb)
 {
-	struct kvmppc_gs_parser gsp = { 0 };
+	struct kvmppc_gs_parser *gsp;
 	struct kvmppc_hostwide_stats *stats = gsm->data;
 	struct kvmppc_gs_elem *gse;
 	int rc;
 
-	rc = kvmppc_gse_parse(&gsp, gsb);
-	if (rc < 0)
-		return rc;
+	gsp = kvmppc_gse_parse(gsb);
+	if (IS_ERR(gsp)) {
+		rc = PTR_ERR(gsp);
+		goto out;
+	}
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_L0_GUEST_HEAP);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_L0_GUEST_HEAP);
 	if (gse)
 		stats->guest_heap = kvmppc_gse_get_u64(gse);
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_L0_GUEST_HEAP_MAX);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_L0_GUEST_HEAP_MAX);
 	if (gse)
 		stats->guest_heap_max = kvmppc_gse_get_u64(gse);
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_SIZE);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_SIZE);
 	if (gse)
 		stats->guest_pgtable_size = kvmppc_gse_get_u64(gse);
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_SIZE_MAX);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_SIZE_MAX);
 	if (gse)
 		stats->guest_pgtable_size_max = kvmppc_gse_get_u64(gse);
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_RECLAIM);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_L0_GUEST_PGTABLE_RECLAIM);
 	if (gse)
 		stats->guest_pgtable_reclaim = kvmppc_gse_get_u64(gse);
 
-	return 0;
+out:
+	kfree(gsp);
+
+	return rc;
 }
 
 /* gsb-message ops for setting up/parsing */

@@ -101,7 +101,7 @@ static void test_adding_element(struct kunit *test)
 static void test_gs_parsing(struct kunit *test)
 {
 	struct kvmppc_gs_elem *gse;
-	struct kvmppc_gs_parser gsp = { 0 };
+	struct kvmppc_gs_parser *gsp;
 	struct kvmppc_gs_buff *gsb;
 	size_t size = 0x1000;
 	u64 tmp1, tmp2;
@@ -112,14 +112,16 @@ static void test_gs_parsing(struct kunit *test)
 	tmp1 = 0xdeadbeefull;
 	kvmppc_gse_put_u64(gsb, KVMPPC_GSID_GPR(0), tmp1);
 
-	KUNIT_EXPECT_GE(test, kvmppc_gse_parse(&gsp, gsb), 0);
+	gsp = kvmppc_gse_parse(gsb);
+	KUNIT_ASSERT_NOT_ERR_OR_NULL(gsp);
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_GPR(0));
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_GPR(0));
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, gse);
 
 	tmp2 = kvmppc_gse_get_u64(gse);
 	KUNIT_EXPECT_EQ(test, tmp2, 0xdeadbeefull);
 
+	kfree(gsp);
 	kvmppc_gsb_free(gsb);
 }
 
@@ -261,16 +263,16 @@ static int test1_fill_info(struct kvmppc_gs_buff *gsb,
 static int test1_refresh_info(struct kvmppc_gs_msg *gsm,
 			      struct kvmppc_gs_buff *gsb)
 {
-	struct kvmppc_gs_parser gsp = { 0 };
+	struct kvmppc_gs_parser *gsp;
 	struct kvmppc_gs_msg_test1_data *data = gsm->data;
 	struct kvmppc_gs_elem *gse;
 	int rc;
 
-	rc = kvmppc_gse_parse(&gsp, gsb);
-	if (rc < 0)
-		return rc;
+	gsp = kvmppc_gse_parse(gsb);
+	if (IS_ERR(gsp))
+		return PTR_ERR(gsp);
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_GPR(0));
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_GPR(0));
 	if (gse)
 		data->a = kvmppc_gse_get_u64(gse);
 
@@ -278,6 +280,7 @@ static int test1_refresh_info(struct kvmppc_gs_msg *gsm,
 	if (gse)
 		data->b = kvmppc_gse_get_u32(gse);
 
+	kfree(gsp);
 	return 0;
 }
 

@@ -85,19 +85,20 @@ gs_msg_ops_kvmhv_nestedv2_config_refresh_info(struct kvmppc_gs_msg *gsm,
 					      struct kvmppc_gs_buff *gsb)
 {
 	struct kvmhv_nestedv2_config *cfg;
-	struct kvmppc_gs_parser gsp = { 0 };
+	struct kvmppc_gs_parser *gsp;
 	struct kvmppc_gs_elem *gse;
-	int rc;
 
 	cfg = gsm->data;
 
-	rc = kvmppc_gse_parse(&gsp, gsb);
-	if (rc < 0)
-		return rc;
+	gsp = kvmppc_gse_parse(gsb);
+	if (IS_ERR(gsp))
+		return PTR_ERR(gsp);
 
-	gse = kvmppc_gsp_lookup(&gsp, KVMPPC_GSID_RUN_OUTPUT_MIN_SIZE);
+	gse = kvmppc_gsp_lookup(gsp, KVMPPC_GSID_RUN_OUTPUT_MIN_SIZE);
 	if (gse)
 		cfg->vcpu_run_output_size = kvmppc_gse_get_u64(gse);
+
+	kfree(gsp);
 	return 0;
 }
 
@@ -399,25 +400,25 @@ static int gs_msg_ops_vcpu_fill_info(struct kvmppc_gs_buff *gsb,
 static int gs_msg_ops_vcpu_refresh_info(struct kvmppc_gs_msg *gsm,
 					struct kvmppc_gs_buff *gsb)
 {
-	struct kvmppc_gs_parser gsp = { 0 };
+	struct kvmppc_gs_parser *gsp;
 	struct kvmhv_nestedv2_io *io;
 	struct kvmppc_gs_bitmap *valids;
 	struct kvm_vcpu *vcpu;
 	struct kvmppc_gs_elem *gse;
 	vector128 v;
-	int rc, i;
+	int i;
 	u16 iden;
 
 	vcpu = gsm->data;
 
-	rc = kvmppc_gse_parse(&gsp, gsb);
-	if (rc < 0)
-		return rc;
+	gsp = kvmppc_gse_parse(gsb);
+	if (IS_ERR(gsp))
+		return PTR_ERR(gsp);
 
 	io = &vcpu->arch.nestedv2_io;
 	valids = &io->valids;
 
-	kvmppc_gsp_for_each(&gsp, iden, gse)
+	kvmppc_gsp_for_each(gsp, iden, gse)
 	{
 		switch (iden) {
 		case KVMPPC_GSID_DSCR:
@@ -628,6 +629,7 @@ static int gs_msg_ops_vcpu_refresh_info(struct kvmppc_gs_msg *gsm,
 		}
 		kvmppc_gsbm_set(valids, iden);
 	}
+	kfree(gsp);
 
 	return 0;
 }
