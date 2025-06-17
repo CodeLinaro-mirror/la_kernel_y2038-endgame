@@ -262,7 +262,7 @@ static inline unsigned long __phys_addr(unsigned long x, bool is_31bit)
 
 static inline unsigned long virt_to_phys(volatile void *address)
 {
-	return __phys_addr(address, false);
+	return __phys_addr((unsigned long)address, false);
 }
 
 static inline void *phys_to_virt(unsigned long address)
