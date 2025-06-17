@@ -252,7 +252,6 @@ static inline unsigned long __phys_addr(unsigned long x, bool is_31bit)
 #define __pa32(x)		__phys_addr((unsigned long)(x), true)
 #define __va(x)			((void *)((unsigned long)(x) + __identity_base))
 
-#endif /* __DECOMPRESSOR */
 
 #define phys_to_pfn(phys)	((phys) >> PAGE_SHIFT)
 #define pfn_to_phys(pfn)	((pfn) << PAGE_SHIFT)
@@ -279,6 +278,8 @@ static inline unsigned long virt_to_pfn(const void *kaddr)
 {
 	return phys_to_pfn(__pa(kaddr));
 }
+
+#endif /* __DECOMPRESSOR */
 
 #define pfn_to_kaddr(pfn)	pfn_to_virt(pfn)
 
