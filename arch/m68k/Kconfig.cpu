@@ -38,7 +38,6 @@ config SUN3
 	depends on MMU
 	select HAVE_ARCH_PFN_VALID
 	select LEGACY_TIMER_TICK
-	select NO_DMA
 	select M68020
 	help
 	  This option enables support for the Sun 3 series of workstations
@@ -558,4 +557,4 @@ config COLDFIRE_COHERENT_DMA
 config M68K_NONCOHERENT_DMA
 	bool
 	default y
-	depends on HAS_DMA && !COLDFIRE_COHERENT_DMA
+	depends on HAS_DMA && !COLDFIRE_COHERENT_DMA && !SUN3

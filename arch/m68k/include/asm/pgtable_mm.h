@@ -168,8 +168,10 @@ static inline void update_mmu_cache_range(struct vm_fault *vmf,
 	    ? (__pgprot((pgprot_val(prot) & _CACHEMASK040) | _PAGE_NOCACHE_S))	\
 	    : (prot)))
 
+#ifndef CONFIG_SUN3
 pgprot_t pgprot_dmacoherent(pgprot_t prot);
 #define pgprot_dmacoherent(prot)	pgprot_dmacoherent(prot)
+#endif
 
 #endif /* CONFIG_COLDFIRE */
 #endif /* !__ASSEMBLER__ */
