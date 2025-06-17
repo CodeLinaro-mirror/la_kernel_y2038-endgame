@@ -38,7 +38,6 @@ config M68K
 	select MMU_GATHER_NO_RANGE if MMU
 	select MODULES_USE_ELF_REL
 	select MODULES_USE_ELF_RELA
-	select NO_DMA if !MMU && !COLDFIRE
 	select OLD_SIGACTION
 	select OLD_SIGSUSPEND3
 	select UACCESS_MEMCPY if !MMU
