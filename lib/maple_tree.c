@@ -3724,10 +3724,9 @@ done:
  * span.
  * @wr_mas: The maple write state
  */
-static noinline void mas_wr_spanning_store(struct ma_wr_state *wr_mas)
+static noinline_for_kasan void _mas_wr_spanning_store(struct ma_wr_state *wr_mas, struct maple_big_node *b_node)
 {
 	struct maple_subtree_state mast;
-	struct maple_big_node b_node;
 	struct ma_state *mas;
 	unsigned char height;
 
@@ -3765,7 +3764,7 @@ static noinline void mas_wr_spanning_store(struct ma_wr_state *wr_mas)
 	 * store to ensure it's not NULL and to combine both the next node and
 	 * the node with the start together.
 	 */
-	r_mas = *mas;
+	memcpy(&r_mas, mas, sizeof(r_mas));
 	/* Avoid overflow, walk to next slot in the tree. */
 	if (r_mas.last + 1)
 		r_mas.last++;
@@ -3775,7 +3774,7 @@ static noinline void mas_wr_spanning_store(struct ma_wr_state *wr_mas)
 	r_mas.last = r_mas.index = mas->last;
 
 	/* Set up left side. */
-	l_mas = *mas;
+	memcpy(&l_mas, mas, sizeof(l_mas));
 	mas_wr_walk_index(&l_wr_mas);
 
 	if (!wr_mas->entry) {
@@ -3791,26 +3790,34 @@ static noinline void mas_wr_spanning_store(struct ma_wr_state *wr_mas)
 		return mas_new_root(mas, wr_mas->entry);
 	}
 
-	memset(&b_node, 0, sizeof(struct maple_big_node));
+	memset(b_node, 0, sizeof(struct maple_big_node));
 	/* Copy l_mas and store the value in b_node. */
-	mas_store_b_node(&l_wr_mas, &b_node, l_mas.end);
+	mas_store_b_node(&l_wr_mas, b_node, l_mas.end);
+
 	/* Copy r_mas into b_node if there is anything to copy. */
 	if (r_mas.max > r_mas.last)
 		mas_mab_cp(&r_mas, r_mas.offset, r_mas.end,
-			   &b_node, b_node.b_end + 1);
+			   b_node, b_node->b_end + 1);
 	else
-		b_node.b_end++;
+		b_node->b_end++;
 
 	/* Stop spanning searches by searching for just index. */
 	l_mas.index = l_mas.last = mas->index;
 
-	mast.bn = &b_node;
+	mast.bn = b_node;
 	mast.orig_l = &l_mas;
 	mast.orig_r = &r_mas;
+
 	/* Combine l_mas and r_mas and split them up evenly again. */
 	return mas_spanning_rebalance(mas, &mast, height + 1);
 }
 
+static noinline void mas_wr_spanning_store(struct ma_wr_state *wr_mas)
+{
+	struct maple_big_node b_node;
+
+	_mas_wr_spanning_store(wr_mas, &b_node);
+}
 /*
  * mas_wr_node_store() - Attempt to store the value in a node
  * @wr_mas: The maple write state
