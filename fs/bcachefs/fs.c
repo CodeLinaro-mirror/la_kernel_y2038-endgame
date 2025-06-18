@@ -908,7 +908,8 @@ static struct dentry *bch2_mkdir(struct mnt_idmap *idmap,
 	return ERR_PTR(bch2_mknod(idmap, vdir, dentry, mode|S_IFDIR, 0));
 }
 
-static int bch2_rename2(struct mnt_idmap *idmap,
+static __no_sanitize_address
+int bch2_rename2(struct mnt_idmap *idmap,
 			struct inode *src_vdir, struct dentry *src_dentry,
 			struct inode *dst_vdir, struct dentry *dst_dentry,
 			unsigned flags)

@@ -160,9 +160,10 @@ found:
 }
 
 /* Get lost+found, create if it doesn't exist: */
-static int lookup_lostfound(struct btree_trans *trans, u32 snapshot,
-			    struct bch_inode_unpacked *lostfound,
-			    u64 reattaching_inum)
+static __no_sanitize_address
+int lookup_lostfound(struct btree_trans *trans, u32 snapshot,
+		     struct bch_inode_unpacked *lostfound,
+		     u64 reattaching_inum)
 {
 	struct bch_fs *c = trans->c;
 	struct qstr lostfound_str = QSTR("lost+found");
@@ -362,6 +363,7 @@ err:
 	return ret;
 }
 
+__no_sanitize_address
 static int reattach_inode(struct btree_trans *trans, struct bch_inode_unpacked *inode)
 {
 	struct bch_fs *c = trans->c;

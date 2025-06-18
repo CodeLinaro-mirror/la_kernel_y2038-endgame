@@ -259,8 +259,9 @@ static int data_update_invalid_bkey(struct data_update *m,
 	return bch_err_throw(c, invalid_bkey);
 }
 
-static int __bch2_data_update_index_update(struct btree_trans *trans,
-					   struct bch_write_op *op)
+static __no_sanitize_address
+int __bch2_data_update_index_update(struct btree_trans *trans,
+				    struct bch_write_op *op)
 {
 	struct bch_fs *c = op->c;
 	struct btree_iter iter;

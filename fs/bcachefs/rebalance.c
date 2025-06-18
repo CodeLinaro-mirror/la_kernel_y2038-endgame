@@ -604,7 +604,7 @@ static int do_rebalance(struct moving_context *ctxt)
 	return ret;
 }
 
-static int bch2_rebalance_thread(void *arg)
+static __no_sanitize_address int bch2_rebalance_thread(void *arg)
 {
 	struct bch_fs *c = arg;
 	struct bch_fs_rebalance *r = &c->rebalance;

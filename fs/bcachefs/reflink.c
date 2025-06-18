@@ -589,6 +589,7 @@ static struct bkey_s_c get_next_src(struct btree_trans *trans,
 	return ret ? bkey_s_c_err(ret) : bkey_s_c_null;
 }
 
+__no_sanitize_address
 s64 bch2_remap_range(struct bch_fs *c,
 		     subvol_inum dst_inum, u64 dst_offset,
 		     subvol_inum src_inum, u64 src_offset,

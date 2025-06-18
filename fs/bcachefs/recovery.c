@@ -1151,6 +1151,7 @@ fsck_err:
 	goto final_out;
 }
 
+__no_sanitize_address
 int bch2_fs_initialize(struct bch_fs *c)
 {
 	struct bch_inode_unpacked root_inode, lostfound_inode;

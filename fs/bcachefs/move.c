@@ -1092,7 +1092,8 @@ typedef bool (*move_btree_pred)(struct bch_fs *, void *,
 				struct btree *, struct bch_io_opts *,
 				struct data_update_opts *);
 
-static int bch2_move_btree(struct bch_fs *c,
+static __no_sanitize_address
+int bch2_move_btree(struct bch_fs *c,
 			   struct bbpos start,
 			   struct bbpos end,
 			   move_btree_pred pred, void *arg,

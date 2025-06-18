@@ -1244,7 +1244,7 @@ void bch2_btree_node_iter_push(struct btree_node_iter *iter,
 	bch2_btree_node_iter_sort(iter, b);
 }
 
-noinline __flatten __cold
+noinline __cold __no_sanitize_address
 static void btree_node_iter_init_pack_failed(struct btree_node_iter *iter,
 			      struct btree *b, struct bpos *search)
 {

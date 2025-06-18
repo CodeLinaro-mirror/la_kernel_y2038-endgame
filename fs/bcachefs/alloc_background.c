@@ -1565,6 +1565,7 @@ fsck_err:
 	return ret;
 }
 
+__no_sanitize_address
 int bch2_check_alloc_info(struct bch_fs *c)
 {
 	struct btree_trans *trans = bch2_trans_get(c);
