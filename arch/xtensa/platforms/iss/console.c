@@ -141,15 +141,6 @@ static int __init rs_init(void)
 	return 0;
 }
 
-
-static __exit void rs_exit(void)
-{
-	tty_unregister_driver(serial_driver);
-	tty_driver_kref_put(serial_driver);
-	tty_port_destroy(&serial_port);
-}
-
-
 /* We use `late_initcall' instead of just `__initcall' as a workaround for
  * the fact that (1) simcons_tty_init can't be called before tty_init,
  * (2) tty_init is called via `module_init', (3) if statically linked,
