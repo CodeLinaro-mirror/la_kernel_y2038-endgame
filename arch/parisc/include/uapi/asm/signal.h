@@ -58,7 +58,7 @@
 #include <asm-generic/signal-defs.h>
 
 #define _NSIG		64
-#define _NSIG_BPW	(sizeof(unsigned long) * 8)
+#define _NSIG_BPW	__BITS_PER_LONG
 #define _NSIG_WORDS	(_NSIG / _NSIG_BPW)
 
 # ifndef __ASSEMBLER__
