@@ -5963,8 +5963,8 @@ static int handle_query_phys_parms_rsp(union ibmvnic_crq *crq,
 	return rc;
 }
 
-static void ibmvnic_handle_crq(union ibmvnic_crq *crq,
-			       struct ibmvnic_adapter *adapter)
+static noinline_for_stack void ibmvnic_handle_crq(union ibmvnic_crq *crq,
+						  struct ibmvnic_adapter *adapter)
 {
 	struct ibmvnic_generic_crq *gen_crq = &crq->generic;
 	struct net_device *netdev = adapter->netdev;
