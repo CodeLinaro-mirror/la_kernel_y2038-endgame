@@ -1709,7 +1709,7 @@ static unsigned char FlashPoint_InterruptPending(void *pCurrCard)
  *              us.
  *
  *---------------------------------------------------------------------*/
-static int FlashPoint_HandleInterrupt(void *pcard)
+static noinline_for_stack int FlashPoint_HandleInterrupt(void *pcard)
 {
 	struct sccb *currSCCB;
 	unsigned char thisCard, result, bm_status;
@@ -4409,7 +4409,7 @@ static void FPT_phaseChkFifo(u32 port, unsigned char p_card)
  *              because of command complete or from a disconnect.
  *
  *---------------------------------------------------------------------*/
-static void FPT_phaseBusFree(u32 port, unsigned char p_card)
+static noinline_for_stack void FPT_phaseBusFree(u32 port, unsigned char p_card)
 {
 	struct sccb *currSCCB;
 
@@ -4611,7 +4611,7 @@ static void FPT_autoLoadDefaultMap(u32 p_port)
  *
  *---------------------------------------------------------------------*/
 
-static void FPT_autoCmdCmplt(u32 p_port, unsigned char p_card)
+static noinline_for_stack void FPT_autoCmdCmplt(u32 p_port, unsigned char p_card)
 {
 	struct sccb *currSCCB;
 	unsigned char status_byte;
