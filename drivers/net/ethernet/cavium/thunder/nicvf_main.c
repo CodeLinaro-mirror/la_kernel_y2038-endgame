@@ -614,7 +614,7 @@ static inline bool nicvf_xdp_rx(struct nicvf *nic, struct bpf_prog *prog,
 	return false;
 }
 
-static void nicvf_snd_ptp_handler(struct net_device *netdev,
+static noinline void nicvf_snd_ptp_handler(struct net_device *netdev,
 				  struct cqe_send_t *cqe_tx)
 {
 	struct nicvf *nic = netdev_priv(netdev);
@@ -652,7 +652,7 @@ no_tstamp:
 	smp_wmb();
 }
 
-static void nicvf_snd_pkt_handler(struct net_device *netdev,
+static noinline void nicvf_snd_pkt_handler(struct net_device *netdev,
 				  struct cqe_send_t *cqe_tx,
 				  int budget, int *subdesc_cnt,
 				  unsigned int *tx_pkts, unsigned int *tx_bytes)
@@ -767,7 +767,7 @@ static inline void nicvf_set_rxtstamp(struct nicvf *nic, struct sk_buff *skb)
 	__skb_pull(skb, 8);
 }
 
-static void nicvf_rcv_pkt_handler(struct net_device *netdev,
+static noinline void nicvf_rcv_pkt_handler(struct net_device *netdev,
 				  struct napi_struct *napi,
 				  struct cqe_rx_t *cqe_rx,
 				  struct snd_queue *sq, struct rcv_queue *rq)
