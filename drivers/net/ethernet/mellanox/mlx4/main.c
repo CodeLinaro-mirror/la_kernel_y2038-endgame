@@ -2311,7 +2311,7 @@ static int mlx4_init_fw(struct mlx4_dev *dev)
 	return err;
 }
 
-static int mlx4_init_hca(struct mlx4_dev *dev)
+static noinline_for_stack int mlx4_init_hca(struct mlx4_dev *dev)
 {
 	struct mlx4_priv	  *priv = mlx4_priv(dev);
 	struct mlx4_init_hca_param *init_hca = NULL;
