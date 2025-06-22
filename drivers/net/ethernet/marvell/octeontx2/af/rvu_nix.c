@@ -1035,7 +1035,15 @@ static void nix_get_aq_req_smq(struct rvu *rvu, struct nix_aq_enq_req *req,
 	}
 }
 
-static int rvu_nix_blk_aq_enq_inst(struct rvu *rvu, struct nix_hw *nix_hw,
+static inline void flip_bit(bool ena, bool mask_ena, int qidx, unsigned long *bmap)
+{
+	if ((ena & mask_ena) | (test_bit(qidx, bmap) & !mask_ena))
+		__set_bit(qidx, bmap);
+	else
+		__clear_bit(qidx, bmap);
+}
+
+static noinline int rvu_nix_blk_aq_enq_inst(struct rvu *rvu, struct nix_hw *nix_hw,
 				   struct nix_aq_enq_req *req,
 				   struct nix_aq_enq_rsp *rsp)
 {
@@ -1048,7 +1056,6 @@ static int rvu_nix_blk_aq_enq_inst(struct rvu *rvu, struct nix_hw *nix_hw,
 	struct rvu_pfvf *pfvf;
 	u16 smq, smq_mask;
 	void *ctx, *mask;
-	bool ena;
 	u64 cfg;
 
 	blkaddr = nix_hw->blkaddr;
@@ -1213,34 +1220,15 @@ static int rvu_nix_blk_aq_enq_inst(struct rvu *rvu, struct nix_hw *nix_hw,
 		if (req->ctype == NIX_AQ_CTYPE_CQ && req->cq.ena)
 			__set_bit(req->qidx, pfvf->cq_bmap);
 	}
-
 	if (req->op == NIX_AQ_INSTOP_WRITE) {
 		if (req->ctype == NIX_AQ_CTYPE_RQ) {
-			ena = (req->rq.ena & req->rq_mask.ena) |
-				(test_bit(req->qidx, pfvf->rq_bmap) &
-				~req->rq_mask.ena);
-			if (ena)
-				__set_bit(req->qidx, pfvf->rq_bmap);
-			else
-				__clear_bit(req->qidx, pfvf->rq_bmap);
+			flip_bit(req->rq.ena, req->rq_mask.ena, req->qidx, pfvf->rq_bmap);
 		}
 		if (req->ctype == NIX_AQ_CTYPE_SQ) {
-			ena = (req->rq.ena & req->sq_mask.ena) |
-				(test_bit(req->qidx, pfvf->sq_bmap) &
-				~req->sq_mask.ena);
-			if (ena)
-				__set_bit(req->qidx, pfvf->sq_bmap);
-			else
-				__clear_bit(req->qidx, pfvf->sq_bmap);
+			flip_bit(req->rq.ena, req->sq_mask.ena, req->qidx, pfvf->sq_bmap);
 		}
 		if (req->ctype == NIX_AQ_CTYPE_CQ) {
-			ena = (req->rq.ena & req->cq_mask.ena) |
-				(test_bit(req->qidx, pfvf->cq_bmap) &
-				~req->cq_mask.ena);
-			if (ena)
-				__set_bit(req->qidx, pfvf->cq_bmap);
-			else
-				__clear_bit(req->qidx, pfvf->cq_bmap);
+			flip_bit(req->rq.ena, req->cq_mask.ena, req->qidx, pfvf->cq_bmap);
 		}
 	}
 
