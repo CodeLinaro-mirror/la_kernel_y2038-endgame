@@ -3427,7 +3427,7 @@ static void free_firmware(void)
 #define free_firmware() do {} while (0)
 #endif
 
-static int ipw_load(struct ipw_priv *priv)
+static noinline_for_stack int ipw_load(struct ipw_priv *priv)
 {
 #ifndef CONFIG_PM
 	const struct firmware *raw = NULL;
