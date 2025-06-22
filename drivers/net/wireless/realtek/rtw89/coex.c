@@ -1405,9 +1405,9 @@ struct rtw89_btc_prpt {
 	u8 content[];
 } __packed;
 
-static u32 _chk_btc_report(struct rtw89_dev *rtwdev,
-			   struct rtw89_btc_btf_fwinfo *pfwinfo,
-			   u8 *prptbuf, u32 index)
+static noinline_for_stack u32
+_chk_btc_report(struct rtw89_dev *rtwdev, struct rtw89_btc_btf_fwinfo *pfwinfo,
+		u8 *prptbuf, u32 index)
 {
 	struct rtw89_btc *btc = &rtwdev->btc;
 	struct rtw89_btc_ver *fwsubver = &btc->fwinfo.fw_subver;
