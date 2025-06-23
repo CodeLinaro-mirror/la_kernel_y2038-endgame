@@ -94,9 +94,9 @@
 #define DC395x_LOCK_IO(dev,flags)		spin_lock_irqsave(((struct Scsi_Host *)dev)->host_lock, flags)
 #define DC395x_UNLOCK_IO(dev,flags)		spin_unlock_irqrestore(((struct Scsi_Host *)dev)->host_lock, flags)
 
-#define DC395x_read8(acb,address)		(u8)(inb(acb->io_port_base + (address)))
-#define DC395x_read16(acb,address)		(u16)(inw(acb->io_port_base + (address)))
-#define DC395x_read32(acb,address)		(u32)(inl(acb->io_port_base + (address)))
+#define DC395x_read8(acb,address)		inb(acb->io_port_base + (address))
+#define DC395x_read16(acb,address)		inw(acb->io_port_base + (address))
+#define DC395x_read32(acb,address)		inl(acb->io_port_base + (address))
 #define DC395x_write8(acb,address,value)	outb((value), acb->io_port_base + (address))
 #define DC395x_write16(acb,address,value)	outw((value), acb->io_port_base + (address))
 #define DC395x_write32(acb,address,value)	outl((value), acb->io_port_base + (address))
