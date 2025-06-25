@@ -126,21 +126,6 @@ struct fb_cursor_user {
 	struct fb_image_user image;	/* Cursor image */
 };
 
-/*
- * Register/unregister for framebuffer events
- */
-
-#ifdef CONFIG_GUMSTIX_AM200EPD
-/* only used by mach-pxa/am200epd.c */
-#define FB_EVENT_FB_REGISTERED          0x05
-#define FB_EVENT_FB_UNREGISTERED        0x06
-#endif
-
-struct fb_event {
-	struct fb_info *info;
-	void *data;
-};
-
 /*	Enough for the VT console needs, see its max_font_width/height */
 #define FB_MAX_BLIT_WIDTH	64
 #define FB_MAX_BLIT_HEIGHT	128
