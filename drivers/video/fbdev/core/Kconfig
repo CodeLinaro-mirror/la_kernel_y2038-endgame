@@ -7,9 +7,6 @@ config FB_CORE
 	select VIDEO
 	tristate
 
-config FB_NOTIFY
-	bool
-
 config FB_DEVICE
 	bool "Provide legacy /dev/fb* device"
 	depends on FB_CORE

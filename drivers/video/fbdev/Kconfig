@@ -7,7 +7,6 @@ menuconfig FB
 	tristate "Support for frame buffer device drivers"
 	depends on MMU
 	select FB_CORE
-	select FB_NOTIFY
 	help
 	  The frame buffer device provides an abstraction for the graphics
 	  hardware. It represents the frame buffer of some video hardware and
