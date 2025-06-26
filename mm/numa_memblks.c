@@ -4,6 +4,7 @@
 #include <linux/sort.h>
 #include <linux/printk.h>
 #include <linux/memblock.h>
+#include <linux/mmzone.h>
 #include <linux/numa.h>
 #include <linux/numa_memblks.h>
 
