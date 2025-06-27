@@ -279,7 +279,7 @@ static int  __init plist_test(void)
 	printk(KERN_DEBUG "end plist test\n");
 
 	/* Worst case test for plist_add() */
-	unsigned int test_data[241];
+	static unsigned int test_data[241] __initdata;
 
 	for (i = 0; i < ARRAY_SIZE(test_data); i++)
 		test_data[i] = i;
