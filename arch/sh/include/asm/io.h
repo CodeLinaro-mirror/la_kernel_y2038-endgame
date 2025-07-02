@@ -121,7 +121,7 @@ __BUILD_MEMORY_STRING(__raw_, q, u64)
 #define ioport_map ioport_map
 #define pci_iounmap pci_iounmap
 
-#ifdef CONFIG_HAS_IOPORT_MAP
+#ifdef CONFIG_HAS_IOPORT
 
 extern void __iomem *ioport_map(unsigned long port, unsigned int nr);
 
@@ -219,12 +219,6 @@ __BUILD_IOPORT_STRING(w, u16)
 __BUILD_IOPORT_STRING(l, u32)
 __BUILD_IOPORT_STRING(q, u64)
 
-#else /* !CONFIG_HAS_IOPORT_MAP */
-
-#include <asm/io_noioport.h>
-
-#endif
-
 #define inb(addr)      inb(addr)
 #define inw(addr)      inw(addr)
 #define inl(addr)      inl(addr)
@@ -247,6 +241,8 @@ __BUILD_IOPORT_STRING(q, u64)
 #define outsl outsl
 
 #define IO_SPACE_LIMIT 0xffffffff
+
+#endif
 
 /* We really want to try and get these to memcpy etc */
 #define memset_io memset_io
