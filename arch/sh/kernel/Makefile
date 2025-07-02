@@ -21,7 +21,7 @@ obj-y	:= head_32.o debugtraps.o dumpstack.o				\
 	   syscalls_32.o time.o topology.o traps.o			\
 	   traps_32.o unwinder.o
 
-obj-$(CONFIG_HAS_IOPORT_MAP)	+= ioport.o
+obj-$(CONFIG_HAS_IOPORT)	+= ioport.o
 
 obj-y				+= sys_sh32.o
 obj-y				+= cpu/
