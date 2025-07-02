@@ -38,11 +38,13 @@ endif
 ifneq ($(CONFIG_KMSAN)$(CONFIG_KASAN_STACK),)
 FRAME_WARN += + 256
 endif
-# PPC64 on clang uses more stack space, partially from the calling
+# PPC64 and MIPS on clang uses more stack space, partially from the calling
 # conventions, and partially from ppc specific code that could be
 # cleaned up.
-ifdef CONFIG_PPC64
+ifdef CONFIG_CC_IS_CLANG
+ifneq ($(CONFIG_PPC64)$(CONFIG_MIPS)$(CONFIG_ARCH_RV64I),)
 FRAME_WARN += + 256
+endif
 endif
 # When W=1 is set, set the limit 25% lower than the normal limit,
 # expecting to get a few dozen warnings about the top stack users
