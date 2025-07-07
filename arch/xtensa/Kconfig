@@ -78,9 +78,6 @@ config ARCH_HAS_ILOG2_U64
 config ARCH_MTD_XIP
 	def_bool y
 
-config NO_IOPORT_MAP
-	def_bool n
-
 config HZ
 	int
 	default 100
