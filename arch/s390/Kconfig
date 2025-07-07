@@ -35,9 +35,6 @@ config GENERIC_LOCKBREAK
 config AUDIT_ARCH
 	def_bool y
 
-config NO_IOPORT_MAP
-	def_bool y
-
 config ARCH_SUPPORTS_UPROBES
 	def_bool y
 

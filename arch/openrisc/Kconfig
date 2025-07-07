@@ -56,9 +56,6 @@ config MMU
 config GENERIC_HWEIGHT
 	def_bool y
 
-config NO_IOPORT_MAP
-	def_bool y
-
 # For now, use generic checksum functions
 #These can be reimplemented in assembly later if so inclined
 config GENERIC_CSUM

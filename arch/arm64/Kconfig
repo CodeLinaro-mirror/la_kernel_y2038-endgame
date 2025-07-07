@@ -347,9 +347,6 @@ config ARCH_MMAP_RND_COMPAT_BITS_MIN
 config ARCH_MMAP_RND_COMPAT_BITS_MAX
 	default 16
 
-config NO_IOPORT_MAP
-	def_bool y if !PCI
-
 config STACKTRACE_SUPPORT
 	def_bool y
 

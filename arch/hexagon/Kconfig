@@ -56,9 +56,6 @@ config EARLY_PRINTK
 config MMU
 	def_bool y
 
-config NO_IOPORT_MAP
-	def_bool y
-
 config GENERIC_CSUM
 	def_bool y
 
