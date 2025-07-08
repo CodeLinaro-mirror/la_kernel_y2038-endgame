@@ -11,6 +11,7 @@ menuconfig ARCH_PXA
 	select GPIO_PXA
 	select GPIOLIB
 	select GPIOLIB_LEGACY
+	select HAS_IOPORT
 	select PLAT_PXA
 	help
 	  Support for Intel/Marvell's PXA2xx/PXA3xx processor line.

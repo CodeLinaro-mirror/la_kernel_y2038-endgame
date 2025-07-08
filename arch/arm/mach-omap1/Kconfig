@@ -31,6 +31,7 @@ config ARCH_OMAP16XX
 	select ARCH_OMAP_OTG
 	select CPU_ARM926T
 	select OMAP_DM_TIMER
+	select HAS_IOPORT # for PCMCIA/OMAP_CF
 
 config ARCH_OMAP
 	bool
