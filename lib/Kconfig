@@ -380,7 +380,7 @@ config HAS_IOPORT
 config HAS_IOPORT_MAP
 	bool
 	depends on HAS_IOMEM && !NO_IOPORT_MAP
-	default y
+	default HAS_IOPORT
 
 source "kernel/dma/Kconfig"
 
