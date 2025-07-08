@@ -198,6 +198,7 @@ void __iomem *pci_remap_cfgspace(resource_size_t res_cookie, size_t size);
 #ifdef CONFIG_NEED_MACH_IO_H
 #include <mach/io.h>
 #else
+#ifdef CONFIG_HAS_IOPORT
 #if IS_ENABLED(CONFIG_PCMCIA) || defined(CONFIG_PCI)
 #define IO_SPACE_LIMIT	((resource_size_t)0xfffff)
 #else
@@ -250,6 +251,7 @@ void __iomem *pci_remap_cfgspace(resource_size_t res_cookie, size_t size);
 #define insb(p,d,l)		__raw_readsb(__io(p),d,l)
 #define insw(p,d,l)		__raw_readsw(__io(p),d,l)
 #define insl(p,d,l)		__raw_readsl(__io(p),d,l)
+#endif
 #endif
 
 /*

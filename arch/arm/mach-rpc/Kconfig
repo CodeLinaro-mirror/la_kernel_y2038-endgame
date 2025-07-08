@@ -11,6 +11,7 @@ config ARCH_RPC
 	select CPU_SA110
 	select FIQ
 	select HAVE_PATA_PLATFORM
+	select HAS_IOPORT
 	select ISA_DMA_API
 	select LEGACY_TIMER_TICK
 	select NEED_MACH_IO_H
