@@ -1299,9 +1299,9 @@ static struct workqueue_struct *drm_sched_alloc_wq(const char *name)
 	 * allocated submit_wq.
 	 */
 
-	return alloc_ordered_workqueue_lockdep_map(name, WQ_MEM_RECLAIM, &map);
+	return alloc_ordered_workqueue_lockdep_map("%s", WQ_MEM_RECLAIM, &map, name);
 #else
-	return alloc_ordered_workqueue(name, WQ_MEM_RECLAIM);
+	return alloc_ordered_workqueue("%s", WQ_MEM_RECLAIM, name);
 #endif
 }
 
