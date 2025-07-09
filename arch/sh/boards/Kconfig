@@ -183,7 +183,6 @@ config SH_SDK7786
 	bool "SDK7786"
 	depends on CPU_SUBTYPE_SH7786
 	select HAVE_PCI
-	select NO_IOPORT_MAP if !PCI
 	select HAVE_SRAM_POOL
 	select REGULATOR_FIXED_VOLTAGE if REGULATOR
 	help
@@ -228,7 +227,6 @@ config SH_URQUELL
 	depends on CPU_SUBTYPE_SH7786
 	select GPIOLIB
 	select HAVE_PCI
-	select NO_IOPORT_MAP if !PCI
 
 config SH_MIGOR
 	bool "Migo-R"
@@ -325,7 +323,6 @@ config SH_LBOX_RE2
 config SH_X3PROTO
 	bool "SH-X3 Prototype board"
 	depends on CPU_SUBTYPE_SHX3
-	select NO_IOPORT_MAP if !PCI
 	select IRQ_DOMAIN
 
 config SH_MAGIC_PANEL_R2
@@ -346,7 +343,6 @@ config SH_POLARIS
 
 config SH_SH2007
 	bool "SH-2007 board"
-	select NO_IOPORT_MAP
 	select REGULATOR_FIXED_VOLTAGE if REGULATOR
 	depends on CPU_SUBTYPE_SH7780
 	help
