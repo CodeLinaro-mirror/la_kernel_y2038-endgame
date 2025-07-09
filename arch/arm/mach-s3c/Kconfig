@@ -7,7 +7,6 @@ source "arch/arm/mach-s3c/Kconfig.s3c64xx"
 config PLAT_SAMSUNG
 	def_bool ARCH_S3C64XX
 	select GENERIC_IRQ_CHIP
-	select NO_IOPORT_MAP
 	select SOC_SAMSUNG
 	help
 	  Base platform code for all Samsung SoC based systems
