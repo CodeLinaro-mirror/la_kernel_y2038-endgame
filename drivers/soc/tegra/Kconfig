@@ -144,6 +144,7 @@ config ARCH_TEGRA_241_SOC
 config ARCH_TEGRA_264_SOC
 	bool "NVIDIA Tegra264 SoC"
 	depends on !CPU_BIG_ENDIAN
+	depends on COMMON_CLK
 	select MAILBOX
 	select SOC_TEGRA_PMC
 	help
