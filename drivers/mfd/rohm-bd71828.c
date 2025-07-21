@@ -21,7 +21,9 @@
 
 static struct gpio_keys_button button = {
 	.code = KEY_POWER,
+#ifdef CONFIG_GPIOLIB_LEGACY
 	.gpio = -1,
+#endif
 	.type = EV_KEY,
 };
 
