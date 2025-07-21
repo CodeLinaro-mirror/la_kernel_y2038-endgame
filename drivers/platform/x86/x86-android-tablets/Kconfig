@@ -8,6 +8,7 @@ config X86_ANDROID_TABLETS
 	depends on I2C && SPI && SERIAL_DEV_BUS
 	depends on GPIOLIB && PMIC_OPREGION
 	depends on ACPI && EFI && PCI
+	select GPIOLIB_LEGACY
 	select NEW_LEDS
 	select LEDS_CLASS
 	select POWER_SUPPLY
