@@ -676,7 +676,9 @@ typedef int (*gpio_blink_set_t)(struct gpio_desc *desc, int state,
 struct gpio_led {
 	const char *name;
 	const char *default_trigger;
+#ifdef CONFIG_GPIOLIB_LEGACY
 	unsigned 	gpio;
+#endif
 	unsigned	active_low : 1;
 	unsigned	retain_state_suspended : 1;
 	unsigned	panic_indicator : 1;
