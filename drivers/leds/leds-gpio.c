@@ -212,7 +212,9 @@ static struct gpio_desc *gpio_led_get_gpiod(struct device *dev, int idx,
 					    const struct gpio_led *template)
 {
 	struct gpio_desc *gpiod;
+#ifdef CONFIG_GPIOLIB_LEGACY
 	int ret;
+#endif
 
 	/*
 	 * This means the LED does not come from the device tree
@@ -228,6 +230,7 @@ static struct gpio_desc *gpio_led_get_gpiod(struct device *dev, int idx,
 		return gpiod;
 	}
 
+#ifdef CONFIG_GPIOLIB_LEGACY
 	/*
 	 * This is the legacy code path for platform code that
 	 * still uses GPIO numbers. Ultimately we would like to get
@@ -244,6 +247,7 @@ static struct gpio_desc *gpio_led_get_gpiod(struct device *dev, int idx,
 		return ERR_PTR(ret);
 
 	gpiod = gpio_to_desc(template->gpio);
+#endif
 	if (!gpiod)
 		return ERR_PTR(-EINVAL);
 
@@ -276,8 +280,8 @@ static int gpio_led_probe(struct platform_device *pdev)
 				led_dat->gpiod =
 					gpio_led_get_gpiod(dev, i, template);
 			if (IS_ERR(led_dat->gpiod)) {
-				dev_info(dev, "Skipping unavailable LED gpio %d (%s)\n",
-					 template->gpio, template->name);
+				dev_info(dev, "Skipping unavailable LED gpio %s\n",
+					 template->name);
 				continue;
 			}
 
