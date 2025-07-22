@@ -53,8 +53,6 @@ struct nfcmrvl_platform_data {
 	 * Generic
 	 */
 
-	/* GPIO that is wired to RESET_N signal */
-	int reset_n_io;
 	/* Tell if transport is muxed in HCI one */
 	bool hci_muxed;
 
@@ -82,6 +80,9 @@ struct nfcmrvl_private {
 
 	/* Platform configuration */
 	struct nfcmrvl_platform_data config;
+
+	/* RESET_N GPIO line */
+	struct gpio_desc *reset_n_io;
 
 	/* Parent dev */
 	struct nci_dev *ndev;
