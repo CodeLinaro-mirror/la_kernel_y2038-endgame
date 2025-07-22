@@ -3,9 +3,6 @@
 # GPIO infrastructure and drivers
 #
 
-config GPIOLIB_LEGACY
-	def_bool y
-
 config HAVE_SHARED_GPIOS
 	bool
 
@@ -19,6 +16,9 @@ menuconfig GPIOLIB
 	  If unsure, say N.
 
 if GPIOLIB
+
+config GPIOLIB_LEGACY
+	bool "Legacy GPIO interfaces" if COMPILE_TEST
 
 config GPIOLIB_FASTPATH_LIMIT
 	int "Maximum number of GPIOs for fast path"
