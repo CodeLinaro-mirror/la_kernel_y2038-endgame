@@ -57,7 +57,7 @@ extern bool early_page_ext;
 extern unsigned long page_ext_size;
 extern void pgdat_page_ext_init(struct pglist_data *pgdat);
 
-static inline bool early_page_ext_enabled(void)
+static __always_inline bool early_page_ext_enabled(void)
 {
 	return early_page_ext;
 }
@@ -190,7 +190,7 @@ static inline struct page_ext *page_ext_iter_get(const struct page_ext_iter *ite
 #else /* !CONFIG_PAGE_EXTENSION */
 struct page_ext;
 
-static inline bool early_page_ext_enabled(void)
+static __always_inline bool early_page_ext_enabled(void)
 {
 	return false;
 }
