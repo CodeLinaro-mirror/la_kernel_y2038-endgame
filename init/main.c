@@ -1349,19 +1349,19 @@ static void __init initcall_debug_enable(void)
 # define do_trace_initcall_finish	trace_initcall_finish
 # define do_trace_initcall_level	trace_initcall_level
 #else
-static inline void do_trace_initcall_start(initcall_t fn)
+static __always_inline void do_trace_initcall_start(initcall_t fn)
 {
 	if (!initcall_debug)
 		return;
 	trace_initcall_start_cb(&initcall_calltime, fn);
 }
-static inline void do_trace_initcall_finish(initcall_t fn, int ret)
+static __always_inline void do_trace_initcall_finish(initcall_t fn, int ret)
 {
 	if (!initcall_debug)
 		return;
 	trace_initcall_finish_cb(&initcall_calltime, fn, ret);
 }
-static inline void do_trace_initcall_level(const char *level)
+static __always_inline void do_trace_initcall_level(const char *level)
 {
 	if (!initcall_debug)
 		return;
