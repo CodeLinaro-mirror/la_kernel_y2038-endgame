@@ -147,7 +147,7 @@
 #define SCORPION_ITLB_MISS				0x12021
 
 __diag_push()
-__diag_ignore(GCC, 5, "-Woverride-init", "for PERF_MAP_ALL_UNSUPPORTED")
+__diag_ignore(GCC, 8, "-Woverride-init", "for PERF_MAP_ALL_UNSUPPORTED")
 __diag_ignore(clang, 9, "-Winitializer-overrides", "for PERF_MAP_ALL_UNSUPPORTED")
 
 /*

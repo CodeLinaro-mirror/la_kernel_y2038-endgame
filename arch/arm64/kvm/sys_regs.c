@@ -3099,7 +3099,7 @@ static u64 reset_mdcr(struct kvm_vcpu *vcpu, const struct sys_reg_desc *r)
  * This should be revisited if we ever encounter a more demanding
  * guest...
  */
-__diag_ignore(GCC, 5, "-Woverride-init", "SYS_DESC overrides")
+__diag_ignore(GCC, 8, "-Woverride-init", "SYS_DESC overrides")
 __diag_ignore(clang, 9, "-Winitializer-overrides", "SYS_DESC overrides")
 static const struct sys_reg_desc sys_reg_descs[] = {
 	DBG_BCR_BVR_WCR_WVR_EL1(0),
