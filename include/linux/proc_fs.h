@@ -201,7 +201,7 @@ static inline struct proc_dir_entry *proc_create_seq_private(const char *name,
 	proc_create_seq_private(name, mode, parent, ops, 0, data)
 #define proc_create_seq(name, mode, parent, ops) \
 	proc_create_seq_private(name, mode, parent, ops, 0, NULL)
-static __always_inline inline struct proc_dir_entry *
+static __always_inline struct proc_dir_entry *
 proc_create_single_data(const char *name, umode_t mode,
 			struct proc_dir_entry *parent,
 			int (*show)(struct seq_file *, void *), void *data)
