@@ -249,15 +249,6 @@ static int __init hp300_8250_init(void)
 		base = (FRODO_BASE + FRODO_APCI_OFFSET(i));
 
 		/* Memory mapped I/O */
-		uart.port.iotype = UPIO_MEM;
-		uart.port.flags = UPF_SKIP_TEST | UPF_SHARE_IRQ
-				| UPF_BOOT_AUTOCONF;
-		/* XXX - no interrupt support yet */
-		uart.port.irq = 0;
-		uart.port.uartclk = HPAPCI_BAUD_BASE * 16;
-		uart.port.mapbase = base;
-		uart.port.membase = (char *)(base + DIO_VIRADDRBASE);
-		uart.port.regshift = 2;
 
 		line = serial8250_register_8250_port(&uart);
 

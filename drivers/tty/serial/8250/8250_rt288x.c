@@ -81,19 +81,6 @@ EXPORT_SYMBOL_GPL(au_platform_setup);
 
 int rt288x_setup(struct uart_port *p)
 {
-	struct uart_8250_port *up = up_to_u8250p(p);
-
-	p->iotype = UPIO_AU;
-
-	p->serial_in = au_serial_in;
-	p->serial_out = au_serial_out;
-	up->dl_read = au_serial_dl_read;
-	up->dl_write = au_serial_dl_write;
-
-	p->mapsize = 0x100;
-
-	up->bugs |= UART_BUG_NOMSR;
-
 	return 0;
 }
 EXPORT_SYMBOL_GPL(rt288x_setup);

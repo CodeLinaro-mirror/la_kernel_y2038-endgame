@@ -168,7 +168,7 @@ OF_EARLYCON_DECLARE(jz4780_uart, "ingenic,jz4780-uart",
 OF_EARLYCON_DECLARE(x1000_uart, "ingenic,x1000-uart",
 		    ingenic_early_console_setup);
 
-static void ingenic_uart_serial_out(struct uart_port *p, unsigned int offset, u32 value)
+static __maybe_unused void ingenic_uart_serial_out(struct uart_port *p, unsigned int offset, u32 value)
 {
 	u32 ier;
 
@@ -206,7 +206,7 @@ static void ingenic_uart_serial_out(struct uart_port *p, unsigned int offset, u3
 	writeb(value, p->membase + (offset << p->regshift));
 }
 
-static u32 ingenic_uart_serial_in(struct uart_port *p, unsigned int offset)
+static __maybe_unused u32 ingenic_uart_serial_in(struct uart_port *p, unsigned int offset)
 {
 	u8 value;
 
@@ -234,7 +234,7 @@ static int ingenic_uart_probe(struct platform_device *pdev)
 	struct ingenic_uart_data *data;
 	const struct ingenic_uart_config *cdata;
 	struct resource *regs;
-	int err;
+	int err = 0;
 
 	cdata = of_device_get_match_data(&pdev->dev);
 	if (!cdata) {
@@ -252,25 +252,9 @@ static int ingenic_uart_probe(struct platform_device *pdev)
 	if (!data)
 		return -ENOMEM;
 
-	spin_lock_init(&uart.port.lock);
-	uart.port.type = PORT_16550A;
-	uart.port.flags = UPF_SKIP_TEST | UPF_IOREMAP | UPF_FIXED_TYPE;
-	uart.port.mapbase = regs->start;
-	uart.port.serial_out = ingenic_uart_serial_out;
-	uart.port.serial_in = ingenic_uart_serial_in;
-	uart.port.dev = &pdev->dev;
-	uart.tx_loadsz = cdata->tx_loadsz;
-	uart.capabilities = UART_CAP_FIFO | UART_CAP_RTOIE;
-
-	err = uart_read_port_properties(&uart.port);
 	if (err)
 		return err;
 
-	uart.port.regshift = 2;
-	uart.port.fifosize = cdata->fifosize;
-
-	uart.port.membase = devm_ioremap(&pdev->dev, regs->start,
-					 resource_size(regs));
 	if (!uart.port.membase)
 		return -ENOMEM;
 
@@ -295,7 +279,6 @@ static int ingenic_uart_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "could not enable baud clock: %d\n", err);
 		goto out_disable_moduleclk;
 	}
-	uart.port.uartclk = clk_get_rate(data->clk_baud);
 
 	data->line = serial8250_register_8250_port(&uart);
 	if (data->line < 0) {

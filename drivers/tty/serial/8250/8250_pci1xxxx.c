@@ -155,7 +155,7 @@ struct pci1xxxx_8250 {
 	int line[] __counted_by(nr);
 };
 
-static const struct serial_rs485 pci1xxxx_rs485_supported = {
+static __maybe_unused const struct serial_rs485 pci1xxxx_rs485_supported = {
 	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND |
 		 SER_RS485_RTS_AFTER_SEND,
 	.delay_rts_after_send = 1,
@@ -233,7 +233,7 @@ static int pci1xxxx_get_num_ports(struct pci_dev *dev)
 	}
 }
 
-static unsigned int pci1xxxx_get_divisor(struct uart_port *port,
+static __maybe_unused unsigned int pci1xxxx_get_divisor(struct uart_port *port,
 					 unsigned int baud, unsigned int *frac)
 {
 	unsigned int uart_sample_cnt;
@@ -255,7 +255,7 @@ static unsigned int pci1xxxx_get_divisor(struct uart_port *port,
 	return quot;
 }
 
-static void pci1xxxx_set_divisor(struct uart_port *port, unsigned int baud,
+static __maybe_unused void pci1xxxx_set_divisor(struct uart_port *port, unsigned int baud,
 				 unsigned int quot, unsigned int frac)
 {
 	if (baud >= UART_BAUD_4MBPS)
@@ -267,7 +267,7 @@ static void pci1xxxx_set_divisor(struct uart_port *port, unsigned int baud,
 	       port->membase + UART_BAUD_CLK_DIVISOR_REG);
 }
 
-static void pci1xxxx_set_mctrl(struct uart_port *port, unsigned int mctrl)
+static __maybe_unused void pci1xxxx_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
 	u32 fract_div_cfg_reg;
 	u32 line_stat_reg;
@@ -308,7 +308,7 @@ static void pci1xxxx_set_mctrl(struct uart_port *port, unsigned int mctrl)
 	}
 }
 
-static int pci1xxxx_rs485_config(struct uart_port *port,
+static __maybe_unused int pci1xxxx_rs485_config(struct uart_port *port,
 				 struct ktermios *termios,
 				 struct serial_rs485 *rs485)
 {
@@ -483,7 +483,7 @@ static void pci1xxxx_process_write_data(struct uart_port *port,
 	}
 }
 
-static void pci1xxxx_tx_burst(struct uart_port *port, u32 uart_status)
+static __maybe_unused void pci1xxxx_tx_burst(struct uart_port *port, u32 uart_status)
 {
 	struct uart_8250_port *up = up_to_u8250p(port);
 	struct tty_port *tport = &port->state->port;
@@ -528,7 +528,7 @@ static void pci1xxxx_tx_burst(struct uart_port *port, u32 uart_status)
 		port->ops->stop_tx(port);
 }
 
-static int pci1xxxx_handle_irq(struct uart_port *port)
+static __maybe_unused int pci1xxxx_handle_irq(struct uart_port *port)
 {
 	unsigned long flags;
 	u32 status;
@@ -675,8 +675,6 @@ static int pci1xxxx_setup(struct pci_dev *pdev,
 {
 	int ret;
 
-	port->port.flags |= UPF_FIXED_TYPE | UPF_SKIP_TEST;
-	port->port.type = PORT_MCHP16550A;
 	/*
 	 * 8250 core considers prescaller value to be always 16.
 	 * The MCHP ports support downscaled mode and hence the
@@ -687,21 +685,14 @@ static int pci1xxxx_setup(struct pci_dev *pdev,
 	 * The value itself is not really used anywhere except baud
 	 * rate calculations, so we can mangle it as we wish.
 	 */
-	port->port.uartclk = 64 * HZ_PER_MHZ;
-	port->port.set_termios = serial8250_do_set_termios;
-	port->port.get_divisor = pci1xxxx_get_divisor;
-	port->port.set_divisor = pci1xxxx_set_divisor;
-	port->port.rs485_config = pci1xxxx_rs485_config;
-	port->port.rs485_supported = pci1xxxx_rs485_supported;
-
 	/*
 	 * C0 and later revisions support Burst operation.
 	 * RTS workaround in mctrl is applicable only to B0.
 	 */
-	if (priv->dev_rev >= 0xC0)
-		port->port.handle_irq = pci1xxxx_handle_irq;
-	else if (priv->dev_rev == 0xB0)
-		port->port.set_mctrl = pci1xxxx_set_mctrl;
+	if (rev >= 0xC0)
+		;
+	else if (rev == 0xB0)
+		;
 
 	ret = serial8250_pci_setup_port(pdev, port, 0, PORT_OFFSET * port_idx, 0, priv->membase);
 	if (ret < 0)
@@ -805,8 +796,6 @@ static int pci1xxxx_serial_probe(struct pci_dev *pdev,
 	}
 
 	memset(&uart, 0, sizeof(uart));
-	uart.port.flags = UPF_SHARE_IRQ | UPF_FIXED_PORT;
-	uart.port.dev = dev;
 
 	if (num_vectors == max_vec_reqd)
 		writeb(UART_PCI_CTRL_SET_MULTIPLE_MSI, priv->membase + UART_PCI_CTRL_REG);
@@ -817,9 +806,7 @@ static int pci1xxxx_serial_probe(struct pci_dev *pdev,
 		port_idx = pci1xxxx_logical_to_physical_port_translate(subsys_dev, i);
 
 		if (num_vectors == max_vec_reqd)
-			uart.port.irq = pci_irq_vector(pdev, port_idx);
-		else
-			uart.port.irq = pci_irq_vector(pdev, 0);
+			;
 
 		rc = pci1xxxx_setup(pdev, &uart, port_idx, priv);
 		if (rc) {

@@ -203,32 +203,25 @@ static int __uart_read_properties(struct uart_port *port, bool use_defaults)
 	int ret;
 
 	/* Read optional UART functional clock frequency */
-	device_property_read_u32(dev, "clock-frequency", &port->uartclk);
 
 	/* Read the registers alignment (default: 8-bit) */
 	ret = device_property_read_u32(dev, "reg-shift", &value);
-	if (ret)
-		port->regshift = use_defaults ? 0 : port->regshift;
-	else
-		port->regshift = value;
+	if (ret) {
+	} else {
+	}
 
 	/* Read the registers I/O access type (default: MMIO 8-bit) */
 	ret = device_property_read_u32(dev, "reg-io-width", &value);
 	if (ret) {
-		port->iotype = port->iobase ? UPIO_PORT : UPIO_MEM;
 	} else {
 		switch (value) {
 		case 1:
-			port->iotype = UPIO_MEM;
 			break;
 		case 2:
-			port->iotype = UPIO_MEM16;
 			break;
 		case 4:
-			port->iotype = device_is_big_endian(dev) ? UPIO_MEM32BE : UPIO_MEM32;
 			break;
 		default:
-			port->iotype = UPIO_UNKNOWN;
 			break;
 		}
 	}
@@ -249,39 +242,34 @@ static int __uart_read_properties(struct uart_port *port, bool use_defaults)
 		return -EINVAL;
 	}
 
-	port->mapbase += value;
-	port->mapsize -= value;
-
 	/* Read optional FIFO size */
-	device_property_read_u32(dev, "fifo-size", &port->fifosize);
 
 	if (device_property_read_bool(dev, "no-loopback-test"))
-		port->flags |= UPF_SKIP_TEST;
 
 	/* Get index of serial line, if found in DT aliases */
 	ret = of_alias_get_id(dev_of_node(dev), "serial");
-	if (ret >= 0)
-		port->line = ret;
+	if (ret >= 0) {
+	}
 
-	if (dev_is_platform(dev))
+	if (dev_is_platform(dev)) {
 		ret = platform_get_irq(to_platform_device(dev), 0);
-	else if (dev_is_pnp(dev)) {
+	} else if (dev_is_pnp(dev)) {
 		ret = pnp_irq(to_pnp_dev(dev), 0);
 		if (ret < 0)
 			ret = -ENXIO;
-	} else
+	} else {
 		ret = fwnode_irq_get(dev_fwnode(dev), 0);
+	}
 	if (ret == -EPROBE_DEFER)
 		return ret;
 	if (ret > 0)
-		port->irq = ret;
-	else if (use_defaults)
+		;
+	else if (use_defaults) {
 		/* By default IRQ support is mandatory */
 		return ret;
-	else
-		port->irq = 0;
+	} else {
+	}
 
-	port->flags |= UPF_SHARE_IRQ;
 
 	return 0;
 }

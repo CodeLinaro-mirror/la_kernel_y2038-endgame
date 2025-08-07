@@ -101,7 +101,6 @@ struct serial_info {
  */
 static void quirk_setup_brainboxes_0104(struct pcmcia_device *link, struct uart_8250_port *uart)
 {
-	uart->port.uartclk = 14745600;
 }
 
 static int quirk_post_ibm(struct pcmcia_device *link)
@@ -350,13 +349,8 @@ static int setup_serial(struct pcmcia_device *handle, struct serial_info *info,
 	int line;
 
 	memset(&uart, 0, sizeof(uart));
-	uart.port.iobase = iobase;
-	uart.port.irq = irq;
-	uart.port.flags = UPF_BOOT_AUTOCONF | UPF_SKIP_TEST | UPF_SHARE_IRQ;
-	uart.port.uartclk = 1843200;
-	uart.port.dev = &handle->dev;
 	if (buggy_uart)
-		uart.port.flags |= UPF_BUGGY_UART;
+		;
 
 	if (info->quirk && info->quirk->setup)
 		info->quirk->setup(handle, &uart);

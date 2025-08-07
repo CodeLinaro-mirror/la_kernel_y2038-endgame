@@ -50,19 +50,11 @@ static int __init serial_init_chip(struct parisc_device *dev)
 		address += 0x800;
 
 	memset(&uart, 0, sizeof(uart));
-	uart.port.iotype	= UPIO_MEM;
 	/* 7.272727MHz on Lasi.  Assumed the same for Dino, Wax and Timi. */
-	uart.port.uartclk	= (dev->id.sversion != 0xad) ?
-					7272727 : 1843200;
-	uart.port.mapbase	= address;
-	uart.port.membase	= ioremap(address, 16);
 	if (!uart.port.membase) {
 		dev_warn(&dev->dev, "Failed to map memory\n");
 		return -ENOMEM;
 	}
-	uart.port.irq	= dev->irq;
-	uart.port.flags	= UPF_BOOT_AUTOCONF;
-	uart.port.dev	= &dev->dev;
 
 	err = serial8250_register_8250_port(&uart);
 	if (err < 0) {

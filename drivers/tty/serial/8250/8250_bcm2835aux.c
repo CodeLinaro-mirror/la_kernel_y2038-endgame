@@ -46,7 +46,7 @@ struct bcm2835aux_data {
 	u32 cntl;
 };
 
-static void bcm2835aux_rs485_start_tx(struct uart_8250_port *up, bool toggle_ier)
+static __maybe_unused void bcm2835aux_rs485_start_tx(struct uart_8250_port *up, bool toggle_ier)
 {
 	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX)) {
 		struct bcm2835aux_data *data = dev_get_drvdata(up->port.dev);
@@ -65,7 +65,7 @@ static void bcm2835aux_rs485_start_tx(struct uart_8250_port *up, bool toggle_ier
 		serial8250_out_MCR(up, UART_MCR_RTS);
 }
 
-static void bcm2835aux_rs485_stop_tx(struct uart_8250_port *up, bool toggle_ier)
+static __maybe_unused void bcm2835aux_rs485_stop_tx(struct uart_8250_port *up, bool toggle_ier)
 {
 	if (up->port.rs485.flags & SER_RS485_RTS_AFTER_SEND)
 		serial8250_out_MCR(up, 0);
@@ -87,7 +87,7 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
 	struct bcm2835aux_data *data;
 	struct resource *res;
 	unsigned int uartclk;
-	int ret;
+	int ret = 0;
 
 	/* allocate the custom structure */
 	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
@@ -95,14 +95,6 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	/* initialize data */
-	up.capabilities = UART_CAP_FIFO | UART_CAP_MINI;
-	up.port.dev = &pdev->dev;
-	up.port.type = PORT_16550;
-	up.port.flags = UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_SKIP_TEST | UPF_IOREMAP;
-	up.port.rs485_config = serial8250_em485_config;
-	up.port.rs485_supported = serial8250_em485_supported;
-	up.rs485_start_tx = bcm2835aux_rs485_start_tx;
-	up.rs485_stop_tx = bcm2835aux_rs485_stop_tx;
 
 	/* initialize cached copy with power-on reset value */
 	data->cntl = BCM2835_AUX_UART_CNTL_RXEN | BCM2835_AUX_UART_CNTL_TXEN;
@@ -121,8 +113,6 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	up.port.mapbase = res->start;
-	up.port.mapsize = resource_size(res);
 
 	bcm2835_swnode = device_get_match_data(&pdev->dev);
 	if (bcm2835_swnode) {
@@ -131,12 +121,9 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
 			return ret;
 	}
 
-	ret = uart_read_port_properties(&up.port);
 	if (ret)
 		goto rm_swnode;
 
-	up.port.regshift = 2;
-	up.port.fifosize = 8;
 
 	/* enable the clock as a last step */
 	ret = clk_prepare_enable(data->clk);
@@ -147,14 +134,12 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
 
 	uartclk = clk_get_rate(data->clk);
 	if (uartclk)
-		up.port.uartclk = uartclk;
 
 	/* the HW-clock divider for bcm2835aux is 8,
 	 * but 8250 expects a divider of 16,
 	 * so we have to multiply the actual clock by 2
 	 * to get identical baudrates.
 	 */
-	up.port.uartclk *= 2;
 
 	/* register the port */
 	ret = serial8250_register_8250_port(&up);

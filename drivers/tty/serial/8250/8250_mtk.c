@@ -189,7 +189,7 @@ static void mtk8250_dma_enable(struct uart_8250_port *up)
 }
 #endif
 
-static int mtk8250_startup(struct uart_port *port)
+static __maybe_unused int mtk8250_startup(struct uart_port *port)
 {
 #ifdef CONFIG_SERIAL_8250_DMA
 	struct uart_8250_port *up = up_to_u8250p(port);
@@ -209,7 +209,7 @@ static int mtk8250_startup(struct uart_port *port)
 	return serial8250_do_startup(port);
 }
 
-static void mtk8250_shutdown(struct uart_port *port)
+static __maybe_unused void mtk8250_shutdown(struct uart_port *port)
 {
 	struct uart_8250_port *up = up_to_u8250p(port);
 	struct mtk8250_data *data = port->private_data;
@@ -304,7 +304,7 @@ static void mtk8250_set_flow_ctrl(struct uart_8250_port *up, int mode)
 	}
 }
 
-static void
+static __maybe_unused void
 mtk8250_set_termios(struct uart_port *port, struct ktermios *termios,
 		    const struct ktermios *old)
 {
@@ -453,7 +453,7 @@ static int __maybe_unused mtk8250_runtime_resume(struct device *dev)
 	return 0;
 }
 
-static void
+static __maybe_unused void
 mtk8250_do_pm(struct uart_port *port, unsigned int state, unsigned int old)
 {
 	if (!state)
@@ -535,8 +535,6 @@ static int mtk8250_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	uart.port.membase = devm_ioremap(&pdev->dev, regs->start,
-					 resource_size(regs));
 	if (!uart.port.membase)
 		return -ENOMEM;
 
@@ -555,24 +553,9 @@ static int mtk8250_probe(struct platform_device *pdev)
 	}
 
 	spin_lock_init(&uart.port.lock);
-	uart.port.mapbase = regs->start;
-	uart.port.irq = irq;
-	uart.port.pm = mtk8250_do_pm;
-	uart.port.type = PORT_16550;
-	uart.port.flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT;
-	uart.port.dev = &pdev->dev;
-	uart.port.iotype = UPIO_MEM32;
-	uart.port.regshift = 2;
-	uart.port.private_data = data;
-	uart.port.shutdown = mtk8250_shutdown;
-	uart.port.startup = mtk8250_startup;
-	uart.port.set_termios = mtk8250_set_termios;
-	uart.port.uartclk = clk_get_rate(data->uart_clk);
-	if (!uart.port.uartclk)
-		uart.port.uartclk = 26 * HZ_PER_MHZ;
 #ifdef CONFIG_SERIAL_8250_DMA
 	if (data->dma)
-		uart.dma = data->dma;
+	;
 #endif
 
 	if (is_of_node(fwnode)) {
