@@ -77,7 +77,7 @@ static void pnw_exit(struct mid8250 *mid)
 	pci_dev_put(mid->dma_dev);
 }
 
-static int tng_handle_irq(struct uart_port *p)
+static __maybe_unused int tng_handle_irq(struct uart_port *p)
 {
 	struct mid8250 *mid = p->private_data;
 	struct uart_8250_port *up = up_to_u8250p(p);
@@ -124,7 +124,6 @@ static int tng_setup(struct mid8250 *mid, struct uart_port *p)
 	mid->dma_index = index;
 	mid->dma_dev = pci_get_slot(pdev->bus, PCI_DEVFN(5, 0));
 
-	p->handle_irq = tng_handle_irq;
 	return 0;
 }
 
@@ -133,7 +132,7 @@ static void tng_exit(struct mid8250 *mid)
 	pci_dev_put(mid->dma_dev);
 }
 
-static int dnv_handle_irq(struct uart_port *p)
+static __maybe_unused int dnv_handle_irq(struct uart_port *p)
 {
 	struct mid8250 *mid = p->private_data;
 	struct uart_8250_port *up = up_to_u8250p(p);
@@ -176,8 +175,6 @@ static int dnv_setup(struct mid8250 *mid, struct uart_port *p)
 	if (ret < 0)
 		return ret;
 
-	p->irq = pci_irq_vector(pdev, 0);
-
 	chip->dev = &pdev->dev;
 	chip->irq = pci_irq_vector(pdev, 0);
 	chip->regs = p->membase;
@@ -191,7 +188,6 @@ static int dnv_setup(struct mid8250 *mid, struct uart_port *p)
 
 	mid->dma_dev = pdev;
 
-	p->handle_irq = dnv_handle_irq;
 	return 0;
 }
 
@@ -204,7 +200,7 @@ static void dnv_exit(struct mid8250 *mid)
 
 /*****************************************************************************/
 
-static void mid8250_set_termios(struct uart_port *p, struct ktermios *termios,
+static __maybe_unused void mid8250_set_termios(struct uart_port *p, struct ktermios *termios,
 				const struct ktermios *old)
 {
 	unsigned int baud = tty_termios_baud_rate(termios);
@@ -281,7 +277,6 @@ static int mid8250_dma_setup(struct mid8250 *mid, struct uart_8250_port *port)
 	dma->rx_param = rx_param;
 	dma->tx_param = tx_param;
 
-	port->dma = dma;
 	return 0;
 }
 
@@ -303,17 +298,6 @@ static int mid8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	memset(&uart, 0, sizeof(struct uart_8250_port));
 
-	uart.port.dev = &pdev->dev;
-	uart.port.irq = pdev->irq;
-	uart.port.private_data = mid;
-	uart.port.type = PORT_16750;
-	uart.port.iotype = UPIO_MEM;
-	uart.port.uartclk = mid->board->base_baud * 16;
-	uart.port.flags = UPF_SHARE_IRQ | UPF_FIXED_PORT | UPF_FIXED_TYPE;
-	uart.port.set_termios = mid8250_set_termios;
-
-	uart.port.mapbase = pci_resource_start(pdev, mid->board->bar);
-	uart.port.membase = pcim_iomap(pdev, mid->board->bar, 0);
 	if (!uart.port.membase)
 		return -ENOMEM;
 

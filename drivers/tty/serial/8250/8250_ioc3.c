@@ -21,12 +21,12 @@ struct ioc3_8250_data {
 	int line;
 };
 
-static u32 ioc3_serial_in(struct uart_port *p, unsigned int offset)
+static __maybe_unused u32 ioc3_serial_in(struct uart_port *p, unsigned int offset)
 {
 	return readb(p->membase + (offset ^ 3));
 }
 
-static void ioc3_serial_out(struct uart_port *p, unsigned int offset, u32 value)
+static __maybe_unused void ioc3_serial_out(struct uart_port *p, unsigned int offset, u32 value)
 {
 	writeb(value, p->membase + (offset ^ 3));
 }
@@ -57,16 +57,6 @@ static int serial8250_ioc3_probe(struct platform_device *pdev)
 
 	/* Register serial ports with 8250.c */
 	memset(&up, 0, sizeof(struct uart_8250_port));
-	up.port.iotype = UPIO_MEM;
-	up.port.uartclk = IOC3_UARTCLK;
-	up.port.type = PORT_16550A;
-	up.port.irq = irq;
-	up.port.flags = (UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ);
-	up.port.dev = &pdev->dev;
-	up.port.membase = membase;
-	up.port.mapbase = r->start;
-	up.port.serial_in = ioc3_serial_in;
-	up.port.serial_out = ioc3_serial_out;
 	line = serial8250_register_8250_port(&up);
 	if (line < 0)
 		return line;

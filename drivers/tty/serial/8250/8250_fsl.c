@@ -129,22 +129,6 @@ static int fsl8250_acpi_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	spin_lock_init(&port8250.port.lock);
-
-	port8250.port.mapbase           = regs->start;
-	port8250.port.irq               = irq;
-	port8250.port.handle_irq        = fsl8250_handle_irq;
-	port8250.port.type              = PORT_16550A;
-	port8250.port.flags             = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF
-						| UPF_FIXED_PORT | UPF_IOREMAP
-						| UPF_FIXED_TYPE;
-	port8250.port.dev               = dev;
-	port8250.port.mapsize           = resource_size(regs);
-	port8250.port.iotype            = UPIO_MEM;
-	port8250.port.irqflags          = IRQF_SHARED;
-
-	port8250.port.membase = devm_ioremap(dev,  port8250.port.mapbase,
-							port8250.port.mapsize);
 	if (!port8250.port.membase)
 		return -ENOMEM;
 

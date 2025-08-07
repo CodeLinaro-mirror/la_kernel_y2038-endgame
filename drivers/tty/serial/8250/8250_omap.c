@@ -204,7 +204,7 @@ static void __omap8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
 	}
 }
 
-static void omap8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
+static __maybe_unused void omap8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
 	int err;
 
@@ -360,8 +360,12 @@ static void omap8250_restore_regs(struct uart_8250_port *up)
 		serial8250_em485_stop_tx(up, true);
 }
 
+/*
+ * OMAP can use "CLK / (16 or 13) / div" for baud rate. And then we have have
+ * some differences in how we want to handle flow control.
+ */
 static void omap_8250_set_termios_atomic(struct uart_port *port, struct ktermios *termios,
-					 const struct ktermios *old, unsigned int baud)
+				  const struct ktermios *old, unsigned int baud)
 {
 	struct uart_8250_port *up = up_to_u8250p(port);
 	struct omap8250_priv *priv = port->private_data;
@@ -499,7 +503,7 @@ static void omap_8250_set_termios_atomic(struct uart_port *port, struct ktermios
  * OMAP can use "CLK / (16 or 13) / div" for baud rate. And then we have have
  * some differences in how we want to handle flow control.
  */
-static void omap_8250_set_termios(struct uart_port *port,
+static __maybe_unused void omap_8250_set_termios(struct uart_port *port,
 				  struct ktermios *termios,
 				  const struct ktermios *old)
 {
@@ -527,7 +531,7 @@ static void omap_8250_set_termios(struct uart_port *port,
 }
 
 /* same as 8250 except that we may have extra flow bits set in EFR */
-static void omap_8250_pm(struct uart_port *port, unsigned int state,
+static __maybe_unused void omap_8250_pm(struct uart_port *port, unsigned int state,
 			 unsigned int oldstate)
 {
 	struct uart_8250_port *up = up_to_u8250p(port);
@@ -704,7 +708,7 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
 	return IRQ_RETVAL(ret);
 }
 
-static int omap_8250_startup(struct uart_port *port)
+static __maybe_unused int omap_8250_startup(struct uart_port *port)
 {
 	struct uart_8250_port *up = up_to_u8250p(port);
 	struct omap8250_priv *priv = port->private_data;
@@ -800,7 +804,7 @@ static void omap_8250_shutdown(struct uart_port *port)
 	serial_out(up, UART_FCR, UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
 }
 
-static void omap_8250_throttle(struct uart_port *port)
+static __maybe_unused void omap_8250_throttle(struct uart_port *port)
 {
 	struct omap8250_priv *priv = port->private_data;
 
@@ -811,7 +815,7 @@ static void omap_8250_throttle(struct uart_port *port)
 	priv->throttled = true;
 }
 
-static void omap_8250_unthrottle(struct uart_port *port)
+static __maybe_unused void omap_8250_unthrottle(struct uart_port *port)
 {
 	struct omap8250_priv *priv = port->private_data;
 	struct uart_8250_port *up = up_to_u8250p(port);
@@ -827,7 +831,7 @@ static void omap_8250_unthrottle(struct uart_port *port)
 	serial_out(up, UART_IER, up->ier);
 }
 
-static int omap8250_rs485_config(struct uart_port *port,
+static __maybe_unused int omap8250_rs485_config(struct uart_port *port,
 				 struct ktermios *termios,
 				 struct serial_rs485 *rs485)
 {
@@ -1350,7 +1354,7 @@ static inline int omap_8250_rx_dma(struct uart_8250_port *p)
 }
 #endif
 
-static int omap8250_no_handle_irq(struct uart_port *port)
+static __maybe_unused int omap8250_no_handle_irq(struct uart_port *port)
 {
 	/* IRQ has not been requested but handling irq? */
 	WARN_ONCE(1, "Unexpected irq handling before port startup\n");
@@ -1419,7 +1423,7 @@ static int omap8250_probe(struct platform_device *pdev)
 	struct uart_8250_port up;
 	struct resource *regs;
 	void __iomem *membase;
-	int ret;
+	int ret = 0;
 
 	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!regs) {
@@ -1437,9 +1441,6 @@ static int omap8250_probe(struct platform_device *pdev)
 		return -ENODEV;
 
 	memset(&up, 0, sizeof(up));
-	up.port.dev = &pdev->dev;
-	up.port.mapbase = regs->start;
-	up.port.membase = membase;
 	/*
 	 * It claims to be 16C750 compatible however it is a little different.
 	 * It has EFR and has no FCR7_64byte bit. The AFE (which it claims to
@@ -1448,12 +1449,6 @@ static int omap8250_probe(struct platform_device *pdev)
 	 * we don't need our own type since we don't use 8250's set_termios()
 	 * or pm callback.
 	 */
-	up.port.type = PORT_8250;
-	up.port.flags = UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_SOFT_FLOW | UPF_HARD_FLOW;
-	up.port.private_data = priv;
-
-	up.tx_loadsz = 64;
-	up.capabilities = UART_CAP_FIFO;
 #ifdef CONFIG_PM
 	/*
 	 * Runtime PM is mostly transparent. However to do it right we need to a
@@ -1461,28 +1456,12 @@ static int omap8250_probe(struct platform_device *pdev)
 	 * PM is not enabled we don't add that flag and can spare that one extra
 	 * interrupt in the TX path.
 	 */
-	up.capabilities |= UART_CAP_RPM;
 #endif
-	up.port.set_termios = omap_8250_set_termios;
-	up.port.set_mctrl = omap8250_set_mctrl;
-	up.port.pm = omap_8250_pm;
-	up.port.startup = omap_8250_startup;
-	up.port.shutdown = omap_8250_shutdown;
-	up.port.throttle = omap_8250_throttle;
-	up.port.unthrottle = omap_8250_unthrottle;
-	up.port.rs485_config = omap8250_rs485_config;
 	/* same rs485_supported for software emulation and native RS485 */
-	up.port.rs485_supported = serial8250_em485_supported;
-	up.rs485_start_tx = serial8250_em485_start_tx;
-	up.rs485_stop_tx = serial8250_em485_stop_tx;
-	up.port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
 
-	ret = uart_read_port_properties(&up.port);
 	if (ret)
 		return ret;
 
-	up.port.regshift = OMAP_UART_REGSHIFT;
-	up.port.fifosize = 64;
 
 	if (!up.port.uartclk) {
 		struct clk *clk;
@@ -1492,20 +1471,18 @@ static int omap8250_probe(struct platform_device *pdev)
 			if (PTR_ERR(clk) == -EPROBE_DEFER)
 				return -EPROBE_DEFER;
 		} else {
-			up.port.uartclk = clk_get_rate(clk);
 		}
 	}
 
 	if (of_property_read_u32(np, "overrun-throttle-ms",
 				 &up.overrun_backoff_time_ms) != 0)
-		up.overrun_backoff_time_ms = 0;
+		;
 
 	pdata = of_device_get_match_data(&pdev->dev);
 	if (pdata)
 		priv->habit |= pdata->habit;
 
 	if (!up.port.uartclk) {
-		up.port.uartclk = DEFAULT_CLK_SPEED;
 		dev_warn(&pdev->dev,
 			 "No clock speed specified: using default: %d\n",
 			 DEFAULT_CLK_SPEED);
@@ -1542,7 +1519,6 @@ static int omap8250_probe(struct platform_device *pdev)
 	pm_runtime_get_sync(&pdev->dev);
 
 	omap_serial_fill_features_erratas(&up, priv);
-	up.port.handle_irq = omap8250_no_handle_irq;
 	priv->rx_trigger = RX_TRIGGER;
 	priv->tx_trigger = TX_TRIGGER;
 #ifdef CONFIG_SERIAL_8250_DMA
@@ -1579,7 +1555,6 @@ static int omap8250_probe(struct platform_device *pdev)
 	}
 #endif
 
-	irq_set_status_flags(up.port.irq, IRQ_NOAUTOEN);
 	ret = devm_request_irq(&pdev->dev, up.port.irq, omap8250_irq, 0,
 			       dev_name(&pdev->dev), priv);
 	if (ret < 0)

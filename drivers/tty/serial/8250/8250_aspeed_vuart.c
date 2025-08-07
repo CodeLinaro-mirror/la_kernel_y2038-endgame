@@ -244,7 +244,7 @@ static void aspeed_vuart_set_host_tx_discard(struct aspeed_vuart *vuart,
 	aspeed_vuart_writeb(vuart, reg, ASPEED_VUART_GCRA);
 }
 
-static int aspeed_vuart_startup(struct uart_port *uart_port)
+static __maybe_unused int aspeed_vuart_startup(struct uart_port *uart_port)
 {
 	struct uart_8250_port *uart_8250_port = up_to_u8250p(uart_port);
 	struct aspeed_vuart *vuart = uart_8250_port->port.private_data;
@@ -259,7 +259,7 @@ static int aspeed_vuart_startup(struct uart_port *uart_port)
 	return 0;
 }
 
-static void aspeed_vuart_shutdown(struct uart_port *uart_port)
+static __maybe_unused void aspeed_vuart_shutdown(struct uart_port *uart_port)
 {
 	struct uart_8250_port *uart_8250_port = up_to_u8250p(uart_port);
 	struct aspeed_vuart *vuart = uart_8250_port->port.private_data;
@@ -292,7 +292,7 @@ static void aspeed_vuart_set_throttle(struct uart_port *port, bool throttle)
 	uart_port_unlock_irqrestore(port, flags);
 }
 
-static void aspeed_vuart_throttle(struct uart_port *port)
+static __maybe_unused void aspeed_vuart_throttle(struct uart_port *port)
 {
 	aspeed_vuart_set_throttle(port, true);
 }
@@ -328,7 +328,7 @@ static void aspeed_vuart_unthrottle_exp(struct timer_list *timer)
  * throttle now and schedule an unthrottle for later, once the ldisc has had
  * a chance to drain the buffers.
  */
-static int aspeed_vuart_handle_irq(struct uart_port *port)
+static __maybe_unused int aspeed_vuart_handle_irq(struct uart_port *port)
 {
 	struct uart_8250_port *up = up_to_u8250p(port);
 	unsigned int iir, lsr;
@@ -438,25 +438,11 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
 		return -EINVAL;
 
 	memset(&port, 0, sizeof(port));
-	port.port.private_data = vuart;
-	port.port.mapbase = res->start;
-	port.port.mapsize = resource_size(res);
-	port.port.startup = aspeed_vuart_startup;
-	port.port.shutdown = aspeed_vuart_shutdown;
-	port.port.throttle = aspeed_vuart_throttle;
-	port.port.unthrottle = aspeed_vuart_unthrottle;
-	port.port.status = UPSTAT_SYNC_FIFO;
-	port.port.dev = &pdev->dev;
-	port.port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
-	port.port.flags = UPF_BOOT_AUTOCONF | UPF_IOREMAP | UPF_FIXED_PORT | UPF_FIXED_TYPE |
-			  UPF_NO_THRE_TEST;
-	port.bugs |= UART_BUG_TXRACE;
 
 	rc = sysfs_create_group(&vuart->dev->kobj, &aspeed_vuart_attr_group);
 	if (rc < 0)
 		return rc;
 
-	rc = uart_read_port_properties(&port.port);
 	if (rc)
 		goto err_sysfs_remove;
 
@@ -468,21 +454,13 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
 			goto err_sysfs_remove;
 		}
 
-		port.port.uartclk = clk_get_rate(vclk);
 	}
 
 	/* If current-speed was set, then try not to change it. */
 	if (of_property_read_u32(np, "current-speed", &prop) == 0)
-		port.port.custom_divisor = port.port.uartclk / (16 * prop);
 
-	port.port.handle_irq = aspeed_vuart_handle_irq;
-	port.port.type = PORT_ASPEED_VUART;
-
-	if (port.port.fifosize)
-		port.capabilities = UART_CAP_FIFO;
 
 	if (of_property_read_bool(np, "auto-flow-control"))
-		port.capabilities |= UART_CAP_AFE;
 
 	rc = serial8250_register_8250_port(&port);
 	if (rc < 0)

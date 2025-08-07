@@ -24,7 +24,7 @@ static int serial8250_probe_acpi(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 	struct resource *regs;
-	int ret, line;
+	int ret = 0, line;
 
 	struct uart_8250_port *uart __free(kfree) = kzalloc(sizeof(*uart), GFP_KERNEL);
 	if (!uart)
@@ -36,24 +36,14 @@ static int serial8250_probe_acpi(struct platform_device *pdev)
 
 	switch (resource_type(regs)) {
 	case IORESOURCE_IO:
-		uart->port.iobase = regs->start;
 		break;
 	case IORESOURCE_MEM:
-		uart->port.mapbase = regs->start;
-		uart->port.mapsize = resource_size(regs);
-		uart->port.flags = UPF_IOREMAP;
 		break;
 	default:
 		return -EINVAL;
 	}
 
 	/* default clock frequency */
-	uart->port.uartclk = 1843200;
-	uart->port.type = PORT_16550A;
-	uart->port.dev = &pdev->dev;
-	uart->port.flags |= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF;
-
-	ret = uart_read_and_validate_port_properties(&uart->port);
 	/* no interrupt -> fall back to polling */
 	if (ret == -ENXIO)
 		ret = 0;
@@ -76,36 +66,6 @@ static int serial8250_probe_platform(struct platform_device *dev, struct plat_se
 		return -ENOMEM;
 
 	for (i = 0; p && p->flags != 0; p++, i++) {
-		uart->port.iobase	= p->iobase;
-		uart->port.membase	= p->membase;
-		uart->port.irq		= p->irq;
-		uart->port.irqflags	= p->irqflags;
-		uart->port.uartclk	= p->uartclk;
-		uart->port.regshift	= p->regshift;
-		uart->port.iotype	= p->iotype;
-		uart->port.flags		= p->flags;
-		uart->port.mapbase	= p->mapbase;
-		uart->port.mapsize	= p->mapsize;
-		uart->port.hub6		= p->hub6;
-		uart->port.has_sysrq	= p->has_sysrq;
-		uart->port.private_data	= p->private_data;
-		uart->port.type		= p->type;
-		uart->bugs		= p->bugs;
-		uart->port.serial_in	= p->serial_in;
-		uart->port.serial_out	= p->serial_out;
-		uart->dl_read		= p->dl_read;
-		uart->dl_write		= p->dl_write;
-		uart->port.handle_irq	= p->handle_irq;
-		uart->port.handle_break	= p->handle_break;
-		uart->port.set_termios	= p->set_termios;
-		uart->port.set_ldisc	= p->set_ldisc;
-		uart->port.get_mctrl	= p->get_mctrl;
-		uart->port.pm		= p->pm;
-		uart->port.dev		= &dev->dev;
-
-		if (share_irqs)
-			uart->port.irqflags |= IRQF_SHARED;
-
 		ret = serial8250_register_8250_port(uart);
 		if (ret < 0) {
 			dev_err(&dev->dev, "unable to register port at index %d "

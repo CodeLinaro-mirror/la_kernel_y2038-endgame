@@ -48,7 +48,7 @@ struct pericom8250 {
 	int line[];
 };
 
-static void pericom_do_set_divisor(struct uart_port *port, unsigned int baud,
+static __maybe_unused void pericom_do_set_divisor(struct uart_port *port, unsigned int baud,
 				   unsigned int quot, unsigned int quot_frac)
 {
 	int scr;
@@ -112,17 +112,7 @@ static int pericom8250_probe(struct pci_dev *pdev, const struct pci_device_id *i
 
 	memset(&uart, 0, sizeof(uart));
 
-	uart.port.dev = &pdev->dev;
-	uart.port.irq = pdev->irq;
-	uart.port.private_data = pericom;
-	uart.port.iotype = UPIO_PORT;
-	uart.port.uartclk = 921600 * 16;
-	uart.port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ;
-	uart.port.set_divisor = pericom_do_set_divisor;
 	for (i = 0; i < nr && i < maxnr; i++) {
-		unsigned int offset = (i == 3 && nr == 4) ? 0x38 : i * 0x8;
-
-		uart.port.iobase = pci_resource_start(pdev, bar) + offset;
 
 		dev_dbg(&pdev->dev, "Setup PCI port: port %lx, irq %d, type %d\n",
 			uart.port.iobase, uart.port.irq, uart.port.iotype);

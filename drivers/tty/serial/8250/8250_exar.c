@@ -419,7 +419,7 @@ static const struct serial_rs485 generic_rs485_supported = {
 	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND,
 };
 
-static void exar_pm(struct uart_port *port, unsigned int state, unsigned int old)
+static __maybe_unused void exar_pm(struct uart_port *port, unsigned int state, unsigned int old)
 {
 	/*
 	 * Exar UARTs have a SLEEP register that enables or disables each UART
@@ -476,7 +476,7 @@ static int xr17v35x_startup(struct uart_port *port)
 	return serial8250_do_startup(port);
 }
 
-static void exar_shutdown(struct uart_port *port)
+static __maybe_unused void exar_shutdown(struct uart_port *port)
 {
 	bool tx_complete = false;
 	struct uart_8250_port *up = up_to_u8250p(port);
@@ -518,18 +518,8 @@ static int default_setup(struct exar8250 *priv, struct pci_dev *pcidev,
 	 */
 	status = readb(port->port.membase + UART_EXAR_DVID);
 	if (status == 0x82 || status == 0x84 || status == 0x88) {
-		port->port.type = PORT_XR17V35X;
-
-		port->port.get_divisor = xr17v35x_get_divisor;
-		port->port.set_divisor = xr17v35x_set_divisor;
-
-		port->port.startup = xr17v35x_startup;
 	} else {
-		port->port.type = PORT_XR17D15X;
 	}
-
-	port->port.pm = exar_pm;
-	port->port.shutdown = exar_shutdown;
 
 	return 0;
 }
@@ -539,11 +529,8 @@ pci_fastcom335_setup(struct exar8250 *priv, struct pci_dev *pcidev,
 		     struct uart_8250_port *port, int idx)
 {
 	unsigned int offset = idx * 0x200;
-	unsigned int baud = 1843200;
 	u8 __iomem *p;
 	int err;
-
-	port->port.uartclk = baud * 16;
 
 	err = default_setup(priv, pcidev, idx, offset, port);
 	if (err)
@@ -830,16 +817,9 @@ static int cti_port_setup_common(struct exar8250 *priv,
 {
 	int ret;
 
-	port->port.port_id = idx;
-	port->port.uartclk = priv->osc_freq;
-
 	ret = serial8250_pci_setup_port(pcidev, port, 0, offset, 0, priv->virt);
 	if (ret)
 		return ret;
-
-	port->port.private_data = (void *)priv;
-	port->port.pm = exar_pm;
-	port->port.shutdown = exar_shutdown;
 
 	return 0;
 }
@@ -887,15 +867,8 @@ static int cti_port_setup_fpga(struct exar8250 *priv,
 
 	// FPGA shares port offsets with XR17C15X
 	offset = idx * UART_EXAR_XR17C15X_PORT_OFFSET;
-	port->port.type = PORT_XR17D15X;
-
-	port->port.get_divisor = xr17v35x_get_divisor;
-	port->port.set_divisor = xr17v35x_set_divisor;
-	port->port.startup = xr17v35x_startup;
 
 	if (CTI_PORT_TYPE_RS485(port_type)) {
-		port->port.rs485_config = generic_rs485_config;
-		port->port.rs485_supported = generic_rs485_supported;
 	}
 
 	return cti_port_setup_common(priv, pcidev, idx, offset, port);
@@ -924,21 +897,13 @@ static int cti_port_setup_xr17v35x(struct exar8250 *priv,
 	offset = idx * UART_EXAR_XR17V35X_PORT_OFFSET;
 	port->port.type = PORT_XR17V35X;
 
-	port->port.get_divisor = xr17v35x_get_divisor;
-	port->port.set_divisor = xr17v35x_set_divisor;
-	port->port.startup = xr17v35x_startup;
-
 	switch (port_type) {
 	case CTI_PORT_TYPE_RS422_485:
 	case CTI_PORT_TYPE_RS232_422_485_HW:
-		port->port.rs485_config = cti_rs485_config_mpio_tristate;
-		port->port.rs485_supported = generic_rs485_supported;
 		break;
 	case CTI_PORT_TYPE_RS232_422_485_SW:
 	case CTI_PORT_TYPE_RS232_422_485_4B:
 	case CTI_PORT_TYPE_RS232_422_485_2B:
-		port->port.rs485_config = generic_rs485_config;
-		port->port.rs485_supported = generic_rs485_supported;
 		break;
 	default:
 		break;
@@ -1064,7 +1029,6 @@ static int cti_port_setup_xr17c15x(struct exar8250 *priv,
 	port_type = cti_get_port_type_xr17c15x_xr17v25x(priv, pcidev, idx);
 
 	offset = idx * UART_EXAR_XR17C15X_PORT_OFFSET;
-	port->port.type = PORT_XR17D15X;
 
 	if (CTI_PORT_TYPE_RS485(port_type)) {
 		switch (pcidev->subsystem_device) {
@@ -1080,15 +1044,12 @@ static int cti_port_setup_xr17c15x(struct exar8250 *priv,
 		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4_XPRS_OPTO:
 		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_XPRS_LP:
 		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_XPRS_LP_485:
-			port->port.rs485_config = cti_rs485_config_mpio_tristate;
 			break;
 		// Otherwise auto or no power on 485 tri-state support
 		default:
-			port->port.rs485_config = generic_rs485_config;
 			break;
 		}
 
-		port->port.rs485_supported = generic_rs485_supported;
 	}
 
 	return cti_port_setup_common(priv, pcidev, idx, offset, port);
@@ -1483,9 +1444,6 @@ exar_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
 		return rc;
 
 	memset(&uart, 0, sizeof(uart));
-	uart.port.flags = UPF_SHARE_IRQ | UPF_EXAR_EFR | UPF_FIXED_TYPE | UPF_FIXED_PORT;
-	uart.port.irq = pci_irq_vector(pcidev, 0);
-	uart.port.dev = &pcidev->dev;
 
 	/* Clear interrupts */
 	exar_misc_clear(priv);

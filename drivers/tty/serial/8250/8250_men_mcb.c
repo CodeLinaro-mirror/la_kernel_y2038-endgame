@@ -52,7 +52,7 @@ struct serial_8250_men_mcb_data {
  * parameter in order to really set the correct baudrate, and
  * do so if possible without user interaction
  */
-static u32 men_lookup_uartclk(struct mcb_device *mdev)
+static __maybe_unused u32 men_lookup_uartclk(struct mcb_device *mdev)
 {
 	/* use default value if board is not available below */
 	u32 clkval = 1041666;
@@ -205,18 +205,6 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
 
 	for (i = 0; i < data->num_ports; i++) {
 		memset(&uart, 0, sizeof(struct uart_8250_port));
-		spin_lock_init(&uart.port.lock);
-
-		uart.port.flags = UPF_SKIP_TEST |
-				  UPF_SHARE_IRQ |
-				  UPF_BOOT_AUTOCONF |
-				  UPF_IOREMAP;
-		uart.port.iotype = UPIO_MEM;
-		uart.port.uartclk = men_lookup_uartclk(mdev);
-		uart.port.irq = mcb_get_irq(mdev);
-		uart.port.mapbase = (unsigned long) mem->start
-					    + data->offset[i];
-		uart.port.dev = &mdev->dev;
 
 		/* ok, register the port */
 		res = serial8250_register_8250_port(&uart);

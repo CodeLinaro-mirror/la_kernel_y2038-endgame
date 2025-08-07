@@ -582,7 +582,7 @@ static irqreturn_t brcmuart_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-static int brcmuart_startup(struct uart_port *port)
+static __maybe_unused int brcmuart_startup(struct uart_port *port)
 {
 	int res;
 	struct uart_8250_port *up = up_to_u8250p(port);
@@ -620,7 +620,7 @@ static int brcmuart_startup(struct uart_port *port)
 	return res;
 }
 
-static void brcmuart_shutdown(struct uart_port *port)
+static __maybe_unused void brcmuart_shutdown(struct uart_port *port)
 {
 	struct uart_8250_port *up = up_to_u8250p(port);
 	struct brcmuart_priv *priv = up->port.private_data;
@@ -771,7 +771,7 @@ static void set_clock_mux(struct uart_port *up, struct brcmuart_priv *priv,
 	up->uartclk = best_freq;
 }
 
-static void brcmstb_set_termios(struct uart_port *up,
+static __maybe_unused void brcmstb_set_termios(struct uart_port *up,
 				struct ktermios *termios,
 				const struct ktermios *old)
 {
@@ -788,7 +788,7 @@ static void brcmstb_set_termios(struct uart_port *up,
 		start_rx_dma(p8250);
 }
 
-static int brcmuart_handle_irq(struct uart_port *p)
+static __maybe_unused int brcmuart_handle_irq(struct uart_port *p)
 {
 	unsigned int iir = serial_port_in(p, UART_IIR);
 	struct brcmuart_priv *priv = p->private_data;
@@ -899,14 +899,14 @@ static void brcmuart_free_bufs(struct device *dev, struct brcmuart_priv *priv)
 				  priv->tx_addr);
 }
 
-static void brcmuart_throttle(struct uart_port *port)
+static __maybe_unused void brcmuart_throttle(struct uart_port *port)
 {
 	struct brcmuart_priv *priv = port->private_data;
 
 	udma_writel(priv, REGS_DMA_ISR, UDMA_INTR_MASK_SET, UDMA_RX_INTERRUPTS);
 }
 
-static void brcmuart_unthrottle(struct uart_port *port)
+static __maybe_unused void brcmuart_unthrottle(struct uart_port *port)
 {
 	struct brcmuart_priv *priv = port->private_data;
 
@@ -1025,20 +1025,11 @@ static int brcmuart_probe(struct platform_device *pdev)
 	dev_dbg(dev, "DMA is %senabled\n", priv->dma_enabled ? "" : "not ");
 
 	memset(&up, 0, sizeof(up));
-	up.port.type = PORT_BCM7271;
-	up.port.dev = dev;
-	up.port.mapbase = mapbase;
-	up.port.membase = membase;
-	up.port.handle_irq = brcmuart_handle_irq;
-	up.port.flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_FIXED_TYPE;
-	up.port.private_data = priv;
 
 	ret = uart_read_port_properties(&up.port);
 	if (ret)
 		goto release_dma;
 
-	up.port.regshift = 2;
-	up.port.iotype = device_is_big_endian(dev) ? UPIO_MEM32BE : UPIO_MEM32;
 
 	/* See if a Baud clock has been specified */
 	baud_mux_clk = devm_clk_get_optional_enabled(dev, "sw_baud");
@@ -1050,7 +1041,6 @@ static int brcmuart_probe(struct platform_device *pdev)
 
 		priv->baud_mux_clk = baud_mux_clk;
 		init_real_clk_rates(dev, priv);
-		up.port.uartclk = priv->default_mux_rate;
 	} else {
 		dev_dbg(dev, "BAUD MUX clock not specified\n");
 	}
@@ -1058,11 +1048,6 @@ static int brcmuart_probe(struct platform_device *pdev)
 	/* setup HR timer */
 	hrtimer_setup(&priv->hrt, brcmuart_hrtimer_func, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
 
-	up.port.shutdown = brcmuart_shutdown;
-	up.port.startup = brcmuart_startup;
-	up.port.throttle = brcmuart_throttle;
-	up.port.unthrottle = brcmuart_unthrottle;
-	up.port.set_termios = brcmstb_set_termios;
 
 	if (priv->dma_enabled) {
 		priv->rx_size = RX_BUF_SIZE * RX_BUFS_COUNT;

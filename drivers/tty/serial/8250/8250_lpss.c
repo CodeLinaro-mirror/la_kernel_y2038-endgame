@@ -299,8 +299,6 @@ static int lpss8250_dma_setup(struct lpss8250 *lpss, struct uart_8250_port *port
 	dma->rx_param = rx_param;
 	dma->tx_param = tx_param;
 
-	port->dma = dma;
-
 out_configuration_only:
 	dma->rxconf.src_maxburst = lpss->dma_maxburst;
 	dma->txconf.dst_maxburst = lpss->dma_maxburst;
@@ -332,17 +330,6 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	memset(&uart, 0, sizeof(struct uart_8250_port));
 
-	uart.port.dev = &pdev->dev;
-	uart.port.irq = pci_irq_vector(pdev, 0);
-	uart.port.private_data = &lpss->data;
-	uart.port.type = PORT_16550A;
-	uart.port.iotype = UPIO_MEM32;
-	uart.port.regshift = 2;
-	uart.port.uartclk = lpss->board->base_baud * 16;
-	uart.port.flags = UPF_SHARE_IRQ | UPF_FIXED_PORT | UPF_FIXED_TYPE;
-	uart.capabilities = UART_CAP_FIFO | UART_CAP_AFE;
-	uart.port.mapbase = pci_resource_start(pdev, 0);
-	uart.port.membase = pcim_iomap(pdev, 0, 0);
 	if (!uart.port.membase)
 		return -ENOMEM;
 

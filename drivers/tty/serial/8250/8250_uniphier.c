@@ -63,7 +63,7 @@ OF_EARLYCON_DECLARE(uniphier, "socionext,uniphier-uart",
  * The register map is slightly different from that of 8250.
  * IO callbacks must be overridden for correct access to FCR, LCR, MCR and SCR.
  */
-static u32 uniphier_serial_in(struct uart_port *p, unsigned int offset)
+static __maybe_unused u32 uniphier_serial_in(struct uart_port *p, unsigned int offset)
 {
 	unsigned int valshift = 0;
 
@@ -92,7 +92,7 @@ static u32 uniphier_serial_in(struct uart_port *p, unsigned int offset)
 	return (readl(p->membase + offset) >> valshift) & 0xff;
 }
 
-static void uniphier_serial_out(struct uart_port *p, unsigned int offset, u32 value)
+static __maybe_unused void uniphier_serial_out(struct uart_port *p, unsigned int offset, u32 value)
 {
 	unsigned int valshift = 0;
 	bool normal = false;
@@ -145,12 +145,12 @@ static void uniphier_serial_out(struct uart_port *p, unsigned int offset, u32 va
  * The divisor latch register exists at different address.
  * Override dl_read/write callbacks.
  */
-static u32 uniphier_serial_dl_read(struct uart_8250_port *up)
+static __maybe_unused u32 uniphier_serial_dl_read(struct uart_8250_port *up)
 {
 	return readl(up->port.membase + UNIPHIER_UART_DLR);
 }
 
-static void uniphier_serial_dl_write(struct uart_8250_port *up, u32 value)
+static __maybe_unused void uniphier_serial_dl_write(struct uart_8250_port *up, u32 value)
 {
 	writel(value, up->port.membase + UNIPHIER_UART_DLR);
 }
@@ -190,34 +190,15 @@ static int uniphier_uart_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	up.port.uartclk = clk_get_rate(priv->clk);
 
-	spin_lock_init(&priv->atomic_write_lock);
 
-	up.port.dev = dev;
-	up.port.private_data = priv;
-	up.port.mapbase = regs->start;
-	up.port.mapsize = resource_size(regs);
-	up.port.membase = membase;
 
-	ret = uart_read_port_properties(&up.port);
 	if (ret)
 		return ret;
 
-	up.port.type = PORT_16550A;
-	up.port.iotype = UPIO_MEM32;
-	up.port.fifosize = 64;
-	up.port.regshift = UNIPHIER_UART_REGSHIFT;
-	up.port.flags = UPF_FIXED_PORT | UPF_FIXED_TYPE;
-	up.capabilities = UART_CAP_FIFO;
 
 	if (of_property_read_bool(dev->of_node, "auto-flow-control"))
-		up.capabilities |= UART_CAP_AFE;
-
-	up.port.serial_in = uniphier_serial_in;
-	up.port.serial_out = uniphier_serial_out;
-	up.dl_read = uniphier_serial_dl_read;
-	up.dl_write = uniphier_serial_dl_write;
+		;
 
 	ret = serial8250_register_8250_port(&up);
 	if (ret < 0) {

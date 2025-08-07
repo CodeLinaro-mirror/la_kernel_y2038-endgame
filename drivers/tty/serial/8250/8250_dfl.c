@@ -60,23 +60,18 @@ static int dfl_uart_get_params(struct dfl_device *dfl_dev, struct uart_8250_port
 	if (ret)
 		return dev_err_probe(dev, ret, "missing CLK_FRQ param\n");
 
-	uart->port.uartclk = clk_freq;
-
 	ret = dfh_get_u64_param_val(dfl_dev, DFHv1_PARAM_ID_FIFO_LEN, &fifo_len);
 	if (ret)
 		return dev_err_probe(dev, ret, "missing FIFO_LEN param\n");
 
 	switch (fifo_len) {
 	case 32:
-		uart->port.type = PORT_ALTR_16550_F32;
 		break;
 
 	case 64:
-		uart->port.type = PORT_ALTR_16550_F64;
 		break;
 
 	case 128:
-		uart->port.type = PORT_ALTR_16550_F128;
 		break;
 
 	default:
@@ -87,15 +82,12 @@ static int dfl_uart_get_params(struct dfl_device *dfl_dev, struct uart_8250_port
 	if (ret)
 		return dev_err_probe(dev, ret, "missing REG_LAYOUT param\n");
 
-	uart->port.regshift = FIELD_GET(DFHv1_PARAM_REG_LAYOUT_SHIFT, reg_layout);
 	reg_width = FIELD_GET(DFHv1_PARAM_REG_LAYOUT_WIDTH, reg_layout);
 	switch (reg_width) {
 	case 4:
-		uart->port.iotype = UPIO_MEM32;
 		break;
 
 	case 2:
-		uart->port.iotype = UPIO_MEM16;
 		break;
 
 	default:
@@ -113,17 +105,12 @@ static int dfl_uart_probe(struct dfl_device *dfl_dev)
 	struct dfl_uart *dfluart;
 	int ret;
 
-	uart.port.flags = UPF_IOREMAP;
-	uart.port.mapbase = dfl_dev->mmio_res.start;
-	uart.port.mapsize = resource_size(&dfl_dev->mmio_res);
-	uart.port.dev = dev;
-
 	ret = dfl_uart_get_params(dfl_dev, &uart);
 	if (ret < 0)
 		return dev_err_probe(dev, ret, "failed uart feature walk\n");
 
 	if (dfl_dev->num_irqs == 1)
-		uart.port.irq = dfl_dev->irqs[0];
+		;
 
 	dfluart = devm_kzalloc(dev, sizeof(*dfluart), GFP_KERNEL);
 	if (!dfluart)

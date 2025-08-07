@@ -72,7 +72,7 @@
  * we have: div(F) * (16 * baud) = rem
  * so frac = 2^dlf_size * rem / (16 * baud) = (rem << dlf_size) / (16 * baud)
  */
-static unsigned int dw8250_get_divisor(struct uart_port *p, unsigned int baud,
+static __maybe_unused unsigned int dw8250_get_divisor(struct uart_port *p, unsigned int baud,
 				       unsigned int *frac)
 {
 	unsigned int quot, rem, base_baud = baud * 16;
@@ -85,7 +85,7 @@ static unsigned int dw8250_get_divisor(struct uart_port *p, unsigned int baud,
 	return quot;
 }
 
-static void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
+static __maybe_unused void dw8250_set_divisor(struct uart_port *p, unsigned int baud,
 			       unsigned int quot, unsigned int quot_frac)
 {
 	dw8250_writel_ext(p, DW_UART_DLF, quot_frac);
@@ -177,7 +177,7 @@ static void dw8250_rs485_set_addr(struct uart_port *p, struct serial_rs485 *rs48
 	dw8250_writel_ext(p, DW_UART_LCR_EXT, lcr);
 }
 
-static int dw8250_rs485_config(struct uart_port *p, struct ktermios *termios,
+static __maybe_unused int dw8250_rs485_config(struct uart_port *p, struct ktermios *termios,
 			       struct serial_rs485 *rs485)
 {
 	u32 tcr;
@@ -233,7 +233,7 @@ static bool dw8250_detect_rs485_hw(struct uart_port *p)
 	return reg;
 }
 
-static const struct serial_rs485 dw8250_rs485_supported = {
+static __maybe_unused const struct serial_rs485 dw8250_rs485_supported = {
 	.flags = SER_RS485_ENABLED | SER_RS485_RX_DURING_TX | SER_RS485_RTS_ON_SEND |
 		 SER_RS485_RTS_AFTER_SEND | SER_RS485_ADDRB | SER_RS485_ADDR_RECV |
 		 SER_RS485_ADDR_DEST,
@@ -242,21 +242,12 @@ static const struct serial_rs485 dw8250_rs485_supported = {
 void dw8250_setup_port(struct uart_port *p)
 {
 	struct dw8250_port_data *pd = p->private_data;
-	struct uart_8250_port *up = up_to_u8250p(p);
 	u32 reg, old_dlf;
 
 	pd->hw_rs485_support = dw8250_detect_rs485_hw(p);
 	if (pd->hw_rs485_support) {
-		p->rs485_config = dw8250_rs485_config;
-		up->lsr_save_mask = LSR_SAVE_FLAGS | DW_UART_LSR_ADDR_RCVD;
-		p->rs485_supported = dw8250_rs485_supported;
 	} else {
-		p->rs485_config = serial8250_em485_config;
-		p->rs485_supported = serial8250_em485_supported;
-		up->rs485_start_tx = serial8250_em485_start_tx;
-		up->rs485_stop_tx = serial8250_em485_stop_tx;
 	}
-	up->capabilities |= UART_CAP_NOTEMT;
 
 	/* Preserve value written by firmware or bootloader  */
 	old_dlf = dw8250_readl_ext(p, DW_UART_DLF);
@@ -266,8 +257,6 @@ void dw8250_setup_port(struct uart_port *p)
 
 	if (reg) {
 		pd->dlf_size = fls(reg);
-		p->get_divisor = dw8250_get_divisor;
-		p->set_divisor = dw8250_set_divisor;
 	}
 
 	reg = dw8250_readl_ext(p, DW_UART_UCV);
@@ -285,16 +274,12 @@ void dw8250_setup_port(struct uart_port *p)
 
 	/* Select the type based on FIFO */
 	if (reg & DW_UART_CPR_FIFO_MODE) {
-		p->type = PORT_16550A;
-		p->flags |= UPF_FIXED_TYPE;
-		p->fifosize = DW_UART_CPR_FIFO_SIZE(reg);
-		up->capabilities = UART_CAP_FIFO | UART_CAP_NOTEMT;
 	}
 
 	if (reg & DW_UART_CPR_AFCE_MODE)
-		up->capabilities |= UART_CAP_AFE;
+	;
 
 	if (reg & DW_UART_CPR_SIR_MODE)
-		up->capabilities |= UART_CAP_IRDA;
+	;
 }
 EXPORT_SYMBOL_GPL(dw8250_setup_port);

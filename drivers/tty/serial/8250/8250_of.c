@@ -35,7 +35,7 @@ struct of_serial_info {
 #define UART_NPCM_TOR          7
 #define UART_NPCM_TOIE         BIT(7)  /* Timeout Interrupt Enable */
 
-static int npcm_startup(struct uart_port *port)
+static __maybe_unused int npcm_startup(struct uart_port *port)
 {
 	/*
 	 * Nuvoton calls the scratch register 'UART_TOR' (timeout
@@ -48,7 +48,7 @@ static int npcm_startup(struct uart_port *port)
 }
 
 /* Nuvoton NPCM UARTs have a custom divisor calculation */
-static unsigned int npcm_get_divisor(struct uart_port *port, unsigned int baud,
+static __maybe_unused unsigned int npcm_get_divisor(struct uart_port *port, unsigned int baud,
 				     unsigned int *frac)
 {
 	return DIV_ROUND_CLOSEST(port->uartclk, 16 * baud + 2) - 2;
@@ -56,8 +56,6 @@ static unsigned int npcm_get_divisor(struct uart_port *port, unsigned int baud,
 
 static int npcm_setup(struct uart_port *port)
 {
-	port->get_divisor = npcm_get_divisor;
-	port->startup = npcm_startup;
 	return 0;
 }
 
@@ -106,16 +104,8 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
 		goto err_pmruntime;
 	}
 
-	port->dev = &ofdev->dev;
-	port->flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_FIXED_TYPE;
-	spin_lock_init(&port->lock);
-
 	if (resource_type(&resource) == IORESOURCE_IO) {
-		port->iobase = resource.start;
 	} else {
-		port->mapbase = resource.start;
-		port->mapsize = resource_size(&resource);
-		port->flags |= UPF_IOREMAP;
 	}
 
 	ret = uart_read_and_validate_port_properties(port);
@@ -140,15 +130,12 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
 		}
 
 		info->bus_clk = bus_clk;
-		port->uartclk = clk_get_rate(info->clk);
 	}
 	/* If current-speed was set, then try not to change it. */
 	if (of_property_read_u32(np, "current-speed", &spd) == 0)
-		port->custom_divisor = port->uartclk / (16 * spd);
 
 	/* Compatibility with the deprecated pxa driver and 8250_pxa drivers. */
 	if (of_device_is_compatible(np, "mrvl,mmp-uart"))
-		port->regshift = 2;
 
 	info->rst = devm_reset_control_get_optional_shared(&ofdev->dev, NULL);
 	if (IS_ERR(info->rst)) {
@@ -159,12 +146,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
 	ret = reset_control_deassert(info->rst);
 	if (ret)
 		goto err_pmruntime;
-
-	port->type = type;
-	port->rs485_config = serial8250_em485_config;
-	port->rs485_supported = serial8250_em485_supported;
-	up->rs485_start_tx = serial8250_em485_start_tx;
-	up->rs485_stop_tx = serial8250_em485_stop_tx;
 
 	switch (type) {
 	case PORT_RT2880:
@@ -184,8 +165,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
 	if (IS_REACHABLE(CONFIG_SERIAL_8250_FSL) &&
 	    (of_device_is_compatible(np, "fsl,ns16550") ||
 	     of_device_is_compatible(np, "fsl,16550-FIFO64"))) {
-		port->handle_irq = fsl8250_handle_irq;
-		port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
 	}
 
 	return 0;
@@ -226,22 +205,19 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
 	if (ret)
 		goto err_free;
 
-	if (port8250.port.fifosize)
-		port8250.capabilities = UART_CAP_FIFO;
-
 	/* Check for TX FIFO threshold & set tx_loadsz */
 	if ((of_property_read_u32(ofdev->dev.of_node, "tx-threshold",
 				  &tx_threshold) == 0) &&
 	    (tx_threshold < port8250.port.fifosize))
-		port8250.tx_loadsz = port8250.port.fifosize - tx_threshold;
+		;
 
 	if (of_property_read_bool(ofdev->dev.of_node, "auto-flow-control"))
-		port8250.capabilities |= UART_CAP_AFE;
+		;
 
 	if (of_property_read_u32(ofdev->dev.of_node,
 			"overrun-throttle-ms",
 			&port8250.overrun_backoff_time_ms) != 0)
-		port8250.overrun_backoff_time_ms = 0;
+		;
 
 	ret = serial8250_register_8250_port(&port8250);
 	if (ret < 0)

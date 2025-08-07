@@ -23,7 +23,7 @@ struct tegra_uart {
 	int line;
 };
 
-static void tegra_uart_handle_break(struct uart_port *p)
+static __maybe_unused void tegra_uart_handle_break(struct uart_port *p)
 {
 	unsigned int status, tmout = 10000;
 
@@ -57,29 +57,18 @@ static int tegra_uart_probe(struct platform_device *pdev)
 	port = &port8250.port;
 	spin_lock_init(&port->lock);
 
-	port->flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_FIXED_TYPE;
-	port->type = PORT_TEGRA;
-	port->dev = &pdev->dev;
-	port->handle_break = tegra_uart_handle_break;
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
 		return -ENODEV;
 
-	port->membase = devm_ioremap(&pdev->dev, res->start,
-				     resource_size(res));
 	if (!port->membase)
 		return -ENOMEM;
 
-	port->mapbase = res->start;
-	port->mapsize = resource_size(res);
-
-	ret = uart_read_port_properties(port);
+	ret = 0;
 	if (ret)
 		return ret;
 
-	port->iotype = UPIO_MEM32;
-	port->regshift = 2;
 
 	uart->rst = devm_reset_control_get_optional_shared(&pdev->dev, NULL);
 	if (IS_ERR(uart->rst))
@@ -96,7 +85,6 @@ static int tegra_uart_probe(struct platform_device *pdev)
 		if (ret < 0)
 			return ret;
 
-		port->uartclk = clk_get_rate(uart->clk);
 	}
 
 	ret = reset_control_deassert(uart->rst);

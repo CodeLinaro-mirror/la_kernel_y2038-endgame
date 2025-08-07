@@ -119,7 +119,7 @@ static void serial8250_em_reg_update(struct uart_port *p, int off, int value)
 	serial8250_em_serial_out_helper(p, UART_HCR0_EM, hcr0);
 }
 
-static void serial8250_em_serial_out(struct uart_port *p, unsigned int offset, u32 value)
+static __maybe_unused void serial8250_em_serial_out(struct uart_port *p, unsigned int offset, u32 value)
 {
 	switch (offset) {
 	case UART_TX:
@@ -139,12 +139,12 @@ static void serial8250_em_serial_out(struct uart_port *p, unsigned int offset, u
 	}
 }
 
-static u32 serial8250_em_serial_dl_read(struct uart_8250_port *up)
+static __maybe_unused u32 serial8250_em_serial_dl_read(struct uart_8250_port *up)
 {
 	return serial_in(up, UART_DLL_EM) | serial_in(up, UART_DLM_EM) << 8;
 }
 
-static void serial8250_em_serial_dl_write(struct uart_8250_port *up, u32 value)
+static __maybe_unused void serial8250_em_serial_dl_write(struct uart_8250_port *up, u32 value)
 {
 	serial_out(up, UART_DLL_EM, value & 0xff);
 	serial_out(up, UART_DLM_EM, value >> 8 & 0xff);
@@ -176,20 +176,6 @@ static int serial8250_em_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, PTR_ERR(sclk), "unable to get clock\n");
 
 	memset(&up, 0, sizeof(up));
-	up.port.mapbase = regs->start;
-	up.port.irq = irq;
-	up.port.type = PORT_16750;
-	up.port.flags = UPF_FIXED_PORT | UPF_IOREMAP | UPF_FIXED_TYPE;
-	up.port.dev = dev;
-	up.port.private_data = priv;
-
-	up.port.uartclk = clk_get_rate(sclk);
-
-	up.port.iotype = UPIO_MEM32;
-	up.port.serial_in = serial8250_em_serial_in;
-	up.port.serial_out = serial8250_em_serial_out;
-	up.dl_read = serial8250_em_serial_dl_read;
-	up.dl_write = serial8250_em_serial_dl_write;
 
 	ret = serial8250_register_8250_port(&up);
 	if (ret < 0)

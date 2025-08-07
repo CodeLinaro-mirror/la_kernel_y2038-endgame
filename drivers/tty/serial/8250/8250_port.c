@@ -3155,24 +3155,23 @@ void serial8250_set_defaults(struct uart_8250_port *up)
 	struct uart_port *port = &up->port;
 
 	if (up->port.flags & UPF_FIXED_TYPE) {
-		unsigned int type = up->port.type;
 
-		if (!up->port.fifosize)
-			up->port.fifosize = uart_config[type].fifo_size;
-		if (!up->tx_loadsz)
-			up->tx_loadsz = uart_config[type].tx_loadsz;
-		if (!up->capabilities)
-			up->capabilities = uart_config[type].flags;
+		if (!up->port.fifosize) {
+		}
+		if (!up->tx_loadsz) {
+		}
+		if (!up->capabilities) {
+		}
 	}
 
 	set_io_from_upio(port);
 
 	/* default dma handlers */
 	if (up->dma) {
-		if (!up->dma->tx_dma)
-			up->dma->tx_dma = serial8250_tx_dma;
-		if (!up->dma->rx_dma)
-			up->dma->rx_dma = serial8250_rx_dma;
+		if (!up->dma->tx_dma) {
+		}
+		if (!up->dma->rx_dma) {
+		}
 	}
 }
 EXPORT_SYMBOL_GPL(serial8250_set_defaults);

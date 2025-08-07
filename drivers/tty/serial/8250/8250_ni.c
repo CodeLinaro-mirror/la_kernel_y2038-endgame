@@ -102,7 +102,7 @@ static int ni16550_disable_transceivers(struct uart_port *port)
 	return 0;
 }
 
-static int ni16550_rs485_config(struct uart_port *port,
+static __maybe_unused int ni16550_rs485_config(struct uart_port *port,
 				struct ktermios *termios,
 				struct serial_rs485 *rs485)
 {
@@ -182,7 +182,7 @@ static void ni16550_config_prescaler(struct uart_8250_port *up,
 	serial_out(up, UART_ICR, prescaler);
 }
 
-static const struct serial_rs485 ni16550_rs485_supported = {
+static __maybe_unused const struct serial_rs485 ni16550_rs485_supported = {
 	.flags = SER_RS485_ENABLED | SER_RS485_MODE_RS422 | SER_RS485_RTS_ON_SEND |
 		 SER_RS485_RTS_AFTER_SEND,
 	/*
@@ -196,16 +196,13 @@ static const struct serial_rs485 ni16550_rs485_supported = {
 
 static void ni16550_rs485_setup(struct uart_port *port)
 {
-	port->rs485_config = ni16550_rs485_config;
-	port->rs485_supported = ni16550_rs485_supported;
 	/*
 	 * The hardware comes up by default in 2-wire auto mode and we
 	 * set the flags to represent that
 	 */
-	port->rs485.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND;
 }
 
-static int ni16550_port_startup(struct uart_port *port)
+static __maybe_unused int ni16550_port_startup(struct uart_port *port)
 {
 	int ret;
 
@@ -216,7 +213,7 @@ static int ni16550_port_startup(struct uart_port *port)
 	return ni16550_enable_transceivers(port);
 }
 
-static void ni16550_port_shutdown(struct uart_port *port)
+static __maybe_unused void ni16550_port_shutdown(struct uart_port *port)
 {
 	ni16550_disable_transceivers(port);
 
@@ -265,7 +262,7 @@ static u8 ni16550_read_fifo_size(struct uart_8250_port *uart, int reg)
 	return value;
 }
 
-static void ni16550_set_mctrl(struct uart_port *port, unsigned int mctrl)
+static __maybe_unused void ni16550_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
 	struct uart_8250_port *up = up_to_u8250p(port);
 
@@ -300,14 +297,8 @@ static int ni16550_probe(struct platform_device *pdev)
 		return ret;
 
 	/* early setup so that serial_in()/serial_out() work */
-	serial8250_set_defaults(uart);
 
 	info = device_get_match_data(dev);
-
-	uart->port.dev		= dev;
-	uart->port.flags	= UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_FIXED_TYPE;
-	uart->port.startup	= ni16550_port_startup;
-	uart->port.shutdown	= ni16550_port_shutdown;
 
 	/*
 	 * Hardware instantiation of FIFO sizes are held in registers.
@@ -318,18 +309,12 @@ static int ni16550_probe(struct platform_device *pdev)
 	dev_dbg(dev, "NI 16550 has TX FIFO size %u, RX FIFO size %u\n",
 		txfifosz, rxfifosz);
 
-	uart->port.type		= PORT_16550A;
-	uart->port.fifosize	= txfifosz;
-	uart->tx_loadsz		= txfifosz;
-	uart->fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10;
-	uart->capabilities	= UART_CAP_FIFO | UART_CAP_AFE | UART_CAP_EFR;
 
 	/*
 	 * Declaration of the base clock frequency can come from one of:
 	 * - static declaration in this driver (for older ACPI IDs)
 	 * - a "clock-frequency" ACPI
 	 */
-	uart->port.uartclk = info->uartclk;
 
 	ret = uart_read_port_properties(&uart->port);
 	if (ret)
@@ -338,7 +323,7 @@ static int ni16550_probe(struct platform_device *pdev)
 	if (!uart->port.uartclk) {
 		data->clk = devm_clk_get_enabled(dev, NULL);
 		if (!IS_ERR(data->clk))
-			uart->port.uartclk = clk_get_rate(data->clk);
+			;
 	}
 
 	if (!uart->port.uartclk)
@@ -347,7 +332,6 @@ static int ni16550_probe(struct platform_device *pdev)
 	prescaler = info->prescaler;
 	device_property_read_u32(dev, "clock-prescaler", &prescaler);
 	if (prescaler) {
-		uart->port.set_mctrl = ni16550_set_mctrl;
 		ni16550_config_prescaler(uart, (u8)prescaler);
 	}
 

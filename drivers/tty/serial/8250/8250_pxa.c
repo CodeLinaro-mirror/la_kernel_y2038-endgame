@@ -60,7 +60,7 @@ static const struct of_device_id serial_pxa_dt_ids[] = {
 MODULE_DEVICE_TABLE(of, serial_pxa_dt_ids);
 
 /* Uart divisor latch write */
-static void serial_pxa_dl_write(struct uart_8250_port *up, u32 value)
+static __maybe_unused void serial_pxa_dl_write(struct uart_8250_port *up, u32 value)
 {
 	unsigned int dll;
 
@@ -76,7 +76,7 @@ static void serial_pxa_dl_write(struct uart_8250_port *up, u32 value)
 }
 
 
-static void serial_pxa_pm(struct uart_port *port, unsigned int state,
+static __maybe_unused void serial_pxa_pm(struct uart_port *port, unsigned int state,
 	      unsigned int oldstate)
 {
 	struct pxa8250_platform_data *data = port->private_data;
@@ -110,23 +110,9 @@ static int serial_pxa_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	uart.port.type = PORT_XSCALE;
-	uart.port.mapbase = mmres->start;
-	uart.port.flags = UPF_IOREMAP | UPF_SKIP_TEST | UPF_FIXED_TYPE;
-	uart.port.dev = &pdev->dev;
-	uart.port.uartclk = clk_get_rate(data->clk);
-	uart.port.pm = serial_pxa_pm;
-	uart.port.private_data = data;
-
-	ret = uart_read_port_properties(&uart.port);
 	if (ret)
 		return ret;
 
-	uart.port.iotype = UPIO_MEM32;
-	uart.port.regshift = 2;
-	uart.port.fifosize = 64;
-	uart.tx_loadsz = 32;
-	uart.dl_write = serial_pxa_dl_write;
 
 	ret = serial8250_register_8250_port(&uart);
 	if (ret < 0)

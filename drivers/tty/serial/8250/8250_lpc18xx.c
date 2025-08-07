@@ -32,7 +32,7 @@ struct lpc18xx_uart_data {
 	int line;
 };
 
-static int lpc18xx_rs485_config(struct uart_port *port, struct ktermios *termios,
+static __maybe_unused int lpc18xx_rs485_config(struct uart_port *port, struct ktermios *termios,
 				struct serial_rs485 *rs485)
 {
 	struct uart_8250_port *up = up_to_u8250p(port);
@@ -67,7 +67,7 @@ static int lpc18xx_rs485_config(struct uart_port *port, struct ktermios *termios
 	return 0;
 }
 
-static void lpc18xx_uart_serial_out(struct uart_port *p, unsigned int offset, u32 value)
+static __maybe_unused void lpc18xx_uart_serial_out(struct uart_port *p, unsigned int offset, u32 value)
 {
 	/*
 	 * For DMA mode one must ensure that the UART_FCR_DMA_SELECT
@@ -81,7 +81,7 @@ static void lpc18xx_uart_serial_out(struct uart_port *p, unsigned int offset, u3
 	writel(value, p->membase + offset);
 }
 
-static const struct serial_rs485 lpc18xx_rs485_supported = {
+static __maybe_unused const struct serial_rs485 lpc18xx_rs485_supported = {
 	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND,
 	.delay_rts_after_send = 1,
 	/* Delay RTS before send is not supported */
@@ -102,8 +102,6 @@ static int lpc18xx_serial_probe(struct platform_device *pdev)
 
 	memset(&uart, 0, sizeof(uart));
 
-	uart.port.membase = devm_ioremap(&pdev->dev, res->start,
-					 resource_size(res));
 	if (!uart.port.membase)
 		return -ENOMEM;
 
@@ -138,27 +136,9 @@ static int lpc18xx_serial_probe(struct platform_device *pdev)
 	data->dma.rx_param = data;
 	data->dma.tx_param = data;
 
-	spin_lock_init(&uart.port.lock);
-	uart.port.dev = &pdev->dev;
-	uart.port.mapbase = res->start;
-	uart.port.type = PORT_16550A;
-	uart.port.flags = UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_SKIP_TEST;
-	uart.port.uartclk = clk_get_rate(data->clk_uart);
-	uart.port.private_data = data;
-	uart.port.rs485_config = lpc18xx_rs485_config;
-	uart.port.rs485_supported = lpc18xx_rs485_supported;
-	uart.port.serial_out = lpc18xx_uart_serial_out;
-
 	ret = uart_read_port_properties(&uart.port);
 	if (ret)
 		goto dis_uart_clk;
-
-	uart.port.iotype = UPIO_MEM32;
-	uart.port.regshift = 2;
-
-	uart.dma = &data->dma;
-	uart.dma->rxconf.src_maxburst = 1;
-	uart.dma->txconf.dst_maxburst = 1;
 
 	ret = serial8250_register_8250_port(&uart);
 	if (ret < 0) {

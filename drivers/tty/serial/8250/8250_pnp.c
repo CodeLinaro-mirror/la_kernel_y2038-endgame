@@ -446,21 +446,12 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
 
 	memset(&uart, 0, sizeof(uart));
 	if ((flags & CIR_PORT) && pnp_port_valid(dev, 2)) {
-		uart.port.iobase = pnp_port_start(dev, 2);
 	} else if (pnp_port_valid(dev, 0)) {
-		uart.port.iobase = pnp_port_start(dev, 0);
 	} else if (pnp_mem_valid(dev, 0)) {
-		uart.port.mapbase = pnp_mem_start(dev, 0);
-		uart.port.mapsize = pnp_mem_len(dev, 0);
-		uart.port.flags = UPF_IOREMAP;
 	} else
 		return -ENODEV;
 
-	uart.port.uartclk = 1843200;
-	uart.port.dev = &dev->dev;
-	uart.port.flags |= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF;
 
-	ret = uart_read_port_properties(&uart.port);
 	/* no interrupt -> fall back to polling */
 	if (ret == -ENXIO)
 		ret = 0;
@@ -468,8 +459,6 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
 		return ret;
 
 	if (flags & CIR_PORT) {
-		uart.port.flags |= UPF_FIXED_PORT | UPF_FIXED_TYPE;
-		uart.port.type = PORT_8250_CIR;
 	}
 
 	dev_info(&dev->dev,

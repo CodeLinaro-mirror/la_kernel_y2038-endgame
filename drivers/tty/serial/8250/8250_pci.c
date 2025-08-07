@@ -1449,7 +1449,7 @@ static int pci_quatech_test(struct uart_8250_port *port)
 	return 0;
 }
 
-static int pci_quatech_clock(struct uart_8250_port *port)
+static __maybe_unused int pci_quatech_clock(struct uart_8250_port *port)
 {
 	u8 qopr, reg, set;
 	unsigned long clock;
@@ -1544,9 +1544,7 @@ static int pci_quatech_setup(struct serial_private *priv,
 		return serial_8250_warn_need_ioport(priv->dev);
 
 	/* Needed by pci_quatech calls below */
-	port->port.iobase = pci_resource_start(priv->dev, FL_GET_BASE(board->flags));
 	/* Set up the clocking */
-	port->port.uartclk = pci_quatech_clock(port);
 	/* For now just warn about RS422 */
 	if (pci_quatech_rs422(port))
 		pci_warn(priv->dev, "software control of RS422 features not currently supported.\n");
@@ -1582,10 +1580,6 @@ ce4100_serial_setup(struct serial_private *priv,
 	int ret;
 
 	ret = setup_port(priv, port, idx, 0, board->reg_shift);
-	port->port.iotype = UPIO_MEM32;
-	port->port.type = PORT_XSCALE;
-	port->port.flags = (port->port.flags | UPF_FIXED_PORT | UPF_FIXED_TYPE);
-	port->port.regshift = 2;
 
 	return ret;
 }
@@ -1605,8 +1599,6 @@ pci_brcm_trumanage_setup(struct serial_private *priv,
 {
 	int ret = pci_default_setup(priv, board, port, idx);
 
-	port->port.type = PORT_BRCM_TRUMANAGE;
-	port->port.flags = (port->port.flags | UPF_FIXED_PORT | UPF_FIXED_TYPE);
 	return ret;
 }
 
@@ -1616,7 +1608,7 @@ pci_brcm_trumanage_setup(struct serial_private *priv,
 #define FINTEK_RTS_INVERT		BIT(5)
 
 /* We should do proper H/W transceiver setting before change to RS485 mode */
-static int pci_fintek_rs485_config(struct uart_port *port, struct ktermios *termios,
+static __maybe_unused int pci_fintek_rs485_config(struct uart_port *port, struct ktermios *termios,
 			       struct serial_rs485 *rs485)
 {
 	struct pci_dev *pci_dev = to_pci_dev(port->dev);
@@ -1646,7 +1638,7 @@ static int pci_fintek_rs485_config(struct uart_port *port, struct ktermios *term
 	return 0;
 }
 
-static const struct serial_rs485 pci_fintek_rs485_supported = {
+static __maybe_unused const struct serial_rs485 pci_fintek_rs485_supported = {
 	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND,
 	/* F81504/508/512 does not support RTS delay before or after send */
 };
@@ -1670,10 +1662,6 @@ static int pci_fintek_setup(struct serial_private *priv,
 
 	pci_dbg(pdev, "idx=%d iobase=0x%x", idx, iobase);
 
-	port->port.iotype = UPIO_PORT;
-	port->port.iobase = iobase;
-	port->port.rs485_config = pci_fintek_rs485_config;
-	port->port.rs485_supported = pci_fintek_rs485_supported;
 
 	data = devm_kzalloc(&pdev->dev, sizeof(u8), GFP_KERNEL);
 	if (!data)
@@ -1681,7 +1669,6 @@ static int pci_fintek_setup(struct serial_private *priv,
 
 	/* preserve index in PCI configuration space */
 	*data = idx;
-	port->port.private_data = data;
 
 	return 0;
 }
@@ -1753,7 +1740,7 @@ static int pci_fintek_init(struct pci_dev *dev)
 	return max_port;
 }
 
-static void f815xxa_mem_serial_out(struct uart_port *p, unsigned int offset, u32 value)
+static __maybe_unused void f815xxa_mem_serial_out(struct uart_port *p, unsigned int offset, u32 value)
 {
 	struct f815xxa_data *data = p->private_data;
 	unsigned long flags;
@@ -1778,11 +1765,6 @@ static int pci_fintek_f815xxa_setup(struct serial_private *priv,
 	data->idx = idx;
 	spin_lock_init(&data->lock);
 
-	port->port.private_data = data;
-	port->port.iotype = UPIO_MEM;
-	port->port.flags |= UPF_IOREMAP;
-	port->port.mapbase = pci_resource_start(pdev, 0) + 8 * idx;
-	port->port.serial_out = f815xxa_mem_serial_out;
 
 	return 0;
 }
@@ -1828,7 +1810,6 @@ static int skip_tx_en_setup(struct serial_private *priv,
 			const struct pciserial_board *board,
 			struct uart_8250_port *port, int idx)
 {
-	port->port.quirks |= UPQ_NO_TXEN_TEST;
 	pci_dbg(priv->dev,
 		"serial8250: skipping TxEn test for device [%04x:%04x] subsystem [%04x:%04x]\n",
 		priv->dev->vendor, priv->dev->device,
@@ -1837,7 +1818,7 @@ static int skip_tx_en_setup(struct serial_private *priv,
 	return pci_default_setup(priv, board, port, idx);
 }
 
-static void kt_handle_break(struct uart_port *p)
+static __maybe_unused void kt_handle_break(struct uart_port *p)
 {
 	struct uart_8250_port *up = up_to_u8250p(p);
 	/*
@@ -1848,7 +1829,7 @@ static void kt_handle_break(struct uart_port *p)
 	serial8250_clear_and_reinit_fifos(up);
 }
 
-static u32 kt_serial_in(struct uart_port *p, unsigned int offset)
+static __maybe_unused u32 kt_serial_in(struct uart_port *p, unsigned int offset)
 {
 	struct uart_8250_port *up = up_to_u8250p(p);
 	u32 val;
@@ -1878,9 +1859,6 @@ static int kt_serial_setup(struct serial_private *priv,
 	if (!IS_ENABLED(CONFIG_HAS_IOPORT))
 		return serial_8250_warn_need_ioport(priv->dev);
 
-	port->port.flags |= UPF_BUG_THRE;
-	port->port.serial_in = kt_serial_in;
-	port->port.handle_break = kt_handle_break;
 	return skip_tx_en_setup(priv, board, port, idx);
 }
 
@@ -1980,8 +1958,6 @@ pci_sunix_setup(struct serial_private *priv,
 	int bar;
 	int offset;
 
-	port->port.flags |= UPF_FIXED_TYPE;
-	port->port.type = PORT_SUNIX;
 
 	if (idx < 4) {
 		bar = 0;
@@ -4158,16 +4134,12 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
 	priv->quirk = quirk;
 
 	memset(&uart, 0, sizeof(uart));
-	uart.port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ;
-	uart.port.uartclk = board->base_baud * 16;
 
 	if (board->flags & FL_NOIRQ) {
-		uart.port.irq = 0;
 	} else {
 		if (pci_match_id(pci_use_msi, dev)) {
 			pci_dbg(dev, "Using MSI(-X) interrupts\n");
 			pci_set_master(dev);
-			uart.port.flags &= ~UPF_SHARE_IRQ;
 			rc = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_ALL_TYPES);
 		} else {
 			pci_dbg(dev, "Using legacy interrupts\n");
@@ -4179,10 +4151,8 @@ pciserial_init_ports(struct pci_dev *dev, const struct pciserial_board *board)
 			goto err_deinit;
 		}
 
-		uart.port.irq = pci_irq_vector(dev, 0);
 	}
 
-	uart.port.dev = &dev->dev;
 
 	for (i = 0; i < nr_ports; i++) {
 		if (quirk->setup(priv, board, &uart, i))
