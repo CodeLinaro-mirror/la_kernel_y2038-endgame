@@ -12,10 +12,17 @@ menuconfig GPIOLIB
 
 	  If unsure, say N.
 
-config GPIOLIB_LEGACY
-	def_bool y
-
 if GPIOLIB
+
+config GPIOLIB_LEGACY
+	bool "Legacy GPIO interfaces" if COMPILE_TEST
+	help
+	  There are a few legacy platforms that use the traditional GPIO
+	  number based interfaces instead of GPIO descriptors.
+	  Say Y here to enable build testing drivers that are specific
+	  to those platforms.
+
+	  If unsure, say N.
 
 config GPIOLIB_FASTPATH_LIMIT
 	int "Maximum number of GPIOs for fast path"
