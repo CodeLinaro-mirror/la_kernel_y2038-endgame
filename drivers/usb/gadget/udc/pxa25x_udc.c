@@ -2339,6 +2339,7 @@ static int pxa25x_udc_probe(struct platform_device *pdev)
 		dev_dbg(&pdev->dev,
 			"can't get pullup gpio err: %ld\n",
 			PTR_ERR(dev->pullup_gpio));
+		retval = PTR_ERR(dev->pullup_gpio);
 		goto err;
 	}
 
