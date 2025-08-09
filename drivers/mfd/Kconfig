@@ -1207,7 +1207,7 @@ config MFD_OCELOT
 config EZX_PCAP
 	bool "Motorola EZXPCAP Support"
 	depends on SPI_MASTER
-	depends on UNUSED
+	depends on GPIOLIB_LEGACY && UNUSED
 	help
 	  This enables the PCAP ASIC present on EZX Phones. This is
 	  needed for MMC, TouchScreen, Sound, USB, etc..
