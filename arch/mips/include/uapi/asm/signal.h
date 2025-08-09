@@ -13,7 +13,7 @@
 #include <linux/types.h>
 
 #define _NSIG		128
-#define _NSIG_BPW	(sizeof(unsigned long) * 8)
+#define _NSIG_BPW	_MIPS_SZLONG
 #define _NSIG_WORDS	(_NSIG / _NSIG_BPW)
 
 typedef struct {
