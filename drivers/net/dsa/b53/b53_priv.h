@@ -467,8 +467,9 @@ static inline void b53_arl_search_read(struct b53_device *dev, u8 idx,
 #ifdef CONFIG_BCM47XX
 
 #include <linux/bcm47xx_nvram.h>
+#include <linux/gpio.h>
 #include <bcm47xx_board.h>
-static inline gpio_desc *b53_switch_get_reset_gpio(struct b53_device *dev)
+static inline struct gpio_desc *b53_switch_get_reset_gpio(struct b53_device *dev)
 {
 	enum bcm47xx_board board = bcm47xx_board_get();
 	int gpio, ret;
@@ -485,8 +486,8 @@ static inline gpio_desc *b53_switch_get_reset_gpio(struct b53_device *dev)
 	if (!gpio_is_valid(gpio))
 		return ERR_PTR(-EINVAL);
 
-	ret = devm_gpiod_request_one(dev->dev, gpio,
-				     GPIOF_OUT_INIT_HIGH, "robo_reset");
+	ret = devm_gpio_request_one(dev->dev, gpio,
+				    GPIOF_OUT_INIT_HIGH, "robo_reset");
 	if (ret)
 		return ERR_PTR(ret);
 
