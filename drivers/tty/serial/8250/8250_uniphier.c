@@ -198,7 +198,7 @@ static int uniphier_uart_probe(struct platform_device *pdev)
 
 
 	if (of_property_read_bool(dev->of_node, "auto-flow-control"))
-		;
+		{}
 
 	ret = serial8250_register_8250_port(&up);
 	if (ret < 0) {

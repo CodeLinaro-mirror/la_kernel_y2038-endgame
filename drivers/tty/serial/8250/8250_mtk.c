@@ -555,7 +555,7 @@ static int mtk8250_probe(struct platform_device *pdev)
 	spin_lock_init(&uart.port.lock);
 #ifdef CONFIG_SERIAL_8250_DMA
 	if (data->dma)
-	;
+		{}
 #endif
 
 	if (is_of_node(fwnode)) {
