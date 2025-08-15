@@ -330,7 +330,6 @@ config MERAKI_MX100
 	depends on GPIOLIB
 	depends on GPIO_ICH
 	depends on LEDS_CLASS
-	select GPIOLIB_LEGACY
 	select LEDS_GPIO
 	help
 	  This driver provides support for the front button and LEDs on
@@ -588,7 +587,6 @@ config PCENGINES_APU2
 	depends on INPUT && INPUT_KEYBOARD && GPIOLIB
 	depends on LEDS_CLASS
 	select GPIO_AMD_FCH
-	select GPIOLIB_LEGACY
 	select KEYBOARD_GPIO_POLLED
 	select LEDS_GPIO
 	help
