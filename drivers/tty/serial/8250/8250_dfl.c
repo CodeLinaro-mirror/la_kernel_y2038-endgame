@@ -110,7 +110,7 @@ static int dfl_uart_probe(struct dfl_device *dfl_dev)
 		return dev_err_probe(dev, ret, "failed uart feature walk\n");
 
 	if (dfl_dev->num_irqs == 1)
-		;
+		{}
 
 	dfluart = devm_kzalloc(dev, sizeof(*dfluart), GFP_KERNEL);
 	if (!dfluart)

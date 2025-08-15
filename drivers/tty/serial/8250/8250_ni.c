@@ -323,7 +323,7 @@ static int ni16550_probe(struct platform_device *pdev)
 	if (!uart->port.uartclk) {
 		data->clk = devm_clk_get_enabled(dev, NULL);
 		if (!IS_ERR(data->clk))
-			;
+			{}
 	}
 
 	if (!uart->port.uartclk)

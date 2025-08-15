@@ -690,9 +690,9 @@ static int pci1xxxx_setup(struct pci_dev *pdev,
 	 * RTS workaround in mctrl is applicable only to B0.
 	 */
 	if (rev >= 0xC0)
-		;
+		{}
 	else if (rev == 0xB0)
-		;
+		{}
 
 	ret = serial8250_pci_setup_port(pdev, port, 0, PORT_OFFSET * port_idx, 0, priv->membase);
 	if (ret < 0)
@@ -806,7 +806,7 @@ static int pci1xxxx_serial_probe(struct pci_dev *pdev,
 		port_idx = pci1xxxx_logical_to_physical_port_translate(subsys_dev, i);
 
 		if (num_vectors == max_vec_reqd)
-			;
+			{}
 
 		rc = pci1xxxx_setup(pdev, &uart, port_idx, priv);
 		if (rc) {

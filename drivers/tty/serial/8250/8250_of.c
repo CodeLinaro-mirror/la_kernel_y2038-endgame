@@ -209,15 +209,15 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
 	if ((of_property_read_u32(ofdev->dev.of_node, "tx-threshold",
 				  &tx_threshold) == 0) &&
 	    (tx_threshold < port8250.port.fifosize))
-		;
+		{}
 
 	if (of_property_read_bool(ofdev->dev.of_node, "auto-flow-control"))
-		;
+		{}
 
 	if (of_property_read_u32(ofdev->dev.of_node,
 			"overrun-throttle-ms",
 			&port8250.overrun_backoff_time_ms) != 0)
-		;
+		{}
 
 	ret = serial8250_register_8250_port(&port8250);
 	if (ret < 0)

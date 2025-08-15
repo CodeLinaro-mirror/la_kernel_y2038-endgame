@@ -350,7 +350,7 @@ static int setup_serial(struct pcmcia_device *handle, struct serial_info *info,
 
 	memset(&uart, 0, sizeof(uart));
 	if (buggy_uart)
-		;
+		{}
 
 	if (info->quirk && info->quirk->setup)
 		info->quirk->setup(handle, &uart);

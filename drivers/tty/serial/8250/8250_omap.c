@@ -1476,7 +1476,7 @@ static int omap8250_probe(struct platform_device *pdev)
 
 	if (of_property_read_u32(np, "overrun-throttle-ms",
 				 &up.overrun_backoff_time_ms) != 0)
-		;
+		{}
 
 	pdata = of_device_get_match_data(&pdev->dev);
 	if (pdata)

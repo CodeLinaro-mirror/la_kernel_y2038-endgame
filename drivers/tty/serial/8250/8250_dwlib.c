@@ -277,9 +277,9 @@ void dw8250_setup_port(struct uart_port *p)
 	}
 
 	if (reg & DW_UART_CPR_AFCE_MODE)
-	;
+		{}
 
 	if (reg & DW_UART_CPR_SIR_MODE)
-	;
+		{}
 }
 EXPORT_SYMBOL_GPL(dw8250_setup_port);
