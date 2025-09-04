@@ -1373,6 +1373,15 @@ config DEBUG_ATOMIC
 
 	  This option has potentially significant overhead.
 
+config DEBUG_ATOMIC_LARGEST_ALIGN
+	bool "Check alignment only up to __LARGEST_ALIGN"
+	depends on DEBUG_ATOMIC
+	help
+	  Say Y here if you require natural alignment of atomic accesses
+	  only up to long word boundaries. That is, char, short, int and long
+	  will be checked for natural alignment but anything larger checked
+	  only for alignment with a long word boundary.
+
 menu "Lock Debugging (spinlocks, mutexes, etc...)"
 
 config LOCK_DEBUGGING_SUPPORT
