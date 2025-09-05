@@ -202,7 +202,7 @@ struct meson_host {
 #define CMD_RESP_MASK GENMASK(31, 1)
 #define CMD_RESP_SRAM BIT(0)
 
-static unsigned int meson_mmc_get_timeout_msecs(struct mmc_data *data)
+static __always_inline unsigned int meson_mmc_get_timeout_msecs(struct mmc_data *data)
 {
 	unsigned int timeout = data->timeout_ns / NSEC_PER_MSEC;
 
@@ -806,10 +806,11 @@ static void meson_mmc_start_cmd(struct mmc_host *mmc, struct mmc_command *cmd)
 
 	/* data? */
 	if (data) {
+		u32 timeout = meson_mmc_get_timeout_msecs(data);
+
 		data->bytes_xfered = 0;
 		cmd_cfg |= CMD_CFG_DATA_IO;
-		cmd_cfg |= FIELD_PREP(CMD_CFG_TIMEOUT_MASK,
-				      ilog2(meson_mmc_get_timeout_msecs(data)));
+		cmd_cfg |= FIELD_PREP(CMD_CFG_TIMEOUT_MASK, timeout);
 
 		if (meson_mmc_desc_chain_mode(data)) {
 			meson_mmc_desc_chain_transfer(mmc, cmd_cfg);
