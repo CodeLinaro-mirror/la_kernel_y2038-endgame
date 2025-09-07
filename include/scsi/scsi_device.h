@@ -375,7 +375,7 @@ struct scsi_target {
 	char			scsi_level;
 	enum scsi_target_state	state;
 	void 			*hostdata; /* available to low-level driver */
-	unsigned long		starget_data[]; /* for the transport */
+	unsigned long		starget_data[] __aligned(sizeof(long)); /* for the transport */
 	/* starget_data must be the last element!!!! */
 } __attribute__((aligned(sizeof(unsigned long))));
 
