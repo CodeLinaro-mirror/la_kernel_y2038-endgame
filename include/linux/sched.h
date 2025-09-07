@@ -954,7 +954,7 @@ struct task_struct {
 	struct mm_struct		*active_mm;
 	struct address_space		*faults_disabled_mapping;
 
-	int				exit_state;
+	int				exit_state __aligned(sizeof(int));
 	int				exit_code;
 	int				exit_signal;
 	/* The signal sent when the parent dies: */
@@ -1199,7 +1199,7 @@ struct task_struct {
 	size_t				sas_ss_size;
 	unsigned int			sas_ss_flags;
 
-	struct callback_head		*task_works;
+	struct callback_head		*task_works __aligned(sizeof(void *));
 
 #ifdef CONFIG_AUDIT
 #ifdef CONFIG_AUDITSYSCALL
