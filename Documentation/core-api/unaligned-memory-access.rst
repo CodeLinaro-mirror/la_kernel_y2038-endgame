@@ -40,9 +40,6 @@ The rule mentioned above forms what we refer to as natural alignment:
 When accessing N bytes of memory, the base memory address must be evenly
 divisible by N, i.e. addr % N == 0.
 
-When writing code, assume the target architecture has natural alignment
-requirements.
-
 In reality, only a few architectures require natural alignment on all sizes
 of memory access. However, we must consider ALL supported architectures;
 writing code that satisfies natural alignment requirements is the easiest way
@@ -102,10 +99,6 @@ above case it would insert 2 bytes of padding in between field1 and field2.
 Therefore, for standard structure types you can always rely on the compiler
 to pad structures so that accesses to fields are suitably aligned (assuming
 you do not cast the field to a type of different length).
-
-Similarly, you can also rely on the compiler to align variables and function
-parameters to a naturally aligned scheme, based on the size of the type of
-the variable.
 
 At this point, it should be clear that accessing a single byte (u8 or char)
 will never cause an unaligned access, because all memory addresses are evenly
