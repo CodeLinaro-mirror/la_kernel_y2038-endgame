@@ -14,7 +14,7 @@
 #include <linux/platform_device.h>
 #include <linux/mtd/platnand.h>
 #include <linux/mtd/mtd.h>
-#include <linux/gpio.h>
+#include <linux/gpio/legacy.h>
 #include <linux/gpio/machine.h>
 #include <linux/gpio_keys.h>
 #include <linux/input.h>

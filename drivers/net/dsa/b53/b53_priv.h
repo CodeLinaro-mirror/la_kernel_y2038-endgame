@@ -23,6 +23,7 @@
 #include <linux/mutex.h>
 #include <linux/phylink.h>
 #include <linux/etherdevice.h>
+#include <linux/gpio/legacy.h>
 #include <net/dsa.h>
 
 #include "b53_regs.h"

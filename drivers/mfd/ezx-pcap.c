@@ -13,7 +13,7 @@
 #include <linux/irq.h>
 #include <linux/mfd/ezx-pcap.h>
 #include <linux/spi/spi.h>
-#include <linux/gpio.h>
+#include <linux/gpio/legacy.h>
 #include <linux/slab.h>
 
 #define PCAP_ADC_MAXQ		8

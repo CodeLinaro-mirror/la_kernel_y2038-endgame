@@ -14,8 +14,4 @@
 #include <linux/gpio/consumer.h>
 #endif
 
-#ifdef CONFIG_GPIOLIB_LEGACY
-#include <linux/gpio/legacy.h>
-#endif /* CONFIG_GPIOLIB_LEGACY */
-
 #endif /* __LINUX_GPIO_H */
