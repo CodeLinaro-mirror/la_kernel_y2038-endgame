@@ -46,7 +46,7 @@ struct pt_regs {
   unsigned long  pc;
 #else
   unsigned short sr;
-  unsigned long  pc;
+  unsigned long  pc __uapi_arch_align;
   unsigned format :  4; /* frame format specifier */
   unsigned vector : 12; /* vector offset */
 #endif

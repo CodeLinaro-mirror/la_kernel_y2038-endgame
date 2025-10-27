@@ -13,7 +13,7 @@ struct sigcontext {
 	unsigned long  sc_a5;
 #endif
 	unsigned short sc_sr;
-	unsigned long  sc_pc;
+	unsigned long  sc_pc __uapi_arch_align;
 	unsigned short sc_formatvec;
 #ifndef __uClinux__
 	unsigned long  sc_fpregs[2*3];  /* room for two fp registers */
