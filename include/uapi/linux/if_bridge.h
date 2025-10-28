@@ -291,7 +291,8 @@ struct br_mrp_instance {
 	__u32 p_ifindex;
 	__u32 s_ifindex;
 	__u16 prio;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct br_mrp_ring_state {
 	__u32 ring_id;
@@ -314,21 +315,24 @@ struct br_mrp_start_test {
 struct br_mrp_in_state {
 	__u32 in_state;
 	__u16 in_id;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct br_mrp_in_role {
 	__u32 ring_id;
 	__u32 in_role;
 	__u32 i_ifindex;
 	__u16 in_id;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct br_mrp_start_in_test {
 	__u32 interval;
 	__u32 max_miss;
 	__u32 period;
 	__u16 in_id;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 enum {
 	IFLA_BRIDGE_CFM_UNSPEC,
@@ -691,8 +695,10 @@ enum {
 
 struct br_port_msg {
 	__u8  family;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	__u32 ifindex;
-};
+} __uapi_arch_align;
 
 struct br_mdb_entry {
 	__u32 ifindex;
@@ -713,8 +719,9 @@ struct br_mdb_entry {
 			unsigned char mac_addr[ETH_ALEN];
 		} u;
 		__be16		proto;
-	} addr;
-};
+		__uapi_arch_pad16;
+	} addr __uapi_arch_align;
+} __uapi_arch_align;
 
 enum {
 	MDBA_SET_ENTRY_UNSPEC,

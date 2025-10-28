@@ -82,11 +82,12 @@ struct mfcctl {
 	struct in_addr mfcc_mcastgrp;		/* Group in question	*/
 	vifi_t	mfcc_parent;			/* Where it arrived	*/
 	unsigned char mfcc_ttls[MAXVIFS];	/* Where it is going	*/
+	__uapi_arch_pad16;
 	unsigned int mfcc_pkt_cnt;		/* pkt count for src-grp */
 	unsigned int mfcc_byte_cnt;
 	unsigned int mfcc_wrong_if;
 	int	     mfcc_expire;
-};
+} __uapi_arch_align;
 
 /*  Group count retrieval for mrouted */
 struct sioc_sg_req {
@@ -100,11 +101,13 @@ struct sioc_sg_req {
 /* To get vif packet counts */
 struct sioc_vif_req {
 	vifi_t	vifi;		/* Which iface */
+	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
 	unsigned long icount;	/* In packets */
 	unsigned long ocount;	/* Out packets */
 	unsigned long ibytes;	/* In bytes */
 	unsigned long obytes;	/* Out bytes */
-};
+} __uapi_arch_align;
 
 /* This is the format the mroute daemon expects to see IGMP control
  * data. Magically happens to be like an IP packet as per the original

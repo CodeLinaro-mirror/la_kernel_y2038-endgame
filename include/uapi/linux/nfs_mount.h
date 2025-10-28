@@ -42,9 +42,12 @@ struct nfs_mount_data {
 	int		namlen;			/* 2 */
 	unsigned int	bsize;			/* 3 */
 	struct nfs3_fh	root;			/* 4 */
+	__uapi_arch_pad16;
 	int		pseudoflavor;		/* 5 */
 	char		context[NFS_MAX_CONTEXT_LEN + 1];	/* 6 */
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* bits in the flags field visible to user space */
 

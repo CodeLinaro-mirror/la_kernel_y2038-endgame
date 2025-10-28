@@ -263,8 +263,9 @@ struct rds_info_rdma_connection {
 	__u32		rdma_mr_size;
 	__u8		tos;
 	__u8		sl;
+	__uapi_arch_pad16;
 	__u32		cache_allocs;
-};
+} __uapi_arch_align;
 
 struct rds6_info_rdma_connection {
 	struct in6_addr	src_addr;
@@ -279,8 +280,9 @@ struct rds6_info_rdma_connection {
 	__u32		rdma_mr_size;
 	__u8		tos;
 	__u8		sl;
+	__uapi_arch_pad16;
 	__u32		cache_allocs;
-};
+} __uapi_arch_align;
 
 /* RDS message Receive Path Latency points */
 enum rds_message_rxpath_latency {

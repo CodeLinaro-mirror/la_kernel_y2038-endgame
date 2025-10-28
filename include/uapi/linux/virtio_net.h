@@ -359,7 +359,7 @@ struct virtio_net_rss_config {
 	__le16 max_tx_vq;
 	__u8 hash_key_length;
 	__u8 hash_key_data[/* hash_key_length */];
-};
+} __uapi_arch_align; //???
 
 struct virtio_net_rss_config_hdr {
 	__le32 hash_types;
@@ -390,7 +390,7 @@ struct virtio_net_hash_config {
 	__le16 reserved[4];
 	__u8 hash_key_length;
 	__u8 hash_key_data[/* hash_key_length */];
-};
+} __uapi_arch_align; //???
 
  #define VIRTIO_NET_CTRL_MQ_HASH_CONFIG         2
 

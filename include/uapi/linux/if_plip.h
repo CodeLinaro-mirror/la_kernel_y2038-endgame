@@ -18,9 +18,10 @@
 
 struct plipconf {
 	unsigned short pcmd;
+	__uapi_arch_pad16;
 	unsigned long  nibble;
 	unsigned long  trigger;
-};
+} __uapi_arch_align;
 
 #define PLIP_GET_TIMEOUT	0x1
 #define PLIP_SET_TIMEOUT	0x2

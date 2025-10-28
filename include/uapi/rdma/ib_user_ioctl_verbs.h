@@ -192,7 +192,8 @@ struct ib_uverbs_flow_action_esp_encap {
 	RDMA_UAPI_PTR(struct ib_uverbs_flow_action_esp_encap *, next_ptr);
 	__u16	len;		/* Len of the filter struct val_ptr points to */
 	__u16	type;		/* Use flow_spec_type enum */
-};
+	__uapi_arch_pad_long;
+} __aligned(8);
 
 struct ib_uverbs_flow_action_esp {
 	__u32		spi;

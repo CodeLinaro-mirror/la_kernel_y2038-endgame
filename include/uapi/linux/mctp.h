@@ -43,7 +43,9 @@ struct sockaddr_mctp_ext {
 struct mctp_fq_addr {
 	unsigned int	net;
 	mctp_eid_t	eid;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #define MCTP_NET_ANY		0x0
 
@@ -102,7 +104,8 @@ struct mctp_ioc_tag_ctl2 {
 	 * a prior SIOCMCTPALLOCTAG2 call (and so must have TO and PREALLOC set).
 	 */
 	__u8		tag;
-
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #endif /* __UAPI_MCTP_H */

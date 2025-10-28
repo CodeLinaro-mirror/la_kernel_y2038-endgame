@@ -210,7 +210,8 @@ struct ethtool_wolinfo {
 	__u32	supported;
 	__u32	wolopts;
 	__u8	sopass[SOPASS_MAX];
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* for passing single values */
 struct ethtool_value {
@@ -1260,7 +1261,9 @@ struct ethtool_tcpip4_spec {
 	__be16	psrc;
 	__be16	pdst;
 	__u8    tos;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /**
  * struct ethtool_ah_espip4_spec - flow specification for IPsec/IPv4
@@ -1276,7 +1279,9 @@ struct ethtool_ah_espip4_spec {
 	__be32	ip4dst;
 	__be32	spi;
 	__u8    tos;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #define	ETH_RX_NFC_IP4	1
 
@@ -1296,7 +1301,8 @@ struct ethtool_usrip4_spec {
 	__u8    tos;
 	__u8    ip_ver;
 	__u8    proto;
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 /**
  * struct ethtool_tcpip6_spec - flow specification for TCP/IPv6 etc.
@@ -1314,7 +1320,9 @@ struct ethtool_tcpip6_spec {
 	__be16	psrc;
 	__be16	pdst;
 	__u8    tclass;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /**
  * struct ethtool_ah_espip6_spec - flow specification for IPsec/IPv6
@@ -1330,7 +1338,9 @@ struct ethtool_ah_espip6_spec {
 	__be32	ip6dst[4];
 	__be32	spi;
 	__u8    tclass;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /**
  * struct ethtool_usrip6_spec - general flow specification for IPv6
@@ -1346,7 +1356,8 @@ struct ethtool_usrip6_spec {
 	__be32	l4_4_bytes;
 	__u8    tclass;
 	__u8    l4_proto;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 union ethtool_flow_union {
 	struct ethtool_tcpip4_spec		tcp_ip4_spec;

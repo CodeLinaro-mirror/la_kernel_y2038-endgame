@@ -12,7 +12,8 @@ struct ip6t_opts {
 	__u8 invflags;			/* Inverse flags */
 	__u16 opts[IP6T_OPTS_OPTSNR];	/* opts */
 	__u8 optsnr;			/* Nr of OPts */
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 #define IP6T_OPTS_LEN 		0x01
 #define IP6T_OPTS_OPTS 		0x02

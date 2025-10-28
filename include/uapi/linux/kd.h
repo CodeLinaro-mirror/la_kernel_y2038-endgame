@@ -65,8 +65,10 @@ struct unipair {
 };
 struct unimapdesc {
 	unsigned short entry_ct;
+	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
 	struct unipair __user *entries;
-};
+} __uapi_arch_align;
 #define PIO_UNIMAP	0x4B67	/* put unicode-to-font mapping in kernel */
 #define PIO_UNIMAPCLR	0x4B68	/* clear table, possibly advise hash algorithm */
 struct unimapinit {

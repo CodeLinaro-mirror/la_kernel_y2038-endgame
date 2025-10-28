@@ -177,11 +177,15 @@ struct opal_status {
  */
 struct opal_geometry {
 	__u8 align;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	__u32 logical_block_size;
 	__u64 alignment_granularity;
 	__u64 lowest_aligned_lba;
 	__u8  __align[3];
-};
+	__uapi_arch_pad8;
+	//__uapi_arch_pad_maybe32; /* alignof(u64) */
+} __uapi_arch_align;
 
 struct opal_discovery {
 	__u64 data;

@@ -54,6 +54,7 @@ struct mptcp_info {
 	__u8	mptcpi_add_addr_accepted_max;
 	#define mptcpi_limit_add_addr_accepted mptcpi_add_addr_accepted_max
 	/* 16-bit hole that can no longer be filled */
+	__uapi_arch_pad16;
 	__u32	mptcpi_flags;
 	__u32	mptcpi_token;
 	__u64	mptcpi_write_seq;
@@ -64,6 +65,7 @@ struct mptcp_info {
 	#define mptcpi_endp_subflow_max mptcpi_local_addr_max
 	__u8	mptcpi_csum_enabled;
 	/* 8-bit hole that can no longer be filled */
+	__uapi_arch_pad8;
 	__u32	mptcpi_retransmits;
 	__u64	mptcpi_bytes_retrans;
 	__u64	mptcpi_bytes_sent;
@@ -76,7 +78,7 @@ struct mptcp_info {
 	__u32	mptcpi_last_data_sent;
 	__u32	mptcpi_last_data_recv;
 	__u32	mptcpi_last_ack_recv;
-};
+} __uapi_arch_align;
 
 /* MPTCP Reset reason codes, rfc8684 */
 #define MPTCP_RST_EUNSPEC	0

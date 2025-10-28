@@ -200,8 +200,10 @@ struct ifmap {
 	unsigned char irq;
 	unsigned char dma;
 	unsigned char port;
-	/* 3 bytes spare */
-};
+	/* 3 bytes spare: */
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 #endif /* __UAPI_DEF_IF_IFMAP */
 
 struct if_settings {

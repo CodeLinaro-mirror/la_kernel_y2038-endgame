@@ -40,8 +40,9 @@ struct hdr_ni {
 	__u8 ssap;
 	__be16 ctrl;
 	__u8  orig[3];
+	__uapi_arch_pad8;
 	__be16 type;
-};
+} __uapi_arch_align;
 
 struct ebt_802_3_hdr {
 	__u8  daddr[ETH_ALEN];

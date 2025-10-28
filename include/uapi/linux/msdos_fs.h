@@ -89,10 +89,15 @@
 
 struct __fat_dirent {
 	long		d_ino;
+#if __BITS_PER_LONG == 32
+	__uapi_arch_pad32;
+#endif
 	__kernel_off_t	d_off;
 	unsigned short	d_reclen;
 	char		d_name[256]; /* We must not include limits.h! */
-};
+	__uapi_arch_pad16;
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /*
  * ioctl commands

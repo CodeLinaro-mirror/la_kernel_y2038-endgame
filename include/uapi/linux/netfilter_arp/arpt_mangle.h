@@ -15,8 +15,10 @@ struct arpt_mangle
 		struct in_addr tgt_ip;
 	} u_t;
 	__u8 flags;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	int target;
-};
+} __uapi_arch_align;
 
 #define ARPT_MANGLE_SDEV 0x01
 #define ARPT_MANGLE_TDEV 0x02

@@ -9,7 +9,8 @@ struct ip6t_frag {
 	__u32 hdrlen;			/* Header Length */
 	__u8  flags;			/* Flags */
 	__u8  invflags;			/* Inverse flags */
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #define IP6T_FRAG_IDS 		0x01
 #define IP6T_FRAG_LEN 		0x02

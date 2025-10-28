@@ -47,8 +47,9 @@ struct hiddev_devinfo {
 	__s16 vendor;
 	__s16 product;
 	__s16 version;
+	__uapi_arch_pad16;
 	__u32 num_applications;
-};
+} __uapi_arch_align;
 
 struct hiddev_collection_info {
 	__u32 index;

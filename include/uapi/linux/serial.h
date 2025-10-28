@@ -32,11 +32,13 @@ struct serial_struct {
 	int	hub6;
 	unsigned short	closing_wait; /* time to wait before closing */
 	unsigned short	closing_wait2; /* no longer used... */
+	__uapi_arch_pad_long;
 	unsigned char	*iomem_base;
 	unsigned short	iomem_reg_shift;
+	__uapi_arch_pad16;
 	unsigned int	port_high;
 	unsigned long	iomap_base;	/* cookie passed into ioremap */
-};
+} __uapi_arch_align;
 
 /*
  * For the close wait times, 0 means wait forever for serial port to
@@ -86,15 +88,19 @@ struct serial_multiport_struct {
 	int		irq;
 	int		port1;
 	unsigned char	mask1, match1;
+	__uapi_arch_pad16;
 	int		port2;
 	unsigned char	mask2, match2;
+	__uapi_arch_pad16;
 	int		port3;
 	unsigned char	mask3, match3;
+	__uapi_arch_pad16;
 	int		port4;
 	unsigned char	mask4, match4;
+	__uapi_arch_pad16;
 	int		port_monitor;
 	int	reserved[32];
-};
+} __uapi_arch_align;
 
 /*
  * Serial input interrupt line counters -- external structure

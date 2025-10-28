@@ -429,7 +429,7 @@ check_deps() {
 		ARCH="x86"
 	fi
 
-	local -r abidiff_min_version="2.4"
+	local -r abidiff_min_version="2.2"
 	local -r libdw_min_version_if_clang="0.171"
 
 	if ! command -v "$ABIDIFF" > /dev/null 2>&1; then

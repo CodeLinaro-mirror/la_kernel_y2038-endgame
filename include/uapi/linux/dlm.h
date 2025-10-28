@@ -63,8 +63,11 @@ struct dlm_lksb {
 	int 	 sb_status;
 	__u32	 sb_lkid;
 	char 	 sb_flags;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
 	char *	 sb_lvbptr;
-};
+} __uapi_arch_align;
 
 /* dlm_new_lockspace() flags */
 
