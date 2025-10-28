@@ -16,6 +16,8 @@ struct xt_iprange_mtinfo {
 	union nf_inet_addr src_min, src_max;
 	union nf_inet_addr dst_min, dst_max;
 	__u8 flags;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #endif /* _LINUX_NETFILTER_XT_IPRANGE_H */

@@ -26,7 +26,8 @@ struct xt_udp {
 	__u16 spts[2];			/* Source port range. */
 	__u16 dpts[2];			/* Destination port range. */
 	__u8 invflags;			/* Inverse flags */
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 /* Values for "invflags" field in struct ipt_udp. */
 #define XT_UDP_INV_SRCPT	0x01	/* Invert the sense of source ports. */

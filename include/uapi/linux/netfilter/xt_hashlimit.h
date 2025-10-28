@@ -65,7 +65,8 @@ struct hashlimit_cfg1 {
 	__u32 expire;	/* when do entries expire? */
 
 	__u8 srcmask, dstmask;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct hashlimit_cfg2 {
 	__u64 avg;		/* Average secs between packets * scale */
@@ -79,7 +80,8 @@ struct hashlimit_cfg2 {
 	__u32 expire;		/* when do entries expire? */
 
 	__u8 srcmask, dstmask;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct hashlimit_cfg3 {
 	__u64 avg;		/* Average secs between packets * scale */
@@ -94,7 +96,8 @@ struct hashlimit_cfg3 {
 
 	__u32 interval;
 	__u8 srcmask, dstmask;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct xt_hashlimit_mtinfo1 {
 	char name[IFNAMSIZ];

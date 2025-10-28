@@ -42,14 +42,16 @@
 struct i2c_smbus_ioctl_data {
 	__u8 read_write;
 	__u8 command;
+	__uapi_arch_pad16;
 	__u32 size;
 	union i2c_smbus_data __user *data;
-};
+} __uapi_arch_align;
 
 /* This is the structure as used in the I2C_RDWR ioctl call */
 struct i2c_rdwr_ioctl_data {
 	struct i2c_msg __user *msgs;	/* pointers to i2c_msgs */
 	__u32 nmsgs;			/* number of i2c_msgs */
+	__uapi_arch_pad_long;
 };
 
 #define  I2C_RDWR_IOCTL_MAX_MSGS	42

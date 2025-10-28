@@ -74,6 +74,7 @@ struct llc_pktinfo {
 	int lpi_ifindex;
 	unsigned char lpi_sap;
 	unsigned char lpi_mac[IFHWADDRLEN];
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 #endif /* _UAPI__LINUX_LLC_H */

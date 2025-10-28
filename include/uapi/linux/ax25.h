@@ -50,7 +50,9 @@ typedef struct {
 struct sockaddr_ax25 {
 	__kernel_sa_family_t sax25_family;
 	ax25_address	sax25_call;
-	int		sax25_ndigis;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	int		sax25_ndigis __uapi_arch_align;
 	/* Digipeater ax25_address sets follow */
 };
 
@@ -70,15 +72,20 @@ struct ax25_routes_struct {
 
 struct ax25_route_opt_struct {
 	ax25_address	port_addr;
+	__uapi_arch_pad8;
 	ax25_address	dest_addr;
+	__uapi_arch_pad8;
 	int		cmd;
 	int		arg;
 };
 
 struct ax25_ctl_struct {
         ax25_address            port_addr;
+	__uapi_arch_pad8;
         ax25_address            source_addr;
+	__uapi_arch_pad8;
         ax25_address            dest_addr;
+	__uapi_arch_pad8;
         unsigned int            cmd;
         unsigned long           arg;
         unsigned char           digi_count;

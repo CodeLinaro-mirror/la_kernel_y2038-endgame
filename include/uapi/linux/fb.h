@@ -166,7 +166,9 @@ struct fb_fix_screeninfo {
 	__u16 xpanstep;			/* zero if no hardware panning  */
 	__u16 ypanstep;			/* zero if no hardware panning  */
 	__u16 ywrapstep;		/* zero if no hardware ywrap    */
+	__uapi_arch_pad16;
 	__u32 line_length;		/* length of a line in bytes    */
+	__uapi_arch_pad_long;
 	unsigned long mmio_start;	/* Start of Memory Mapped I/O   */
 					/* (physical address) */
 	__u32 mmio_len;			/* Length of Memory Mapped I/O  */
@@ -174,7 +176,8 @@ struct fb_fix_screeninfo {
 					/*  specific chip/card we have	*/
 	__u16 capabilities;		/* see FB_CAP_*			*/
 	__u16 reserved[2];		/* Reserved for future compatibility */
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* Interpretation of offset for color fields: All offsets are from the right,
  * inside a "pixel" value, which is exactly 'bits_per_pixel' wide (means: you
@@ -359,9 +362,12 @@ struct fb_image {
 	__u32 fg_color;		/* Only used when a mono bitmap */
 	__u32 bg_color;
 	__u8  depth;		/* Depth of the image */
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
 	const char *data;	/* Pointer to image data */
 	struct fb_cmap cmap;	/* color map info */
-};
+} __uapi_arch_align;
 
 /*
  * hardware cursor control
@@ -383,10 +389,12 @@ struct fb_cursor {
 	__u16 set;		/* what to set */
 	__u16 enable;		/* cursor on/off */
 	__u16 rop;		/* bitop operation */
+	__uapi_arch_pad16;
 	const char *mask;	/* cursor mask bits */
 	struct fbcurpos hot;	/* cursor hot spot */
+	__uapi_arch_pad_long;
 	struct fb_image	image;	/* Cursor image */
-};
+} __uapi_arch_align;
 
 /* Settings for the generic backlight code */
 #define FB_BACKLIGHT_LEVELS	128

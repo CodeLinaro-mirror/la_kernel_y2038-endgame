@@ -213,13 +213,14 @@ struct sctp_sndrcvinfo {
 	__u16 sinfo_stream;
 	__u16 sinfo_ssn;
 	__u16 sinfo_flags;
+	__uapi_arch_pad16;
 	__u32 sinfo_ppid;
 	__u32 sinfo_context;
 	__u32 sinfo_timetolive;
 	__u32 sinfo_tsn;
 	__u32 sinfo_cumtsn;
 	sctp_assoc_t sinfo_assoc_id;
-};
+} __uapi_arch_align;
 
 /* 5.3.4 SCTP Send Information Structure (SCTP_SNDINFO)
  *
@@ -250,12 +251,13 @@ struct sctp_rcvinfo {
 	__u16 rcv_sid;
 	__u16 rcv_ssn;
 	__u16 rcv_flags;
+	__uapi_arch_pad16;
 	__u32 rcv_ppid;
 	__u32 rcv_tsn;
 	__u32 rcv_cumtsn;
 	__u32 rcv_context;
 	sctp_assoc_t rcv_assoc_id;
-};
+} __uapi_arch_align;
 
 /* 5.3.6 SCTP Next Receive Information Structure (SCTP_NXTINFO)
  *
@@ -286,8 +288,9 @@ struct sctp_nxtinfo {
  */
 struct sctp_prinfo {
 	__u16 pr_policy;
+	__uapi_arch_pad16;
 	__u32 pr_value;
-};
+} __uapi_arch_align;
 
 /* 5.3.8 SCTP AUTH Information Structure (SCTP_AUTHINFO)
  *
@@ -435,9 +438,10 @@ struct sctp_remote_error {
 	__u16 sre_flags;
 	__u32 sre_length;
 	__be16 sre_error;
+	__uapi_arch_pad16;
 	sctp_assoc_t sre_assoc_id;
 	__u8 sre_data[];
-};
+} __uapi_arch_align;
 
 
 /*
@@ -875,7 +879,8 @@ struct sctp_authkey {
 struct sctp_authkeyid {
 	sctp_assoc_t	scact_assoc_id;
 	__u16		scact_keynumber;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 
 /*
@@ -1097,7 +1102,8 @@ struct sctp_paddrthlds_v2 {
 	__u16 spt_pathmaxrxt;
 	__u16 spt_pathpfthld;
 	__u16 spt_pathcpthld;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /*
  * Socket Option for Getting the Association/Stream-Specific PR-SCTP Status
@@ -1114,7 +1120,8 @@ struct sctp_default_prinfo {
 	sctp_assoc_t pr_assoc_id;
 	__u32 pr_value;
 	__u16 pr_policy;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct sctp_info {
 	__u32	sctpi_tag;
@@ -1197,13 +1204,15 @@ struct sctp_event {
 	sctp_assoc_t se_assoc_id;
 	uint16_t se_type;
 	uint8_t se_on;
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 struct sctp_udpencaps {
 	sctp_assoc_t sue_assoc_id;
 	struct sockaddr_storage sue_address;
 	uint16_t sue_port;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* SCTP Stream schedulers */
 enum sctp_sched_type {

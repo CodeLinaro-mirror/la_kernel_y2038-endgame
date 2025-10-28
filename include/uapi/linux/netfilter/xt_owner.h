@@ -20,6 +20,7 @@ struct xt_owner_match_info {
 	__u32 uid_min, uid_max;
 	__u32 gid_min, gid_max;
 	__u8 match, invert;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #endif /* _XT_OWNER_MATCH_H */

@@ -30,8 +30,10 @@ struct sock_filter {	/* Filter block */
 
 struct sock_fprog {	/* Required for SO_ATTACH_FILTER. */
 	unsigned short		len;	/* Number of filter blocks */
+	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
 	struct sock_filter __user *filter;
-};
+} __uapi_arch_align;
 
 /* ret - BPF_K and BPF_X also apply */
 #define BPF_RVAL(code)  ((code) & 0x18)

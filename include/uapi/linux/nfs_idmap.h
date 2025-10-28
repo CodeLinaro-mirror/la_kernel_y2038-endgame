@@ -57,9 +57,12 @@ struct idmap_msg {
 	__u8  im_type;
 	__u8  im_conv;
 	char  im_name[IDMAP_NAMESZ];
+	__uapi_arch_pad16;
 	__u32 im_id;
 	__u8  im_status;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 
 #endif /* _UAPINFS_IDMAP_H */

@@ -83,6 +83,7 @@ struct ip6t_srh1 {
 	__u8                    segs_left;
 	__u8                    last_entry;
 	__u16                   tag;
+	__uapi_arch_pad16;
 	struct in6_addr         psid_addr;
 	struct in6_addr         nsid_addr;
 	struct in6_addr         lsid_addr;
@@ -91,6 +92,6 @@ struct ip6t_srh1 {
 	struct in6_addr         lsid_msk;
 	__u16                   mt_flags;
 	__u16                   mt_invflags;
-};
+} __uapi_arch_align;
 
 #endif /*_IP6T_SRH_H*/

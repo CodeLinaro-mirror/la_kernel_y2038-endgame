@@ -11,6 +11,8 @@ struct xt_mark_tginfo2 {
 struct xt_mark_mtinfo1 {
 	__u32 mark, mask;
 	__u8 invert;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #endif /*_XT_MARK_H*/

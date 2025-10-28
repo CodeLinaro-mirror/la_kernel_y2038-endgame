@@ -61,6 +61,7 @@ struct vlan_ioctl_args {
         } u;
 
 	short vlan_qos;   
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #endif /* _UAPI_LINUX_IF_VLAN_H_ */

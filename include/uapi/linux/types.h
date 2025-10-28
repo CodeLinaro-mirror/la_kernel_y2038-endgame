@@ -59,5 +59,42 @@ typedef __u32 __bitwise __wsum;
 
 typedef unsigned __bitwise __poll_t;
 
+/*
+ * annotations for padding in uapi structures:
+ * 
+ */
+#define __uapi_arch_pad8 __u8 :8
+#ifndef __uapi_arch_pad16
+#define __uapi_arch_pad16 __u16 :16
+#endif
+#ifndef __uapi_arch_pad32
+#define __uapi_arch_pad32 __u32 :32
+#endif
+#ifndef __uapi_arch_pad_long
+#if __BITS_PER_LONG == 64
+#define __uapi_arch_pad_long __u32 :32
+#else
+#define __uapi_arch_pad_long
+#endif
+#endif
+#ifndef __uapi_arch_pad_kernel_long_t
+#define __uapi_arch_pad_kernel_long_t __uapi_arch_pad_long
+#endif
+#ifndef __uapi_arch_align
+#define __uapi_arch_align __attribute__((aligned(sizeof(__u32))))
+#endif
+#ifndef __uapi_arch_pad_mode_t
+#define __uapi_arch_pad_mode_t
+#endif
+#ifndef __uapi_arch_pad_ipc_pid_t
+#define __uapi_arch_pad_ipc_pid_t
+#endif
+#ifndef __uapi_arch_pad_ipc_perm
+#define __uapi_arch_pad_ipc_perm
+#endif
+#ifndef __uapi_arch_pad_old_dev_t
+#define __uapi_arch_pad_old_dev_t
+#endif
+
 #endif /*  __ASSEMBLY__ */
 #endif /* _UAPI_LINUX_TYPES_H */

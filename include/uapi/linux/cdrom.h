@@ -213,9 +213,11 @@ struct cdrom_subchnl
 	__u8	cdsc_ctrl:	4;
 	__u8	cdsc_trk;
 	__u8	cdsc_ind;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	union cdrom_addr cdsc_absaddr;
 	union cdrom_addr cdsc_reladdr;
-};
+} __uapi_arch_align;
 
 
 /* This struct is used by the CDROMREADTOCENTRY ioctl */
@@ -225,9 +227,12 @@ struct cdrom_tocentry
 	__u8	cdte_adr	:4;
 	__u8	cdte_ctrl	:4;
 	__u8	cdte_format;
+	__uapi_arch_pad8;
 	union cdrom_addr cdte_addr;
 	__u8	cdte_datamode;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* This struct is used by the CDROMREADMODE1, and CDROMREADMODE2 ioctls */
 struct cdrom_read      
@@ -242,9 +247,12 @@ struct cdrom_read_audio
 {
 	union cdrom_addr addr; /* frame address */
 	__u8 addr_format;      /* CDROM_LBA or CDROM_MSF */
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	int nframes;           /* number of 2352-byte-frames to read at once */
+	__uapi_arch_pad_long;
 	__u8 __user *buf;      /* frame buffer (size: nframes*2352 bytes) */
-};
+} __uapi_arch_align;
 
 /* This struct is used with the CDROMMULTISESSION ioctl */
 struct cdrom_multisession
@@ -254,7 +262,8 @@ struct cdrom_multisession
 	                           if the "xa_flag" is true. */
 	__u8 xa_flag;        /* 1: "is XA disk" */
 	__u8 addr_format;    /* CDROM_LBA or CDROM_MSF */
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* This struct is used with the CDROM_GET_MCN ioctl.  
  * Very few audio discs actually have Universal Product Code information, 
@@ -271,7 +280,8 @@ struct cdrom_blk
 {
 	unsigned from;
 	unsigned short len;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #define CDROM_PACKET_SIZE	12
 
@@ -284,18 +294,22 @@ struct cdrom_blk
 struct cdrom_generic_command
 {
 	unsigned char 		cmd[CDROM_PACKET_SIZE];
+	__uapi_arch_pad_long;
 	unsigned char		__user *buffer;
 	unsigned int 		buflen;
 	int			stat;
 	struct request_sense	__user *sense;
 	unsigned char		data_direction;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	int			quiet;
 	int			timeout;
+	__uapi_arch_pad_long;
 	union {
 		void		__user *reserved[1];	/* unused, actually */
 		void            __user *unused;
 	};
-};
+} __uapi_arch_align;
 
 /* This struct is used by CDROM_TIMED_MEDIA_CHANGE */
 struct cdrom_timed_media_change_info {
@@ -567,8 +581,9 @@ struct dvd_layer {
 struct dvd_physical {
 	__u8 type;
 	__u8 layer_num;
+	__uapi_arch_pad16;
 	struct dvd_layer layer[DVD_LAYERS];
-};
+} __uapi_arch_align;
 
 struct dvd_copyright {
 	__u8 type;
@@ -583,22 +598,30 @@ struct dvd_disckey {
 
 	unsigned agid		: 2;
 	__u8 value[2048];
-};
+	/*
+	 *  the 'unsigned agid' type makes the structure alignment
+	 * 32-bit on all architectures other than m68k
+	 */
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct dvd_bca {
 	__u8 type;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 
 	int len;
 	__u8 value[188];
-};
+} __uapi_arch_align;
 
 struct dvd_manufact {
 	__u8 type;
 
 	__u8 layer_num;
+	__uapi_arch_pad16;
 	int len;
 	__u8 value[2048];
-};
+} __uapi_arch_align;
 
 typedef union {
 	__u8 type;
@@ -639,21 +662,22 @@ typedef __u8 dvd_challenge[10];	/* 80-bit value, MSB is first elem. */
 struct dvd_lu_send_agid {
 	__u8 type;
 	unsigned agid		: 2;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct dvd_host_send_challenge {
 	__u8 type;
 	unsigned agid		: 2;
 
 	dvd_challenge chal;
-};
+} __uapi_arch_align;
 
 struct dvd_send_key {
 	__u8 type;
 	unsigned agid		: 2;
 
 	dvd_key key;
-};
+} __uapi_arch_align;
 
 struct dvd_lu_send_challenge {
 	__u8 type;
@@ -677,18 +701,23 @@ struct dvd_lu_send_title_key {
 	unsigned agid		: 2;
 
 	dvd_key title_key;
+	__uapi_arch_pad8;
 	int lba;
 	unsigned cpm		: 1;
 	unsigned cp_sec		: 1;
 	unsigned cgms		: 2;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct dvd_lu_send_asf {
 	__u8 type;
 	unsigned agid		: 2;
 
 	unsigned asf		: 1;
-};
+
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct dvd_host_send_rpcstate {
 	__u8 type;
@@ -863,6 +892,7 @@ typedef struct {
         __u8 dbc_v			: 1;
 	__u8 did_v			: 1;
 #endif
+
 	__u8 disc_type;
 	__u8 n_sessions_msb;
 	__u8 first_track_msb;
@@ -873,7 +903,8 @@ typedef struct {
 	__u8 disc_bar_code[8];
 	__u8 reserved3;
 	__u8 n_opc;
-} disc_information;
+	__uapi_arch_pad16;
+} disc_information __uapi_arch_align;
 
 typedef struct {
 	__be16 track_information_length;

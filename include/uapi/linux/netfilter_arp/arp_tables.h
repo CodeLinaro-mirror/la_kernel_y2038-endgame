@@ -68,9 +68,11 @@ struct arpt_arp {
 
 	/* Flags word */
 	__u8 flags;
+	__uapi_arch_pad8;
 	/* Inverse flags */
 	__u16 invflags;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* Values for "flag" field in struct arpt_ip (general arp structure).
  * No flags defined yet.
