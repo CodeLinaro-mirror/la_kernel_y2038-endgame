@@ -48,10 +48,11 @@ struct in6_rtmsg {
 	__u16			rtmsg_dst_len;
 	__u16			rtmsg_src_len;
 	__u32			rtmsg_metric;
+	__uapi_arch_pad_long;
 	unsigned long		rtmsg_info;
         __u32			rtmsg_flags;
 	int			rtmsg_ifindex;
-};
+} __uapi_arch_align;
 
 #define RTMSG_NEWDEVICE		0x11
 #define RTMSG_DELDEVICE		0x12

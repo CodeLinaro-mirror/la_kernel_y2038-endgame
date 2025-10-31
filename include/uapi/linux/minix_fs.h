@@ -93,7 +93,8 @@ struct minix3_super_block {
 	__u16 s_pad2;
 	__u16 s_blocksize;
 	__u8  s_disk_version;
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 struct minix_dir_entry {
 	__u16 inode;

@@ -64,11 +64,13 @@
  */
 struct timex {
 	unsigned int modes;	/* mode selector */
+	__uapi_arch_pad_kernel_long_t;
 	__kernel_long_t offset;	/* time offset (usec) */
 	__kernel_long_t freq;	/* frequency offset (scaled ppm) */
 	__kernel_long_t maxerror;/* maximum error (usec) */
 	__kernel_long_t esterror;/* estimated error (usec) */
 	int status;		/* clock command/status */
+	__uapi_arch_pad_kernel_long_t;
 	__kernel_long_t constant;/* pll time constant */
 	__kernel_long_t precision;/* clock precision (usec) (read only) */
 	__kernel_long_t tolerance;/* clock frequency tolerance (ppm)
@@ -80,6 +82,7 @@ struct timex {
 	__kernel_long_t ppsfreq;/* pps frequency (scaled ppm) (ro) */
 	__kernel_long_t jitter; /* pps jitter (us) (ro) */
 	int shift;              /* interval duration (s) (shift) (ro) */
+	__uapi_arch_pad_kernel_long_t;
 	__kernel_long_t stabil;            /* pps stability (scaled ppm) (ro) */
 	__kernel_long_t jitcnt; /* jitter limit exceeded (ro) */
 	__kernel_long_t calcnt; /* calibration intervals (ro) */
@@ -91,7 +94,7 @@ struct timex {
 	int  :32; int  :32; int  :32; int  :32;
 	int  :32; int  :32; int  :32; int  :32;
 	int  :32; int  :32; int  :32;
-};
+} __uapi_arch_align;
 #endif
 
 struct __kernel_timex_timeval {

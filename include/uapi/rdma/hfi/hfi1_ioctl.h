@@ -94,8 +94,8 @@ struct hfi1_ctxt_info {
 	__u16 rcvhdrq_cnt;      /* number of RcvHdrQ entries */
 	__u16 rcvhdrq_entsize;  /* size (in bytes) for each RcvHdrQ entry */
 	__u16 sdma_ring_size;   /* number of entries in SDMA request ring */
-	__uapi_arch_pad16;
-} __aligned(8);
+	__u16 :16;		/* pad to 8 byte alignment */
+} __attribute__((aligned(8)));
 
 struct hfi1_tid_info {
 	/* virtual address of first page in transfer */

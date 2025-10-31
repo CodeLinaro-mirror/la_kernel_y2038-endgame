@@ -245,11 +245,16 @@
 #ifndef _LINUX_FUSE_H
 #define _LINUX_FUSE_H
 
-#ifdef __KERNEL__
 #include <linux/types.h>
-#else
-#include <stdint.h>
-#endif
+
+typedef __u8 uint8_t;
+typedef __s8 int8_t;
+typedef __u16 uint16_t;
+typedef __s16 int16_t;
+typedef __u32 uint32_t;
+typedef __s32 int32_t;
+typedef __u64 uint64_t;
+typedef __s64 int64_t;
 
 /*
  * Version negotiation:

@@ -69,7 +69,8 @@ struct cec_msg {
 	__u8 tx_nack_cnt;
 	__u8 tx_low_drive_cnt;
 	__u8 tx_error_cnt;
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 /**
  * cec_msg_initiator - return the initiator's logical address.
@@ -395,7 +396,8 @@ struct cec_log_addrs {
 	/* CEC 2.0 */
 	__u8 all_device_types[CEC_MAX_LOG_ADDRS];
 	__u8 features[CEC_MAX_LOG_ADDRS][12];
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 /* Allow a fallback to unregistered */
 #define CEC_LOG_ADDRS_FL_ALLOW_UNREG_FALLBACK	(1 << 0)

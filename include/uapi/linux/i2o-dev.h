@@ -53,44 +53,51 @@ struct i2o_cmd_passthru32 {
 
 struct i2o_cmd_passthru {
 	unsigned int iop;	/* IOP unit number */
+	__uapi_arch_pad_long;
 	void __user *msg;	/* message */
-};
+} __uapi_arch_align;
 
 struct i2o_cmd_hrtlct {
 	unsigned int iop;	/* IOP unit number */
+	__uapi_arch_pad_long;
 	void __user *resbuf;	/* Buffer for result */
 	unsigned int __user *reslen;	/* Buffer length in bytes */
-};
+} __uapi_arch_align;
 
 struct i2o_cmd_psetget {
 	unsigned int iop;	/* IOP unit number */
 	unsigned int tid;	/* Target device TID */
 	void __user *opbuf;	/* Operation List buffer */
 	unsigned int oplen;	/* Operation List buffer length in bytes */
+	__uapi_arch_pad_long;
 	void __user *resbuf;	/* Result List buffer */
 	unsigned int __user *reslen;	/* Result List buffer length in bytes */
-};
+} __uapi_arch_align;
 
 struct i2o_sw_xfer {
 	unsigned int iop;	/* IOP unit number */
 	unsigned char flags;	/* Flags field */
 	unsigned char sw_type;	/* Software type */
+	__uapi_arch_pad16;
 	unsigned int sw_id;	/* Software ID */
+	__uapi_arch_pad_long;
 	void __user *buf;	/* Pointer to software buffer */
 	unsigned int __user *swlen;	/* Length of software data */
 	unsigned int __user *maxfrag;	/* Maximum fragment count */
 	unsigned int __user *curfrag;	/* Current fragment count */
-};
+} __uapi_arch_align;
 
 struct i2o_html {
 	unsigned int iop;	/* IOP unit number */
 	unsigned int tid;	/* Target device ID */
 	unsigned int page;	/* HTML page */
+	__uapi_arch_pad_long;
 	void __user *resbuf;	/* Buffer for reply HTML page */
 	unsigned int __user *reslen;	/* Length in bytes of reply buffer */
 	void __user *qbuf;	/* Pointer to HTTP query string */
 	unsigned int qlen;	/* Length in bytes of query string buffer */
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 #define I2O_EVT_Q_LEN 32
 

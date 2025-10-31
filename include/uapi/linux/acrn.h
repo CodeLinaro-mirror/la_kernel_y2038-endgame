@@ -57,7 +57,8 @@ struct acrn_pio_request {
 	__u64	address;
 	__u64	size;
 	__u32	value;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct acrn_pci_request - Info of a PCI I/O request
@@ -81,7 +82,8 @@ struct acrn_pci_request {
 	__u32	dev;
 	__u32	func;
 	__u32	reg;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct acrn_io_request - 256-byte ACRN I/O request
@@ -158,6 +160,7 @@ struct acrn_io_request {
 	__u32	reserved1;
 	__u32	kernel_handled;
 	__u32	processed;
+	struct { __u32 pad_to_alignment[29]; };
 } __attribute__((aligned(256)));
 
 struct acrn_io_request_buffer {
@@ -304,7 +307,8 @@ struct acrn_regs {
 	__le16				gs_sel;
 	__le16				ldt_sel;
 	__le16				tr_sel;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct acrn_vcpu_regs - Info of vCPU registers state
@@ -414,8 +418,9 @@ struct acrn_pcidev {
 	__u16	phys_bdf;
 	__u8	intr_line;
 	__u8	intr_pin;
+	__uapi_arch_pad16;
 	__u32	bar[ACRN_PCI_NUM_BARS];
-};
+} __uapi_arch_align;
 
 /**
  * struct acrn_mmio_dev_res - MMIO device resource description
@@ -512,9 +517,12 @@ struct acrn_acpi_generic_address {
 struct acrn_cstate_data {
 	struct acrn_acpi_generic_address	cx_reg;
 	__u8					type;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	__u32					latency;
+	__uapi_arch_pad32;
 	__u64					power;
-};
+} __uapi_arch_align;
 
 /**
  * struct acrn_pstate_data - A P state package defined in ACPI

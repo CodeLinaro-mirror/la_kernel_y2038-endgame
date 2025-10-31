@@ -88,7 +88,8 @@ struct keyctl_kdf_params {
 	char __user *otherinfo;
 	__u32 otherinfolen;
 	__u32 __spare[8];
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 #define KEYCTL_SUPPORTS_ENCRYPT		0x01
 #define KEYCTL_SUPPORTS_DECRYPT		0x02

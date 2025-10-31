@@ -8,7 +8,8 @@
 struct tc_connmark {
 	tc_gen;
 	__u16 zone;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 enum {
 	TCA_CONNMARK_UNSPEC,

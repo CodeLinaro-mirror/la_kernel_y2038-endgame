@@ -161,6 +161,7 @@ struct fat_boot_sector {
 			__u8	vol_label[MSDOS_NAME];	/* volume label */
 			__u8	fs_type[8];		/* file system type */
 			/* other fields are not added here */
+			__uapi_arch_pad16;
 		} fat32;
 	};
 };

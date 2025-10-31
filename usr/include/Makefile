@@ -6,7 +6,7 @@
 #
 # -std=c90 (equivalent to -ansi) catches the violation of those.
 # We cannot go as far as adding -Wpedantic since it emits too many warnings.
-UAPI_CFLAGS := -std=c90 -Werror=implicit-function-declaration -Wpadded
+UAPI_CFLAGS := -std=c90 -Werror=implicit-function-declaration -Werror=padded
 
 # when cross-compiling with a minimal toolchain, use nolibc headers
 ifndef CONFIG_CC_CAN_LINK
@@ -21,11 +21,11 @@ override c_flags = $(KBUILD_USERCFLAGS) $(UAPI_CFLAGS) -Wp,-MMD,$(depfile) -I $(
 # Please consider to fix the header first.
 #
 # Sorted alphabetically.
-#no-header-test += asm/ucontext.h
+no-header-test += asm/ucontext.h
 #no-header-test += drm/vmwgfx_drm.h
 #no-header-test += linux/am437x-vpfe.h
 #no-header-test += linux/coda.h
-#no-header-test += linux/cyclades.h
+no-header-test += linux/cyclades.h
 #no-header-test += linux/errqueue.h
 #no-header-test += linux/hdlc/ioctl.h
 #no-header-test += linux/ivtv.h

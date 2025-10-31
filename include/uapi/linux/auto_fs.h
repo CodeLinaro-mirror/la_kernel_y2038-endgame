@@ -199,7 +199,8 @@ struct autofs_v5_packet {
 	__u32 tgid;
 	__u32 len;
 	char name[NAME_MAX+1];
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 typedef struct autofs_v5_packet autofs_packet_missing_indirect_t;
 typedef struct autofs_v5_packet autofs_packet_expire_indirect_t;

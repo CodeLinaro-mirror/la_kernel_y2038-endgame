@@ -2,6 +2,7 @@
 #ifndef __HDLC_IOCTL_H__
 #define __HDLC_IOCTL_H__
 
+#include <linux/types.h>
 
 #define GENERIC_HDLC_VERSION 4	/* For synchronization with sethdlc utility */
 
@@ -73,7 +74,7 @@ typedef struct {
 
 typedef struct {
 	unsigned int dlci;
-	char master[IFNAMSIZ];	/* Name of master FRAD device */
+	char master[16];	/* Name of master FRAD device */
 }fr_proto_pvc_info;		/* for returning PVC information only */
 
 typedef struct {

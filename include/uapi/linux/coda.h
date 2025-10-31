@@ -114,6 +114,12 @@ typedef short		     int16_t;
 typedef unsigned short	   u_int16_t;
 typedef int		     int32_t;
 typedef unsigned int	   u_int32_t;
+typedef long long	     int64_t;
+typedef unsigned long long u_int64_t;
+typedef u_int16_t	u_short;
+typedef unsigned long	u_long;
+typedef u_long ino_t;
+typedef void * caddr_t;
 #endif
 
 
@@ -203,17 +209,21 @@ enum coda_vtype	{ C_VNON, C_VREG, C_VDIR, C_VBLK, C_VCHR, C_VLNK, C_VSOCK, C_VFI
 struct coda_timespec {
 	int64_t		tv_sec;		/* seconds */
 	long		tv_nsec;	/* nanoseconds */
-};
+	__uapi_arch_pad_long_to_u64;
+} __uapi_arch_align;
 
 struct coda_vattr {
 	long     	va_type;	/* vnode type (for create) */
-	u_short		va_mode;	/* files access mode and type */
+	u_int16_t	va_mode;	/* files access mode and type */
 	short		va_nlink;	/* number of references to file */
 	vuid_t		va_uid;		/* owner user id */
 	vgid_t		va_gid;		/* owner group id */
+	__uapi_arch_pad_long;
 	long		va_fileid;	/* file id */
+	__uapi_arch_pad_long_to_u64;
 	u_quad_t	va_size;	/* file size in bytes */
 	long		va_blocksize;	/* blocksize preferred for i/o */
+	__uapi_arch_pad_long_to_u64;
 	struct coda_timespec va_atime;	/* time of last access */
 	struct coda_timespec va_mtime;	/* time of last modification */
 	struct coda_timespec va_ctime;	/* time file changed */
@@ -282,11 +292,13 @@ struct coda_statfs {
 
 #define CIOC_KERNEL_VERSION _IOWR('c', 10, size_t)
 
+#if 0
 //      CODA_KERNEL_VERSION 0 /* don't care about kernel version number */
 //      CODA_KERNEL_VERSION 1 /* The old venus 4.6 compatible interface */
 //      CODA_KERNEL_VERSION 2 /* venus_lookup gets an extra parameter */
 //      CODA_KERNEL_VERSION 3 /* 128-bit file identifiers */
 //      CODA_KERNEL_VERSION 4 /* 64-bit timespec */
+#endif
 #define CODA_KERNEL_VERSION 5 /* access intent support */
 
 /*
@@ -326,8 +338,10 @@ struct coda_open_in {
 
 struct coda_open_out {
     struct coda_out_hdr oh;
+    __uapi_arch_pad32;
     cdev_t	dev;
     ino_t	inode;
+    __uapi_arch_pad_long_to_u64;
 };
 
 
@@ -389,16 +403,18 @@ struct coda_getattr_in {
 
 struct coda_getattr_out {
     struct coda_out_hdr oh;
+    __uapi_arch_pad32;
     struct coda_vattr attr;
-};
+} __uapi_arch_align;
 
 
 /* coda_setattr: NO_OUT */
 struct coda_setattr_in {
     struct coda_in_hdr ih;
     struct CodaFid VFid;
+    __uapi_arch_pad32;
     struct coda_vattr attr;
-};
+} __uapi_arch_align;
 
 struct coda_setattr_out {
     struct coda_out_hdr out;
@@ -439,17 +455,20 @@ struct coda_lookup_out {
 struct coda_create_in {
     struct coda_in_hdr ih;
     struct CodaFid VFid;
+    __uapi_arch_pad32;
     struct coda_vattr attr;
     int excl;
     int mode;
     int 	name;		/* Place holder for data. */
-};
+    __uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct coda_create_out {
     struct coda_out_hdr oh;
     struct CodaFid VFid;
+    __uapi_arch_pad32;
     struct coda_vattr attr;
-};
+} __uapi_arch_align;
 
 
 /* coda_remove: NO_OUT */
@@ -493,15 +512,18 @@ struct coda_rename_out {
 struct coda_mkdir_in {
     struct coda_in_hdr ih;
     struct CodaFid VFid;
+    __uapi_arch_pad32;
     struct coda_vattr attr;
     int	   name;		/* Place holder for data. */
-};
+    __uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct coda_mkdir_out {
     struct coda_out_hdr oh;
     struct CodaFid VFid;
+    __uapi_arch_pad32;
     struct coda_vattr attr;
-};
+} __uapi_arch_align;
 
 
 /* coda_rmdir: NO_OUT */
@@ -522,7 +544,8 @@ struct coda_symlink_in {
     int srcname;
     struct coda_vattr attr;
     int tname;
-};
+    __uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct coda_symlink_out {
     struct coda_out_hdr out;
@@ -737,13 +760,15 @@ struct ViceIoctl {
         void __user *out;       /* Data to be transferred out */
         u_short in_size;        /* Size of input buffer <= 2K */
         u_short out_size;       /* Maximum size of output buffer, <= 2K */
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 struct PioctlData {
         const char __user *path;
         int follow;
+	__uapi_arch_pad_long;
         struct ViceIoctl vi;
-};
+} __uapi_arch_align;
 
 #define CODA_CONTROL		".CONTROL"
 #define CODA_CONTROLLEN		8

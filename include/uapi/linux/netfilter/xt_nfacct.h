@@ -3,6 +3,7 @@
 #define _XT_NFACCT_MATCH_H
 
 #include <linux/netfilter/nfnetlink_acct.h>
+#include <linux/types.h>
 
 struct nf_acct;
 
@@ -14,6 +15,7 @@ struct xt_nfacct_match_info {
 struct xt_nfacct_match_info_v1 {
 	char		name[NFACCT_NAME_MAX];
 	struct nf_acct	*nfacct __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_u64;
 };
 
 #endif /* _XT_NFACCT_MATCH_H */

@@ -5,6 +5,7 @@
 #define LINUX_ATM_HE_H
 
 #include <linux/atmioc.h>
+#include <linux/types.h>
 
 #define HE_GET_REG	_IOW('a', ATMIOC_SARPRV, struct atmif_sioc)
 
@@ -16,6 +17,8 @@
 struct he_ioctl_reg {
 	unsigned addr, val;
 	char type;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #endif /* LINUX_ATM_HE_H */

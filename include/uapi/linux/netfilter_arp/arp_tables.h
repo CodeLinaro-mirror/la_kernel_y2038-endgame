@@ -106,13 +106,14 @@ struct arpt_entry
 
 	/* Back pointer */
 	unsigned int comefrom;
+	__uapi_arch_pad32;
 
 	/* Packet and byte counters. */
 	struct xt_counters counters;
 
 	/* The matches (if any), then the target. */
 	unsigned char elems[];
-};
+} __uapi_arch_align;
 
 /*
  * New IP firewall options for [gs]etsockopt at the RAW IP level.
@@ -181,10 +182,11 @@ struct arpt_replace {
 	unsigned int num_counters;
 	/* The old entries' counters. */
 	struct xt_counters __user *counters;
+	__uapi_arch_pad_long_to_u64;
 
 	/* The entries (hang off end: not really an array). */
 	struct arpt_entry entries[];
-};
+} __uapi_arch_align;
 
 /* The argument to ARPT_SO_GET_ENTRIES. */
 struct arpt_get_entries {
@@ -193,10 +195,11 @@ struct arpt_get_entries {
 
 	/* User fills this in: total entry size. */
 	unsigned int size;
+	__uapi_arch_pad32;
 
 	/* The entries. */
 	struct arpt_entry entrytable[];
-};
+} __uapi_arch_align;
 
 /* Helper functions */
 static __inline__ struct xt_entry_target *arpt_get_target(struct arpt_entry *e)

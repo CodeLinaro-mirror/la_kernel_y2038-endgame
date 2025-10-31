@@ -114,8 +114,9 @@ struct mptcp_subflow_addrs {
 
 struct mptcp_subflow_info {
 	__u32				id;
+	__uapi_arch_pad32;
 	struct mptcp_subflow_addrs	addrs;
-};
+} __uapi_arch_align;
 
 struct mptcp_full_info {
 	__u32		size_tcpinfo_kernel;	/* must be 0, set by kernel */
@@ -133,6 +134,12 @@ struct mptcp_full_info {
 	__aligned_u64		subflow_info;
 	__aligned_u64		tcp_info;
 	struct mptcp_info	mptcp_info;
+#ifdef __m68k__
+	__u16 :16;				 /* sizeof(mptcp_full_info) needs to be padded to
+						 * 64 bits, but the mptcp_info member on m68k is
+						 * two bytes short.
+						 */
+#endif
 };
 
 /* MPTCP socket options */

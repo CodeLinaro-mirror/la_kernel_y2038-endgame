@@ -27,9 +27,11 @@ struct xt_string_info {
 			__u8  flags;
 		} v1;
 	} u;
+	__u16 :16;
 
 	/* Used internally by the kernel */
 	struct ts_config __attribute__((aligned(8))) *config;
+	__uapi_arch_pad_long_to_u64;
 };
 
 #endif /*_XT_STRING_H*/

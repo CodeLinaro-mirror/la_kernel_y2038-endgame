@@ -40,7 +40,8 @@ struct scom_access {
 #define SCOM_PIB_PARITY_ERR	6	/* Parity error on the PIB bus */
 #define SCOM_PIB_TIMEOUT	7	/* Bus timeout */
 	__u8	pad;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* Flags for SCOM check */
 #define SCOM_CHECK_SUPPORTED	0x00000001	/* Interface supported */

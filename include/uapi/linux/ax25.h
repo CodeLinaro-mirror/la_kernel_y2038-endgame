@@ -8,6 +8,7 @@
 #define	AX25_KERNEL_H
 
 #include <linux/socket.h>
+#include <linux/types.h>
 
 #define AX25_MTU	256
 #define AX25_MAX_DIGIS  8
@@ -87,10 +88,14 @@ struct ax25_ctl_struct {
         ax25_address            dest_addr;
 	__uapi_arch_pad8;
         unsigned int            cmd;
+	__uapi_arch_pad_long;
         unsigned long           arg;
         unsigned char           digi_count;
         ax25_address            digi_addr[AX25_MAX_DIGIS];
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 /* this will go away. Please do not export to user land */
 struct ax25_info_struct_deprecated {

@@ -130,10 +130,12 @@ struct qedr_create_qp_uresp {
 	/* SQ */
 	__u32 sq_db_offset;
 	__u16 sq_icid;
+	__u16 :16;
 
 	/* RQ */
 	__u32 rq_db_offset;
 	__u16 rq_icid;
+	__u16 :16;
 
 	__u32 rq_db2_offset;
 	__u32 reserved;

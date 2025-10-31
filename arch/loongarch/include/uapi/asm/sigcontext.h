@@ -21,6 +21,7 @@ struct sigcontext {
 	__u64	sc_pc;
 	__u64	sc_regs[32];
 	__u32	sc_flags;
+	__u32	:32;
 	__u64	sc_extcontext[0] __attribute__((__aligned__(16)));
 };
 
@@ -38,6 +39,7 @@ struct fpu_context {
 	__u64	regs[32];
 	__u64	fcc;
 	__u32	fcsr;
+	__uapi_arch_pad32;
 };
 
 /* LSX context */
@@ -47,6 +49,7 @@ struct lsx_context {
 	__u64	regs[2*32];
 	__u64	fcc;
 	__u32	fcsr;
+	__uapi_arch_pad32;
 };
 
 /* LASX context */
@@ -56,6 +59,7 @@ struct lasx_context {
 	__u64	regs[4*32];
 	__u64	fcc;
 	__u32	fcsr;
+	__uapi_arch_pad32;
 };
 
 /* LBT context */

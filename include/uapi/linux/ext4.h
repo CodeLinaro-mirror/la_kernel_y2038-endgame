@@ -102,13 +102,14 @@ struct move_extent {
 /* Used to pass group descriptor data when online resize is done */
 struct ext4_new_group_input {
 	__u32 group;		/* Group number for this data */
+	__uapi_arch_pad32;
 	__u64 block_bitmap;	/* Absolute block number of block bitmap */
 	__u64 inode_bitmap;	/* Absolute block number of inode bitmap */
 	__u64 inode_table;	/* Absolute block number of inode table start */
 	__u32 blocks_count;	/* Total number of blocks in this group */
 	__u16 reserved_blocks;	/* Number of reserved blocks in this group */
 	__u16 unused;
-};
+} __uapi_arch_align;
 
 struct ext4_tune_sb_params {
 	__u32 set_flags;

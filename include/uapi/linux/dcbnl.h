@@ -158,7 +158,9 @@ struct ieee_pfc {
 	__u8	pfc_cap;
 	__u8	pfc_en;
 	__u8	mbc;
+	__uapi_arch_pad8;
 	__u16	delay;
+	__uapi_arch_pad16;
 	__u64	requests[IEEE_8021QAZ_MAX_TCS];
 	__u64	indications[IEEE_8021QAZ_MAX_TCS];
 };

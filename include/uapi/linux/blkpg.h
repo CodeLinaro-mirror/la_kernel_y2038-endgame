@@ -4,6 +4,7 @@
 
 #include <linux/compiler.h>
 #include <linux/ioctl.h>
+#include <linux/types.h>
 
 #define BLKPG      _IO(0x12,105)
 
@@ -12,8 +13,9 @@ struct blkpg_ioctl_arg {
         int op;
         int flags;
         int datalen;
+	__uapi_arch_pad_long;
         void __user *data;
-};
+} __uapi_arch_align;
 
 /* The subfunctions (for the op field) */
 #define BLKPG_ADD_PARTITION	1
@@ -31,6 +33,7 @@ struct blkpg_partition {
 	int pno;			/* partition number */
 	char devname[BLKPG_DEVNAMELTH];	/* unused / ignored */
 	char volname[BLKPG_VOLNAMELTH];	/* unused / ignore */
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 #endif /* _UAPI__LINUX_BLKPG_H */

@@ -65,7 +65,8 @@ struct hsmp_message {
 	__u16	response_sz;		/* Number of expected output/response words */
 	__u32	args[HSMP_MAX_MSG_LEN];	/* argument/response buffer */
 	__u16	sock_ind;		/* socket number */
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 enum hsmp_msg_type {
 	HSMP_RSVD = -1,

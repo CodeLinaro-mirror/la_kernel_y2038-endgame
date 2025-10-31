@@ -2,6 +2,8 @@
 #ifndef _ASM_M68k_SIGCONTEXT_H
 #define _ASM_M68k_SIGCONTEXT_H
 
+#include <linux/types.h>
+
 struct sigcontext {
 	unsigned long  sc_mask;		/* old sigmask */
 	unsigned long  sc_usp;		/* old user stack pointer */

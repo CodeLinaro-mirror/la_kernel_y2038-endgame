@@ -37,7 +37,10 @@ struct user_desc {
 	 * actual value.
 	 */
 	unsigned int  lm:1;
+#else
+	unsigned int  :1;
 #endif
+	unsigned int  :24;
 };
 
 #define MODIFY_LDT_CONTENTS_DATA	0

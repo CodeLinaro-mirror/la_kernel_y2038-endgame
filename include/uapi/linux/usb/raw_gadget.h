@@ -123,6 +123,7 @@ struct usb_raw_ep_caps {
 	__u32	type_int	: 1;
 	__u32	dir_in		: 1;
 	__u32	dir_out		: 1;
+	__u32			:26;
 };
 
 /*

@@ -38,6 +38,7 @@
 
 /* In Linux we need to be prepared for cross compiling */
 #include <linux/ioctl.h>
+#include <linux/types.h>
 
 /* Endian macros. */
 #ifndef __KERNEL__
@@ -623,7 +624,8 @@ typedef struct count_info {
 typedef struct buffmem_desc {
 		unsigned *buffer;
 		int size;
-	} buffmem_desc;
+		__uapi_arch_pad_long;
+	} __uapi_arch_align buffmem_desc;
 #define SNDCTL_DSP_MAPINBUF		_SIOR ('P', 19, buffmem_desc)
 #define SNDCTL_DSP_MAPOUTBUF		_SIOR ('P', 20, buffmem_desc)
 #define SNDCTL_DSP_SETSYNCRO		_SIO  ('P', 21)

@@ -399,6 +399,12 @@ struct hv_kvp_msg {
 		struct hv_kvp_msg_enumerate	kvp_enum_data;
 		struct hv_kvp_ipaddr_value      kvp_ip_val;
 		struct hv_kvp_register		kvp_register;
+		/*
+		 * hv_kvp_register is 7426 bytes, but union has 4-byte alignment
+		 * because of hv_kvp_msg_delete member alignment.
+		 * Add a member to fix the correct size.
+		 */
+		char				__pad[7428];
 	} body;
 } __attribute__((packed));
 

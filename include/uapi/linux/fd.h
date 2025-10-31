@@ -4,6 +4,7 @@
 
 #include <linux/ioctl.h>
 #include <linux/compiler.h>
+#include <linux/types.h>
 
 /* New file layout: Now the ioctl definitions immediately follow the
  * definitions of the structures that they use */
@@ -187,6 +188,7 @@ struct floppy_drive_params {
 	int checkfreq; /* how often should the drive be checked for disk
 			* changes */
 	int native_format; /* native format of this drive */
+	__uapi_arch_pad_long;
 } __uapi_arch_align;
 
 enum {
@@ -241,7 +243,8 @@ struct floppy_drive_struct {
 
 	char *dmabuf;
 	int bufblocks;
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 #define FDGETDRVSTAT _IOR(2, 0x12, struct floppy_drive_struct)
 #define FDPOLLDRVSTAT _IOR(2, 0x13, struct floppy_drive_struct)
@@ -269,7 +272,6 @@ struct floppy_fdc_state {
 	unsigned char version;	/* FDC version code */
 	unsigned char dor;
 	__uapi_arch_pad16;
-	__uapi_arch_pad_long;
 	unsigned long address;	/* io address */
 	unsigned int rawcmd:2;
 	unsigned int reset:1;

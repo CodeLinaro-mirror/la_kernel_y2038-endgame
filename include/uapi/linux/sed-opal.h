@@ -184,7 +184,7 @@ struct opal_geometry {
 	__u64 lowest_aligned_lba;
 	__u8  __align[3];
 	__uapi_arch_pad8;
-	//__uapi_arch_pad_maybe32; /* alignof(u64) */
+	__uapi_arch_pad32;
 } __uapi_arch_align;
 
 struct opal_discovery {

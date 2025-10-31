@@ -9,6 +9,14 @@
 
 typedef unsigned short __kernel_sa_family_t;
 
+struct __kernel_sockaddr {
+	__kernel_sa_family_t	sa_family;	/* address family, AF_xxx	*/
+	union {
+		char sa_data_min[14];		/* Minimum 14 bytes of protocol address	*/
+		char sa_data[];
+	};
+};
+
 /*
  * The definition uses anonymous union and struct in order to control the
  * default alignment.

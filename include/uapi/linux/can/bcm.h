@@ -68,11 +68,14 @@ struct bcm_msg_head {
 	__u32 opcode;
 	__u32 flags;
 	__u32 count;
+	__uapi_arch_pad_long; /* padding on 64-bit architectures */
 	struct bcm_timeval ival1, ival2;
 	canid_t can_id;
 	__u32 nframes;
+	/* padding on 32-bit architectures */
+	__u8 __pad[sizeof(long long) - sizeof(long)];
 	struct can_frame frames[];
-};
+} __uapi_arch_align;
 
 enum {
 	TX_SETUP = 1,	/* create (cyclic) transmission task */

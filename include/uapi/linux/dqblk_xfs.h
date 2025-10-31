@@ -165,9 +165,11 @@ typedef struct fs_qfilestat {
 
 typedef struct fs_quota_stat {
 	__s8		qs_version;	/* version number for future changes */
+	__uapi_arch_pad8;
 	__u16		qs_flags;	/* FS_QUOTA_{U,P,G}DQ_{ACCT,ENFD} */
 	__s8		qs_pad;		/* unused */
-	__uapi_arch_pad32;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	fs_qfilestat_t	qs_uquota;	/* user quota storage information */
 	fs_qfilestat_t	qs_gquota;	/* group quota storage information */
 	__u32		qs_incoredqs;	/* number of dquots incore */

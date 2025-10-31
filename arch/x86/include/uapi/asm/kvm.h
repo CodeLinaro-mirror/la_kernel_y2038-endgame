@@ -218,8 +218,9 @@ struct kvm_msr_filter_range {
 	__u32 flags;
 	__u32 nmsrs; /* number of msrs in bitmap */
 	__u32 base;  /* MSR index the bitmap starts at */
+	__uapi_arch_pad_long;
 	__u8 *bitmap; /* a 1 bit allows the operations in flags, 0 denies */
-};
+} __uapi_arch_align;
 
 #define KVM_MSR_FILTER_MAX_RANGES 16
 struct kvm_msr_filter {
@@ -229,8 +230,9 @@ struct kvm_msr_filter {
 #define KVM_MSR_FILTER_DEFAULT_DENY  (1 << 0)
 #define KVM_MSR_FILTER_VALID_MASK (KVM_MSR_FILTER_DEFAULT_DENY)
 	__u32 flags;
+	__uapi_arch_pad_long;
 	struct kvm_msr_filter_range ranges[KVM_MSR_FILTER_MAX_RANGES];
-};
+} __uapi_arch_align;
 
 struct kvm_cpuid_entry {
 	__u32 function;

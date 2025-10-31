@@ -166,10 +166,14 @@ enum omapfb_color_key_type {
 
 struct omapfb_color_key {
 	__u8  channel_out;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	__u32 background;
 	__u32 trans_key;
 	__u8  key_type;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 enum omapfb_update_mode {
 	OMAPFB_UPDATE_DISABLED = 0,
@@ -182,20 +186,21 @@ struct omapfb_memory_read {
 	__u16 y;
 	__u16 w;
 	__u16 h;
-	size_t buffer_size;
+	__kernel_size_t buffer_size;
 	void __user *buffer;
 };
 
 struct omapfb_ovl_colormode {
 	__u8 overlay_idx;
 	__u8 mode_idx;
+	__uapi_arch_pad16;
 	__u32 bits_per_pixel;
 	__u32 nonstd;
 	struct fb_bitfield red;
 	struct fb_bitfield green;
 	struct fb_bitfield blue;
 	struct fb_bitfield transp;
-};
+} __uapi_arch_align;
 
 struct omapfb_vram_info {
 	__u32 total;

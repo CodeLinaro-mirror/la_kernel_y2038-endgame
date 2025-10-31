@@ -5,6 +5,7 @@
 #define _UAPI_SCC_H
 
 #include <linux/sockios.h>
+#include <linux/types.h>
 
 /* selection of hardware types */
 
@@ -129,13 +130,16 @@ struct scc_stat {
 
 	unsigned int maxqueue;	/* allocated tx_buffers */
 	unsigned int bufsize;	/* used buffersize */
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 struct scc_modem {
 	long speed;		/* Line speed, bps */
 	char clocksrc;		/* 0 = DPLL, 1 = external, 2 = divider */
 	char nrz;		/* NRZ instead of NRZI */	
-};
+	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 struct scc_kiss_cmd {
 	int  	 command;	/* one of the KISS-Commands defined above */
@@ -151,12 +155,15 @@ struct scc_hw_config {
 	io_port	special;	/* special function port */
 
 	int	irq;		/* irq */
+	__uapi_arch_pad_long;
 	long	clock;		/* clock */
 	char	option;		/* command for function port */
 
 	char brand;		/* hardware type */
 	char escc;		/* use ext. features of a 8580/85180/85280 */
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 /* (#) only one INTACK latch allowed. */
 
@@ -169,6 +176,8 @@ struct scc_mem_config {
 struct scc_calibrate {
 	unsigned int time;
 	unsigned char pattern;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #endif /* _UAPI_SCC_H */

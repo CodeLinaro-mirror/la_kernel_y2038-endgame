@@ -115,7 +115,6 @@ struct taskstats {
 	__u8	ac_sched __attribute__((aligned(8)));
 					/* Scheduling discipline */
 	__u8	ac_pad[3];
-	__uapi_arch_pad8;
 	__u32 :32;
 	__u32	ac_uid __attribute__((aligned(8)));
 					/* User ID */
@@ -191,6 +190,7 @@ struct taskstats {
 
 	/* v12 begin */
 	__u32   ac_tgid;	/* thread group ID */
+	__u32	:32;
 	/* Thread group walltime up to now. This is total process walltime if
 	 * AGROUP flag is set.
 	 */

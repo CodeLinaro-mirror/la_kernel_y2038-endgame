@@ -182,8 +182,13 @@ struct rseq {
 
 	/*
 	 * Flexible array member at end of structure, after last feature field.
+	 * Flexible array member at end of structure, after last feature field,
+	 * but overlapping with the padding.
 	 */
-	char end[];
+	union {
+		__u32 :32;
+		char end[];
+	};
 } __attribute__((aligned(4 * sizeof(__u64))));
 
 #endif /* _UAPI_LINUX_RSEQ_H */

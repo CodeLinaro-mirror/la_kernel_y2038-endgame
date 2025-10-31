@@ -154,13 +154,14 @@ typedef struct vring_used __attribute__((aligned(VRING_USED_ALIGN_SIZE)))
 
 struct vring {
 	unsigned int num;
+	__uapi_arch_pad_long;
 
 	vring_desc_t *desc;
 
 	vring_avail_t *avail;
 
 	vring_used_t *used;
-};
+} __uapi_arch_align;
 
 #ifndef VIRTIO_RING_NO_LEGACY
 

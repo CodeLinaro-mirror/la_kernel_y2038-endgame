@@ -17,7 +17,7 @@
 /* Obsolete, used only for backwards compatibility and libc5 compiles */
 struct msqid_ds {
 	struct ipc_perm msg_perm;
-	//__uapi_arch_pad_long; /* XXX who knows */
+	__uapi_arch_pad_long; /* XXX who knows */
 	struct msg *msg_first;		/* first message on queue,unused  */
 	struct msg *msg_last;		/* last message in queue,unused */
 	__kernel_old_time_t msg_stime;	/* last msgsnd time */
@@ -31,6 +31,7 @@ struct msqid_ds {
 	__uapi_arch_pad_ipc_pid_t;
 	__kernel_ipc_pid_t msg_lspid;	/* pid of last msgsnd */
 	__kernel_ipc_pid_t msg_lrpid;	/* last receive pid */
+	__uapi_arch_pad_long_to_u64;
 } __uapi_arch_align;
 
 /* Include the definition of msqid64_ds */
@@ -57,6 +58,7 @@ struct msginfo {
 	int msgssz; 
 	int msgtql; 
 	unsigned short  msgseg; 
+	__uapi_arch_pad16;
 } __uapi_arch_align;
 
 /*

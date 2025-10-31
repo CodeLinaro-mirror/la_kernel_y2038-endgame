@@ -19,7 +19,8 @@
  */
 struct atm_backend_ppp {
 	atm_backend_t	backend_num;	/* ATM_BACKEND_PPP */
+	__uapi_arch_pad16;
 	int		encaps;		/* PPPOATM_ENCAPS_* */
-};
+} __uapi_arch_align;
 
 #endif	/* _LINUX_ATMPPP_H */

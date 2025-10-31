@@ -136,7 +136,8 @@ struct mtd_read_req {
 	__u8 mode;
 	__u8 padding[7];
 	struct mtd_read_req_ecc_stats ecc_stats;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 #define MTD_ABSENT		0
 #define MTD_RAM			1

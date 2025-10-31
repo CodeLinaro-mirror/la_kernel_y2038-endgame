@@ -160,8 +160,9 @@ struct isst_if_msr_cmd {
  */
 struct isst_if_msr_cmds {
 	__u32 cmd_count;
+	__uapi_arch_pad32;
 	struct isst_if_msr_cmd msr_cmd[1];
-};
+} __uapi_arch_align;
 
 /**
  * struct isst_core_power - Structure to get/set core_power feature
@@ -205,7 +206,8 @@ struct isst_clos_param {
 	__u16 min_freq_mhz;
 	__u16 max_freq_mhz;
 	__u8 prop_prio;
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 /**
  * struct isst_if_clos_assoc - Structure to assign clos to a CPU
@@ -424,10 +426,13 @@ struct isst_perf_level_cpu_mask {
 	__u8 power_domain_id;
 	__u8 level;
 	__u8 punit_cpu_map;
+	__uapi_arch_pad32;
 	__u64 mask;
 	__u16 cpu_buffer_size;
 	__s8 cpu_buffer[1];
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct isst_base_freq_info - Structure to get SST-BF frequencies

@@ -34,6 +34,8 @@ struct snd_compr_params {
 	struct snd_compressed_buffer buffer;
 	struct snd_codec codec;
 	__u8 no_wake_mode;
+	__u8  :8;
+	__u16 :16;
 } __attribute__((packed, aligned(4)));
 
 /**

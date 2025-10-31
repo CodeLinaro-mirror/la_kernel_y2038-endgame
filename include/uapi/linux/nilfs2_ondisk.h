@@ -336,6 +336,7 @@ struct nilfs_dir_entry {
 	__u8	file_type;		/* Dir entry type (file, dir, etc) */
 	char	name[NILFS_NAME_LEN];	/* File name */
 	char    pad;
+	__uapi_arch_pad32;
 };
 
 /*

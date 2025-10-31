@@ -207,8 +207,9 @@ struct fanotify_event_info_range {
 
 struct fanotify_event_info_mnt {
 	struct fanotify_event_info_header hdr;
+	__uapi_arch_pad32;
 	__u64 mnt_id;
-};
+} __uapi_arch_align;
 
 /*
  * User space may need to record additional information about its decision.

@@ -238,9 +238,11 @@ struct cdrom_tocentry
 struct cdrom_read      
 {
 	int	cdread_lba;
+	__uapi_arch_pad_long;
 	char 	*cdread_bufaddr;
 	int	cdread_buflen;
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 /* This struct is used by the CDROMREADAUDIO ioctl */
 struct cdrom_read_audio
@@ -565,16 +567,25 @@ struct dvd_layer {
 	__u8 book_type		: 4;
 	__u8 min_rate		: 4;
 	__u8 disc_size		: 4;
+
 	__u8 layer_type		: 4;
 	__u8 track_path		: 1;
 	__u8 nlayers		: 2;
+	/* padding starting with gcc-4.4 */
+	__u8			: 1;
+
 	__u8 track_density	: 4;
 	__u8 linear_density	: 4;
+
 	__u8 bca		: 1;
+	__u8			: 7;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+
 	__u32 start_sector;
 	__u32 end_sector;
 	__u32 end_sector_l0;
-};
+} __uapi_arch_align;
 
 #define DVD_LAYERS	4
 
@@ -597,6 +608,7 @@ struct dvd_disckey {
 	__u8 type;
 
 	unsigned agid		: 2;
+	unsigned		: 6;
 	__u8 value[2048];
 	/*
 	 *  the 'unsigned agid' type makes the structure alignment
@@ -662,12 +674,14 @@ typedef __u8 dvd_challenge[10];	/* 80-bit value, MSB is first elem. */
 struct dvd_lu_send_agid {
 	__u8 type;
 	unsigned agid		: 2;
+	__u8			: 6;
 	__uapi_arch_pad16;
 } __uapi_arch_align;
 
 struct dvd_host_send_challenge {
 	__u8 type;
 	unsigned agid		: 2;
+	unsigned :6;
 
 	dvd_challenge chal;
 } __uapi_arch_align;
@@ -675,13 +689,16 @@ struct dvd_host_send_challenge {
 struct dvd_send_key {
 	__u8 type;
 	unsigned agid		: 2;
+	unsigned :6;
 
 	dvd_key key;
+	__uapi_arch_pad8;
 } __uapi_arch_align;
 
 struct dvd_lu_send_challenge {
 	__u8 type;
 	unsigned agid		: 2;
+	unsigned :6;
 
 	dvd_challenge chal;
 };
@@ -699,6 +716,7 @@ struct dvd_lu_send_challenge {
 struct dvd_lu_send_title_key {
 	__u8 type;
 	unsigned agid		: 2;
+	unsigned		: 6;
 
 	dvd_key title_key;
 	__uapi_arch_pad8;
@@ -706,6 +724,7 @@ struct dvd_lu_send_title_key {
 	unsigned cpm		: 1;
 	unsigned cp_sec		: 1;
 	unsigned cgms		: 2;
+	unsigned		: 4;
 	__uapi_arch_pad8;
 	__uapi_arch_pad16;
 } __uapi_arch_align;
@@ -715,6 +734,7 @@ struct dvd_lu_send_asf {
 	unsigned agid		: 2;
 
 	unsigned asf		: 1;
+	unsigned		: 5;
 
 	__uapi_arch_pad16;
 } __uapi_arch_align;

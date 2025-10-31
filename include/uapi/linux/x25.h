@@ -75,7 +75,8 @@ struct x25_subscrip_struct {
 	char device[200-sizeof(unsigned long)];
 	unsigned long	global_facil_mask;	/* 0 to disable negotiation */
 	unsigned int	extended;
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 /* values for above global_facil_mask */
 

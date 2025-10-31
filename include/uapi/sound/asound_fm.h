@@ -2,6 +2,7 @@
 #ifndef __SOUND_ASOUND_FM_H
 #define __SOUND_ASOUND_FM_H
 
+#include <linux/types.h>
 /*
  *  Advanced Linux Sound Architecture - ALSA
  *
@@ -56,9 +57,12 @@ struct snd_dm_fm_voice {
 struct snd_dm_fm_note {
 	unsigned char voice;	/* 0-17 voice channel */
 	unsigned char octave;	/* 3 bits: what octave to play */
+	__uapi_arch_pad16;
 	unsigned int fnum;	/* 10 bits: frequency number */
 	unsigned char key_on;	/* set for active, clear for silent */
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /*
  *  FM parameters that apply globally to all voices, and thus are not "notes"

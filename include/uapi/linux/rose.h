@@ -92,7 +92,6 @@ struct rose_facilities_struct {
 	unsigned int	rand;
 	rose_address	fail_addr;
 	ax25_address	fail_call;
-	__uapi_arch_pad16;
 } __uapi_arch_align;
 
 #endif

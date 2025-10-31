@@ -44,6 +44,7 @@ struct hashlimit_cfg {
 struct xt_hashlimit_info {
 	char name [IFNAMSIZ];		/* name */
 	struct hashlimit_cfg cfg;
+	__uapi_arch_pad_long;
 
 	/* Used internally by the kernel */
 	struct xt_hashlimit_htable *hinfo;
@@ -65,8 +66,8 @@ struct hashlimit_cfg1 {
 	__u32 expire;	/* when do entries expire? */
 
 	__u8 srcmask, dstmask;
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+	__u16 :16;
+};
 
 struct hashlimit_cfg2 {
 	__u64 avg;		/* Average secs between packets * scale */
@@ -80,8 +81,8 @@ struct hashlimit_cfg2 {
 	__u32 expire;		/* when do entries expire? */
 
 	__u8 srcmask, dstmask;
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+	__u16 :16;
+};
 
 struct hashlimit_cfg3 {
 	__u64 avg;		/* Average secs between packets * scale */
@@ -96,8 +97,9 @@ struct hashlimit_cfg3 {
 
 	__u32 interval;
 	__u8 srcmask, dstmask;
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+	__u16 :16;
+	__u32 :32;
+};
 
 struct xt_hashlimit_mtinfo1 {
 	char name[IFNAMSIZ];
@@ -105,22 +107,27 @@ struct xt_hashlimit_mtinfo1 {
 
 	/* Used internally by the kernel */
 	struct xt_hashlimit_htable *hinfo __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_u64;
 };
 
 struct xt_hashlimit_mtinfo2 {
 	char name[NAME_MAX];
+	__u8 :8;
 	struct hashlimit_cfg2 cfg;
 
 	/* Used internally by the kernel */
 	struct xt_hashlimit_htable *hinfo __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_u64;
 };
 
 struct xt_hashlimit_mtinfo3 {
 	char name[NAME_MAX];
+	__u8 :8;
 	struct hashlimit_cfg3 cfg;
 
 	/* Used internally by the kernel */
 	struct xt_hashlimit_htable *hinfo __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_u64;
 };
 
 #endif /* _UAPI_XT_HASHLIMIT_H */

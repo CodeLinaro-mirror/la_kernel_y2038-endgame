@@ -27,19 +27,22 @@
 struct atalk_addr {
 	__be16	s_net;
 	__u8	s_node;
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 struct sockaddr_at {
 	__kernel_sa_family_t sat_family;
 	__u8		  sat_port;
+	__uapi_arch_pad8;
 	struct atalk_addr sat_addr;
 	char		  sat_zero[8];
-};
+} __uapi_arch_align;
 
 struct atalk_netrange {
 	__u8	nr_phase;
+	__uapi_arch_pad8;
 	__be16	nr_firstnet;
 	__be16	nr_lastnet;
-};
+} __uapi_arch_align;
 
 #endif /* _UAPI__LINUX_ATALK_H__ */

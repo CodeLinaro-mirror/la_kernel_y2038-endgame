@@ -32,13 +32,7 @@ struct xt_statistic_info {
 		} nth;
 	} u;
 	struct xt_statistic_priv *master __attribute__((aligned(8)));
-#if __BIT_PER_LONG == 32
-	/*
-	 * structure is aligned to 64 bits, so there is padding after
-	 * a 32-bit pointer at the end.
-	 */
-	__u32 :32;;
-#endif
+	__uapi_arch_pad_long_to_u64;
 };
 
 #endif /* _XT_STATISTIC_H */

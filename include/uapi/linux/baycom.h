@@ -8,6 +8,8 @@
 #ifndef _BAYCOM_H
 #define _BAYCOM_H
 
+#include <linux/types.h>
+
 /* -------------------------------------------------------------------- */
 /*
  * structs for the IOCTL commands
@@ -21,10 +23,11 @@ struct baycom_debug_data {
 
 struct baycom_ioctl {
 	int cmd;
+	__uapi_arch_pad_long;
 	union {
 		struct baycom_debug_data dbg;
 	} data;
-};
+} __uapi_arch_align;
 
 /* -------------------------------------------------------------------- */
 

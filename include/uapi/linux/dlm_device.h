@@ -45,8 +45,11 @@ struct dlm_lock_params {
 	void __user *bastaddr;
 	struct dlm_lksb __user *lksb;
 	char lvb[DLM_USER_LVB_LEN];
-	char name[];
-};
+	union {
+		__uapi_arch_pad_long_to_u64;
+		char name[];
+	};
+} __uapi_arch_align;
 
 struct dlm_lspace_params {
 	__u32 flags;

@@ -88,7 +88,8 @@ struct __port_info {
 	__u32 message_age_timer_value;
 	__u32 forward_delay_timer_value;
 	__u32 hold_timer_value;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct __fdb_entry {
 	__u8 mac_addr[ETH_ALEN];

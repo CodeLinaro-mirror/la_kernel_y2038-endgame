@@ -10,6 +10,8 @@
 #ifndef __UAPI_LINUX_PCITEST_H
 #define __UAPI_LINUX_PCITEST_H
 
+#include <linux/types.h>
+
 #define PCITEST_BAR		_IO('P', 0x1)
 #define PCITEST_INTX_IRQ	_IO('P', 0x2)
 #define PCITEST_LEGACY_IRQ	PCITEST_INTX_IRQ
@@ -36,6 +38,9 @@
 struct pci_endpoint_test_xfer_param {
 	unsigned long size;
 	unsigned char flags;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 #endif /* __UAPI_LINUX_PCITEST_H */
