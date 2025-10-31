@@ -57,10 +57,11 @@ struct chsc_chp_cd {
 struct chsc_cu_cd {
 	__u16 cun;
 	__u8 cssid;
+	__uapi_arch_pad8;
 	int m;
 	int fmt;
 	struct chsc_response_struct cucb;
-};
+} __uapi_arch_align;
 
 struct chsc_sch_cud {
 	struct subchannel_id schid;
@@ -72,7 +73,8 @@ struct conf_id {
 	int m;
 	__u8 cssid;
 	__u8 ssid;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct chsc_conf_info {
 	struct conf_id id;
@@ -102,6 +104,7 @@ struct chsc_comp_list {
 		int fmt;
 		struct ccl_parm_chpid chpid;
 		struct ccl_parm_cssids cssids;
+		__uapi_arch_pad16;
 	} req;
 	struct chsc_response_struct sccl;
 };

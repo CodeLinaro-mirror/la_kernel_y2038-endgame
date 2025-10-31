@@ -152,6 +152,9 @@ struct ioctl_gntdev_unmap_notify {
 	__u32 event_channel_port;
 };
 
+typedef __u32 grant_ref_t;
+typedef __u16 domid_t;
+
 struct gntdev_grant_copy_segment {
 	union {
 		void __user *virt;
@@ -165,7 +168,8 @@ struct gntdev_grant_copy_segment {
 
 	__u16 flags;  /* GNTCOPY_* */
 	__s16 status; /* GNTST_* */
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /*
  * Copy between grant references and local buffers.
@@ -199,8 +203,9 @@ struct gntdev_grant_copy_segment {
 	_IOC(_IOC_NONE, 'G', 8, sizeof(struct ioctl_gntdev_grant_copy))
 struct ioctl_gntdev_grant_copy {
 	unsigned int count;
+	__uapi_arch_pad_long;
 	struct gntdev_grant_copy_segment __user *segments;
-};
+} __uapi_arch_align;
 
 /* Clear (set to zero) the byte specified by index */
 #define UNMAP_NOTIFY_CLEAR_BYTE 0x1

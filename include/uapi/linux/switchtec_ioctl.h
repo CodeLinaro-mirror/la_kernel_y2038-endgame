@@ -77,7 +77,8 @@ struct switchtec_ioctl_event_summary {
 	__u32 padding;
 	__u32 part[48];
 	__u32 pff[255];
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 #define SWITCHTEC_IOCTL_EVENT_STACK_ERROR		0
 #define SWITCHTEC_IOCTL_EVENT_PPU_ERROR			1

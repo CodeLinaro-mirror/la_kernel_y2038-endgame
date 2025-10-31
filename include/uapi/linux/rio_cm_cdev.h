@@ -46,7 +46,8 @@ struct rio_cm_channel {
 	__u16 remote_channel;
 	__u16 remote_destid;
 	__u8 mport_id;
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 struct rio_cm_msg {
 	__u16 ch_num;

@@ -253,6 +253,7 @@ struct tcp_info {
 	__u8	tcpi_options;
 	__u8	tcpi_snd_wscale : 4, tcpi_rcv_wscale : 4;
 	__u8	tcpi_delivery_rate_app_limited:1, tcpi_fastopen_client_fail:2;
+	__u8	:5;
 
 	__u32	tcpi_rto;
 	__u32	tcpi_ato;

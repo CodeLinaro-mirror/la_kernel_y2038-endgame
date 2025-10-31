@@ -111,7 +111,8 @@ struct bpf_lpm_trie_key_u8 {
 struct bpf_cgroup_storage_key {
 	__u64	cgroup_inode_id;	/* cgroup inode id */
 	__u32	attach_type;		/* program attach type (enum bpf_attach_type) */
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 enum bpf_cgroup_iter_order {
 	BPF_CGROUP_ITER_ORDER_UNSPEC = 0,
@@ -1580,6 +1581,7 @@ union bpf_attr {
 
 	struct { /* anonymous struct used by BPF_MAP_*_ELEM and BPF_MAP_FREEZE commands */
 		__u32		map_fd;
+		__u32		:32;
 		__aligned_u64	key;
 		union {
 			__aligned_u64 value;
@@ -1682,6 +1684,7 @@ union bpf_attr {
 		 * if BPF_F_PATH_FD flag is not set, AT_FDCWD is assumed.
 		 */
 		__s32		path_fd;
+		__u32		:32;
 	};
 
 	struct { /* anonymous struct used by BPF_PROG_ATTACH/DETACH commands */
@@ -1722,6 +1725,7 @@ union bpf_attr {
 		__u32		flags;
 		__u32		cpu;
 		__u32		batch_size;
+		__u32		:32;
 	} test;
 
 	struct { /* anonymous struct used by BPF_*_GET_*_ID */
@@ -1823,6 +1827,7 @@ union bpf_attr {
 			struct {
 				__aligned_u64	iter_info;	/* extra bpf_iter_link_info */
 				__u32		iter_info_len;	/* iter_info length */
+				__u32		:32;
 			};
 			struct {
 				/* black box user-provided value passed through
@@ -1841,12 +1846,13 @@ union bpf_attr {
 			struct {
 				/* this is overlaid with the target_btf_id above. */
 				__u32		target_btf_id;
+				__uapi_arch_pad32;
 				/* black box user-provided value passed through
 				 * to BPF program at the execution time and
 				 * accessible through bpf_get_attach_cookie() BPF helper
 				 */
 				__u64		cookie;
-			} tracing;
+			} __uapi_arch_align tracing;
 			struct {
 				__u32		pf;
 				__u32		hooknum;
@@ -1858,8 +1864,9 @@ union bpf_attr {
 					__u32	relative_fd;
 					__u32	relative_id;
 				};
+				__uapi_arch_pad32;
 				__u64		expected_revision;
-			} tcx;
+			} __uapi_arch_align tcx;
 			struct {
 				__aligned_u64	path;
 				__aligned_u64	offsets;
@@ -1875,6 +1882,7 @@ union bpf_attr {
 					__u32	relative_fd;
 					__u32	relative_id;
 				};
+				__uapi_arch_pad32;
 				__u64		expected_revision;
 			} netkit;
 			struct {
@@ -1882,6 +1890,7 @@ union bpf_attr {
 					__u32	relative_fd;
 					__u32	relative_id;
 				};
+				__uapi_arch_pad32;
 				__u64		expected_revision;
 			} cgroup;
 			struct {
@@ -1942,6 +1951,7 @@ union bpf_attr {
 		__u32		stream_buf_len;
 		__u32		stream_id;
 		__u32		prog_fd;
+		__u32		:32;
 	} prog_stream_read;
 
 	struct {
@@ -6743,6 +6753,7 @@ struct sk_reuseport_md {
 	__u32 ip_protocol;	/* IP protocol. e.g. IPPROTO_TCP, IPPROTO_UDP */
 	__u32 bind_inany;	/* Is sock bound to an INANY address? */
 	__u32 hash;		/* A hash of the packet 4 tuples */
+	__u32 :32;
 	/* When reuse->migrating_sk is NULL, it is selecting a sk for the
 	 * new incoming connection request (e.g. selecting a listen sk for
 	 * the received SYN in the TCP case).  reuse->sk is one of the sk
@@ -6757,7 +6768,7 @@ struct sk_reuseport_md {
 	 */
 	__bpf_md_ptr(struct bpf_sock *, sk);
 	__bpf_md_ptr(struct bpf_sock *, migrating_sk);
-};
+} __uapi_arch_align;
 
 #define BPF_TAG_SIZE	8
 
@@ -6839,6 +6850,7 @@ struct bpf_link_info {
 	__u32 type;
 	__u32 id;
 	__u32 prog_id;
+	__u32 :32; /* pad to alignof(__aligned_u64) */
 	union {
 		struct {
 			__aligned_u64 tp_name; /* in/out: tp_name buffer ptr */
@@ -6856,6 +6868,7 @@ struct bpf_link_info {
 		struct {
 			__u64 cgroup_id;
 			__u32 attach_type;
+			__uapi_arch_pad32;
 		} cgroup;
 		struct {
 			__aligned_u64 target_name; /* in/out: target_name buffer ptr */
@@ -6874,6 +6887,7 @@ struct bpf_link_info {
 				struct {
 					__u64 cgroup_id;
 					__u32 order;
+					__u32 :32;
 				} cgroup;
 				struct {
 					__u32 tid;
@@ -7002,6 +7016,7 @@ struct bpf_sock_addr {
 	__u32 msg_src_ip6[4];	/* Allows 1,2,4,8-byte read and 4,8-byte write.
 				 * Stored in network byte order.
 				 */
+	__u32 :32;		/* pad to alignof(u64) */
 	__bpf_md_ptr(struct bpf_sock *, sk);
 };
 
@@ -7670,6 +7685,7 @@ struct bpf_sk_lookup {
 	__u32 local_ip6[4];	/* Network byte order */
 	__u32 local_port;	/* Host byte order */
 	__u32 ingress_ifindex;		/* The arriving interface. Determined by inet_iif. */
+	__u32 :32;
 };
 
 /*

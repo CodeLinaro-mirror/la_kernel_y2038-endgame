@@ -101,9 +101,10 @@ struct uinput_setup {
 
 struct uinput_abs_setup {
 	__u16  code; /* axis code */
+	__uapi_arch_pad16;
 	/* __u16 filler; */
 	struct input_absinfo absinfo;
-};
+} __uapi_arch_align;
 
 /**
  * UI_ABS_SETUP - Set absolute axis information for the device to setup

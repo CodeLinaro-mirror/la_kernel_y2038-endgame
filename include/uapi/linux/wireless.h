@@ -692,7 +692,8 @@ struct iw_point {
   void __user	*pointer;	/* Pointer to the data  (in user space) */
   __u16		length;		/* number of fields or size in bytes */
   __u16		flags;		/* Optional params */
-};
+  __uapi_arch_pad_long;
+} __uapi_arch_align;
 
 
 /*
@@ -1088,8 +1089,9 @@ struct iw_priv_args {
 struct iw_event {
 	__u16		len;			/* Real length of this stuff */
 	__u16		cmd;			/* Wireless IOCTL */
+	__uapi_arch_pad_long;
 	union iwreq_data	u;		/* IOCTL fixed payload */
-};
+} __uapi_arch_align;
 
 /* Size of the Event prefix (including padding and alignement junk) */
 #define IW_EV_LCP_LEN	(sizeof(struct iw_event) - sizeof(union iwreq_data))

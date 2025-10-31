@@ -69,7 +69,8 @@ struct xt_entry_target {
 struct xt_standard_target {
 	struct xt_entry_target target;
 	int verdict;
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 struct xt_error_target {
 	struct xt_entry_target target;
@@ -99,9 +100,7 @@ struct _xt_align {
 	__u8 u8;
 	__uapi_arch_pad8;
 	__u16 u16;
-	__uapi_arch_pad16;
 	__u32 u32;
-	__uapi_arch_pad32;
 	__u64 u64;
 } __uapi_arch_align;
 
@@ -126,9 +125,10 @@ struct xt_counters_info {
 
 	unsigned int num_counters;
 
+	__uapi_arch_pad32;
 	/* The counters (actually `number' of these). */
 	struct xt_counters counters[];
-};
+} __uapi_arch_align;
 
 #define XT_INV_PROTO		0x40	/* Invert the sense of PROTO. */
 

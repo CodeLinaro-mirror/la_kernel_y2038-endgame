@@ -108,8 +108,9 @@ struct sigaction {
 typedef struct sigaltstack {
         void __user *ss_sp;
         int ss_flags;
+	__uapi_arch_pad_long;
 	__kernel_size_t ss_size;
-} stack_t;
+} __uapi_arch_align stack_t;
 
 
 #endif /* _UAPI_ASMS390_SIGNAL_H */

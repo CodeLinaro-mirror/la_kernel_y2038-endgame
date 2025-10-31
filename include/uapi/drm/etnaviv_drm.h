@@ -140,6 +140,7 @@ struct drm_etnaviv_gem_submit_reloc {
 	__u32 reloc_idx;      /* in, index of reloc_bo buffer */
 	__u64 reloc_offset;   /* in, offset from start of reloc_bo */
 	__u32 flags;          /* in, placeholder for now, no defined values */
+	__uapi_arch_pad32;
 };
 
 /* Each buffer referenced elsewhere in the cmdstream submit (ie. the
@@ -263,7 +264,8 @@ struct drm_etnaviv_pm_signal {
 	__u16 iter;       /* in/out, select pm source at index iter */
 	__u16 id;         /* out, id of signal */
 	char  name[64];   /* out, name of domain */
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #define DRM_ETNAVIV_GET_PARAM          0x00
 /* placeholder:

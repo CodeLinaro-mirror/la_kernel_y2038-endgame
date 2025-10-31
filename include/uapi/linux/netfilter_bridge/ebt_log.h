@@ -15,7 +15,8 @@
 struct ebt_log_info {
 	__u8 loglevel;
 	__u8 prefix[EBT_LOG_PREFIX_SIZE];
+	__uapi_arch_pad8;
 	__u32 bitmask;
-};
+} __uapi_arch_align;
 
 #endif

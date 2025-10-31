@@ -287,11 +287,12 @@ struct ifreq {
 #if __UAPI_DEF_IF_IFCONF
 struct ifconf  {
 	int	ifc_len;			/* size of buffer	*/
+	__uapi_arch_pad_long;
 	union {
 		char __user *ifcu_buf;
 		struct ifreq __user *ifcu_req;
 	} ifc_ifcu;
-};
+} __uapi_arch_align;
 #endif /* __UAPI_DEF_IF_IFCONF */
 
 #define	ifc_buf	ifc_ifcu.ifcu_buf		/* buffer address	*/

@@ -175,6 +175,7 @@ struct blk_user_trace_setup {
 	__uapi_arch_pad16;
 	__u32 buf_size;			/* input */
 	__u32 buf_nr;			/* input */
+	__uapi_arch_pad32;
 	__u64 start_lba;
 	__u64 end_lba;
 	__u32 pid;

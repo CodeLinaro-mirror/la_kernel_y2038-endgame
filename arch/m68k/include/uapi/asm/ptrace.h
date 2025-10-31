@@ -2,6 +2,8 @@
 #ifndef _UAPI_M68K_PTRACE_H
 #define _UAPI_M68K_PTRACE_H
 
+#include <linux/types.h>
+
 #define PT_D1	   0
 #define PT_D2	   1
 #define PT_D3	   2

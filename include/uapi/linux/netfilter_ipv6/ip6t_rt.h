@@ -17,6 +17,7 @@ struct ip6t_rt {
 	struct in6_addr addrs[IP6T_RT_HOPS];	/* Hops */
 	__u8 addrnr;			/* Nr of Addresses */
 	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 } __uapi_arch_align;
 
 #define IP6T_RT_TYP 		0x01

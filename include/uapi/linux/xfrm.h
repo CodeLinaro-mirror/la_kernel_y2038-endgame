@@ -419,6 +419,7 @@ struct xfrm_usersa_info {
 #define XFRM_STATE_ESN		128
 	__uapi_arch_pad8;
 	__uapi_arch_pad16;
+	__uapi_arch_pad32;
 } __uapi_arch_align;
 
 #define XFRM_SA_XFLAG_DONT_ENCAP_DSCP	1
@@ -461,7 +462,8 @@ struct xfrm_userpolicy_info {
 #define XFRM_POLICY_ICMP	2
 #define XFRM_POLICY_CPU_ACQUIRE	4
 	__u8				share;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct xfrm_userpolicy_id {
 	struct xfrm_selector		sel;
@@ -487,6 +489,7 @@ struct xfrm_user_expire {
 	__u8				hard;
 	__uapi_arch_pad8;
 	__uapi_arch_pad16;
+	__uapi_arch_pad32;
 } __uapi_arch_align;
 
 struct xfrm_user_polexpire {
@@ -494,6 +497,7 @@ struct xfrm_user_polexpire {
 	__u8				hard;
 	__uapi_arch_pad8;
 	__uapi_arch_pad16;
+	__uapi_arch_pad32;
 } __uapi_arch_align;
 
 struct xfrm_usersa_flush {

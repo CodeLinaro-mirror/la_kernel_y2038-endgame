@@ -36,7 +36,9 @@
 
 #include <linux/types.h>
 #include <linux/compiler.h>
-#include <xen/interface/xen.h>
+
+typedef __u16 domid_t;
+typedef __u64 xen_pfn_t;
 
 struct privcmd_hypercall {
 	__u64 op;
@@ -56,16 +58,19 @@ struct privcmd_mmap_entry {
 struct privcmd_mmap {
 	int num;
 	domid_t dom; /* target domain */
+	__uapi_arch_pad16;
 	struct privcmd_mmap_entry __user *entry;
-};
+} __uapi_arch_align;
 
 struct privcmd_mmapbatch {
 	int num;     /* number of pages to populate */
 	domid_t dom; /* target domain */
+	__uapi_arch_pad16;
 	__u64 addr;  /* virtual address */
 	xen_pfn_t __user *arr; /* array of mfns - or'd with
 				  PRIVCMD_MMAPBATCH_*_ERROR on err */
-};
+	__uapi_arch_pad_long_to_u64;
+} __uapi_arch_align;
 
 #define PRIVCMD_MMAPBATCH_MFN_ERROR     0xf0000000U
 #define PRIVCMD_MMAPBATCH_PAGED_ERROR   0x80000000U
@@ -73,6 +78,7 @@ struct privcmd_mmapbatch {
 struct privcmd_mmapbatch_v2 {
 	unsigned int num; /* number of pages to populate */
 	domid_t dom;      /* target domain */
+	__uapi_arch_pad16;
 	__u64 addr;       /* virtual address */
 	const xen_pfn_t __user *arr; /* array of mfns */
 	int __user *err;  /* array of error codes */
@@ -80,23 +86,25 @@ struct privcmd_mmapbatch_v2 {
 
 struct privcmd_dm_op_buf {
 	void __user *uptr;
-	size_t size;
+	__kernel_size_t size;
 };
 
 struct privcmd_dm_op {
 	domid_t dom;
 	__u16 num;
+	__uapi_arch_pad_long;
 	const struct privcmd_dm_op_buf __user *ubufs;
-};
+} __uapi_arch_align;
 
 struct privcmd_mmap_resource {
 	domid_t dom;
+	__uapi_arch_pad16;
 	__u32 type;
 	__u32 id;
 	__u32 idx;
 	__u64 num;
 	__u64 addr;
-};
+} __uapi_arch_align;
 
 /* For privcmd_irqfd::flags */
 #define PRIVCMD_IRQFD_FLAG_DEASSIGN (1 << 0)

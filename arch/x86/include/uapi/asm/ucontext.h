@@ -51,6 +51,8 @@
 #define UC_STRICT_RESTORE_SS	0x4
 #endif
 
+#include <asm/signal.h>
+#include <asm/sigcontext.h>
 #include <asm-generic/ucontext.h>
 
 #endif /* _ASM_X86_UCONTEXT_H */

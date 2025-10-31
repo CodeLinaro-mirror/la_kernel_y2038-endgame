@@ -12,6 +12,7 @@ struct ebt_mark_m_info {
 	__u8 invert;
 	__u8 bitmask;
 	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
 } __uapi_arch_align;
 #define EBT_MARK_MATCH "mark_m"
 

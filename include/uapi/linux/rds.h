@@ -300,8 +300,9 @@ struct rds_rx_trace_so {
 struct rds_cmsg_rx_trace {
 	__u8 rx_traces;
 	__u8 rx_trace_pos[RDS_MSG_RX_DGRAM_TRACE_MAX];
+	__uapi_arch_pad32;
 	__u64 rx_trace[RDS_MSG_RX_DGRAM_TRACE_MAX];
-};
+} __uapi_arch_align;
 
 /*
  * Congestion monitoring.
@@ -405,7 +406,8 @@ struct rds_atomic_args {
 struct rds_rdma_notify {
 	__u64		user_token;
 	__s32		status;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 #define RDS_RDMA_SUCCESS	0
 #define RDS_RDMA_REMOTE_ERROR	1

@@ -185,7 +185,8 @@ struct edd {
 	struct edd_info edd_info[EDDMAXNR];
 	unsigned char mbr_signature_nr;
 	unsigned char edd_info_nr;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #endif				/*!__ASSEMBLY__ */
 

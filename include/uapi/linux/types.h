@@ -73,15 +73,20 @@ typedef unsigned __bitwise __poll_t;
 #ifndef __uapi_arch_pad_long
 #if __BITS_PER_LONG == 64
 #define __uapi_arch_pad_long __u32 :32
+#define __uapi_arch_pad_long_to_u64
 #else
 #define __uapi_arch_pad_long
+#define __uapi_arch_pad_long_to_u64 __u32 :32
 #endif
 #endif
 #ifndef __uapi_arch_pad_kernel_long_t
 #define __uapi_arch_pad_kernel_long_t __uapi_arch_pad_long
 #endif
 #ifndef __uapi_arch_align
+#if 0
 #define __uapi_arch_align __attribute__((aligned(sizeof(__u32))))
+#endif
+#define __uapi_arch_align
 #endif
 #ifndef __uapi_arch_pad_mode_t
 #define __uapi_arch_pad_mode_t
@@ -93,7 +98,7 @@ typedef unsigned __bitwise __poll_t;
 #define __uapi_arch_pad_ipc_perm
 #endif
 #ifndef __uapi_arch_pad_old_dev_t
-#define __uapi_arch_pad_old_dev_t
+#define __uapi_arch_pad_old_dev_t __u16 :16 /* only on architectures with 16-bit __kernel_old_dev_t */
 #endif
 
 #endif /*  __ASSEMBLY__ */

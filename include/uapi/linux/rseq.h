@@ -199,12 +199,17 @@ struct rseq {
 	 * The next field to be added to the rseq area will be larger
 	 * than one byte, and will replace this reserved byte.
 	 */
-	__u8 __reserved;
+	__u8 __reserved[4];
 
 	/*
 	 * Flexible array member at end of structure, after last feature field.
+	 * Flexible array member at end of structure, after last feature field,
+	 * but overlapping with the padding.
 	 */
-	char end[];
-} __attribute__((aligned(32)));
+	union {
+		__u32 :32;
+		char end[];
+	};
+} __attribute__((aligned(4 * sizeof(__u64))));
 
 #endif /* _UAPI_LINUX_RSEQ_H */

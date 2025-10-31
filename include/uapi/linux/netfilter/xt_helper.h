@@ -2,6 +2,8 @@
 #ifndef _XT_HELPER_H
 #define _XT_HELPER_H
 
+#include <linux/types.h>
+
 struct xt_helper_info {
 	int invert;
 	char name[30];

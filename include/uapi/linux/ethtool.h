@@ -1422,9 +1422,11 @@ struct ethtool_rx_flow_spec {
 	struct ethtool_flow_ext h_ext;
 	union ethtool_flow_union m_u;
 	struct ethtool_flow_ext m_ext;
+	__uapi_arch_pad32;
 	__u64		ring_cookie;
 	__u32		location;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /* How rings are laid out when accessing virtual functions or
  * offloaded queues is device specific. To allow users to do flow
@@ -1521,8 +1523,11 @@ struct ethtool_rxnfc {
 		__u32			rule_cnt;
 		__u32			rss_context;
 	};
-	__u32				rule_locs[];
-};
+	union {
+		__uapi_arch_pad32;
+		__u32			rule_locs[];
+	};
+} __uapi_arch_align;
 
 
 /**
@@ -1625,6 +1630,7 @@ struct ethtool_rx_ntuple_flow_spec {
 	__u64		data_mask;
 
 	__s32		action;
+	__uapi_arch_pad32;
 #define ETHTOOL_RXNTUPLE_ACTION_DROP	(-1)	/* drop packet */
 #define ETHTOOL_RXNTUPLE_ACTION_CLEAR	(-2)	/* clear filter */
 };
@@ -1636,6 +1642,7 @@ struct ethtool_rx_ntuple_flow_spec {
  */
 struct ethtool_rx_ntuple {
 	__u32					cmd;
+	__uapi_arch_pad32;
 	struct ethtool_rx_ntuple_flow_spec	fs;
 };
 

@@ -430,7 +430,8 @@ struct drm_msm_wait_fence {
 	__u32 flags;          /* in, bitmask of MSM_WAIT_FENCE_x */
 	struct drm_msm_timespec timeout;   /* in */
 	__u32 queueid;         /* in, submitqueue id */
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /* madvise provides a way to tell the kernel in case a buffers contents
  * can be discarded under memory pressure, which is useful for userspace

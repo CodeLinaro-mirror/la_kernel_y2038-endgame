@@ -38,6 +38,8 @@
 #ifndef _UAPI_LINUX_PG_H
 #define _UAPI_LINUX_PG_H
 
+#include <linux/types.h>
+
 #define PG_MAGIC	'P'
 #define PG_RESET	'Z'
 #define PG_COMMAND	'C'
@@ -48,20 +50,22 @@ struct pg_write_hdr {
 
 	char	magic;		/* == PG_MAGIC */
 	char	func;		/* PG_RESET or PG_COMMAND */
+	__uapi_arch_pad16;
 	int     dlen;		/* number of bytes expected to transfer */
 	int     timeout;	/* number of seconds before timeout */
 	char	packet[12];	/* packet command */
 
-};
+} __uapi_arch_align;
 
 struct pg_read_hdr {
 
 	char	magic;		/* == PG_MAGIC */
 	char	scsi;		/* "scsi" status == sense key */
+	__uapi_arch_pad16;
 	int	dlen;		/* size of device transfer request */
 	int     duration;	/* time in seconds command took */
 	char    pad[12];	/* not used */
 
-};
+} __uapi_arch_align;
 
 #endif /* _UAPI_LINUX_PG_H */

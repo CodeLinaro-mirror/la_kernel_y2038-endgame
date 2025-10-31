@@ -18,6 +18,8 @@
 #define _UAPI__ASM_UCONTEXT_H
 
 #include <linux/types.h>
+#include <linux/signal.h>
+#include <asm/sigcontext.h>
 
 struct ucontext {
 	unsigned long	  uc_flags;
@@ -27,6 +29,7 @@ struct ucontext {
 	/* glibc uses a 1024-bit sigset_t */
 	__u8		  __unused[1024 / 8 - sizeof(sigset_t)];
 	/* last for future expansion */
+	__u64 :64;	/* pad to sigcontext alignment */
 	struct sigcontext uc_mcontext;
 };
 
