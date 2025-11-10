@@ -8,6 +8,11 @@
 # We cannot go as far as adding -Wpedantic since it emits too many warnings.
 UAPI_CFLAGS := -std=c90 -Werror=implicit-function-declaration
 
+# when cross-compiling with a minimal toolchain, use nolibc headers
+ifndef CONFIG_CC_CAN_LINK
+UAPI_CFLAGS += -I$(srctree)/tools/include/nolibc/
+endif
+
 override c_flags = $(KBUILD_USERCFLAGS) $(UAPI_CFLAGS) -Wp,-MMD,$(depfile) -I $(obj) -I $(srctree)/usr/dummy-include
 
 # The following are excluded for now because they fail to build.
