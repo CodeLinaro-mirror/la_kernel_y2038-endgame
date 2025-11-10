@@ -47,7 +47,7 @@ struct dlm_lock_params {
 	char lvb[DLM_USER_LVB_LEN];
 	union {
 		__uapi_arch_pad_long_to_u64;
-		char name[];
+		__DECLARE_FLEX_ARRAY(char, name);
 	};
 } __uapi_arch_align;
 

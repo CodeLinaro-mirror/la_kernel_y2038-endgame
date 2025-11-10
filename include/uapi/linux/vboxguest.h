@@ -188,15 +188,6 @@ struct vbg_ioctl_log {
 	struct vbg_ioctl_hdr hdr;
 	union {
 		struct {
-			/*
-			 * architecture-specific padding to
-			 * alignof(struct vbg_ioctl_hdr)
-			 */
-			__u8	:8;
-			__uapi_arch_pad8;
-			__uapi_arch_pad16;
-		};
-		struct {
 			/**
 			 * The log message, this may be zero terminated. If it
 			 * is not zero terminated then the length is determined
@@ -205,6 +196,9 @@ struct vbg_ioctl_log {
 			char msg[1];
 		} in;
 	} u;
+	/* architecture-specific padding to alignof(struct vbg_ioctl_hdr) */
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 };
 
 #define VBG_IOCTL_LOG(s)		_IO('V', 9)

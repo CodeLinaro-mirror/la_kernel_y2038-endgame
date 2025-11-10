@@ -384,7 +384,7 @@ struct virtio_net_rss_config_trailer {
 	__u8 hash_key_length;
 	union {
 		__uapi_arch_pad8;
-		__u8 hash_key_data[/* hash_key_length */];
+		__DECLARE_FLEX_ARRAY(__u8, hash_key_data); /* hash_key_length */
 	};
 };
 

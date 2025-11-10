@@ -10,6 +10,10 @@
 #include <linux/socket.h>
 #include <linux/types.h>
 
+#ifndef __KERNEL__
+#include <sys/types.h>
+#endif
+
 #define AX25_MTU	256
 #define AX25_MAX_DIGIS  8
 
@@ -82,11 +86,10 @@ struct ax25_route_opt_struct {
 
 struct ax25_ctl_struct {
         ax25_address            port_addr;
-	__uapi_arch_pad8;
         ax25_address            source_addr;
-	__uapi_arch_pad8;
         ax25_address            dest_addr;
 	__uapi_arch_pad8;
+	__uapi_arch_pad16;
         unsigned int            cmd;
 	__uapi_arch_pad_long;
         unsigned long           arg;

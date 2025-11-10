@@ -121,7 +121,7 @@ struct fw_cdev_event_response {
 	__u32 length;
 	union {
 		__uapi_arch_pad32;
-		__u32 data[];
+		__DECLARE_FLEX_ARRAY(__u32, data);
 	} __uapi_arch_align;
 } __uapi_arch_align;
 
@@ -354,7 +354,7 @@ struct fw_cdev_event_iso_interrupt {
 	__u32 header_length;
 	union {
 		__uapi_arch_pad32;
-		__u32 header[];
+		__DECLARE_FLEX_ARRAY(__u32, header);
 	};
 };
 
@@ -445,7 +445,7 @@ struct fw_cdev_event_phy_packet {
 	__u32 length;
 	union {
 		__uapi_arch_pad32;
-		__u32 data[];
+		__DECLARE_FLEX_ARRAY(__u32, data);
 	};
 } __uapi_arch_align;
 

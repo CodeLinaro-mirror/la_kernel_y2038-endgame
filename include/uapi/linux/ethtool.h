@@ -1522,7 +1522,7 @@ struct ethtool_rxnfc {
 	};
 	union {
 		__uapi_arch_pad32;
-		__u32			rule_locs[];
+		__DECLARE_FLEX_ARRAY(__u32, rule_locs);
 	};
 } __uapi_arch_align;
 

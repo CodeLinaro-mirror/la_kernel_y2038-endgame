@@ -212,6 +212,7 @@ struct ip_vs_service_entry {
 	/* which service: user fills in these */
 	__u16		protocol;
 	__uapi_arch_pad16;
+	__be32			addr;		/* virtual address */
 	__be16			port;
 	__uapi_arch_pad16;
 	__u32		fwmark;		/* firwall mark of service */
@@ -224,7 +225,6 @@ struct ip_vs_service_entry {
 
 	/* number of real servers */
 	unsigned int		num_dests;
-	__uapi_arch_pad32;
 
 	/* statistics */
 	struct ip_vs_stats_user stats;

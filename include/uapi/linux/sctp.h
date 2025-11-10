@@ -851,7 +851,7 @@ struct sctp_hmacalgo {
 	__u32		shmac_num_idents;
 	union {
 		__uapi_arch_pad32;
-		__u16		shmac_idents[];
+		__DECLARE_FLEX_ARRAY(__u16, shmac_idents);
 	};
 } __uapi_arch_align;
 

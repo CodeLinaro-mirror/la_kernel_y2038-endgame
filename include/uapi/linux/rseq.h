@@ -187,7 +187,7 @@ struct rseq {
 	 */
 	union {
 		__u32 :32;
-		char end[];
+		__DECLARE_FLEX_ARRAY(char, end);
 	};
 } __attribute__((aligned(4 * sizeof(__u64))));
 

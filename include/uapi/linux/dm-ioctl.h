@@ -194,7 +194,7 @@ struct dm_name_list {
 				   the _start_ of this */
 	union {
 		__uapi_arch_pad32;
-		char name[];
+		__DECLARE_FLEX_ARRAY(char, name);
 	} __uapi_arch_align;
 
 	/*
