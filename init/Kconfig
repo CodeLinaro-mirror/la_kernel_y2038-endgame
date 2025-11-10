@@ -267,7 +267,7 @@ config WERROR
 	  If in doubt, say Y.
 
 config UAPI_HEADER_TEST
-	bool "Compile test UAPI headers"
+	def_bool y
 	depends on HEADERS_INSTALL
 	help
 	  Compile test headers exported to user-space to ensure they are
