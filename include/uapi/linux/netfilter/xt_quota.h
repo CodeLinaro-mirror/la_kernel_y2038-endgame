@@ -18,7 +18,6 @@ struct xt_quota_info {
 
 	/* Used internally by the kernel */
 	struct xt_quota_priv	*master;
-	__uapi_arch_pad_long_to_u64;
 };
 
 #endif /* _XT_QUOTA_H */

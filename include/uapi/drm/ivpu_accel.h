@@ -404,8 +404,7 @@ struct drm_ivpu_submit {
 	 * %DRM_IVPU_JOB_PRIORITY_REALTIME
 	 */
 	__u32 priority;
-	__uapi_arch_pad32;
-} __uapi_arch_align;
+};
 
 /**
  * struct drm_ivpu_cmdq_submit - Submit commands to the VPU using explicit command queue
@@ -504,8 +503,7 @@ struct drm_ivpu_metric_streamer_start {
 	__u32 sample_size;
 	/** @max_data_size: Returned max @data_size from %DRM_IOCTL_IVPU_METRIC_STREAMER_GET_DATA */
 	__u32 max_data_size;
-	__uapi_arch_pad32;
-} __uapi_arch_align;
+};
 
 /**
  * struct drm_ivpu_metric_streamer_get_data - Copy collected metric data

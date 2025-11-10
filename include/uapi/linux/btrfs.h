@@ -140,8 +140,7 @@ struct btrfs_ioctl_vol_args_v2 {
 		struct {
 			__u64 size;
 			struct btrfs_qgroup_inherit __user *qgroup_inherit;
-			__uapi_arch_pad_long_to_u64;
-		} __uapi_arch_align;
+		};
 		__u64 unused[4];
 	};
 	union {
@@ -208,9 +207,7 @@ struct btrfs_ioctl_dev_replace_start_params {
 						 * above */
 	__u8 srcdev_name[BTRFS_DEVICE_PATH_NAME_MAX + 1];	/* in */
 	__u8 tgtdev_name[BTRFS_DEVICE_PATH_NAME_MAX + 1];	/* in */
-	__uapi_arch_pad16;
-	__uapi_arch_pad32;
-} __uapi_arch_align;
+};
 
 #define BTRFS_IOCTL_DEV_REPLACE_STATE_NEVER_STARTED	0
 #define BTRFS_IOCTL_DEV_REPLACE_STATE_STARTED		1
@@ -801,8 +798,7 @@ struct btrfs_ioctl_qgroup_create_args {
 struct btrfs_ioctl_timespec {
 	__u64 sec;
 	__u32 nsec;
-	__uapi_arch_pad32;
-} __uapi_arch_align;
+};
 
 struct btrfs_ioctl_received_subvol_args {
 	char	uuid[BTRFS_UUID_SIZE];	/* in */
@@ -857,12 +853,11 @@ struct btrfs_ioctl_send_args {
 	__s64 send_fd;			/* in */
 	__u64 clone_sources_count;	/* in */
 	__u64 __user *clone_sources;	/* in */
-	__uapi_arch_pad_long_to_u64;
 	__u64 parent_root;		/* in */
 	__u64 flags;			/* in */
 	__u32 version;			/* in */
 	__u8  reserved[28];		/* in */
-} __uapi_arch_align;
+};
 
 /*
  * Information about a fs tree root.

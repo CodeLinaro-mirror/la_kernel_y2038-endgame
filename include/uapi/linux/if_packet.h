@@ -140,8 +140,7 @@ struct tpacket_hdr {
 	unsigned short	tp_net;
 	unsigned int	tp_sec;
 	unsigned int	tp_usec;
-	__uapi_arch_pad_long;
-} __uapi_arch_align;
+};
 
 #define TPACKET_ALIGNMENT	16
 #define TPACKET_ALIGN(x)	(((x)+TPACKET_ALIGNMENT-1)&~(TPACKET_ALIGNMENT-1))

@@ -207,13 +207,8 @@ typedef struct {
 
 typedef struct {
 	unsigned short perc_atmid;
-	__uapi_arch_pad16;
-	__uapi_arch_pad_long;
 	unsigned long address;
 	unsigned char access_id;
-	__uapi_arch_pad8;
-	__uapi_arch_pad16;
-	__uapi_arch_pad_long;
 } per_lowcore_words;
 
 typedef struct {
@@ -230,14 +225,10 @@ typedef struct {
 	unsigned atmid_psw_bit_16	 : 1;
 	unsigned atmid_psw_bit_17	 : 1;
 	unsigned si			 : 2;
-	unsigned			 :16;
-	__uapi_arch_pad_long;
 	unsigned long address;
 	unsigned			 : 4;
 	unsigned access_id		 : 4;
-	unsigned			 :24;
-	__uapi_arch_pad_long;
-} __uapi_arch_align per_lowcore_bits;
+} per_lowcore_bits;
 
 typedef struct {
 	union {
@@ -252,7 +243,6 @@ typedef struct {
 	unsigned  single_step	    : 1;
 	unsigned  instruction_fetch : 1;
 	unsigned		    : 30;
-	__uapi_arch_pad32;
 	/*
 	 * These addresses are copied into cr10 & cr11 if single
 	 * stepping is switched off
@@ -267,7 +257,6 @@ typedef struct {
 
 typedef struct {
 	unsigned int  len;
-	__uapi_arch_pad32;
 	unsigned long kernel_addr;
 	unsigned long process_addr;
 } ptrace_area;
@@ -311,7 +300,6 @@ typedef struct {
 	unsigned long lowaddr;
 	unsigned long hiaddr;
 	ptprot_flags prot;
-	__uapi_arch_pad_long;
 } ptprot_area;
 
 /* Sequence of bytes for breakpoint illegal instruction.  */

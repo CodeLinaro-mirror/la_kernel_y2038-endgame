@@ -115,7 +115,6 @@ struct counter_event {
 	__aligned_u64 value;
 	struct counter_watch watch;
 	__u8 status;
-	__uapi_arch_pad8;
 };
 
 /* Count direction values */

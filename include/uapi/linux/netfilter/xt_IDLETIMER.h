@@ -26,7 +26,6 @@ struct idletimer_tg_info {
 
 	/* for kernel module internal use only */
 	struct idletimer_tg *timer __attribute__((aligned(8)));
-	__uapi_arch_pad_long_to_u64;
 };
 
 struct idletimer_tg_info_v1 {
@@ -36,11 +35,8 @@ struct idletimer_tg_info_v1 {
 
 	__u8 send_nl_msg;   /* unused: for compatibility with Android */
 	__u8 timer_type;
-	__u16 :16;
-	__u32 :32;
 
 	/* for kernel module internal use only */
 	struct idletimer_tg *timer __attribute__((aligned(8)));
-	__uapi_arch_pad_long_to_u64;
 };
 #endif

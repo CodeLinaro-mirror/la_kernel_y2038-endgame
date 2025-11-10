@@ -35,13 +35,12 @@
 struct __sysctl_args {
 	int __user *name;
 	int nlen;
-	__uapi_arch_pad_long;
 	void __user *oldval;
-	__kernel_size_t __user *oldlenp;
+	size_t __user *oldlenp;
 	void __user *newval;
-	__kernel_size_t newlen;
+	size_t newlen;
 	unsigned long __unused[4];
-} __uapi_arch_align;
+};
 
 /* Define sysctl names first */
 

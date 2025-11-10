@@ -6,9 +6,8 @@
 
 struct ebt_arpreply_info {
 	unsigned char mac[ETH_ALEN];
-	__uapi_arch_pad16;
 	int target;
-} __uapi_arch_align;
+};
 #define EBT_ARPREPLY_TARGET "arpreply"
 
 #endif

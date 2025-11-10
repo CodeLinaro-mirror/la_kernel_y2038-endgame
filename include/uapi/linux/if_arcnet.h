@@ -123,7 +123,6 @@ struct archdr {
 		struct arc_rfc1051   rfc1051;
 		struct arc_eth_encap eth_encap;
 		struct arc_cap       cap;
-		__u8 __pad[16];
 		__u8 raw[0];	/* 508 bytes				*/
 	} soft;
 };

@@ -213,14 +213,13 @@ struct sctp_sndrcvinfo {
 	__u16 sinfo_stream;
 	__u16 sinfo_ssn;
 	__u16 sinfo_flags;
-	__uapi_arch_pad16;
 	__u32 sinfo_ppid;
 	__u32 sinfo_context;
 	__u32 sinfo_timetolive;
 	__u32 sinfo_tsn;
 	__u32 sinfo_cumtsn;
 	sctp_assoc_t sinfo_assoc_id;
-} __uapi_arch_align;
+};
 
 /* 5.3.4 SCTP Send Information Structure (SCTP_SNDINFO)
  *
@@ -251,13 +250,12 @@ struct sctp_rcvinfo {
 	__u16 rcv_sid;
 	__u16 rcv_ssn;
 	__u16 rcv_flags;
-	__uapi_arch_pad16;
 	__u32 rcv_ppid;
 	__u32 rcv_tsn;
 	__u32 rcv_cumtsn;
 	__u32 rcv_context;
 	sctp_assoc_t rcv_assoc_id;
-} __uapi_arch_align;
+};
 
 /* 5.3.6 SCTP Next Receive Information Structure (SCTP_NXTINFO)
  *
@@ -288,9 +286,8 @@ struct sctp_nxtinfo {
  */
 struct sctp_prinfo {
 	__u16 pr_policy;
-	__uapi_arch_pad16;
 	__u32 pr_value;
-} __uapi_arch_align;
+};
 
 /* 5.3.8 SCTP AUTH Information Structure (SCTP_AUTHINFO)
  *
@@ -319,7 +316,7 @@ enum sctp_sinfo_flags {
 	SCTP_SENDALL		= (1 << 6),
 	SCTP_PR_SCTP_ALL	= (1 << 7),
 	SCTP_NOTIFICATION	= MSG_NOTIFICATION, /* Next message is not user msg but notification. */
-	SCTP_EOF		= 0x200,  /* Initiate graceful shutdown process. */
+	SCTP_EOF		= MSG_FIN,  /* Initiate graceful shutdown process. */
 };
 
 typedef union {
@@ -399,7 +396,7 @@ struct sctp_paddr_change {
 	__u16 spc_type;
 	__u16 spc_flags;
 	__u32 spc_length;
-	struct __kernel_sockaddr_storage spc_aaddr;
+	struct sockaddr_storage spc_aaddr;
 	int spc_state;
 	int spc_error;
 	sctp_assoc_t spc_assoc_id;
@@ -438,10 +435,9 @@ struct sctp_remote_error {
 	__u16 sre_flags;
 	__u32 sre_length;
 	__be16 sre_error;
-	__uapi_arch_pad16;
 	sctp_assoc_t sre_assoc_id;
 	__u8 sre_data[];
-} __uapi_arch_align;
+};
 
 
 /*
@@ -752,7 +748,7 @@ struct sctp_assocparams {
  */
 struct sctp_setpeerprim {
 	sctp_assoc_t            sspp_assoc_id;
-	struct __kernel_sockaddr_storage sspp_addr;
+	struct sockaddr_storage sspp_addr;
 } __attribute__((packed, aligned(4)));
 
 /*
@@ -765,7 +761,7 @@ struct sctp_setpeerprim {
  */
 struct sctp_prim {
 	sctp_assoc_t            ssp_assoc_id;
-	struct __kernel_sockaddr_storage ssp_addr;
+	struct sockaddr_storage ssp_addr;
 } __attribute__((packed, aligned(4)));
 
 /* For backward compatibility use, define the old name too */
@@ -809,7 +805,7 @@ enum  sctp_spp_flags {
 
 struct sctp_paddrparams {
 	sctp_assoc_t		spp_assoc_id;
-	struct __kernel_sockaddr_storage	spp_address;
+	struct sockaddr_storage	spp_address;
 	__u32			spp_hbinterval;
 	__u16			spp_pathmaxrxt;
 	__u32			spp_pathmtu;
@@ -817,7 +813,6 @@ struct sctp_paddrparams {
 	__u32			spp_flags;
 	__u32			spp_ipv6_flowlabel;
 	__u8			spp_dscp;
-	__u8			:8;
 } __attribute__((packed, aligned(4)));
 
 /*
@@ -849,11 +844,8 @@ enum {
 
 struct sctp_hmacalgo {
 	__u32		shmac_num_idents;
-	union {
-		__uapi_arch_pad32;
-		__DECLARE_FLEX_ARRAY(__u16, shmac_idents);
-	};
-} __uapi_arch_align;
+	__u16		shmac_idents[];
+};
 
 /* Sadly, user and kernel space have different names for
  * this structure member, so this is to not break anything.
@@ -883,8 +875,7 @@ struct sctp_authkey {
 struct sctp_authkeyid {
 	sctp_assoc_t	scact_assoc_id;
 	__u16		scact_keynumber;
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+};
 
 
 /*
@@ -903,19 +894,19 @@ struct sctp_authkeyid {
  */
 struct sctp_sack_info {
 	sctp_assoc_t	sack_assoc_id;
-	__u32	sack_delay;
-	__u32	sack_freq;
+	uint32_t	sack_delay;
+	uint32_t	sack_freq;
 };
 
 struct sctp_assoc_value {
     sctp_assoc_t            assoc_id;
-    __u32                assoc_value;
+    uint32_t                assoc_value;
 };
 
 struct sctp_stream_value {
 	sctp_assoc_t assoc_id;
-	__u16 stream_id;
-	__u16 stream_value;
+	uint16_t stream_id;
+	uint16_t stream_value;
 };
 
 /*
@@ -929,7 +920,7 @@ struct sctp_stream_value {
  */
 struct sctp_paddrinfo {
 	sctp_assoc_t		spinfo_assoc_id;
-	struct __kernel_sockaddr_storage	spinfo_address;
+	struct sockaddr_storage	spinfo_address;
 	__s32			spinfo_state;
 	__u32			spinfo_cwnd;
 	__u32			spinfo_srtt;
@@ -986,7 +977,7 @@ struct sctp_status {
 struct sctp_authchunks {
 	sctp_assoc_t	gauth_assoc_id;
 	__u32		gauth_number_of_chunks;
-	__u8		gauth_chunks[];
+	uint8_t		gauth_chunks[];
 };
 
 /* The broken spelling has been released already in lksctp-tools header,
@@ -1049,9 +1040,7 @@ struct sctp_getaddrs {
 struct sctp_assoc_stats {
 	sctp_assoc_t	sas_assoc_id;    /* Input */
 					 /* Transport of observed max RTO */
-	__uapi_arch_pad_long;
-	struct __kernel_sockaddr_storage sas_obs_rto_ipaddr;
-	__uapi_arch_pad_long_to_u64;
+	struct sockaddr_storage sas_obs_rto_ipaddr;
 	__u64		sas_maxrto;      /* Maximum Observed RTO for period */
 	__u64		sas_isacks;	 /* SACKs received */
 	__u64		sas_osacks;	 /* SACKs sent */
@@ -1067,7 +1056,7 @@ struct sctp_assoc_stats {
 	__u64		sas_iodchunks;	 /* Ordered data chunks received */
 	__u64		sas_octrlchunks; /* Control chunks sent */
 	__u64		sas_ictrlchunks; /* Control chunks received */
-} __uapi_arch_align;
+};
 
 /*
  * 8.1 sctp_bindx()
@@ -1096,23 +1085,19 @@ typedef struct {
  */
 struct sctp_paddrthlds {
 	sctp_assoc_t spt_assoc_id;
-	__uapi_arch_pad_long;
-	struct __kernel_sockaddr_storage spt_address;
+	struct sockaddr_storage spt_address;
 	__u16 spt_pathmaxrxt;
 	__u16 spt_pathpfthld;
-	__uapi_arch_pad_long;
-} __uapi_arch_align;
+};
 
 /* Use a new structure with spt_pathcpthld for back compatibility */
 struct sctp_paddrthlds_v2 {
 	sctp_assoc_t spt_assoc_id;
-	__uapi_arch_pad_long;
-	struct __kernel_sockaddr_storage spt_address;
+	struct sockaddr_storage spt_address;
 	__u16 spt_pathmaxrxt;
 	__u16 spt_pathpfthld;
 	__u16 spt_pathcpthld;
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+};
 
 /*
  * Socket Option for Getting the Association/Stream-Specific PR-SCTP Status
@@ -1129,8 +1114,7 @@ struct sctp_default_prinfo {
 	sctp_assoc_t pr_assoc_id;
 	__u32 pr_value;
 	__u16 pr_policy;
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+};
 
 struct sctp_info {
 	__u32	sctpi_tag;
@@ -1169,7 +1153,7 @@ struct sctp_info {
 	__u64	sctpi_ictrlchunks;
 
 	/* primary transport info */
-	struct __kernel_sockaddr_storage	sctpi_p_address;
+	struct sockaddr_storage	sctpi_p_address;
 	__s32	sctpi_p_state;
 	__u32	sctpi_p_cwnd;
 	__u32	sctpi_p_srtt;
@@ -1198,32 +1182,28 @@ struct sctp_info {
 
 struct sctp_reset_streams {
 	sctp_assoc_t srs_assoc_id;
-	__u16 srs_flags;
-	__u16 srs_number_streams;	/* 0 == ALL */
-	__u16 srs_stream_list[];	/* list if srs_num_streams is not 0 */
+	uint16_t srs_flags;
+	uint16_t srs_number_streams;	/* 0 == ALL */
+	uint16_t srs_stream_list[];	/* list if srs_num_streams is not 0 */
 };
 
 struct sctp_add_streams {
 	sctp_assoc_t sas_assoc_id;
-	__u16 sas_instrms;
-	__u16 sas_outstrms;
+	uint16_t sas_instrms;
+	uint16_t sas_outstrms;
 };
 
 struct sctp_event {
-	sctp_assoc_t	se_assoc_id;
-	__u16		se_type;
-	__u8		se_on;
-	__uapi_arch_pad8;
-} __uapi_arch_align;
+	sctp_assoc_t se_assoc_id;
+	uint16_t se_type;
+	uint8_t se_on;
+};
 
 struct sctp_udpencaps {
 	sctp_assoc_t sue_assoc_id;
-	__uapi_arch_pad_long;
-	struct __kernel_sockaddr_storage sue_address;
-	__u16 sue_port;
-	__uapi_arch_pad16;
-	__uapi_arch_pad_long;
-} __uapi_arch_align;
+	struct sockaddr_storage sue_address;
+	uint16_t sue_port;
+};
 
 /* SCTP Stream schedulers */
 enum sctp_sched_type {
@@ -1239,10 +1219,8 @@ enum sctp_sched_type {
 /* Probe Interval socket option */
 struct sctp_probeinterval {
 	sctp_assoc_t spi_assoc_id;
-	__uapi_arch_pad_long;
-	struct __kernel_sockaddr_storage spi_address;
+	struct sockaddr_storage spi_address;
 	__u32 spi_interval;
-	__uapi_arch_pad_long;
-} __uapi_arch_align;
+};
 
 #endif /* _UAPI_SCTP_H */

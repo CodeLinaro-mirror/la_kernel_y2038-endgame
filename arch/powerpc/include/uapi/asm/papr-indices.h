@@ -13,10 +13,8 @@ struct papr_indices_io_block {
 	union {
 		struct {
 			__u8 is_sensor; /* 0 for indicator and 1 for sensor */
-			__uapi_arch_pad8;
-			__uapi_arch_pad16;
 			__u32 indice_type;
-		} __uapi_arch_align indices;
+		} indices;
 		struct {
 			__u32 token; /* Sensor or indicator token */
 			__u32 state; /* get / set state */

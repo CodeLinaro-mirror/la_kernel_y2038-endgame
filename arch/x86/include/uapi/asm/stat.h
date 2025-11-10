@@ -2,7 +2,7 @@
 #ifndef _ASM_X86_STAT_H
 #define _ASM_X86_STAT_H
 
-#include <linux/types.h>
+#include <asm/posix_types.h>
 
 #define STAT_HAVE_NSEC 1
 
@@ -53,7 +53,6 @@ struct stat64 {
 
 	unsigned long long	st_rdev;
 	unsigned char	__pad3[4];
-	__u32		:32;
 
 	long long	st_size;
 	unsigned long	st_blksize;
@@ -66,13 +65,12 @@ struct stat64 {
 
 	unsigned long	st_mtime;
 	unsigned int	st_mtime_nsec;
-	__uapi_arch_pad_long;
 
 	unsigned long	st_ctime;
 	unsigned long	st_ctime_nsec;
 
 	unsigned long long	st_ino;
-} __uapi_arch_align;
+};
 
 /* We don't need to memset the whole thing just to initialize the padding */
 #define INIT_STRUCT_STAT64_PADDING(st) do {		\
@@ -124,7 +122,6 @@ struct __old_kernel_stat {
 	unsigned short st_uid;
 	unsigned short st_gid;
 	unsigned short st_rdev;
-	__uapi_arch_pad16;
 #ifdef __i386__
 	unsigned long  st_size;
 	unsigned long  st_atime;
@@ -136,6 +133,6 @@ struct __old_kernel_stat {
 	unsigned int  st_mtime;
 	unsigned int  st_ctime;
 #endif
-} __uapi_arch_align;
+};
 
 #endif /* _ASM_X86_STAT_H */

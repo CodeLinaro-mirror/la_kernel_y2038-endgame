@@ -161,7 +161,6 @@ struct kvm_regs {
  */
 struct kvm_sregs {
 	__u32 pvr;
-	__uapi_arch_pad32;
 	union {
 		struct {
 			__u64 sdr1;
@@ -187,7 +186,6 @@ struct kvm_sregs {
 
 					/* KVM_SREGS_E_FSL_PIDn */
 					__u32 pid1, pid2;
-					__uapi_arch_pad32;
 				} fsl;
 				__u8 pad[256];
 			} impl;
@@ -329,8 +327,7 @@ struct kvm_sync_regs {
 struct kvm_create_spapr_tce {
 	__u64 liobn;
 	__u32 window_size;
-	__uapi_arch_pad32;
-} __uapi_arch_align;
+};
 
 /* for KVM_CAP_SPAPR_TCE_64 */
 struct kvm_create_spapr_tce_64 {

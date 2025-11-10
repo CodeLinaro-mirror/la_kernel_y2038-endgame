@@ -11,6 +11,9 @@
  * For kernel code, use <linux/soundcard.h>
  */
 
+#ifndef _LINUX_PATCHKEY_H_INDIRECT
+#error "patchkey.h included directly"
+#endif
 
 #ifndef _UAPI_LINUX_PATCHKEY_H
 #define _UAPI_LINUX_PATCHKEY_H

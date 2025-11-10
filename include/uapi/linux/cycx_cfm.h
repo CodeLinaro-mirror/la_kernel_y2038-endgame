@@ -19,8 +19,6 @@
 #ifndef	_CYCX_CFM_H
 #define	_CYCX_CFM_H
 
-#include <linux/types.h>
-
 /* Defines */
 
 #define	CFM_VERSION	2
@@ -66,18 +64,13 @@ struct cycx_fw_info {
 	unsigned short	codeid;
 	unsigned short	version;
 	unsigned short	adapter[CFM_MAX_CYCX];
-	__uapi_arch_pad16;
 	unsigned long	memsize;
 	unsigned short	reserved[2];
 	unsigned short	startoffs;
 	unsigned short	winoffs;
 	unsigned short	codeoffs;
-	__uapi_arch_pad16;
-	__uapi_arch_pad_long;
 	unsigned long	codesize;
 	unsigned short	dataoffs;
-	__uapi_arch_pad16;
-	__uapi_arch_pad_long;
 	unsigned long	datasize;
 };
 

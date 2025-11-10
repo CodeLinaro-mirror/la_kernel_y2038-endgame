@@ -64,9 +64,6 @@ struct statfs64 {
  */
 #ifndef ARCH_PACK_COMPAT_STATFS64
 #define ARCH_PACK_COMPAT_STATFS64
-#define __compat_statfs64_pad __uapi_arch_pad32
-#else
-#define __compat_statfs64_pad
 #endif
 
 struct compat_statfs64 {
@@ -82,9 +79,6 @@ struct compat_statfs64 {
 	__u32 f_frsize;
 	__u32 f_flags;
 	__u32 f_spare[4];
-	__compat_statfs64_pad;
 } ARCH_PACK_COMPAT_STATFS64;
-
-#undef __compat_statfs64_pad
 
 #endif /* _UAPI_GENERIC_STATFS_H */

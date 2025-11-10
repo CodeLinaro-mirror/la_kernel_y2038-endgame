@@ -95,10 +95,7 @@ struct ptrace_syscall_info {
 		struct {
 			__s64 rval;
 			__u8 is_error;
-			__uapi_arch_pad8;
-			__uapi_arch_pad16;
-			__uapi_arch_pad32;
-		} __uapi_arch_align exit;
+		} exit;
 		struct {
 			__u64 nr;
 			__u64 args[6];

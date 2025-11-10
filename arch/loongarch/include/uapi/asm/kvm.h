@@ -35,7 +35,6 @@ struct kvm_regs {
  */
 struct kvm_fpu {
 	__u32 fcsr;
-	__uapi_arch_pad32;
 	__u64 fcc;    /* 8x8 */
 	struct kvm_fpureg {
 		__u64 val64[4];

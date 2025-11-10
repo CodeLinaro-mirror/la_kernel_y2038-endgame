@@ -48,16 +48,14 @@ struct ebt_replace {
 	unsigned int nentries;
 	/* total size of the entries */
 	unsigned int entries_size;
-	__uapi_arch_pad_long;
 	/* start of the chains */
 	struct ebt_entries __user *hook_entry[NF_BR_NUMHOOKS];
 	/* nr of counters userspace expects back */
 	unsigned int num_counters;
-	__uapi_arch_pad_long;
 	/* where the kernel will put the old counters */
 	struct ebt_counter __user *counters;
 	char __user *entries;
-} __uapi_arch_align;
+};
 
 struct ebt_replace_kernel {
 	char name[EBT_TABLE_MAXNAMELEN];
@@ -66,16 +64,14 @@ struct ebt_replace_kernel {
 	unsigned int nentries;
 	/* total size of the entries */
 	unsigned int entries_size;
-	__uapi_arch_pad_long;
 	/* start of the chains */
 	struct ebt_entries *hook_entry[NF_BR_NUMHOOKS];
 	/* nr of counters userspace expects back */
 	unsigned int num_counters;
-	__uapi_arch_pad_long;
 	/* where the kernel will put the old counters */
 	struct ebt_counter *counters;
 	char *entries;
-} __uapi_arch_align;
+};
 
 struct ebt_entries {
 	/* this field is always set to zero
@@ -133,9 +129,8 @@ struct ebt_entry_match {
 	} u;
 	/* size of data */
 	unsigned int match_size;
-	__uapi_arch_pad_long;
 	unsigned char data[] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
-} __uapi_arch_align;
+};
 
 struct ebt_entry_watcher {
 	union {
@@ -147,9 +142,8 @@ struct ebt_entry_watcher {
 	} u;
 	/* size of data */
 	unsigned int watcher_size;
-	__uapi_arch_pad_long;
 	unsigned char data[] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
-} __uapi_arch_align;
+};
 
 struct ebt_entry_target {
 	union {
@@ -161,16 +155,14 @@ struct ebt_entry_target {
 	} u;
 	/* size of data */
 	unsigned int target_size;
-	__uapi_arch_pad_long;
 	unsigned char data[0] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
-} __uapi_arch_align;
+};
 
 #define EBT_STANDARD_TARGET "standard"
 struct ebt_standard_target {
 	struct ebt_entry_target target;
 	int verdict;
-	__uapi_arch_pad_long;
-} __uapi_arch_align;
+};
 
 /* one entry */
 struct ebt_entry {
@@ -190,7 +182,6 @@ struct ebt_entry {
 	unsigned char sourcemsk[ETH_ALEN];
 	unsigned char destmac[ETH_ALEN];
 	unsigned char destmsk[ETH_ALEN];
-	__uapi_arch_pad16;
 	__struct_group(/* no tag */, offsets, /* no attrs */,
 		/* sizeof ebt_entry + matches */
 		unsigned int watchers_offset;

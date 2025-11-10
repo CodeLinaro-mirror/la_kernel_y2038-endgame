@@ -256,11 +256,11 @@
 #ifndef _LINUX_FUSE_H
 #define _LINUX_FUSE_H
 
-#ifndef __KERNEL__
-#include <sys/types.h>
-#endif
-
+#ifdef __KERNEL__
 #include <linux/types.h>
+#else
+#include <stdint.h>
+#endif
 
 /*
  * Version negotiation:

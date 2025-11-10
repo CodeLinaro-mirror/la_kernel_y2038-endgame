@@ -32,10 +32,8 @@ typedef struct dasd_information2_t {
 	unsigned int schid;	    /* S/390 subchannel identifier */
 	unsigned int cu_type  : 16; /* from SenseID */
 	unsigned int cu_model :  8; /* from SenseID */
-	unsigned int :8;
 	unsigned int dev_type : 16; /* from SenseID */
 	unsigned int dev_model : 8; /* from SenseID */
-	unsigned int :8;
 	unsigned int open_count;
 	unsigned int req_queue_len;
 	unsigned int chanq_len;     /* length of chanq */
@@ -106,10 +104,8 @@ typedef struct dasd_information_t {
 	unsigned int schid;	    /* S/390 subchannel identifier */
 	unsigned int cu_type  : 16; /* from SenseID */
 	unsigned int cu_model :  8; /* from SenseID */
-	unsigned int :8;
 	unsigned int dev_type : 16; /* from SenseID */
 	unsigned int dev_model : 8; /* from SenseID */
-	unsigned int :8;
 	unsigned int open_count;
 	unsigned int req_queue_len;
 	unsigned int chanq_len;     /* length of chanq */

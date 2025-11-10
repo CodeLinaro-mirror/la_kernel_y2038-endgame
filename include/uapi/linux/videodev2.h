@@ -1185,7 +1185,6 @@ struct v4l2_buffer {
 	__u32			bytesused;
 	__u32			flags;
 	__u32			field;
-	__uapi_arch_pad32; /* not for 32-bit time_t! */
 #ifdef __KERNEL__
 	struct __kernel_v4l2_timeval timestamp;
 #else
@@ -1208,8 +1207,7 @@ struct v4l2_buffer {
 		__s32		request_fd;
 		__u32		reserved;
 	};
-	__uapi_arch_pad_long;
-} __uapi_arch_align;
+};
 
 #ifndef __KERNEL__
 /**
@@ -1344,13 +1342,9 @@ struct v4l2_window {
 	__u32			chromakey;
 	struct v4l2_clip	*clips;
 	__u32			clipcount;
-	__uapi_arch_pad_long;
 	void			__user *bitmap;
 	__u8                    global_alpha;
-	__uapi_arch_pad8;
-	__uapi_arch_pad16;
-	__uapi_arch_pad_long;
-} __uapi_arch_align;
+};
 
 /*
  *	C A P T U R E   P A R A M E T E R S
@@ -1552,14 +1546,12 @@ typedef __u64 v4l2_std_id;
 
 struct v4l2_standard {
 	__u32		     index;
-	__uapi_arch_pad32;
 	v4l2_std_id          id;
 	__u8		     name[24];
 	struct v4l2_fract    frameperiod; /* Frames, not fields */
 	__u32		     framelines;
 	__u32		     reserved[4];
-	__uapi_arch_pad32;
-} __uapi_arch_align;
+};
 
 /*
  *	D V	B T	T I M I N G S
@@ -1812,8 +1804,7 @@ struct v4l2_input {
 	__u32	     status;
 	__u32	     capabilities;
 	__u32	     reserved[3];
-	__uapi_arch_pad32;
-} __uapi_arch_align;
+};
 
 /*  Values for the 'type' field */
 #define V4L2_INPUT_TYPE_TUNER		1
@@ -1938,9 +1929,8 @@ struct v4l2_ext_controls {
 	__u32 error_idx;
 	__s32 request_fd;
 	__u32 reserved[1];
-	__uapi_arch_pad_long;
 	struct v4l2_ext_control *controls;
-} __uapi_arch_align;
+};
 
 #define V4L2_CTRL_ID_MASK	  (0x0fffffff)
 #ifndef __KERNEL__
@@ -2353,10 +2343,9 @@ struct v4l2_sliced_vbi_format {
 				 (equals frame lines 313-336 for 625 line video
 				  standards, 263-286 for 525 line standards) */
 	__u16   service_lines[2][24];
-	__uapi_arch_pad16;
 	__u32   io_size;
 	__u32   reserved[2];            /* must be zero */
-} __uapi_arch_align;
+};
 
 /* Teletext World System Teletext
    (WST), defined on ITU-R BT.653-2 */
@@ -2378,10 +2367,9 @@ struct v4l2_sliced_vbi_cap {
 				 (equals frame lines 313-336 for 625 line video
 				  standards, 263-286 for 525 line standards) */
 	__u16   service_lines[2][24];
-	__uapi_arch_pad16;
 	__u32	type;		/* enum v4l2_buf_type */
 	__u32   reserved[3];    /* must be 0 */
-} __uapi_arch_align;
+};
 
 struct v4l2_sliced_vbi_data {
 	__u32   id;
@@ -2536,7 +2524,6 @@ struct v4l2_meta_format {
  */
 struct v4l2_format {
 	__u32	 type;
-	__uapi_arch_pad_long;
 	union {
 		struct v4l2_pix_format		pix;     /* V4L2_BUF_TYPE_VIDEO_CAPTURE */
 		struct v4l2_pix_format_mplane	pix_mp;  /* V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE */
@@ -2597,8 +2584,7 @@ struct v4l2_event_ctrl {
 	__s32 maximum;
 	__s32 step;
 	__s32 default_value;
-	__uapi_arch_pad32;
-} __uapi_arch_align;
+};
 
 struct v4l2_event_frame_sync {
 	__u32 frame_sequence;
@@ -2627,7 +2613,6 @@ struct v4l2_event_motion_det {
 
 struct v4l2_event {
 	__u32				type;
-	__uapi_arch_pad32;
 	union {
 		struct v4l2_event_vsync		vsync;
 		struct v4l2_event_ctrl		ctrl;
@@ -2645,8 +2630,7 @@ struct v4l2_event {
 #endif
 	__u32				id;
 	__u32				reserved[8];
-	__uapi_arch_pad32;
-} __uapi_arch_align;
+};
 
 #define V4L2_EVENT_SUB_FL_SEND_INITIAL		(1 << 0)
 #define V4L2_EVENT_SUB_FL_ALLOW_FEEDBACK	(1 << 1)
@@ -2722,13 +2706,12 @@ struct v4l2_create_buffers {
 	__u32			index;
 	__u32			count;
 	__u32			memory;
-	__uapi_arch_pad_long;
 	struct v4l2_format	format;
 	__u32			capabilities;
 	__u32			flags;
 	__u32			max_num_buffers;
 	__u32			reserved[5];
-} __uapi_arch_align;
+};
 
 /**
  * struct v4l2_remove_buffers - VIDIOC_REMOVE_BUFS argument

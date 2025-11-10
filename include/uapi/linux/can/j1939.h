@@ -101,8 +101,6 @@ struct j1939_filter {
 	pgn_t pgn_mask;
 	__u8 addr;
 	__u8 addr_mask;
-	__uapi_arch_pad16;
-	__uapi_arch_pad32;
 };
 
 #define J1939_FILTER_MAX 512 /* maximum number of j1939_filter set via setsockopt() */

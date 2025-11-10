@@ -44,17 +44,15 @@ struct usbdevfs_ctrltransfer {
 	__u16 wIndex;
 	__u16 wLength;
 	__u32 timeout;  /* in milliseconds */
-	__uapi_arch_pad_long;
  	void __user *data;
-} __uapi_arch_align;
+};
 
 struct usbdevfs_bulktransfer {
 	unsigned int ep;
 	unsigned int len;
 	unsigned int timeout; /* in milliseconds */
-	__uapi_arch_pad_long;
 	void __user *data;
-} __uapi_arch_align;
+};
 
 struct usbdevfs_setinterface {
 	unsigned int interface;
@@ -63,9 +61,8 @@ struct usbdevfs_setinterface {
 
 struct usbdevfs_disconnectsignal {
 	unsigned int signr;
-	__uapi_arch_pad_long;
 	void __user *context;
-} __uapi_arch_align;
+};
 
 #define USBDEVFS_MAXDRIVERNAME 255
 
@@ -77,9 +74,7 @@ struct usbdevfs_getdriver {
 struct usbdevfs_connectinfo {
 	unsigned int devnum;
 	unsigned char slow;
-	__uapi_arch_pad8;
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+};
 
 struct usbdevfs_conninfo_ex {
 	__u32 size;		/* Size of the structure from the kernel's */
@@ -122,10 +117,8 @@ struct usbdevfs_iso_packet_desc {
 struct usbdevfs_urb {
 	unsigned char type;
 	unsigned char endpoint;
-	__uapi_arch_pad16;
 	int status;
 	unsigned int flags;
-	__uapi_arch_pad_long;
 	void __user *buffer;
 	int buffer_length;
 	int actual_length;
@@ -138,8 +131,8 @@ struct usbdevfs_urb {
 	unsigned int signr;	/* signal to be sent on completion,
 				  or 0 if none should be sent. */
 	void __user *usercontext;
-		struct usbdevfs_iso_packet_desc iso_frame_desc[];
-} __uapi_arch_align;
+	struct usbdevfs_iso_packet_desc iso_frame_desc[];
+};
 
 /* ioctls for talking directly to drivers */
 struct usbdevfs_ioctl {
