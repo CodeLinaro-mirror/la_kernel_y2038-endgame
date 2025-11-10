@@ -28,7 +28,6 @@
 #define _UAPI_I915_DRM_H_
 
 #include "drm.h"
-#include <linux/stddef.h>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -560,7 +559,6 @@ typedef struct drm_i915_batchbuffer {
 	int DR1;		/* hw flags for GFX_OP_DRAWRECT_INFO */
 	int DR4;		/* window origin for GFX_OP_DRAWRECT_INFO */
 	int num_cliprects;	/* mulitpass with multiple cliprects? */
-	__uapi_arch_pad_long;
 	struct drm_clip_rect __user *cliprects;	/* pointer to userspace cliprects */
 } drm_i915_batchbuffer_t;
 
@@ -822,7 +820,6 @@ typedef struct drm_i915_irq_wait {
 struct drm_i915_getparam {
 	/** @param: Driver parameter to query. */
 	__s32 param;
-	__uapi_arch_pad_long;
 
 	/**
 	 * @value: Address of memory where queried value should be put.
@@ -831,7 +828,7 @@ struct drm_i915_getparam {
 	 * compat32 code. Don't repeat this mistake.
 	 */
 	int __user *value;
-} __uapi_arch_align;
+};
 
 /**
  * typedef drm_i915_getparam_t - Driver parameter query structure.
@@ -860,9 +857,8 @@ typedef struct drm_i915_mem_alloc {
 	int region;
 	int alignment;
 	int size;
-	__uapi_arch_pad_long;
 	int __user *region_offset;	/* offset from start of fb or agp */
-} __uapi_arch_align drm_i915_mem_alloc_t;
+} drm_i915_mem_alloc_t;
 
 typedef struct drm_i915_mem_free {
 	int region;
@@ -3426,16 +3422,7 @@ struct drm_i915_query_perf_config {
 		 * String formatted like "%08x-%04x-%04x-%04x-%012x"
 		 */
 		char uuid[36];
-
-		/*
-		 * uuid is the longest field in the union but is not a multiple
-		 * of alignof(__u64) in size, which leads to a -Wpadded warning.
-		 * add an explicit union member here with the correct size on
-		 * the architectures that need padding or zero length on those
-		 * that do not.
-		 */
-		struct { __uapi_arch_pad32; } __pad[10];
-	} __uapi_arch_align;
+	};
 
 	/**
 	 * @flags:
@@ -3460,11 +3447,8 @@ struct drm_i915_query_perf_config {
 	 *  - &drm_i915_perf_oa_config.n_boolean_regs
 	 *  - &drm_i915_perf_oa_config.n_flex_regs
 	 */
-	union {
-		__uapi_arch_pad32; /* pad to alignof(__u64) */
-		__DECLARE_FLEX_ARRAY(__u8, data);
-	};
-} __uapi_arch_align;
+	__u8 data[];
+};
 
 /**
  * enum drm_i915_gem_memory_class - Supported memory classes
@@ -3883,8 +3867,7 @@ struct drm_i915_gem_create_ext_protected_content {
 	struct i915_user_extension base;
 	/** @flags: reserved for future usage, currently MBZ */
 	__u32 flags;
-	__uapi_arch_pad32;
-} __uapi_arch_align;
+};
 
 /**
  * struct drm_i915_gem_create_ext_set_pat - The

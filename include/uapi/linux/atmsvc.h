@@ -22,7 +22,6 @@ enum atmsvc_msg_type { as_catch_null, as_bind, as_connect, as_accept, as_reject,
 
 struct atmsvc_msg {
 	enum atmsvc_msg_type type;
-	__uapi_arch_atm_pad;
 	atm_kptr_t vcc;
 	atm_kptr_t listen_vcc;		/* indicate */
 	int reply;			/* for okay and close:		   */
@@ -31,13 +30,11 @@ struct atmsvc_msg {
 					/*   ==0: success		   */
 				        /*   > 0: error when active (still */
 					/*        need to close)	   */
-	__uapi_arch_atm_pad;
 	struct sockaddr_atmpvc pvc;	/* indicate, okay (connect) */
 	struct sockaddr_atmsvc local;	/* local SVC address */
 	struct atm_qos qos;		/* QOS parameters */
 	struct atm_sap sap;		/* SAP */
 	unsigned int session;		/* for p2pm */
-	__uapi_arch_atm_pad;
 	struct sockaddr_atmsvc svc;	/* SVC address */
 } __ATM_API_ALIGN;
 

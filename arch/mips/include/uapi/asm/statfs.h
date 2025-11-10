@@ -57,8 +57,7 @@ struct statfs64 {
 	__u32	f_namelen;
 	__u32	f_flags;
 	__u32	f_spare[5];
-	__uapi_arch_pad32;
-} __uapi_arch_align;
+};
 
 #endif /* _MIPS_SIM == _MIPS_SIM_ABI32 */
 

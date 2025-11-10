@@ -56,13 +56,10 @@ struct tcmu_mailbox {
 
 	__u32 cmd_head;
 
-	__u32 __pad1[12];
-
 	/* Updated by user. On its own cacheline */
 	__u32 cmd_tail __attribute__((__aligned__(ALIGN_SIZE)));
 
-	__u32 __pad2[15];
-} __packed; /* not actually packed */
+} __packed;
 
 enum tcmu_opcode {
 	TCMU_OP_PAD = 0,
@@ -119,12 +116,11 @@ struct tcmu_cmd_entry {
 			__u32 iov_cnt;
 			__u32 iov_bidi_cnt;
 			__u32 iov_dif_cnt;
-			__uapi_arch_pad32;
 			__u64 cdb_off;
 			__u64 __pad1;
 			__u64 __pad2;
 			__DECLARE_FLEX_ARRAY(struct iovec, iov);
-		} __uapi_arch_align req;
+		} req;
 		struct {
 			__u8 scsi_status;
 			__u8 __pad1;

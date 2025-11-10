@@ -500,8 +500,7 @@ struct ovs_key_arp {
 	__be16 arp_op;
 	__u8   arp_sha[ETH_ALEN];
 	__u8   arp_tha[ETH_ALEN];
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+};
 
 struct ovs_key_nd {
 	__be32	nd_target[4];
@@ -541,9 +540,7 @@ struct ovs_key_ct_tuple_ipv4 {
 	__be16 src_port;
 	__be16 dst_port;
 	__u8   ipv4_proto;
-	__uapi_arch_pad8;
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+};
 
 struct ovs_key_ct_tuple_ipv6 {
 	__be32 ipv6_src[4];
@@ -551,9 +548,7 @@ struct ovs_key_ct_tuple_ipv6 {
 	__be16 src_port;
 	__be16 dst_port;
 	__u8   ipv6_proto;
-	__uapi_arch_pad8;
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+};
 
 enum ovs_nsh_key_attr {
 	OVS_NSH_KEY_ATTR_UNSPEC,
@@ -724,8 +719,7 @@ struct ovs_action_trunc {
 struct ovs_action_push_mpls {
 	__be32 mpls_lse;
 	__be16 mpls_ethertype; /* Either %ETH_P_MPLS_UC or %ETH_P_MPLS_MC */
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+};
 
 /**
  * struct ovs_action_add_mpls - %OVS_ACTION_ATTR_ADD_MPLS action

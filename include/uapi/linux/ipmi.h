@@ -17,7 +17,6 @@
 
 #include <linux/ipmi_msgdefs.h>
 #include <linux/compiler.h>
-#include <linux/types.h>
 
 /*
  * This file describes an interface to an IPMI driver.  You have to
@@ -55,8 +54,7 @@ struct ipmi_addr {
 	int   addr_type;
 	short channel;
 	char  data[IPMI_MAX_ADDR_SIZE];
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+};
 
 /*
  * When the address is not used, the type will be set to this value.
@@ -68,8 +66,7 @@ struct ipmi_system_interface_addr {
 	int           addr_type;
 	short         channel;
 	unsigned char lun;
-	__uapi_arch_pad8;
-} __uapi_arch_align;
+};
 
 /* An IPMB Address. */
 #define IPMI_IPMB_ADDR_TYPE		0x01
@@ -95,9 +92,7 @@ struct ipmi_ipmb_direct_addr {
 	unsigned char slave_addr;
 	unsigned char rs_lun;
 	unsigned char rq_lun;
-	__uapi_arch_pad8;
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+};
 
 /*
  * A LAN Address.  This is an address to/from a LAN interface bridged
@@ -125,8 +120,7 @@ struct ipmi_lan_addr {
 	unsigned char remote_SWID;
 	unsigned char local_SWID;
 	unsigned char lun;
-	__uapi_arch_pad8;
-} __uapi_arch_align;
+};
 
 
 /*
@@ -155,17 +149,15 @@ struct ipmi_msg {
 	unsigned char  netfn;
 	unsigned char  cmd;
 	unsigned short data_len;
-	__uapi_arch_pad_long;
 	unsigned char  __user *data;
-} __uapi_arch_align;
+};
 
 struct kernel_ipmi_msg {
 	unsigned char  netfn;
 	unsigned char  cmd;
 	unsigned short data_len;
-	__uapi_arch_pad_long;
 	unsigned char  *data;
-} __uapi_arch_align;
+};
 
 /*
  * Various defines that are useful for IPMI applications.
@@ -255,7 +247,6 @@ struct kernel_ipmi_msg {
 struct ipmi_req {
 	unsigned char __user *addr; /* Address to send the message to. */
 	unsigned int  addr_len;
-	__uapi_arch_pad_long;
 
 	long    msgid; /* The sequence number for the message.  This
 			  exact value will be reported back in the
@@ -264,7 +255,7 @@ struct ipmi_req {
 			  the sequence value for the response.  */
 
 	struct ipmi_msg msg;
-} __uapi_arch_align;
+};
 /*
  * Send a message to the interfaces.  error values are:
  *   - EFAULT - an address supplied was invalid.
@@ -302,7 +293,6 @@ struct ipmi_req_settime {
 struct ipmi_recv {
 	int     recv_type; /* Is this a command, response or an
 			      asyncronous event. */
-	__uapi_arch_pad_long;
 
 	unsigned char __user *addr;    /* Address the message was from is put
 				   here.  The caller must supply the
@@ -313,7 +303,6 @@ struct ipmi_recv {
 				   the actual message length when the
 				   message is received. */
 
-	__uapi_arch_pad_long;
 	long    msgid; /* The sequence number specified in the request
 			  if this is a response.  If this is a command,
 			  this will be the sequence number from the
@@ -416,8 +405,7 @@ struct ipmi_cmdspec_chans {
 struct ipmi_channel_lun_address_set {
 	unsigned short channel;
 	unsigned char  value;
-	__uapi_arch_pad8;
-} __uapi_arch_align;
+};
 #define IPMICTL_SET_MY_CHANNEL_ADDRESS_CMD \
 	_IOR(IPMI_IOC_MAGIC, 24, struct ipmi_channel_lun_address_set)
 #define IPMICTL_GET_MY_CHANNEL_ADDRESS_CMD \

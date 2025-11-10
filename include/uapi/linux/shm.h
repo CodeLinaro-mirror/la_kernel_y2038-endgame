@@ -97,13 +97,12 @@ struct	shminfo {
 
 struct shm_info {
 	int used_ids;
-	__uapi_arch_pad_long;
 	__kernel_ulong_t shm_tot;	/* total allocated shm */
 	__kernel_ulong_t shm_rss;	/* total resident shm */
 	__kernel_ulong_t shm_swp;	/* total swapped shm */
 	__kernel_ulong_t swap_attempts;
 	__kernel_ulong_t swap_successes;
-} __uapi_arch_align;
+};
 
 
 #endif /* _UAPI_LINUX_SHM_H_ */

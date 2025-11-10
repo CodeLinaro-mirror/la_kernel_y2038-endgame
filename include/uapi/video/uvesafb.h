@@ -32,11 +32,9 @@ struct v86_regs {
 
 struct uvesafb_task {
 	__u8 flags;
-	__uapi_arch_pad8;
-	__uapi_arch_pad16;
 	int buf_len;
 	struct v86_regs regs;
-} __uapi_arch_align;
+};
 
 /* Constants for the capabilities field
  * in vbe_ib */

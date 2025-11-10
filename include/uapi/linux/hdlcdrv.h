@@ -8,8 +8,6 @@
 #ifndef _UAPI_HDLCDRV_H
 #define _UAPI_HDLCDRV_H
 
-#include <linux/types.h>
-
 /* -------------------------------------------------------------------- */
 /*
  * structs for the IOCTL commands
@@ -44,16 +42,14 @@ struct hdlcdrv_channel_state {
  	int ptt;
  	int dcd;
  	int ptt_keyed;
-	__uapi_arch_pad_long;
  	unsigned long tx_packets;
  	unsigned long tx_errors;
  	unsigned long rx_packets;
  	unsigned long rx_errors;
-} __uapi_arch_align;
+};
 
 struct hdlcdrv_ioctl {
 	int cmd;
-	__uapi_arch_pad_long;
 	union {
 		struct hdlcdrv_params mp;
 		struct hdlcdrv_channel_params cp;
@@ -64,7 +60,7 @@ struct hdlcdrv_ioctl {
 		char modename[128];
 		char drivername[32];
 	} data;
-} __uapi_arch_align;
+};
 
 /* -------------------------------------------------------------------- */
 

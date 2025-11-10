@@ -20,7 +20,6 @@ struct ebt_limit_info {
 	unsigned long prev;
 	__u32 credit;
 	__u32 credit_cap, cost;
-	__uapi_arch_pad_long;
-} __uapi_arch_align;
+};
 
 #endif

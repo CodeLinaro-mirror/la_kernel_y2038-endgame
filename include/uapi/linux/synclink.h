@@ -149,21 +149,16 @@ typedef struct _MGSL_PARAMS
 
 	unsigned long	mode;		/* Asynchronous or HDLC */
 	unsigned char	loopback;	/* internal loopback mode */
-	__uapi_arch_pad8;
 
 	/* HDLC Only */
 
 	unsigned short	flags;
 	unsigned char	encoding;	/* NRZ, NRZI, etc. */
-	__uapi_arch_pad8;
-	__uapi_arch_pad16;
 	unsigned long	clock_speed;	/* external clock speed in bits per second */
 	unsigned char	addr_filter;	/* receive HDLC address filter, 0xFF = disable */
-	__uapi_arch_pad8;
 	unsigned short	crc_type;	/* None, CRC16-CCITT, or CRC32-CCITT */
 	unsigned char	preamble_length;
 	unsigned char	preamble;
-	__uapi_arch_pad16;
 
 	/* Async Only */
 
@@ -171,10 +166,8 @@ typedef struct _MGSL_PARAMS
 	unsigned char	data_bits;	/* 7 or 8 data bits */
 	unsigned char	stop_bits;	/* 1 or 2 stop bits */
 	unsigned char	parity;		/* none, even, or odd */
-	__uapi_arch_pad8;
-	__uapi_arch_pad_long;
 
-} __uapi_arch_align MGSL_PARAMS, *PMGSL_PARAMS;
+} MGSL_PARAMS, *PMGSL_PARAMS;
 
 #define MICROGATE_VENDOR_ID 0x13c0
 #define SYNCLINK_DEVICE_ID 0x0010

@@ -246,7 +246,6 @@ struct canxl_frame {
  */
 struct sockaddr_can {
 	__kernel_sa_family_t can_family;
-	__uapi_arch_pad16;
 	int         can_ifindex;
 	union {
 		/* transport protocol class address information (e.g. ISOTP) */
@@ -267,13 +266,11 @@ struct sockaddr_can {
 
 			/* 1 byte address */
 			__u8 addr;
-			__uapi_arch_pad8;
-			__uapi_arch_pad16;
 		} j1939;
 
 		/* reserved for future CAN protocols address information */
 	} can_addr;
-} __uapi_arch_align;
+};
 
 /**
  * struct can_filter - CAN ID based filter in can_register().

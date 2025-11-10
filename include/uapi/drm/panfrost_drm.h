@@ -402,16 +402,14 @@ struct panfrost_dump_object_header {
 			__u32 gpu_id;
 			__u32 major;
 			__u32 minor;
-			__uapi_arch_pad32;
 			__u64 nbos;
-		} __uapi_arch_align reghdr;
+		} reghdr;
 
 		struct {
 			__u32 valid;
-			__uapi_arch_pad32;
 			__u64 iova;
 			__u32 data[2];
-		} __uapi_arch_align bomap;
+		} bomap;
 
 		/*
 		 * Force same size in case we want to expand the header

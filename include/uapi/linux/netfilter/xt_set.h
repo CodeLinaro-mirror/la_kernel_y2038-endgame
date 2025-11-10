@@ -16,17 +16,15 @@
 
 struct xt_set_info_v0 {
 	ip_set_id_t index;
-	__uapi_arch_pad16;
 	union {
 		__u32 flags[IPSET_DIM_MAX + 1];
 		struct {
 			__u32 __flags[IPSET_DIM_MAX];
 			__u8 dim;
 			__u8 flags;
-			__uapi_arch_pad16;
-		} compat __uapi_arch_align;
-	} u __uapi_arch_align;
-} __uapi_arch_align;
+		} compat;
+	} u;
+};
 
 /* match and target infos */
 struct xt_set_info_match_v0 {
@@ -69,12 +67,10 @@ struct xt_set_info_target_v2 {
 
 struct xt_set_info_match_v3 {
 	struct xt_set_info match_set;
-	__uapi_arch_pad32;
 	struct ip_set_counter_match0 packets;
 	struct ip_set_counter_match0 bytes;
 	__u32 flags;
-	__uapi_arch_pad32;
-} __uapi_arch_align;
+};
 
 /* Revision 3 target */
 
@@ -90,11 +86,9 @@ struct xt_set_info_target_v3 {
 
 struct xt_set_info_match_v4 {
 	struct xt_set_info match_set;
-	__u32 :32;
 	struct ip_set_counter_match packets;
 	struct ip_set_counter_match bytes;
 	__u32 flags;
-	__u32 :32;
 };
 
 #endif /*_XT_SET_H*/

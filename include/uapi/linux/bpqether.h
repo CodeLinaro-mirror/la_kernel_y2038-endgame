@@ -31,12 +31,10 @@ struct bpq_req  {
     int clockmode;		/* unused */
     int txdelay;
     unsigned char persist;	/* unused */
-    __uapi_arch_pad8;
-    __uapi_arch_pad16;
     int slotime;		/* unused */
     int squeldelay;
     int dmachan;		/* unused */
     int irq;			/* unused */
-} __uapi_arch_align;
+};
 
 #endif

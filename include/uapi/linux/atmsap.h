@@ -134,7 +134,6 @@ struct atm_blli {
 				  /* (only if ipi == NLPID_IEEE802_1_SNAP) */
 	} tr9577;
     } l3;
-    __uapi_arch_atm_blli_pad;
 } __ATM_API_ALIGN;
 
 
@@ -151,7 +150,6 @@ struct atm_bhli {
 
 struct atm_sap {
 	struct atm_bhli bhli;		/* local SAP, high-layer information */
-	__uapi_arch_atm_pad;
 	struct atm_blli blli[ATM_MAX_BLLI] __ATM_API_ALIGN;
 					/* local SAP, low-layer info */
 };

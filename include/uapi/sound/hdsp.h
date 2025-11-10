@@ -57,8 +57,7 @@ struct hdsp_config_info {
 	unsigned char phone_gain;
 	unsigned char xlr_breakout_cable;
 	unsigned char analog_extension_board;
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+};
 
 #define SNDRV_HDSP_IOCTL_GET_CONFIG_INFO _IOR('H', 0x41, struct hdsp_config_info)
 
@@ -71,8 +70,7 @@ struct hdsp_firmware {
 struct hdsp_version {
 	enum HDSP_IO_Type io_type;
 	unsigned short firmware_rev;
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+};
 
 #define SNDRV_HDSP_IOCTL_GET_VERSION _IOR('H', 0x43, struct hdsp_version)
 

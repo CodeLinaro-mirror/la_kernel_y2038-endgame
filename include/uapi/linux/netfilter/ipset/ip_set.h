@@ -268,20 +268,12 @@ enum {
 /* Backward compatibility for set match v3 */
 struct ip_set_counter_match0 {
 	__u8 op;
-	__uapi_arch_pad8;
-	__uapi_arch_pad16;
-	__uapi_arch_pad32;
 	__u64 value;
-} __uapi_arch_align;
+};
 
 struct ip_set_counter_match {
 	__aligned_u64 value;
 	__u8 op;
-
-	/* not __uapi_arch_pad* because value is always aligned */
-	__u8 :8;
-	__u16 :16;
-	__u32 :32;
 };
 
 /* Interface to iptables/ip6tables */

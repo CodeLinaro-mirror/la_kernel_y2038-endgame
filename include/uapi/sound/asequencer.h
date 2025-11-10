@@ -420,12 +420,10 @@ struct snd_seq_remove_events {
 
 	int  type;	/* For REMOVE_EVENT_TYPE */
 	char  tag;	/* Tag for REMOVE_TAG */
-	__uapi_arch_pad8;
-	__uapi_arch_pad16;
 
 	int  reserved[10];	/* To allow for future binary compatibility */
 
-} __uapi_arch_align;
+};
 
 
 	/* known port numbers */
@@ -484,7 +482,6 @@ struct snd_seq_remove_events {
 struct snd_seq_port_info {
 	struct snd_seq_addr addr;	/* client/port numbers */
 	char name[64];			/* port name */
-	__uapi_arch_pad16;
 
 	unsigned int capability;	/* port capability bits */
 	unsigned int type;		/* port type bits */
@@ -501,7 +498,7 @@ struct snd_seq_port_info {
 	unsigned char direction;	/* port usage direction (r/w/bidir) */
 	unsigned char ump_group;	/* 0 = UMP EP (no conversion), 1-16 = UMP group number */
 	char reserved[57];		/* for future use */
-} __uapi_arch_align;
+};
 
 
 /* queue flags */
@@ -517,13 +514,11 @@ struct snd_seq_queue_info {
 	 */
 	int owner;		/* client id for owner of the queue */
 	unsigned locked:1;	/* timing queue locked for other queues */
-	unsigned       :7;	/* pad to sizeof(unsigned) */
 	char name[64];		/* name of this queue */
-	__uapi_arch_pad8;
-	__uapi_arch_pad16;
 	unsigned int flags;	/* flags */
 	char reserved[60];	/* for future use */
-} __uapi_arch_align;
+
+};
 
 /* queue info/status */
 struct snd_seq_queue_status {
@@ -598,16 +593,14 @@ struct snd_seq_port_subscribe {
 
 struct snd_seq_query_subs {
 	struct snd_seq_addr root;	/* client/port id to be searched */
-	__uapi_arch_pad16;
 	int type;		/* READ or WRITE */
 	int index;		/* 0..N-1 */
 	int num_subs;		/* R/O: number of subscriptions on this port */
 	struct snd_seq_addr addr;	/* R/O: result */
 	unsigned char queue;	/* R/O: result */
-	__uapi_arch_pad8;
 	unsigned int flags;	/* R/O: result */
 	char reserved[64];	/* for future use */
-} __uapi_arch_align;
+};
 
 /*
  * UMP-specific information

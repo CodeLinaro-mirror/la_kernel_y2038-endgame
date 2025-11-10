@@ -14,7 +14,6 @@
 #ifndef _UAPI_LINUX_IF_VLAN_H_
 #define _UAPI_LINUX_IF_VLAN_H_
 
-#include <linux/types.h>
 
 /* VLAN IOCTLs are found in sockios.h */
 
@@ -62,7 +61,6 @@ struct vlan_ioctl_args {
         } u;
 
 	short vlan_qos;   
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+};
 
 #endif /* _UAPI_LINUX_IF_VLAN_H_ */

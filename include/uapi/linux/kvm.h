@@ -128,7 +128,6 @@ struct kvm_hyperv_exit {
 struct kvm_xen_exit {
 #define KVM_EXIT_XEN_HCALL          1
 	__u32 type;
-	__uapi_arch_pad32;
 	union {
 		struct {
 			__u32 longmode;
@@ -138,7 +137,7 @@ struct kvm_xen_exit {
 			__u64 params[6];
 		} hcall;
 	} u;
-} __uapi_arch_align;
+};
 
 struct kvm_exit_snp_req_certs {
 	__u64 gpa;
@@ -251,8 +250,7 @@ struct kvm_run {
 		struct {
 			__u64 hardware_entry_failure_reason;
 			__u32 cpu;
-			__uapi_arch_pad32;
-		} __uapi_arch_align fail_entry;
+		} fail_entry;
 		/* KVM_EXIT_EXCEPTION */
 		struct {
 			__u32 exception;
@@ -278,18 +276,14 @@ struct kvm_run {
 			__u8  data[8];
 			__u32 len;
 			__u8  is_write;
-			__uapi_arch_pad8;
-			__uapi_arch_pad16;
-		} __uapi_arch_align mmio;
+		} mmio;
 		/* KVM_EXIT_LOONGARCH_IOCSR */
 		struct {
 			__u64 phys_addr;
 			__u8  data[8];
 			__u32 len;
 			__u8  is_write;
-			__uapi_arch_pad8;
-			__uapi_arch_pad16;
-		} __uapi_arch_align iocsr_io;
+		} iocsr_io;
 		/* KVM_EXIT_HYPERCALL */
 		struct {
 			__u64 nr;
@@ -312,7 +306,6 @@ struct kvm_run {
 		/* KVM_EXIT_S390_SIEIC */
 		struct {
 			__u8 icptcode;
-			__uapi_arch_pad8;
 			__u16 ipa;
 			__u32 ipb;
 		} s390_sieic;
@@ -322,15 +315,12 @@ struct kvm_run {
 		struct {
 			__u64 trans_exc_code;
 			__u32 pgm_code;
-			__uapi_arch_pad32;
-		} __uapi_arch_align s390_ucontrol;
+		} s390_ucontrol;
 		/* KVM_EXIT_DCR (deprecated) */
 		struct {
 			__u32 dcrn;
 			__u32 data;
 			__u8  is_write;
-			__uapi_arch_pad8;
-			__uapi_arch_pad16;
 		} dcr;
 		/* KVM_EXIT_INTERNAL_ERROR */
 		struct {
@@ -386,8 +376,6 @@ struct kvm_run {
 			__u32 io_int_word;
 			__u32 ipb;
 			__u8 dequeued;
-			__uapi_arch_pad8;
-			__uapi_arch_pad16;
 		} s390_tsch;
 		/* KVM_EXIT_EPR */
 		struct {
@@ -419,8 +407,7 @@ struct kvm_run {
 			__u8 fc;
 			__u8 sel1;
 			__u16 sel2;
-			__uapi_arch_pad16;
-		} __uapi_arch_align s390_stsi;
+		} s390_stsi;
 		/* KVM_EXIT_IOAPIC_EOI */
 		struct {
 			__u8 vector;
@@ -1116,8 +1103,7 @@ struct kvm_config_tlb {
 struct kvm_dirty_tlb {
 	__u64 bitmap;
 	__u32 num_dirty;
-	__uapi_arch_pad32;
-} __uapi_arch_align;
+};
 
 /* Available with KVM_CAP_ONE_REG */
 

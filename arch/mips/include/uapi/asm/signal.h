@@ -102,8 +102,7 @@ typedef struct sigaltstack {
 	void __user *ss_sp;
 	__kernel_size_t ss_size;
 	int ss_flags;
-	__uapi_arch_pad_long;
-} __uapi_arch_align stack_t;
+} stack_t;
 
 
 #endif /* _UAPI_ASM_SIGNAL_H */

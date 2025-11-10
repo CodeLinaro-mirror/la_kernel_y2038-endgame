@@ -62,13 +62,12 @@ typedef struct _agp_info {
 	struct agp_version version;	/* version of the driver        */
 	__u32 bridge_id;	/* bridge vendor/device         */
 	__u32 agp_mode;		/* mode info of bridge          */
-	__uapi_arch_pad_long;
 	unsigned long aper_base;/* base of aperture             */
 	__kernel_size_t aper_size;	/* size of aperture             */
 	__kernel_size_t pg_total;	/* max pages (swap + system)    */
 	__kernel_size_t pg_system;	/* max pages (system)           */
 	__kernel_size_t pg_used;	/* current pages used           */
-} __uapi_arch_align agp_info;
+} agp_info;
 
 typedef struct _agp_setup {
 	__u32 agp_mode;		/* mode info of bridge          */
@@ -81,32 +80,28 @@ typedef struct _agp_segment {
 	__kernel_off_t pg_start;	/* starting page to populate    */
 	__kernel_size_t pg_count;	/* number of pages              */
 	int prot;			/* prot flags for mmap          */
-	__uapi_arch_pad_long;
-} __uapi_arch_align agp_segment;
+} agp_segment;
 
 typedef struct _agp_region {
 	__kernel_pid_t pid;		/* pid of process       */
-	__uapi_arch_pad_long;
 	__kernel_size_t seg_count;	/* number of segments   */
 	struct _agp_segment *seg_list;
-} __uapi_arch_align agp_region;
+} agp_region;
 
 typedef struct _agp_allocate {
 	int key;		/* tag of allocation            */
-	__uapi_arch_pad_long;
 	__kernel_size_t pg_count;/* number of pages             */
 	__u32 type;		/* 0 == normal, other devspec   */
    	__u32 physical;         /* device specific (some devices  
 				 * need a phys address of the     
 				 * actual page behind the gatt    
 				 * table)                        */
-} __uapi_arch_align agp_allocate;
+} agp_allocate;
 
 typedef struct _agp_bind {
 	int key;		/* tag of allocation            */
-	__uapi_arch_pad_long;
 	__kernel_off_t pg_start;/* starting page to populate    */
-} __uapi_arch_align agp_bind;
+} agp_bind;
 
 typedef struct _agp_unbind {
 	int key;		/* tag of allocation            */

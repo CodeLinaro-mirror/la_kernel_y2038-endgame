@@ -569,7 +569,6 @@ typedef struct drm_radeon_init {
 		RADEON_INIT_R300_CP = 0x04,
 		RADEON_INIT_R600_CP = 0x05
 	} func;
-	__uapi_arch_pad_long;
 	unsigned long sarea_priv_offset;
 	int is_pci;
 	int cp_mode;
@@ -582,7 +581,6 @@ typedef struct drm_radeon_init {
 	unsigned int back_offset, back_pitch;
 	unsigned int depth_bpp;
 	unsigned int depth_offset, depth_pitch;
-	__uapi_arch_pad_long;
 
 	unsigned long fb_offset;
 	unsigned long mmio_offset;
@@ -590,7 +588,7 @@ typedef struct drm_radeon_init {
 	unsigned long ring_rptr_offset;
 	unsigned long buffers_offset;
 	unsigned long gart_textures_offset;
-} __uapi_arch_align drm_radeon_init_t;
+} drm_radeon_init_t;
 
 typedef struct drm_radeon_cp_stop {
 	int flush;
@@ -621,9 +619,8 @@ typedef struct drm_radeon_clear {
 	unsigned int clear_depth;
 	unsigned int color_mask;
 	unsigned int depth_mask;	/* misnamed field:  should be stencil */
-	__uapi_arch_pad_long;
 	drm_radeon_clear_rect_t __user *depth_boxes;
-} __uapi_arch_align drm_radeon_clear_t;
+} drm_radeon_clear_t;
 
 typedef struct drm_radeon_vertex {
 	int prim;
@@ -648,12 +645,10 @@ typedef struct drm_radeon_vertex2 {
 	int idx;		/* Index of vertex buffer */
 	int discard;		/* Client finished with buffer? */
 	int nr_states;
-	__uapi_arch_pad_long;
 	drm_radeon_state_t __user *state;
 	int nr_prims;
-	__uapi_arch_pad_long;
 	drm_radeon_prim_t __user *prim;
-} __uapi_arch_align drm_radeon_vertex2_t;
+} drm_radeon_vertex2_t;
 
 /* v1.3 - obsoletes drm_radeon_vertex2
  *      - allows arbitrarily large cliprect list
@@ -667,12 +662,10 @@ typedef struct drm_radeon_vertex2 {
  */
 typedef struct drm_radeon_cmd_buffer {
 	int bufsz;
-	__uapi_arch_pad_long;
 	char __user *buf;
 	int nbox;
-	__uapi_arch_pad_long;
 	struct drm_clip_rect __user *boxes;
-} __uapi_arch_align drm_radeon_cmd_buffer_t;
+} drm_radeon_cmd_buffer_t;
 
 typedef struct drm_radeon_tex_image {
 	unsigned int x, y;	/* Blit coordinates */
@@ -686,7 +679,6 @@ typedef struct drm_radeon_texture {
 	int format;
 	int width;		/* Texture image coordinates */
 	int height;
-	__uapi_arch_pad_long;
 	drm_radeon_tex_image_t __user *image;
 } drm_radeon_texture_t;
 
@@ -731,9 +723,8 @@ typedef struct drm_radeon_indirect {
 
 typedef struct drm_radeon_getparam {
 	int param;
-	__uapi_arch_pad_long;
 	void __user *value;
-} __uapi_arch_align drm_radeon_getparam_t;
+} drm_radeon_getparam_t;
 
 /* 1.6: Set up a memory manager for regions of shared memory:
  */
@@ -744,9 +735,8 @@ typedef struct drm_radeon_mem_alloc {
 	int region;
 	int alignment;
 	int size;
-	__uapi_arch_pad_long;
 	int __user *region_offset;	/* offset from start of fb or GART */
-} __uapi_arch_align drm_radeon_mem_alloc_t;
+} drm_radeon_mem_alloc_t;
 
 typedef struct drm_radeon_mem_free {
 	int region;
@@ -775,9 +765,8 @@ typedef struct drm_radeon_irq_wait {
 
 typedef struct drm_radeon_setparam {
 	unsigned int param;
-	__uapi_arch_pad32;
 	__s64 value;
-} __uapi_arch_align drm_radeon_setparam_t;
+} drm_radeon_setparam_t;
 
 #define RADEON_SETPARAM_FB_LOCATION    1	/* determined framebuffer location */
 #define RADEON_SETPARAM_SWITCH_TILING  2	/* enable/disable color tiling */
@@ -827,8 +816,7 @@ struct drm_radeon_gem_create {
 	__u32	handle;
 	__u32	initial_domain;
 	__u32	flags;
-	__uapi_arch_pad32;
-} __uapi_arch_align;
+};
 
 /*
  * This is not a reliable API and you should expect it to fail for any

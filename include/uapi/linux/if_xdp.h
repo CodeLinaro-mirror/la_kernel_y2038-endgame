@@ -150,12 +150,10 @@ struct xsk_tx_metadata {
 			/* Offset from csum_start where checksum should be stored. */
 			__u16 csum_offset;
 
-			__uapi_arch_pad32;
-
 			/* XDP_TXMD_FLAGS_LAUNCH_TIME */
 			/* Launch time in nanosecond against the PTP HW Clock */
 			__u64 launch_time;
-		} __uapi_arch_align request;
+		} request;
 
 		struct {
 			/* XDP_TXMD_FLAGS_TIMESTAMP */

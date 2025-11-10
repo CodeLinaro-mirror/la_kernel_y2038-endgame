@@ -46,7 +46,6 @@ struct atmlec_config_msg {
 	unsigned int maximum_unknown_frame_count;
 	unsigned int max_unknown_frame_time;
 	unsigned short max_retry_count;
-	__uapi_arch_pad16;
 	unsigned int aging_time;
 	unsigned int forward_delay_time;
 	unsigned int arp_response_time;
@@ -64,7 +63,6 @@ struct atmlec_msg {
 		struct {
 			unsigned char mac_addr[ETH_ALEN];
 			unsigned char atm_addr[ATM_ESA_LEN];
-			__uapi_arch_pad16;
 			unsigned int flag;	/*
 						 * Topology_change flag,
 						 * remoteflag, permanent flag,
@@ -72,29 +70,23 @@ struct atmlec_msg {
 						 */
 			unsigned int targetless_le_arp;	/* LANE2 */
 			unsigned int no_source_le_narp;	/* LANE2 */
-		} __uapi_arch_align normal;
+		} normal;
 		struct atmlec_config_msg config;
 		struct {
 			__u16 lec_id;				/* requestor lec_id  */
-			__uapi_arch_pad16;
 			__u32 tran_id;				/* transaction id    */
 			unsigned char mac_addr[ETH_ALEN];	/* dst mac addr      */
 			unsigned char atm_addr[ATM_ESA_LEN];	/* reqestor ATM addr */
-			__uapi_arch_pad16;
-		} __uapi_arch_align proxy;
-				/*
+		} proxy;	/*
 				 * For mapping LE_ARP requests to responses. Filled by
 				 * zeppelin, returned by kernel. Used only when proxying
 				 */
 	} content;
-	__uapi_arch_atm_pad;
 } __ATM_API_ALIGN;
 
 struct atmlec_ioc {
 	int dev_num;
 	unsigned char atm_addr[ATM_ESA_LEN];
 	unsigned char receive;	/* 1= receive vcc, 0 = send vcc */
-	__uapi_arch_pad8;
-	__uapi_arch_pad16;
-} __uapi_arch_align;
+};
 #endif /* _ATMLEC_H_ */

@@ -26,14 +26,12 @@ struct nr_route_struct {
 	int		type;
 	ax25_address	callsign;
 	char		device[16];
-	__uapi_arch_pad8;
 	unsigned int	quality;
 	char		mnemonic[7];
 	ax25_address	neighbour;
-	__uapi_arch_pad16;
 	unsigned int	obs_count;
 	unsigned int	ndigis;
 	ax25_address	digipeaters[AX25_MAX_DIGIS];
-} __uapi_arch_align;
+};
 
 #endif

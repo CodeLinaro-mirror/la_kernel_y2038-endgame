@@ -49,7 +49,6 @@ struct atm_dev_stats {
 	struct atm_aal_stats aal0;
 	struct atm_aal_stats aal34;
 	struct atm_aal_stats aal5;
-	__uapi_arch_atm_pad;
 } __ATM_API_ALIGN;
 
 
@@ -156,9 +155,8 @@ struct atm_dev_stats {
 
 struct atm_iobuf {
 	int length;
-	__uapi_arch_pad_long;
 	void __user *buffer;
-} __uapi_arch_align;
+};
 
 /* for ATM_GETCIRANGE / ATM_SETCIRANGE */
 

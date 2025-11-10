@@ -76,9 +76,8 @@ struct mif6ctl {
 	unsigned char mif6c_flags;	/* MIFF_ flags */
 	unsigned char vifc_threshold;	/* ttl limit */
 	__u16	 mif6c_pifi;		/* the index of the physical IF */
-	__uapi_arch_pad16;
 	unsigned int vifc_rate_limit;	/* Rate limiter values (NI) */
-} __uapi_arch_align;
+};
 
 #define MIFF_REGISTER	0x1	/* register vif	*/
 
@@ -90,9 +89,8 @@ struct mf6cctl {
 	struct sockaddr_in6 mf6cc_origin;		/* Origin of mcast	*/
 	struct sockaddr_in6 mf6cc_mcastgrp;		/* Group in question	*/
 	mifi_t	mf6cc_parent;			/* Where it arrived	*/
-	__uapi_arch_pad16;
 	struct if_set mf6cc_ifset;		/* Where it is going */
-} __uapi_arch_align;
+};
 
 /*
  *	Group count retrieval for pim6sd
@@ -112,13 +110,11 @@ struct sioc_sg_req6 {
 
 struct sioc_mif_req6 {
 	mifi_t	mifi;		/* Which iface */
-	__uapi_arch_pad16;
-	__uapi_arch_pad_long;
 	unsigned long icount;	/* In packets */
 	unsigned long ocount;	/* Out packets */
 	unsigned long ibytes;	/* In bytes */
 	unsigned long obytes;	/* Out bytes */
-} __uapi_arch_align;
+};
 
 /*
  *	That's all usermode folks

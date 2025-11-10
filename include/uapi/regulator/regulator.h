@@ -10,10 +10,6 @@
 
 #include <linux/types.h>
 
-#ifndef __KERNEL__
-#include <stdint.h>
-#endif
-
 /*
  * Regulator notifier events.
  *

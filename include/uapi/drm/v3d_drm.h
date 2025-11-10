@@ -354,8 +354,6 @@ struct drm_v3d_submit_csd {
 	__u32 cfg[7];
 	__u32 coef[4];
 
-	__uapi_arch_pad32;
-
 	/* Pointer to a u32 array of the BOs that are referenced by the job.
 	 */
 	__u64 bo_handles;
@@ -381,7 +379,7 @@ struct drm_v3d_submit_csd {
 	__u32 flags;
 
 	__u32 pad;
-} __uapi_arch_align;
+};
 
 /**
  * struct drm_v3d_indirect_csd - ioctl extension for the CPU job to create an
