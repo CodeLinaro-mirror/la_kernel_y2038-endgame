@@ -72,8 +72,7 @@ struct bcm_msg_head {
 	struct bcm_timeval ival1, ival2;
 	canid_t can_id;
 	__u32 nframes;
-	/* padding on 32-bit architectures */
-	__u8 __pad[sizeof(long long) - sizeof(long)];
+	__uapi_arch_pad_long_to_u64;
 	struct can_frame frames[];
 } __uapi_arch_align;
 

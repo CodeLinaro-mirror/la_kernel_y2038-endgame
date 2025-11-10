@@ -12,9 +12,11 @@
    figure that we are on a sparc64 while compiling user-space programs. */
 #define __ATM_API_ALIGN	__attribute__((aligned(8)))
 #define __uapi_arch_atm_pad unsigned:32
+#define __uapi_arch_atm_blli_pad char __pad[6]
 #else
 #define __ATM_API_ALIGN
 #define __uapi_arch_atm_pad
+#define __uapi_arch_atm_blli_pad
 #endif
 
 

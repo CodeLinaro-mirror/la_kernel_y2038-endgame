@@ -3462,7 +3462,7 @@ struct drm_i915_query_perf_config {
 	 */
 	union {
 		__uapi_arch_pad32; /* pad to alignof(__u64) */
-		__u8 data[];
+		__DECLARE_FLEX_ARRAY(__u8, data);
 	};
 } __uapi_arch_align;
 

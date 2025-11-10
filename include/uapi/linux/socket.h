@@ -2,6 +2,8 @@
 #ifndef _UAPI_LINUX_SOCKET_H
 #define _UAPI_LINUX_SOCKET_H
 
+#include <linux/stddef.h>
+
 /*
  * Desired design of maximum size and alignment (see RFC2553)
  */
@@ -13,7 +15,7 @@ struct __kernel_sockaddr {
 	__kernel_sa_family_t	sa_family;	/* address family, AF_xxx	*/
 	union {
 		char sa_data_min[14];		/* Minimum 14 bytes of protocol address	*/
-		char sa_data[];
+		__DECLARE_FLEX_ARRAY(char, sa_data);
 	};
 };
 

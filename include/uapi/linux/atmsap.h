@@ -133,12 +133,8 @@ struct atm_blli {
 	    unsigned char snap[5];/* IEEE 802.1 SNAP identifier */
 				  /* (only if ipi == NLPID_IEEE802_1_SNAP) */
 	} tr9577;
-        struct {
-		__uapi_arch_atm_pad;
-		__uapi_arch_atm_pad;
-		__uapi_arch_atm_pad;
-	};
     } l3;
+    __uapi_arch_atm_blli_pad;
 } __ATM_API_ALIGN;
 
 
