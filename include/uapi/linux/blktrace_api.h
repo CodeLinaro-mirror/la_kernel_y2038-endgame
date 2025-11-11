@@ -172,12 +172,15 @@ enum {
 struct blk_user_trace_setup {
 	char name[BLKTRACE_BDEV_SIZE];	/* output */
 	__u16 act_mask;			/* input */
+	__uapi_arch_pad16;
 	__u32 buf_size;			/* input */
 	__u32 buf_nr;			/* input */
+	__uapi_arch_pad32;
 	__u64 start_lba;
 	__u64 end_lba;
 	__u32 pid;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /*
  * User setup structure passed with BLKTRACESETUP2

@@ -2,6 +2,8 @@
 #ifndef _M68K_STAT_H
 #define _M68K_STAT_H
 
+#include <linux/types.h>
+
 struct __old_kernel_stat {
 	unsigned short st_dev;
 	unsigned short st_ino;
@@ -14,7 +16,7 @@ struct __old_kernel_stat {
 	unsigned long  st_atime;
 	unsigned long  st_mtime;
 	unsigned long  st_ctime;
-};
+} __uapi_arch_align;
 
 struct stat {
 	unsigned short st_dev;
@@ -73,6 +75,6 @@ struct stat64 {
 	unsigned long	st_ctime_nsec;
 
 	unsigned long long	st_ino;
-};
+} __uapi_arch_align;
 
 #endif /* _M68K_STAT_H */

@@ -8,6 +8,9 @@
 #ifndef _ASM_S390_UCONTEXT_H
 #define _ASM_S390_UCONTEXT_H
 
+#include <asm/signal.h>
+#include <asm/sigcontext.h>
+
 #define UC_GPRS_HIGH	1	/* uc_mcontext_ext has valid high gprs */
 #define UC_VXRS		2	/* uc_mcontext_ext has valid vector regs */
 

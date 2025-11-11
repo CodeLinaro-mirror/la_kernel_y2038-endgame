@@ -158,12 +158,13 @@ struct dmx_filter {
 struct dmx_sct_filter_params {
 	__u16             pid;
 	struct dmx_filter filter;
+	__uapi_arch_pad16;
 	__u32             timeout;
 	__u32             flags;
 #define DMX_CHECK_CRC       1
 #define DMX_ONESHOT         2
 #define DMX_IMMEDIATE_START 4
-};
+} __uapi_arch_align;
 
 /**
  * struct dmx_pes_filter_params - Specifies Packetized Elementary Stream (PES)
@@ -177,11 +178,12 @@ struct dmx_sct_filter_params {
  */
 struct dmx_pes_filter_params {
 	__u16           pid;
+	__uapi_arch_pad16;
 	enum dmx_input  input;
 	enum dmx_output output;
 	enum dmx_ts_pes pes_type;
 	__u32           flags;
-};
+} __uapi_arch_align;
 
 /**
  * struct dmx_stc - Stores System Time Counter (STC) information.

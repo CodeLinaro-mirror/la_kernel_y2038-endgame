@@ -9,14 +9,16 @@
 /* Obsolete, used only for backwards compatibility and libc5 compiles */
 struct ipc_perm
 {
-	__kernel_key_t	key;
-	__kernel_uid_t	uid;
+	__kernel_key_t	key; /* always 32 */
+	__kernel_uid_t	uid; /* 16 on arm/m68k/s390/sh/sparc/i386 */
 	__kernel_gid_t	gid;
 	__kernel_uid_t	cuid;
 	__kernel_gid_t	cgid;
-	__kernel_mode_t	mode; 
+	__kernel_mode_t	mode; /* 16 on arm/m68k/microblaze/parisc32/s390-32/sh/sparc32 */
 	unsigned short	seq;
-};
+	/* hole at end of structure for 32-bit mode_t */
+	__uapi_arch_pad_mode_t;
+} __uapi_arch_align;
 
 /* Include the definition of ipc64_perm */
 #include <asm/ipcbuf.h>

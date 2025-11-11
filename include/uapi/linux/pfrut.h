@@ -152,7 +152,8 @@ struct pfru_com_buf_info {
 	__u64 addr_lo;
 	__u64 addr_hi;
 	__u32 buf_size;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct pfru_updated_result - Platform firmware runtime update result information.
@@ -204,7 +205,8 @@ struct pfrt_log_data_info {
 	__u32 chunk2_size;
 	__u32 rollover_cnt;
 	__u32 reset_cnt;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct pfrt_log_info - Telemetry log information.

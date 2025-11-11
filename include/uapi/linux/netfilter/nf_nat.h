@@ -50,6 +50,7 @@ struct nf_nat_range2 {
 	union nf_conntrack_man_proto	min_proto;
 	union nf_conntrack_man_proto	max_proto;
 	union nf_conntrack_man_proto	base_proto;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #endif /* _NETFILTER_NF_NAT_H */

@@ -432,8 +432,9 @@ struct drm_vc4_perfmon_destroy {
  */
 struct drm_vc4_perfmon_get_values {
 	__u32 id;
+	__uapi_arch_pad32;
 	__u64 values_ptr;
-};
+} __uapi_arch_align;
 
 #if defined(__cplusplus)
 }

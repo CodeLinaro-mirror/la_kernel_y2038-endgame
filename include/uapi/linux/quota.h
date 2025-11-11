@@ -118,7 +118,8 @@ struct if_dqblk {
 	__u64 dqb_btime;
 	__u64 dqb_itime;
 	__u32 dqb_valid;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct if_nextdqblk {
 	__u64 dqb_bhardlimit;

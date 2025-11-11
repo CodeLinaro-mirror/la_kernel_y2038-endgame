@@ -13,9 +13,12 @@ struct ip6t_rt {
 	__u32 hdrlen;			/* Header Length */
 	__u8  flags;			/*  */
 	__u8  invflags;			/* Inverse flags */
+	__uapi_arch_pad16;
 	struct in6_addr addrs[IP6T_RT_HOPS];	/* Hops */
 	__u8 addrnr;			/* Nr of Addresses */
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #define IP6T_RT_TYP 		0x01
 #define IP6T_RT_SGS 		0x02

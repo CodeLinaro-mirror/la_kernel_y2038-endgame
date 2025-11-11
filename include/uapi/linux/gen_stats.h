@@ -26,7 +26,8 @@ enum {
 struct gnet_stats_basic {
 	__u64	bytes;
 	__u32	packets;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct gnet_stats_rate_est - rate estimator

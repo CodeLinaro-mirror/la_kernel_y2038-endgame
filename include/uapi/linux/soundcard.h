@@ -38,6 +38,7 @@
 
 /* In Linux we need to be prepared for cross compiling */
 #include <linux/ioctl.h>
+#include <linux/types.h>
 
 /* Endian macros. */
 #ifndef __KERNEL__
@@ -219,6 +220,7 @@ struct patch_info {
 		short device_no;	/* Synthesizer number */
 		short instr_no;		/* Midi pgm# */
 
+		__uapi_arch_pad16;
 		unsigned int mode;
 /*
  * The least significant byte has the same format than the GUS .PAT
@@ -289,6 +291,7 @@ struct patch_info {
 		unsigned char	vibrato_rate;
 		unsigned char	vibrato_depth;
 
+		__uapi_arch_pad16;
 		int		scale_frequency;
 		unsigned int	scale_factor;		/* from 0 to 2048 or 0 to 2 */
 	
@@ -297,7 +300,9 @@ struct patch_info {
 		int		reserved1;
 	        int		spare[2];
 		char data[1];	/* The waveform data starts here */
-	};
+		__uapi_arch_pad8;
+		__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct sysex_info {
 		short key;		/* Use SYSEX_PATCH or MAUI_PATCH here */
@@ -306,7 +311,9 @@ struct sysex_info {
 		short device_no;	/* Synthesizer number */
 		int len;	/* Size of the sysex data in bytes */
 		unsigned char data[1];	/* Sysex data starts here */
-	};
+		__uapi_arch_pad8;
+		__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /*
  * /dev/sequencer input events.
@@ -479,6 +486,7 @@ struct sbi_instrument {
 
 struct synth_info {	/* Read only */
 		char	name[30];
+		__uapi_arch_pad16;
 		int	device;		/* 0-N. INITIALIZE BEFORE CALLING */
 		int	synth_type;
 #define SYNTH_TYPE_FM			0
@@ -503,7 +511,7 @@ struct synth_info {	/* Read only */
 #define SYNTH_CAP_OPL3			0x00000002 /* Set if OPL3 supported */
 #define SYNTH_CAP_INPUT			0x00000004 /* Input (MIDI) device */
 		int	dummies[19];	/* Reserve space */
-	};
+	} __uapi_arch_align;
 
 struct sound_timer_info {
 		char name[32];
@@ -514,11 +522,12 @@ struct sound_timer_info {
 
 struct midi_info {
 		char		name[30];
+		__uapi_arch_pad16;
 		int		device;		/* 0-N. INITIALIZE BEFORE CALLING */
 		unsigned int	capabilities;	/* To be defined later */
 		int		dev_type;
 		int		dummies[18];	/* Reserve space */
-	};
+	} __uapi_arch_align;
 
 /********************************************
  * ioctl commands for the /dev/midi##
@@ -615,7 +624,8 @@ typedef struct count_info {
 typedef struct buffmem_desc {
 		unsigned *buffer;
 		int size;
-	} buffmem_desc;
+		__uapi_arch_pad_long;
+	} __uapi_arch_align buffmem_desc;
 #define SNDCTL_DSP_MAPINBUF		_SIOR ('P', 19, buffmem_desc)
 #define SNDCTL_DSP_MAPOUTBUF		_SIOR ('P', 20, buffmem_desc)
 #define SNDCTL_DSP_SETSYNCRO		_SIO  ('P', 21)

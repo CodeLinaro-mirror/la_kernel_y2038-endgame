@@ -16,8 +16,9 @@
 
 struct tc_skbmod {
 	tc_gen;
+	__uapi_arch_pad32;
 	__u64 flags;
-};
+} __uapi_arch_align;
 
 enum {
 	TCA_SKBMOD_UNSPEC,

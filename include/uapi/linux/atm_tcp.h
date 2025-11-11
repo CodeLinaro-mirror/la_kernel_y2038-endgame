@@ -35,10 +35,12 @@ struct atmtcp_hdr {
 struct atmtcp_control {
 	struct atmtcp_hdr hdr;	/* must be first */
 	int type;		/* message type; both directions */
+	__uapi_arch_atm_pad;
 	atm_kptr_t vcc;		/* both directions */
 	struct sockaddr_atmpvc addr; /* suggested value from kernel */
 	struct atm_qos	qos;	/* both directions */
 	int result;		/* to kernel only */
+	__uapi_arch_atm_pad;
 } __ATM_API_ALIGN;
 
 /*

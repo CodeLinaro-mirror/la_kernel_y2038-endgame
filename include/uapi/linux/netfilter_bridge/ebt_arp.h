@@ -23,6 +23,7 @@ struct ebt_arp_info
 	__be16 htype;
 	__be16 ptype;
 	__be16 opcode;
+	__uapi_arch_pad16;
 	__be32 saddr;
 	__be32 smsk;
 	__be32 daddr;
@@ -33,6 +34,7 @@ struct ebt_arp_info
 	unsigned char dmmsk[ETH_ALEN];
 	__u8  bitmask;
 	__u8  invflags;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #endif

@@ -500,7 +500,8 @@ struct gpioevent_request {
 struct gpioevent_data {
 	__u64 timestamp;
 	__u32 id;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /*
  * v1 and v2 ioctl()s

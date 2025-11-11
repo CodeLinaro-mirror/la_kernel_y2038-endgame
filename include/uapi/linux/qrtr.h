@@ -10,9 +10,10 @@
 
 struct sockaddr_qrtr {
 	__kernel_sa_family_t sq_family;
+	__uapi_arch_pad16;
 	__u32 sq_node;
 	__u32 sq_port;
-};
+} __uapi_arch_align;
 
 enum qrtr_pkt_type {
 	QRTR_TYPE_DATA		= 1,

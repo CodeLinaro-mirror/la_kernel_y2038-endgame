@@ -118,7 +118,8 @@ struct fastrpc_mem_map {
 	__u64 vaddrout;		/* [out] remote virtual address */
 	__s32 attrs;		/* buffer attributes used for SMMU mapping */
 	__s32 reserved[4];
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct fastrpc_req_munmap {
 	__u64 vaddrout;	/* address to unmap */
@@ -131,7 +132,8 @@ struct fastrpc_mem_unmap {
 	__u64 vaddr;		/* remote process (dsp) virtual address */
 	__u64 length;		/* buffer size */
 	__s32 reserved[5];
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct fastrpc_ioctl_capability {
 	__u32 unused; /* deprecated, ignored by the kernel */

@@ -72,9 +72,10 @@ enum {
 
 struct f2fs_gc_range {
 	__u32 sync;
+	__uapi_arch_pad32;
 	__u64 start;
 	__u64 len;
-};
+} __uapi_arch_align;
 
 struct f2fs_defragment {
 	__u64 start;
@@ -83,10 +84,11 @@ struct f2fs_defragment {
 
 struct f2fs_move_range {
 	__u32 dst_fd;		/* destination fd */
+	__uapi_arch_pad32;
 	__u64 pos_in;		/* start position in src_fd */
 	__u64 pos_out;		/* start position in dst_fd */
 	__u64 len;		/* size to move */
-};
+} __uapi_arch_align;
 
 struct f2fs_flush_device {
 	__u32 dev_num;		/* device number to flush */

@@ -2,6 +2,8 @@
 #ifndef _LINUX_NFS4_MOUNT_H
 #define _LINUX_NFS4_MOUNT_H
 
+#include <linux/types.h>
+
 /*
  *  linux/include/linux/nfs4_mount.h
  *
@@ -21,8 +23,9 @@
 
 struct nfs_string {
 	unsigned int len;
+	__uapi_arch_pad_long;
 	const char __user * data;
-};
+} __uapi_arch_align;
 
 struct nfs4_mount_data {
 	int version;				/* 1 */
@@ -46,6 +49,7 @@ struct nfs4_mount_data {
 	struct nfs_string hostname;		/* 1 */
 	/* Server IP address */
 	unsigned int host_addrlen;		/* 1 */
+	__uapi_arch_pad_long;
 	struct sockaddr __user * host_addr;	/* 1 */
 
 	/* Transport protocol to use */
@@ -54,7 +58,7 @@ struct nfs4_mount_data {
 	/* Pseudo-flavours to use for authentication. See RFC2623 */
 	int auth_flavourlen;			/* 1 */
 	int __user *auth_flavours;		/* 1 */
-};
+} __uapi_arch_align;
 
 /* bits in the flags field */
 /* Note: the fields that correspond to existing NFSv2/v3 mount options

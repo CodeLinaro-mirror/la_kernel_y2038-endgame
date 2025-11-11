@@ -7,7 +7,9 @@
 struct xt_esp {
 	__u32 spis[2];	/* Security Parameter Index */
 	__u8  invflags;	/* Inverse flags */
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* Values for "invflags" field in struct xt_esp. */
 #define XT_ESP_INV_SPI	0x01	/* Invert the sense of spi. */

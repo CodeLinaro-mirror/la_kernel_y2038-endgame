@@ -2,6 +2,10 @@
 #ifndef __MIPS_UAPI_ASM_UCONTEXT_H
 #define __MIPS_UAPI_ASM_UCONTEXT_H
 
+#include <linux/types.h>
+#include <asm/signal.h>
+#include <asm/sigcontext.h>
+
 /**
  * struct extcontext - extended context header structure
  * @magic:	magic value identifying the type of extended context
@@ -38,7 +42,8 @@ struct msa_extcontext {
 
 	unsigned long long	wr[32];
 	unsigned int		csr;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 #define END_EXTCONTEXT_MAGIC	0x78454e44	/* xEND */
 
@@ -56,11 +61,12 @@ struct ucontext {
 	unsigned long		uc_flags;
 	struct ucontext		*uc_link;
 	stack_t			uc_stack;
+	__uapi_arch_pad32;
 	struct sigcontext	uc_mcontext;
 	sigset_t		uc_sigmask;
 
 	/* Extended context structures may follow ucontext */
 	unsigned long long	uc_extcontext[];
-};
+} __uapi_arch_align;
 
 #endif /* __MIPS_UAPI_ASM_UCONTEXT_H */

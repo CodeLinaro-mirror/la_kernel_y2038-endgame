@@ -28,6 +28,7 @@ struct xt_policy_spec {
 			mode:1,
 			spi:1,
 			reqid:1;
+	__u8 :2;
 };
 
 #ifndef __KERNEL__

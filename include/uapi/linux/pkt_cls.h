@@ -251,6 +251,7 @@ struct tc_u32_sel {
 		unsigned char		flags;
 		unsigned char		offshift;
 		unsigned char		nkeys;
+		__uapi_arch_pad8;
 
 		__be16			offmask;
 		__u16			off;
@@ -260,7 +261,7 @@ struct tc_u32_sel {
 		__be32			hmask;
 	);
 	struct tc_u32_key	keys[];
-};
+} __uapi_arch_align;
 
 struct tc_u32_mark {
 	__u32		val;

@@ -14,6 +14,8 @@
 
 #include <asm-generic/int-ll64.h>
 
+#define __uapi_arch_pad_old_dev_t __uapi_arch_pad16
+
 #ifdef __ASSEMBLER__
 # define __XTENSA_UL(x)		(x)
 # define __XTENSA_UL_CONST(x)	x

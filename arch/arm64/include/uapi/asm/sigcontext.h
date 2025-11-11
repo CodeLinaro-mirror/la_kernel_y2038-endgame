@@ -32,6 +32,8 @@ struct sigcontext {
 	__u64 sp;
 	__u64 pc;
 	__u64 pstate;
+
+	__u64 :64; /* pad to alignment */
 	/* 4K reserved for FP/SIMD state and future expansion */
 	__u8 __reserved[4096] __attribute__((__aligned__(16)));
 };

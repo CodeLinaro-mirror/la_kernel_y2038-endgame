@@ -183,7 +183,7 @@ struct rseq {
 	/*
 	 * Flexible array member at end of structure, after last feature field.
 	 */
-	char end[];
+	__DECLARE_FLEX_ARRAY(char, end);
 } __attribute__((aligned(4 * sizeof(__u64))));
 
 #endif /* _UAPI_LINUX_RSEQ_H */

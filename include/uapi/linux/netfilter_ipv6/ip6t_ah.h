@@ -9,7 +9,8 @@ struct ip6t_ah {
 	__u32 hdrlen;			/* Header Length */
 	__u8  hdrres;			/* Test of the Reserved Filed */
 	__u8  invflags;			/* Inverse flags */
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #define IP6T_AH_SPI 0x01
 #define IP6T_AH_LEN 0x02

@@ -207,6 +207,7 @@ do_compile() {
 		  -fno-eliminate-unused-debug-types \
 		  -g \
 		  "-I${inc_dir}" \
+		  "-I${KERNEL_SRC}/tools/include/nolibc" \
 		  -include "$header" \
 		  -
 }
@@ -453,15 +454,15 @@ check_deps() {
 		return 1
 	fi
 
-	if "$CC" --version | grep -q clang; then
-		local -r libdw_version="$(ldconfig -v 2>/dev/null | grep -v SKIPPED | grep -m 1 -o 'libdw-[0-9]\+.[0-9]\+' | cut -c 7-)"
-		if ! min_version_is_satisfied "$libdw_min_version_if_clang" "$libdw_version"; then
-			eprintf "error - libdw version too old for use with clang: %s\n" "$libdw_version"
-			eprintf "Please install libdw from elfutils version %s or greater\n" "$libdw_min_version_if_clang"
-			eprintf "See: https://sourceware.org/elfutils/\n"
-			return 1
-		fi
-	fi
+#	if "$CC" --version | grep -q clang; then
+#		local -r libdw_version="$(ldconfig -v 2>/dev/null | grep -v SKIPPED | grep -m 1 -o 'libdw-[0-9]\+.[0-9]\+' | cut -c 7-)"
+#		if ! min_version_is_satisfied "$libdw_min_version_if_clang" "$libdw_version"; then
+#			eprintf "error - libdw version too old for use with clang: %s\n" "$libdw_version"
+#			eprintf "Please install libdw from elfutils version %s or greater\n" "$libdw_min_version_if_clang"
+#			eprintf "See: https://sourceware.org/elfutils/\n"
+#			return 1
+#		fi
+#	fi
 
 	if [ ! -d "arch/${ARCH}" ]; then
 		eprintf 'error - ARCH "%s" is not a subdirectory under arch/\n' "$ARCH"

@@ -200,8 +200,9 @@ struct pkey_verifykey {
 	__u16  cardnr;			       /* out: card number	  */
 	__u16  domain;			       /* out: domain number	  */
 	__u16  keysize;			       /* out: key size in bits   */
+	__uapi_arch_pad16;
 	__u32  attributes;		       /* out: attribute bits	  */
-};
+} __uapi_arch_align;
 
 #define PKEY_VERIFYKEY _IOWR(PKEY_IOCTL_MAGIC, 0x07, struct pkey_verifykey)
 #define PKEY_VERIFY_ATTR_AES	   0x00000001  /* key is an AES key */
@@ -233,7 +234,8 @@ struct pkey_kblob2pkey {
 	__u8 __user *key;		/* in: the key blob	   */
 	__u32 keylen;			/* in: the key blob length */
 	struct pkey_protkey protkey;	/* out: the protected key  */
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 #define PKEY_KBLOB2PROTK _IOWR(PKEY_IOCTL_MAGIC, 0x0A, struct pkey_kblob2pkey)
 
@@ -266,7 +268,8 @@ struct pkey_genseck2 {
 	__u8 __user *key;	    /* in: pointer to key blob buffer	  */
 	__u32 keylen;		    /* in: available key blob buffer size */
 				    /* out: actual key blob size	  */
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 #define PKEY_GENSECK2 _IOWR(PKEY_IOCTL_MAGIC, 0x11, struct pkey_genseck2)
 
@@ -301,7 +304,8 @@ struct pkey_clr2seck2 {
 	__u8 __user *key;	    /* in: pointer to key blob buffer	   */
 	__u32 keylen;		    /* in: available key blob buffer size  */
 				    /* out: actual key blob size	   */
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 #define PKEY_CLR2SECK2 _IOWR(PKEY_IOCTL_MAGIC, 0x12, struct pkey_clr2seck2)
 
@@ -339,7 +343,8 @@ struct pkey_verifykey2 {
 	enum pkey_key_type type;    /* out: the key type		 */
 	enum pkey_key_size size;    /* out: the key size		 */
 	__u32 flags;		    /* out: additional key info flags	 */
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 #define PKEY_VERIFYKEY2 _IOWR(PKEY_IOCTL_MAGIC, 0x17, struct pkey_verifykey2)
 
@@ -359,10 +364,12 @@ struct pkey_verifykey2 {
 struct pkey_kblob2pkey2 {
 	__u8 __user *key;	     /* in: pointer to key blob		   */
 	__u32 keylen;		     /* in: key blob size		   */
+	__uapi_arch_pad_long;
 	struct pkey_apqn __user *apqns; /* in: ptr to list of apqn targets */
 	__u32 apqn_entries;	     /* in: # of apqn target list entries  */
 	struct pkey_protkey protkey; /* out: the protected key		   */
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 #define PKEY_KBLOB2PROTK2 _IOWR(PKEY_IOCTL_MAGIC, 0x1A, struct pkey_kblob2pkey2)
 
@@ -399,7 +406,8 @@ struct pkey_apqns4key {
 	struct pkey_apqn __user *apqns; /* in/out: ptr to list of apqn targets*/
 	__u32 apqn_entries;	   /* in: max # of apqn entries in the list   */
 				   /* out: # apqns stored into the list	      */
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 #define PKEY_APQNS4K _IOWR(PKEY_IOCTL_MAGIC, 0x1B, struct pkey_apqns4key)
 
@@ -439,7 +447,8 @@ struct pkey_apqns4keytype {
 	struct pkey_apqn __user *apqns; /* in/out: ptr to list of apqn targets*/
 	__u32 apqn_entries;	   /* in: max # of apqn entries in the list   */
 				   /* out: # apqns stored into the list	      */
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 #define PKEY_APQNS4KT _IOWR(PKEY_IOCTL_MAGIC, 0x1C, struct pkey_apqns4keytype)
 
@@ -461,12 +470,14 @@ struct pkey_apqns4keytype {
 struct pkey_kblob2pkey3 {
 	__u8 __user *key;	     /* in: pointer to key blob		   */
 	__u32 keylen;		     /* in: key blob size		   */
+	__uapi_arch_pad_long;
 	struct pkey_apqn __user *apqns; /* in: ptr to list of apqn targets */
 	__u32 apqn_entries;	     /* in: # of apqn target list entries  */
 	__u32 pkeytype;		/* out: prot key type (enum pkey_key_type) */
 	__u32 pkeylen;	 /* in/out: size of pkey buffer/actual len of pkey */
+	__uapi_arch_pad_long;
 	__u8 __user *pkey;		 /* in: pkey blob buffer space ptr */
-};
+} __uapi_arch_align;
 
 #define PKEY_KBLOB2PROTK3 _IOWR(PKEY_IOCTL_MAGIC, 0x1D, struct pkey_kblob2pkey3)
 

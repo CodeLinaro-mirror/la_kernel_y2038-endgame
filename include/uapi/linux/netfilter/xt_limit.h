@@ -19,7 +19,8 @@ struct xt_rateinfo {
 	unsigned long prev; /* moved to xt_limit_priv */
 	__u32 credit; /* moved to xt_limit_priv */
 	__u32 credit_cap, cost;
+	__uapi_arch_pad_long;
 
 	struct xt_limit_priv *master;
-};
+} __uapi_arch_align;
 #endif /*_XT_RATE_H*/

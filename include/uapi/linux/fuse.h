@@ -245,9 +245,9 @@
 #ifndef _LINUX_FUSE_H
 #define _LINUX_FUSE_H
 
-#ifdef __KERNEL__
 #include <linux/types.h>
-#else
+
+#ifndef __KERNEL__
 #include <stdint.h>
 #endif
 

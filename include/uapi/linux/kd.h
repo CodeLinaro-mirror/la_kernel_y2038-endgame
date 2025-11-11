@@ -14,8 +14,9 @@
 struct consolefontdesc {
 	unsigned short charcount;	/* characters in font (256 or 512) */
 	unsigned short charheight;	/* scan lines per character (1-32) */
+	__uapi_arch_pad_long;
 	char __user *chardata;		/* font data in expanded form */
-};
+} __uapi_arch_align;
 
 #define PIO_FONTRESET   0x4B6D	/* reset to default font */
 
@@ -65,8 +66,10 @@ struct unipair {
 };
 struct unimapdesc {
 	unsigned short entry_ct;
+	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
 	struct unipair __user *entries;
-};
+} __uapi_arch_align;
 #define PIO_UNIMAP	0x4B67	/* put unicode-to-font mapping in kernel */
 #define PIO_UNIMAPCLR	0x4B68	/* clear table, possibly advise hash algorithm */
 struct unimapinit {
@@ -161,18 +164,20 @@ struct console_font_op {
 	unsigned int flags;	/* KD_FONT_FLAG_* */
 	unsigned int width, height;	/* font size */
 	unsigned int charcount;
+	__uapi_arch_pad_long;
 	unsigned char __user *data;	/* font data with vpitch fixed to 32 for
 					 * KD_FONT_OP_SET/GET
 					 */
-};
+} __uapi_arch_align;
 
 struct console_font {
 	unsigned int width, height;	/* font size */
 	unsigned int charcount;
+	__uapi_arch_pad_long;
 	unsigned char *data;	/* font data with vpitch fixed to 32 for
 				 * KD_FONT_OP_SET/GET
 				 */
-};
+} __uapi_arch_align;
 
 #define KD_FONT_OP_SET		0	/* Set font */
 #define KD_FONT_OP_GET		1	/* Get font */

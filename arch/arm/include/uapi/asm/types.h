@@ -38,4 +38,6 @@
 #define __UINTPTR_TYPE__	unsigned long
 #endif
 
+#define __uapi_arch_pad_old_dev_t __uapi_arch_pad16
+
 #endif /* _UAPI_ASM_TYPES_H */

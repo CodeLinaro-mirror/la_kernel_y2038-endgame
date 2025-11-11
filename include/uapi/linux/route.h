@@ -35,9 +35,12 @@ struct rtentry {
 	struct sockaddr	rt_genmask;	/* target network mask (IP)	*/
 	unsigned short	rt_flags;
 	short		rt_pad2;
+	__uapi_arch_pad_long;
 	unsigned long	rt_pad3;
 	void		*rt_pad4;
 	short		rt_metric;	/* +1 for binary compatibility!	*/
+	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
 	char __user	*rt_dev;	/* forcing the device at add	*/
 	unsigned long	rt_mtu;		/* per route MTU/Window 	*/
 #ifndef __KERNEL__
@@ -45,7 +48,9 @@ struct rtentry {
 #endif
 	unsigned long	rt_window;	/* Window clamping 		*/
 	unsigned short	rt_irtt;	/* Initial RTT			*/
-};
+	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 
 #define	RTF_UP		0x0001		/* route usable		  	*/

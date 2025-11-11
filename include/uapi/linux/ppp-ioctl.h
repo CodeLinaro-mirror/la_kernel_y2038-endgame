@@ -69,6 +69,7 @@ struct pppol2tp_ioc_stats {
 	__u16		tunnel_id;	/* redundant */
 	__u16		session_id;	/* if zero, get tunnel stats */
 	__u32		using_ipsec:1;
+	__u32		:31;
 	__aligned_u64	tx_packets;
 	__aligned_u64	tx_bytes;
 	__aligned_u64	tx_errors;

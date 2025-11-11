@@ -29,7 +29,7 @@
 #elif defined(__sh__)
 #include "arch-sh.h"
 #else
-#error Unsupported Architecture
+#include "arch-missing.h"
 #endif
 
 #endif /* _NOLIBC_ARCH_H */

@@ -27,5 +27,7 @@
 # endif
 #endif
 
+#define __uapi_arch_pad_mode_t		__uapi_arch_pad16
+#define __uapi_arch_pad_ipc_pid_t	__uapi_arch_pad16
 
 #endif /* _UAPI_ASM_TYPES_H */

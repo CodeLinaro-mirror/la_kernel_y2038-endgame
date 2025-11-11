@@ -27,6 +27,7 @@ struct ipt_ECN_info {
 	union {
 		struct {
 			__u8 ece:1, cwr:1; /* TCP ECT bits */
+			__u8 :6;
 		} tcp;
 	} proto;
 };

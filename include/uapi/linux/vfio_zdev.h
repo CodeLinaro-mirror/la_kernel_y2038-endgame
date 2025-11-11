@@ -31,8 +31,9 @@ struct vfio_device_info_cap_zpci_base {
 	__u8 gid;		/* PCI function group ID */
 	/* End of version 1 */
 	__u32 fh;		/* PCI function handle */
+	__uapi_arch_pad32;
 	/* End of version 2 */
-};
+} __uapi_arch_align;
 
 /**
  * VFIO_DEVICE_INFO_CAP_ZPCI_GROUP - Base PCI Function Group information
@@ -53,8 +54,10 @@ struct vfio_device_info_cap_zpci_group {
 	/* End of version 1 */
 	__u8 reserved;
 	__u16 imaxstbl;		/* Maximum Interpreted Store Block Length */
+	__uapi_arch_pad16;
+	__uapi_arch_pad32;
 	/* End of version 2 */
-};
+} __uapi_arch_align;
 
 /**
  * VFIO_DEVICE_INFO_CAP_ZPCI_UTIL - Utility String

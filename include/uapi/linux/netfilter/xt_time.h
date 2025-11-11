@@ -12,7 +12,8 @@ struct xt_time_info {
 	__u32 monthdays_match;
 	__u8 weekdays_match;
 	__u8 flags;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 enum {
 	/* Match against local time (instead of UTC) */

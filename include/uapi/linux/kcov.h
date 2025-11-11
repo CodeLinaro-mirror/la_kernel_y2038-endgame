@@ -12,6 +12,7 @@ struct kcov_remote_arg {
 	__u32		trace_mode;	/* KCOV_TRACE_PC or KCOV_TRACE_CMP */
 	__u32		area_size;	/* Length of coverage buffer in words */
 	__u32		num_handles;	/* Size of handles array */
+	__u32		:32;		/* pad to __aligned_u64 */
 	__aligned_u64	common_handle;
 	__aligned_u64	handles[];
 };

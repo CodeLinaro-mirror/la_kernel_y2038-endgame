@@ -86,6 +86,8 @@ struct ioctl_evtchn_notify {
 #define IOCTL_EVTCHN_RESET				\
 	_IOC(_IOC_NONE, 'E', 5, 0)
 
+typedef unsigned short domid_t;
+
 /*
  * Restrict this file descriptor so that it can only be used to bind
  * new interdomain events from one domain.

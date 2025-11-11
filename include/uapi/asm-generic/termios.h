@@ -9,6 +9,7 @@
  * New architectures should not provide their own version.
  */
 
+#include <linux/types.h>
 #include <asm/termbits.h>
 #include <asm/ioctls.h>
 
@@ -27,6 +28,7 @@ struct termio {
 	unsigned short c_lflag;		/* local mode flags */
 	unsigned char c_line;		/* line discipline */
 	unsigned char c_cc[NCC];	/* control characters */
+	__uapi_arch_pad8;
 };
 
 /* modem lines */

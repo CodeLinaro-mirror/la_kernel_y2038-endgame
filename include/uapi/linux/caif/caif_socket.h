@@ -141,6 +141,7 @@ enum caif_debug_service {
  */
 struct sockaddr_caif {
 	__kernel_sa_family_t  family;
+	__uapi_arch_pad16;
 	union {
 		struct {
 			__u8  type;		/* type: enum caif_at_type */
@@ -151,6 +152,8 @@ struct sockaddr_caif {
 		union {
 			__u32 connection_id;
 			__u8  nsapi;
+			__uapi_arch_pad8;
+			__uapi_arch_pad16;
 		} dgm;				/* CAIFPROTO_DATAGRAM(_LOOP)*/
 		struct {
 			__u32 connection_id;
@@ -161,7 +164,7 @@ struct sockaddr_caif {
 			__u8  service;		/* service:caif_debug_service */
 		} dbg;				/* CAIFPROTO_DEBUG */
 	} u;
-};
+} __uapi_arch_align;
 
 /**
  * enum caif_socket_opts - CAIF option values for getsockopt and setsockopt.

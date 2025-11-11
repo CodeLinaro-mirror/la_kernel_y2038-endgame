@@ -40,8 +40,9 @@ struct hdr_ni {
 	__u8 ssap;
 	__be16 ctrl;
 	__u8  orig[3];
+	__uapi_arch_pad8;
 	__be16 type;
-};
+} __uapi_arch_align;
 
 struct ebt_802_3_hdr {
 	__u8  daddr[ETH_ALEN];
@@ -56,9 +57,10 @@ struct ebt_802_3_hdr {
 
 struct ebt_802_3_info {
 	__u8  sap;
+	__uapi_arch_pad8;
 	__be16 type;
 	__u8  bitmask;
 	__u8  invflags;
-};
+} __uapi_arch_align;
 
 #endif /* _UAPI__LINUX_BRIDGE_EBT_802_3_H */

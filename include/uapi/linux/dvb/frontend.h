@@ -180,8 +180,10 @@ struct dvb_diseqc_master_cmd {
 struct dvb_diseqc_slave_reply {
 	__u8 msg[4];
 	__u8 msg_len;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	int  timeout;
-};
+} __uapi_arch_align;
 
 /**
  * enum fe_sec_voltage - DC Voltage used to feed the LNBf
@@ -920,8 +922,9 @@ struct dtv_property {
  */
 struct dtv_properties {
 	__u32 num;
+	__uapi_arch_pad_long;
 	struct dtv_property *props;
-};
+} __uapi_arch_align;
 
 /*
  * When set, this flag will disable any zigzagging or other "normal" tuning

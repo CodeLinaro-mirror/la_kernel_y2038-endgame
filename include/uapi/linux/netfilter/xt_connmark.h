@@ -22,16 +22,21 @@ enum {
 struct xt_connmark_tginfo1 {
 	__u32 ctmark, ctmask, nfmask;
 	__u8 mode;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __arch_uapi_align;
 
 struct xt_connmark_tginfo2 {
 	__u32 ctmark, ctmask, nfmask;
 	__u8 shift_dir, shift_bits, mode;
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 struct xt_connmark_mtinfo1 {
 	__u32 mark, mask;
 	__u8 invert;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #endif /*_XT_CONNMARK_H*/

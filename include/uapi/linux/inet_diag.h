@@ -103,9 +103,10 @@ enum {
 struct inet_diag_hostcond {
 	__u8	family;
 	__u8	prefix_len;
+	__uapi_arch_pad16;
 	int	port;
 	__be32	addr[];
-};
+} __uapi_arch_align;
 
 struct inet_diag_markcond {
 	__u32 mark;

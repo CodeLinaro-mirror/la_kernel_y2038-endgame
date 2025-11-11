@@ -2,7 +2,7 @@
 #ifndef __ASM_GENERIC_IPCBUF_H
 #define __ASM_GENERIC_IPCBUF_H
 
-#include <linux/posix_types.h>
+#include <linux/types.h>
 
 /*
  * The generic ipc64_perm structure:
@@ -30,8 +30,9 @@ struct ipc64_perm {
 	unsigned char		__pad1[4 - sizeof(__kernel_mode_t)];
 	unsigned short		seq;
 	unsigned short		__pad2;
+	__uapi_arch_pad_long;
 	__kernel_ulong_t	__unused1;
 	__kernel_ulong_t	__unused2;
-};
+} __uapi_arch_align;
 
 #endif /* __ASM_GENERIC_IPCBUF_H */

@@ -8,7 +8,8 @@ struct xt_ipcomp {
 	__u32 spis[2];	/* Security Parameter Index */
 	__u8 invflags;	/* Inverse flags */
 	__u8 hdrres;	/* Test of the Reserved Filed */
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* Values for "invflags" field in struct xt_ipcomp. */
 #define XT_IPCOMP_INV_SPI	0x01	/* Invert the sense of spi. */

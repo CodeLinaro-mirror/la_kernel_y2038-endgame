@@ -15,6 +15,8 @@
 typedef unsigned long addr_t;
 typedef __signed__ long saddr_t;
 
+#define __uapi_arch_pad_old_dev_t __uapi_arch_pad16
+
 typedef struct {
 	union {
 		struct {

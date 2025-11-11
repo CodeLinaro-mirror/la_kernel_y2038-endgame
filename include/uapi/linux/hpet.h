@@ -3,14 +3,15 @@
 #define _UAPI__HPET__
 
 #include <linux/compiler.h>
-
+#include <linux/types.h>
 
 struct hpet_info {
 	unsigned long hi_ireqfreq;	/* Hz */
 	unsigned long hi_flags;	/* information */
 	unsigned short hi_hpet;
 	unsigned short hi_timer;
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 #define HPET_INFO_PERIODIC	0x0010	/* periodic-capable comparator */
 
