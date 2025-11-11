@@ -37,7 +37,7 @@
 #elif defined(__hexagon__)
 #include "arch-hexagon.h"
 #else
-#error Unsupported Architecture
+#include "arch-missing.h"
 #endif
 
 #endif /* _NOLIBC_ARCH_H */

@@ -146,7 +146,8 @@ struct prctl_mm_map {
 	__u64	*auxv;			/* auxiliary vector */
 	__u32	auxv_size;		/* vector size */
 	__u32	exe_fd;			/* /proc/$pid/exe link file */
-};
+	__uapi_arch_pad_long_to_u64;
+} __uapi_arch_align;
 
 /*
  * Set specific pid that is allowed to ptrace the current task.

@@ -28,6 +28,7 @@ struct xt_connlimit_info {
 
 	/* Used internally by the kernel */
 	struct nf_conncount_data *data __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 
 #endif /* _XT_CONNLIMIT_H */

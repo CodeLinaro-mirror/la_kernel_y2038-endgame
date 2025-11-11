@@ -728,7 +728,8 @@ struct drm_amdgpu_gem_metadata {
 		__u64	tiling_info;
 		__u32	data_size_bytes;
 		__u32	data[64];
-	} data;
+		__uapi_arch_pad32;
+	} __uapi_arch_align data;
 };
 
 struct drm_amdgpu_gem_mmap_in {
@@ -1568,7 +1569,8 @@ struct drm_amdgpu_info_hw_ip {
 	__u32  ip_discovery_version;
 	/* Userq available slots */
 	__u32  userq_num_slots;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct drm_amdgpu_info_num_handles {
 	/** Max handles as supported by firmware for UVD */

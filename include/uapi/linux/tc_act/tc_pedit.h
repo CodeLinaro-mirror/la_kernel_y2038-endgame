@@ -62,8 +62,9 @@ struct tc_pedit_sel {
 	tc_gen;
 	unsigned char           nkeys;
 	unsigned char           flags;
+	__uapi_arch_pad16;
 	struct tc_pedit_key     keys[] __counted_by(nkeys);
-};
+} __uapi_arch_align;
 
 #define tc_pedit tc_pedit_sel
 

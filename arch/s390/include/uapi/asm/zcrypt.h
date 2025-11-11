@@ -38,11 +38,13 @@
 struct ica_rsa_modexpo {
 	__u8 __user  *inputdata;
 	__u32	      inputdatalength;
+	__uapi_arch_pad_long;
 	__u8 __user  *outputdata;
 	__u32	      outputdatalength;
+	__uapi_arch_pad_long;
 	__u8 __user  *b_key;
 	__u8 __user  *n_modulus;
-};
+} __uapi_arch_align;
 
 /**
  * struct ica_rsa_modexpo_crt
@@ -61,14 +63,16 @@ struct ica_rsa_modexpo {
 struct ica_rsa_modexpo_crt {
 	__u8 __user  *inputdata;
 	__u32	      inputdatalength;
+	__uapi_arch_pad_long;
 	__u8 __user  *outputdata;
 	__u32	      outputdatalength;
+	__uapi_arch_pad_long;
 	__u8 __user  *bp_key;
 	__u8 __user  *bq_key;
 	__u8 __user  *np_prime;
 	__u8 __user  *nq_prime;
 	__u8 __user  *u_mult_inv;
-};
+} __uapi_arch_align;
 
 /**
  * CPRBX

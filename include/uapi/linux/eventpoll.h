@@ -77,11 +77,14 @@
 #ifdef __x86_64__
 #define EPOLL_PACKED __attribute__((packed))
 #else
-#define EPOLL_PACKED
+#define EPOLL_PACKED __uapi_arch_align
 #endif
 
 struct epoll_event {
 	__poll_t events;
+#ifndef __x86_64__
+	__uapi_arch_pad32;
+#endif
 	__u64 data;
 } EPOLL_PACKED;
 

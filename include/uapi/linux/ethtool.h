@@ -210,7 +210,8 @@ struct ethtool_wolinfo {
 	__u32	supported;
 	__u32	wolopts;
 	__u8	sopass[SOPASS_MAX];
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* for passing single values */
 struct ethtool_value {
@@ -1263,7 +1264,9 @@ struct ethtool_tcpip4_spec {
 	__be16	psrc;
 	__be16	pdst;
 	__u8    tos;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /**
  * struct ethtool_ah_espip4_spec - flow specification for IPsec/IPv4
@@ -1279,7 +1282,9 @@ struct ethtool_ah_espip4_spec {
 	__be32	ip4dst;
 	__be32	spi;
 	__u8    tos;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #define	ETH_RX_NFC_IP4	1
 
@@ -1299,7 +1304,8 @@ struct ethtool_usrip4_spec {
 	__u8    tos;
 	__u8    ip_ver;
 	__u8    proto;
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 /**
  * struct ethtool_tcpip6_spec - flow specification for TCP/IPv6 etc.
@@ -1317,7 +1323,9 @@ struct ethtool_tcpip6_spec {
 	__be16	psrc;
 	__be16	pdst;
 	__u8    tclass;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /**
  * struct ethtool_ah_espip6_spec - flow specification for IPsec/IPv6
@@ -1333,7 +1341,9 @@ struct ethtool_ah_espip6_spec {
 	__be32	ip6dst[4];
 	__be32	spi;
 	__u8    tclass;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /**
  * struct ethtool_usrip6_spec - general flow specification for IPv6
@@ -1349,7 +1359,8 @@ struct ethtool_usrip6_spec {
 	__be32	l4_4_bytes;
 	__u8    tclass;
 	__u8    l4_proto;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 union ethtool_flow_union {
 	struct ethtool_tcpip4_spec		tcp_ip4_spec;
@@ -1411,9 +1422,11 @@ struct ethtool_rx_flow_spec {
 	struct ethtool_flow_ext h_ext;
 	union ethtool_flow_union m_u;
 	struct ethtool_flow_ext m_ext;
+	__uapi_arch_pad32;
 	__u64		ring_cookie;
 	__u32		location;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /* How rings are laid out when accessing virtual functions or
  * offloaded queues is device specific. To allow users to do flow
@@ -1510,8 +1523,11 @@ struct ethtool_rxnfc {
 		__u32			rule_cnt;
 		__u32			rss_context;
 	};
-	__u32				rule_locs[];
-};
+	union {
+		__uapi_arch_pad32;
+		__DECLARE_FLEX_ARRAY(__u32, rule_locs);
+	};
+} __uapi_arch_align;
 
 
 /**
@@ -1614,6 +1630,7 @@ struct ethtool_rx_ntuple_flow_spec {
 	__u64		data_mask;
 
 	__s32		action;
+	__uapi_arch_pad32;
 #define ETHTOOL_RXNTUPLE_ACTION_DROP	(-1)	/* drop packet */
 #define ETHTOOL_RXNTUPLE_ACTION_CLEAR	(-2)	/* clear filter */
 };
@@ -1625,6 +1642,7 @@ struct ethtool_rx_ntuple_flow_spec {
  */
 struct ethtool_rx_ntuple {
 	__u32					cmd;
+	__uapi_arch_pad32;
 	struct ethtool_rx_ntuple_flow_spec	fs;
 };
 

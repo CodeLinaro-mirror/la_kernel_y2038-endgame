@@ -123,6 +123,11 @@ struct usb_raw_ep_caps {
 	__u32	type_int	: 1;
 	__u32	dir_in		: 1;
 	__u32	dir_out		: 1;
+#ifdef __m68k__
+	__u32			: 2;
+#else
+	__u32			:26;
+#endif
 };
 
 /*
@@ -150,6 +155,9 @@ struct usb_raw_ep_info {
 	__u8				name[USB_RAW_EP_NAME_MAX];
 	__u32				addr;
 	struct usb_raw_ep_caps		caps;
+#ifdef __m68k__
+	__u8				:8;
+#endif
 	struct usb_raw_ep_limits	limits;
 };
 

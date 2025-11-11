@@ -11,6 +11,7 @@ struct xt_led_info {
 
 	/* Kernel data used in the module */
 	void *internal_data __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 
 #endif /* _XT_LED_H */

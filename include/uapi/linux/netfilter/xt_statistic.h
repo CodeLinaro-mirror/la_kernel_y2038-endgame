@@ -32,6 +32,7 @@ struct xt_statistic_info {
 		} nth;
 	} u;
 	struct xt_statistic_priv *master __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 
 #endif /* _XT_STATISTIC_H */

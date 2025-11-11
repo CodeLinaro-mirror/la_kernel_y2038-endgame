@@ -192,7 +192,10 @@ struct dm_name_list {
 	__u64 dev;
 	__u32 next;		/* offset to the next record from
 				   the _start_ of this */
-	char name[];
+	union {
+		__uapi_arch_pad32;
+		__DECLARE_FLEX_ARRAY(char, name);
+	} __uapi_arch_align;
 
 	/*
 	 * The following members can be accessed by taking a pointer that
@@ -204,7 +207,7 @@ struct dm_name_list {
 	 * __u32 flags;
 	 * char uuid[0];
 	 */
-};
+} __uapi_arch_align;
 
 #define DM_NAME_LIST_FLAG_HAS_UUID		1
 #define DM_NAME_LIST_FLAG_DOESNT_HAVE_UUID	2

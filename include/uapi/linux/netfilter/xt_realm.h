@@ -8,6 +8,8 @@ struct xt_realm_info {
 	__u32 id;
 	__u32 mask;
 	__u8 invert;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #endif /* _XT_REALM_H */

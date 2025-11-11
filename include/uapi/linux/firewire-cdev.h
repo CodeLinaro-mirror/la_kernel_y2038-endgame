@@ -67,7 +67,8 @@
 struct fw_cdev_event_common {
 	__u64 closure;
 	__u32 type;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct fw_cdev_event_bus_reset - Sent when a bus reset occurred
@@ -97,7 +98,8 @@ struct fw_cdev_event_bus_reset {
 	__u32 irm_node_id;
 	__u32 root_node_id;
 	__u32 generation;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct fw_cdev_event_response - Sent when a response packet was received
@@ -117,8 +119,11 @@ struct fw_cdev_event_response {
 	__u32 type;
 	__u32 rcode;
 	__u32 length;
-	__u32 data[];
-};
+	union {
+		__uapi_arch_pad32;
+		__DECLARE_FLEX_ARRAY(__u32, data);
+	} __uapi_arch_align;
+} __uapi_arch_align;
 
 /**
  * struct fw_cdev_event_response2 - Sent when a response packet was received
@@ -347,7 +352,10 @@ struct fw_cdev_event_iso_interrupt {
 	__u32 type;
 	__u32 cycle;
 	__u32 header_length;
-	__u32 header[];
+	union {
+		__uapi_arch_pad32;
+		__DECLARE_FLEX_ARRAY(__u32, header);
+	};
 };
 
 /**
@@ -435,8 +443,11 @@ struct fw_cdev_event_phy_packet {
 	__u32 type;
 	__u32 rcode;
 	__u32 length;
-	__u32 data[];
-};
+	union {
+		__uapi_arch_pad32;
+		__DECLARE_FLEX_ARRAY(__u32, data);
+	};
+} __uapi_arch_align;
 
 /**
  * struct fw_cdev_event_phy_packet2 - A PHY packet was transmitted or received with time stamp.
@@ -626,7 +637,8 @@ struct fw_cdev_get_info {
 	__u64 bus_reset;
 	__u64 bus_reset_closure;
 	__u32 card;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct fw_cdev_send_request - Send an asynchronous request packet
@@ -650,7 +662,8 @@ struct fw_cdev_send_request {
 	__u64 closure;
 	__u64 data;
 	__u32 generation;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct fw_cdev_send_response - Send an asynchronous response packet
@@ -670,7 +683,8 @@ struct fw_cdev_send_response {
 	__u32 length;
 	__u64 data;
 	__u32 handle;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct fw_cdev_allocate - Allocate a CSR in an address range
@@ -841,7 +855,8 @@ struct fw_cdev_create_iso_context {
 	__u32 speed;
 	__u64 closure;
 	__u32 handle;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct fw_cdev_set_iso_channels - Select channels in multichannel reception
@@ -857,7 +872,8 @@ struct fw_cdev_create_iso_context {
 struct fw_cdev_set_iso_channels {
 	__u64 channels;
 	__u32 handle;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 #define FW_CDEV_ISO_PAYLOAD_LENGTH(v)	(v)
 #define FW_CDEV_ISO_INTERRUPT		(1 << 16)
@@ -1034,7 +1050,8 @@ struct fw_cdev_flush_iso {
 struct fw_cdev_get_cycle_timer {
 	__u64 local_time;
 	__u32 cycle_timer;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct fw_cdev_get_cycle_timer2 - read cycle timer register
@@ -1060,7 +1077,8 @@ struct fw_cdev_get_cycle_timer2 {
 	__s32 tv_nsec;
 	__s32 clk_id;
 	__u32 cycle_timer;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct fw_cdev_allocate_iso_resource - (De)allocate a channel or bandwidth
@@ -1159,7 +1177,8 @@ struct fw_cdev_send_phy_packet {
 	__u64 closure;
 	__u32 data[2];
 	__u32 generation;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct fw_cdev_receive_phy_packets - start reception of PHY packets

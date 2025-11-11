@@ -716,7 +716,8 @@ struct kfd_ioctl_criu_args {
 	__u32 num_objects;	/* Used during ops: PROCESS_INFO, RESTORE */
 	__u32 pid;		/* Used during ops: PROCESS_INFO, RESUME */
 	__u32 op;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct kfd_criu_device_bucket {
 	__u32 user_gpu_id;

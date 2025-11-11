@@ -36,6 +36,7 @@ struct mce {
 	__u64 ipid;		/* MCA_IPID MSR: only valid on SMCA systems */
 	__u64 ppin;		/* Protected Processor Inventory Number */
 	__u32 microcode;	/* Microcode revision */
+	__uapi_arch_pad32;	/* pad */
 	__u64 kflags;		/* Internal kernel use */
 };
 

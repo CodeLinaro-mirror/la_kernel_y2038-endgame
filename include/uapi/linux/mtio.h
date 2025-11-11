@@ -19,8 +19,9 @@
 /* structure for MTIOCTOP - mag tape op command */
 struct	mtop {
 	short	mt_op;		/* operations defined below */
+	__uapi_arch_pad16;
 	int	mt_count;	/* how many of them */
-};
+} __uapi_arch_align;
 
 /* Magnetic Tape operations [Not all operations supported by all drivers]: */
 #define MTRESET 0	/* +reset drive in case of problems */

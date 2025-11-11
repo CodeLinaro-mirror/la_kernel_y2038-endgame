@@ -37,11 +37,13 @@ struct elf64_fdpic_loadseg {
 	Elf64_Addr	addr;		/* core address to which mapped */
 	Elf64_Addr	p_vaddr;	/* VMA recorded in file */
 	Elf64_Word	p_memsz;	/* allocation size recorded in file */
+	__uapi_arch_pad32;
 };
 
 struct elf64_fdpic_loadmap {
 	Elf64_Half	version;	/* version of these structures, just in case... */
 	Elf64_Half	nsegs;		/* number of segments */
+	__uapi_arch_pad32;
 	struct elf64_fdpic_loadseg segs[];
 };
 

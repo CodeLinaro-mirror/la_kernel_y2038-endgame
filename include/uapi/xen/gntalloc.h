@@ -35,7 +35,8 @@ struct ioctl_gntalloc_alloc_gref {
 		__u32 gref_ids[1];
 		__DECLARE_FLEX_ARRAY(__u32, gref_ids_flex);
 	};
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 #define GNTALLOC_FLAG_WRITABLE 1
 
@@ -51,7 +52,8 @@ struct ioctl_gntalloc_dealloc_gref {
 	__u64 index;
 	/* Number of references to unmap */
 	__u32 count;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /*
  * Sets up an unmap notification within the page, so that the other side can do

@@ -59,9 +59,11 @@ struct xfrm_selector {
 	__u8	prefixlen_d;
 	__u8	prefixlen_s;
 	__u8	proto;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	int	ifindex;
 	__kernel_uid32_t	user;
-};
+} __uapi_arch_align;
 
 #define XFRM_INF (~(__u64)0)
 
@@ -268,8 +270,9 @@ struct xfrm_encap_tmpl {
 	__u16		encap_type;
 	__be16		encap_sport;
 	__be16		encap_dport;
+	__uapi_arch_pad16;
 	xfrm_address_t	encap_oa;
-};
+} __uapi_arch_align;
 
 /* AEVENT flags  */
 enum xfrm_ae_ftype_t {
@@ -288,9 +291,11 @@ enum xfrm_ae_ftype_t {
 
 struct xfrm_userpolicy_type {
 	__u8		type;
+	__uapi_arch_pad8;
 	__u16		reserved1;
 	__u8		reserved2;
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 /* Netlink message attributes.  */
 enum xfrm_attr_type_t {
@@ -412,7 +417,10 @@ struct xfrm_usersa_info {
 #define XFRM_STATE_AF_UNSPEC	32
 #define XFRM_STATE_ALIGN4	64
 #define XFRM_STATE_ESN		128
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 #define XFRM_SA_XFLAG_DONT_ENCAP_DSCP	1
 #define XFRM_SA_XFLAG_OSEQ_MAY_WRAP	2
@@ -422,7 +430,8 @@ struct xfrm_usersa_id {
 	__be32				spi;
 	__u16				family;
 	__u8				proto;
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 struct xfrm_aevent_id {
 	struct xfrm_usersa_id		sa_id;
@@ -453,13 +462,16 @@ struct xfrm_userpolicy_info {
 #define XFRM_POLICY_ICMP	2
 #define XFRM_POLICY_CPU_ACQUIRE	4
 	__u8				share;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct xfrm_userpolicy_id {
 	struct xfrm_selector		sel;
 	__u32				index;
 	__u8				dir;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct xfrm_user_acquire {
 	struct xfrm_id			id;
@@ -475,12 +487,18 @@ struct xfrm_user_acquire {
 struct xfrm_user_expire {
 	struct xfrm_usersa_info		state;
 	__u8				hard;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct xfrm_user_polexpire {
 	struct xfrm_userpolicy_info	pol;
 	__u8				hard;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct xfrm_usersa_flush {
 	__u8				proto;
@@ -488,8 +506,10 @@ struct xfrm_usersa_flush {
 
 struct xfrm_user_report {
 	__u8				proto;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	struct xfrm_selector		sel;
-};
+} __uapi_arch_align;
 
 /* Used by MIGRATE to pass addresses IKE should use to perform
  * SA negotiation with the peer */
@@ -498,7 +518,8 @@ struct xfrm_user_kmaddress {
 	xfrm_address_t                  remote;
 	__u32				reserved;
 	__u16				family;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct xfrm_user_migrate {
 	xfrm_address_t			old_daddr;
@@ -555,7 +576,9 @@ struct xfrm_address_filter {
 struct xfrm_user_offload {
 	int				ifindex;
 	__u8				flags;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 /* This flag was exposed without any kernel code that supports it.
  * Unfortunately, strongswan has the code that sets this flag,
  * which makes it impossible to reuse this bit.

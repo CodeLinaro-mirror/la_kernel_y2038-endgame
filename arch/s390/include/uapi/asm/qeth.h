@@ -111,6 +111,7 @@ struct qeth_query_oat_data {
 	__u32 command;
 	__u32 buffer_len;
 	__u32 response_len;
+	__uapi_arch_pad32;
 	__u64 ptr;
-};
+} __uapi_arch_align;
 #endif /* __ASM_S390_QETH_IOCTL_H__ */

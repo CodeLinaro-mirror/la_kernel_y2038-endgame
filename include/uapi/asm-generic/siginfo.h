@@ -47,6 +47,7 @@ union __sifields {
 		int _overrun;		/* overrun count */
 		sigval_t _sigval;	/* same as below */
 		int _sys_private;       /* Not used by the kernel. Historic leftover. Always 0. */
+		__uapi_arch_pad_long;
 	} _timer;
 
 	/* POSIX.1b signals */
@@ -61,6 +62,7 @@ union __sifields {
 		__kernel_pid_t _pid;	/* which child */
 		__kernel_uid32_t _uid;	/* sender's uid */
 		int _status;		/* exit code */
+		__u8 __pad[sizeof(__ARCH_SI_CLOCK_T) - sizeof(int)];
 		__ARCH_SI_CLOCK_T _utime;
 		__ARCH_SI_CLOCK_T _stime;
 	} _sigchld;
@@ -103,6 +105,7 @@ union __sifields {
 	struct {
 		__ARCH_SI_BAND_T _band;	/* POLL_IN, POLL_OUT, POLL_MSG */
 		int _fd;
+		__u8 _si_band_pad[sizeof(__ARCH_SI_BAND_T) - sizeof(int)];
 	} _sigpoll;
 
 	/* SIGSYS */
@@ -119,6 +122,7 @@ struct {				\
 	int si_signo;			\
 	int si_errno;			\
 	int si_code;			\
+	__uapi_arch_pad_long;		\
 	union __sifields _sifields;	\
 }
 #else

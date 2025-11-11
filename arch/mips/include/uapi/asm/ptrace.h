@@ -85,6 +85,7 @@ struct mips32_watch_regs {
 	unsigned short watch_masks[8];
 	/* The number of valid watch register pairs.  */
 	unsigned int num_valid;
+	__uapi_arch_pad32;
 } __attribute__((aligned(8)));
 
 struct mips64_watch_regs {
@@ -92,15 +93,17 @@ struct mips64_watch_regs {
 	unsigned short watchhi[8];
 	unsigned short watch_masks[8];
 	unsigned int num_valid;
+	__uapi_arch_pad32;
 } __attribute__((aligned(8)));
 
 struct pt_watch_regs {
 	enum pt_watch_style style;
+	__uapi_arch_pad32;
 	union {
 		struct mips32_watch_regs mips32;
 		struct mips64_watch_regs mips64;
 	};
-};
+} __uapi_arch_align;
 
 #define PTRACE_GET_WATCH_REGS	0xd0
 #define PTRACE_SET_WATCH_REGS	0xd1

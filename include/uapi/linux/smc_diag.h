@@ -103,6 +103,7 @@ struct smc_diag_fallback {
 
 struct smcd_diag_dmbinfo {		/* SMC-D Socket internals */
 	__u32		linkid;		/* Link identifier */
+	__u32		:32;		/* pad for alignment */
 	__aligned_u64	peer_gid;	/* Peer GID */
 	__aligned_u64	my_gid;		/* My GID */
 	__aligned_u64	token;		/* Token of DMB */

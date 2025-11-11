@@ -52,9 +52,11 @@ struct stat64 {
 	unsigned int		st_gid;
 	unsigned long long	st_rdev;
 	unsigned int		__pad2;
+	__uapi_arch_pad32;
 	signed long long	st_size;
 	signed int		st_blksize;
 
+	__uapi_arch_pad32;
 	signed long long	st_blocks;
 	signed int		st_atime;
 	unsigned int		st_atime_nsec;

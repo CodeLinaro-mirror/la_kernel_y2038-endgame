@@ -184,9 +184,9 @@
 #define A_CC_REG_NONZERO	A_C_00000100
 
 /* FX buses */
-// These are arbitrary mappings; our DSP code simply expects
-// the config files to route the channels this way.
-// The numbers are documented in {audigy,sb-live}-mixer.rst.
+/* These are arbitrary mappings; our DSP code simply expects	*/
+/* the config files to route the channels this way.		*/
+/* The numbers are documented in {audigy,sb-live}-mixer.rst.	*/
 #define FXBUS_PCM_LEFT		0x00
 #define FXBUS_PCM_RIGHT		0x01
 #define FXBUS_PCM_LEFT_REAR	0x02
@@ -334,8 +334,9 @@ struct snd_emu10k1_fx8010_control_gpr {
 	int min;			/* minimum range */
 	int max;			/* maximum range */
 	unsigned int translation;	/* translation type (EMU10K1_GPR_TRANSLATION*) */
+	__uapi_arch_pad_long;
 	const unsigned int *tlv;
-};
+} __uapi_arch_align;
 
 /* old ABI without TLV support */
 struct snd_emu10k1_fx8010_control_old_gpr {
@@ -356,9 +357,11 @@ struct snd_emu10k1_fx8010_code {
 	__u32 *gpr_map;			/* initializers */
 
 	unsigned int gpr_add_control_count; /* count of GPR controls to add/replace */
+	__uapi_arch_pad_long;
 	struct snd_emu10k1_fx8010_control_gpr *gpr_add_controls; /* GPR controls to add/replace */
 
 	unsigned int gpr_del_control_count; /* count of GPR controls to remove */
+	__uapi_arch_pad_long;
 	struct emu10k1_ctl_elem_id *gpr_del_controls; /* IDs of GPR controls to remove */
 
 	unsigned int gpr_list_control_count; /* count of GPR controls to list */
@@ -371,7 +374,7 @@ struct snd_emu10k1_fx8010_code {
 
 	__EMU10K1_DECLARE_BITMAP(code_valid, 1024); /* bitmask of valid instructions */
 	__u32 *code;			  /* one instruction - 64 bits */
-};
+} __uapi_arch_align;
 
 struct snd_emu10k1_fx8010_tram {
 	unsigned int address;		/* 31.bit == 1 -> external TRAM */
@@ -394,8 +397,10 @@ struct snd_emu10k1_fx8010_pcm_rec {
 	unsigned short gpr_running;	/* GPR containing info if PCM is running (FX8010) */
 	unsigned char pad;		/* reserved */
 	unsigned char etram[32];	/* external TRAM address & data (one per channel) */
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	unsigned int res2;		/* reserved */
-};
+} __uapi_arch_align;
 
 #define SNDRV_EMU10K1_VERSION		SNDRV_PROTOCOL_VERSION(1, 0, 1)
 

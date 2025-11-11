@@ -15,7 +15,8 @@ struct papr_sysparm_io_block {
 	__u32 parameter;
 	__u16 length;
 	__u8 data[PAPR_SYSPARM_MAX_OUTPUT];
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /**
  * PAPR_SYSPARM_IOC_GET - Retrieve the value of a PAPR system parameter.

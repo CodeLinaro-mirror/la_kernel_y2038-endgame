@@ -70,7 +70,8 @@ struct pps_kinfo {
 	struct pps_ktime assert_tu;	/* time of assert event */
 	struct pps_ktime clear_tu;	/* time of clear event */
 	int current_mode;		/* current mode bits */
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct pps_kinfo_compat {
 	__u32 assert_sequence;			/* seq. num. of assert event */

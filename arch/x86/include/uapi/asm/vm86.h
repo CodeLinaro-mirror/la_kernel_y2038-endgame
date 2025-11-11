@@ -13,6 +13,7 @@
  * Linus
  */
 
+#include <linux/types.h>
 #include <asm/processor-flags.h>
 
 #define BIOSSEG		0x0f000
@@ -78,6 +79,7 @@ struct vm86_regs {
 	long orig_eax;
 	long eip;
 	unsigned short cs, __csh;
+	__uapi_arch_pad_long;
 	long eflags;
 	long esp;
 	unsigned short ss, __ssh;
@@ -88,7 +90,8 @@ struct vm86_regs {
 	unsigned short ds, __dsh;
 	unsigned short fs, __fsh;
 	unsigned short gs, __gsh;
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 struct revectored_struct {
 	unsigned long __map[8];			/* 256 bits */
@@ -115,7 +118,9 @@ struct vm86plus_info_struct {
 	unsigned long unused:28;
 	unsigned long is_vm86pus:1;	      /* for vm86 internal use */
 	unsigned char vm86dbg_intxxtab[32];   /* for debugger */
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
+
 struct vm86plus_struct {
 	struct vm86_regs regs;
 	unsigned long flags;

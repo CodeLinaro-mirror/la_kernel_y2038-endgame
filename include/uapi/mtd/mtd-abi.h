@@ -136,7 +136,8 @@ struct mtd_read_req {
 	__u8 mode;
 	__u8 padding[7];
 	struct mtd_read_req_ecc_stats ecc_stats;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 #define MTD_ABSENT		0
 #define MTD_RAM			1
@@ -174,13 +175,15 @@ struct mtd_read_req {
 
 struct mtd_info_user {
 	__u8 type;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	__u32 flags;
 	__u32 size;	/* Total size of the MTD */
 	__u32 erasesize;
 	__u32 writesize;
 	__u32 oobsize;	/* Amount of OOB data per block (e.g. 16) */
 	__u64 padding;	/* Old obsolete field; do not use */
-};
+} __uapi_arch_align;
 
 struct region_info_user {
 	__u32 offset;		/* At which this region starts,

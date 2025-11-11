@@ -2,6 +2,7 @@
 #ifndef _PARISC_MSGBUF_H
 #define _PARISC_MSGBUF_H
 
+#include <linux/types.h>
 #include <asm/bitsperlong.h>
 #include <asm/ipcbuf.h>
 
@@ -35,6 +36,7 @@ struct msqid64_ds {
 	__kernel_pid_t	msg_lrpid;	/* last receive pid */
 	unsigned long	__unused1;
 	unsigned long	__unused2;
+	__uapi_arch_pad_long_to_u64;
 };
 
 #endif /* _PARISC_MSGBUF_H */

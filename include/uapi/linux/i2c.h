@@ -84,8 +84,9 @@ struct i2c_msg {
 #define I2C_M_NOSTART		0x4000	/* use only if I2C_FUNC_NOSTART */
 #define I2C_M_STOP		0x8000	/* use only if I2C_FUNC_PROTOCOL_MANGLING */
 	__u16 len;
+	__uapi_arch_pad16;
 	__u8 *buf;
-};
+} __uapi_arch_align;
 
 /* To determine what functionality is present */
 

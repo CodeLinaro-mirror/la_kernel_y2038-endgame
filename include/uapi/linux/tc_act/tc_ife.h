@@ -13,7 +13,8 @@
 struct tc_ife {
 	tc_gen;
 	__u16 flags;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /*XXX: We need to encode the total number of bytes consumed */
 enum {

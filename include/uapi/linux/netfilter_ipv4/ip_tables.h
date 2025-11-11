@@ -201,10 +201,11 @@ struct ipt_replace {
 	unsigned int num_counters;
 	/* The old entries' counters. */
 	struct xt_counters __user *counters;
+	__uapi_arch_pad_long_to_u64;
 
 	/* The entries (hang off end: not really an array). */
 	struct ipt_entry entries[];
-};
+} __uapi_arch_align;
 
 /* The argument to IPT_SO_GET_ENTRIES. */
 struct ipt_get_entries {
@@ -213,10 +214,11 @@ struct ipt_get_entries {
 
 	/* User fills this in: total entry size. */
 	unsigned int size;
+	__uapi_arch_pad32;
 
 	/* The entries. */
 	struct ipt_entry entrytable[];
-};
+} __uapi_arch_align;
 
 /* Helper functions */
 static __inline__ struct xt_entry_target *

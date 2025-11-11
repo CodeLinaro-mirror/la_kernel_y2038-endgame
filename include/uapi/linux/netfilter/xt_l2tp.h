@@ -16,7 +16,8 @@ struct xt_l2tp_info {
 	__u8 version;			/* L2TP protocol version */
 	__u8 type;			/* L2TP packet type */
 	__u8 flags;			/* which fields to match */
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 enum {
 	XT_L2TP_TID	= (1 << 0),	/* match L2TP tunnel id */

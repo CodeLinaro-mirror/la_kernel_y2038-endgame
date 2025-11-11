@@ -59,7 +59,8 @@ struct xt_conntrack_mtinfo2 {
 	__be16 replsrc_port, repldst_port;
 	__u16 match_flags, invert_flags;
 	__u16 state_mask, status_mask;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct xt_conntrack_mtinfo3 {
 	union nf_inet_addr origsrc_addr, origsrc_mask;
@@ -74,6 +75,7 @@ struct xt_conntrack_mtinfo3 {
 	__u16 state_mask, status_mask;
 	__u16 origsrc_port_high, origdst_port_high;
 	__u16 replsrc_port_high, repldst_port_high;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #endif /*_XT_CONNTRACK_H*/

@@ -32,7 +32,8 @@ struct xt_recent_mtinfo {
 	__u8 invert;
 	char name[XT_RECENT_NAME_LEN];
 	__u8 side;
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 struct xt_recent_mtinfo_v1 {
 	__u32 seconds;
@@ -41,7 +42,8 @@ struct xt_recent_mtinfo_v1 {
 	__u8 invert;
 	char name[XT_RECENT_NAME_LEN];
 	__u8 side;
+	__uapi_arch_pad8;
 	union nf_inet_addr mask;
-};
+} __uapi_arch_align;
 
 #endif /* _LINUX_NETFILTER_XT_RECENT_H */
