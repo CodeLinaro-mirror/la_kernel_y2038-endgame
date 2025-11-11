@@ -1058,57 +1058,57 @@ struct loongson3_lscsr_format {	/* Loongson-3 CPUCFG&CSR read/write format */
  * MIPS16e instruction formats (16-bit length)
  */
 struct m16e_rr {
-	__BITFIELD_FIELD(unsigned int opcode : 5,
-	__BITFIELD_FIELD(unsigned int rx : 3,
-	__BITFIELD_FIELD(unsigned int nd : 1,
-	__BITFIELD_FIELD(unsigned int l : 1,
-	__BITFIELD_FIELD(unsigned int ra : 1,
-	__BITFIELD_FIELD(unsigned int func : 5,
+	__BITFIELD_FIELD(unsigned short opcode : 5,
+	__BITFIELD_FIELD(unsigned short rx : 3,
+	__BITFIELD_FIELD(unsigned short nd : 1,
+	__BITFIELD_FIELD(unsigned short l : 1,
+	__BITFIELD_FIELD(unsigned short ra : 1,
+	__BITFIELD_FIELD(unsigned short func : 5,
 	;))))))
 };
 
 struct m16e_jal {
-	__BITFIELD_FIELD(unsigned int opcode : 5,
-	__BITFIELD_FIELD(unsigned int x : 1,
-	__BITFIELD_FIELD(unsigned int imm20_16 : 5,
-	__BITFIELD_FIELD(signed int imm25_21 : 5,
+	__BITFIELD_FIELD(unsigned short opcode : 5,
+	__BITFIELD_FIELD(unsigned short x : 1,
+	__BITFIELD_FIELD(unsigned short imm20_16 : 5,
+	__BITFIELD_FIELD(signed short imm25_21 : 5,
 	;))))
 };
 
 struct m16e_i64 {
-	__BITFIELD_FIELD(unsigned int opcode : 5,
-	__BITFIELD_FIELD(unsigned int func : 3,
-	__BITFIELD_FIELD(unsigned int imm : 8,
+	__BITFIELD_FIELD(unsigned short opcode : 5,
+	__BITFIELD_FIELD(unsigned short func : 3,
+	__BITFIELD_FIELD(unsigned short imm : 8,
 	;)))
 };
 
 struct m16e_ri64 {
-	__BITFIELD_FIELD(unsigned int opcode : 5,
-	__BITFIELD_FIELD(unsigned int func : 3,
-	__BITFIELD_FIELD(unsigned int ry : 3,
-	__BITFIELD_FIELD(unsigned int imm : 5,
+	__BITFIELD_FIELD(unsigned short opcode : 5,
+	__BITFIELD_FIELD(unsigned short func : 3,
+	__BITFIELD_FIELD(unsigned short ry : 3,
+	__BITFIELD_FIELD(unsigned short imm : 5,
 	;))))
 };
 
 struct m16e_ri {
-	__BITFIELD_FIELD(unsigned int opcode : 5,
-	__BITFIELD_FIELD(unsigned int rx : 3,
-	__BITFIELD_FIELD(unsigned int imm : 8,
+	__BITFIELD_FIELD(unsigned short opcode : 5,
+	__BITFIELD_FIELD(unsigned short rx : 3,
+	__BITFIELD_FIELD(unsigned short imm : 8,
 	;)))
 };
 
 struct m16e_rri {
-	__BITFIELD_FIELD(unsigned int opcode : 5,
-	__BITFIELD_FIELD(unsigned int rx : 3,
-	__BITFIELD_FIELD(unsigned int ry : 3,
-	__BITFIELD_FIELD(unsigned int imm : 5,
+	__BITFIELD_FIELD(unsigned short opcode : 5,
+	__BITFIELD_FIELD(unsigned short rx : 3,
+	__BITFIELD_FIELD(unsigned short ry : 3,
+	__BITFIELD_FIELD(unsigned short imm : 5,
 	;))))
 };
 
 struct m16e_i8 {
-	__BITFIELD_FIELD(unsigned int opcode : 5,
-	__BITFIELD_FIELD(unsigned int func : 3,
-	__BITFIELD_FIELD(unsigned int imm : 8,
+	__BITFIELD_FIELD(unsigned short opcode : 5,
+	__BITFIELD_FIELD(unsigned short func : 3,
+	__BITFIELD_FIELD(unsigned short imm : 8,
 	;)))
 };
 
@@ -1161,7 +1161,7 @@ union mips_instruction {
 };
 
 union mips16e_instruction {
-	unsigned int full : 16;
+	unsigned short full : 16;
 	struct m16e_rr rr;
 	struct m16e_jal jal;
 	struct m16e_i64 i64;
