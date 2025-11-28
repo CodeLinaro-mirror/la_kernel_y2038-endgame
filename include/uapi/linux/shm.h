@@ -21,6 +21,13 @@
 #define SHMALL (ULONG_MAX - (1UL << 24)) /* max shm system wide (pages) */
 #define SHMSEG SHMMNI			 /* max shared segs per process */
 
+/* Include the definition of shmid64_ds and shminfo64 */
+#include <asm/shmbuf.h>
+
+#ifndef __uapi_arch_pad_shm_long
+#define __uapi_arch_pad_shm_long __uapi_arch_pad_long
+#endif
+
 /* Obsolete, used only for backwards compatibility and libc5 compiles */
 struct shmid_ds {
 	struct ipc_perm		shm_perm;	/* operation perms */
@@ -32,12 +39,10 @@ struct shmid_ds {
 	__kernel_ipc_pid_t	shm_lpid;	/* pid of last operator */
 	unsigned short		shm_nattch;	/* no. of current attaches */
 	unsigned short 		shm_unused;	/* compatibility */
+	__uapi_arch_pad_shm_long;
 	void 			*shm_unused2;	/* ditto - used by DIPC */
 	void			*shm_unused3;	/* unused */
 };
-
-/* Include the definition of shmid64_ds and shminfo64 */
-#include <asm/shmbuf.h>
 
 /*
  * shmget() shmflg values.

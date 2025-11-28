@@ -2,6 +2,7 @@
 #ifndef _SPARC_MSGBUF_H
 #define _SPARC_MSGBUF_H
 
+#include <linux/types.h>
 #include <asm/ipcbuf.h>
 
 /*
@@ -33,5 +34,12 @@ struct msqid64_ds {
 	__kernel_pid_t msg_lrpid;	/* last receive pid */
 	unsigned long  __unused1;
 	unsigned long  __unused2;
+	__uapi_arch_pad_long_to_u64;
 };
+
+#ifndef __arch64__
+#define __uapi_arch_pad_msqid_pid
+#define __uapi_arch_pad_msqid __uapi_arch_pad16
+#endif
+
 #endif /* _SPARC_MSGBUF_H */

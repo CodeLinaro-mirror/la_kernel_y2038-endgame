@@ -2,6 +2,7 @@
 #ifndef _UAPI_ALPHA_TERMIOS_H
 #define _UAPI_ALPHA_TERMIOS_H
 
+#include <linux/types.h>
 #include <asm/ioctls.h>
 #include <asm/termbits.h>
 
@@ -46,6 +47,7 @@ struct termio {
 	unsigned short c_lflag;		/* local mode flags */
 	unsigned char c_line;		/* line discipline */
 	unsigned char c_cc[NCC];	/* control characters */
+	__uapi_arch_pad8;
 };
 
 /*

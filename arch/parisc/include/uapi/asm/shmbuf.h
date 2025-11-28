@@ -52,4 +52,7 @@ struct shminfo64 {
 	unsigned long	__unused4;
 };
 
+/* shmid_ds has no padding before shm_unused2 */
+#define __uapi_arch_pad_shm_long
+
 #endif /* _PARISC_SHMBUF_H */

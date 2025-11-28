@@ -104,26 +104,5 @@ typedef unsigned __bitwise __poll_t;
 #define __uapi_arch_align
 #endif
 
-/*
- * Padding around architecture-defined types
- */
-
-#ifndef __uapi_arch_pad_kernel_long_t
-#define __uapi_arch_pad_kernel_long_t		__uapi_arch_pad_long
-#endif
-#ifndef __uapi_arch_pad_mode_t
-#define __uapi_arch_pad_mode_t
-#endif
-#ifndef __uapi_arch_pad_ipc_pid_t
-#define __uapi_arch_pad_ipc_pid_t
-#endif
-#ifndef __uapi_arch_pad_ipc_perm
-#define __uapi_arch_pad_ipc_perm
-#endif
-#ifndef __uapi_arch_pad_old_dev_t
-/* only on architectures with 16-bit __kernel_old_dev_t */
-#define __uapi_arch_pad_old_dev_t
-#endif
-
 #endif /*  __ASSEMBLY__ */
 #endif /* _UAPI_LINUX_TYPES_H */

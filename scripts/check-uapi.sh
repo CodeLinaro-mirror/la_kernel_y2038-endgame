@@ -207,7 +207,7 @@ do_compile() {
 		  -fno-eliminate-unused-debug-types \
 		  -g \
 		  "-I${inc_dir}" \
-		  "-I${KERNEL_SRC}/tools/include/nolibc" \
+		  "-I${KERNEL_SRC}/tools/include/nolibc" "-nostdinc"\
 		  -include "$header" \
 		  -
 }

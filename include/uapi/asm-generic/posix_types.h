@@ -14,6 +14,7 @@
 #ifndef __kernel_long_t
 typedef long		__kernel_long_t;
 typedef unsigned long	__kernel_ulong_t;
+#define __uapi_arch_pad_kernel_long_t	__uapi_arch_pad_long
 #endif
 
 #ifndef __kernel_ino_t
@@ -22,6 +23,7 @@ typedef __kernel_ulong_t __kernel_ino_t;
 
 #ifndef __kernel_mode_t
 typedef unsigned int	__kernel_mode_t;
+#define __uapi_arch_pad_mode_t __uapi_arch_pad16
 #endif
 
 #ifndef __kernel_pid_t
@@ -57,6 +59,7 @@ typedef __kernel_gid_t	__kernel_old_gid_t;
 
 #ifndef __kernel_old_dev_t
 typedef unsigned int	__kernel_old_dev_t;
+#define __uapi_arch_pad_old_dev_t
 #endif
 
 /*

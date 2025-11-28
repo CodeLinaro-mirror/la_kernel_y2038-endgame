@@ -132,9 +132,10 @@ struct xt_hashlimit_mtinfo3 {
 	struct hashlimit_cfg3 cfg;
 #ifdef __m68k__
 	__u16 :16;
+#endif
+#if defined(__i386__) || defined(__csky__) || defined(__m68k__) || defined(__microblaze__)
 	__u32 :32;
 #endif
-
 	/* Used internally by the kernel */
 	struct xt_hashlimit_htable *hinfo __attribute__((aligned(8)));
 	__uapi_arch_pad_long_to_aligned_u64;

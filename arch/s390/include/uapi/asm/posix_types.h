@@ -19,6 +19,7 @@ typedef long            __kernel_ssize_t;
 
 typedef unsigned short	__kernel_old_dev_t;
 #define __kernel_old_dev_t __kernel_old_dev_t
+#define __uapi_arch_pad_old_dev_t __uapi_arch_pad16
 
 #ifdef __KERNEL__
 typedef unsigned short __kernel_old_uid_t;
@@ -28,6 +29,7 @@ typedef unsigned short __kernel_old_gid_t;
 
 typedef unsigned int    __kernel_ino_t;
 typedef unsigned int    __kernel_mode_t;
+#define __uapi_arch_pad_mode_t __uapi_arch_pad16
 typedef int             __kernel_ipc_pid_t;
 typedef unsigned int    __kernel_uid_t;
 typedef unsigned int    __kernel_gid_t;

@@ -43,6 +43,7 @@ struct shmid64_ds {
 	unsigned long		shm_nattch;	/* no. of current attaches */
 	unsigned long		__unused5;
 	unsigned long		__unused6;
+	__uapi_arch_pad_long_to_u64;
 };
 
 struct shminfo64 {

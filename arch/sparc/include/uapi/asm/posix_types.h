@@ -22,10 +22,14 @@ typedef int		       __kernel_suseconds_t;
 typedef long		__kernel_long_t;
 typedef unsigned long	__kernel_ulong_t;
 #define __kernel_long_t __kernel_long_t
+#define __uapi_arch_pad_kernel_long_t __uapi_arch_pad_long
 
 struct __kernel_old_timeval {
 	__kernel_long_t tv_sec;
 	__kernel_suseconds_t tv_usec;
+#ifdef __arch64__
+	unsigned int :32;
+#endif
 };
 #define __kernel_old_timeval __kernel_old_timeval
 
@@ -46,12 +50,14 @@ typedef unsigned short         __kernel_gid_t;
 
 typedef unsigned short         __kernel_mode_t;
 #define __kernel_mode_t __kernel_mode_t
+#define __uapi_arch_pad_mode_t
 
 typedef long                   __kernel_daddr_t;
 #define __kernel_daddr_t __kernel_daddr_t
 
 typedef unsigned short	       __kernel_old_dev_t;
 #define __kernel_old_dev_t __kernel_old_dev_t
+#define __uapi_arch_pad_old_dev_t __uapi_arch_pad16
 
 #endif /* defined(__sparc__) && defined(__arch64__) */
 

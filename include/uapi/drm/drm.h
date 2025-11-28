@@ -276,6 +276,10 @@ struct drm_stats {
 		unsigned long value;
 		enum drm_stat_type type;
 		__uapi_arch_pad_long;
+#ifdef __hexagon__
+		/* hexagon uses short enums */
+		__u8 :8, :8, :8;
+#endif
 	} __uapi_arch_align data[15];
 };
 

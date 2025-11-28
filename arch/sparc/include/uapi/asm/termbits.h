@@ -2,6 +2,7 @@
 #ifndef _UAPI_SPARC_TERMBITS_H
 #define _UAPI_SPARC_TERMBITS_H
 
+#include <linux/types.h>
 #include <asm-generic/termbits-common.h>
 
 #if defined(__sparc__) && defined(__arch64__)
@@ -19,6 +20,7 @@ struct termios {
 	cc_t c_line;			/* line discipline */
 #ifndef __KERNEL__
 	cc_t c_cc[NCCS];		/* control characters */
+	__uapi_arch_pad16;
 #else
 	cc_t c_cc[NCCS+2];	/* kernel needs 2 more to hold vmin/vtime */
 #define SIZEOF_USER_TERMIOS sizeof (struct termios) - (2*sizeof (cc_t))

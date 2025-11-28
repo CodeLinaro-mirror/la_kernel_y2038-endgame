@@ -90,6 +90,7 @@ struct sigaction {
 	} _u;
 	sigset_t	sa_mask;
 	int		sa_flags;
+	__uapi_arch_pad_long;
 };
 
 #define sa_handler	_u._sa_handler
@@ -100,6 +101,7 @@ struct sigaction {
 typedef struct sigaltstack {
 	void __user *ss_sp;
 	int ss_flags;
+	__uapi_arch_pad_long;
 	__kernel_size_t ss_size;
 } stack_t;
 
@@ -110,6 +112,7 @@ typedef struct sigaltstack {
 struct sigstack {
 	void __user *ss_sp;
 	int ss_onstack;
+	__uapi_arch_pad_long;
 };
 
 
