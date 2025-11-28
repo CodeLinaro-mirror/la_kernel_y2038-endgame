@@ -10,15 +10,15 @@
 #define HYPERVISOR_EXTABLE					\
 	. = ALIGN(SZ_8);					\
 	__start___kvm_ex_table = .;				\
-	*(__kvm_ex_table)					\
+	KEEP(*(__kvm_ex_table))					\
 	__stop___kvm_ex_table = .;
 
 #define HYPERVISOR_RODATA_SECTIONS				\
 	HYP_SECTION_NAME(.rodata) : {				\
 		. = ALIGN(PAGE_SIZE);				\
 		__hyp_rodata_start = .;				\
-		*(HYP_SECTION_NAME(.data..ro_after_init))	\
-		*(HYP_SECTION_NAME(.rodata))			\
+		KEEP(*(HYP_SECTION_NAME(.data..ro_after_init)))	\
+		KEEP(*(HYP_SECTION_NAME(.rodata)))		\
 		. = ALIGN(PAGE_SIZE);				\
 		__hyp_rodata_end = .;				\
 	}
@@ -27,7 +27,7 @@
 	HYP_SECTION_NAME(.data) : {				\
 		. = ALIGN(PAGE_SIZE);				\
 		__hyp_data_start = .;				\
-		*(HYP_SECTION_NAME(.data))			\
+		KEEP(*(HYP_SECTION_NAME(.data)))		\
 		. = ALIGN(PAGE_SIZE);				\
 		__hyp_data_end = .;				\
 	}
@@ -35,19 +35,19 @@
 #define HYPERVISOR_PERCPU_SECTION				\
 	. = ALIGN(PAGE_SIZE);					\
 	HYP_SECTION_NAME(.data..percpu) : {			\
-		*(HYP_SECTION_NAME(.data..percpu))		\
+		KEEP(*(HYP_SECTION_NAME(.data..percpu)))	\
 	}
 
 #define HYPERVISOR_RELOC_SECTION				\
 	.hyp.reloc : ALIGN(4) {					\
 		__hyp_reloc_begin = .;				\
-		*(.hyp.reloc)					\
+		KEEP(*(.hyp.reloc))				\
 		__hyp_reloc_end = .;				\
 	}
 
 #define BSS_FIRST_SECTIONS					\
 	__hyp_bss_start = .;					\
-	*(HYP_SECTION_NAME(.bss))				\
+	KEEP(*(HYP_SECTION_NAME(.bss)))				\
 	. = ALIGN(PAGE_SIZE);					\
 	__hyp_bss_end = .;
 
@@ -87,10 +87,10 @@ jiffies = jiffies_64;
 #define HYPERVISOR_TEXT					\
 	. = ALIGN(PAGE_SIZE);				\
 	__hyp_idmap_text_start = .;			\
-	*(.hyp.idmap.text)				\
+	KEEP(*(.hyp.idmap.text))			\
 	__hyp_idmap_text_end = .;			\
 	__hyp_text_start = .;				\
-	*(.hyp.text)					\
+	KEEP(*(.hyp.text))				\
 	HYPERVISOR_EXTABLE				\
 	. = ALIGN(PAGE_SIZE);				\
 	__hyp_text_end = .;
@@ -98,14 +98,14 @@ jiffies = jiffies_64;
 #define IDMAP_TEXT					\
 	. = ALIGN(SZ_4K);				\
 	__idmap_text_start = .;				\
-	*(.idmap.text)					\
+	KEEP(*(.idmap.text))				\
 	__idmap_text_end = .;
 
 #ifdef CONFIG_HIBERNATION
 #define HIBERNATE_TEXT					\
 	ALIGN_FUNCTION();				\
 	__hibernate_exit_text_start = .;		\
-	*(.hibernate_exit.text)				\
+	KEEP(*(.hibernate_exit.text))			\
 	__hibernate_exit_text_end = .;
 #else
 #define HIBERNATE_TEXT
@@ -115,7 +115,7 @@ jiffies = jiffies_64;
 #define KEXEC_TEXT					\
 	ALIGN_FUNCTION();				\
 	__relocate_new_kernel_start = .;		\
-	*(.kexec_relocate.text)				\
+	KEEP(*(.kexec_relocate.text))			\
 	__relocate_new_kernel_end = .;
 #else
 #define KEXEC_TEXT
@@ -125,10 +125,10 @@ jiffies = jiffies_64;
 #define TRAMP_TEXT					\
 	. = ALIGN(PAGE_SIZE);				\
 	__entry_tramp_text_start = .;			\
-	*(.entry.tramp.text)				\
+	KEEP(*(.entry.tramp.text))			\
 	. = ALIGN(PAGE_SIZE);				\
 	__entry_tramp_text_end = .;			\
-	*(.entry.tramp.rodata)
+	KEEP(*(.entry.tramp.rodata))
 #else
 #define TRAMP_TEXT
 #endif
@@ -137,7 +137,7 @@ jiffies = jiffies_64;
 #define UNWIND_DATA_SECTIONS				\
 	.eh_frame : {					\
 		__pi___eh_frame_start = .;		\
-		*(.eh_frame)				\
+		KEEP(*(.eh_frame))			\
 		__pi___eh_frame_end = .;		\
 	}
 #else
@@ -202,12 +202,12 @@ SECTIONS
 
 	HYPERVISOR_RODATA_SECTIONS
 
-	.got : { *(.got) }
+	.got : { KEEP(*(.got)) }
 	/*
 	 * Make sure that the .got.plt is either completely empty or it
 	 * contains only the lazy dispatch entries.
 	 */
-	.got.plt : { *(.got.plt) }
+	.got.plt : { KEEP(*(.got.plt)) }
 	ASSERT(SIZEOF(.got.plt) == 0 || SIZEOF(.got.plt) == 0x18,
 	       "Unexpected GOT/PLT entries detected!")
 
@@ -284,13 +284,13 @@ SECTIONS
 
 	.rela.dyn : ALIGN(8) {
 		__pi_rela_start = .;
-		*(.rela .rela*)
+		KEEP(*(.rela .rela*))
 		__pi_rela_end = .;
 	}
 
 	.relr.dyn : ALIGN(8) {
 		__pi_relr_start = .;
-		*(.relr.dyn)
+		KEEP(*(.relr.dyn))
 		__pi_relr_end = .;
 	}
 
@@ -358,7 +358,7 @@ SECTIONS
 	 * explicitly check instead of blindly discarding.
 	 */
 	.plt : {
-		*(.plt) *(.plt.*) *(.iplt) *(.igot .igot.plt)
+		KEEP(*(.plt)) KEEP(*(.plt.*)) *(.iplt) *(.igot .igot.plt)
 	}
 	ASSERT(SIZEOF(.plt) == 0, "Unexpected run-time procedure linkages detected!")
 }

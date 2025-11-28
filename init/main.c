@@ -1144,19 +1144,25 @@ void start_kernel(void)
 	 * we've done PCI setups etc, and console_init() must be aware of
 	 * this. But we do want output early, in case something goes wrong.
 	 */
+pr_err("%s:%d\n", __func__, __LINE__);
 	console_init();
+pr_err("%s:%d\n", __func__, __LINE__);
 	if (panic_later)
 		panic("Too many boot %s vars at `%s'", panic_later,
 		      panic_param);
 
+pr_err("%s:%d\n", __func__, __LINE__);
 	lockdep_init();
+pr_err("%s:%d\n", __func__, __LINE__);
 
 	/*
 	 * Need to run this when irqs are enabled, because it wants
 	 * to self-test [hard/soft]-irqs on/off lock inversion bugs
 	 * too:
 	 */
+pr_err("%s:%d\n", __func__, __LINE__);
 	locking_selftest();
+pr_err("%s:%d\n", __func__, __LINE__);
 
 #ifdef CONFIG_BLK_DEV_INITRD
 	if (initrd_start && !initrd_below_start_ok &&
@@ -1167,12 +1173,18 @@ void start_kernel(void)
 		initrd_start = 0;
 	}
 #endif
+pr_err("%s:%d\n", __func__, __LINE__);
 	setup_per_cpu_pageset();
+pr_err("%s:%d\n", __func__, __LINE__);
 	numa_policy_init();
+pr_err("%s:%d\n", __func__, __LINE__);
 	acpi_early_init();
+pr_err("%s:%d\n", __func__, __LINE__);
 	if (late_time_init)
 		late_time_init();
+pr_err("%s:%d\n", __func__, __LINE__);
 	sched_clock_init();
+pr_err("%s:%d\n", __func__, __LINE__);
 	calibrate_delay();
 
 	arch_cpu_finalize_init();

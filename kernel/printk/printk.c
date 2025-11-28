@@ -4387,27 +4387,34 @@ void __init console_init(void)
 	initcall_t call;
 	initcall_entry_t *ce;
 
+pr_err("%s:%d\n", __func__, __LINE__);
 #ifdef CONFIG_NULL_TTY_DEFAULT_CONSOLE
 	if (!console_set_on_cmdline)
 		add_preferred_console("ttynull", 0, NULL);
 #endif
 
+pr_err("%s:%d\n", __func__, __LINE__);
 	/* Setup the default TTY line discipline. */
 	n_tty_init();
 
+pr_err("%s:%d\n", __func__, __LINE__);
 	/*
 	 * set up the console device so that later boot sequences can
 	 * inform about problems etc..
 	 */
+pr_err("%s:%d\n", __func__, __LINE__);
 	ce = __con_initcall_start;
 	trace_initcall_level("console");
+pr_err("%s:%d\n", __func__, __LINE__);
 	while (ce < __con_initcall_end) {
+pr_err("%s:%d\n", __func__, __LINE__);
 		call = initcall_from_entry(ce);
 		trace_initcall_start(call);
 		ret = call();
 		trace_initcall_finish(call, ret);
 		ce++;
 	}
+pr_err("%s:%d\n", __func__, __LINE__);
 }
 
 /*
