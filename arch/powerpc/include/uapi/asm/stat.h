@@ -20,6 +20,7 @@ struct __old_kernel_stat {
 	unsigned short st_uid;
 	unsigned short st_gid;
 	unsigned short st_rdev;
+	__uapi_arch_pad16;
 	unsigned long  st_size;
 	unsigned long  st_atime;
 	unsigned long  st_mtime;
@@ -36,6 +37,7 @@ struct stat {
 #else
 	__kernel_mode_t	st_mode;
 	unsigned short	st_nlink;
+	__uapi_arch_pad16;
 #endif
 	__kernel_uid32_t st_uid;
 	__kernel_gid32_t st_gid;

@@ -32,4 +32,9 @@ struct msqid64_ds {
 
 #endif
 
+#ifndef __x86_64__
+#define __uapi_arch_pad_msqid_pid
+#define __uapi_arch_pad_msqid		__uapi_arch_pad16
+#endif
+
 #endif /* __ASM_GENERIC_MSGBUF_H */

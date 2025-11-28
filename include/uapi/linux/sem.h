@@ -21,10 +21,13 @@
 #define SEM_INFO 19
 #define SEM_STAT_ANY 20
 
+/* Include the definition of semid64_ds */
+#include <asm/sembuf.h>
+
 /* Obsolete, used only for backwards compatibility and libc5 compiles */
 struct semid_ds {
 	struct ipc_perm	sem_perm;		/* permissions .. see ipc.h */
-	__uapi_arch_pad_ipc_perm;
+	__uapi_arch_pad_long;
 	__kernel_old_time_t sem_otime;		/* last semop time */
 	__kernel_old_time_t sem_ctime;		/* create/last semctl() time */
 	struct sem	*sem_base;		/* ptr to first semaphore in array */
@@ -35,9 +38,6 @@ struct semid_ds {
 	__uapi_arch_pad16;
 	__uapi_arch_pad_long;
 } __uapi_arch_align;
-
-/* Include the definition of semid64_ds */
-#include <asm/sembuf.h>
 
 /* semop system calls takes an array of these. */
 struct sembuf {

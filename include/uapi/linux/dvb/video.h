@@ -34,6 +34,10 @@ typedef struct {
 	int w;
 	int h;
 	video_format_t aspect_ratio;
+#ifdef __hexagon__
+	/* hexagon uses short enums */
+	__u8 :8, :8, :8;
+#endif
 } video_size_t;
 
 typedef enum {

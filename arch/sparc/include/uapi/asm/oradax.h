@@ -35,6 +35,7 @@ struct ccb_info_result {
 struct ccb_exec_result {
 	__u64	status_data;	/* additional status data (e.g. bad VA) */
 	__u32	status;		/* one of DAX_SUBMIT_* */
+	__uapi_arch_pad32;
 };
 
 union ccb_result {

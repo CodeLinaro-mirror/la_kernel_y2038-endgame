@@ -51,6 +51,7 @@ struct loop_info {
 	unsigned char	   lo_encrypt_key[LO_KEY_SIZE]; /* ioctl w/o */
 	unsigned long	   lo_init[2];
 	char		   reserved[4];
+	__uapi_arch_pad_long;
 } __uapi_arch_align;
 #else
 struct loop_info {

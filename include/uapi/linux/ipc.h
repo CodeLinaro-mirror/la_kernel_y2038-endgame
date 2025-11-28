@@ -14,6 +14,7 @@ struct ipc_perm
 	__kernel_gid_t	gid;
 	__kernel_uid_t	cuid;
 	__kernel_gid_t	cgid;
+/* 96 or 160 */
 	__kernel_mode_t	mode; /* 16 on arm/m68k/microblaze/parisc32/s390-32/sh/sparc32 */
 	unsigned short	seq;
 	/* hole at end of structure for 32-bit mode_t */

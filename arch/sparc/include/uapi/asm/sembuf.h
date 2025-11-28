@@ -2,6 +2,7 @@
 #ifndef _SPARC_SEMBUF_H
 #define _SPARC_SEMBUF_H
 
+#include <linux/types.h>
 #include <asm/ipcbuf.h>
 
 /*
@@ -27,6 +28,7 @@ struct semid64_ds {
 	unsigned long	sem_nsems;		/* no. of semaphores in array */
 	unsigned long	__unused1;
 	unsigned long	__unused2;
+	__uapi_arch_pad_long_to_u64;
 };
 
 #endif /* _SPARC64_SEMBUF_H */

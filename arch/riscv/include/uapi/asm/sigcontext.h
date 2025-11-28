@@ -20,6 +20,9 @@
 
 struct __sc_riscv_v_state {
 	struct __riscv_v_ext_state v_state;
+#if __riscv_xlen == 32
+	unsigned long long :64;
+#endif
 } __attribute__((aligned(16)));
 
 /*

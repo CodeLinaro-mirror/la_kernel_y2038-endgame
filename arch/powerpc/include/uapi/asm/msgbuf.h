@@ -31,6 +31,15 @@ struct msqid64_ds {
 	__kernel_pid_t msg_lrpid;	/* last receive pid */
 	unsigned long  __unused4;
 	unsigned long  __unused5;
+	__uapi_arch_pad_long_to_u64;
 };
+
+#ifndef __powerpc64__
+#define __uapi_arch_pad_msqid_pid
+#define __uapi_arch_pad_msqid __uapi_arch_pad16
+#else
+#define __uapi_arch_pad_msqid_pid __uapi_arch_pad16
+#define __uapi_arch_pad_msqid
+#endif
 
 #endif	/* _ASM_POWERPC_MSGBUF_H */

@@ -39,4 +39,11 @@ struct msqid64_ds {
 	__uapi_arch_pad_long_to_u64;
 };
 
+#define __uapi_arch_pad_msqid_pid
+#if __BITS_PER_LONG == 64
+#define __uapi_arch_pad_msqid __uapi_arch_pad16; __uapi_arch_pad32
+#else
+#define __uapi_arch_pad_msqid __uapi_arch_pad16
+#endif
+
 #endif /* _PARISC_MSGBUF_H */

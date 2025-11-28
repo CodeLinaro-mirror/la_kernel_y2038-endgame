@@ -4,6 +4,7 @@
 
 typedef unsigned short	__kernel_mode_t;
 #define __kernel_mode_t __kernel_mode_t
+#define __uapi_arch_pad_mode_t
 
 #include <asm-generic/posix_types.h>
 

@@ -1577,6 +1577,7 @@ union bpf_attr {
 		__aligned_u64 excl_prog_hash;
 		/* Size of the passed excl_prog_hash. */
 		__u32 excl_prog_hash_size;
+		__u32		:32;
 	};
 
 	struct { /* anonymous struct used by BPF_MAP_*_ELEM and BPF_MAP_FREEZE commands */
@@ -6895,8 +6896,8 @@ struct bpf_link_info {
 					__u32 pid;
 				} task;
 				struct {
-					__aligned_u64 :64;
-					__aligned_u64 :64;
+					__u64 :64;
+					__u64 :64;
 				};
 			};
 		} iter;

@@ -17,6 +17,9 @@ struct timespec {
 struct timeval {
 	__kernel_old_time_t	tv_sec;		/* seconds */
 	__kernel_suseconds_t	tv_usec;	/* microseconds */
+#if defined(__sparc__) && defined(__arch64__)
+	__u32 :32;
+#endif
 };
 
 struct itimerspec {

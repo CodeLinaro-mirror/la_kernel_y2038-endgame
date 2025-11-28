@@ -65,7 +65,8 @@ struct __riscv_f_ext_state {
 struct __riscv_d_ext_state {
 	__u64 f[32];
 	__u32 fcsr;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct __riscv_q_ext_state {
 	__u64 f[64] __attribute__((aligned(16)));

@@ -363,8 +363,11 @@ struct virtio_net_rss_config {
 		 * either 16 or 32 bit depending on architecture,
 		 * but flexarray hash_key_data starts before end.
 		 */
+#ifdef __m68k__
 		__u16 :16;
-		__uapi_arch_pad32;
+#else
+		__u32 :32;
+#endif
 		struct {
 			__u8 hash_key_length;
 			__u8 hash_key_data[/* hash_key_length */];
@@ -403,8 +406,11 @@ struct virtio_net_hash_config {
 	/* for compatibility with virtio_net_rss_config */
 	__le16 reserved[4];
 	union {
+#ifdef __m68k__
 		__u16 :16;
-		__uapi_arch_pad32;
+#else
+		__u32 :32;
+#endif
 		struct {
 			__u8 hash_key_length;
 			__u8 hash_key_data[/* hash_key_length */];
