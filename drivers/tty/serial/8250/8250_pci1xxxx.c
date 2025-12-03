@@ -689,11 +689,6 @@ static int pci1xxxx_setup(struct pci_dev *pdev,
 	 * C0 and later revisions support Burst operation.
 	 * RTS workaround in mctrl is applicable only to B0.
 	 */
-	if (rev >= 0xC0)
-		{}
-	else if (rev == 0xB0)
-		{}
-
 	ret = serial8250_pci_setup_port(pdev, port, 0, PORT_OFFSET * port_idx, 0, priv->membase);
 	if (ret < 0)
 		return ret;
