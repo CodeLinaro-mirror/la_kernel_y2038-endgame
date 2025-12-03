@@ -350,6 +350,7 @@ static int hv_crash_nmi_local(unsigned int cmd, struct pt_regs *regs)
 	return NMI_DONE;
 }
 
+#ifdef CONFIG_SMP
 /*
  * hv_crash_stop_other_cpus() == smp_ops.crash_stop_other_cpus
  *
@@ -407,6 +408,7 @@ static void __noclone hv_crash_stop_other_cpus(void)
 	crash_nmi_callback(&lregs);
 }
 STACK_FRAME_NON_STANDARD(hv_crash_stop_other_cpus);
+#endif
 
 /* This GDT is accessed in IA32-e compat mode which uses 32bits addresses */
 struct hv_gdtreg_32 {
