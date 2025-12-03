@@ -17,6 +17,7 @@ config CRYPTO_GHASH_ARM64_CE
 config CRYPTO_AES_ARM64_CE_BLK
 	tristate "Ciphers: AES, modes: ECB/CBC/CTR/XTS (ARMv8 Crypto Extensions)"
 	depends on KERNEL_MODE_NEON
+	depends on BROKEN
 	select CRYPTO_SKCIPHER
 	select CRYPTO_LIB_AES
 	select CRYPTO_LIB_SHA256
@@ -53,6 +54,7 @@ config CRYPTO_AES_ARM64_NEON_BLK
 config CRYPTO_AES_ARM64_BS
 	tristate "Ciphers: AES, modes: ECB/CBC/CTR/XCTR/XTS modes (bit-sliced NEON)"
 	depends on KERNEL_MODE_NEON
+	depends on BROKEN
 	select CRYPTO_SKCIPHER
 	select CRYPTO_AES_ARM64_NEON_BLK
 	select CRYPTO_LIB_AES
@@ -73,6 +75,7 @@ config CRYPTO_AES_ARM64_BS
 config CRYPTO_SM4_ARM64_CE
 	tristate "Ciphers: SM4 (ARMv8.2 Crypto Extensions)"
 	depends on KERNEL_MODE_NEON
+	depends on BROKEN
 	select CRYPTO_ALGAPI
 	select CRYPTO_SM4
 	help
@@ -85,6 +88,7 @@ config CRYPTO_SM4_ARM64_CE
 config CRYPTO_SM4_ARM64_CE_BLK
 	tristate "Ciphers: SM4, modes: ECB/CBC/CTR/XTS (ARMv8 Crypto Extensions)"
 	depends on KERNEL_MODE_NEON
+	depends on BROKEN
 	select CRYPTO_SKCIPHER
 	select CRYPTO_SM4
 	help
@@ -118,6 +122,7 @@ config CRYPTO_SM4_ARM64_NEON_BLK
 config CRYPTO_AES_ARM64_CE_CCM
 	tristate "AEAD cipher: AES in CCM mode (ARMv8 Crypto Extensions)"
 	depends on KERNEL_MODE_NEON
+	depends on BROKEN
 	select CRYPTO_ALGAPI
 	select CRYPTO_AES_ARM64_CE_BLK
 	select CRYPTO_AEAD
@@ -134,6 +139,7 @@ config CRYPTO_AES_ARM64_CE_CCM
 config CRYPTO_SM4_ARM64_CE_CCM
 	tristate "AEAD cipher: SM4 in CCM mode (ARMv8 Crypto Extensions)"
 	depends on KERNEL_MODE_NEON
+	depends on BROKEN
 	select CRYPTO_ALGAPI
 	select CRYPTO_AEAD
 	select CRYPTO_SM4
@@ -150,6 +156,7 @@ config CRYPTO_SM4_ARM64_CE_CCM
 config CRYPTO_SM4_ARM64_CE_GCM
 	tristate "AEAD cipher: SM4 in GCM mode (ARMv8 Crypto Extensions)"
 	depends on KERNEL_MODE_NEON
+	depends on BROKEN
 	select CRYPTO_ALGAPI
 	select CRYPTO_AEAD
 	select CRYPTO_SM4
