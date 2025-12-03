@@ -203,12 +203,10 @@ static int ramdax_ctl(struct nvdimm_bus_descriptor *nd_desc,
 	return ramdax_nvdimm_ctl(nvdimm, cmd, buf, buf_len);
 }
 
-#ifdef CONFIG_OF
 static const struct of_device_id ramdax_of_matches[] = {
 	{ .compatible = "pmem-region", },
 	{ },
 };
-#endif
 
 static int ramdax_probe_of(struct platform_device *pdev,
 		struct nvdimm_bus *bus, struct device_node *np)
