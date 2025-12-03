@@ -218,8 +218,6 @@ static inline bool serial8250_clear_THRI(struct uart_8250_port *up)
 
 static inline void serial8250_apply_quirks(struct uart_8250_port *up)
 {
-	if (IS_ENABLED(CONFIG_SERIAL_8250_ISA))
-		up->port.quirks |= skip_txen_test ? UPQ_NO_TXEN_TEST : 0;
 }
 
 void serial8250_setup_ports(void);
