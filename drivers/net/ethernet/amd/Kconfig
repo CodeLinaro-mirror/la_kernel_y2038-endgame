@@ -161,6 +161,7 @@ config AMD_XGBE
 	depends on (OF_ADDRESS || ACPI || PCI) && HAS_IOMEM
 	depends on X86 || ARM64 || COMPILE_TEST
 	depends on PTP_1588_CLOCK_OPTIONAL
+	depends on INET # for NET_SELFTESTS
 	select BITREVERSE
 	select CRC32
 	select PHYLIB
