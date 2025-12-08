@@ -453,6 +453,7 @@ struct mali_c55_params_aexp_weights {
 	__u8 nodes_used_horiz;
 	__u8 nodes_used_vert;
 	__u8 zone_weights[MALI_C55_MAX_ZONES];
+	__u8 :8, :8, :8, :8, :8;
 };
 
 /**
@@ -469,6 +470,8 @@ struct mali_c55_params_aexp_weights {
 struct mali_c55_params_digital_gain {
 	struct v4l2_isp_params_block_header header;
 	__u16 gain;
+	__u16 :16;
+	__u32 :32;
 };
 
 /**
@@ -700,6 +703,7 @@ struct mali_c55_params_mesh_shading_config {
 	__u8 mesh_page_b;
 	__u8 mesh_width;
 	__u8 mesh_height;
+	__u8 :8;
 	__u32 mesh[MALI_C55_NUM_MESH_SHADING_ELEMENTS];
 };
 
