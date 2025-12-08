@@ -133,7 +133,7 @@ struct xt_hashlimit_mtinfo3 {
 #ifdef __m68k__
 	__u16 :16;
 #endif
-#if defined(__i386__) || defined(__csky__) || defined(__m68k__) || defined(__microblaze__)
+#if defined(__i386__) || defined(__csky__) || defined(__m68k__) || defined(__microblaze__) || defined(__arc__) || defined(__nios2__) || defined(__or1k__) || defined(__sh__)
 	__u32 :32;
 #endif
 	/* Used internally by the kernel */
