@@ -443,6 +443,7 @@ struct ff_haptic_effect {
 	__u16 hid_usage;
 	__u16 vendor_id;
 	__u8  vendor_waveform_page;
+	__u8 :8;
 	__u16 intensity;
 	__u16 repeat_count;
 	__u16 retrigger_period;
