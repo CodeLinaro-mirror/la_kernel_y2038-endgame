@@ -45,13 +45,18 @@ no-header-test += linux/cyclades.h
 #no-header-test += sound/compress_offload.h
 #no-header-test += sound/emu10k1.h
 #no-header-test += sound/sfnt_info.h
-#no-header-test += xen/evtchn.h
-#no-header-test += xen/gntdev.h
-#no-header-test += xen/privcmd.h
+no-header-test += xen/evtchn.h
+no-header-test += xen/gntalloc.h
+no-header-test += xen/gntdev.h
+no-header-test += xen/privcmd.h
 
 # More headers are broken in some architectures
 
 ifeq ($(SRCARCH),arc)
+no-header-test += linux/bpf_perf_event.h
+endif
+
+ifeq ($(SRCARCH),nios2)
 no-header-test += linux/bpf_perf_event.h
 endif
 
