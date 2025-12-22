@@ -5028,9 +5028,8 @@ pipe_config_lt_phy_pll_mismatch(struct drm_printer *p, bool fastset,
 				const struct intel_lt_phy_pll_state *b)
 {
 	struct intel_display *display = to_intel_display(crtc);
-	char *chipname = "LTPHY";
 
-	pipe_config_mismatch(p, fastset, crtc, name, chipname);
+	pipe_config_mismatch(p, fastset, crtc, name, "LTPHY");
 
 	drm_printf(p, "expected:\n");
 	intel_lt_phy_dump_hw_state(display, a);
