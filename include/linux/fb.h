@@ -755,7 +755,7 @@ static inline struct lcd_device *fb_lcd_device(struct fb_info *info)
 extern int fbmon_dpms(const struct fb_info *fb_info);
 extern int fb_validate_mode(const struct fb_var_screeninfo *var,
 			    struct fb_info *info);
-#if defined(CONFIG_FIRMWARE_EDID) && defined(CONFIG_X86)
+#if defined(CONFIG_FIRMWARE_EDID)
 extern const unsigned char *fb_firmware_edid(struct device *device);
 #else
 static inline const unsigned char *fb_firmware_edid(struct device *device)
