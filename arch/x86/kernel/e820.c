@@ -900,12 +900,6 @@ __init unsigned long e820__end_of_low_ram_pfn(void)
 }
 
 __initdata static int userdef;
-{
-	early_printk("%s", msg);
-	panic("%s", msg);
-}
-
-static int userdef __initdata;
 
 /* The "mem=nopentium" boot option disables 4MB page tables on 32-bit kernels: */
 __init static int parse_memopt(char *p)
