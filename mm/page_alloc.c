@@ -5306,7 +5306,7 @@ unsigned long get_free_pages_noprof(gfp_t gfp_mask, unsigned int order)
 {
 	struct page *page;
 
-	page = alloc_pages_noprof(gfp_mask & ~__GFP_HIGHMEM, order);
+	page = alloc_pages_noprof(gfp_mask & __GFP_NOHIGHMEM, order);
 	if (!page)
 		return 0;
 	return (unsigned long) page_address(page);
@@ -5438,7 +5438,7 @@ void *alloc_pages_exact_noprof(size_t size, gfp_t gfp_mask)
 	unsigned long addr;
 
 	if (WARN_ON_ONCE(gfp_mask & (__GFP_COMP | __GFP_HIGHMEM)))
-		gfp_mask &= ~(__GFP_COMP | __GFP_HIGHMEM);
+		gfp_mask &= ~__GFP_COMP | __GFP_NOHIGHMEM;
 
 	addr = get_free_pages_noprof(gfp_mask, order);
 	return make_alloc_exact(addr, order, size);
@@ -5463,7 +5463,7 @@ void * __meminit alloc_pages_exact_nid_noprof(int nid, size_t size, gfp_t gfp_ma
 	struct page *p;
 
 	if (WARN_ON_ONCE(gfp_mask & (__GFP_COMP | __GFP_HIGHMEM)))
-		gfp_mask &= ~(__GFP_COMP | __GFP_HIGHMEM);
+		gfp_mask &= ~__GFP_COMP | __GFP_NOHIGHMEM;
 
 	p = alloc_pages_node_noprof(nid, gfp_mask, order);
 	if (!p)

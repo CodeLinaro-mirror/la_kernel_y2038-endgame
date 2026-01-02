@@ -181,7 +181,7 @@ static int preallocate_pmds(struct mm_struct *mm, pmd_t *pmds[], int count)
 
 	if (mm == &init_mm)
 		gfp &= ~__GFP_ACCOUNT;
-	gfp &= ~__GFP_HIGHMEM;
+	gfp &= __GFP_NOHIGHMEM;
 
 	for (i = 0; i < count; i++) {
 		pmd_t *pmd = NULL;

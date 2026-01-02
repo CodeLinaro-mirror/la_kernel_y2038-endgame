@@ -125,7 +125,7 @@ static struct inode *__lookup_free_space_inode(struct btrfs_root *root,
 
 	mapping_set_gfp_mask(inode->vfs_inode.i_mapping,
 			mapping_gfp_constraint(inode->vfs_inode.i_mapping,
-			~(__GFP_FS | __GFP_HIGHMEM)));
+			~__GFP_FS & __GFP_NOHIGHMEM));
 
 	return &inode->vfs_inode;
 }

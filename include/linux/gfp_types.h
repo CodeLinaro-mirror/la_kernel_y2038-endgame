@@ -111,6 +111,10 @@ enum {
 #define __GFP_MOVABLE	((__force gfp_t)___GFP_MOVABLE)  /* ZONE_MOVABLE allowed */
 #define GFP_ZONEMASK	(__GFP_DMA|__GFP_HIGHMEM|__GFP_DMA32|__GFP_MOVABLE)
 
+#define __GFP_NOHIGHMEM (~__GFP_HIGHMEM)
+#define __GFP_NODMA	(~__GFP_DMA)
+#define __GFP_NODMA32	(~__GFP_DMA32)
+
 /**
  * DOC: Page mobility and placement hints
  *

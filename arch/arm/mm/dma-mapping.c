@@ -559,7 +559,7 @@ static void *__dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
 #endif
 
 	buf = kzalloc(sizeof(*buf),
-		      gfp & ~(__GFP_DMA | __GFP_DMA32 | __GFP_HIGHMEM));
+		      gfp & __GFP_NOHIGHMEM & __GFP_NODMA & __GFP_NODMA32);
 	if (!buf)
 		return NULL;
 

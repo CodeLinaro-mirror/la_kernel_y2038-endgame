@@ -83,7 +83,7 @@ struct folio *memfd_alloc_folio(struct file *memfd, pgoff_t idx)
 		long nr_resv;
 
 		gfp_mask = htlb_alloc_mask(h);
-		gfp_mask &= ~(__GFP_HIGHMEM | __GFP_MOVABLE);
+		gfp_mask &= __GFP_NOHIGHMEM & ~__GFP_MOVABLE;
 		idx >>= huge_page_order(h);
 
 		nr_resv = hugetlb_reserve_pages(inode, idx, idx + 1, NULL, EMPTY_VMA_FLAGS);
