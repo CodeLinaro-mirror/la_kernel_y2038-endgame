@@ -54,9 +54,6 @@ static DEFINE_PER_CPU_SHARED_ALIGNED(struct rds_page_remainder, rds_page_remaind
  * @bytes: the number of bytes needed.
  * @gfp: the waiting behaviour of the allocation
  *
- * @gfp is always ored with __GFP_HIGHMEM.  Callers must be prepared to
- * kmap the pages, etc.
- *
  * If @bytes is at least a full page then this just returns a page from
  * alloc_page().
  *
@@ -73,8 +70,6 @@ int rds_page_remainder_alloc(struct scatterlist *scat, unsigned long bytes,
 	struct rds_page_remainder *rem;
 	struct page *page;
 	int ret;
-
-	gfp |= __GFP_HIGHMEM;
 
 	/* jump straight to allocation if we're trying for a huge page */
 	if (bytes >= PAGE_SIZE) {
