@@ -195,7 +195,7 @@ static inline void *page_pool_alloc_va(struct page_pool *pool,
 	struct page *page;
 
 	/* Mask off __GFP_HIGHMEM to ensure we can use page_address() */
-	page = page_pool_alloc(pool, &offset, size, gfp & ~__GFP_HIGHMEM);
+	page = page_pool_alloc(pool, &offset, size, gfp & __GFP_NOHIGHMEM);
 	if (unlikely(!page))
 		return NULL;
 
