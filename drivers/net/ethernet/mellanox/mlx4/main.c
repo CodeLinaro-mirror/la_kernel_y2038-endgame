@@ -1569,7 +1569,7 @@ static int mlx4_load_fw(struct mlx4_dev *dev)
 	int err;
 
 	priv->fw.fw_icm = mlx4_alloc_icm(dev, priv->fw.fw_pages,
-					 GFP_HIGHUSER | __GFP_NOWARN, 0);
+					 GFP_KERNEL | __GFP_NOWARN, 0);
 	if (!priv->fw.fw_icm) {
 		mlx4_err(dev, "Couldn't allocate FW area, aborting\n");
 		return -ENOMEM;
@@ -1610,7 +1610,7 @@ static int mlx4_init_cmpt_table(struct mlx4_dev *dev, u64 cmpt_base,
 					  cmpt_entry_sz) << MLX4_CMPT_SHIFT),
 				  cmpt_entry_sz, dev->caps.num_qps,
 				  dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FW],
-				  0, 0);
+				  0);
 	if (err)
 		goto err;
 
@@ -1619,7 +1619,7 @@ static int mlx4_init_cmpt_table(struct mlx4_dev *dev, u64 cmpt_base,
 				  ((u64) (MLX4_CMPT_TYPE_SRQ *
 					  cmpt_entry_sz) << MLX4_CMPT_SHIFT),
 				  cmpt_entry_sz, dev->caps.num_srqs,
-				  dev->caps.reserved_srqs, 0, 0);
+				  dev->caps.reserved_srqs, 0);
 	if (err)
 		goto err_qp;
 
@@ -1628,7 +1628,7 @@ static int mlx4_init_cmpt_table(struct mlx4_dev *dev, u64 cmpt_base,
 				  ((u64) (MLX4_CMPT_TYPE_CQ *
 					  cmpt_entry_sz) << MLX4_CMPT_SHIFT),
 				  cmpt_entry_sz, dev->caps.num_cqs,
-				  dev->caps.reserved_cqs, 0, 0);
+				  dev->caps.reserved_cqs, 0);
 	if (err)
 		goto err_srq;
 
@@ -1637,7 +1637,7 @@ static int mlx4_init_cmpt_table(struct mlx4_dev *dev, u64 cmpt_base,
 				  cmpt_base +
 				  ((u64) (MLX4_CMPT_TYPE_EQ *
 					  cmpt_entry_sz) << MLX4_CMPT_SHIFT),
-				  cmpt_entry_sz, num_eqs, num_eqs, 0, 0);
+				  cmpt_entry_sz, num_eqs, num_eqs, 0);
 	if (err)
 		goto err_cq;
 
@@ -1675,7 +1675,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 		 (unsigned long long) aux_pages << 2);
 
 	priv->fw.aux_icm = mlx4_alloc_icm(dev, aux_pages,
-					  GFP_HIGHUSER | __GFP_NOWARN, 0);
+					  GFP_KERNEL | __GFP_NOWARN, 0);
 	if (!priv->fw.aux_icm) {
 		mlx4_err(dev, "Couldn't allocate aux memory, aborting\n");
 		return -ENOMEM;
@@ -1697,7 +1697,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 	num_eqs = dev->phys_caps.num_phys_eqs;
 	err = mlx4_init_icm_table(dev, &priv->eq_table.table,
 				  init_hca->eqc_base, dev_cap->eqc_entry_sz,
-				  num_eqs, num_eqs, 0, 0);
+				  num_eqs, num_eqs, 0);
 	if (err) {
 		mlx4_err(dev, "Failed to map EQ context memory, aborting\n");
 		goto err_unmap_cmpt;
@@ -1718,7 +1718,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  init_hca->mtt_base,
 				  dev->caps.mtt_entry_sz,
 				  dev->caps.num_mtts,
-				  dev->caps.reserved_mtts, 1, 0);
+				  dev->caps.reserved_mtts, 0);
 	if (err) {
 		mlx4_err(dev, "Failed to map MTT context memory, aborting\n");
 		goto err_unmap_eq;
@@ -1728,7 +1728,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  init_hca->dmpt_base,
 				  dev_cap->dmpt_entry_sz,
 				  dev->caps.num_mpts,
-				  dev->caps.reserved_mrws, 1, 1);
+				  dev->caps.reserved_mrws, 1);
 	if (err) {
 		mlx4_err(dev, "Failed to map dMPT context memory, aborting\n");
 		goto err_unmap_mtt;
@@ -1739,7 +1739,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  dev_cap->qpc_entry_sz,
 				  dev->caps.num_qps,
 				  dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FW],
-				  0, 0);
+				  0);
 	if (err) {
 		mlx4_err(dev, "Failed to map QP context memory, aborting\n");
 		goto err_unmap_dmpt;
@@ -1750,7 +1750,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  dev_cap->aux_entry_sz,
 				  dev->caps.num_qps,
 				  dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FW],
-				  0, 0);
+				  0);
 	if (err) {
 		mlx4_err(dev, "Failed to map AUXC context memory, aborting\n");
 		goto err_unmap_qp;
@@ -1761,7 +1761,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  dev_cap->altc_entry_sz,
 				  dev->caps.num_qps,
 				  dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FW],
-				  0, 0);
+				  0);
 	if (err) {
 		mlx4_err(dev, "Failed to map ALTC context memory, aborting\n");
 		goto err_unmap_auxc;
@@ -1772,7 +1772,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  dev_cap->rdmarc_entry_sz << priv->qp_table.rdmarc_shift,
 				  dev->caps.num_qps,
 				  dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FW],
-				  0, 0);
+				  0);
 	if (err) {
 		mlx4_err(dev, "Failed to map RDMARC context memory, aborting\n");
 		goto err_unmap_altc;
@@ -1782,7 +1782,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  init_hca->cqc_base,
 				  dev_cap->cqc_entry_sz,
 				  dev->caps.num_cqs,
-				  dev->caps.reserved_cqs, 0, 0);
+				  dev->caps.reserved_cqs, 0);
 	if (err) {
 		mlx4_err(dev, "Failed to map CQ context memory, aborting\n");
 		goto err_unmap_rdmarc;
@@ -1792,7 +1792,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  init_hca->srqc_base,
 				  dev_cap->srq_entry_sz,
 				  dev->caps.num_srqs,
-				  dev->caps.reserved_srqs, 0, 0);
+				  dev->caps.reserved_srqs, 0);
 	if (err) {
 		mlx4_err(dev, "Failed to map SRQ context memory, aborting\n");
 		goto err_unmap_cq;
@@ -1810,7 +1810,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  mlx4_get_mgm_entry_size(dev),
 				  dev->caps.num_mgms + dev->caps.num_amgms,
 				  dev->caps.num_mgms + dev->caps.num_amgms,
-				  0, 0);
+				  0);
 	if (err) {
 		mlx4_err(dev, "Failed to map MCG context memory, aborting\n");
 		goto err_unmap_srq;
