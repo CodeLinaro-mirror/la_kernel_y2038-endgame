@@ -489,7 +489,7 @@ static struct vring_desc *alloc_indirect_split(struct virtqueue *_vq,
 	 * otherwise virt_to_phys will give us bogus addresses in the
 	 * virtqueue.
 	 */
-	gfp &= ~__GFP_HIGHMEM;
+	gfp &= __GFP_NOHIGHMEM;
 
 	size = sizeof(*desc) * total_sg + sizeof(*extra) * total_sg;
 
@@ -1303,7 +1303,7 @@ static struct vring_packed_desc *alloc_indirect_packed(unsigned int total_sg,
 	 * otherwise virt_to_phys will give us bogus addresses in the
 	 * virtqueue.
 	 */
-	gfp &= ~__GFP_HIGHMEM;
+	gfp &= __GFP_NOHIGHMEM;
 
 	size = (sizeof(*desc) + sizeof(*extra)) * total_sg;
 

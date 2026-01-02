@@ -721,7 +721,7 @@ retry:
 
 out_unlock:
 	xas_unlock_irq(xas);
-	if (xas_nomem(xas, mapping_gfp_mask(mapping) & ~__GFP_HIGHMEM))
+	if (xas_nomem(xas, mapping_gfp_mask(mapping) & __GFP_NOHIGHMEM))
 		goto retry;
 	if (xas->xa_node == XA_ERROR(-ENOMEM))
 		return xa_mk_internal(VM_FAULT_OOM);

@@ -115,14 +115,14 @@ void *__vmalloc_noprof(unsigned long size, gfp_t gfp_mask)
 	 *  You can't specify __GFP_HIGHMEM with kmalloc() since kmalloc()
 	 * returns only a logical address.
 	 */
-	return kmalloc_noprof(size, (gfp_mask | __GFP_COMP) & ~__GFP_HIGHMEM);
+	return kmalloc_noprof(size, (gfp_mask | __GFP_COMP) & __GFP_NOHIGHMEM);
 }
 EXPORT_SYMBOL(__vmalloc_noprof);
 
 void *vrealloc_node_align_noprof(const void *p, size_t size, unsigned long align,
 				 gfp_t flags, int node)
 {
-	return krealloc_noprof(p, size, (flags | __GFP_COMP) & ~__GFP_HIGHMEM);
+	return krealloc_noprof(p, size, (flags | __GFP_COMP) & __GFP_NOHIGHMEM);
 }
 
 void *__vmalloc_node_range_noprof(unsigned long size, unsigned long align,

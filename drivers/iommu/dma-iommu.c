@@ -969,7 +969,7 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
 	 * __iommu_dma_alloc_pages() but are not used for the supporting
 	 * internal allocations that follow.
 	 */
-	gfp &= ~(__GFP_DMA | __GFP_DMA32 | __GFP_HIGHMEM | __GFP_COMP);
+	gfp &= __GFP_NODMA & __GFP_NODMA32 & __GFP_NOHIGHMEM & ~__GFP_COMP;
 
 	if (sg_alloc_table_from_pages(sgt, pages, count, 0, size, gfp))
 		goto out_free_iova;
