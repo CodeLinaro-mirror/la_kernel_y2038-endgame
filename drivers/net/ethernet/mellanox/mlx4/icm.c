@@ -138,15 +138,10 @@ struct mlx4_icm *mlx4_alloc_icm(struct mlx4_dev *dev, int npages,
 	gfp_t mask;
 	int ret;
 
-	/* We use sg_set_buf for coherent allocs, which assumes low memory */
-	BUG_ON(coherent && (gfp_mask & __GFP_HIGHMEM));
-
-	icm = kmalloc_node(sizeof(*icm),
-			   gfp_mask & ~(__GFP_HIGHMEM | __GFP_NOWARN),
+	icm = kmalloc_node(sizeof(*icm), gfp_mask & __GFP_NOWARN,
 			   dev->numa_node);
 	if (!icm) {
-		icm = kmalloc(sizeof(*icm),
-			      gfp_mask & ~(__GFP_HIGHMEM | __GFP_NOWARN));
+		icm = kmalloc(sizeof(*icm), gfp_mask & ~__GFP_NOWARN);
 		if (!icm)
 			return NULL;
 	}
@@ -159,13 +154,11 @@ struct mlx4_icm *mlx4_alloc_icm(struct mlx4_dev *dev, int npages,
 	while (npages > 0) {
 		if (!chunk) {
 			chunk = kzalloc_node(sizeof(*chunk),
-					     gfp_mask & ~(__GFP_HIGHMEM |
-							  __GFP_NOWARN),
+					     gfp_mask & ~__GFP_NOWARN,
 					     dev->numa_node);
 			if (!chunk) {
 				chunk = kzalloc(sizeof(*chunk),
-						gfp_mask & ~(__GFP_HIGHMEM |
-							     __GFP_NOWARN));
+						gfp_mask & __GFP_NOWARN);
 				if (!chunk)
 					goto fail;
 			}
@@ -269,8 +262,7 @@ int mlx4_table_get(struct mlx4_dev *dev, struct mlx4_icm_table *table, u32 obj)
 	}
 
 	table->icm[i] = mlx4_alloc_icm(dev, MLX4_TABLE_CHUNK_SIZE >> PAGE_SHIFT,
-				       (table->lowmem ? GFP_KERNEL : GFP_HIGHUSER) |
-				       __GFP_NOWARN, table->coherent);
+				       GFP_KERNEL | __GFP_NOWARN, table->coherent);
 	if (!table->icm[i]) {
 		ret = -ENOMEM;
 		goto out;
@@ -319,9 +311,6 @@ void *mlx4_table_find(struct mlx4_icm_table *table, u32 obj,
 	struct mlx4_icm_chunk *chunk;
 	struct mlx4_icm *icm;
 	void *addr = NULL;
-
-	if (!table->lowmem)
-		return NULL;
 
 	mutex_lock(&table->mutex);
 
@@ -414,7 +403,7 @@ void mlx4_table_put_range(struct mlx4_dev *dev, struct mlx4_icm_table *table,
 
 int mlx4_init_icm_table(struct mlx4_dev *dev, struct mlx4_icm_table *table,
 			u64 virt, int obj_size,	u32 nobj, int reserved,
-			int use_lowmem, int use_coherent)
+			int use_coherent)
 {
 	int obj_per_chunk;
 	int num_icm;
@@ -434,7 +423,6 @@ int mlx4_init_icm_table(struct mlx4_dev *dev, struct mlx4_icm_table *table,
 	table->num_icm  = num_icm;
 	table->num_obj  = nobj;
 	table->obj_size = obj_size;
-	table->lowmem   = use_lowmem;
 	table->coherent = use_coherent;
 	mutex_init(&table->mutex);
 
@@ -446,8 +434,7 @@ int mlx4_init_icm_table(struct mlx4_dev *dev, struct mlx4_icm_table *table,
 					i * MLX4_TABLE_CHUNK_SIZE);
 
 		table->icm[i] = mlx4_alloc_icm(dev, chunk_size >> PAGE_SHIFT,
-					       (use_lowmem ? GFP_KERNEL : GFP_HIGHUSER) |
-					       __GFP_NOWARN, use_coherent);
+					       GFP_KERNEL | __GFP_NOWARN, use_coherent);
 		if (!table->icm[i])
 			goto err;
 		if (mlx4_MAP_ICM(dev, table->icm[i], virt + i * MLX4_TABLE_CHUNK_SIZE)) {
