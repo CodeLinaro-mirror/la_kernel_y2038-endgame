@@ -736,7 +736,7 @@ int mthca_map_eq_icm(struct mthca_dev *dev, u64 icm_virt)
 	 * memory, or 1 KB total.
 	 */
 	dev->eq_table.icm_virt = icm_virt;
-	dev->eq_table.icm_page = alloc_page(GFP_HIGHUSER);
+	dev->eq_table.icm_page = alloc_page(GFP_KERNEL);
 	if (!dev->eq_table.icm_page)
 		return -ENOMEM;
 	dev->eq_table.icm_dma =

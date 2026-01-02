@@ -65,7 +65,6 @@ struct mthca_icm_table {
 	int               num_icm;
 	int               num_obj;
 	int               obj_size;
-	int               lowmem;
 	int               coherent;
 	struct mutex      mutex;
 	struct mthca_icm *icm[] __counted_by(num_icm);
@@ -86,7 +85,7 @@ void mthca_free_icm(struct mthca_dev *dev, struct mthca_icm *icm, int coherent);
 struct mthca_icm_table *mthca_alloc_icm_table(struct mthca_dev *dev,
 					      u64 virt, int obj_size,
 					      int nobj, int reserved,
-					      int use_lowmem, int use_coherent);
+					      int use_coherent);
 void mthca_free_icm_table(struct mthca_dev *dev, struct mthca_icm_table *table);
 int mthca_table_get(struct mthca_dev *dev, struct mthca_icm_table *table, int obj);
 void mthca_table_put(struct mthca_dev *dev, struct mthca_icm_table *table, int obj);

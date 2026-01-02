@@ -142,10 +142,7 @@ struct mthca_icm *mthca_alloc_icm(struct mthca_dev *dev, int npages,
 	int cur_order;
 	int ret;
 
-	/* We use sg_set_buf for coherent allocs, which assumes low memory */
-	BUG_ON(coherent && (gfp_mask & __GFP_HIGHMEM));
-
-	icm = kmalloc(sizeof *icm, gfp_mask & ~(__GFP_HIGHMEM | __GFP_NOWARN));
+	icm = kmalloc(sizeof *icm, gfp_mask & ~__GFP_NOWARN);
 	if (!icm)
 		return icm;
 
@@ -157,7 +154,7 @@ struct mthca_icm *mthca_alloc_icm(struct mthca_dev *dev, int npages,
 	while (npages > 0) {
 		if (!chunk) {
 			chunk = kmalloc(sizeof *chunk,
-					gfp_mask & ~(__GFP_HIGHMEM | __GFP_NOWARN));
+					gfp_mask & ~__GFP_NOWARN);
 			if (!chunk)
 				goto fail;
 
@@ -232,8 +229,7 @@ int mthca_table_get(struct mthca_dev *dev, struct mthca_icm_table *table, int ob
 	}
 
 	table->icm[i] = mthca_alloc_icm(dev, MTHCA_TABLE_CHUNK_SIZE >> PAGE_SHIFT,
-					(table->lowmem ? GFP_KERNEL : GFP_HIGHUSER) |
-					__GFP_NOWARN, table->coherent);
+					GFP_KERNEL | __GFP_NOWARN, table->coherent);
 	if (!table->icm[i]) {
 		ret = -ENOMEM;
 		goto out;
@@ -281,9 +277,6 @@ void *mthca_table_find(struct mthca_icm_table *table, int obj, dma_addr_t *dma_h
 	struct mthca_icm_chunk *chunk;
 	struct mthca_icm *icm;
 	struct page *page = NULL;
-
-	if (!table->lowmem)
-		return NULL;
 
 	mutex_lock(&table->mutex);
 
@@ -356,7 +349,7 @@ void mthca_table_put_range(struct mthca_dev *dev, struct mthca_icm_table *table,
 struct mthca_icm_table *mthca_alloc_icm_table(struct mthca_dev *dev,
 					      u64 virt, int obj_size,
 					      int nobj, int reserved,
-					      int use_lowmem, int use_coherent)
+					      int use_coherent)
 {
 	struct mthca_icm_table *table;
 	int obj_per_chunk;
@@ -375,7 +368,6 @@ struct mthca_icm_table *mthca_alloc_icm_table(struct mthca_dev *dev,
 	table->num_icm  = num_icm;
 	table->num_obj  = nobj;
 	table->obj_size = obj_size;
-	table->lowmem   = use_lowmem;
 	table->coherent = use_coherent;
 	mutex_init(&table->mutex);
 
@@ -388,8 +380,8 @@ struct mthca_icm_table *mthca_alloc_icm_table(struct mthca_dev *dev,
 			chunk_size = nobj * obj_size - i * MTHCA_TABLE_CHUNK_SIZE;
 
 		table->icm[i] = mthca_alloc_icm(dev, chunk_size >> PAGE_SHIFT,
-						(use_lowmem ? GFP_KERNEL : GFP_HIGHUSER) |
-						__GFP_NOWARN, use_coherent);
+						GFP_KERNEL | __GFP_NOWARN,
+						use_coherent);
 		if (!table->icm[i])
 			goto err;
 		if (mthca_MAP_ICM(dev, table->icm[i],
