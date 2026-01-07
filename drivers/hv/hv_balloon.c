@@ -1214,7 +1214,7 @@ static unsigned int alloc_balloon_pages(struct hv_dynmem_device *dm,
 		 * We execute this code in a thread context. Furthermore,
 		 * we don't want the kernel to try too hard.
 		 */
-		pg = alloc_pages(GFP_HIGHUSER | __GFP_NORETRY |
+		pg = alloc_pages(GFP_KERNEL | __GFP_NORETRY |
 				__GFP_NOMEMALLOC | __GFP_NOWARN,
 				get_order(alloc_unit << PAGE_SHIFT));
 

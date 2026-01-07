@@ -141,7 +141,7 @@ static DECLARE_WAIT_QUEUE_HEAD(balloon_wq);
 /* When ballooning out (allocating memory to return to Xen) we don't really
    want the kernel to try too hard since that can trigger the oom killer. */
 #define GFP_BALLOON \
-	(GFP_HIGHUSER | __GFP_NOWARN | __GFP_NORETRY | __GFP_NOMEMALLOC)
+	(GFP_KERNEL | __GFP_NOWARN | __GFP_NORETRY | __GFP_NOMEMALLOC)
 
 /* balloon_append: add the given page to the balloon. */
 static void balloon_append(struct page *page)

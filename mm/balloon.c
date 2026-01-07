@@ -151,7 +151,7 @@ struct page *balloon_page_alloc(void)
 	if (IS_ENABLED(CONFIG_BALLOON_MIGRATION))
 		gfp_flags |= GFP_HIGHUSER_MOVABLE;
 	else
-		gfp_flags |= GFP_HIGHUSER;
+		gfp_flags |= GFP_KERNEL;
 
 	return alloc_page(gfp_flags);
 }
