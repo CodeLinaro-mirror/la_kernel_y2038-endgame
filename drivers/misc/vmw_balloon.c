@@ -671,7 +671,7 @@ static int vmballoon_alloc_page_list(struct vmballoon *b,
 			list_del(&page->lru);
 		} else {
 			if (ctl->page_size == VMW_BALLOON_2M_PAGE)
-				page = alloc_pages(__GFP_HIGHMEM|__GFP_NOWARN|
+				page = alloc_pages(GFP_KERNEL | __GFP_NOWARN|
 					__GFP_NOMEMALLOC, VMW_BALLOON_2M_ORDER);
 			else
 				page = balloon_page_alloc();
