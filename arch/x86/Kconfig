@@ -1416,9 +1416,8 @@ config HIGHMEM4G
 
 choice
 	prompt "Memory split" if EXPERT
-	default VMSPLIT_2G_OPT if HIGHMEM && !X86_PAE
 	default VMSPLIT_2G if X86_PAE
-	default VMSPLIT_3G_OPT
+	default VMSPLIT_2G_OPT
 	depends on X86_32
 	help
 	  Select the desired split between kernel and user memory.
@@ -1429,9 +1428,7 @@ choice
 	  than low memory, as it needs to be mapped into the kernel first.
 	  Note that increasing the kernel address space limits the range
 	  available to user programs, making the address space there
-	  tighter.  Selecting anything other than the default 3G/1G split
-	  will also likely make your kernel incompatible with binary-only
-	  kernel modules.
+	  tighter.
 
 	  If you are not absolutely sure what you are doing, leave this
 	  option alone!
