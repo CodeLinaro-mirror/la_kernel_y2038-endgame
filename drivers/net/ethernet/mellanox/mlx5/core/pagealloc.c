@@ -297,7 +297,7 @@ static int alloc_system_page(struct mlx5_core_dev *dev, u32 function)
 	u64 addr;
 	int err;
 
-	page = alloc_pages_node(nid, GFP_HIGHUSER, 0);
+	page = alloc_pages_node(nid, GFP_KERNEL, 0);
 	if (!page) {
 		mlx5_core_warn(dev, "failed to allocate page\n");
 		return -ENOMEM;
