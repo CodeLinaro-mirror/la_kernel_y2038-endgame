@@ -78,7 +78,7 @@ static void vbg_guest_mappings_init(struct vbg_dev *gdev)
 	if (!pages)
 		goto out;
 
-	gdev->guest_mappings_dummy_page = alloc_page(GFP_HIGHUSER);
+	gdev->guest_mappings_dummy_page = alloc_page(GFP_KERNEL);
 	if (!gdev->guest_mappings_dummy_page)
 		goto out;
 
