@@ -602,6 +602,7 @@ config BALLOON_COMPACTION
 	bool "Allow for balloon memory compaction/migration"
 	default y
 	depends on COMPACTION && MEMORY_BALLOON
+	depends on !HIGHMEM
 	help
 	  Memory fragmentation introduced by ballooning might reduce
 	  significantly the number of 2MB contiguous memory blocks that can be

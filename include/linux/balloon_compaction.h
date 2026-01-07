@@ -111,7 +111,7 @@ static inline gfp_t balloon_mapping_gfp_mask(void)
 {
 	if (IS_ENABLED(CONFIG_BALLOON_COMPACTION))
 		return GFP_HIGHUSER_MOVABLE;
-	return GFP_HIGHUSER;
+	return GFP_USER;
 }
 
 /*
