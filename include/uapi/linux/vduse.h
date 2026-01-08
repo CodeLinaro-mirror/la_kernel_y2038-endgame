@@ -85,7 +85,7 @@ struct vduse_iotlb_entry {
 	__uapi_arch_pad8;
 	__uapi_arch_pad16;
 	__uapi_arch_pad32;
-};
+} __uapi_arch_align;
 
 /*
  * Find the first IOVA region that overlaps with the range [start, last]

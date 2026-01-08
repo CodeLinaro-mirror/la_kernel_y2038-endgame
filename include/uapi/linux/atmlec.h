@@ -55,7 +55,7 @@ struct atmlec_config_msg {
 	unsigned int lane_version;	/* LANE2: 1 for LANEv1, 2 for LANEv2 */
 	int mtu;
 	int is_proxy;
-};
+} __uapi_arch_align;
 
 struct atmlec_msg {
 	atmlec_msg_type type;
@@ -88,7 +88,7 @@ struct atmlec_msg {
 				 */
 	} content;
 	__uapi_arch_atm_pad;
-} __ATM_API_ALIGN;
+} __uapi_arch_align __ATM_API_ALIGN;
 
 struct atmlec_ioc {
 	int dev_num;

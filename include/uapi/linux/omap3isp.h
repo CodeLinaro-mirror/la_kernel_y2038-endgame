@@ -181,14 +181,14 @@ struct omap3isp_stat_data {
 #endif
 	void __user *buf;
 	__struct_group(/* no tag */, frame, /* no attrs */,
-		__u32 buf_size;
+		__u32 buf_size __uapi_arch_align;
 		__u16 frame_number;
 		__u16 cur_frame;
 		__u16 config_counter;
 		__uapi_arch_pad16;
 	);
 	__uapi_arch_pad_long;
-};
+} __uapi_arch_align;
 
 #ifdef __KERNEL__
 struct omap3isp_stat_data_time32 {
@@ -405,7 +405,7 @@ struct omap3isp_ccdc_fpc {
 	__u16 fpnum;
 	__uapi_arch_pad16;
 	__u32 fpcaddr;
-};
+} __uapi_arch_align;
 
 /**
  * struct omap3isp_ccdc_blcomp - Black Level Compensation parameters
@@ -629,7 +629,7 @@ struct omap3isp_prev_nf {
 	__uapi_arch_pad8;
 	__uapi_arch_pad16;
 	__u32 table[OMAP3ISP_PREV_NF_TBL_SIZE];
-};
+} __uapi_arch_align;
 
 /**
  * struct omap3isp_prev_gtables - Gamma correction tables

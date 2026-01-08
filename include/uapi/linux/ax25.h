@@ -81,7 +81,7 @@ struct ax25_route_opt_struct {
 	__uapi_arch_pad16;
 	int		cmd;
 	int		arg;
-};
+} __uapi_arch_align;
 
 struct ax25_ctl_struct {
         ax25_address            port_addr;

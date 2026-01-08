@@ -199,7 +199,7 @@ struct vbg_ioctl_log {
 	/* architecture-specific padding to alignof(struct vbg_ioctl_hdr) */
 	__uapi_arch_pad8;
 	__uapi_arch_pad16;
-};
+} __uapi_arch_align;
 
 #define VBG_IOCTL_LOG(s)		_IO('V', 9)
 

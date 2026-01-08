@@ -55,7 +55,7 @@ typedef union ide_reg_valid_s {
 		unsigned select_hob		: 1;
 		unsigned control_hob		: 1;
 		__uapi_arch_pad16; /* padding to sizeof(unsigned) */
-	} b __uapi_arch_align;
+	} __uapi_arch_align b;
 } __uapi_arch_align ide_reg_valid_t;
 
 typedef struct ide_task_request_s {

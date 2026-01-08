@@ -119,7 +119,7 @@ typedef struct ifslave {
 	__s8 state;
 	__uapi_arch_pad16;
 	__u32  link_failure_count;
-} ifslave __uapi_arch_align;
+} __uapi_arch_align ifslave;
 
 struct ad_info {
 	__u16 aggregator_id;

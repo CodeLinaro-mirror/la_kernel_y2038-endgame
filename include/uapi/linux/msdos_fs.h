@@ -159,9 +159,9 @@ struct fat_boot_sector {
 			__u8	fs_type[8];		/* file system type */
 			/* other fields are not added here */
 			__uapi_arch_pad16;
-		} fat32;
-	};
-};
+		} __uapi_arch_align fat32;
+	} __uapi_arch_align;
+} __uapi_arch_align;
 
 struct fat_boot_fsinfo {
 	__le32   signature1;	/* 0x41615252L */

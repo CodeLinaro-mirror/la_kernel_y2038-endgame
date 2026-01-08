@@ -269,10 +269,10 @@ struct sockaddr_can {
 			__u8 addr;
 			__uapi_arch_pad8;
 			__uapi_arch_pad16;
-		} j1939;
+		} __uapi_arch_align j1939;
 
 		/* reserved for future CAN protocols address information */
-	} can_addr;
+	} __uapi_arch_align can_addr;
 } __uapi_arch_align;
 
 /**

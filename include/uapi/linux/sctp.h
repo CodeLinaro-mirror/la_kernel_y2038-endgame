@@ -458,7 +458,7 @@ struct sctp_send_failed {
 	struct sctp_sndrcvinfo ssf_info;
 	sctp_assoc_t ssf_assoc_id;
 	__u8 ssf_data[];
-};
+} __uapi_arch_align;
 
 struct sctp_send_failed_event {
 	__u16 ssf_type;

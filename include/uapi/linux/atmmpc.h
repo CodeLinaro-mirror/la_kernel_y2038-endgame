@@ -65,7 +65,7 @@ struct k_message {
                 struct mpc_parameters params;
         } content;
         struct atm_qos qos;       
-} __ATM_API_ALIGN;
+} __uapi_arch_align __ATM_API_ALIGN;
 
 struct llc_snap_hdr {
 	/* RFC 1483 LLC/SNAP encapsulation for routed IP PDUs */

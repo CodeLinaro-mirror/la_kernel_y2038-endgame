@@ -426,7 +426,7 @@ struct snd_pcm_hw_params {
 	snd_pcm_uframes_t fifo_size;	/* R: chip FIFO size in frames */
 	unsigned char sync[16];		/* R: synchronization ID (perfect sync - one clock source) */
 	unsigned char reserved[48];	/* reserved for future */
-};
+} __uapi_arch_align;
 
 enum {
 	SNDRV_PCM_TSTAMP_NONE = 0,

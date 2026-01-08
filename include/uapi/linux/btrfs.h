@@ -240,10 +240,10 @@ struct btrfs_ioctl_dev_replace_args {
 	union {
 		struct btrfs_ioctl_dev_replace_start_params start;
 		struct btrfs_ioctl_dev_replace_status_params status;
-	};	/* in/out */
+	} __uapi_arch_align;	/* in/out */
 
 	__u64 spare[64];
-};
+} __uapi_arch_align;
 
 struct btrfs_ioctl_dev_info_args {
 	__u64 devid;				/* in/out */

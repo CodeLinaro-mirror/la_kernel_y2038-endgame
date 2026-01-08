@@ -163,7 +163,7 @@ struct ieee_pfc {
 	__uapi_arch_pad16;
 	__u64	requests[IEEE_8021QAZ_MAX_TCS];
 	__u64	indications[IEEE_8021QAZ_MAX_TCS];
-};
+} __uapi_arch_align;
 
 #define IEEE_8021Q_MAX_PRIORITIES 8
 #define DCBX_MAX_BUFFERS  8

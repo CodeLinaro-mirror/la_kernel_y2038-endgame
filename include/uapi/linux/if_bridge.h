@@ -718,10 +718,10 @@ struct br_mdb_entry {
 			__be32	ip4;
 			struct in6_addr ip6;
 			unsigned char mac_addr[ETH_ALEN];
-		} u;
+		} __uapi_arch_align u;
 		__be16		proto;
 		__uapi_arch_pad16;
-	} addr __uapi_arch_align;
+	} addr;
 } __uapi_arch_align;
 
 enum {

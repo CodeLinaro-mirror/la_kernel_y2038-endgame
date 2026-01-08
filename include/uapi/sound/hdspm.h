@@ -42,7 +42,7 @@ struct hdspm_peak_rms {
 	__uapi_arch_pad8;
 	__uapi_arch_pad16;
 	int status2;
-};
+} __uapi_arch_align;
 
 #define SNDRV_HDSPM_IOCTL_GET_PEAK_RMS \
 	_IOR('H', 0x42, struct hdspm_peak_rms)
