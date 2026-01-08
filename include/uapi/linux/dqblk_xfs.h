@@ -161,7 +161,7 @@ typedef struct fs_qfilestat {
 	__u64		qfs_nblks;	/* number of BBs 512-byte-blks */
 	__u32		qfs_nextents;	/* number of extents */
 	__uapi_arch_pad32;
-} fs_qfilestat_t __uapi_arch_align;
+} __uapi_arch_align fs_qfilestat_t;
 
 typedef struct fs_quota_stat {
 	__s8		qs_version;	/* version number for future changes */
@@ -179,7 +179,7 @@ typedef struct fs_quota_stat {
 	__u16		qs_bwarnlimit;	/* limit for num warnings */
 	__u16		qs_iwarnlimit;	/* limit for num warnings */
 	__uapi_arch_pad32;
-} fs_quota_stat_t __uapi_arch_align;
+} __uapi_arch_align fs_quota_stat_t;
 
 /*
  * fs_quota_statv is used by Q_XGETQSTATV for a given file system. It provides

@@ -24,7 +24,7 @@ struct xt_entry_match {
 
 			/* Used inside the kernel */
 			struct xt_match *match;
-		} kernel __uapi_arch_align;
+		} __uapi_arch_align kernel;
 
 		/* Total length */
 		__u16 match_size;
@@ -49,7 +49,7 @@ struct xt_entry_target {
 
 			/* Used inside the kernel */
 			struct xt_target *target;
-		} kernel __uapi_arch_align;
+		} __uapi_arch_align kernel;
 
 		/* Total length */
 		__u16 target_size;

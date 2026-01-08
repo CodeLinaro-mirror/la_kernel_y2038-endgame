@@ -93,7 +93,7 @@ struct dlm_lock_result {
 	__u8 unused[3];
 	/* Offsets may be zero if no data is present */
 	__u32 lvb_offset;
-};
+} __uapi_arch_align;
 
 /* Commands passed to the device */
 #define DLM_USER_LOCK         1

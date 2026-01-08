@@ -141,7 +141,7 @@ struct usb_raw_ep_limits {
 	__u16	maxpacket_limit;
 	__u16	max_streams;
 	__u32	reserved;
-};
+} __uapi_arch_align;
 
 /*
  * struct usb_raw_ep_info - stores information about a gadget endpoint.
@@ -159,7 +159,7 @@ struct usb_raw_ep_info {
 	__u8				:8;
 #endif
 	struct usb_raw_ep_limits	limits;
-};
+} __uapi_arch_align;
 
 /*
  * struct usb_raw_eps_info - argument for USB_RAW_IOCTL_EPS_INFO ioctl.

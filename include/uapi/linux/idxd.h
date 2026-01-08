@@ -210,7 +210,7 @@ struct dsa_hw_desc {
 			__uapi_arch_pad8;
 			__uapi_arch_pad16;
 			__uapi_arch_pad32;
-		};
+		} __uapi_arch_align;
 		__u32	delta_rec_size;
 		__u64	dest2;
 		/* CRC */

@@ -79,7 +79,7 @@ struct cycx_fw_info {
 	__uapi_arch_pad16;
 	__uapi_arch_pad_long;
 	unsigned long	datasize;
-};
+} __uapi_arch_align;
 
 /**
  *	struct cycx_firmware - CYCX firmware file structure
@@ -99,7 +99,7 @@ struct cycx_firmware {
 	char		    descr[CFM_DESCR_LEN];
 	struct cycx_fw_info info;
 	unsigned char	    image[];
-};
+} __uapi_arch_align;
 
 struct cycx_fw_header {
 	unsigned long  reset_size;

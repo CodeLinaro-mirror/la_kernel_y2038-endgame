@@ -116,7 +116,7 @@ struct vpfe_ccdc_config_params_raw {
 	struct vpfe_ccdc_black_clamp blk_clamp;
 	/* Structure for Black Compensation */
 	struct vpfe_ccdc_black_compensation blk_comp;
-};
+} __uapi_arch_align;
 
 /*
  *  Private IOCTL

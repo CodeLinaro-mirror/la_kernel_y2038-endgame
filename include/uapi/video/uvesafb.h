@@ -21,7 +21,7 @@ struct v86_regs {
 	__u16 ds;
 	__u16 fs;
 	__u16 gs;
-};
+} __uapi_arch_align;
 
 /* Task flags */
 #define TF_VBEIB	0x01

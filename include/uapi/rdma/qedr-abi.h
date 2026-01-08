@@ -149,7 +149,7 @@ struct qedr_create_qp_uresp {
 	/* address of RQ doorbell recovery user entry */
 	__aligned_u64 rq_db_rec_addr;
 
-};
+} __uapi_arch_align;
 
 struct qedr_create_srq_ureq {
 	/* user space virtual address of producer pair */

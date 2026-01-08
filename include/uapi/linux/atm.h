@@ -187,7 +187,7 @@ struct sockaddr_atmpvc {
 		short	vpi;		/* VPI (only 8 bits at UNI) */
 		int	vci;		/* VCI (only 16 bits at UNI) */
 	} sap_addr __ATM_API_ALIGN;	/* PVC address */
-};
+} __uapi_arch_align;
 
 /* SVC addressing */
 
@@ -221,7 +221,7 @@ struct sockaddr_atmsvc {
 	char		lij_type;	/* role in LIJ call; one of ATM_LIJ* */
         __uapi_arch_pad16;
 	__u32	lij_id;		/* LIJ call identifier */
-    } sas_addr __uapi_arch_align __ATM_API_ALIGN; /* SVC address */
+    } __uapi_arch_align sas_addr __ATM_API_ALIGN; /* SVC address */
 } __uapi_arch_align;
 
 

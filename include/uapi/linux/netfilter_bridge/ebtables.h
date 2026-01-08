@@ -200,7 +200,7 @@ struct ebt_entry {
 		unsigned int next_offset;
 	);
 	unsigned char elems[] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
-};
+} __uapi_arch_align;
 
 static __inline__ struct ebt_entry_target *
 ebt_get_target(struct ebt_entry *e)

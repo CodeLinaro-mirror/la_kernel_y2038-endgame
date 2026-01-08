@@ -48,11 +48,11 @@ struct pt_regs {
   unsigned long  pc;
 #else
   unsigned short sr;
-  unsigned long  pc __uapi_arch_align;
+  unsigned long  pc;
   unsigned format :  4; /* frame format specifier */
   unsigned vector : 12; /* vector offset */
 #endif
-};
+} __uapi_arch_align;
 
 /*
  * This is the extended stack used by signal handlers and the context

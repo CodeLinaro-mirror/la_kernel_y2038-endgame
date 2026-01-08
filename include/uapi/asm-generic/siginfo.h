@@ -70,9 +70,11 @@ union __sifields {
 	/* SIGILL, SIGFPE, SIGSEGV, SIGBUS, SIGTRAP, SIGEMT */
 	struct {
 		void __user *_addr; /* faulting insn/memory ref. */
-
-#define __ADDR_BND_PKEY_PAD  (__alignof__(void *) < sizeof(short) ? \
-			      sizeof(short) : __alignof__(void *))
+#ifdef __m68k__
+#define __ADDR_BND_PKEY_PAD  sizeof(short)
+#else
+#define __ADDR_BND_PKEY_PAD __alignof__(void *)
+#endif
 		union {
 			/* used on alpha and sparc */
 			int _trapno;	/* TRAP # which caused the signal */
@@ -86,12 +88,12 @@ union __sifields {
 				char _dummy_bnd[__ADDR_BND_PKEY_PAD];
 				void __user *_lower;
 				void __user *_upper;
-			} _addr_bnd;
+			} __uapi_arch_align _addr_bnd;
 			/* used when si_code=SEGV_PKUERR */
 			struct {
 				char _dummy_pkey[__ADDR_BND_PKEY_PAD];
 				__u32 _pkey;
-			} _addr_pkey;
+			} __uapi_arch_align _addr_pkey;
 			/* used when si_code=TRAP_PERF */
 			struct {
 				unsigned long _data;
@@ -114,7 +116,7 @@ union __sifields {
 		int _syscall;	/* triggering system call number */
 		unsigned int _arch;	/* AUDIT_ARCH_* of syscall */
 	} _sigsys;
-};
+} __uapi_arch_align;
 
 #ifndef __ARCH_HAS_SWAPPED_SIGINFO
 #define __SIGINFO 			\

@@ -699,7 +699,7 @@ struct dvd_send_key {
 #ifndef __m68k__
 	__uapi_arch_pad8;
 #endif
-} __uapi_arch_align;
+};
 
 struct dvd_lu_send_challenge {
 	__u8 type;
@@ -930,7 +930,7 @@ typedef struct {
 	__u8 reserved3;
 	__u8 n_opc;
 	__uapi_arch_pad16;
-} disc_information __uapi_arch_align;
+} __uapi_arch_align disc_information;
 
 typedef struct {
 	__be16 track_information_length;

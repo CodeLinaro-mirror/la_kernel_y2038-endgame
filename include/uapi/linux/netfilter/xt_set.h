@@ -24,8 +24,8 @@ struct xt_set_info_v0 {
 			__u8 dim;
 			__u8 flags;
 			__uapi_arch_pad16;
-		} compat __uapi_arch_align;
-	} u __uapi_arch_align;
+		} __uapi_arch_align compat;
+	} __uapi_arch_align u;
 } __uapi_arch_align;
 
 /* match and target infos */
