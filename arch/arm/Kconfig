@@ -1043,6 +1043,36 @@ config PAGE_OFFSET
 	default 0xB0000000 if VMSPLIT_3G_OPT
 	default 0xC0000000
 
+config PHYSMEM_SPLIT
+	bool "Allow sparse lowmem sections"
+	depends on SPARSEMEM
+	default y
+	help
+	  A few SoCs organize their physical address space to have each
+	  memory controller at a fixed address rather than remapping
+	  all DRAM into a contiguous address range. This leads to only
+	  the first area fitting into the linear mapping range and the
+	  upper addresses requiring CONFIG_HIGHMEM even though the total
+	  memory is less than the configured lowmem size.
+
+	  With CONFIG_PHYSMEM_SPLT, the linear map is split into two
+	  lowmem chunks that can accomodate either a large linear area,
+	  or two 512MiB (with VMSPLIT_3G_OPT/VMSPLIT_2G) or 1GiB
+	  (with VMSPLIT_2G_OPT/VMSPLIT_1G). This comes at a small runtime
+	  overhead.
+
+	  Say y here and for CONFIG_SPARSEMEM if there is a chance that
+	  this kernel may run on machines with discontiguous memory.
+
+config PHYSMEM_SPLIT_SIZE
+	depends on MMU
+	hex
+	default 0x40000000 if VMSPLIT_1G	# 1G + 1.75G
+	default 0x40000000 if VMSPLIT_2G_OPT	# 1G + 1G
+	default 0x20000000 if VMSPLIT_2G	# 512M + 1.25G
+	default 0x20000000 if VMSPLIT_3G_OPT	# 512M + 512M
+	default 0x10000000 if VMSPLIT_3G	# 256M + 512M
+
 config KASAN_SHADOW_OFFSET
 	hex
 	depends on KASAN

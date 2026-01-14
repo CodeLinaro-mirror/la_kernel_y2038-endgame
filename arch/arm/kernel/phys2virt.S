@@ -31,6 +31,8 @@
 ENTRY(__fixup_pv_table)
 	mov	r0, r8, lsr #PAGE_SHIFT	@ convert to PFN
 	str_l	r0, __pv_phys_pfn_offset, r3
+	add	r0, #CONFIG_PHYSMEM_SPLIT_SIZE >> 12
+	str_l	r0, __pv_phys_pfn_offset2, r3
 
 	adr_l	r0, __pv_offset
 	subs	r3, r8, #PAGE_OFFSET	@ PHYS_OFFSET - PAGE_OFFSET
@@ -230,6 +232,12 @@ ENDPROC(fixup_pv_table)
 __pv_phys_pfn_offset:
 	.word	0
 	.size	__pv_phys_pfn_offset, . -__pv_phys_pfn_offset
+
+	.globl	__pv_phys_pfn_offset2
+	.type	__pv_phys_pfn_offset2, %object
+__pv_phys_pfn_offset2:
+	.word	0
+	.size	__pv_phys_pfn_offset2, . -__pv_phys_pfn_offset2
 
 	.globl	__pv_offset
 	.type	__pv_offset, %object

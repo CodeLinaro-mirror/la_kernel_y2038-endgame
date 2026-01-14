@@ -174,6 +174,40 @@ extern u64 kernel_sec_end;
  * PFN 0 == physical address 0.
  */
 
+#if defined(CONFIG_PHYSMEM_SPLIT)
+/*
+ * These are not very optimized and could be changed to use the
+ * CONFIG_ARM_PATCH_PHYS_VIRT logic below if it makes a difference.
+ */
+extern unsigned long __pv_phys_pfn_offset;
+extern unsigned long __pv_phys_pfn_offset2;
+
+#define PHYS_OFFSET		((phys_addr_t)__pv_phys_pfn_offset << PAGE_SHIFT)
+#define PHYS_OFFSET2		((phys_addr_t)__pv_phys_pfn_offset2 << PAGE_SHIFT)
+
+static inline phys_addr_t __virt_to_phys_nodebug(unsigned long x)
+{
+	if (x < PAGE_OFFSET + CONFIG_PHYSMEM_SPLIT_SIZE)
+		return (phys_addr_t)x - PAGE_OFFSET + PHYS_OFFSET;
+	else
+		return (phys_addr_t)x - PAGE_OFFSET - CONFIG_PHYSMEM_SPLIT_SIZE + PHYS_OFFSET2;
+}
+
+static inline unsigned long __phys_to_virt(phys_addr_t x)
+{
+	if (x < PHYS_OFFSET2)
+		return x - PHYS_OFFSET + PAGE_OFFSET;
+	else
+		return x - PHYS_OFFSET2 + PAGE_OFFSET + CONFIG_PHYSMEM_SPLIT_SIZE;
+}
+
+static inline unsigned long virt_to_pfn(const void *p)
+{
+	return __virt_to_phys_nodebug((unsigned long)p) >> PAGE_SHIFT;
+}
+
+#else
+
 #if defined(CONFIG_ARM_PATCH_PHYS_VIRT)
 
 /*
@@ -271,7 +305,6 @@ static inline unsigned long __phys_to_virt(phys_addr_t x)
 }
 
 #else
-
 #define PHYS_OFFSET	PLAT_PHYS_OFFSET
 #define PHYS_PFN_OFFSET	((unsigned long)(PHYS_OFFSET >> PAGE_SHIFT))
 
@@ -284,7 +317,6 @@ static inline unsigned long __phys_to_virt(phys_addr_t x)
 {
 	return x - PHYS_OFFSET + PAGE_OFFSET;
 }
-
 #endif
 
 static inline unsigned long virt_to_pfn(const void *p)
@@ -293,6 +325,8 @@ static inline unsigned long virt_to_pfn(const void *p)
 	return (((kaddr - PAGE_OFFSET) >> PAGE_SHIFT) +
 		PHYS_PFN_OFFSET);
 }
+#endif
+
 #define __pa_symbol_nodebug(x)	__virt_to_phys_nodebug((x))
 
 #ifdef CONFIG_DEBUG_VIRTUAL

@@ -166,8 +166,9 @@ EXPORT_SYMBOL(_find_next_bit_be);
 EXPORT_SYMBOL(__gnu_mcount_nc);
 #endif
 
-#ifdef CONFIG_ARM_PATCH_PHYS_VIRT
+#if defined(CONFIG_ARM_PATCH_PHYS_VIRT) || defined(CONFIG_PHYSMEM_SPLIT)
 EXPORT_SYMBOL(__pv_phys_pfn_offset);
+EXPORT_SYMBOL(__pv_phys_pfn_offset2);
 EXPORT_SYMBOL(__pv_offset);
 #endif
 

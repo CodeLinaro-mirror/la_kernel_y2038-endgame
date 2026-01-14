@@ -133,7 +133,7 @@ ENTRY(stext)
 #ifdef CONFIG_SMP_ON_UP
 	bl	__fixup_smp
 #endif
-#ifdef CONFIG_ARM_PATCH_PHYS_VIRT
+#if defined(CONFIG_ARM_PATCH_PHYS_VIRT) || defined(CONFIG_PHYSMEM_SPLIT)
 	bl	__fixup_pv_table
 #endif
 	bl	__create_page_tables

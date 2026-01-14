@@ -98,10 +98,23 @@ unsigned long arm_dma_pfn_limit;
 void __init setup_dma_zone(const struct machine_desc *mdesc)
 {
 #ifdef CONFIG_ZONE_DMA
-	if (mdesc->dma_zone_size) {
+	if (mdesc->dma_zone_size)
 		arm_dma_zone_size = mdesc->dma_zone_size;
+
+#ifdef CONFIG_PHYSMEM_SPLIT
+	/*
+	 * If lowmem is nonlinear, only allow DMA to the first chunk
+	 * out of caution.
+	 * This is probably unnecessary on most hardware though.
+	 */
+	if (!arm_dma_zone_size ||
+	    arm_dma_zone_size > CONFIG_PHYSMEM_SPLIT_SIZE)
+		arm_dma_zone_size = CONFIG_PHYSMEM_SPLIT_SIZE;
+#endif
+
+	if (arm_dma_zone_size)
 		arm_dma_limit = PHYS_OFFSET + arm_dma_zone_size - 1;
-	} else
+	else
 		arm_dma_limit = 0xffffffff;
 	arm_dma_pfn_limit = arm_dma_limit >> PAGE_SHIFT;
 #endif
