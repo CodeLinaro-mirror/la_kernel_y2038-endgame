@@ -203,7 +203,13 @@ static inline unsigned long __phys_to_virt(phys_addr_t x)
 
 static inline unsigned long virt_to_pfn(const void *p)
 {
-	return __virt_to_phys_nodebug((unsigned long)p) >> PAGE_SHIFT;
+	unsigned long x = (unsigned long)p;
+
+	if (x < PAGE_OFFSET + CONFIG_PHYSMEM_SPLIT_SIZE)
+		return ((x - PAGE_OFFSET) >> PAGE_SHIFT) + __pv_phys_pfn_offset;
+	else
+		return ((x - PAGE_OFFSET - CONFIG_PHYSMEM_SPLIT_SIZE) >> PAGE_SHIFT) +
+			__pv_phys_pfn_offset2;
 }
 
 #else

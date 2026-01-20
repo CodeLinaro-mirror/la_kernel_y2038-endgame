@@ -168,8 +168,11 @@ EXPORT_SYMBOL(__gnu_mcount_nc);
 
 #if defined(CONFIG_ARM_PATCH_PHYS_VIRT) || defined(CONFIG_PHYSMEM_SPLIT)
 EXPORT_SYMBOL(__pv_phys_pfn_offset);
+#ifdef CONFIG_PHYSMEM_SPLIT
 EXPORT_SYMBOL(__pv_phys_pfn_offset2);
+#else
 EXPORT_SYMBOL(__pv_offset);
+#endif
 #endif
 
 #ifdef CONFIG_HAVE_ARM_SMCCC
