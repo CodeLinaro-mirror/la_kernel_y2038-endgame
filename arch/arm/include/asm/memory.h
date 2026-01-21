@@ -190,15 +190,15 @@ static inline phys_addr_t __virt_to_phys_nodebug(unsigned long x)
 	if (x < PAGE_OFFSET + CONFIG_PHYSMEM_SPLIT_SIZE)
 		return (phys_addr_t)x - PAGE_OFFSET + PHYS_OFFSET;
 	else
-		return (phys_addr_t)x - PAGE_OFFSET - CONFIG_PHYSMEM_SPLIT_SIZE + PHYS_OFFSET2;
+		return (phys_addr_t)x - PAGE_OFFSET + PHYS_OFFSET2;
 }
 
 static inline unsigned long __phys_to_virt(phys_addr_t x)
 {
-	if (x < PHYS_OFFSET2)
+	if (x < PHYS_OFFSET + CONFIG_PHYSMEM_SPLIT_SIZE)
 		return x - PHYS_OFFSET + PAGE_OFFSET;
 	else
-		return x - PHYS_OFFSET2 + PAGE_OFFSET + CONFIG_PHYSMEM_SPLIT_SIZE;
+		return x - PHYS_OFFSET2 + PAGE_OFFSET;
 }
 
 static inline unsigned long virt_to_pfn(const void *p)
@@ -208,8 +208,7 @@ static inline unsigned long virt_to_pfn(const void *p)
 	if (x < PAGE_OFFSET + CONFIG_PHYSMEM_SPLIT_SIZE)
 		return ((x - PAGE_OFFSET) >> PAGE_SHIFT) + __pv_phys_pfn_offset;
 	else
-		return ((x - PAGE_OFFSET - CONFIG_PHYSMEM_SPLIT_SIZE) >> PAGE_SHIFT) +
-			__pv_phys_pfn_offset2;
+		return ((x - PAGE_OFFSET) >> PAGE_SHIFT) + __pv_phys_pfn_offset2;
 }
 
 #else

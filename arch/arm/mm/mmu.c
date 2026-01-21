@@ -1215,18 +1215,19 @@ void __init adjust_lowmem_bounds(void)
 	for_each_mem_range(i, &block_start, &block_end) {
 		if (block_start >= vmalloc_limit &&
 		    lowmem_limit < PHYS_OFFSET + CONFIG_PHYSMEM_SPLIT_SIZE) {
-			pr_notice("Discontigous lowmem found before %llx\n", block_start);
 #ifdef CONFIG_PHYSMEM_SPLIT
 			/*
 			 * All previous memblocks are completely in the
 			 * lower half, but this one does not fit, so
 			 * adjust PHYS_OFFSET2 to start mapping the rest
 			 */
-			__pv_phys_pfn_offset2 = PFN_DOWN(round_down(block_start, PMD_SIZE));
-			vmalloc_limit += PHYS_OFFSET2 - PHYS_OFFSET - CONFIG_PHYSMEM_SPLIT_SIZE;
+			phys_addr_t skip = round_down(block_start, PMD_SIZE) - PHYS_OFFSET;
+			__pv_phys_pfn_offset2 = __pv_phys_pfn_offset + PFN_DOWN(skip);
+			vmalloc_limit += skip;
 #else
 			pr_notice("Try enabling CONFIG_SPARSEMEM and CONFIG_PHYSMEM_SPLIT\n");
 #endif
+			pr_notice("Discontigous lowmem found before %llx\n", block_start);
 		}
 		if (block_start < vmalloc_limit) {
 			if (block_end > lowmem_limit)
