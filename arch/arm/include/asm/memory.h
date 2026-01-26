@@ -185,8 +185,12 @@ extern unsigned long __pv_phys_pfn_offset2;
 #define PHYS_OFFSET		((phys_addr_t)__pv_phys_pfn_offset << PAGE_SHIFT)
 #define PHYS_OFFSET2		((phys_addr_t)__pv_phys_pfn_offset2 << PAGE_SHIFT)
 
+#include <linux/printk.h>
+#include <linux/bug.h>
+
 static inline phys_addr_t __virt_to_phys_nodebug(unsigned long x)
 {
+if (WARN_ON(x >= PAGE_OFFSET+CONFIG_PHYSMEM_SPLIT_SIZE)) printk("!!!!!!virt_to_phys %llx\n", (u64)x);
 	if (x < PAGE_OFFSET + CONFIG_PHYSMEM_SPLIT_SIZE)
 		return (phys_addr_t)x - PAGE_OFFSET + PHYS_OFFSET;
 	else
@@ -195,16 +199,20 @@ static inline phys_addr_t __virt_to_phys_nodebug(unsigned long x)
 
 static inline unsigned long __phys_to_virt(phys_addr_t x)
 {
-	if (x < PHYS_OFFSET + CONFIG_PHYSMEM_SPLIT_SIZE)
+if (WARN_ON(x >= PHYS_OFFSET+CONFIG_PHYSMEM_SPLIT_SIZE)) printk("!!!!!!phys_to_virt %llx\n", (u64)x);
+	if (x < PHYS_OFFSET + CONFIG_PHYSMEM_SPLIT_SIZE) {
 		return x - PHYS_OFFSET + PAGE_OFFSET;
-	else
+	}
+	else {
 		return x - PHYS_OFFSET2 + PAGE_OFFSET;
+	}
 }
 
 static inline unsigned long virt_to_pfn(const void *p)
 {
 	unsigned long x = (unsigned long)p;
 
+if (WARN_ON(x >= PHYS_OFFSET+CONFIG_PHYSMEM_SPLIT_SIZE)) printk("!!!!!!virt_to_pfn %llx\n", (u64)x);
 	if (x < PAGE_OFFSET + CONFIG_PHYSMEM_SPLIT_SIZE)
 		return ((x - PAGE_OFFSET) >> PAGE_SHIFT) + __pv_phys_pfn_offset;
 	else

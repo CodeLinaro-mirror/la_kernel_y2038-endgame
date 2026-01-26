@@ -935,6 +935,7 @@ static void __init __create_mapping(struct mm_struct *mm, struct map_desc *md,
 
 	type = &mem_types[md->type];
 
+//printk("%s:%d\n", __func__, __LINE__);
 #ifndef CONFIG_ARM_LPAE
 	/*
 	 * Catch 36-bit addresses
@@ -948,6 +949,7 @@ static void __init __create_mapping(struct mm_struct *mm, struct map_desc *md,
 	addr = md->virtual & PAGE_MASK;
 	phys = __pfn_to_phys(md->pfn);
 	length = PAGE_ALIGN(md->length + (md->virtual & ~PAGE_MASK));
+//printk("%s:%d\n", __func__, __LINE__);
 
 	if (type->prot_l1 == 0 && ((addr | phys | length) & ~SECTION_MASK)) {
 		pr_warn("BUG: map for 0x%08llx at 0x%08lx can not be mapped using pages, ignoring.\n",
@@ -955,6 +957,7 @@ static void __init __create_mapping(struct mm_struct *mm, struct map_desc *md,
 		return;
 	}
 
+//printk("%s:%d\n", __func__, __LINE__);
 	pgd = pgd_offset(mm, addr);
 	end = addr + length;
 	do {
@@ -965,6 +968,7 @@ static void __init __create_mapping(struct mm_struct *mm, struct map_desc *md,
 		phys += next - addr;
 		addr = next;
 	} while (pgd++, addr != end);
+//printk("%s:%d\n", __func__, __LINE__);
 }
 
 /*
@@ -976,11 +980,13 @@ static void __init __create_mapping(struct mm_struct *mm, struct map_desc *md,
  */
 static void __init create_mapping(struct map_desc *md)
 {
+///printk("%s:%d\n", __func__, __LINE__);
 	if (md->virtual != vectors_base() && md->virtual < TASK_SIZE) {
 		pr_warn("BUG: not creating mapping for 0x%08llx at 0x%08lx in user region\n",
 			(long long)__pfn_to_phys((u64)md->pfn), md->virtual);
 		return;
 	}
+//printk("%s:%d\n", __func__, __LINE__);
 
 	if (md->type == MT_DEVICE &&
 	    md->virtual >= PAGE_OFFSET && md->virtual < FIXADDR_START &&
@@ -989,7 +995,9 @@ static void __init create_mapping(struct map_desc *md)
 			(long long)__pfn_to_phys((u64)md->pfn), md->virtual);
 	}
 
+//printk("%s:%d\n", __func__, __LINE__);
 	__create_mapping(&init_mm, md, early_alloc, false);
+//printk("%s:%d\n", __func__, __LINE__);
 }
 
 void __init create_mapping_late(struct mm_struct *mm, struct map_desc *md,
@@ -1213,8 +1221,10 @@ void __init adjust_lowmem_bounds(void)
 	}
 
 	for_each_mem_range(i, &block_start, &block_end) {
+printk("%s:%d: block_start %llx lowmem_limit %llx PHYS_OFFSET %llx PHYS_OFFSET2 %llx vmalloc_limit %llx\n",
+	__func__, __LINE__, (u64)block_start, (u64) lowmem_limit, (u64)PHYS_OFFSET, (u64)PHYS_OFFSET2, vmalloc_limit);
 		if (block_start >= vmalloc_limit &&
-		    lowmem_limit < PHYS_OFFSET + CONFIG_PHYSMEM_SPLIT_SIZE) {
+		    lowmem_limit <= PHYS_OFFSET + CONFIG_PHYSMEM_SPLIT_SIZE) {
 #ifdef CONFIG_PHYSMEM_SPLIT
 			/*
 			 * All previous memblocks are completely in the
@@ -1222,12 +1232,14 @@ void __init adjust_lowmem_bounds(void)
 			 * adjust PHYS_OFFSET2 to start mapping the rest
 			 */
 			phys_addr_t skip = round_down(block_start, PMD_SIZE) - PHYS_OFFSET;
-			__pv_phys_pfn_offset2 = __pv_phys_pfn_offset + PFN_DOWN(skip);
-			vmalloc_limit += skip;
+			__pv_phys_pfn_offset2 = __pv_phys_pfn_offset +
+						PFN_DOWN(skip - CONFIG_PHYSMEM_SPLIT_SIZE);
+			vmalloc_limit += skip - CONFIG_PHYSMEM_SPLIT_SIZE;
+printk("%s:%d: skip %llx PHYS_OFFSET2 %llx vmalloc_limit %llx\n", __func__, __LINE__, (u64)skip, (u64)PHYS_OFFSET2, (u64)vmalloc_limit);
 #else
 			pr_notice("Try enabling CONFIG_SPARSEMEM and CONFIG_PHYSMEM_SPLIT\n");
 #endif
-			pr_notice("Discontigous lowmem found before %llx\n", block_start);
+			pr_notice("Discontigous lowmem found before %llx\n", (u64)block_start);
 		}
 		if (block_start < vmalloc_limit) {
 			if (block_end > lowmem_limit)
@@ -1267,6 +1279,7 @@ void __init adjust_lowmem_bounds(void)
 	arm_lowmem_limit = lowmem_limit;
 
 	high_memory = __va(arm_lowmem_limit - 1) + 1;
+printk("%s:%d: high_memory %lx, arm_lowmem_limit %llx\n", __func__, __LINE__, (unsigned long)high_memory, (u64)arm_lowmem_limit);
 
 	if (!memblock_limit)
 		memblock_limit = arm_lowmem_limit;
@@ -1325,8 +1338,10 @@ static __init void prepare_page_table(void)
 	/* The XIP kernel is mapped in the module area -- skip over it */
 	addr = ((unsigned long)_exiprom + PMD_SIZE - 1) & PMD_MASK;
 #endif
+printk("%s:%d\n", __func__, __LINE__);
 	for ( ; addr < PAGE_OFFSET; addr += PMD_SIZE)
 		pmd_clear(pmd_off_k(addr));
+printk("%s:%d\n", __func__, __LINE__);
 
 	/*
 	 * Find the end of the first block of lowmem.
@@ -1385,6 +1400,7 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
 	unsigned long addr;
 	void *vectors;
 
+printk("%s:%d\n", __func__, __LINE__);
 	/*
 	 * Allocate the vector page early.
 	 */
@@ -1392,13 +1408,18 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
 
 	early_trap_init(vectors);
 
+printk("%s:%d\n", __func__, __LINE__);
 	/*
 	 * Clear page table except top pmd used by early fixmaps
 	 */
-	for (addr = VMALLOC_START; addr < (FIXADDR_TOP & PMD_MASK); addr += PMD_SIZE)
+	for (addr = VMALLOC_START; addr < (FIXADDR_TOP & PMD_MASK); addr += PMD_SIZE) {
+//early_printk("%s:%d addr %lx pmd_off_k %lx\n", __func__, __LINE__, addr, pmd_off_k(addr));
 		pmd_clear(pmd_off_k(addr));
+}
+//early_printk("%s:%d\n", __func__, __LINE__);
 
 	if (__atags_pointer) {
+//early_printk("%s:%d\n", __func__, __LINE__);
 		/* create a read-only mapping of the device tree */
 		map.pfn = __phys_to_pfn(__atags_pointer & SECTION_MASK);
 		map.virtual = FDT_FIXED_BASE;
@@ -1406,6 +1427,7 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
 		map.type = MT_MEMORY_RO;
 		create_mapping(&map);
 	}
+//early_printk("%s:%d\n", __func__, __LINE__);
 
 	/*
 	 * Map the cache flushing regions.
@@ -1439,6 +1461,7 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
 	map.type = MT_LOW_VECTORS;
 #endif
 	create_mapping(&map);
+//early_printk("%s:%d\n", __func__, __LINE__);
 
 	if (!vectors_high()) {
 		map.virtual = 0;
@@ -1446,6 +1469,7 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
 		map.type = MT_LOW_VECTORS;
 		create_mapping(&map);
 	}
+//early_printk("%s:%d\n", __func__, __LINE__);
 
 	/* Now create a kernel read-only mapping */
 	map.pfn += 1;
@@ -1454,6 +1478,7 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
 	map.type = MT_LOW_VECTORS;
 	create_mapping(&map);
 
+//early_printk("%s:%d\n", __func__, __LINE__);
 	/*
 	 * Ask the machine support to map in the statically mapped devices.
 	 */
@@ -1463,6 +1488,7 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
 		debug_ll_io_init();
 	fill_pmd_gaps();
 
+//early_printk("%s:%d\n", __func__, __LINE__);
 	/* Reserve fixed i/o space in VMALLOC region */
 	pci_reserve_io();
 
@@ -1472,11 +1498,13 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
 	 * any write-allocated cache lines in the vector page are written
 	 * back.  After this point, we can start to touch devices again.
 	 */
+//early_printk("%s:%d\n", __func__, __LINE__);
 	local_flush_tlb_all();
 	flush_cache_all();
 
 	/* Enable asynchronous aborts */
 	early_abt_enable();
+early_printk("%s:%d\n", __func__, __LINE__);
 }
 
 static void __init kmap_init(void)
@@ -1499,10 +1527,12 @@ static void __init map_lowmem(void)
 	for_each_mem_range(i, &start, &end) {
 		struct map_desc map;
 
-		pr_debug("map lowmem start: 0x%08llx, end: 0x%08llx\n",
+printk("%s:%d\n", __func__, __LINE__);
+		printk("map lowmem start: 0x%08llx, end: 0x%08llx\n",
 			 (long long)start, (long long)end);
 		if (end > arm_lowmem_limit)
 			end = arm_lowmem_limit;
+printk("%s:%d arm_lowmem_limit %llx\n", __func__, __LINE__, (u64)arm_lowmem_limit);
 		if (start >= end)
 			break;
 
@@ -1569,8 +1599,11 @@ static void __init map_lowmem(void)
 		map.virtual = __phys_to_virt(start);
 		map.length = end - start;
 		map.type = MT_MEMORY_RW;
+//printk("%s:%d virtual %lx\n", __func__, __LINE__, map.virtual);
 		create_mapping(&map);
+//printk("%s:%d\n", __func__, __LINE__);
 	}
+printk("%s:%d\n", __func__, __LINE__);
 }
 
 static void __init map_kernel(void)
@@ -1772,6 +1805,7 @@ void __init paging_init(const struct machine_desc *mdesc)
 {
 	void *zero_page;
 
+printk("%s:%d\n", __func__, __LINE__);
 #ifdef CONFIG_XIP_KERNEL
 	/* Store the kernel RW RAM region start/end in these variables */
 	kernel_sec_start = CONFIG_PHYS_OFFSET & SECTION_MASK;
@@ -1780,20 +1814,30 @@ void __init paging_init(const struct machine_desc *mdesc)
 	pr_debug("physical kernel sections: 0x%08llx-0x%08llx\n",
 		 kernel_sec_start, kernel_sec_end);
 
+printk("%s:%d\n", __func__, __LINE__);
 	prepare_page_table();
+printk("%s:%d\n", __func__, __LINE__);
 	map_lowmem();
+//printk("%s:%d\n", __func__, __LINE__);
 	memblock_set_current_limit(arm_lowmem_limit);
+//printk("%s:%d\n", __func__, __LINE__);
 	pr_debug("lowmem limit is %08llx\n", (long long)arm_lowmem_limit);
 	/*
 	 * After this point early_alloc(), i.e. the memblock allocator, can
 	 * be used
 	 */
 	map_kernel();
+//printk("%s:%d\n", __func__, __LINE__);
 	dma_contiguous_remap();
+//printk("%s:%d\n", __func__, __LINE__);
 	early_fixmap_shutdown();
+//printk("%s:%d\n", __func__, __LINE__);
 	devicemaps_init(mdesc);
+//printk("%s:%d\n", __func__, __LINE__);
 	kmap_init();
+//printk("%s:%d\n", __func__, __LINE__);
 	tcm_init();
+//printk("%s:%d\n", __func__, __LINE__);
 
 	top_pmd = pmd_off_k(0xffff0000);
 

@@ -1151,22 +1151,30 @@ void __init setup_arch(char **cmdline_p)
 	arm_memblock_init(mdesc);
 	/* Memory may have been removed so recalculate the bounds. */
 	adjust_lowmem_bounds();
+printk("%s:%d\n", __func__, __LINE__);
 
 	early_ioremap_reset();
+printk("%s:%d\n", __func__, __LINE__);
 
 	paging_init(mdesc);
+printk("%s:%d\n", __func__, __LINE__);
 	kasan_init();
+printk("%s:%d\n", __func__, __LINE__);
 	request_standard_resources(mdesc);
+printk("%s:%d\n", __func__, __LINE__);
 
 	if (mdesc->restart) {
 		__arm_pm_restart = mdesc->restart;
 		register_restart_handler(&arm_restart_nb);
 	}
 
+printk("%s:%d\n", __func__, __LINE__);
 	unflatten_device_tree();
 
+printk("%s:%d\n", __func__, __LINE__);
 	arm_dt_init_cpu_maps();
 	psci_dt_init();
+printk("%s:%d\n", __func__, __LINE__);
 #ifdef CONFIG_SMP
 	if (is_smp()) {
 		if (!mdesc->smp_init || !mdesc->smp_init()) {
@@ -1182,8 +1190,10 @@ void __init setup_arch(char **cmdline_p)
 
 	if (!is_smp())
 		hyp_mode_check();
+printk("%s:%d\n", __func__, __LINE__);
 
 	reserve_crashkernel();
+printk("%s:%d\n", __func__, __LINE__);
 
 #ifdef CONFIG_VT
 #if defined(CONFIG_VGA_CONSOLE)
@@ -1193,6 +1203,7 @@ void __init setup_arch(char **cmdline_p)
 
 	if (mdesc->init_early)
 		mdesc->init_early();
+printk("%s:%d\n", __func__, __LINE__);
 }
 
 bool arch_cpu_is_hotpluggable(int num)
