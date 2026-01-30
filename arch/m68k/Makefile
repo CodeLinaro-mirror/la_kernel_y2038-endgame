@@ -61,7 +61,7 @@ cpuflags-y := $(cpuflags-y)
 KBUILD_AFLAGS += $(cpuflags-y)
 KBUILD_CFLAGS += $(cpuflags-y)
 
-KBUILD_CFLAGS += -pipe -ffreestanding
+KBUILD_CFLAGS += -pipe -ffreestanding -malign-int
 
 ifdef CONFIG_MMU
 KBUILD_CFLAGS += -ffixed-a2
