@@ -174,6 +174,25 @@ add_to_incompat_list() {
 }
 
 # Compile the simple test app
+do_compile2() {
+	local -r inc_dir="$1"
+	local -r header="$2"
+	local -r out="$3"
+	printf "int main(void) { return 0; }\n" | \
+		"$CC" -c \
+		  -o "$out" \
+		  -x c \
+		  -O0 \
+		  -malign-int \
+		  -std=c90 \
+		  -fno-eliminate-unused-debug-types \
+		  -g \
+		  "-I${inc_dir}" \
+		  "-I${KERNEL_SRC}/tools/include/nolibc" "-nostdinc"\
+		  -include "$header" \
+		  -
+}
+
 do_compile() {
 	local -r inc_dir="$1"
 	local -r header="$2"
@@ -325,7 +344,7 @@ compare_abi() {
 
 	mkdir -p "$(dirname "$log")"
 
-	if ! do_compile "$(get_header_tree "$base_ref")/include" "$base_header" "${base_header}.bin" 2> "$log"; then
+	if ! do_compile2 "$(get_header_tree "$base_ref")/include" "$base_header" "${base_header}.bin" 2> "$log"; then
 		{
 			warn_str=$(printf "==== Could not compile version of UAPI header %s at %s ====\n" \
 				"$file" "$base_ref")
