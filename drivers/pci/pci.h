@@ -416,7 +416,7 @@ static inline bool pci_is_cardbus_bridge(struct pci_dev *dev)
 {
 	return dev->hdr_type == PCI_HEADER_TYPE_CARDBUS;
 }
-#ifdef CONFIG_CARDBUS
+#if IS_ENABLED(CONFIG_CARDBUS)
 unsigned long pci_cardbus_resource_alignment(struct resource *res);
 int pci_bus_size_cardbus_bridge(struct pci_bus *bus,
 				struct list_head *realloc_head);
