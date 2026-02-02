@@ -186,7 +186,7 @@ config HOTPLUG_PCI_S390
 endif # HOTPLUG_PCI
 
 menuconfig CARDBUS
-	tristate "Support for CardBus PC Cards"
+	bool "Support for CardBus PC Cards"
 	depends on PCI
 	select YENTA
 	default PCCARD
