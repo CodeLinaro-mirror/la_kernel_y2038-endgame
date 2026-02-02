@@ -50,8 +50,6 @@ KBUILD_CFLAGS += $(call cc-option, -Wno-format-truncation-non-kprintf)
 KBUILD_CFLAGS += $(call cc-option, -Wno-default-const-init-unsafe)
 else
 
-# gcc inanely warns about local variables called 'main'
-KBUILD_CFLAGS += -Wno-main
 KBUILD_CFLAGS += -Wunused-const-variable
 endif
 
@@ -120,7 +118,6 @@ ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
 
 KBUILD_CFLAGS += -Wmissing-format-attribute
 KBUILD_CFLAGS += -Wmissing-include-dirs
-KBUILD_CFLAGS += -Wunused-const-variable
 
 KBUILD_CPPFLAGS += -Wundef
 KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN1
@@ -130,7 +127,6 @@ else
 # Some diagnostics enabled by default are noisy.
 # Suppress them by using -Wno... except for W=1.
 KBUILD_CFLAGS += -Wno-unused-but-set-variable
-KBUILD_CFLAGS += -Wno-unused-const-variable
 KBUILD_CFLAGS += $(call cc-option, -Wno-packed-not-aligned)
 ifdef CONFIG_CC_IS_GCC
 KBUILD_CFLAGS += $(call cc-option, -Wno-format-overflow)
@@ -156,7 +152,6 @@ KBUILD_CFLAGS += -Wformat-zero-length -Wnonnull
 KBUILD_CFLAGS += -Wformat-insufficient-args
 endif
 KBUILD_CFLAGS += -Wno-pointer-to-enum-cast
-KBUILD_CFLAGS += -Wno-tautological-constant-out-of-range-compare
 KBUILD_CFLAGS += -Wno-unaligned-access
 KBUILD_CFLAGS += -Wno-enum-compare-conditional
 endif
