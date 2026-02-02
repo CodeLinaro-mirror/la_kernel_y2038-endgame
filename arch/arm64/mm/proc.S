@@ -425,7 +425,6 @@ alternative_else_nop_endif
 	.unreq	cur_p4dp
 	.unreq	end_p4dp
 	.unreq	p4d
-
 	/* Secondary CPUs end up here */
 __idmap_kpti_secondary:
 	/* Uninstall swapper before surgery begins */
@@ -437,9 +436,12 @@ __idmap_kpti_secondary:
 SYM_FUNC_END(idmap_kpti_install_ng_mappings)
 	.popsection
 #endif
-
 	.pushsection ".idmap.text", "a"
+#ifdef CONFIG_SMP
 SYM_TYPED_FUNC_START(wait_linear_map_split_to_ptes)
+#else
+SYM_FUNC_START(wait_linear_map_split_to_ptes)
+#endif
 	/* Must be same registers as in idmap_kpti_install_ng_mappings */
 	swapper_ttb	.req	x3
 	flag_ptr	.req	x4
@@ -447,7 +449,6 @@ SYM_TYPED_FUNC_START(wait_linear_map_split_to_ptes)
 	mrs     swapper_ttb, ttbr1_el1
 	adr_l   flag_ptr, idmap_kpti_bbml2_flag
 	__idmap_cpu_set_reserved_ttbr1 x16, x17
-
 scondary_cpu_wait:
 	/* Increment the flag to let the boot CPU we're ready */
 1:	ldxr	w16, [flag_ptr]
