@@ -141,12 +141,12 @@ KBUILD_CFLAGS += $(call cc-option,-Wenum-conversion)
 KBUILD_CFLAGS += -Wunused
 KBUILD_CFLAGS += -Wformat-security
 
+KBUILD_CFLAGS += -Wmissing-format-attribute
 #
 # W=1 - warnings which may be relevant and do not occur too often
 #
 ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
 
-KBUILD_CFLAGS += -Wmissing-format-attribute
 KBUILD_CFLAGS += -Wmissing-include-dirs
 
 KBUILD_CPPFLAGS += -Wundef
