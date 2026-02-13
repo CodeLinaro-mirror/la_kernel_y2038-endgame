@@ -1182,10 +1182,10 @@ static int dpu_plane_atomic_check(struct drm_plane *plane,
 	if (IS_ERR(plane_state))
 		return PTR_ERR(plane_state);
 
-	if (!plane_state->crtc)
-		return -ENXIO;
+	if (plane_state->crtc)
+		crtc_state = drm_atomic_get_new_crtc_state(state,
+							   plane_state->crtc);
 
-	crtc_state = drm_atomic_get_new_crtc_state(state, plane_state->crtc);
 	ret = dpu_plane_atomic_check_nosspp(plane, plane_state, crtc_state);
 	if (ret)
 		return ret;
