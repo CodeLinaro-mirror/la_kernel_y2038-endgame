@@ -1960,13 +1960,13 @@ int mt7996_mcu_set_fixed_rate_ctrl(struct mt7996_dev *dev,
 	struct tlv *tlv;
 	int len;
 
-	len = sizeof(struct uni_header) + sizeof(*req);
+	len = sizeof(hdr) + sizeof(*req);
 
 	skb = mt76_mcu_msg_alloc(&dev->mt76, NULL, len);
 	if (!skb)
 		return -ENOMEM;
 
-	skb_put_zero(skb, sizeof(struct uni_header));
+	skb_put_data(skb, &hdr, sizeof(hdr));
 
 	tlv = mt7996_mcu_add_uni_tlv(skb, UNI_RA_FIXED_RATE, sizeof(*req));
 	req = (struct ra_fixed_rate *)tlv;
@@ -3386,17 +3386,20 @@ out:
 
 int mt7996_mcu_set_hdr_trans(struct mt7996_dev *dev, bool hdr_trans)
 {
+	struct {
+		u8 __rsv[4];
+	} __packed hdr = {};
 	struct hdr_trans_blacklist *req_blacklist;
 	struct hdr_trans_en *req_en;
 	struct sk_buff *skb;
 	struct tlv *tlv;
-	int len = MT7996_HDR_TRANS_MAX_SIZE + 4;
+	int len = MT7996_HDR_TRANS_MAX_SIZE + sizeof(hdr);
 
 	skb = mt76_mcu_msg_alloc(&dev->mt76, NULL, len);
 	if (!skb)
 		return -ENOMEM;
 
-	skb_put_zero(skb, 4);
+	skb_put_data(skb, &hdr, sizeof(hdr));
 
 	tlv = mt7996_mcu_add_uni_tlv(skb, UNI_HDR_TRANS_EN, sizeof(*req_en));
 	req_en = (struct hdr_trans_en *)tlv;
