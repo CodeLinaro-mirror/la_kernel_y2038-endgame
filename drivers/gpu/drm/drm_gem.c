@@ -127,7 +127,7 @@ drm_gem_init(struct drm_device *dev)
  */
 int drm_gem_object_init_with_mnt(struct drm_device *dev,
 				 struct drm_gem_object *obj, size_t size,
-				 struct vfsmount *gemfs)
+				 struct vfsmount *gemfs, gfp_t gfp)
 {
 	struct file *filp;
 
@@ -144,6 +144,8 @@ int drm_gem_object_init_with_mnt(struct drm_device *dev,
 
 	obj->filp = filp;
 
+	mapping_set_gfp_mask(filp->f_mapping, gfp);
+
 	return 0;
 }
 EXPORT_SYMBOL(drm_gem_object_init_with_mnt);
@@ -158,9 +160,9 @@ EXPORT_SYMBOL(drm_gem_object_init_with_mnt);
  * shmfs backing store.
  */
 int drm_gem_object_init(struct drm_device *dev, struct drm_gem_object *obj,
-			size_t size)
+			size_t size, gfp_t gfp)
 {
-	return drm_gem_object_init_with_mnt(dev, obj, size, NULL);
+	return drm_gem_object_init_with_mnt(dev, obj, size, NULL, gfp);
 }
 EXPORT_SYMBOL(drm_gem_object_init);
 

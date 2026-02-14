@@ -494,10 +494,10 @@ struct drm_gem_object {
 void drm_gem_object_release(struct drm_gem_object *obj);
 void drm_gem_object_free(struct kref *kref);
 int drm_gem_object_init(struct drm_device *dev,
-			struct drm_gem_object *obj, size_t size);
+			struct drm_gem_object *obj, size_t size, gfp_t gfp);
 int drm_gem_object_init_with_mnt(struct drm_device *dev,
 				 struct drm_gem_object *obj, size_t size,
-				 struct vfsmount *gemfs);
+				 struct vfsmount *gemfs, gfp_t gfp);
 void drm_gem_private_object_init(struct drm_device *dev,
 				 struct drm_gem_object *obj, size_t size);
 void drm_gem_private_object_fini(struct drm_gem_object *obj);

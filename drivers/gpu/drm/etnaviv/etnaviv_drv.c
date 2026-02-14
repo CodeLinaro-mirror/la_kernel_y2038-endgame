@@ -546,6 +546,13 @@ static int etnaviv_bind(struct device *dev)
 	mutex_init(&priv->gem_lock);
 	INIT_LIST_HEAD(&priv->gem_list);
 	priv->num_gpus = 0;
+
+	/*
+	 * Our buffers are kept pinned, so allocating them from the MOVABLE
+	 * zone is a really bad idea, and conflicts with CMA. See comments
+	 * above new_inode() why this is required _and_ expected if you're
+	 * going to pin these pages.
+	 */
 	priv->shm_gfp_mask = GFP_HIGHUSER | __GFP_RETRY_MAYFAIL | __GFP_NOWARN;
 
 	/*

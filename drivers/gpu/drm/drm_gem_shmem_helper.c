@@ -62,7 +62,8 @@ static int __drm_gem_shmem_init(struct drm_device *dev, struct drm_gem_shmem_obj
 		drm_gem_private_object_init(dev, obj, size);
 		shmem->map_wc = false; /* dma-buf mappings use always writecombine */
 	} else {
-		ret = drm_gem_object_init_with_mnt(dev, obj, size, gemfs);
+		ret = drm_gem_object_init_with_mnt(dev, obj, size, gemfs,
+			GFP_USER | __GFP_RETRY_MAYFAIL | __GFP_NOWARN);
 	}
 	if (ret) {
 		drm_gem_private_object_fini(obj);
@@ -74,18 +75,6 @@ static int __drm_gem_shmem_init(struct drm_device *dev, struct drm_gem_shmem_obj
 		goto err_release;
 
 	INIT_LIST_HEAD(&shmem->madv_list);
-
-	if (!private) {
-		/*
-		 * Our buffers are kept pinned, so allocating them
-		 * from the MOVABLE zone is a really bad idea, and
-		 * conflicts with CMA. See comments above new_inode()
-		 * why this is required _and_ expected if you're
-		 * going to pin these pages.
-		 */
-		mapping_set_gfp_mask(obj->filp->f_mapping, GFP_HIGHUSER |
-				     __GFP_RETRY_MAYFAIL | __GFP_NOWARN);
-	}
 
 	return 0;
 err_release:
