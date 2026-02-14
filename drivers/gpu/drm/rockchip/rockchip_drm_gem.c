@@ -297,7 +297,7 @@ static struct rockchip_gem_object *
 
 	obj->funcs = &rockchip_gem_object_funcs;
 
-	drm_gem_object_init(drm, obj, size, GFP_HIGHUSER_MOVABLE);
+	drm_gem_object_init(drm, obj, size, GFP_USER);
 
 	return rk_obj;
 }

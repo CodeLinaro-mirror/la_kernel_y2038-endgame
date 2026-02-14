@@ -239,10 +239,10 @@ static vm_fault_t nouveau_dmem_migrate_to_ram(struct vm_fault *vmf)
 		return 0;
 
 	if (order)
-		dpage = folio_page(vma_alloc_folio(GFP_HIGHUSER | __GFP_ZERO,
+		dpage = folio_page(vma_alloc_folio(GFP_USER | __GFP_ZERO,
 					order, vmf->vma, vmf->address), 0);
 	else
-		dpage = alloc_page_vma(GFP_HIGHUSER | __GFP_ZERO, vmf->vma,
+		dpage = alloc_page_vma(GFP_USER | __GFP_ZERO, vmf->vma,
 					vmf->address);
 	if (!dpage) {
 		ret = VM_FAULT_OOM;
@@ -494,16 +494,14 @@ nouveau_dmem_evict_chunk(struct nouveau_dmem_chunk *chunk)
 			unsigned int order = folio_order(folio);
 
 			if (src_pfns[i] & MIGRATE_PFN_COMPOUND) {
-				dpage = folio_page(
-						folio_alloc(
-						GFP_HIGHUSER_MOVABLE, order), 0);
+				dpage = folio_page(folio_alloc(GFP_USER, order), 0);
 			} else {
 				/*
 				 * _GFP_NOFAIL because the GPU is going away and there
 				 * is nothing sensible we can do if we can't copy the
 				 * data back.
 				 */
-				dpage = alloc_page(GFP_HIGHUSER | __GFP_NOFAIL);
+				dpage = alloc_page(GFP_USER | __GFP_NOFAIL);
 			}
 
 			dst_pfns[i] = migrate_pfn(page_to_pfn(dpage));

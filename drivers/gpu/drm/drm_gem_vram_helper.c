@@ -206,7 +206,7 @@ struct drm_gem_vram_object *drm_gem_vram_create(struct drm_device *dev,
 	if (!gem->funcs)
 		gem->funcs = &drm_gem_vram_object_funcs;
 
-	ret = drm_gem_object_init(dev, gem, size, GFP_HIGHUSER_MOVABLE);
+	ret = drm_gem_object_init(dev, gem, size, GFP_USER);
 	if (ret) {
 		kfree(gbo);
 		return ERR_PTR(ret);

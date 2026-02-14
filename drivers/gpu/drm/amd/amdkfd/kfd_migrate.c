@@ -250,7 +250,7 @@ svm_migrate_get_sys_page(struct vm_area_struct *vma, unsigned long addr)
 {
 	struct page *page;
 
-	page = alloc_page_vma(GFP_HIGHUSER, vma, addr);
+	page = alloc_page_vma(GFP_USER, vma, addr);
 	if (page)
 		lock_page(page);
 
