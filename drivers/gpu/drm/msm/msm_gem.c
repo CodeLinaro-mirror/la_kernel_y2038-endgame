@@ -1235,6 +1235,7 @@ struct drm_gem_object *msm_gem_new(struct drm_device *dev, size_t size, uint32_t
 	struct msm_drm_private *priv = dev->dev_private;
 	struct msm_gem_object *msm_obj;
 	struct drm_gem_object *obj = NULL;
+	gfp_t gfp;
 	int ret;
 
 	size = PAGE_ALIGN(size);
@@ -1251,16 +1252,17 @@ struct drm_gem_object *msm_gem_new(struct drm_device *dev, size_t size, uint32_t
 
 	msm_obj = to_msm_bo(obj);
 
-	ret = drm_gem_object_init(dev, obj, size);
-	if (ret)
-		goto fail;
 	/*
 	 * Our buffers are kept pinned, so allocating them from the
 	 * MOVABLE zone is a really bad idea, and conflicts with CMA.
 	 * See comments above new_inode() why this is required _and_
 	 * expected if you're going to pin these pages.
 	 */
-	mapping_set_gfp_mask(obj->filp->f_mapping, GFP_HIGHUSER);
+	gfp = GFP_USER;
+
+	ret = drm_gem_object_init(dev, obj, size, gfp);
+	if (ret)
+		goto fail;
 
 	drm_gem_lru_move_tail(&priv->lru.unbacked, obj);
 

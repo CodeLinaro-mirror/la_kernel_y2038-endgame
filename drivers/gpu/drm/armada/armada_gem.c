@@ -217,7 +217,6 @@ static struct armada_gem_object *armada_gem_alloc_object(struct drm_device *dev,
 	size_t size)
 {
 	struct armada_gem_object *obj;
-	struct address_space *mapping;
 
 	size = roundup_gem_size(size);
 
@@ -227,13 +226,10 @@ static struct armada_gem_object *armada_gem_alloc_object(struct drm_device *dev,
 
 	obj->obj.funcs = &armada_gem_object_funcs;
 
-	if (drm_gem_object_init(dev, &obj->obj, size)) {
+	if (drm_gem_object_init(dev, &obj->obj, size, GFP_HIGHUSER | __GFP_RECLAIMABLE)) {
 		kfree(obj);
 		return NULL;
 	}
-
-	mapping = obj->obj.filp->f_mapping;
-	mapping_set_gfp_mask(mapping, GFP_HIGHUSER | __GFP_RECLAIMABLE);
 
 	DRM_DEBUG_DRIVER("alloc obj %p size %zu\n", obj, size);
 

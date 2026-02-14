@@ -1284,7 +1284,6 @@ struct drm_gem_object *omap_gem_new(struct drm_device *dev,
 	struct omap_drm_private *priv = dev->dev_private;
 	struct omap_gem_object *omap_obj;
 	struct drm_gem_object *obj;
-	struct address_space *mapping;
 	size_t size;
 	int ret;
 
@@ -1350,12 +1349,9 @@ struct drm_gem_object *omap_gem_new(struct drm_device *dev,
 	if (!(flags & OMAP_BO_MEM_SHMEM)) {
 		drm_gem_private_object_init(dev, obj, size);
 	} else {
-		ret = drm_gem_object_init(dev, obj, size);
+		ret = drm_gem_object_init(dev, obj, size, GFP_USER | __GFP_DMA32);
 		if (ret)
 			goto err_free;
-
-		mapping = obj->filp->f_mapping;
-		mapping_set_gfp_mask(mapping, GFP_USER | __GFP_DMA32);
 	}
 
 	/* Allocate memory if needed. */

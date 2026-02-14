@@ -182,7 +182,7 @@ drm_gem_init(struct drm_device *dev)
  * drm_gem_huge_mnt_create() beforehand.
  */
 int drm_gem_object_init(struct drm_device *dev, struct drm_gem_object *obj,
-			size_t size)
+			size_t size, gfp_t gfp)
 {
 	struct vfsmount *huge_mnt;
 	struct file *filp;
@@ -201,6 +201,8 @@ int drm_gem_object_init(struct drm_device *dev, struct drm_gem_object *obj,
 		return PTR_ERR(filp);
 
 	obj->filp = filp;
+
+	mapping_set_gfp_mask(filp->f_mapping, gfp);
 
 	return 0;
 }

@@ -95,7 +95,7 @@ static struct drm_gem_dma_object *mtk_gem_init(struct drm_device *dev,
 		ret = 0;
 		drm_gem_private_object_init(dev, &dma_obj->base, size);
 	} else {
-		ret = drm_gem_object_init(dev, &dma_obj->base, size);
+		ret = drm_gem_object_init(dev, &dma_obj->base, size, GFP_HIGHUSER_MOVABLE);
 	}
 	if (ret) {
 		DRM_ERROR("failed to initialize gem object\n");
