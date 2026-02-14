@@ -183,7 +183,7 @@ struct ttm_buffer_object *ttm_bo_kunit_init(struct kunit *test,
 	if (obj)
 		bo->base.resv = obj;
 
-	err = drm_gem_object_init(devs->drm, &bo->base, size, GFP_HIGHUSER_MOVABLE);
+	err = drm_gem_object_init(devs->drm, &bo->base, size, GFP_USER);
 	KUNIT_ASSERT_EQ(test, err, 0);
 
 	bo->bdev = devs->ttm_dev;

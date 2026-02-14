@@ -46,10 +46,9 @@ static int i915_gem_object_get_pages_internal(struct drm_i915_gem_object *obj)
 	max_segment = i915_sg_segment_size(i915->drm.dev) >> PAGE_SHIFT;
 	max_order = min(max_order, get_order(max_segment));
 
-	gfp = GFP_KERNEL | __GFP_HIGHMEM | __GFP_RECLAIMABLE;
+	gfp = GFP_KERNEL | __GFP_RECLAIMABLE;
 	if (IS_I965GM(i915) || IS_I965G(i915)) {
 		/* 965gm cannot relocate objects above 4GiB. */
-		gfp &= ~__GFP_HIGHMEM;
 		gfp |= __GFP_DMA32;
 	}
 

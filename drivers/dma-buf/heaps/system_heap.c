@@ -51,8 +51,8 @@ struct dma_heap_attachment {
 #define cc_shared_buffer(b) (IS_ENABLED(CONFIG_DMABUF_HEAPS_SYSTEM_CC_SHARED) && \
 				(b)->cc_shared)
 
-#define LOW_ORDER_GFP (GFP_HIGHUSER | __GFP_ZERO)
-#define HIGH_ORDER_GFP  (((GFP_HIGHUSER | __GFP_ZERO | __GFP_NOWARN \
+#define LOW_ORDER_GFP (GFP_KERNEL | __GFP_ZERO)
+#define HIGH_ORDER_GFP  (((GFP_KERNEL | __GFP_ZERO | __GFP_NOWARN \
 				| __GFP_NORETRY) & ~__GFP_RECLAIM) \
 				| __GFP_COMP)
 static gfp_t order_flags[] = {HIGH_ORDER_GFP, HIGH_ORDER_GFP, LOW_ORDER_GFP};

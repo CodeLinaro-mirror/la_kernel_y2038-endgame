@@ -123,7 +123,6 @@ int lima_gem_create_handle(struct drm_device *dev, struct drm_file *file,
 
 	/* Mali Utgard GPU can only support 32bit address space */
 	mask = mapping_gfp_mask(obj->filp->f_mapping);
-	mask &= ~__GFP_HIGHMEM;
 	mask |= __GFP_DMA32;
 	mapping_set_gfp_mask(obj->filp->f_mapping, mask);
 
