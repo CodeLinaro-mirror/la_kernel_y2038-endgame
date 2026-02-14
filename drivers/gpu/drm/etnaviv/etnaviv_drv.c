@@ -553,17 +553,15 @@ static int etnaviv_bind(struct device *dev)
 	 * above new_inode() why this is required _and_ expected if you're
 	 * going to pin these pages.
 	 */
-	priv->shm_gfp_mask = GFP_HIGHUSER | __GFP_RETRY_MAYFAIL | __GFP_NOWARN;
+	priv->shm_gfp_mask = GFP_USER | __GFP_RETRY_MAYFAIL | __GFP_NOWARN;
 
 	/*
 	 * If the GPU is part of a system with DMA addressing limitations,
 	 * request pages for our SHM backend buffers from the DMA32 zone to
 	 * hopefully avoid performance killing SWIOTLB bounce buffering.
 	 */
-	if (dma_addressing_limited(dev)) {
+	if (dma_addressing_limited(dev))
 		priv->shm_gfp_mask |= GFP_DMA32;
-		priv->shm_gfp_mask &= ~__GFP_HIGHMEM;
-	}
 
 	priv->cmdbuf_suballoc = etnaviv_cmdbuf_suballoc_new(drm->dev);
 	if (IS_ERR(priv->cmdbuf_suballoc)) {

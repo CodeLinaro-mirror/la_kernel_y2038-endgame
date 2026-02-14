@@ -204,7 +204,7 @@ static int i915_ttm_tt_shmem_populate(struct ttm_device *bdev,
 		if (IS_ERR(filp))
 			return PTR_ERR(filp);
 
-		mask = GFP_HIGHUSER | __GFP_RECLAIMABLE;
+		mask = GFP_USER | __GFP_RECLAIMABLE;
 
 		mapping = filp->f_mapping;
 		mapping_set_gfp_mask(mapping, mask);

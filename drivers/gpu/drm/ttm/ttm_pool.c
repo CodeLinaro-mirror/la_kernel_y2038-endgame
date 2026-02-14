@@ -731,7 +731,7 @@ static int __ttm_pool_alloc(struct ttm_pool *pool, struct ttm_tt *tt,
 	if (ttm_pool_uses_dma32(pool))
 		gfp_flags |= GFP_DMA32;
 	else
-		gfp_flags |= GFP_HIGHUSER;
+		gfp_flags |= GFP_KERNEL;
 
 	page_caching = tt->caching;
 	allow_pools = true;
@@ -1026,7 +1026,7 @@ long ttm_pool_backup(struct ttm_pool *pool, struct ttm_tt *tt,
 	if (ttm_pool_uses_dma32(pool))
 		gfp = GFP_DMA32;
 	else
-		gfp = GFP_HIGHUSER;
+		gfp = GFP_KERNEL;
 
 	alloc_gfp = GFP_KERNEL | __GFP_HIGH | __GFP_NOWARN | __GFP_RETRY_MAYFAIL;
 

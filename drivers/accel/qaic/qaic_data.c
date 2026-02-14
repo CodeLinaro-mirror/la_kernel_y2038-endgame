@@ -485,8 +485,7 @@ static int create_sgt(struct qaic_device *qdev, struct sg_table **sgt_out, u64 s
 	while (nr_pages > 0) {
 		order = min(get_order(nr_pages * PAGE_SIZE), max_order);
 		while (1) {
-			pages[i] = alloc_pages(GFP_KERNEL | GFP_HIGHUSER |
-					       __GFP_NOWARN | __GFP_ZERO |
+			pages[i] = alloc_pages(GFP_KERNEL | __GFP_NOWARN | __GFP_ZERO |
 					       (order ? __GFP_NORETRY : __GFP_RETRY_MAYFAIL),
 					       order);
 			if (pages[i])

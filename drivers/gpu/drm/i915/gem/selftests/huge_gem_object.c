@@ -51,7 +51,7 @@ static int huge_get_pages(struct drm_i915_gem_object *obj)
 	for (n = 0; n < nreal; n++) {
 		struct page *page;
 
-		page = alloc_page(GFP | __GFP_HIGHMEM);
+		page = alloc_page(GFP);
 		if (!page) {
 			sg_mark_end(sg);
 			goto err;

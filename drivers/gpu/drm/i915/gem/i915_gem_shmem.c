@@ -552,10 +552,9 @@ static int shmem_object_init(struct intel_memory_region *mem,
 	if (ret)
 		return ret;
 
-	mask = GFP_HIGHUSER | __GFP_RECLAIMABLE;
+	mask = GFP_KERNEL | __GFP_RECLAIMABLE;
 	if (IS_I965GM(i915) || IS_I965G(i915)) {
 		/* 965gm cannot relocate objects above 4GiB. */
-		mask &= ~__GFP_HIGHMEM;
 		mask |= __GFP_DMA32;
 	}
 

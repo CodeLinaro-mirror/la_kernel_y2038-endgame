@@ -196,9 +196,7 @@ nvkm_mem_new_host(struct nvkm_mmu *mmu, int type, u8 page, u64 size,
 	if (!(mem->dma = kvmalloc_array(size, sizeof(*mem->dma), GFP_KERNEL)))
 		return -ENOMEM;
 
-	if (mmu->dma_bits > 32)
-		gfp |= GFP_HIGHUSER;
-	else
+	if (mmu->dma_bits <= 32)
 		gfp |= GFP_DMA32;
 
 	for (mem->pages = 0; size; size--, mem->pages++) {

@@ -121,7 +121,7 @@ int qxl_bo_create(struct qxl_device *qdev, unsigned long size,
 		return -ENOMEM;
 	size = roundup(size, PAGE_SIZE);
 	r = drm_gem_object_init(&qdev->ddev, &bo->tbo.base, size,
-				GFP_HIGHUSER_MOVABLE);
+				GFP_USER);
 	if (unlikely(r)) {
 		kfree(bo);
 		return r;
