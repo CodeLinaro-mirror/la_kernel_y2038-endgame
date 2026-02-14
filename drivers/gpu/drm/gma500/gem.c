@@ -170,12 +170,9 @@ psb_gem_create(struct drm_device *dev, u64 size, const char *name, bool stolen, 
 	if (stolen) {
 		drm_gem_private_object_init(dev, obj, size);
 	} else {
-		ret = drm_gem_object_init(dev, obj, size);
+		ret = drm_gem_object_init(dev, obj, size, GFP_KERNEL | __GFP_DMA32);
 		if (ret)
 			goto err_release_resource;
-
-		/* Limit the object to 32-bit mappings */
-		mapping_set_gfp_mask(obj->filp->f_mapping, GFP_KERNEL | __GFP_DMA32);
 	}
 
 	return pobj;

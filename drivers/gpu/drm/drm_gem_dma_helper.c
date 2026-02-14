@@ -97,7 +97,7 @@ __drm_gem_dma_create(struct drm_device *drm, size_t size, bool private)
 		/* Always use writecombine for dma-buf mappings */
 		dma_obj->map_noncoherent = false;
 	} else {
-		ret = drm_gem_object_init(drm, gem_obj, size);
+		ret = drm_gem_object_init(drm, gem_obj, size, GFP_HIGHUSER_MOVABLE);
 	}
 	if (ret)
 		goto error;

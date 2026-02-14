@@ -62,7 +62,7 @@ struct drm_gem_object *nouveau_gem_prime_import_sg_table(struct drm_device *dev,
 
 	/* Initialize the embedded gem-object. We return a single gem-reference
 	 * to the caller, instead of a normal nouveau_bo ttm reference. */
-	ret = drm_gem_object_init(dev, &nvbo->bo.base, size);
+	ret = drm_gem_object_init(dev, &nvbo->bo.base, size, GFP_HIGHUSER_MOVABLE);
 	if (ret) {
 		drm_gem_object_release(&nvbo->bo.base);
 		kfree(nvbo);

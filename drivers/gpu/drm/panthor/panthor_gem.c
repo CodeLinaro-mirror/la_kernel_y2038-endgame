@@ -1011,9 +1011,6 @@ panthor_gem_create(struct drm_device *dev, size_t size, uint32_t flags,
 		return bo;
 
 	size = PAGE_ALIGN(size);
-	ret = drm_gem_object_init(dev, &bo->base, size);
-	if (ret)
-		goto err_put;
 
 	/* Our buffers are kept pinned, so allocating them
 	 * from the MOVABLE zone is a really bad idea, and
@@ -1021,8 +1018,10 @@ panthor_gem_create(struct drm_device *dev, size_t size, uint32_t flags,
 	 * why this is required _and_ expected if you're
 	 * going to pin these pages.
 	 */
-	mapping_set_gfp_mask(bo->base.filp->f_mapping,
-			     GFP_HIGHUSER | __GFP_RETRY_MAYFAIL | __GFP_NOWARN);
+	ret = drm_gem_object_init(dev, &bo->base, size,
+				  GFP_HIGHUSER | __GFP_RETRY_MAYFAIL | __GFP_NOWARN);
+	if (ret)
+		goto err_put;
 
 	ret = drm_gem_create_mmap_offset(&bo->base);
 	if (ret)
