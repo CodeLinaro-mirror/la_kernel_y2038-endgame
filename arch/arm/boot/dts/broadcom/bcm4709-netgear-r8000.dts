@@ -130,7 +130,7 @@
 	#address-cells = <3>;
 	#size-cells = <2>;
 
-	bridge@0,0,0 {
+	bridge@0,0 {
 		reg = <0x0000 0 0 0 0>;
 
 		#address-cells = <3>;
@@ -149,13 +149,13 @@
 	#address-cells = <3>;
 	#size-cells = <2>;
 
-	bridge@1,0,0 {
+	bridge@0,0 {
 		reg = <0x0000 0 0 0 0>;
 
 		#address-cells = <3>;
 		#size-cells = <2>;
 
-		bridge@1,1,0 {
+		bridge@1,1 {
 			reg = <0x0000 0 0 0 0>;
 
 			#address-cells = <3>;
@@ -174,7 +174,7 @@
 				};
 			};
 
-			bridge@1,2,2 {
+			bridge@1,2 {
 				reg = <0x1000 0 0 0 0>;
 
 				#address-cells = <3>;
