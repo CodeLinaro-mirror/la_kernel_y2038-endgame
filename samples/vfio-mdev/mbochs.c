@@ -729,7 +729,7 @@ static struct page *__mbochs_get_page(struct mdev_state *mdev_state,
 
 	if (!mdev_state->pages[pgoff]) {
 		mdev_state->pages[pgoff] =
-			alloc_pages(GFP_HIGHUSER | __GFP_ZERO, 0);
+			alloc_pages(GFP_USER | __GFP_ZERO, 0);
 		if (!mdev_state->pages[pgoff])
 			return NULL;
 	}
