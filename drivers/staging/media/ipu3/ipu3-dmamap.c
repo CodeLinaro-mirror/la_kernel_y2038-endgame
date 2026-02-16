@@ -44,7 +44,7 @@ static struct page **imgu_dmamap_alloc_buffer(size_t size, gfp_t gfp)
 	if (!pages)
 		return NULL;
 
-	gfp |= __GFP_HIGHMEM | __GFP_ZERO;
+	gfp |= __GFP_ZERO;
 
 	while (count) {
 		struct page *page = NULL;
