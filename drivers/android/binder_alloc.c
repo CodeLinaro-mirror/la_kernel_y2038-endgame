@@ -284,7 +284,7 @@ static struct page *binder_page_alloc(struct binder_alloc *alloc,
 	struct binder_shrinker_mdata *mdata;
 	struct page *page;
 
-	page = alloc_page(GFP_KERNEL | __GFP_HIGHMEM | __GFP_ZERO);
+	page = alloc_page(GFP_KERNEL | __GFP_ZERO);
 	if (!page)
 		return NULL;
 

@@ -361,7 +361,7 @@ impl ShrinkablePageRange {
     /// Assumes that `i` is in bounds.
     #[cold]
     unsafe fn use_page_slow(&self, i: usize) -> Result<()> {
-        let new_page = Page::alloc_page(GFP_KERNEL | __GFP_HIGHMEM | __GFP_ZERO)?;
+        let new_page = Page::alloc_page(GFP_KERNEL | __GFP_ZERO)?;
 
         let mm_mutex = self.mm_lock.lock();
         let inner = self.lock.lock();
