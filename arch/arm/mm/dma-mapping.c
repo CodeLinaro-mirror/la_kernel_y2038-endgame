@@ -875,10 +875,7 @@ static struct page **__iommu_alloc_buffer(struct device *dev, size_t size,
 	if (attrs & DMA_ATTR_ALLOC_SINGLE_PAGES)
 		order_idx = ARRAY_SIZE(iommu_order_array) - 1;
 
-	/*
-	 * IOMMU can map any pages, so himem can also be used here
-	 */
-	gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
+	gfp |= __GFP_NOWARN;
 
 	while (count) {
 		int j, order;
