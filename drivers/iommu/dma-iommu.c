@@ -884,8 +884,7 @@ static struct page **__iommu_dma_alloc_pages(struct device *dev,
 	if (!pages)
 		return NULL;
 
-	/* IOMMU can map any pages, so himem can also be used here */
-	gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
+	gfp |= __GFP_NOWARN;
 
 	while (count) {
 		struct page *page = NULL;
