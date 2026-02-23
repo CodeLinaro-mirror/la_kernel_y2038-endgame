@@ -1780,14 +1780,14 @@ CLEAN_FILES += vmlinux.symvers modules-only.symvers \
 	       vmlinux.thinlto-index builtin.order \
 	       compile_commands.json rust/test \
 	       rust-project.json .vmlinux.objs .vmlinux.export.c \
-	       .builtin-dtbs-list .builtin-dtbs.S sbom-*.spdx.json
+	       .builtin-dtbs-list .builtin-dtbs.S sbom-*.spdx.json \
+	       Modules.symvers
 
 # Directories & files removed with 'make mrproper'
 MRPROPER_FILES += include/config include/generated          \
 		  arch/$(SRCARCH)/include/generated .objdiff \
 		  debian snap tar-install PKGBUILD pacman \
 		  .config .config.old .version \
-		  Module.symvers \
 		  certs/signing_key.pem \
 		  certs/x509.genkey \
 		  vmlinux-gdb.py \
