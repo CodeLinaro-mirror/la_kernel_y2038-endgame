@@ -179,17 +179,16 @@ do_compile2() {
 	local -r inc_dir="$1"
 	local -r header="$2"
 	local -r out="$3"
-	printf "int main(void) { return 0; }\n" | \
-		"$CC" -c \
+	printf "int f(void) { return 0; }\n" | \
+		"$CC" -shared -nostdlib -fPIC \
 		  -o "$out" \
 		  -x c \
 		  -O0 \
-		  -malign-int \
 		  -std=c90 \
 		  -fno-eliminate-unused-debug-types \
 		  -g \
 		  "-I${inc_dir}" \
-		  "-I${KERNEL_SRC}/tools/include/nolibc" "-nostdinc"\
+		  "-I${KERNEL_SRC}/tools/include/nolibc" "-nostdinc" "-DNOLIBC_NO_RUNTIME" \
 		  -include "$header" \
 		  -
 }
@@ -383,7 +382,7 @@ compare_abi() {
 	else
 		# Bits in abidiff's return code can be used to determine the type of error
 		if [ $((ret & 0x2)) -gt 0 ]; then
-			eprintf "error - abidiff did not run properly\n"
+			eprintf "error - abidiff did not run properly on $file\n"
 			exit 1
 		fi
 
