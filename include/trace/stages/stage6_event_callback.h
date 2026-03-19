@@ -45,7 +45,7 @@
 	do {								\
 		va_list __cp_va;					\
 		va_copy(__cp_va, *(va));				\
-		vsnprintf(__get_str(dst), TRACE_EVENT_STR_MAX, fmt, __cp_va); \
+		__vsnprintf(__get_str(dst), TRACE_EVENT_STR_MAX, fmt, __cp_va); \
 		va_end(__cp_va);					\
 	} while (0)
 

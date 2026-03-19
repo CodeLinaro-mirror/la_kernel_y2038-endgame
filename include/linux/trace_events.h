@@ -977,7 +977,7 @@ perf_trace_buf_submit(void *raw_data, int size, int rctx, u16 type,
 	int __ret;					\
 							\
 	va_copy(__ap, *(va));				\
-	__ret = vsnprintf(NULL, 0, fmt, __ap) + 1;	\
+	__ret = __vsnprintf(NULL, 0, fmt, __ap) + 1;	\
 	va_end(__ap);					\
 							\
 	min(__ret, TRACE_EVENT_STR_MAX);		\

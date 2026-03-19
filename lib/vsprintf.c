@@ -1710,9 +1710,6 @@ char *escaped_string(char *buf, char *end, u8 *addr, struct printf_spec spec,
 	return buf;
 }
 
-__diag_push();
-__diag_ignore(GCC, all, "-Wsuggest-attribute=format",
-	      "Not a valid __printf() conversion candidate.");
 static char *va_format(char *buf, char *end, struct va_format *va_fmt,
 		       struct printf_spec spec)
 {
@@ -1722,12 +1719,11 @@ static char *va_format(char *buf, char *end, struct va_format *va_fmt,
 		return buf;
 
 	va_copy(va, *va_fmt->va);
-	buf += vsnprintf(buf, end > buf ? end - buf : 0, va_fmt->fmt, va);
+	buf += __vsnprintf(buf, end > buf ? end - buf : 0, va_fmt->fmt, va);
 	va_end(va);
 
 	return buf;
 }
-__diag_pop();
 
 static noinline_for_stack
 char *uuid_string(char *buf, char *end, const u8 *addr,
@@ -2992,6 +2988,24 @@ out:
 	return ret_size;
 }
 EXPORT_SYMBOL(vsnprintf);
+
+/**
+ * __vsnprintf - vsnprintf() wrapper without __printf() attribute
+ * @buf: The buffer to place the result into
+ * @size: The size of the buffer, including the trailing null space
+ * @fmt_str: The format string to use
+ * @args: Arguments for the format string
+ *
+ * This has the exact same behavior as vsnprintf() but can be used in call
+ * sites that are missing a __printf() annotation, e.g. because they
+ * get a 'va_format' argument instead of format and varargs.
+ *
+ * For this to work, the attribute is intentionally missing in the
+ * header but is included here using the __copy() macro
+ */
+int __vsnprintf(char *buf, size_t size, const char *fmt_str, va_list args)
+					__alias(vsnprintf) __copy(vsnprintf);
+EXPORT_SYMBOL(__vsnprintf);
 
 /**
  * vscnprintf - Format a string and place it in a buffer
