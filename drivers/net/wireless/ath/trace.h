@@ -40,13 +40,13 @@ TRACE_EVENT(ath_log,
 	    TP_STRUCT__entry(
 		    __string(device, wiphy_name(wiphy))
 		    __string(driver, KBUILD_MODNAME)
-		    __vstring(msg, vaf->fmt, vaf->va)
+		    __vstring(msg, vaf)
 	    ),
 
 	    TP_fast_assign(
 		    __assign_str(device);
 		    __assign_str(driver);
-		    __assign_vstr(msg, vaf->fmt, vaf->va);
+		    __assign_vstr(msg, vaf);
 	    ),
 
 	    TP_printk(

@@ -28,9 +28,9 @@
 DECLARE_EVENT_CLASS(xhci_log_msg,
 	TP_PROTO(struct va_format *vaf),
 	TP_ARGS(vaf),
-	TP_STRUCT__entry(__vstring(msg, vaf->fmt, vaf->va)),
+	TP_STRUCT__entry(__vstring(msg, vaf)),
 	TP_fast_assign(
-		__assign_vstr(msg, vaf->fmt, vaf->va);
+		__assign_vstr(msg, vaf);
 	),
 	TP_printk("%s", __get_str(msg))
 );

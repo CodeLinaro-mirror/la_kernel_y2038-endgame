@@ -17,11 +17,11 @@ DECLARE_EVENT_CLASS(qla_log_event,
 
 	TP_STRUCT__entry(
 		__string(buf, buf)
-		__vstring(msg, vaf->fmt, vaf->va)
+		__vstring(msg, vaf)
 	),
 	TP_fast_assign(
 		__assign_str(buf);
-		__assign_vstr(msg, vaf->fmt, vaf->va);
+		__assign_vstr(msg, vaf);
 	),
 
 	TP_printk("%s %s", __get_str(buf), __get_str(msg))

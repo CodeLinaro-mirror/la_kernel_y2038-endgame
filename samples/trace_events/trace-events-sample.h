@@ -143,20 +143,20 @@
  *         saved string into the "foo" field.
  *
  *   __vstring: This is similar to __string() but instead of taking a
- *         dynamic length, it takes a variable list va_list 'va' variable.
+ *         dynamic length, it takes a variable list va_format 'vaf' variable.
  *         Some event callers already have a message from parameters saved
- *         in a va_list. Passing in the format and the va_list variable
- *         will save just enough on the ring buffer for that string.
- *         Note, the va variable used is a pointer to a va_list, not
- *         to the va_list directly.
+ *         in a va_format. Passing in the va_format variable will save just
+ *	   enough on the ring buffer for that string.
  *
- *           (va_list *va)
+ *           (va_format *vaf)
  *
- *         __vstring(foo, fmt, va)  is similar to:  vsnprintf(foo, fmt, va)
+ *         __vstring(foo, vaf)  is similar to:
+ *
+ *	     vsnprintf(foo, "%pV", vaf)
  *
  *         To assign the string, use the helper macro __assign_vstr().
  *
- *         __assign_vstr(foo, fmt, va);
+ *         __assign_vstr(foo, vaf);
  *
  *         In most cases, the __assign_vstr() macro will take the same
  *         parameters as the __vstring() macro had to declare the string.
@@ -301,9 +301,9 @@ TRACE_EVENT(foo_bar,
 
 	TP_PROTO(const char *foo, int bar, const int *lst,
 		 const char *string, const struct cpumask *mask,
-		 const char *fmt, va_list *va),
+		 struct va_format *vaf),
 
-	TP_ARGS(foo, bar, lst, string, mask, fmt, va),
+	TP_ARGS(foo, bar, lst, string, mask, vaf),
 
 	TP_STRUCT__entry(
 		__array(	char,	foo,    10		)
@@ -312,7 +312,7 @@ TRACE_EVENT(foo_bar,
 		__string(	str,	string			)
 		__bitmask(	cpus,	num_possible_cpus()	)
 		__cpumask(	cpum				)
-		__vstring(	vstr,	fmt,	va		)
+		__vstring(	vstr,	vaf			)
 		__string_len(	lstr,	foo,	bar / 2 < strlen(foo) ? bar / 2 : strlen(foo) )
 	),
 
@@ -323,7 +323,7 @@ TRACE_EVENT(foo_bar,
 		       __length_of(lst) * sizeof(int));
 		__assign_str(str);
 		__assign_str(lstr);
-		__assign_vstr(vstr, fmt, va);
+		__assign_vstr(vstr, vaf);
 		__assign_bitmask(cpus, cpumask_bits(mask), num_possible_cpus());
 		__assign_cpumask(cpum, cpumask_bits(mask));
 	),

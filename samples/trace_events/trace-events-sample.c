@@ -23,6 +23,7 @@ static void do_simple_thread_func(int cnt, const char *fmt, ...)
 {
 	unsigned long bitmask[1] = {0xdeadbeefUL};
 	va_list va;
+	struct va_format vf = { .fmt = fmt };
 	int array[6];
 	int len = cnt % 5;
 	int i;
@@ -35,10 +36,11 @@ static void do_simple_thread_func(int cnt, const char *fmt, ...)
 	array[i] = 0;
 
 	va_start(va, fmt);
+	vf.va = &va;
 
 	/* Silly tracepoints */
 	trace_foo_bar("hello", cnt, array, random_strings[len],
-		      current->cpus_ptr, fmt, &va);
+		      current->cpus_ptr, &vf);
 
 	va_end(va);
 

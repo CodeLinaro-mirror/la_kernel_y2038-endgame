@@ -52,12 +52,12 @@ DECLARE_EVENT_CLASS(ath10k_log_event,
 	TP_STRUCT__entry(
 		__string(device, dev_name(ar->dev))
 		__string(driver, dev_driver_string(ar->dev))
-		__vstring(msg, vaf->fmt, vaf->va)
+		__vstring(msg, vaf)
 	),
 	TP_fast_assign(
 		__assign_str(device);
 		__assign_str(driver);
-		__assign_vstr(msg, vaf->fmt, vaf->va);
+		__assign_vstr(msg, vaf);
 	),
 	TP_printk(
 		"%s %s %s",
@@ -89,13 +89,13 @@ TRACE_EVENT(ath10k_log_dbg,
 		__string(device, dev_name(ar->dev))
 		__string(driver, dev_driver_string(ar->dev))
 		__field(unsigned int, level)
-		__vstring(msg, vaf->fmt, vaf->va)
+		__vstring(msg, vaf)
 	),
 	TP_fast_assign(
 		__assign_str(device);
 		__assign_str(driver);
 		__entry->level = level;
-		__assign_vstr(msg, vaf->fmt, vaf->va);
+		__assign_vstr(msg, vaf);
 	),
 	TP_printk(
 		"%s %s %s",

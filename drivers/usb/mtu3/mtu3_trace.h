@@ -23,11 +23,11 @@ TRACE_EVENT(mtu3_log,
 	TP_ARGS(dev, vaf),
 	TP_STRUCT__entry(
 		__string(name, dev_name(dev))
-		__vstring(msg, vaf->fmt, vaf->va)
+		__vstring(msg, vaf)
 	),
 	TP_fast_assign(
 		__assign_str(name);
-		__assign_vstr(msg, vaf->fmt, vaf->va);
+		__assign_vstr(msg, vaf);
 	),
 	TP_printk("%s: %s", __get_str(name), __get_str(msg))
 );
