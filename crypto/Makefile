@@ -172,7 +172,6 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
 obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
 obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
 obj-$(CONFIG_CRYPTO_ECC) += ecc.o
-KASAN_SANITIZE_ecc.o = n
 obj-$(CONFIG_CRYPTO_ESSIV) += essiv.o
 
 # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=124949
