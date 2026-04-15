@@ -614,6 +614,59 @@ static int soc_slider_access(int mode)
 	return 1;
 }
 
+static int platform_profile_access(int mode)
+{
+	if (access(PATH_PLATFORM_PROFILE, mode)) {
+		if (debug)
+			fprintf(stderr, "Can not access %s\n", PATH_PLATFORM_PROFILE);
+		return 0;
+	}
+
+	return 1;
+}
+
+static int platform_profile_name_is(char *name)
+{
+	char buf[64];
+
+	if (sysfs_read_string(PATH_PLATFORM_PROFILE_NAME, buf, sizeof(buf)) != 0) {
+		if (debug)
+			fprintf(stderr, "Can not read %s\n", PATH_PLATFORM_PROFILE_NAME);
+		return 0;
+	}
+
+	if (strncmp(buf, name, 16)) {
+		if (debug)
+			fprintf(stderr, "%s does not match '%s'\n", PATH_PLATFORM_PROFILE_NAME, name);
+		return 0;
+	}
+
+	return 1;
+}
+
+static int soc_slider_access(int mode)
+{
+	if (!platform_profile_access(R_OK))
+		return 0;
+
+	if (!platform_profile_name_is(POWER_SLIDER_NAME))
+		return 0;
+
+	if (access(PATH_SOC_SLIDER_BALANCE, mode)) {
+		if (debug)
+			fprintf(stderr, "Can not access %s\n", PATH_SOC_SLIDER_BALANCE);
+		return 0;
+	}
+
+	if (access(PATH_SOC_SLIDER_OFFSET, mode)) {
+		if (debug)
+			fprintf(stderr, "Can not access %s\n", PATH_SOC_SLIDER_OFFSET);
+		return 0;
+	}
+
+	return 1;
+}
+
 void cmdline(int argc, char **argv)
 {
 	int opt;
