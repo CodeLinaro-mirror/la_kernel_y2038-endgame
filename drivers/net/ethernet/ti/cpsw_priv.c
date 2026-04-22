@@ -721,7 +721,7 @@ int cpsw_hwtstamp_get(struct net_device *dev,
 {
 	return -EOPNOTSUPP;
 }
-EXPORT_SYMBOL_GPL(cpsw_hwtstamp_set);
+EXPORT_SYMBOL_GPL(cpsw_hwtstamp_get);
 
 int cpsw_hwtstamp_set(struct net_device *dev,
 		      struct kernel_hwtstamp_config *cfg,
@@ -729,7 +729,7 @@ int cpsw_hwtstamp_set(struct net_device *dev,
 {
 	return -EOPNOTSUPP;
 }
-EXPORT_SYMBOL_GPL(cpsw_hwtstamp_get);
+EXPORT_SYMBOL_GPL(cpsw_hwtstamp_set);
 #endif /*CONFIG_TI_CPTS*/
 
 int cpsw_ndo_set_tx_maxrate(struct net_device *ndev, int queue, u32 rate)
