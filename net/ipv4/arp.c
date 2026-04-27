@@ -1391,7 +1391,6 @@ static struct packet_type arp_packet_type __read_mostly = {
 	.func =	arp_rcv,
 };
 
-#ifdef CONFIG_PROC_FS
 #if IS_ENABLED(CONFIG_AX25)
 
 /*
@@ -1507,7 +1506,6 @@ static const struct seq_operations arp_seq_ops = {
 	.stop	= neigh_seq_stop,
 	.show	= arp_seq_show,
 };
-#endif /* CONFIG_PROC_FS */
 
 static int __net_init arp_net_init(struct net *net)
 {
@@ -1517,7 +1515,6 @@ static int __net_init arp_net_init(struct net *net)
 	if (err)
 		goto err;
 
-#ifdef CONFIG_PROC_FS
 #ifdef CONFIG_SYSCTL
 	err = neigh_sysctl_register(NULL, &arp_table(net)->parms, NULL);
 	if (err)
@@ -1529,18 +1526,15 @@ static int __net_init arp_net_init(struct net *net)
 		err = -ENOMEM;
 		goto err_proc_create;
 	}
-#endif
 
 	return 0;
 
-#ifdef CONFIG_PROC_FS
 err_proc_create:
 #ifdef CONFIG_SYSCTL
 	neigh_sysctl_unregister(&arp_table(net)->parms);
 err_sysctl:
 #endif
 	neigh_table_unregister(net, NEIGH_ARP_TABLE);
-#endif
 err:
 	return err;
 }

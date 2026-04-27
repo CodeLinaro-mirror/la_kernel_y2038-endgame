@@ -1542,7 +1542,6 @@ int eeh_pe_inject_err(struct eeh_pe *pe, int type, int func,
 }
 EXPORT_SYMBOL_GPL(eeh_pe_inject_err);
 
-#ifdef CONFIG_PROC_FS
 static int proc_eeh_show(struct seq_file *m, void *v)
 {
 	if (!eeh_enabled()) {
@@ -1569,7 +1568,6 @@ static int proc_eeh_show(struct seq_file *m, void *v)
 
 	return 0;
 }
-#endif /* CONFIG_PROC_FS */
 
 static int eeh_break_device(struct pci_dev *pdev)
 {

@@ -1602,7 +1602,6 @@ static int do_open(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-#ifdef CONFIG_PROC_FS
 static int proc_apm_show(struct seq_file *m, void *v)
 {
 	unsigned short	bx;
@@ -1682,7 +1681,6 @@ static int proc_apm_show(struct seq_file *m, void *v)
 		   units);
 	return 0;
 }
-#endif
 
 static int apm(void *unused)
 {

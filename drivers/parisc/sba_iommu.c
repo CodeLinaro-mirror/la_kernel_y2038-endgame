@@ -1760,7 +1760,6 @@ sba_common_init(struct sba_device *sba_dev)
 #endif
 }
 
-#ifdef CONFIG_PROC_FS
 static int sba_proc_info(struct seq_file *m, void *p)
 {
 	struct sba_device *sba_dev = sba_list;
@@ -1843,7 +1842,6 @@ sba_proc_bitmap_info(struct seq_file *m, void *p)
 
 	return 0;
 }
-#endif /* CONFIG_PROC_FS */
 
 static const struct parisc_device_id sba_tbl[] __initconst = {
 	{ HPHW_IOA, HVERSION_REV_ANY_ID, ASTRO_RUNWAY_PORT, 0xb },
