@@ -114,17 +114,6 @@ extern int valid_phys_addr_range(phys_addr_t addr, size_t size);
 extern int valid_mmap_phys_addr_range(unsigned long pfn, size_t size);
 
 /*
- * ISA I/O bus memory addresses are 1:1 with the physical address.
- * However, we truncate the address to unsigned int to avoid undesirable
- * promotions in legacy drivers.
- */
-static inline unsigned int isa_virt_to_bus(void *address)
-{
-	return (unsigned int)virt_to_phys(address);
-}
-#define isa_bus_to_virt		phys_to_virt
-
-/*
  * The default ioremap() behavior is non-cached; if you need something
  * else, you probably want one of the following.
  */

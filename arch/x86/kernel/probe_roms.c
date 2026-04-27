@@ -125,7 +125,7 @@ static struct resource *find_oprom(struct pci_dev *pdev)
 		if (res->end == 0)
 			break;
 
-		rom = isa_bus_to_virt(res->start);
+		rom = phys_to_virt(res->start);
 		if (get_kernel_nofault(offset, rom + 0x18) != 0)
 			continue;
 
@@ -206,7 +206,7 @@ void __init probe_roms(void)
 	/* video rom */
 	upper = adapter_rom_resources[0].start;
 	for (start = video_rom_resource.start; start < upper; start += 2048) {
-		rom = isa_bus_to_virt(start);
+		rom = phys_to_virt(start);
 		if (!romsignature(rom))
 			continue;
 
@@ -235,7 +235,7 @@ void __init probe_roms(void)
 	upper = system_rom_resource.start;
 
 	/* check for extension rom (ignore length byte!) */
-	rom = isa_bus_to_virt(extension_rom_resource.start);
+	rom = phys_to_virt(extension_rom_resource.start);
 	if (romsignature(rom)) {
 		length = resource_size(&extension_rom_resource);
 		if (romchecksum(rom, length)) {
@@ -246,7 +246,7 @@ void __init probe_roms(void)
 
 	/* check for adapter roms on 2k boundaries */
 	for (i = 0; i < ARRAY_SIZE(adapter_rom_resources) && start < upper; start += 2048) {
-		rom = isa_bus_to_virt(start);
+		rom = phys_to_virt(start);
 		if (!romsignature(rom))
 			continue;
 

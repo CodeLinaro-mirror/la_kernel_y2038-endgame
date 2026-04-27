@@ -854,7 +854,7 @@ static void __init acpi_find_ibft_region(void)
 static int __init acpi_find_isa_region(void)
 {
 	if (ibft_phys_addr) {
-		ibft_addr = isa_bus_to_virt(ibft_phys_addr);
+		ibft_addr = phys_to_virt(ibft_phys_addr);
 		return 0;
 	}
 	return -ENODEV;
