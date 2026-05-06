@@ -377,7 +377,7 @@ static int add_b_desc_to_pending_list(void *shared_ptr_with_pos,
 		return -ENOMEM;
 
 	b_desc->shared_buf_ptr = shared_ptr_with_pos;
-	b_desc->usr_buf_ptr = io->user_buf;
+	b_desc->usr_buf_ptr = u64_to_user_ptr(io->user_buf);
 	b_desc->size = io->length;
 
 	if (io->flags & SE_IO_BUF_FLAGS_IS_INPUT) {
@@ -521,14 +521,14 @@ static int se_ioctl_cmd_snd_rcv_rsp_handler(struct se_if_device_ctx *dev_ctx,
 	}
 
 	if (cmd_snd_rcv_rsp_info.tx_buf_sz < SE_MU_HDR_SZ) {
-		dev_err(priv->dev, "%s: User buffer too small(%d < %d)",
+		dev_err(priv->dev, "%s: User buffer too small(%lld < %d)",
 			dev_ctx->devname, cmd_snd_rcv_rsp_info.tx_buf_sz, SE_MU_HDR_SZ);
 		se_ioctl_cmd_snd_rcv_cleanup(dev_ctx, uarg, &cmd_snd_rcv_rsp_info);
 		return -ENOSPC;
 	}
 
 	struct se_api_msg *tx_msg __free(kfree) =
-		memdup_user(cmd_snd_rcv_rsp_info.tx_buf,
+		memdup_user(u64_to_user_ptr(cmd_snd_rcv_rsp_info.tx_buf),
 			    cmd_snd_rcv_rsp_info.tx_buf_sz);
 	if (IS_ERR(tx_msg)) {
 		err = PTR_ERR(tx_msg);
@@ -588,8 +588,8 @@ static int se_ioctl_cmd_snd_rcv_rsp_handler(struct se_if_device_ctx *dev_ctx,
 	print_hex_dump_debug("to user ", DUMP_PREFIX_OFFSET, 4, 4, rx_msg,
 			     cmd_snd_rcv_rsp_info.rx_buf_sz, false);
 
-	if (copy_to_user(cmd_snd_rcv_rsp_info.rx_buf, rx_msg,
-			 cmd_snd_rcv_rsp_info.rx_buf_sz)) {
+	if (copy_to_user(u64_to_user_ptr(cmd_snd_rcv_rsp_info.rx_buf),
+			 rx_msg, cmd_snd_rcv_rsp_info.rx_buf_sz)) {
 		dev_err(priv->dev, "%s: Failed to copy to user.", dev_ctx->devname);
 		err = -EFAULT;
 	}
@@ -651,7 +651,7 @@ static int se_ioctl_setup_iobuf_handler(struct se_if_device_ctx *dev_ctx,
 		return -EFAULT;
 	}
 
-	dev_dbg(dev_ctx->priv->dev, "%s: io [buf: %p(%d) flag: %x].", dev_ctx->devname,
+	dev_dbg(dev_ctx->priv->dev, "%s: io [buf: %llx(%d) flag: %x].", dev_ctx->devname,
 		io.user_buf, io.length, io.flags);
 
 	if (io.length == 0 || !io.user_buf) {
@@ -694,7 +694,8 @@ static int se_ioctl_setup_iobuf_handler(struct se_if_device_ctx *dev_ctx,
 		 * buffer is input:
 		 * copy data from user space to this allocated buffer.
 		 */
-		if (copy_from_user(shared_mem->ptr + pos, io.user_buf, io.length)) {
+		if (copy_from_user(shared_mem->ptr + pos,
+				   u64_to_user_ptr(io.user_buf), io.length)) {
 			dev_err(dev_ctx->priv->dev,
 				"%s: Failed copy data to shared memory.",
 				dev_ctx->devname);

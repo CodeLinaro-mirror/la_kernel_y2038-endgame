@@ -16,7 +16,7 @@
 /* IOCTL definitions. */
 
 struct se_ioctl_setup_iobuf {
-	void __user *user_buf;
+	__u64 user_buf;
 	__u32 length;
 	__u32 flags;
 	__u64 ele_addr;
@@ -40,10 +40,10 @@ struct se_ioctl_get_if_info {
 };
 
 struct se_ioctl_cmd_snd_rcv_rsp_info {
-	__u32 __user *tx_buf;
-	int tx_buf_sz;
-	__u32 __user *rx_buf;
-	int rx_buf_sz;
+	__u64 tx_buf;
+	__u64 tx_buf_sz;
+	__u64 rx_buf;
+	__u64 rx_buf_sz;
 };
 
 struct se_ioctl_get_soc_info {
