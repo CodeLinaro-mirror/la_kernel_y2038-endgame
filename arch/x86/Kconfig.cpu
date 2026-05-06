@@ -321,7 +321,7 @@ config CPU_SUP_INTEL
 config CPU_SUP_CYRIX_32
 	default y
 	bool "Support Cyrix processors" if PROCESSOR_SELECT
-	depends on M586 || M586TSC || M586MMX || (EXPERT && !64BIT)
+	depends on !64BIT
 	help
 	  This enables detection, tunings and quirks for Cyrix processors
 
