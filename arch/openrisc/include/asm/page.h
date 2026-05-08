@@ -59,21 +59,12 @@ typedef struct page *pgtable_t;
 
 #ifndef __ASSEMBLER__
 
-static inline unsigned long virt_to_phys(const volatile void *address)
-{
-	return (unsigned long)address - PAGE_OFFSET;
-}
-#define __pa(x) virt_to_phys((void *)(x))
-
-static inline void *phys_to_virt(unsigned long address)
-{
-	return (void *)address + PAGE_OFFSET;
-}
-#define __va(x) phys_to_virt((x))
+#define __va(x) ((void *)((unsigned long)(x) + PAGE_OFFSET))
+#define __pa(x) ((unsigned long) (x) - PAGE_OFFSET)
 
 static inline unsigned long virt_to_pfn(const void *kaddr)
 {
-	return virt_to_phys(kaddr) >> PAGE_SHIFT;
+	return __pa(kaddr) >> PAGE_SHIFT;
 }
 
 #define virt_to_page(addr) \
