@@ -7,7 +7,6 @@
 #include <linux/init.h>
 #include <linux/printk.h>
 
-#include <asm/boot.h>
 #include <asm/cpufeature.h>
 #include <asm/memory.h>
 
