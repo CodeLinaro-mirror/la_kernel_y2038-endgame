@@ -262,3 +262,4 @@ module_platform_driver(ipq_pwm_driver);
 
 MODULE_DESCRIPTION("Qualcomm IPQ PWM driver");
 MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("PWM controller driver for Qualcomm IPQ5xxx/6xxx SoCs");
