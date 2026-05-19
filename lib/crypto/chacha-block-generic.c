@@ -13,7 +13,8 @@
 #include <linux/string.h>
 #include <linux/unaligned.h>
 
-static void chacha_permute(struct chacha_state *state, int nrounds)
+static __attribute__((no_sanitize("alignment")))
+void chacha_permute(struct chacha_state *state, int nrounds)
 {
 	u32 *x = state->x;
 	int i;
