@@ -156,7 +156,8 @@ static SHA3_INLINE void sha3_keccakf_one_round_generic(u64 st[25], int round)
 }
 
 /* Generic implementation of the Keccak-f[1600] permutation */
-static void sha3_keccakf_generic(struct sha3_state *state)
+static __attribute__((no_sanitize("alignment")))
+void sha3_keccakf_generic(struct sha3_state *state)
 {
 	/*
 	 * Temporarily convert the state words from little-endian to native-
