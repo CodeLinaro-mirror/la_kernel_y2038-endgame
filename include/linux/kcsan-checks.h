@@ -186,7 +186,8 @@ void kcsan_end_scoped_access(struct kcsan_scoped_access *sa);
 
 #else /* CONFIG_KCSAN */
 
-static inline void __kcsan_check_access(const volatile void *ptr, size_t size,
+static __attribute__((access(none, 1)))
+inline void __kcsan_check_access(const volatile void *ptr, size_t size,
 					int type) { }
 
 static inline void __kcsan_mb(void)			{ }

@@ -17,13 +17,13 @@
  */
 #if defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)
 bool __kasan_check_read(const volatile void *p, unsigned int size);
-bool __kasan_check_write(const volatile void *p, unsigned int size);
+__attribute__((access(none, 1))) bool __kasan_check_write(const volatile void *p, unsigned int size);
 #else
 static inline bool __kasan_check_read(const volatile void *p, unsigned int size)
 {
 	return true;
 }
-static inline bool __kasan_check_write(const volatile void *p, unsigned int size)
+static __attribute__((access(none, 1))) inline bool __kasan_check_write(const volatile void *p, unsigned int size)
 {
 	return true;
 }
@@ -41,7 +41,8 @@ static inline bool kasan_check_read(const volatile void *p, unsigned int size)
 {
 	return true;
 }
-static inline bool kasan_check_write(const volatile void *p, unsigned int size)
+static __attribute__((access(none, 1))) inline
+bool kasan_check_write(const volatile void *p, unsigned int size)
 {
 	return true;
 }

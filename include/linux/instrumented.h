@@ -140,8 +140,9 @@ instrument_copy_to_user(void __user *to, const void *from, unsigned long n)
  * Instrument writes to kernel memory, that are due to copy_from_user (and
  * variants). The instrumentation should be inserted before the accesses.
  */
-static __always_inline void
-instrument_copy_from_user_before(const void *to, const void __user *from, unsigned long n)
+static __always_inline __attribute__((access(none, 1))) void
+instrument_copy_from_user_before(const void *to,
+				 const void __user *from, unsigned long n)
 {
 	kasan_check_write(to, n);
 	kcsan_check_write(to, n);
