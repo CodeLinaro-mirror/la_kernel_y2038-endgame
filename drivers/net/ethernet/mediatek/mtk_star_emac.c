@@ -1629,7 +1629,7 @@ static int mtk_star_probe(struct platform_device *pdev)
 
 	priv->ring_base = dmam_alloc_coherent(dev, MTK_STAR_DMA_SIZE,
 					      &priv->dma_addr,
-					      GFP_KERNEL | GFP_DMA); // XXXX
+					      GFP_KERNEL);
 	if (!priv->ring_base)
 		return -ENOMEM;
 

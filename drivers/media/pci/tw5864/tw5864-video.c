@@ -957,7 +957,7 @@ int tw5864_video_init(struct tw5864_dev *dev, int *video_nr)
 		frame->vlc.addr = dma_alloc_coherent(&dev->pci->dev,
 						     H264_VLC_BUF_SIZE,
 						     &frame->vlc.dma_addr,
-						     GFP_KERNEL | GFP_DMA32);
+						     GFP_KERNEL);
 		if (!frame->vlc.addr) {
 			dev_err(&dev->pci->dev, "dma alloc fail\n");
 			ret = -ENOMEM;
@@ -966,7 +966,7 @@ int tw5864_video_init(struct tw5864_dev *dev, int *video_nr)
 		frame->mv.addr = dma_alloc_coherent(&dev->pci->dev,
 						    H264_MV_BUF_SIZE,
 						    &frame->mv.dma_addr,
-						    GFP_KERNEL | GFP_DMA32);
+						    GFP_KERNEL);
 		if (!frame->mv.addr) {
 			dev_err(&dev->pci->dev, "dma alloc fail\n");
 			ret = -ENOMEM;

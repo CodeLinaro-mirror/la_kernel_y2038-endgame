@@ -113,7 +113,7 @@ static int prestera_sdma_buf_init(struct prestera_sdma *sdma,
 	struct prestera_sdma_desc *desc;
 	dma_addr_t dma;
 
-	desc = dma_pool_alloc(sdma->desc_pool, GFP_DMA | GFP_KERNEL, &dma);
+	desc = dma_pool_alloc(sdma->desc_pool, GFP_KERNEL, &dma);
 	if (!desc)
 		return -ENOMEM;
 
