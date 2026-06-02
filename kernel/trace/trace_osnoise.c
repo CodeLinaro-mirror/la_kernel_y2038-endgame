@@ -83,7 +83,7 @@ struct osnoise_instance {
 
 static struct list_head osnoise_instances;
 
-static void osnoise_print(const char *fmt, ...)
+static __printf(1, 2) void osnoise_print(const char *fmt, ...)
 {
 	struct osnoise_instance *inst;
 	struct trace_array *tr;
