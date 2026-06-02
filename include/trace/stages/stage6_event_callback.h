@@ -28,7 +28,7 @@
 #define __string_len(item, src, len) __dynamic_array(char, item, -1)
 
 #undef __vstring
-#define __vstring(item, vf) __dynamic_array(char, item, -1)
+#define __vstring(item, fmt, ap) __dynamic_array(char, item, -1)
 
 #undef __assign_str
 #define __assign_str(dst)						\
@@ -41,8 +41,13 @@
 	} while (0)
 
 #undef __assign_vstr
-#define __assign_vstr(dst, vf)						\
-	snprintf(__get_str(dst), TRACE_EVENT_STR_MAX, "%pV", vf);
+#define __assign_vstr(dst, fmt, va)					\
+	do {								\
+		va_list __cp_va;					\
+		va_copy(__cp_va, *(va));				\
+		__vsnprintf(__get_str(dst), TRACE_EVENT_STR_MAX, fmt, __cp_va); \
+		va_end(__cp_va);					\
+	} while (0)
 
 #undef __bitmask
 #define __bitmask(item, nr_bits) __dynamic_array(unsigned long, item, -1)

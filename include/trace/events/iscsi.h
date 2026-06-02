@@ -26,12 +26,12 @@ DECLARE_EVENT_CLASS(iscsi_log_msg,
 
 	TP_STRUCT__entry(
 		__string(dname, 	dev_name(dev)		)
-		__vstring(msg,		vaf)
+		__vstring(msg,		vaf->fmt, vaf->va)
 	),
 
 	TP_fast_assign(
 		__assign_str(dname);
-		__assign_vstr(msg, vaf);
+		__assign_vstr(msg, vaf->fmt, vaf->va);
 	),
 
 	TP_printk("%s: %s",__get_str(dname),  __get_str(msg)

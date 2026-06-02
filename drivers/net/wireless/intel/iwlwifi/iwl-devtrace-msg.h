@@ -18,10 +18,10 @@ DECLARE_EVENT_CLASS(iwlwifi_msg_event,
 	TP_PROTO(struct va_format *vaf),
 	TP_ARGS(vaf),
 	TP_STRUCT__entry(
-		__vstring(msg, vaf)
+		__vstring(msg, vaf->fmt, vaf->va)
 	),
 	TP_fast_assign(
-		__assign_vstr(msg, vaf);
+		__assign_vstr(msg, vaf->fmt, vaf->va);
 	),
 	TP_printk("%s", __get_str(msg))
 );
@@ -53,12 +53,12 @@ TRACE_EVENT(iwlwifi_dbg,
 	TP_STRUCT__entry(
 		__field(u32, level)
 		__string(function, function)
-		__vstring(msg, vaf)
+		__vstring(msg, vaf->fmt, vaf->va)
 	),
 	TP_fast_assign(
 		__entry->level = level;
 		__assign_str(function);
-		__assign_vstr(msg, vaf);
+		__assign_vstr(msg, vaf->fmt, vaf->va);
 	),
 	TP_printk("%s", __get_str(msg))
 );

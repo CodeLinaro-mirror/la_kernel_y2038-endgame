@@ -971,11 +971,14 @@ perf_trace_buf_submit(void *raw_data, int size, int rctx, u16 type,
  * gcc warns that you can not use a va_list in an inlined
  * function. But lets me make it into a macro :-/
  */
-#define __trace_event_vstr_len(vf)			\
+#define __trace_event_vstr_len(fmt, va)			\
 ({							\
+	va_list __ap;					\
 	int __ret;					\
 							\
-	__ret = snprintf(NULL, 0, "%pV", vf) + 1;	\
+	va_copy(__ap, *(va));				\
+	__ret = __vsnprintf(NULL, 0, fmt, __ap) + 1;	\
+	va_end(__ap);					\
 							\
 	min(__ret, TRACE_EVENT_STR_MAX);		\
 })

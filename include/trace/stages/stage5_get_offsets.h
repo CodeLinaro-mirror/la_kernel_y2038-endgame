@@ -65,8 +65,8 @@ static inline const char *__string_src(const char *str)
 	__data_offsets->item##_ptr_ = src;
 
 #undef __vstring
-#define __vstring(item, vf) __dynamic_array(char, item,		\
-		      __trace_event_vstr_len(vf))
+#define __vstring(item, fmt, ap) __dynamic_array(char, item,		\
+		      __trace_event_vstr_len(fmt, ap))
 
 #undef __rel_dynamic_array
 #define __rel_dynamic_array(type, item, len)				\

@@ -36,13 +36,13 @@ TRACE_EVENT(batadv_dbg,
 	    TP_STRUCT__entry(
 		    __string(device, bat_priv->mesh_iface->name)
 		    __string(driver, KBUILD_MODNAME)
-		    __vstring(msg, vaf)
+		    __vstring(msg, vaf->fmt, vaf->va)
 	    ),
 
 	    TP_fast_assign(
 		    __assign_str(device);
 		    __assign_str(driver);
-		    __assign_vstr(msg, vaf);
+		    __assign_vstr(msg, vaf->fmt, vaf->va);
 	    ),
 
 	    TP_printk(
