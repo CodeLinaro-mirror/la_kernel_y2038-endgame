@@ -148,7 +148,7 @@
 
 __diag_push()
 __diag_ignore(GCC, 8, "-Woverride-init", "for PERF_MAP_ALL_UNSUPPORTED")
-__diag_ignore(clang, 9, "-Winitializer-overrides", "for PERF_MAP_ALL_UNSUPPORTED")
+__diag_ignore_all("-Woverride-init", "for PERF_MAP_ALL_UNSUPPORTED")
 
 /*
  * Cortex-A8 HW events mapping

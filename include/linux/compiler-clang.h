@@ -120,7 +120,13 @@
 
 #define __diag_str1(s)		#s
 #define __diag_str(s)		__diag_str1(s)
-#define __diag(s)		_Pragma(__diag_str(clang diagnostic s))
+#define __diag(s)		_Pragma(__diag_str(clang diagnostic s));
+
+#if CONFIG_CLANG_VERSION >= 150000
+#define __diag_clang_15(s)	__diag(s)
+#else
+#define __diag_clang_15(s)
+#endif
 
 #if CONFIG_CLANG_VERSION >= 160000
 #define __diag_clang_16(s)	__diag(s)

@@ -29,7 +29,7 @@
 #include "stream_encoder.h"
 
 __diag_ignore(GCC, 8, "-Woverride-init", "for PERF_MAP_ALL_UNSUPPORTED")
-__diag_ignore(clang, 9, "-Winitializer-overrides", "for PERF_MAP_ALL_UNSUPPORTED")
+__diag_ignore_all("-Woverride-init", "for PERF_MAP_ALL_UNSUPPORTED")
 
 #define DCE110STRENC_FROM_STRENC(stream_encoder)\
 	container_of(stream_encoder, struct dce110_stream_encoder, base)

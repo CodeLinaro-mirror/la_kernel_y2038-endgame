@@ -14,7 +14,7 @@
 #define __SYSCALL_WITH_COMPAT(nr, native, compat)  __SYSCALL(nr, native)
 
 __diag_ignore(GCC, 8, "-Woverride-init", "default to sys_ni_syscall")
-__diag_ignore(clang, 9, "-Winitializer-overrides", "default to sys_ni_syscall")
+__diag_ignore_all("-Woverride-init", "default to sys_ni_syscall")
 
 void *sys_call_table[NR_syscalls] = {
 	[0 ... NR_syscalls-1] = sys_ni_syscall,

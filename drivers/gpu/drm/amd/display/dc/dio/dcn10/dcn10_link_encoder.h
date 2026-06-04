@@ -178,7 +178,7 @@ struct dcn10_link_enc_registers {
 };
 
 __diag_ignore(GCC, 8, "-Woverride-init", "lots of intentional overrides")
-__diag_ignore(clang, 9, "-Winitializer-overrides", "lots of intentional overrides")
+__diag_ignore_all("-Woverride-init", "lots of intentional overrides")
 
 #define LE_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix

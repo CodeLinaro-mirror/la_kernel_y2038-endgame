@@ -57,7 +57,7 @@ enum xscale_counters {
 #define XSCALE2_NUM_COUNTERS	5
 
 __diag_ignore(GCC, 8, "-Woverride-init", "PERF_MAP_ALL_UNSUPPORTED override")
-__diag_ignore(clang, 9, "-Winitializer-overrides", "PERF_MAP_ALL_UNSUPPORTED override")
+__diag_ignore_all("-Woverride-init", "PERF_MAP_ALL_UNSUPPORTED override")
 
 
 static const unsigned xscale_perf_map[PERF_COUNT_HW_MAX] = {

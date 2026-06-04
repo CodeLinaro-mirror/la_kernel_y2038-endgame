@@ -12,7 +12,7 @@
 #define sys_sync_file_range sys_sync_file_range2
 
 __diag_ignore(GCC, 8, "-Woverride-init", "default to sys_ni_syscall")
-__diag_ignore(clang, 9, "-Winitializer-overrides", "default to sys_ni_syscall")
+__diag_ignore_all("-Woverride-init", "default to sys_ni_syscall")
 
 void * const sys_call_table[__NR_syscalls] __page_aligned_data = {
 	[0 ... __NR_syscalls - 1] = sys_ni_syscall,
