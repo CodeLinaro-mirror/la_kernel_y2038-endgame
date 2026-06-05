@@ -108,7 +108,7 @@ void scaler_settings_calculation(struct dcn_bw_internal_vars *v)
 }
 
 __diag_push()
-__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(clang, 15, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 __diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 void mode_support_and_system_configuration(struct dcn_bw_internal_vars *v)
 {

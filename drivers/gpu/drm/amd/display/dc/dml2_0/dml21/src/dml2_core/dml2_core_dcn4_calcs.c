@@ -8042,7 +8042,7 @@ static __no_sanitize_address __no_sanitize_thread __no_sanitize_memory noinline_
 }
 
 __diag_push()
-__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(clang, 15, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 __diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 
 static bool __no_sanitize_address __no_sanitize_thread __no_sanitize_memory dml_core_mode_support(struct dml2_core_calcs_mode_support_ex *in_out_params)

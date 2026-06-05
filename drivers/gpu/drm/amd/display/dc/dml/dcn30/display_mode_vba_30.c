@@ -1790,7 +1790,7 @@ static noinline unsigned int CalculateVMAndRowBytes(
 }
 
 __diag_push()
-__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(clang, 15, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 __diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static void __no_sanitize_address __no_sanitize_thread __no_sanitize_memory DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(
 		struct display_mode_lib *mode_lib)
@@ -3330,7 +3330,7 @@ static void CalculateFlipSchedule(
 }
 
 __diag_push()
-__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(clang, 15, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 __diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static noinline double TruncToValidBPP(
 		double LinkBitRate,

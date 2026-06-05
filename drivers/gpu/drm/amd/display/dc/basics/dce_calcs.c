@@ -73,7 +73,7 @@ static enum bw_calcs_version bw_calcs_version_from_asic_id(struct hw_asic_id asi
 }
 
 __diag_push()
-__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(clang, 15, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 __diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static void calculate_bandwidth(
 	const struct bw_calcs_dceip *dceip,

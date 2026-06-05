@@ -58,7 +58,7 @@ void __no_sanitize_address __no_sanitize_memory __no_sanitize_thread dml32_recal
 }
 
 __diag_push()
-__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(clang, 15, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 __diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static void __no_sanitize_address __no_sanitize_memory __no_sanitize_thread DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerformanceCalculation(
 		struct display_mode_lib *mode_lib)
@@ -1730,7 +1730,7 @@ static void mode_support_configuration(struct vba_vars_st *v,
 }
 
 __diag_push()
-__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(clang, 15, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 __diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 void __no_sanitize_address __no_sanitize_thread __no_sanitize_memory dml32_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
 {

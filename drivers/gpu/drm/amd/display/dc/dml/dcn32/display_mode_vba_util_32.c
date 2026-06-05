@@ -3049,7 +3049,7 @@ double dml32_CalculateWriteBackDelay(
 }
 
 __diag_push()
-__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(clang, 15, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 __diag_ignore(GCC, 8, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 void __no_sanitize_address dml32_UseMinimumDCFCLK(
 		enum dm_use_mall_for_pstate_change_mode UseMALLForPStateChange[],

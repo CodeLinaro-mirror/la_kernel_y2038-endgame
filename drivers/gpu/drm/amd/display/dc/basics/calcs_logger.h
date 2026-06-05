@@ -181,7 +181,7 @@ static void print_bw_calcs_vbios(struct dc_context *ctx, const struct bw_calcs_v
 }
 
 __diag_push()
-__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(clang, 15, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 __diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static void print_bw_calcs_data(struct dc_context *ctx, struct bw_calcs_data *data)
 {

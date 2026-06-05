@@ -3283,7 +3283,7 @@ static unsigned int TruncToValidBPP(
 }
 
 __diag_push()
-__diag_ignore(clang, 10, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(clang, 15, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 __diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 void __no_sanitize_address __no_sanitize_thread __no_sanitize_memory dml20_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib)
 {
