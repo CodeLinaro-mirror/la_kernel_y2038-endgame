@@ -146,7 +146,6 @@ KBUILD_CFLAGS += -Wformat-zero-length -Wnonnull
 KBUILD_CFLAGS += -Wformat-insufficient-args
 endif
 KBUILD_CFLAGS += -Wno-pointer-to-enum-cast
-KBUILD_CFLAGS += -Wno-tautological-constant-out-of-range-compare
 KBUILD_CFLAGS += -Wno-unaligned-access
 KBUILD_CFLAGS += -Wno-enum-compare-conditional
 endif
