@@ -19,7 +19,8 @@ config GENERIC_PCI_IOMAP
 	bool
 
 menuconfig PCI
-	bool "PCI support"
+	bool "PCI support" if BROKEN
+	default y
 	depends on HAVE_PCI
 	depends on MMU
 	help
