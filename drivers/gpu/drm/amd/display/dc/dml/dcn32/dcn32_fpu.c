@@ -2774,7 +2774,7 @@ static int override_max_clk_values(struct clk_limit_table_entry *max_clk_limit,
 
 __diag_push()
 __diag_ignore(GCC, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
-__diag_ignore(clang, 9, "-Wframe-larger-than=", "this exceeds 2048 bytes")
+__diag_ignore(clang, 15, "-Wframe-larger-than=", "this exceeds 2048 bytes")
 static int build_synthetic_soc_states(bool disable_dc_mode_overwrite, struct clk_bw_params *bw_params,
 		struct _vcs_dpi_voltage_scaling_st *table, unsigned int *num_entries)
 {
