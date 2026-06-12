@@ -10,7 +10,7 @@
 #include <linux/interrupt.h>
 #include <linux/smsc911x.h>
 #include <linux/input.h>
-#include <linux/gpio.h>
+#include <linux/gpio/legacy.h>
 #include <linux/gpio_keys.h>
 #include <linux/leds.h>
 #include <asm/machvec.h>
