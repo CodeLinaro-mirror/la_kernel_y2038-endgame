@@ -57,6 +57,7 @@ typedef __kernel_gid_t	__kernel_old_gid_t;
 
 #ifndef __kernel_old_dev_t
 typedef unsigned int	__kernel_old_dev_t;
+#define __uapi_arch_pad_old_dev_t
 #endif
 
 /*

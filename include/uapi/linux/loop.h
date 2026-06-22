@@ -34,8 +34,11 @@ enum {
 #include <linux/types.h>	/* for __u64 */
 
 /* Backwards compatibility version */
+#if defined(__powerpc64__) || defined(__x86_64__)
 struct loop_info {
 	int		   lo_number;		/* ioctl r/o */
+	/* 64-bit __kernel_old_dev_t needs 4 byte padding before */
+	__uapi_arch_pad_long;
 	__kernel_old_dev_t lo_device; 		/* ioctl r/o */
 	unsigned long	   lo_inode; 		/* ioctl r/o */
 	__kernel_old_dev_t lo_rdevice; 		/* ioctl r/o */
@@ -47,7 +50,29 @@ struct loop_info {
 	unsigned char	   lo_encrypt_key[LO_KEY_SIZE]; /* ioctl w/o */
 	unsigned long	   lo_init[2];
 	char		   reserved[4];
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
+#else
+struct loop_info {
+	int		   lo_number;		/* ioctl r/o */
+	/* 16-bit __kernel_old_dev_t needs 2 byte padding after */
+	__kernel_old_dev_t lo_device; 		/* ioctl r/o */
+	__uapi_arch_pad_old_dev_t;
+	unsigned long	   lo_inode; 		/* ioctl r/o */
+	__kernel_old_dev_t lo_rdevice; 		/* ioctl r/o */
+	__uapi_arch_pad_old_dev_t;
+	int		   lo_offset;
+	int		   lo_encrypt_type;		/* obsolete, ignored */
+	int		   lo_encrypt_key_size; 	/* ioctl w/o */
+	int		   lo_flags;
+	char		   lo_name[LO_NAME_SIZE];
+	unsigned char	   lo_encrypt_key[LO_KEY_SIZE]; /* ioctl w/o */
+	__uapi_arch_pad_long;
+	unsigned long	   lo_init[2];
+	char		   reserved[4];
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
+#endif
 
 struct loop_info64 {
 	__u64		   lo_device;			/* ioctl r/o */
