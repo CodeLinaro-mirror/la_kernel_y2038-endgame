@@ -49,8 +49,8 @@
 #define F_WRLCK		2
 #define F_UNLCK		3
 
-#define __ARCH_FLOCK_PAD	short __unused;
-#define __ARCH_FLOCK64_PAD	short __unused;
+#define __ARCH_FLOCK_PAD	short __unused; short :16;
+#define __ARCH_FLOCK64_PAD	short __unused; short :16;
 
 #include <asm-generic/fcntl.h>
 

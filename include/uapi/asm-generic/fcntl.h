@@ -203,30 +203,37 @@ struct f_owner_ex {
 #define F_LINUX_SPECIFIC_BASE	1024
 
 #ifndef HAVE_ARCH_STRUCT_FLOCK
+
+#ifndef __ARCH_FLOCK_PAD
+#define __ARCH_FLOCK_PAD __uapi_arch_pad_long;
+#endif
+
+#ifndef __ARCH_FLOCK64_PAD
+#define __ARCH_FLOCK64_PAD __uapi_arch_pad32;
+#endif
+
 struct flock {
 	short	l_type;
 	short	l_whence;
+	__uapi_arch_pad_long;
 	__kernel_off_t	l_start;
 	__kernel_off_t	l_len;
 	__kernel_pid_t	l_pid;
 #ifdef	__ARCH_FLOCK_EXTRA_SYSID
 	__ARCH_FLOCK_EXTRA_SYSID
 #endif
-#ifdef	__ARCH_FLOCK_PAD
 	__ARCH_FLOCK_PAD
-#endif
-};
+} __uapi_arch_align;
 
 struct flock64 {
 	short  l_type;
 	short  l_whence;
+	__uapi_arch_pad32;
 	__kernel_loff_t l_start;
 	__kernel_loff_t l_len;
 	__kernel_pid_t  l_pid;
-#ifdef	__ARCH_FLOCK64_PAD
 	__ARCH_FLOCK64_PAD
-#endif
-};
+} __uapi_arch_align;
 #endif /* HAVE_ARCH_STRUCT_FLOCK */
 
 #endif /* _ASM_GENERIC_FCNTL_H */
