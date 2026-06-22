@@ -6,7 +6,7 @@
 #
 # -std=c90 (equivalent to -ansi) catches the violation of those.
 # We cannot go as far as adding -Wpedantic since it emits too many warnings.
-UAPI_CFLAGS := -std=c90 -Werror=implicit-function-declaration
+UAPI_CFLAGS := -std=c90 -Werror=implicit-function-declaration -Werror=padded
 UAPI_ARCH := $(or $(HEADER_ARCH),$(SRCARCH))
 
 override c_flags = $(KBUILD_USERCFLAGS) $(UAPI_CFLAGS) -Wp,-MMD,$(depfile)
