@@ -19,30 +19,30 @@ cxx_flags = $(filter-out -Wmissing-prototypes -Wstrict-prototypes -std=%, $(KBUI
 #
 # Sorted alphabetically.
 no-header-test += asm/ucontext.h
-no-header-test += drm/vmwgfx_drm.h
-no-header-test += linux/am437x-vpfe.h
-no-header-test += linux/coda.h
+#no-header-test += drm/vmwgfx_drm.h
+#no-header-test += linux/am437x-vpfe.h
+#no-header-test += linux/coda.h
 no-header-test += linux/cyclades.h
-no-header-test += linux/errqueue.h
-no-header-test += linux/hdlc/ioctl.h
-no-header-test += linux/ivtv.h
-no-header-test += linux/matroxfb.h
-no-header-test += linux/omap3isp.h
-no-header-test += linux/omapfb.h
+#no-header-test += linux/errqueue.h
+#no-header-test += linux/hdlc/ioctl.h
+#no-header-test += linux/ivtv.h
+#no-header-test += linux/matroxfb.h
+#no-header-test += linux/omap3isp.h
+#no-header-test += linux/omapfb.h
 no-header-test += linux/patchkey.h
-no-header-test += linux/phonet.h
-no-header-test += linux/sctp.h
-no-header-test += linux/sysctl.h
-no-header-test += linux/usb/audio.h
-no-header-test += linux/v4l2-mediabus.h
-no-header-test += linux/v4l2-subdev.h
-no-header-test += linux/videodev2.h
+#no-header-test += linux/phonet.h
+#no-header-test += linux/sctp.h
+#no-header-test += linux/sysctl.h
+#no-header-test += linux/usb/audio.h
+#no-header-test += linux/v4l2-mediabus.h
+#no-header-test += linux/v4l2-subdev.h
+#no-header-test += linux/videodev2.h
 no-header-test += linux/vm_sockets.h
 no-header-test += sound/asequencer.h
 no-header-test += sound/asoc.h
 no-header-test += sound/asound.h
 no-header-test += sound/compress_offload.h
-no-header-test += sound/emu10k1.h
+#no-header-test += sound/emu10k1.h
 no-header-test += sound/sfnt_info.h
 no-header-test += xen/evtchn.h
 no-header-test += xen/gntdev.h
@@ -144,6 +144,22 @@ uses-libc += linux/virtio_ring.h
 uses-libc += linux/wireless.h
 uses-libc += regulator/regulator.h
 uses-libc += scsi/fc/fc_els.h
+
+uses-libc += linux/matroxfb.h
+uses-libc += linux/ivtv.h
+uses-libc += linux/v4l2-subdev.h
+uses-libc += linux/v4l2-mediabus.h
+uses-libc += linux/vm_sockets.h
+uses-libc += linux/errqueue.h
+uses-libc += sound/sfnt_info.h
+uses-libc += linux/videodev2.h
+uses-libc += linux/am437x-vpfe.h
+uses-libc += linux/omap3isp.h
+uses-libc += sound/asoc.h
+uses-libc += sound/asound.h
+uses-libc += sound/asequencer.h
+uses-libc += sound/compress_offload.h
+
 
 ifeq ($(UAPI_ARCH),hexagon)
 uses-libc += asm/sigcontext.h
