@@ -2,6 +2,8 @@
 #ifndef _ASMARM_STAT_H
 #define _ASMARM_STAT_H
 
+#include <linux/types.h>
+
 struct __old_kernel_stat {
 	unsigned short st_dev;
 	unsigned short st_ino;
@@ -10,11 +12,12 @@ struct __old_kernel_stat {
 	unsigned short st_uid;
 	unsigned short st_gid;
 	unsigned short st_rdev;
+	__uapi_arch_pad16;
 	unsigned long  st_size;
 	unsigned long  st_atime;
 	unsigned long  st_mtime;
 	unsigned long  st_ctime;
-};
+} __uapi_arch_align;
 
 #define STAT_HAVE_NSEC 
 
@@ -68,9 +71,11 @@ struct stat64 {
 
 	unsigned long long	st_rdev;
 	unsigned char   __pad3[4];
+	__uapi_arch_pad32;
 
 	long long	st_size;
 	unsigned long	st_blksize;
+	__uapi_arch_pad32;
 	unsigned long long st_blocks;	/* Number 512-byte blocks allocated. */
 
 	unsigned long	st_atime;
@@ -83,6 +88,6 @@ struct stat64 {
 	unsigned long	st_ctime_nsec;
 
 	unsigned long long	st_ino;
-};
+} __uapi_arch_align;
 
 #endif

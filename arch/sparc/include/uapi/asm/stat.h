@@ -8,12 +8,15 @@
 /* 64 bit sparc */
 struct stat {
 	unsigned int st_dev;
+	__uapi_arch_pad_long;
 	__kernel_ino_t st_ino;
 	__kernel_mode_t st_mode;
 	short   st_nlink;
+	__uapi_arch_pad16;
 	__kernel_uid32_t st_uid;
 	__kernel_gid32_t st_gid;
 	unsigned int st_rdev;
+	__uapi_arch_pad_long;
 	long    st_size;
 	long    st_atime;
 	long    st_mtime;
@@ -51,12 +54,14 @@ struct stat64 {
 /* 32 bit sparc */
 struct stat {
 	unsigned short	st_dev;
+	__uapi_arch_pad16;
 	__kernel_ino_t	st_ino;
 	__kernel_mode_t	st_mode;
 	short		st_nlink;
 	unsigned short	st_uid;
 	unsigned short	st_gid;
 	unsigned short	st_rdev;
+	__uapi_arch_pad16;
 	long		st_size;
 	long		st_atime;
 	unsigned long	st_atime_nsec;

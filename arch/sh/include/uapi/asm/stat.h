@@ -10,6 +10,7 @@ struct __old_kernel_stat {
 	unsigned short st_uid;
 	unsigned short st_gid;
 	unsigned short st_rdev;
+	unsigned short :16;
 	unsigned long  st_size;
 	unsigned long  st_atime;
 	unsigned long  st_mtime;

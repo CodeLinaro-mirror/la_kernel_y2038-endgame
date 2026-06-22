@@ -20,6 +20,7 @@ struct __old_kernel_stat {
 	unsigned short st_uid;
 	unsigned short st_gid;
 	unsigned short st_rdev;
+	__uapi_arch_pad16;
 	unsigned long  st_size;
 	unsigned long  st_atime;
 	unsigned long  st_mtime;
@@ -36,9 +37,11 @@ struct stat {
 #else
 	__kernel_mode_t	st_mode;
 	unsigned short	st_nlink;
+	__uapi_arch_pad16;
 #endif
 	__kernel_uid32_t st_uid;
 	__kernel_gid32_t st_gid;
+	__uapi_arch_pad_long;
 	unsigned long	st_rdev;
 	long		st_size;
 	unsigned long	st_blksize;
@@ -66,8 +69,11 @@ struct stat64 {
 	unsigned int	st_gid;		/* Group ID of the file's group. */
 	unsigned long long st_rdev;	/* Device number, if device.  */
 	unsigned short	__pad2;
+	__uapi_arch_pad16;
+	__uapi_arch_pad32;
 	long long	st_size;	/* Size of file, in bytes.  */
 	int		st_blksize;	/* Optimal block size for I/O.  */
+	__uapi_arch_pad32;
 	long long	st_blocks;	/* Number 512-byte blocks allocated. */
 	int		st_atime;	/* Time of last access.  */
 	unsigned int	st_atime_nsec;

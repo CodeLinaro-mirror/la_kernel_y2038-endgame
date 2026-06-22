@@ -2,6 +2,8 @@
 #ifndef _ALPHA_STAT_H
 #define _ALPHA_STAT_H
 
+#include <linux/types.h>
+
 struct stat {
 	unsigned int	st_dev;
 	unsigned int	st_ino;
@@ -10,6 +12,7 @@ struct stat {
 	unsigned int	st_uid;
 	unsigned int	st_gid;
 	unsigned int	st_rdev;
+	__uapi_arch_pad32;
 	long		st_size;
 	unsigned long	st_atime;
 	unsigned long	st_mtime;
