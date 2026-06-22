@@ -2,6 +2,7 @@
 #ifndef _PARISC_SHMBUF_H
 #define _PARISC_SHMBUF_H
 
+#include <linux/types.h>
 #include <asm/bitsperlong.h>
 #include <asm/ipcbuf.h>
 #include <asm/posix_types.h>
@@ -36,6 +37,7 @@ struct shmid64_ds {
 	unsigned long		shm_nattch;	/* no. of current attaches */
 	unsigned long		__unused1;
 	unsigned long		__unused2;
+	__uapi_arch_pad_long_to_u64;
 };
 
 struct shminfo64 {
@@ -49,5 +51,8 @@ struct shminfo64 {
 	unsigned long	__unused3;
 	unsigned long	__unused4;
 };
+
+/* shmid_ds has no padding before shm_unused2 */
+#define __uapi_arch_pad_shm_long
 
 #endif /* _PARISC_SHMBUF_H */

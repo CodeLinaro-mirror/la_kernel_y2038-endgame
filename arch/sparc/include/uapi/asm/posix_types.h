@@ -47,6 +47,7 @@ typedef unsigned short         __kernel_gid_t;
 
 typedef unsigned short         __kernel_mode_t;
 #define __kernel_mode_t __kernel_mode_t
+#define __uapi_arch_pad_mode_t
 
 typedef long                   __kernel_daddr_t;
 #define __kernel_daddr_t __kernel_daddr_t

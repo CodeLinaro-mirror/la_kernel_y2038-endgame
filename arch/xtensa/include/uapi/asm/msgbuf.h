@@ -47,4 +47,7 @@ struct msqid64_ds {
 	unsigned long  __unused5;
 };
 
+#define __uapi_arch_pad_msqid_pid
+#define __uapi_arch_pad_msqid __uapi_arch_pad16
+
 #endif	/* _XTENSA_MSGBUF_H */

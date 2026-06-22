@@ -14,9 +14,11 @@ struct ipc_perm
 	__kernel_gid_t	gid;
 	__kernel_uid_t	cuid;
 	__kernel_gid_t	cgid;
-	__kernel_mode_t	mode; 
+	__kernel_mode_t	mode;
 	unsigned short	seq;
-};
+	/* hole at end of structure for 32-bit mode_t */
+	__uapi_arch_pad_mode_t;
+} __uapi_arch_align;
 
 /* Include the definition of ipc64_perm */
 #include <asm/ipcbuf.h>

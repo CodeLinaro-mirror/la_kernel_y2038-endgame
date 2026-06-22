@@ -2,6 +2,7 @@
 #ifndef _ASM_POWERPC_SEMBUF_H
 #define _ASM_POWERPC_SEMBUF_H
 
+#include <linux/types.h>
 #include <asm/ipcbuf.h>
 
 /*
@@ -34,6 +35,7 @@ struct semid64_ds {
 	unsigned long	sem_nsems;	/* no. of semaphores in array */
 	unsigned long	__unused3;
 	unsigned long	__unused4;
+	__uapi_arch_pad_long_to_u64;
 };
 
 #endif	/* _ASM_POWERPC_SEMBUF_H */

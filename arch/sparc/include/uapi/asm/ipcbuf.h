@@ -3,6 +3,7 @@
 #define __SPARC_IPCBUF_H
 
 #include <linux/posix_types.h>
+#include <linux/types.h>
 
 /*
  * The ipc64_perm structure for sparc/sparc64 architecture.
@@ -28,6 +29,7 @@ struct ipc64_perm
 	__kernel_mode_t		mode;
 	unsigned short		__pad1;
 	unsigned short		seq;
+	__uapi_arch_pad32;
 	unsigned long long	__unused1;
 	unsigned long long	__unused2;
 };

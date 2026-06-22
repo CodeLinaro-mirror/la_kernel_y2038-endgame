@@ -14,9 +14,21 @@
 #define MSG_EXCEPT      020000  /* recv any msg except of specified type.*/
 #define MSG_COPY        040000  /* copy (not remove) all queue messages */
 
+/* Include the definition of msqid64_ds */
+#include <asm/msgbuf.h>
+
+#ifndef __uapi_arch_pad_msqid_pid
+#define __uapi_arch_pad_msqid_pid __uapi_arch_pad16
+#endif
+
+#ifndef __uapi_arch_pad_msqid
+#define __uapi_arch_pad_msqid
+#endif
+
 /* Obsolete, used only for backwards compatibility and libc5 compiles */
 struct msqid_ds {
 	struct ipc_perm msg_perm;
+	__uapi_arch_pad_long;
 	struct msg *msg_first;		/* first message on queue,unused  */
 	struct msg *msg_last;		/* last message in queue,unused */
 	__kernel_old_time_t msg_stime;	/* last msgsnd time */
@@ -27,18 +39,22 @@ struct msqid_ds {
 	unsigned short msg_cbytes;	/* current number of bytes on queue */
 	unsigned short msg_qnum;	/* number of messages in queue */
 	unsigned short msg_qbytes;	/* max number of bytes on queue */
+	__uapi_arch_pad_msqid_pid;
 	__kernel_ipc_pid_t msg_lspid;	/* pid of last msgsnd */
 	__kernel_ipc_pid_t msg_lrpid;	/* last receive pid */
-};
-
-/* Include the definition of msqid64_ds */
-#include <asm/msgbuf.h>
+	__uapi_arch_pad_msqid;
+} __uapi_arch_align;
 
 /* message buffer for msgsnd and msgrcv calls */
 struct msgbuf {
 	__kernel_long_t mtype;          /* type of message */
 	char mtext[1];                  /* message text */
-};
+
+	/* padding overlaps with mtext[] */
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	__uapi_arch_pad_kernel_long_t;
+} __uapi_arch_align;
 
 /* buffer for msgctl calls IPC_INFO, MSG_INFO */
 struct msginfo {
@@ -50,7 +66,8 @@ struct msginfo {
 	int msgssz; 
 	int msgtql; 
 	unsigned short  msgseg; 
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /*
  * MSGMNI, MSGMAX and MSGMNB are default values which can be
