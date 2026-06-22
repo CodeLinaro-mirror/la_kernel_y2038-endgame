@@ -10,6 +10,8 @@
 #ifndef _NOLIBC_TYPES_H
 #define _NOLIBC_TYPES_H
 
+#include <linux/types.h>
+
 #include "std.h"
 #include <linux/mman.h>
 #include <linux/stat.h>
@@ -131,7 +133,10 @@ struct linux_dirent64 {
 	int64_t        d_off;
 	unsigned short d_reclen;
 	unsigned char  d_type;
-	char           d_name[];
+	union {
+		char __pad[5];
+		__DECLARE_FLEX_ARRAY(char, d_name);
+	};
 };
 
 /* The format of the struct as returned by the libc to the application, which
@@ -139,8 +144,8 @@ struct linux_dirent64 {
  */
 struct stat {
 	dev_t     st_dev;     /* ID of device containing file */
-	ino_t     st_ino;     /* inode number */
 	mode_t    st_mode;    /* protection */
+	ino_t     st_ino;     /* inode number */
 	nlink_t   st_nlink;   /* number of hard links */
 	uid_t     st_uid;     /* user ID of owner */
 	gid_t     st_gid;     /* group ID of owner */

@@ -19,6 +19,7 @@
 
 struct nolibc_heap {
 	size_t	len;
+	char __pad[__alignof__(struct {} __attribute__((__aligned__))) - __alignof__(size_t)];
 	char	user_p[] __attribute__((__aligned__));
 };
 
