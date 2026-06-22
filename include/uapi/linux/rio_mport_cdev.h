@@ -221,7 +221,9 @@ struct rio_rdev_info {
 	__u8 pad0;
 	__u32 comptag;
 	char name[RIO_MAX_DEVNAME_SZ + 1];
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* Driver IOCTL codes */
 #define RIO_MPORT_DRV_MAGIC           'm'

@@ -744,8 +744,9 @@ struct fc_els_rpl_resp {
 	__u8		rpl_llen[3];	/* list length */
 	__u8		rpl_resv3;	/* reserved - must be zero */
 	__u8		rpl_index[3];	/* starting index */
+	__uapi_arch_pad32;
 	struct fc_els_pnb rpl_pnb[1];	/* variable number of PNBs */
-};
+} __uapi_arch_align;
 
 /*
  * Link Error Status Block.
@@ -766,8 +767,9 @@ struct fc_els_rps {
 	__u8		rps_cmd;	/* command */
 	__u8		rps_resv[2];	/* reserved - must be zero */
 	__u8		rps_flag;	/* flag - see below */
+	__uapi_arch_pad32;
 	__be64		rps_port_spec;	/* port selection */
-};
+} __uapi_arch_align;
 
 enum fc_els_rps_flag {
 	FC_ELS_RPS_DID =	0x00,	/* port identified by D_ID of req. */
@@ -874,6 +876,7 @@ struct fc_els_clir {
 	__u8		clir_port_type;	/* incident port type */
 	__u8		clir_port_id[3];	/* incident port ID */
 
+	__uapi_arch_pad32;
 	__be64		clir_conn_wwpn;	/* connected port name */
 	__be64		clir_conn_wwnn;	/* connected node name */
 	__be64		clir_fab_name;	/* fabric name */
@@ -881,8 +884,9 @@ struct fc_els_clir {
 	__be32		clir_trans_id;	/* transaction ID */
 	__u8		clir_resv[3];	/* reserved */
 	__u8		clir_ts_fmt;	/* time stamp format */
+	__uapi_arch_pad32;
 	__be64		clir_timestamp;	/* time stamp */
-};
+} __uapi_arch_align;
 
 /*
  * CLIR clir_ts_fmt - time stamp format values.
@@ -1052,7 +1056,8 @@ struct fc_fn_deli_desc {
 					 * detecting Port Name
 					 */
 	__be32		deli_reason_code;/* see enum fc_fpin_deli_event_types */
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /*
  * Peer Congestion Notification Descriptor
@@ -1075,10 +1080,11 @@ struct fc_fn_peer_congn_desc {
 					 * congestion event
 					 */
 	__be32		pname_count;	/* number of portname_list elements */
+	__uapi_arch_pad32;
 	__be64		pname_list[];	/* list of N_Port_Names accessible
 					 * through the attached port
 					 */
-};
+} __uapi_arch_align;
 
 /*
  * Congestion Notification Descriptor

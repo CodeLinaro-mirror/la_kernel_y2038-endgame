@@ -253,8 +253,9 @@ struct rds_info_rdma_connection {
 	__u32		rdma_mr_size;
 	__u8		tos;
 	__u8		sl;
+	__uapi_arch_pad16;
 	__u32		cache_allocs;
-};
+} __uapi_arch_align;
 
 struct rds6_info_rdma_connection {
 	struct in6_addr	src_addr;
@@ -269,8 +270,9 @@ struct rds6_info_rdma_connection {
 	__u32		rdma_mr_size;
 	__u8		tos;
 	__u8		sl;
+	__uapi_arch_pad16;
 	__u32		cache_allocs;
-};
+} __uapi_arch_align;
 
 /* RDS message Receive Path Latency points */
 enum rds_message_rxpath_latency {
@@ -288,8 +290,9 @@ struct rds_rx_trace_so {
 struct rds_cmsg_rx_trace {
 	__u8 rx_traces;
 	__u8 rx_trace_pos[RDS_MSG_RX_DGRAM_TRACE_MAX];
+	__uapi_arch_pad32;
 	__u64 rx_trace[RDS_MSG_RX_DGRAM_TRACE_MAX];
-};
+} __uapi_arch_align;
 
 /*
  * Congestion monitoring.
@@ -393,7 +396,8 @@ struct rds_atomic_args {
 struct rds_rdma_notify {
 	__u64		user_token;
 	__s32		status;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 #define RDS_RDMA_SUCCESS	0
 #define RDS_RDMA_REMOTE_ERROR	1

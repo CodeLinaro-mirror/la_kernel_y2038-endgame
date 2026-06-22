@@ -334,7 +334,7 @@ struct TT_DMA {
 	u_char	dma_cnt_lmd;
 	u_char	char_dummy7;
 	u_char	dma_cnt_lo;
-	u_long	dma_restdata;
+	u_long	dma_restdata __packed;
 	u_short	dma_ctrl;
 };
 #define	tt_scsi_dma	((*(volatile struct TT_DMA *)TT_SCSI_DMA_BAS))
@@ -417,13 +417,13 @@ struct BLITTER
   u_short halftone[16];
   u_short src_x_inc;
   u_short src_y_inc;
-  u_long src_address;
+  u_long src_address __packed;
   u_short endmask1;
   u_short endmask2;
   u_short endmask3;
   u_short dst_x_inc;
   u_short dst_y_inc;
-  u_long dst_address;
+  u_long dst_address __packed;
   u_short wd_per_line;
   u_short ln_per_bb;
   u_short hlf_op_reg;

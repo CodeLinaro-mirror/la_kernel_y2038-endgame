@@ -351,7 +351,8 @@ struct drm_mode_get_plane {
 struct drm_mode_get_plane_res {
 	__u64 plane_id_ptr;
 	__u32 count_planes;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 #define DRM_MODE_ENCODER_NONE	0
 #define DRM_MODE_ENCODER_DAC	1
@@ -629,14 +630,16 @@ struct drm_mode_obj_get_properties {
 	__u32 count_props;
 	__u32 obj_id;
 	__u32 obj_type;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct drm_mode_obj_set_property {
 	__u64 value;
 	__u32 prop_id;
 	__u32 obj_id;
 	__u32 obj_type;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct drm_mode_get_blob {
 	__u32 blob_id;
@@ -724,8 +727,9 @@ struct drm_mode_fb_cmd2 {
 	 * constants in ``drm_fourcc.h``. All planes must use the same
 	 * modifier. Ignored unless &DRM_MODE_FB_MODIFIERS is set in @flags.
 	 */
+	__uapi_arch_pad32;
 	__u64 modifier[4];
-};
+} __uapi_arch_align;
 
 #define DRM_MODE_FB_DIRTY_ANNOTATE_COPY 0x01
 #define DRM_MODE_FB_DIRTY_ANNOTATE_FILL 0x02
@@ -1079,7 +1083,8 @@ struct hdr_output_metadata {
 	union {
 		struct hdr_metadata_infoframe hdmi_metadata_type1;
 	};
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /**
  * DRM_MODE_PAGE_FLIP_EVENT

@@ -51,8 +51,9 @@ struct pppoe_addr {
  */
 struct pptp_addr {
 	__u16		call_id;
+	__uapi_arch_pad16;
 	struct in_addr	sin_addr;
-};
+} __uapi_arch_align;
 
 /************************************************************************
  * Protocols supported by AF_PPPOX

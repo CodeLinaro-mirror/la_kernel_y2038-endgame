@@ -40,7 +40,8 @@ struct user_fp_state {
 	__u64 fpr[32];
 	__u64 fcc;
 	__u32 fcsr;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct user_lsx_state {
 	/* 32 registers, 128 bits width per register. */

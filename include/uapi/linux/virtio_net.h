@@ -357,9 +357,23 @@ struct virtio_net_rss_config {
 	__le16 unclassified_queue;
 	__le16 indirection_table[1/* + indirection_table_mask */];
 	__le16 max_tx_vq;
-	__u8 hash_key_length;
-	__u8 hash_key_data[/* hash_key_length */];
-};
+	union {
+		/*
+		 * structure size is a aligned for 32-bit member,
+		 * either 16 or 32 bit depending on architecture,
+		 * but flexarray hash_key_data starts before end.
+		 */
+#ifdef __m68k__
+		__u16 :16;
+#else
+		__u32 :32;
+#endif
+		struct {
+			__u8 hash_key_length;
+			__u8 hash_key_data[/* hash_key_length */];
+		};
+	} __uapi_arch_align;
+} __uapi_arch_align;
 
 struct virtio_net_rss_config_hdr {
 	__le32 hash_types;
@@ -371,7 +385,10 @@ struct virtio_net_rss_config_hdr {
 struct virtio_net_rss_config_trailer {
 	__le16 max_tx_vq;
 	__u8 hash_key_length;
-	__u8 hash_key_data[/* hash_key_length */];
+	union {
+		__uapi_arch_pad8;
+		__DECLARE_FLEX_ARRAY(__u8, hash_key_data); /* hash_key_length */
+	};
 };
 
  #define VIRTIO_NET_CTRL_MQ_RSS_CONFIG          1
@@ -388,9 +405,18 @@ struct virtio_net_hash_config {
 	__le32 hash_types;
 	/* for compatibility with virtio_net_rss_config */
 	__le16 reserved[4];
-	__u8 hash_key_length;
-	__u8 hash_key_data[/* hash_key_length */];
-};
+	union {
+#ifdef __m68k__
+		__u16 :16;
+#else
+		__u32 :32;
+#endif
+		struct {
+			__u8 hash_key_length;
+			__u8 hash_key_data[/* hash_key_length */];
+		};
+	};
+} __uapi_arch_align;
 
  #define VIRTIO_NET_CTRL_MQ_HASH_CONFIG         2
 

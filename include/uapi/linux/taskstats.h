@@ -46,6 +46,7 @@ struct taskstats {
 	 * Each time the struct is changed, the value should be incremented.
 	 */
 	__u16	version;
+	__uapi_arch_pad16;
 	__u32	ac_exitcode;		/* Exit status */
 
 	/* The accounting flags of a task as defined in <linux/acct.h>
@@ -54,6 +55,11 @@ struct taskstats {
 	 */
 	__u8	ac_flag;		/* Record flags */
 	__u8	ac_nice;		/* task_nice */
+	__uapi_arch_pad16;
+#ifndef __m68k__
+	/* m68k has no padding here because __uapi_arch_pad16 is empty too */
+	__u32 :32;
+#endif
 
 	/* Delay accounting fields start
 	 *
@@ -109,6 +115,7 @@ struct taskstats {
 	__u8	ac_sched __attribute__((aligned(8)));
 					/* Scheduling discipline */
 	__u8	ac_pad[3];
+	__u32 :32;
 	__u32	ac_uid __attribute__((aligned(8)));
 					/* User ID */
 	__u32	ac_gid;			/* Group ID */
@@ -116,6 +123,7 @@ struct taskstats {
 	__u32	ac_ppid;		/* Parent process ID */
 	/* __u32 range means times from 1970 to 2106 */
 	__u32	ac_btime;		/* Begin time [sec since 1970] */
+	__u32 :32;
 	__u64	ac_etime __attribute__((aligned(8)));
 					/* Elapsed time [usec] */
 	__u64	ac_utime;		/* User CPU time [usec] */
@@ -182,6 +190,7 @@ struct taskstats {
 
 	/* v12 begin */
 	__u32   ac_tgid;	/* thread group ID */
+	__u32	:32;
 	/* Thread group walltime up to now. This is total process walltime if
 	 * AGROUP flag is set.
 	 */

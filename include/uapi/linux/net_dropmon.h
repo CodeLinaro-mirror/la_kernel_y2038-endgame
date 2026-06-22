@@ -17,11 +17,13 @@ struct net_dm_drop_point {
 
 struct net_dm_config_entry {
 	__u32 type;
+	__u32 :32;
 	__u64 data __attribute__((aligned(8)));
 };
 
 struct net_dm_config_msg {
 	__u32 entries;
+	__u32 :32;
 	struct net_dm_config_entry options[];
 };
 

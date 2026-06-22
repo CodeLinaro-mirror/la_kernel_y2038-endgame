@@ -2,6 +2,8 @@
 #ifndef _UAPI_M68K_PTRACE_H
 #define _UAPI_M68K_PTRACE_H
 
+#include <linux/types.h>
+
 #define PT_D1	   0
 #define PT_D2	   1
 #define PT_D3	   2
@@ -50,7 +52,7 @@ struct pt_regs {
   unsigned format :  4; /* frame format specifier */
   unsigned vector : 12; /* vector offset */
 #endif
-};
+} __uapi_arch_align;
 
 /*
  * This is the extended stack used by signal handlers and the context

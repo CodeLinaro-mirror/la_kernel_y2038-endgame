@@ -1595,9 +1595,10 @@ struct vfio_iommu_type1_info_cap_iova_range {
 struct vfio_iommu_type1_info_cap_migration {
 	struct	vfio_info_cap_header header;
 	__u32	flags;
+	__uapi_arch_pad32;
 	__u64	pgsize_bitmap;
 	__u64	max_dirty_bitmap_size;		/* in bytes */
-};
+} __uapi_arch_align;
 
 /*
  * The DMA available capability allows to report the current number of
@@ -1647,7 +1648,8 @@ struct vfio_bitmap {
 	__u64        pgsize;	/* page size for bitmap in bytes */
 	__u64        size;	/* in bytes */
 	__u64 __user *data;	/* one bit per page */
-};
+	__uapi_arch_pad_long_to_u64;
+} __uapi_arch_align;
 
 /**
  * VFIO_IOMMU_UNMAP_DMA - _IOWR(VFIO_TYPE, VFIO_BASE + 14,
@@ -1812,10 +1814,11 @@ struct vfio_eeh_pe_op {
 	__u32 argsz;
 	__u32 flags;
 	__u32 op;
+	__uapi_arch_pad32;
 	union {
 		struct vfio_eeh_pe_err err;
 	};
-};
+} __uapi_arch_align;
 
 #define VFIO_EEH_PE_DISABLE		0	/* Disable EEH functionality */
 #define VFIO_EEH_PE_ENABLE		1	/* Enable EEH functionality  */

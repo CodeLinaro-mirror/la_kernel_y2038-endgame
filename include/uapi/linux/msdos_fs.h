@@ -92,7 +92,9 @@ struct __fat_dirent {
 	__kernel_off_t	d_off;
 	unsigned short	d_reclen;
 	char		d_name[256]; /* We must not include limits.h! */
-};
+	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 /*
  * ioctl commands
@@ -156,9 +158,10 @@ struct fat_boot_sector {
 			__u8	vol_label[MSDOS_NAME];	/* volume label */
 			__u8	fs_type[8];		/* file system type */
 			/* other fields are not added here */
-		} fat32;
-	};
-};
+			__uapi_arch_pad16;
+		} __uapi_arch_align fat32;
+	} __uapi_arch_align;
+} __uapi_arch_align;
 
 struct fat_boot_fsinfo {
 	__le32   signature1;	/* 0x41615252L */

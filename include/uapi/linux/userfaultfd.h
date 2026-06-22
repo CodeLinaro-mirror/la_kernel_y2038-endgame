@@ -119,7 +119,8 @@ struct uffd_msg {
 			union {
 				__u32 ptid;
 			} feat;
-		} pagefault;
+			__uapi_arch_pad32;
+		} __uapi_arch_align pagefault;
 
 		struct {
 			__u32	ufd;

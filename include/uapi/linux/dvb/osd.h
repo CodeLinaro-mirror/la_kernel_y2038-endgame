@@ -13,6 +13,7 @@
 #define _DVBOSD_H_
 
 #include <linux/compiler.h>
+#include <linux/types.h>
 
 typedef enum {
 	/* All functions return -2 on "not open" */
@@ -155,9 +156,10 @@ typedef enum {
 
 typedef struct osd_cap_s {
 	int  cmd;
+	__uapi_arch_pad_long;
 #define OSD_CAP_MEMSIZE         1  /* memory size */
 	long val;
-} osd_cap_t;
+} __uapi_arch_align osd_cap_t;
 
 
 #define OSD_SEND_CMD            _IOW('o', 160, osd_cmd_t)

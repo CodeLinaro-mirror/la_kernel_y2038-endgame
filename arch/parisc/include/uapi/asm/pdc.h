@@ -550,6 +550,7 @@ struct pdc_iodc {     /* PDC_IODC */
 	unsigned int	sversion_rev:4;
 	unsigned int	sversion_model:19;
 	unsigned int	sversion_opt:8;
+	unsigned int	:1;
 	unsigned char	rev;
 	unsigned char	dep;
 	unsigned char	features;
@@ -557,6 +558,7 @@ struct pdc_iodc {     /* PDC_IODC */
 	unsigned int	checksum:16;
 	unsigned int	length:16;
 	unsigned int    pad[15];
+	unsigned int	:32;
 } __attribute__((aligned(8))) ;
 
 /* no BLTBs in pa2.0 processors */

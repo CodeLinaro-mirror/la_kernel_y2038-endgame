@@ -45,8 +45,11 @@ struct dlm_lock_params {
 	void __user *bastaddr;
 	struct dlm_lksb __user *lksb;
 	char lvb[DLM_USER_LVB_LEN];
-	char name[];
-};
+	union {
+		__uapi_arch_pad_long_to_u64;
+		__DECLARE_FLEX_ARRAY(char, name);
+	};
+} __uapi_arch_align;
 
 struct dlm_lspace_params {
 	__u32 flags;
@@ -90,7 +93,7 @@ struct dlm_lock_result {
 	__u8 unused[3];
 	/* Offsets may be zero if no data is present */
 	__u32 lvb_offset;
-};
+} __uapi_arch_align;
 
 /* Commands passed to the device */
 #define DLM_USER_LOCK         1

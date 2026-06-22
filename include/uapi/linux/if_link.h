@@ -273,7 +273,8 @@ struct rtnl_link_ifmap {
 	__u16	irq;
 	__u8	dma;
 	__u8	port;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /*
  * IFLA_AF_SPEC
@@ -1701,7 +1702,8 @@ struct ifla_vf_vlan_info {
 	__u32 vlan; /* 0 - 4095, 0 disables VLAN filter */
 	__u32 qos;
 	__be16 vlan_proto; /* VLAN protocol either 802.1Q or 802.1ad */
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct ifla_vf_tx_rate {
 	__u32 vf;
@@ -1721,8 +1723,9 @@ struct ifla_vf_spoofchk {
 
 struct ifla_vf_guid {
 	__u32 vf;
+	__uapi_arch_pad32;
 	__u64 guid;
-};
+} __uapi_arch_align;
 
 enum {
 	IFLA_VF_LINK_STATE_AUTO,	/* link state of the uplink */

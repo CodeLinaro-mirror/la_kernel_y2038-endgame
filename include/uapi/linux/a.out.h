@@ -6,6 +6,7 @@
 
 #ifndef __STRUCT_EXEC_OVERRIDE__
 
+#include <linux/types.h>
 #include <asm/a.out.h>
 
 #endif /* __STRUCT_EXEC_OVERRIDE__ */
@@ -152,8 +153,9 @@ struct nlist {
   unsigned char n_type;
   char n_other;
   short n_desc;
+  __uapi_arch_pad_long;
   unsigned long n_value;
-};
+} __uapi_arch_align;
 #endif /* no N_NLIST_DECLARED.  */
 
 #if !defined (N_UNDF)

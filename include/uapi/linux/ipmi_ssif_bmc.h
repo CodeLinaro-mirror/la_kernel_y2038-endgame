@@ -13,6 +13,7 @@
 struct ipmi_ssif_msg {
 	unsigned int len;
 	__u8    payload[IPMI_SSIF_PAYLOAD_MAX];
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #endif /* _UAPI_LINUX_IPMI_SSIF_BMC_H */

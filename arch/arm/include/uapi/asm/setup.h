@@ -135,7 +135,8 @@ struct tag_acorn {
 	__u32 vram_pages;
 	__u8 sounddefault;
 	__u8 adfsdrives;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* footbridge memory clock, see arch/arm/mach-footbridge/arch.c */
 #define ATAG_MEMCLK	0x41000402

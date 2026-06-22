@@ -32,6 +32,7 @@ struct efs_super {
 	__be16		fs_heads;       /* heads per cylinder */
 	__be16		fs_ncg;         /* # of cylinder groups in filesystem */
 	__be16		fs_dirty;       /* fs needs to be fsck'd */
+	__uapi_arch_pad16;
 	__be32		fs_time;        /* last super-block update */
 	__be32		fs_magic;       /* magic number */
 	char		fs_fname[6];    /* file system name */
@@ -44,7 +45,7 @@ struct efs_super {
 	__be32		fs_lastialloc;  /* last allocated inode */
 	char		fs_spare[20];   /* space for expansion - MUST BE ZERO */
 	__be32		fs_checksum;    /* checksum of volume portion of fs */
-};
+} __uapi_arch_align;
 
 /* efs superblock information in memory */
 struct efs_sb_info {

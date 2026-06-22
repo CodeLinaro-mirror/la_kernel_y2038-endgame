@@ -318,6 +318,7 @@ static inline int TLV_SET(void *tlv, __u16 type, void *data, __u16 len)
 struct tlv_list_desc {
 	struct tlv_desc *tlv_ptr;	/* ptr to current TLV */
 	__u32 tlv_space;		/* # bytes from curr TLV to list end */
+	__uapi_arch_pad_long;
 };
 
 static inline void TLV_LIST_INIT(struct tlv_list_desc *list,

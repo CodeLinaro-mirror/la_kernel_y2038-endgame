@@ -49,6 +49,9 @@ struct snp_derived_key_resp {
 struct snp_guest_request_ioctl {
 	/* message version number (must be non-zero) */
 	__u8 msg_version;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	__uapi_arch_pad32;
 
 	/* Request and response structure address */
 	__u64 req_data;
@@ -62,7 +65,7 @@ struct snp_guest_request_ioctl {
 			__u32 vmm_error;
 		};
 	};
-};
+} __uapi_arch_align;
 
 struct snp_ext_report_req {
 	struct snp_report_req data;
@@ -72,7 +75,8 @@ struct snp_ext_report_req {
 
 	/* length of the certificate blob */
 	__u32 certs_len;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 #define SNP_GUEST_REQ_IOC_TYPE	'S'
 

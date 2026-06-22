@@ -34,8 +34,10 @@
  */
 #if defined(__ia64__) || defined(__alpha__) /* pure 64bit architectures */
 typedef unsigned long autofs_wqt_t;
+#define __uapi_arch_pad_autofs_wqt __uapi_arch_pad_long
 #else
 typedef unsigned int autofs_wqt_t;
+#define __uapi_arch_pad_autofs_wqt
 #endif
 
 /* Packet types */
@@ -52,6 +54,7 @@ struct autofs_packet_missing {
 	autofs_wqt_t wait_queue_token;
 	int len;
 	char name[NAME_MAX+1];
+	__uapi_arch_pad_autofs_wqt;
 };	
 
 /* v3 expire (via ioctl) */
@@ -178,6 +181,7 @@ struct autofs_packet_expire_multi {
 	autofs_wqt_t wait_queue_token;
 	int len;
 	char name[NAME_MAX+1];
+	__uapi_arch_pad_autofs_wqt;
 };
 
 union autofs_packet_union {
@@ -192,6 +196,7 @@ struct autofs_v5_packet {
 	struct autofs_packet_hdr hdr;
 	autofs_wqt_t wait_queue_token;
 	__u32 dev;
+	__uapi_arch_pad_autofs_wqt;
 	__u64 ino;
 	__u32 uid;
 	__u32 gid;
@@ -199,7 +204,8 @@ struct autofs_v5_packet {
 	__u32 tgid;
 	__u32 len;
 	char name[NAME_MAX+1];
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 typedef struct autofs_v5_packet autofs_packet_missing_indirect_t;
 typedef struct autofs_v5_packet autofs_packet_expire_indirect_t;

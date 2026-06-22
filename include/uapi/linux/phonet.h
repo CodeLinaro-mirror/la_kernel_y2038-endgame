@@ -104,7 +104,7 @@ struct sockaddr_pn {
 	__u8 spn_obj;
 	__u8 spn_dev;
 	__u8 spn_resource;
-	__u8 spn_zero[sizeof(struct sockaddr) - sizeof(__kernel_sa_family_t) - 3];
+	__u8 spn_zero[sizeof(struct __kernel_sockaddr) - sizeof(__kernel_sa_family_t) - 3];
 } __attribute__((packed));
 
 /* Well known address */

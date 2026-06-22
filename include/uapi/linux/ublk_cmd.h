@@ -792,9 +792,10 @@ struct ublk_params {
 	struct ublk_param_devt		devt;
 	struct ublk_param_zoned	zoned;
 	struct ublk_param_dma_align	dma;
+	__uapi_arch_pad32;
 	struct ublk_param_segment	seg;
 	struct ublk_param_integrity	integrity;
-};
+} __uapi_arch_align;
 
 /*
  * Shared memory zero-copy addr encoding for UBLK_IO_F_SHMEM_ZC.

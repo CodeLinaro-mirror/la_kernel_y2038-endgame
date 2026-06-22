@@ -54,10 +54,11 @@
  */
 struct atm_newif_br2684 {
 	atm_backend_t backend_num;	/* ATM_BACKEND_BR2684 */
+	__uapi_arch_pad16;
 	int media;		/* BR2684_MEDIA_*, flags in upper bits */
 	char ifname[IFNAMSIZ];
 	int mtu;
-};
+} __uapi_arch_align;
 
 /*
  * This structure is used to specify a br2684 interface - either by a
@@ -81,6 +82,7 @@ struct br2684_if_spec {
  */
 struct atm_backend_br2684 {
 	atm_backend_t backend_num;	/* ATM_BACKEND_BR2684 */
+	__uapi_arch_pad16;
 	struct br2684_if_spec ifspec;
 	int fcs_in;		/* BR2684_FCSIN_* */
 	int fcs_out;		/* BR2684_FCSOUT_* */
@@ -88,9 +90,10 @@ struct atm_backend_br2684 {
 	int encaps;		/* BR2684_ENCAPS_* */
 	int has_vpiid;		/* 1: use vpn_id - Unsupported */
 	__u8 vpn_id[7];
+	__uapi_arch_pad8;
 	int send_padding;	/* unsupported */
 	int min_size;		/* we will pad smaller packets than this */
-};
+} __uapi_arch_align;
 
 /*
  * The BR2684_SETFILT ioctl is an experimental mechanism for folks

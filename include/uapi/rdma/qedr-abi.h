@@ -130,21 +130,26 @@ struct qedr_create_qp_uresp {
 	/* SQ */
 	__u32 sq_db_offset;
 	__u16 sq_icid;
+	__uapi_arch_pad16;
 
 	/* RQ */
 	__u32 rq_db_offset;
 	__u16 rq_icid;
+	__uapi_arch_pad16;
 
 	__u32 rq_db2_offset;
 	__u32 reserved;
-
+#ifdef __m68k__
+	__u16 :16;
+	__u16 :16;
+#endif
 	/* address of SQ doorbell recovery user entry */
 	__aligned_u64 sq_db_rec_addr;
 
 	/* address of RQ doorbell recovery user entry */
 	__aligned_u64 rq_db_rec_addr;
 
-};
+} __uapi_arch_align;
 
 struct qedr_create_srq_ureq {
 	/* user space virtual address of producer pair */

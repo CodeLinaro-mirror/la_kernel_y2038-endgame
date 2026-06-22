@@ -54,8 +54,9 @@ typedef union ide_reg_valid_s {
 		unsigned hcyl_hob		: 1;
 		unsigned select_hob		: 1;
 		unsigned control_hob		: 1;
-	} b;
-} ide_reg_valid_t;
+		__uapi_arch_pad16; /* padding to sizeof(unsigned) */
+	} __uapi_arch_align b;
+} __uapi_arch_align ide_reg_valid_t;
 
 typedef struct ide_task_request_s {
 	__u8		io_ports[8];
@@ -325,8 +326,9 @@ struct hd_geometry {
       unsigned char heads;
       unsigned char sectors;
       unsigned short cylinders;
+	__uapi_arch_pad_long;
       unsigned long start;
-};
+} __uapi_arch_align;
 
 /* hd/ide ctl's that pass (arg) ptrs to user space are numbered 0x030n/0x031n */
 #define HDIO_GETGEO		0x0301	/* get device geometry */

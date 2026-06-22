@@ -10,6 +10,8 @@
 #ifndef _COMEDI_H
 #define _COMEDI_H
 
+#include <linux/types.h>
+
 #define COMEDI_MAJORVERSION	0
 #define COMEDI_MINORVERSION	7
 #define COMEDI_MICROVERSION	76
@@ -495,7 +497,8 @@ struct comedi_insn {
 	unsigned int subdev;
 	unsigned int chanspec;
 	unsigned int unused[3];
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 /**
  * struct comedi_insnlist - list of COMEDI instructions
@@ -506,8 +509,9 @@ struct comedi_insn {
  */
 struct comedi_insnlist {
 	unsigned int n_insns;
+	__uapi_arch_pad_long;
 	struct comedi_insn __user *insns;
-};
+} __uapi_arch_align;
 
 /**
  * struct comedi_cmd - COMEDI asynchronous acquisition command details
@@ -607,10 +611,12 @@ struct comedi_cmd {
 
 	unsigned int *chanlist;
 	unsigned int chanlist_len;
+	__uapi_arch_pad_long;
 
 	short __user *data;
 	unsigned int data_len;
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 /**
  * struct comedi_chaninfo - used to retrieve per-channel information
@@ -632,11 +638,12 @@ struct comedi_cmd {
  */
 struct comedi_chaninfo {
 	unsigned int subdev;
+	__uapi_arch_pad_long;
 	unsigned int __user *maxdata_list;
 	unsigned int __user *flaglist;
 	unsigned int __user *rangelist;
 	unsigned int unused[4];
-};
+} __uapi_arch_align;;
 
 /**
  * struct comedi_rangeinfo - used to retrieve the range table for a channel
@@ -657,8 +664,9 @@ struct comedi_chaninfo {
  */
 struct comedi_rangeinfo {
 	unsigned int range_type;
+	__uapi_arch_pad_long;
 	void __user *range_ptr;
-};
+} __uapi_arch_align;
 
 /**
  * struct comedi_krange - describes a range in a range table

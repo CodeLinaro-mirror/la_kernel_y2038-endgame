@@ -360,9 +360,12 @@ struct binder_pri_desc {
 
 struct binder_pri_ptr_cookie {
 	__s32 priority;
+#ifndef BINDER_IPC_32BIT
+	__uapi_arch_pad32;
+#endif
 	binder_uintptr_t ptr;
 	binder_uintptr_t cookie;
-};
+} __uapi_arch_align;
 
 enum binder_driver_return_protocol {
 	BR_ERROR = _IOR('r', 0, __s32),

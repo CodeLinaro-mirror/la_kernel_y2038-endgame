@@ -43,8 +43,9 @@ typedef struct _IOCTL_Command_struct {
   RequestBlock_struct      Request;
   ErrorInfo_struct  	   error_info; 
   WORD			   buf_size;  /* size in bytes of the buf */
+  __uapi_arch_pad16;
   BYTE			   __user *buf;
-} IOCTL_Command_struct;
+} __uapi_arch_align IOCTL_Command_struct;
 
 typedef struct _BIG_IOCTL_Command_struct {
   LUNAddr_struct	   LUN_info;
@@ -53,8 +54,9 @@ typedef struct _BIG_IOCTL_Command_struct {
   DWORD			   malloc_size; /* < MAX_KMALLOC_SIZE in cciss.c */
   DWORD			   buf_size;    /* size in bytes of the buf */
   				        /* < malloc_size * MAXSGENTRIES */
+  __uapi_arch_pad_long;
   BYTE			   __user *buf;
-} BIG_IOCTL_Command_struct;
+} __uapi_arch_align BIG_IOCTL_Command_struct;
 
 typedef struct _LogvolInfo_struct{
 	__u32	LunID;

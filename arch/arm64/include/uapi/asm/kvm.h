@@ -51,6 +51,8 @@ struct kvm_regs {
 
 	__u64	spsr[KVM_NR_SPSR];
 
+	__u64 :64; /* align fp_regs */
+
 	struct user_fpsimd_state fp_regs;
 };
 

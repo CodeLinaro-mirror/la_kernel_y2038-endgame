@@ -248,8 +248,11 @@ struct mpi3mr_logdata_entry {
 	__u8	valid_entry;
 	__u8	rsvd1;
 	__u16	rsvd2;
-	__u8	data[1]; /* Variable length Array */
-};
+	union {
+		__u16	:16;	 /* pad to alignment */
+		__u8	data[1]; /* Variable length Array */
+	};
+}; 
 
 /**
  * struct mpi3mr_bsg_in_log_data - Log data entries saved by

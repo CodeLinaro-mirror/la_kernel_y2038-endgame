@@ -140,7 +140,9 @@ enum xsdfec_axis_word_include {
 struct xsdfec_turbo {
 	__u32 alg;
 	__u8 scale;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /**
  * struct xsdfec_ldpc_params - User data for LDPC codes.
@@ -183,11 +185,14 @@ struct xsdfec_ldpc_params {
 	__u32 sc_off;
 	__u32 la_off;
 	__u32 qc_off;
+	__uapi_arch_pad_long;
 	__u32 *sc_table;
 	__u32 *la_table;
 	__u32 *qc_table;
 	__u16 code_id;
-};
+	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 /**
  * struct xsdfec_status - Status of SD-FEC core.
@@ -197,7 +202,9 @@ struct xsdfec_ldpc_params {
 struct xsdfec_status {
 	__u32 state;
 	__s8 activity;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /**
  * struct xsdfec_irq - Enabling or Disabling Interrupts.

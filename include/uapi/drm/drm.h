@@ -87,8 +87,9 @@ struct drm_clip_rect {
  */
 struct drm_drawable_info {
 	unsigned int num_rects;
+	__uapi_arch_pad_long;
 	struct drm_clip_rect *rects;
-};
+} __uapi_arch_align;
 
 /*
  * Texture region,
@@ -122,13 +123,14 @@ struct drm_version {
 	int version_major;	  /**< Major version */
 	int version_minor;	  /**< Minor version */
 	int version_patchlevel;	  /**< Patch level */
+	__uapi_arch_pad_long;
 	__kernel_size_t name_len;	  /**< Length of name buffer */
 	char __user *name;	  /**< Name of driver */
 	__kernel_size_t date_len;	  /**< Length of date buffer */
 	char __user *date;	  /**< User-space buffer to hold date */
 	__kernel_size_t desc_len;	  /**< Length of desc buffer */
 	char __user *desc;	  /**< User-space buffer to hold desc */
-};
+} __uapi_arch_align;
 
 /*
  * DRM_IOCTL_GET_UNIQUE ioctl argument type.
@@ -142,6 +144,7 @@ struct drm_unique {
 
 struct drm_list {
 	int count;		  /**< Length of user-space structures */
+	__uapi_arch_pad_long;
 	struct drm_version __user *version;
 };
 
@@ -192,8 +195,9 @@ enum drm_map_flags {
 
 struct drm_ctx_priv_map {
 	unsigned int ctx_id;	 /**< Context requesting private mapping */
+	__uapi_arch_pad_long;
 	void *handle;		 /**< Handle of map */
-};
+} __uapi_arch_align;
 
 /*
  * DRM_IOCTL_GET_MAP, DRM_IOCTL_ADD_MAP and DRM_IOCTL_RM_MAP ioctls
@@ -209,8 +213,9 @@ struct drm_map {
 	void *handle;		 /**< User-space: "Handle" to pass to mmap() */
 				 /**< Kernel-space: kernel-virtual address */
 	int mtrr;		 /**< MTRR slot used */
+	__uapi_arch_pad_long;
 	/*   Private data */
-};
+} __uapi_arch_align;
 
 /*
  * DRM_IOCTL_GET_CLIENT ioctl argument type.
@@ -257,7 +262,8 @@ struct drm_stats {
 #else
 		enum drm_stat_type type;
 #endif
-	} data[15];
+		__uapi_arch_pad_long;
+	} __uapi_arch_align data[15];
 };
 
 /*
@@ -331,6 +337,7 @@ struct drm_buf_desc {
 		_DRM_FB_BUFFER = 0x08,	/**< Buffer is in frame buffer */
 		_DRM_PCI_BUFFER_RO = 0x10 /**< Map PCI DMA buffer read-only */
 	} flags;
+	__uapi_arch_pad_long;
 	unsigned long agp_start; /**<
 				  * Start address of where the AGP buffers are
 				  * in the AGP aperture
@@ -342,16 +349,18 @@ struct drm_buf_desc {
  */
 struct drm_buf_info {
 	int count;		/**< Entries in list */
+	__uapi_arch_pad_long;
 	struct drm_buf_desc __user *list;
-};
+} __uapi_arch_align;
 
 /*
  * DRM_IOCTL_FREE_BUFS ioctl argument type.
  */
 struct drm_buf_free {
 	int count;
+	__uapi_arch_pad_long;
 	int __user *list;
-};
+} __uapi_arch_align;
 
 /*
  * Buffer information
@@ -362,21 +371,23 @@ struct drm_buf_pub {
 	int idx;		       /**< Index into the master buffer list */
 	int total;		       /**< Buffer size */
 	int used;		       /**< Amount of buffer in use (for DMA) */
+	__uapi_arch_pad_long;
 	void __user *address;	       /**< Address of buffer */
-};
+} __uapi_arch_align;
 
 /*
  * DRM_IOCTL_MAP_BUFS ioctl argument type.
  */
 struct drm_buf_map {
 	int count;		/**< Length of the buffer list */
+	__uapi_arch_pad_long;
 #ifdef __cplusplus
 	void __user *virt;
 #else
 	void __user *virtual;		/**< Mmap'd area in user-virtual */
 #endif
 	struct drm_buf_pub __user *list;	/**< Buffer information */
-};
+} __uapi_arch_align;
 
 /*
  * DRM_IOCTL_DMA ioctl argument type.
@@ -393,10 +404,12 @@ struct drm_dma {
 	enum drm_dma_flags flags;	  /**< Flags */
 	int request_count;		  /**< Number of buffers requested */
 	int request_size;		  /**< Desired size for buffers */
+	__uapi_arch_pad_long;
 	int __user *request_indices;	  /**< Buffer information */
 	int __user *request_sizes;
 	int granted_count;		  /**< Number of buffers granted */
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 enum drm_ctx_flags {
 	_DRM_CONTEXT_PRESERVED = 0x01,
@@ -418,8 +431,9 @@ struct drm_ctx {
  */
 struct drm_ctx_res {
 	int count;
+	__uapi_arch_pad_long;
 	struct drm_ctx __user *contexts;
-};
+} __uapi_arch_align;
 
 /*
  * DRM_IOCTL_ADD_DRAW and DRM_IOCTL_RM_DRAW ioctl argument type.
@@ -439,8 +453,9 @@ struct drm_update_draw {
 	drm_drawable_t handle;
 	unsigned int type;
 	unsigned int num;
+	__uapi_arch_pad32;
 	unsigned long long data;
-};
+} __uapi_arch_align;
 
 /*
  * DRM_IOCTL_GET_MAGIC and DRM_IOCTL_AUTH_MAGIC ioctl argument type.
@@ -564,7 +579,8 @@ struct drm_agp_info {
 	/* PCI information */
 	unsigned short id_vendor;
 	unsigned short id_device;
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 /*
  * DRM_IOCTL_SG_ALLOC ioctl argument type.

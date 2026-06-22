@@ -108,10 +108,11 @@ struct nd_papr_pdsm_health {
 
 			/* Extension flag PDSM_DIMM_HEALTH_RUN_GAUGE_VALID */
 			__u16 dimm_fuel_gauge;
+			__uapi_arch_pad16;
 
 			/* Extension flag PDSM_DIMM_DSC_VALID */
 			__u64 dimm_dsc;
-		};
+		} __uapi_arch_align;
 		__u8 buf[ND_PDSM_PAYLOAD_MAX_SIZE];
 	};
 };
@@ -127,7 +128,8 @@ struct nd_papr_pdsm_smart_inject {
 			__u32 flags;
 			__u8 fatal_enable;
 			__u8 unsafe_shutdown_enable;
-		};
+			__uapi_arch_pad16;
+		} __uapi_arch_align;
 		__u8 buf[ND_PDSM_PAYLOAD_MAX_SIZE];
 	};
 };

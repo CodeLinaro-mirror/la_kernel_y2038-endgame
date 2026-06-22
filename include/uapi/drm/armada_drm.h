@@ -45,7 +45,8 @@ struct drm_armada_gem_pwrite {
 	__u32 handle;
 	__u32 offset;
 	__u32 size;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 #define DRM_IOCTL_ARMADA_GEM_PWRITE \
 	ARMADA_IOCTL(IOW, GEM_PWRITE, gem_pwrite)
 

@@ -42,6 +42,7 @@ struct sigcontext {
 	unsigned int		sc_fpc_eir;	/* Unused */
 	unsigned int		sc_used_math;
 	unsigned int		sc_dsp;		/* dsp status, was sc_ssflags */
+	__uapi_arch_pad32;
 	unsigned long long	sc_mdhi;
 	unsigned long long	sc_mdlo;
 	unsigned long		sc_hi1;		/* Was sc_cause */
@@ -50,7 +51,7 @@ struct sigcontext {
 	unsigned long		sc_lo2;
 	unsigned long		sc_hi3;
 	unsigned long		sc_lo3;
-};
+} __uapi_arch_align;
 
 #endif /* _MIPS_SIM == _MIPS_SIM_ABI32 */
 

@@ -27,6 +27,9 @@ typedef unsigned long	__kernel_ulong_t;
 struct __kernel_old_timeval {
 	__kernel_long_t tv_sec;
 	__kernel_suseconds_t tv_usec;
+#ifdef __arch64__
+	unsigned int :32;
+#endif
 };
 #define __kernel_old_timeval __kernel_old_timeval
 

@@ -4,6 +4,7 @@
 
 #include <linux/compiler.h>
 #include <linux/ioctl.h>
+#include <linux/types.h>
 
 /*
  * SunOS and Solaris /dev/openprom definitions. The ioctl values
@@ -54,8 +55,9 @@ struct opiocdesc
 	int	op_namelen;		/* Length of op_name. */
 	char	__user *op_name;	/* Pointer to the property name. */
 	int	op_buflen;		/* Length of op_buf (value-result) */
+	__uapi_arch_pad_long;
 	char	__user *op_buf;		/* Pointer to buffer. */
-};
+} __uapi_arch_align;
 
 #define	OPIOCGET	_IOWR('O', 1, struct opiocdesc)
 #define	OPIOCSET	_IOW('O', 2, struct opiocdesc)

@@ -212,9 +212,10 @@ struct media_entity_desc {
 struct media_pad_desc {
 	__u32 entity;		/* entity ID */
 	__u16 index;		/* pad index */
+	__uapi_arch_pad16;
 	__u32 flags;		/* pad flags */
 	__u32 reserved[2];
-};
+} __uapi_arch_align;
 
 #define MEDIA_LNK_FL_ENABLED			(1U << 0)
 #define MEDIA_LNK_FL_IMMUTABLE			(1U << 1)
@@ -230,10 +231,11 @@ struct media_link_desc {
 	struct media_pad_desc sink;
 	__u32 flags;
 	__u32 reserved[2];
-};
+} __uapi_arch_align;
 
 struct media_links_enum {
 	__u32 entity;
+	__uapi_arch_pad_long;
 	/* Should have enough room for pads elements */
 	struct media_pad_desc __user *pads;
 	/* Should have enough room for links elements */

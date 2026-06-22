@@ -207,7 +207,10 @@ struct dsa_hw_desc {
 			__u32	max_delta_size;
 			__u32	delt_rsvd;
 			__u8	expected_res_mask;
-		};
+			__uapi_arch_pad8;
+			__uapi_arch_pad16;
+			__uapi_arch_pad32;
+		} __uapi_arch_align;
 		__u32	delta_rec_size;
 		__u64	dest2;
 		/* CRC */
@@ -257,7 +260,8 @@ struct dsa_hw_desc {
 		struct {
 			__u64	transl_fetch_res;
 			__u32	region_stride;
-		};
+			__uapi_arch_pad32;
+		} __uapi_arch_align;
 
 		/* DIX generate */
 		struct {

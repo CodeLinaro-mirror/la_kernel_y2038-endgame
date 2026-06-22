@@ -47,6 +47,7 @@ union __sifields {
 		int _overrun;		/* overrun count */
 		sigval_t _sigval;	/* same as below */
 		int _sys_private;       /* Not used by the kernel. Historic leftover. Always 0. */
+		__uapi_arch_pad_long;
 	} _timer;
 
 	/* POSIX.1b signals */
@@ -61,6 +62,7 @@ union __sifields {
 		__kernel_pid_t _pid;	/* which child */
 		__kernel_uid32_t _uid;	/* sender's uid */
 		int _status;		/* exit code */
+		__u8 __pad[sizeof(__ARCH_SI_CLOCK_T) - sizeof(int)];
 		__ARCH_SI_CLOCK_T _utime;
 		__ARCH_SI_CLOCK_T _stime;
 	} _sigchld;
@@ -68,9 +70,11 @@ union __sifields {
 	/* SIGILL, SIGFPE, SIGSEGV, SIGBUS, SIGTRAP, SIGEMT */
 	struct {
 		void __user *_addr; /* faulting insn/memory ref. */
-
-#define __ADDR_BND_PKEY_PAD  (__alignof__(void *) < sizeof(short) ? \
-			      sizeof(short) : __alignof__(void *))
+#ifdef __m68k__
+#define __ADDR_BND_PKEY_PAD  sizeof(short)
+#else
+#define __ADDR_BND_PKEY_PAD __alignof__(void *)
+#endif
 		union {
 			/* used on alpha and sparc */
 			int _trapno;	/* TRAP # which caused the signal */
@@ -84,12 +88,12 @@ union __sifields {
 				char _dummy_bnd[__ADDR_BND_PKEY_PAD];
 				void __user *_lower;
 				void __user *_upper;
-			} _addr_bnd;
+			} __uapi_arch_align _addr_bnd;
 			/* used when si_code=SEGV_PKUERR */
 			struct {
 				char _dummy_pkey[__ADDR_BND_PKEY_PAD];
 				__u32 _pkey;
-			} _addr_pkey;
+			} __uapi_arch_align _addr_pkey;
 			/* used when si_code=TRAP_PERF */
 			struct {
 				unsigned long _data;
@@ -103,6 +107,7 @@ union __sifields {
 	struct {
 		__ARCH_SI_BAND_T _band;	/* POLL_IN, POLL_OUT, POLL_MSG */
 		int _fd;
+		__u8 _si_band_pad[sizeof(__ARCH_SI_BAND_T) - sizeof(int)];
 	} _sigpoll;
 
 	/* SIGSYS */
@@ -111,7 +116,7 @@ union __sifields {
 		int _syscall;	/* triggering system call number */
 		unsigned int _arch;	/* AUDIT_ARCH_* of syscall */
 	} _sigsys;
-};
+} __uapi_arch_align;
 
 #ifndef __ARCH_HAS_SWAPPED_SIGINFO
 #define __SIGINFO 			\
@@ -119,6 +124,7 @@ struct {				\
 	int si_signo;			\
 	int si_errno;			\
 	int si_code;			\
+	__uapi_arch_pad_long;		\
 	union __sifields _sifields;	\
 }
 #else

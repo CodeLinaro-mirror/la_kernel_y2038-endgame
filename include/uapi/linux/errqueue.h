@@ -4,6 +4,9 @@
 
 #include <linux/types.h>
 #include <linux/time_types.h>
+#ifndef __KERNEL__
+#include <sys/time.h>
+#endif
 
 /* RFC 4884: return offset to extension struct + validation */
 struct sock_ee_data_rfc4884 {

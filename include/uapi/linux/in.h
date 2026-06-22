@@ -213,31 +213,35 @@ struct ip_msfilter {
 
 struct group_req {
 	__u32				 gr_interface;	/* interface index */
+	__uapi_arch_pad_long;
 	struct __kernel_sockaddr_storage gr_group;	/* group address */
-};
+} __uapi_arch_align;
 
 struct group_source_req {
 	__u32				 gsr_interface;	/* interface index */
+	__uapi_arch_pad_long;
 	struct __kernel_sockaddr_storage gsr_group;	/* group address */
 	struct __kernel_sockaddr_storage gsr_source;	/* source address */
-};
+} __uapi_arch_align;
 
 struct group_filter {
 	union {
 		struct {
 			__u32				 gf_interface_aux; /* interface index */
+			__uapi_arch_pad_long;
 			struct __kernel_sockaddr_storage gf_group_aux;	   /* multicast address */
 			__u32				 gf_fmode_aux;	   /* filter mode */
 			__u32				 gf_numsrc_aux;	   /* number of sources */
 			struct __kernel_sockaddr_storage gf_slist[1];	   /* interface index */
-		};
+		} __uapi_arch_align;
 		struct {
 			__u32				 gf_interface;	  /* interface index */
+			__uapi_arch_pad_long;
 			struct __kernel_sockaddr_storage gf_group;	  /* multicast address */
 			__u32				 gf_fmode;	  /* filter mode */
 			__u32				 gf_numsrc;	  /* number of sources */
 			struct __kernel_sockaddr_storage gf_slist_flex[]; /* interface index */
-		};
+		} __uapi_arch_align;
 	};
 };
 

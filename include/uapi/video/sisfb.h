@@ -90,6 +90,8 @@ struct sisfb_info {
 	__u8	sisfb_patchlevel;
 
 	__u8	sisfb_caps;		/* sisfb capabilities */
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 
 	__u32	sisfb_tqlen;		/* turbo queue length (in KB) */
 
@@ -100,6 +102,7 @@ struct sisfb_info {
 	__u8	sisfb_lcdpdc;		/* PanelDelayCompensation */
 
 	__u8	sisfb_lcda;		/* Detected status of LCDA for low res/text modes */
+	__uapi_arch_pad16;
 
 	__u32	sisfb_vbflags;
 	__u32	sisfb_currentvbflags;
@@ -112,6 +115,7 @@ struct sisfb_info {
 	__u8	sisfb_haveemilcd;
 
 	__u8	sisfb_lcdpdca;		/* PanelDelayCompensation for LCD-via-CRT1 */
+	__uapi_arch_pad8;
 
 	__u16	sisfb_tvxpos, sisfb_tvypos;	/* Warning: Values + 32 ! */
 
@@ -122,6 +126,7 @@ struct sisfb_info {
 	__u32	sisfb_curdstn;
 
 	__u16	sisfb_pci_vendor;	/* PCI vendor (SiS or XGI) */
+	__uapi_arch_pad16;
 
 	__u32	sisfb_vbflags2;		/* ivideo->vbflags2 */
 
@@ -130,7 +135,8 @@ struct sisfb_info {
 	__u8	sisfb_was_boot_device;	/* This card was the boot video device (ie is primary) */
 
 	__u8	reserved[183];		/* for future use */
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #define SISFB_CMD_GETVBFLAGS	0x55AA0001	/* no arg; result[1] = vbflags */
 #define SISFB_CMD_SWITCHCRT1	0x55AA0010	/* arg[0]: 99 = query, 0 = off, 1 = on */

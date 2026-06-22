@@ -286,7 +286,8 @@ struct um_timetravel_schedshm {
 			__u64 current_time;
 			__u16 running_id;
 			__u16 max_clients;
-		};
+			__uapi_arch_pad32;
+		} __uapi_arch_align;
 		char hdr[4096]; /* align to 4K page size */
 	};
 	union um_timetravel_schedshm_client clients[];

@@ -41,7 +41,8 @@ struct tc_stats {
 	__u32	pps;			/* Current flow packet rate */
 	__u32	qlen;
 	__u32	backlog;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct tc_estimator {
 	signed char	interval;

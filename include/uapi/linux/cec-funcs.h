@@ -154,9 +154,10 @@ struct cec_op_dvb_data {
 
 struct cec_op_channel_data {
 	__u8 channel_number_fmt;
+	__uapi_arch_pad8;
 	__u16 major;
 	__u16 minor;
-};
+} __uapi_arch_align;
 
 struct cec_op_digital_service_id {
 	__u8 service_id_method;
@@ -171,13 +172,16 @@ struct cec_op_digital_service_id {
 
 struct cec_op_record_src {
 	__u8 type;
+	__uapi_arch_pad8;
 	union {
 		struct cec_op_digital_service_id digital;
 		struct {
 			__u8 ana_bcast_type;
+			__uapi_arch_pad8;
 			__u16 ana_freq;
 			__u8 bcast_system;
-		} analog;
+			__uapi_arch_pad8;
+		} __uapi_arch_align analog;
 		struct {
 			__u8 plug;
 		} ext_plug;
@@ -953,15 +957,18 @@ struct cec_op_tuner_device_info {
 	__u8 rec_flag;
 	__u8 tuner_display_info;
 	__u8 is_analog;
+	__uapi_arch_pad8;
 	union {
 		struct cec_op_digital_service_id digital;
 		struct {
 			__u8 ana_bcast_type;
+			__uapi_arch_pad8;
 			__u16 ana_freq;
 			__u8 bcast_system;
-		} analog;
+			__uapi_arch_pad8;
+		} __uapi_arch_align analog;
 	};
-};
+} __uapi_arch_align;
 
 static inline void cec_msg_tuner_device_status_analog(struct cec_msg *msg,
 						      __u8 rec_flag,

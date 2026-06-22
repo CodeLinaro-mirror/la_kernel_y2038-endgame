@@ -306,6 +306,7 @@ struct rkisp1_cif_isp_bls_config {
 	struct rkisp1_cif_isp_window bls_window1;
 	struct rkisp1_cif_isp_window bls_window2;
 	__u8 bls_samples;
+	__u8 :8;
 	struct rkisp1_cif_isp_bls_fixed_val fixed_val;
 };
 
@@ -397,6 +398,7 @@ struct rkisp1_cif_isp_sdg_config {
 	struct rkisp1_cif_isp_gamma_corr_curve curve_r;
 	struct rkisp1_cif_isp_gamma_corr_curve curve_g;
 	struct rkisp1_cif_isp_gamma_corr_curve curve_b;
+	__u16 :16;
 	struct rkisp1_cif_isp_gamma_curve_x_axis_pnts xa_pnts;
 };
 
@@ -557,6 +559,7 @@ struct rkisp1_cif_isp_flt_config {
 	__u8 grn_stage1;
 	__u8 chr_h_mode;
 	__u8 chr_v_mode;
+	__u8 :8;
 	__u32 thresh_bl0;
 	__u32 thresh_bl1;
 	__u32 thresh_sh0;
@@ -636,8 +639,10 @@ struct rkisp1_cif_isp_goc_config {
 struct rkisp1_cif_isp_hst_config {
 	__u32 mode;
 	__u8 histogram_predivider;
+	__u8 :8;
 	struct rkisp1_cif_isp_window meas_window;
 	__u8 hist_weight[RKISP1_CIF_ISP_HISTOGRAM_WEIGHT_GRIDS_SIZE];
+	__u8 :8;
 };
 
 /**
@@ -664,7 +669,9 @@ struct rkisp1_cif_isp_aec_config {
  */
 struct rkisp1_cif_isp_afc_config {
 	__u8 num_afm_win;
+	__u8 :8;
 	struct rkisp1_cif_isp_window afm_win[RKISP1_CIF_ISP_AFM_MAX_WINDOWS];
+	__u16 :16;
 	__u32 thres;
 	__u32 var_shift;
 };
@@ -721,6 +728,7 @@ enum rkisp1_cif_isp_dpf_nll_scale_mode {
  */
 struct rkisp1_cif_isp_dpf_nll {
 	__u16 coeff[RKISP1_CIF_ISP_DPF_MAX_NLF_COEFFS];
+	__u16 :16;
 	__u32 scale_mode;
 };
 
@@ -826,12 +834,15 @@ struct rkisp1_cif_isp_isp_other_cfg {
 	struct rkisp1_cif_isp_awb_gain_config awb_gain_config;
 	struct rkisp1_cif_isp_flt_config flt_config;
 	struct rkisp1_cif_isp_bdm_config bdm_config;
+	__u8 :8;
 	struct rkisp1_cif_isp_ctk_config ctk_config;
+	__u16 :16;
 	struct rkisp1_cif_isp_goc_config goc_config;
 	struct rkisp1_cif_isp_dpf_config dpf_config;
 	struct rkisp1_cif_isp_dpf_strength_config dpf_strength_config;
 	struct rkisp1_cif_isp_cproc_config cproc_config;
 	struct rkisp1_cif_isp_ie_config ie_config;
+	__u16 :16;
 };
 
 /**
@@ -917,7 +928,8 @@ struct rkisp1_cif_isp_compand_curve_config {
 struct rkisp1_cif_isp_wdr_tone_curve {
 	__u32 dY[RKISP1_CIF_ISP_WDR_CURVE_NUM_DY_REGS];
 	__u16 ym[RKISP1_CIF_ISP_WDR_CURVE_NUM_COEFF];
-};
+	__u16 :16;
+} ;
 
 /**
  * struct rkisp1_cif_isp_wdr_iref_config - Illumination reference config for WDR.
@@ -965,6 +977,7 @@ struct rkisp1_cif_isp_wdr_config {
 	__u8 use_rgb_colorspace;
 	__u8 bypass_chroma_mapping;
 	__u8 use_iref;
+	__u16 :16;
 };
 
 /*
@@ -1072,6 +1085,7 @@ struct rkisp1_cif_isp_awb_meas {
 	__u8 mean_y_or_g;
 	__u8 mean_cb_or_b;
 	__u8 mean_cr_or_r;
+	__u8 :8;
 };
 
 /**
@@ -1116,6 +1130,7 @@ struct rkisp1_cif_isp_bls_meas_val {
  */
 struct rkisp1_cif_isp_ae_stat {
 	__u8 exp_mean[RKISP1_CIF_ISP_AE_MEAN_MAX];
+	__u8 :8;
 	struct rkisp1_cif_isp_bls_meas_val bls_val;
 };
 
@@ -1181,6 +1196,7 @@ struct rkisp1_cif_isp_hist_stat {
 struct rkisp1_cif_isp_stat {
 	struct rkisp1_cif_isp_awb_stat awb;
 	struct rkisp1_cif_isp_ae_stat ae;
+	__u16 :16;
 	struct rkisp1_cif_isp_af_stat af;
 	struct rkisp1_cif_isp_hist_stat hist;
 };
@@ -1286,6 +1302,7 @@ enum rkisp1_ext_params_block_type {
 struct rkisp1_ext_params_bls_config {
 	struct rkisp1_ext_params_block_header header;
 	struct rkisp1_cif_isp_bls_config config;
+	__u32 :32; /* pad to alignment */
 } __attribute__((aligned(8)));
 
 /**
@@ -1302,6 +1319,7 @@ struct rkisp1_ext_params_bls_config {
 struct rkisp1_ext_params_dpcc_config {
 	struct rkisp1_ext_params_block_header header;
 	struct rkisp1_cif_isp_dpcc_config config;
+	__u32 :32; /* pad to alignment */
 } __attribute__((aligned(8)));
 
 /**
@@ -1334,6 +1352,7 @@ struct rkisp1_ext_params_sdg_config {
 struct rkisp1_ext_params_lsc_config {
 	struct rkisp1_ext_params_block_header header;
 	struct rkisp1_cif_isp_lsc_config config;
+	__u32 :32; /* pad to alignment */
 } __attribute__((aligned(8)));
 
 /**
@@ -1381,6 +1400,10 @@ struct rkisp1_ext_params_flt_config {
 struct rkisp1_ext_params_bdm_config {
 	struct rkisp1_ext_params_block_header header;
 	struct rkisp1_cif_isp_bdm_config config;
+	/* pad to alignment */
+	__u8 :8;
+	__u16 :16;
+	__u32 :32;
 } __attribute__((aligned(8)));
 
 /**
@@ -1444,6 +1467,8 @@ struct rkisp1_ext_params_dpf_config {
 struct rkisp1_ext_params_dpf_strength_config {
 	struct rkisp1_ext_params_block_header header;
 	struct rkisp1_cif_isp_dpf_strength_config config;
+	__u8 :8;
+	__u32 :32; /* pad to alignment */
 } __attribute__((aligned(8)));
 
 /**
@@ -1460,6 +1485,7 @@ struct rkisp1_ext_params_dpf_strength_config {
 struct rkisp1_ext_params_cproc_config {
 	struct rkisp1_ext_params_block_header header;
 	struct rkisp1_cif_isp_cproc_config config;
+	__u8 :8; /* pad to alignment */
 } __attribute__((aligned(8)));
 
 /**
@@ -1492,6 +1518,7 @@ struct rkisp1_ext_params_ie_config {
 struct rkisp1_ext_params_awb_meas_config {
 	struct rkisp1_ext_params_block_header header;
 	struct rkisp1_cif_isp_awb_meas_config config;
+	__u32 :32; /* pad to alignment */
 } __attribute__((aligned(8)));
 
 /**
@@ -1540,6 +1567,7 @@ struct rkisp1_ext_params_aec_config {
 struct rkisp1_ext_params_afc_config {
 	struct rkisp1_ext_params_block_header header;
 	struct rkisp1_cif_isp_afc_config config;
+	__u32 :32; /* pad to alignment */
 } __attribute__((aligned(8)));
 
 /**
@@ -1593,6 +1621,7 @@ struct rkisp1_ext_params_compand_curve_config {
 struct rkisp1_ext_params_wdr_config {
 	struct rkisp1_ext_params_block_header header;
 	struct rkisp1_cif_isp_wdr_config config;
+	__u32 :32; /* pad to alignment */
 } __attribute__((aligned(8)));
 
 /**
@@ -1609,6 +1638,7 @@ struct rkisp1_ext_params_wdr_config {
 struct rkisp1_ext_params_cac_config {
 	struct rkisp1_ext_params_block_header header;
 	struct rkisp1_cif_isp_cac_config config;
+	__u32 :16; /* pad to alignment */
 } __attribute__((aligned(8)));
 
 /*

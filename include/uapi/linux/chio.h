@@ -6,6 +6,8 @@
 #ifndef _UAPI_LINUX_CHIO_H
 #define _UAPI_LINUX_CHIO_H
 
+#include <linux/types.h>
+
 /* changer element types */
 #define CHET_MT   0	/* media transport element (robot) */
 #define CHET_ST   1	/* storage element (media slots) */
@@ -100,8 +102,9 @@ struct changer_position {
  */
 struct changer_element_status {
 	int             ces_type;
+	__uapi_arch_pad_long;
 	unsigned char   __user *ces_data;
-};
+} __uapi_arch_align;
 #define CESTATUS_FULL     0x01 /* full */
 #define CESTATUS_IMPEXP   0x02	/* media was imported (inserted by sysop) */
 #define CESTATUS_EXCEPT   0x04	/* error condition */

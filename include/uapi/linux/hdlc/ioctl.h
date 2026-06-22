@@ -2,6 +2,7 @@
 #ifndef __HDLC_IOCTL_H__
 #define __HDLC_IOCTL_H__
 
+#include <linux/types.h>
 
 #define GENERIC_HDLC_VERSION 4	/* For synchronization with sethdlc utility */
 
@@ -41,14 +42,16 @@ typedef struct {
 	unsigned int clock_rate; /* bits per second */
 	unsigned int clock_type; /* internal, external, TX-internal etc. */
 	unsigned short loopback;
-} sync_serial_settings;          /* V.35, V.24, X.21 */
+	__uapi_arch_pad16;
+} __uapi_arch_align sync_serial_settings; /* V.35, V.24, X.21 */
 
 typedef struct {
 	unsigned int clock_rate; /* bits per second */
 	unsigned int clock_type; /* internal, external, TX-internal etc. */
 	unsigned short loopback;
+	__uapi_arch_pad16;
 	unsigned int slot_map;
-} te1_settings;                  /* T1, E1 */
+} __uapi_arch_align te1_settings;     /* T1, E1 */
 
 typedef struct {
 	unsigned short encoding;
@@ -71,7 +74,7 @@ typedef struct {
 
 typedef struct {
 	unsigned int dlci;
-	char master[IFNAMSIZ];	/* Name of master FRAD device */
+	char master[16];	/* Name of master FRAD device */
 }fr_proto_pvc_info;		/* for returning PVC information only */
 
 typedef struct {
@@ -81,12 +84,13 @@ typedef struct {
 
 typedef struct {
 	unsigned short dce; /* 1 for DCE (network side) operation */
+	__uapi_arch_pad16;
 	unsigned int modulo; /* modulo (8 = basic / 128 = extended) */
 	unsigned int window; /* frame window size */
 	unsigned int t1; /* timeout t1 */
 	unsigned int t2; /* timeout t2 */
 	unsigned int n2; /* frame retry counter */
-} x25_hdlc_proto;
+} __uapi_arch_align x25_hdlc_proto;
 
 /* PPP doesn't need any info now - supply length = 0 to ioctl */
 

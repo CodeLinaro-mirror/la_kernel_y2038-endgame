@@ -11,8 +11,12 @@
 /* such alignment is not required on 32 bit sparcs, but we can't
    figure that we are on a sparc64 while compiling user-space programs. */
 #define __ATM_API_ALIGN	__attribute__((aligned(8)))
+#define __uapi_arch_atm_pad unsigned:32
+#define __uapi_arch_atm_blli_pad char :8, :8, :8, :8, :8, :8
 #else
 #define __ATM_API_ALIGN
+#define __uapi_arch_atm_pad
+#define __uapi_arch_atm_blli_pad
 #endif
 
 

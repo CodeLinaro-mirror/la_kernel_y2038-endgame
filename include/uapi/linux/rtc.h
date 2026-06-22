@@ -41,8 +41,9 @@ struct rtc_time {
 struct rtc_wkalrm {
 	unsigned char enabled;	/* 0 = alarm disabled, 1 = alarm enabled */
 	unsigned char pending;  /* 0 = alarm not pending, 1 = alarm pending */
+	__uapi_arch_pad16;
 	struct rtc_time time;	/* time the alarm is set to */
-};
+} __uapi_arch_align;
 
 /*
  * Data structure to control PLL correction some better RTC feature

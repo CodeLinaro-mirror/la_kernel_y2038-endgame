@@ -91,6 +91,7 @@ typedef struct boot_infos
     /* Some infos about the current MacOS display */
     __u32       dispDeviceRect[4];       /* left,top,right,bottom */
     __u32       dispDeviceDepth;         /* (8, 16 or 32) */
+    __uapi_arch_pad_long;
     __u8*       dispDeviceBase;          /* base address (physical) */
     __u32       dispDeviceRowBytes;      /* rowbytes (in bytes) */
     __u32       dispDeviceColorsOffset;  /* Colormap (8 bits only) or 0 (*) */
@@ -123,6 +124,7 @@ typedef struct boot_infos
     /* Total params size (args + colormap + device tree + ramdisk) */
     __u32       totalParamsSize;
 
+    __uapi_arch_pad_long;
 } boot_infos_t;
 
 

@@ -692,7 +692,8 @@ struct iw_point {
   void __user	*pointer;	/* Pointer to the data  (in user space) */
   __u16		length;		/* number of fields or size in bytes */
   __u16		flags;		/* Optional params */
-};
+  __uapi_arch_pad_long;
+} __uapi_arch_align;
 
 
 /*
@@ -884,9 +885,10 @@ struct iw_statistics {
 
 	struct iw_quality	qual;		/* Quality of the link
 						 * (instant/mean/max) */
+	__uapi_arch_pad16;
 	struct iw_discarded	discard;	/* Packet discarded counts */
 	struct iw_missed	miss;		/* Packet missed counts */
-};
+} __uapi_arch_align;
 
 /* ------------------------ IOCTL REQUEST ------------------------ */
 /*
@@ -1002,6 +1004,8 @@ struct iw_range {
 
 	/* Rates */
 	__u8		num_bitrates;	/* Number of entries in the list */
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	__s32		bitrate[IW_MAX_BITRATES];	/* list, in bps */
 
 	/* RTS threshold */
@@ -1025,12 +1029,16 @@ struct iw_range {
 	__u16	encoding_size[IW_MAX_ENCODING_SIZES];	/* Different token sizes */
 	__u8	num_encoding_sizes;	/* Number of entry in the list */
 	__u8	max_encoding_tokens;	/* Max number of tokens */
+
 	/* For drivers that need a "login/passwd" form */
 	__u8	encoding_login_index;	/* token index for login token */
+	__uapi_arch_pad8;
 
 	/* Transmit power */
 	__u16		txpower_capa;	/* What options are supported */
 	__u8		num_txpower;	/* Number of entries in the list */
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	__s32		txpower[IW_MAX_TXPOWER];	/* list, in bps */
 
 	/* Wireless Extension version info */
@@ -1049,12 +1057,13 @@ struct iw_range {
 	/* Frequency */
 	__u16		num_channels;	/* Number of channels [0; num - 1] */
 	__u8		num_frequency;	/* Number of entry in the list */
+	__uapi_arch_pad8;
 	struct iw_freq	freq[IW_MAX_FREQUENCIES];	/* list */
 	/* Note : this frequency list doesn't need to fit channel numbers,
 	 * because each entry contain its channel index */
 
 	__u32		enc_capa;	/* IW_ENC_CAPA_* bit field */
-};
+} __uapi_arch_align;
 
 /*
  * Private ioctl interface information
@@ -1080,8 +1089,9 @@ struct iw_priv_args {
 struct iw_event {
 	__u16		len;			/* Real length of this stuff */
 	__u16		cmd;			/* Wireless IOCTL */
+	__uapi_arch_pad_long;
 	union iwreq_data	u;		/* IOCTL fixed payload */
-};
+} __uapi_arch_align;
 
 /* Size of the Event prefix (including padding and alignement junk) */
 #define IW_EV_LCP_LEN	(sizeof(struct iw_event) - sizeof(union iwreq_data))

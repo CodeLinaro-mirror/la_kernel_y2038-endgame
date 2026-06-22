@@ -13,14 +13,17 @@
 #define _UAPI_LINUX_IF_PLIP_H
 
 #include <linux/sockios.h>
+#include <linux/types.h>
 
 #define	SIOCDEVPLIP	SIOCDEVPRIVATE
 
 struct plipconf {
 	unsigned short pcmd;
+	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
 	unsigned long  nibble;
 	unsigned long  trigger;
-};
+} __uapi_arch_align;
 
 #define PLIP_GET_TIMEOUT	0x1
 #define PLIP_SET_TIMEOUT	0x2

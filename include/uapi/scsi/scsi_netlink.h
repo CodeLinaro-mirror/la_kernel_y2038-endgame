@@ -78,6 +78,7 @@ struct scsi_nl_host_vendor_msg {
 	__u64 vendor_id;
 	__u16 host_no;
 	__u16 vmsg_datalen;
+	__u32 :32;
 } __attribute__((aligned(sizeof(__u64))));
 
 

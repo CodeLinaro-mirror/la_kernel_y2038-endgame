@@ -144,8 +144,10 @@ enum {
 struct ip_vs_service_user {
 	/* virtual service addresses */
 	__u16		protocol;
+	__uapi_arch_pad16;
 	__be32			addr;		/* virtual ip address */
 	__be16			port;
+	__uapi_arch_pad16;
 	__u32		fwmark;		/* firwall mark of service */
 
 	/* virtual service options */
@@ -153,13 +155,14 @@ struct ip_vs_service_user {
 	unsigned int		flags;		/* virtual service flags */
 	unsigned int		timeout;	/* persistent timeout in sec */
 	__be32			netmask;	/* persistent netmask */
-};
+} __uapi_arch_align;
 
 
 struct ip_vs_dest_user {
 	/* destination server address */
 	__be32			addr;
 	__be16			port;
+	__uapi_arch_pad16;
 
 	/* real server options */
 	unsigned int		conn_flags;	/* connection flags */
@@ -168,7 +171,7 @@ struct ip_vs_dest_user {
 	/* thresholds for active connections */
 	__u32		u_threshold;	/* upper threshold */
 	__u32		l_threshold;	/* lower threshold */
-};
+} __uapi_arch_align;
 
 
 /*
@@ -178,6 +181,7 @@ struct ip_vs_stats_user {
 	__u32                   conns;          /* connections scheduled */
 	__u32                   inpkts;         /* incoming packets */
 	__u32                   outpkts;        /* outgoing packets */
+	__uapi_arch_pad32;
 	__u64                   inbytes;        /* incoming bytes */
 	__u64                   outbytes;       /* outgoing bytes */
 
@@ -186,7 +190,8 @@ struct ip_vs_stats_user {
 	__u32			outpps;		/* current out packet rate */
 	__u32			inbps;		/* current in byte rate */
 	__u32			outbps;		/* current out byte rate */
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 
 /* The argument to IP_VS_SO_GET_INFO */
@@ -206,8 +211,10 @@ struct ip_vs_getinfo {
 struct ip_vs_service_entry {
 	/* which service: user fills in these */
 	__u16		protocol;
+	__uapi_arch_pad16;
 	__be32			addr;		/* virtual address */
 	__be16			port;
+	__uapi_arch_pad16;
 	__u32		fwmark;		/* firwall mark of service */
 
 	/* service options */
@@ -221,12 +228,13 @@ struct ip_vs_service_entry {
 
 	/* statistics */
 	struct ip_vs_stats_user stats;
-};
+} __uapi_arch_align;
 
 
 struct ip_vs_dest_entry {
 	__be32			addr;		/* destination address */
 	__be16			port;
+	__uapi_arch_pad16;
 	unsigned int		conn_flags;	/* connection flags */
 	int			weight;		/* destination weight */
 
@@ -236,32 +244,37 @@ struct ip_vs_dest_entry {
 	__u32		activeconns;	/* active connections */
 	__u32		inactconns;	/* inactive connections */
 	__u32		persistconns;	/* persistent connections */
+	__uapi_arch_pad32;
 
 	/* statistics */
 	struct ip_vs_stats_user stats;
-};
+} __uapi_arch_align;
 
 
 /* The argument to IP_VS_SO_GET_DESTS */
 struct ip_vs_get_dests {
 	/* which service: user fills in these */
 	__u16		protocol;
+	__uapi_arch_pad16;
 	__be32			addr;		/* virtual address */
 	__be16			port;
+	__uapi_arch_pad16;
 	__u32		fwmark;		/* firwall mark of service */
 
 	/* number of real servers */
 	unsigned int		num_dests;
+	__uapi_arch_pad32;
 
 	/* the real servers */
 	struct ip_vs_dest_entry	entrytable[];
-};
+} __uapi_arch_align;
 
 
 /* The argument to IP_VS_SO_GET_SERVICES */
 struct ip_vs_get_services {
 	/* number of virtual services */
 	unsigned int		num_services;
+	__uapi_arch_pad32;
 
 	/* service table */
 	struct ip_vs_service_entry entrytable[];

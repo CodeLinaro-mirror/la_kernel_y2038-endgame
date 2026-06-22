@@ -315,6 +315,7 @@ struct kvm_s390_zpci_op {
 			__u8 isc;       /* Guest interrupt subclass */
 			__u8 sbo;       /* Offset of guest summary bit vector */
 			__u16 pad;
+			__uapi_arch_pad32;
 		} reg_aen;
 		__u64 reserved[8];
 	} u;
@@ -361,6 +362,7 @@ struct kvm_s390_io_adapter {
 
 struct kvm_s390_ais_req {
 	__u8 isc;
+	__uapi_arch_pad8;
 	__u16 mode;
 };
 
@@ -403,6 +405,9 @@ struct kvm_s390_io_adapter_req {
 
 struct kvm_s390_vm_tod_clock {
 	__u8  epoch_idx;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	__uapi_arch_pad32;
 	__u64 tod;
 };
 
@@ -518,6 +523,7 @@ struct kvm_sregs {
 /* for KVM_GET_FPU and KVM_SET_FPU */
 struct kvm_fpu {
 	__u32 fpc;
+	__uapi_arch_pad32;
 	__u64 fprs[16];
 };
 

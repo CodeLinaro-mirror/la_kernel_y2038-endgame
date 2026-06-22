@@ -190,7 +190,8 @@ struct ib_user_mad_reg_req {
 	__u8	mgmt_class_version;
 	__u8    oui[3];
 	__u8	rmpp_version;
-};
+	__uapi_arch_pad8;
+} __attribute__((aligned(4)));
 
 /**
  * ib_user_mad_reg_req2 - MAD registration request

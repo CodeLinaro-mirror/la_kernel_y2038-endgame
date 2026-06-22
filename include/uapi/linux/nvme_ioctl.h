@@ -22,7 +22,8 @@ struct nvme_user_io {
 	__u32	reftag;
 	__u16	apptag;
 	__u16	appmask;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 struct nvme_passthru_cmd {
 	__u8	opcode;

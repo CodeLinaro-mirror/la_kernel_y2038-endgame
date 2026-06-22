@@ -110,6 +110,7 @@ struct video_command {
 
 struct video_event {
 	__s32 type;
+	__uapi_arch_pad_long;
 #define VIDEO_EVENT_SIZE_CHANGED	1
 #define VIDEO_EVENT_FRAME_RATE_CHANGED	2
 #define VIDEO_EVENT_DECODER_STOPPED	3
@@ -121,7 +122,8 @@ struct video_event {
 		unsigned int frame_rate;	/* in frames per 1000sec */
 		unsigned char vsync_field;	/* unknown/odd/even/progressive */
 	} u;
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 
 struct video_status {
@@ -136,7 +138,8 @@ struct video_status {
 struct video_still_picture {
 	char __user *iFrame;        /* pointer to a single iframe in memory */
 	__s32 size;
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 
 typedef __u16 video_attributes_t;

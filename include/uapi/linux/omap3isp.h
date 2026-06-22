@@ -77,7 +77,8 @@ struct omap3isp_stat_event_status {
 	__u32 frame_number;
 	__u16 config_counter;
 	__u8 buf_err;
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 /* AE/AWB related structures and flags*/
 
@@ -156,7 +157,9 @@ struct omap3isp_h3a_aewb_config {
 	__u16 subsample_ver_inc;
 	__u16 subsample_hor_inc;
 	__u8 alaw_enable;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /**
  * struct omap3isp_stat_data - Statistic data sent to or received from user
@@ -178,12 +181,14 @@ struct omap3isp_stat_data {
 #endif
 	void __user *buf;
 	__struct_group(/* no tag */, frame, /* no attrs */,
-		__u32 buf_size;
+		__u32 buf_size __uapi_arch_align;
 		__u16 frame_number;
 		__u16 cur_frame;
 		__u16 config_counter;
+		__uapi_arch_pad16;
 	);
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 #ifdef __KERNEL__
 struct omap3isp_stat_data_time32 {
@@ -193,10 +198,11 @@ struct omap3isp_stat_data_time32 {
 	} ts;
 	__u32 buf;
 	__struct_group(/* no tag */, frame, /* no attrs */,
-		__u32 buf_size;
+		__u32 buf_size __uapi_arch_align;
 		__u16 frame_number;
 		__u16 cur_frame;
 		__u16 config_counter;
+		__uapi_arch_pad16;
 	);
 };
 #endif
@@ -248,6 +254,7 @@ struct omap3isp_hist_config {
 
 	__u8 num_acc_frames;	/* Num of image frames to be processed and
 				   accumulated for each histogram frame */
+	__uapi_arch_pad8;
 	__u16 hist_bins;	/* number of bins: 32, 64, 128, or 256 */
 	__u8 cfa;		/* BAYER or FOVEON X3 */
 	__u8 wg[OMAP3ISP_HIST_MAX_WG];	/* White Balance Gain */
@@ -296,7 +303,8 @@ struct omap3isp_h3a_af_paxel {
 	__u8 h_cnt;	/* Horizontal Count */
 	__u8 v_cnt;	/* vertical Count */
 	__u8 line_inc;	/* Line Increment */
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 /* Contains the parameters required for hardware set up of AF Engine */
 struct omap3isp_h3a_af_config {
@@ -314,7 +322,9 @@ struct omap3isp_h3a_af_config {
 	enum omap3isp_h3a_af_rgbpos rgb_pos;	/* RGB Positions */
 	enum omap3isp_h3a_af_fvmode fvmode;	/* Accumulator mode */
 	__u8 alaw_enable;			/* AF ALAW status */
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* ISP CCDC structs */
 
@@ -360,6 +370,7 @@ struct omap3isp_ccdc_lsc_config {
 	__u8 gain_mode_n;
 	__u8 gain_mode_m;
 	__u8 gain_format;
+	__uapi_arch_pad8;
 	__u16 fmtsph;
 	__u16 fmtlnh;
 	__u16 fmtslv;
@@ -392,8 +403,9 @@ struct omap3isp_ccdc_bclamp {
  */
 struct omap3isp_ccdc_fpc {
 	__u16 fpnum;
+	__uapi_arch_pad16;
 	__u32 fpcaddr;
-};
+} __uapi_arch_align;
 
 /**
  * struct omap3isp_ccdc_blcomp - Black Level Compensation parameters
@@ -417,6 +429,7 @@ struct omap3isp_ccdc_blcomp {
  */
 struct omap3isp_ccdc_culling {
 	__u8 v_pattern;
+	__uapi_arch_pad8;
 	__u16 h_odd;
 	__u16 h_even;
 };
@@ -507,8 +520,9 @@ struct omap3isp_prev_cfa {
 	enum omap3isp_cfa_fmt format;
 	__u8 gradthrs_vert;
 	__u8 gradthrs_horz;
+	__uapi_arch_pad16;
 	__u32 table[4][OMAP3ISP_PREV_CFA_BLK_SIZE];
-};
+} __uapi_arch_align;
 
 /**
  * struct omap3isp_prev_csup - Chrominance Suppression
@@ -600,8 +614,10 @@ struct omap3isp_prev_yclimit {
  */
 struct omap3isp_prev_dcor {
 	__u8 couplet_mode_en;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	__u32 detect_correct[OMAP3ISP_PREV_DETECT_CORRECT_CHANNELS];
-};
+} __uapi_arch_align;
 
 /**
  * struct omap3isp_prev_nf - Noise Filter
@@ -610,8 +626,10 @@ struct omap3isp_prev_dcor {
  */
 struct omap3isp_prev_nf {
 	__u8 spread;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	__u32 table[OMAP3ISP_PREV_NF_TBL_SIZE];
-};
+} __uapi_arch_align;
 
 /**
  * struct omap3isp_prev_gtables - Gamma correction tables
@@ -657,6 +675,7 @@ struct omap3isp_prev_update_config {
 	__u32 update;
 	__u32 flag;
 	__u32 shading_shift;
+	__uapi_arch_pad_long;
 	struct omap3isp_prev_luma __user *luma;
 	struct omap3isp_prev_hmed __user *hmed;
 	struct omap3isp_prev_cfa __user *cfa;
@@ -669,6 +688,6 @@ struct omap3isp_prev_update_config {
 	struct omap3isp_prev_dcor __user *dcor;
 	struct omap3isp_prev_nf __user *nf;
 	struct omap3isp_prev_gtables __user *gamma;
-};
+} __uapi_arch_align;
 
 #endif	/* OMAP3_ISP_USER_H */

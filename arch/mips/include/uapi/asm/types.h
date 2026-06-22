@@ -27,5 +27,4 @@
 # endif
 #endif
 
-
 #endif /* _UAPI_ASM_TYPES_H */

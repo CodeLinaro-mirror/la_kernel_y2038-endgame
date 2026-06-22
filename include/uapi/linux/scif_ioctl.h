@@ -105,7 +105,8 @@ struct scifioctl_msg {
 	__s32	len;
 	__s32	flags;
 	__s32	out_len;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct scifioctl_reg - used for SCIF_REG IOCTL
@@ -155,7 +156,8 @@ struct scifioctl_copy {
 	__s64		roffset;
 	__u64		addr;
 	__s32		flags;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct scifioctl_fence_mark  - used for SCIF_FENCE_MARK IOCTL
@@ -164,8 +166,9 @@ struct scifioctl_copy {
  */
 struct scifioctl_fence_mark {
 	__s32	flags;
+	__uapi_arch_pad32;
 	__u64	mark;
-};
+} __uapi_arch_align;
 
 /**
  * struct scifioctl_fence_signal - used for SCIF_FENCE_SIGNAL IOCTL
@@ -181,7 +184,8 @@ struct scifioctl_fence_signal {
 	__s64		roff;
 	__u64		rval;
 	__s32		flags;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /**
  * struct scifioctl_node_ids - used for SCIF_GET_NODEIDS IOCTL
@@ -193,7 +197,8 @@ struct scifioctl_node_ids {
 	__u64	nodes;
 	__u64	self;
 	__s32	len;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 #define SCIF_BIND		_IOWR('s', 1, __u64)
 #define SCIF_LISTEN		_IOW('s', 2, __s32)

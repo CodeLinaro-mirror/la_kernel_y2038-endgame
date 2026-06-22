@@ -78,7 +78,7 @@ struct linux_arguments_v0 {
 	int dev_partition;
 	char *kernel_file_name;
 	void *aieee1;           /* XXX */
-};
+} __packed;
 
 /* V2 and up boot things. */
 struct linux_bootargs_v2 {

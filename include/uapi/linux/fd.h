@@ -4,6 +4,7 @@
 
 #include <linux/ioctl.h>
 #include <linux/compiler.h>
+#include <linux/types.h>
 
 /* New file layout: Now the ioctl definitions immediately follow the
  * definitions of the structures that they use */
@@ -126,6 +127,9 @@ typedef char floppy_drive_name[16];
  */
 struct floppy_drive_params {
 	signed char cmos;		/* CMOS type */
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
 
 	/* Spec2 is (HLD<<1 | ND), where HLD is head load time (1=2ms, 2=4 ms
 	 * etc) and ND is set means no DMA. Hardcoded to 6 (HLD=6ms, use DMA).
@@ -144,11 +148,14 @@ struct floppy_drive_params {
 	unsigned char select_delay;	/* delay to wait after select */
 	unsigned char rps;		/* rotations per second */
 	unsigned char tracks;		/* maximum number of tracks */
+	__uapi_arch_pad_long;
 	unsigned long timeout;		/* timeout for interrupt requests */
 
 	unsigned char interleave_sect;	/* if there are more sectors, use
 					 * interleave */
 
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	struct floppy_max_errors max_errors;
 
 	char flags;			/* various flags, including ftd_msg */
@@ -176,11 +183,13 @@ struct floppy_drive_params {
 #define FD_AUTODETECT_SIZE 8
 
 	short autodetect[FD_AUTODETECT_SIZE]; /* autodetected formats */
+	__uapi_arch_pad16;
 
 	int checkfreq; /* how often should the drive be checked for disk
 			* changes */
 	int native_format; /* native format of this drive */
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 enum {
 	FD_NEED_TWADDLE_BIT,	/* more magic */
@@ -234,7 +243,8 @@ struct floppy_drive_struct {
 
 	char *dmabuf;
 	int bufblocks;
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 #define FDGETDRVSTAT _IOR(2, 0x12, struct floppy_drive_struct)
 #define FDPOLLDRVSTAT _IOR(2, 0x13, struct floppy_drive_struct)
@@ -261,12 +271,16 @@ struct floppy_fdc_state {
 	int dtr;
 	unsigned char version;	/* FDC version code */
 	unsigned char dor;
+	__uapi_arch_pad16;
 	unsigned long address;	/* io address */
 	unsigned int rawcmd:2;
 	unsigned int reset:1;
 	unsigned int need_configure:1;
 	unsigned int perp_mode:2;
 	unsigned int has_fifo:1;
+	unsigned int :1;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	unsigned int driver_version;	/* version code for floppy driver */
 #define FD_DRIVER_VERSION 0x100
 /* user programs using the floppy API should use floppy_fdc_state to
@@ -284,8 +298,8 @@ struct floppy_fdc_state {
 	 * disagreement, it will be possible to reset the FDC without
 	 * incurring the expensive cost of repositioning all heads.
 	 * Right now, these positions are hard wired to 0. */
-
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 #define FDGETFDCSTAT _IOR(2, 0x15, struct floppy_fdc_state)
 
@@ -306,8 +320,10 @@ struct floppy_write_errors {
 				     * encountered */
 
 	/* position of first and last write errors */
+	__uapi_arch_pad_long;
 	unsigned long first_error_sector;
 	int           first_error_generation;
+	__uapi_arch_pad_long;
 	unsigned long last_error_sector;
 	int           last_error_generation;
 
@@ -351,6 +367,7 @@ struct floppy_raw_cmd {
 #define FD_RAW_FAILURE 0x10000 /* command sent to fdc, fdc returned error */
 #define FD_RAW_HARDFAILURE 0x20000 /* fdc had to be reset, or timed out */
 
+	__uapi_arch_pad_long;
 	void __user *data;
 	char *kernel_data; /* location of data buffer in the kernel */
 	struct floppy_raw_cmd *next; /* used for chaining of raw cmd's
@@ -379,12 +396,13 @@ struct floppy_raw_cmd {
 		};
 		unsigned char fullcmd[FD_RAW_CMD_FULLSIZE];
 	};
+	__uapi_arch_pad8;
 	int track;
 	int resultcode;
 
 	int reserved1;
 	int reserved2;
-};
+} __uapi_arch_align;
 
 #define FDRAWCMD _IO(2, 0x58)
 /* send a raw command to the fdc. Structure size not included, because of

@@ -68,13 +68,17 @@ enum vpfe_ccdc_gamma_width {
 struct vpfe_ccdc_a_law {
 	/* Enable/disable A-Law */
 	unsigned char enable;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	/* Gamma Width Input */
 	enum vpfe_ccdc_gamma_width gamma_wd;
-};
+} __uapi_arch_align;
 
 /* structure for Black Clamping */
 struct vpfe_ccdc_black_clamp {
 	unsigned char enable;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	/* only if bClampEnable is TRUE */
 	enum vpfe_ccdc_sample_length sample_pixel;
 	/* only if bClampEnable is TRUE */
@@ -85,7 +89,8 @@ struct vpfe_ccdc_black_clamp {
 	unsigned short sgain;
 	/* only if bClampEnable is FALSE */
 	unsigned short dc_sub;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* structure for Black Level Compensation */
 struct vpfe_ccdc_black_compensation {
@@ -111,7 +116,7 @@ struct vpfe_ccdc_config_params_raw {
 	struct vpfe_ccdc_black_clamp blk_clamp;
 	/* Structure for Black Compensation */
 	struct vpfe_ccdc_black_compensation blk_comp;
-};
+} __uapi_arch_align;
 
 /*
  *  Private IOCTL

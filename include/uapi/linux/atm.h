@@ -135,6 +135,8 @@
 
 struct atm_trafprm {
 	unsigned char	traffic_class;	/* traffic class (ATM_UBR, ...) */
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	int		max_pcr;	/* maximum PCR in cells per second */
 	int		pcr;		/* desired PCR in cells per second */
 	int		min_pcr;	/* minimum PCR in cells per second */
@@ -155,14 +157,17 @@ struct atm_trafprm {
 	unsigned int adtf      :10;     /* ACR Decrease Time Factor (10-bit) */
 	unsigned int cdf       :3;      /* Cutoff Decrease Factor (3-bit) */
         unsigned int spare     :9;      /* spare bits */ 
-};
+} __uapi_arch_align;
 
 struct atm_qos {
 	struct atm_trafprm txtp;	/* parameters in TX direction */
 	struct atm_trafprm rxtp __ATM_API_ALIGN;
 					/* parameters in RX direction */
 	unsigned char aal __ATM_API_ALIGN;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	__uapi_arch_atm_pad;
+} __uapi_arch_align;
 
 /* PVC addressing */
 
@@ -175,12 +180,14 @@ struct atm_qos {
 
 struct sockaddr_atmpvc {
 	unsigned short 	sap_family;	/* address family, AF_ATMPVC  */
+	__uapi_arch_pad16;
+	__uapi_arch_atm_pad;
 	struct {			/* PVC address */
 		short	itf;		/* ATM interface */
 		short	vpi;		/* VPI (only 8 bits at UNI) */
 		int	vci;		/* VCI (only 16 bits at UNI) */
 	} sap_addr __ATM_API_ALIGN;	/* PVC address */
-};
+} __uapi_arch_align;
 
 /* SVC addressing */
 
@@ -205,14 +212,17 @@ struct sockaddr_atmpvc {
 
 struct sockaddr_atmsvc {
     unsigned short 	sas_family;	/* address family, AF_ATMSVC */
+    __uapi_arch_pad16;
+    __uapi_arch_atm_pad;
     struct {				/* SVC address */
         unsigned char	prv[ATM_ESA_LEN];/* private ATM address */
         char		pub[ATM_E164_LEN+1]; /* public address (E.164) */
     					/* unused addresses must be bzero'ed */
 	char		lij_type;	/* role in LIJ call; one of ATM_LIJ* */
+        __uapi_arch_pad16;
 	__u32	lij_id;		/* LIJ call identifier */
-    } sas_addr __ATM_API_ALIGN;		/* SVC address */
-};
+    } __uapi_arch_align sas_addr __ATM_API_ALIGN; /* SVC address */
+} __uapi_arch_align;
 
 
 static __inline__ int atmsvc_addr_in_use(struct sockaddr_atmsvc addr)

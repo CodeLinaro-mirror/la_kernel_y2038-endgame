@@ -2,6 +2,9 @@
 #ifndef __LOONGARCH_UAPI_ASM_UCONTEXT_H
 #define __LOONGARCH_UAPI_ASM_UCONTEXT_H
 
+#include <asm/signal.h>
+#include <asm/sigcontext.h>
+
 /**
  * struct ucontext - user context structure
  * @uc_flags:
@@ -21,6 +24,7 @@ struct ucontext {
 	 * at the end of this structure and explicitly state it can be
 	 * expanded, so we didn't want to box ourselves in here. */
 	__u8		  __unused[1024 / 8 - sizeof(sigset_t)];
+	__u64	:64; /* align to alignof(struct sigcontext) */
 	/* We can't put uc_sigmask at the end of this structure because we need
 	 * to be able to expand sigcontext in the future.  For example, the
 	 * vector ISA extension will almost certainly add ISA state.  We want

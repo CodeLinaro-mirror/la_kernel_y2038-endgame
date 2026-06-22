@@ -202,9 +202,19 @@ struct rseq {
 	__u8 __reserved;
 
 	/*
-	 * Flexible array member at end of structure, after last feature field.
+	 * empty member at end of structure, after last named field.
 	 */
-	char end[];
+	__u8 end[0];
+
+	/*
+	 * anonymous pad to 32 byte alignment.
+	 */
+	__u8  :  8;
+	__u16 : 16;
+	__u32 : 32;
+	__u64 : 64;
+	__u64 : 64;
+	__u64 : 64;
 } __attribute__((aligned(32)));
 
 #endif /* _UAPI_LINUX_RSEQ_H */

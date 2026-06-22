@@ -58,7 +58,8 @@ struct rxe_global_route {
 	__u8		sgid_index;
 	__u8		hop_limit;
 	__u8		traffic_class;
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 struct rxe_av {
 	__u8			port_num;
@@ -88,6 +89,8 @@ struct rxe_send_wr {
 			__u32	rkey;
 			__u8	type;
 			__u8	level;
+			__u16 :16;
+			__u32 :32;
 		} flush;
 		struct {
 			__aligned_u64 remote_addr;

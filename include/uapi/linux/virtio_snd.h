@@ -407,6 +407,12 @@ struct virtio_snd_ctl_info {
 	__le32 index;
 	/* name identifier string for the element */
 	__u8 name[44];
+
+	/*
+	 * value union needs 64-bit alignment on some architectures, which
+	 * makes the layout architecture specific.
+	 */
+	__uapi_arch_pad32;
 	/* additional information about the element's value */
 	union {
 		/* VIRTIO_SND_CTL_TYPE_INTEGER */

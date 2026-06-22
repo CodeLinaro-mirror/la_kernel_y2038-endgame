@@ -412,9 +412,10 @@ struct ff_periodic_effect {
 
 	struct ff_envelope envelope;
 
+	__uapi_arch_pad16;
 	__u32 custom_len;
 	__s16 __user *custom_data;
-};
+} __uapi_arch_align;
 
 /**
  * struct ff_rumble_effect - defines parameters of a periodic force-feedback effect
@@ -442,6 +443,7 @@ struct ff_haptic_effect {
 	__u16 hid_usage;
 	__u16 vendor_id;
 	__u8  vendor_waveform_page;
+	__u8 :8;
 	__u16 intensity;
 	__u16 repeat_count;
 	__u16 retrigger_period;
@@ -477,6 +479,7 @@ struct ff_effect {
 	struct ff_trigger trigger;
 	struct ff_replay replay;
 
+	__uapi_arch_pad16;
 	union {
 		struct ff_constant_effect constant;
 		struct ff_ramp_effect ramp;
@@ -485,7 +488,7 @@ struct ff_effect {
 		struct ff_rumble_effect rumble;
 		struct ff_haptic_effect haptic;
 	} u;
-};
+} __uapi_arch_align;
 
 /*
  * Force feedback effect types

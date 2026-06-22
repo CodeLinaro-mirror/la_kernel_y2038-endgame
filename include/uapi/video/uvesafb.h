@@ -21,7 +21,7 @@ struct v86_regs {
 	__u16 ds;
 	__u16 fs;
 	__u16 gs;
-};
+} __uapi_arch_align;
 
 /* Task flags */
 #define TF_VBEIB	0x01
@@ -32,9 +32,11 @@ struct v86_regs {
 
 struct uvesafb_task {
 	__u8 flags;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	int buf_len;
 	struct v86_regs regs;
-};
+} __uapi_arch_align;
 
 /* Constants for the capabilities field
  * in vbe_ib */

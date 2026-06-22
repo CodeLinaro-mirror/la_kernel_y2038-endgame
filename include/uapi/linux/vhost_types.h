@@ -88,18 +88,21 @@ struct vhost_iotlb_msg {
 #define VHOST_IOTLB_BATCH_BEGIN    5
 #define VHOST_IOTLB_BATCH_END      6
 	__u8 type;
-};
+	__uapi_arch_pad16;
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 #define VHOST_IOTLB_MSG 0x1
 #define VHOST_IOTLB_MSG_V2 0x2
 
 struct vhost_msg {
 	int type;
+	__uapi_arch_pad32;
 	union {
 		struct vhost_iotlb_msg iotlb;
 		__u8 padding[64];
 	};
-};
+} __uapi_arch_align;
 
 struct vhost_msg_v2 {
 	__u32 type;

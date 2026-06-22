@@ -93,7 +93,10 @@ struct vduse_iotlb_entry {
 #define VDUSE_ACCESS_WO 0x2
 #define VDUSE_ACCESS_RW 0x3
 	__u8 perm;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /*
  * Find the first IOVA region that overlaps with the range [start, last]
@@ -213,7 +216,10 @@ struct vduse_vq_info {
 		struct vduse_vq_state_packed packed;
 	};
 	__u8 ready;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /* Get the specified virtqueue's information. Caller should set index field. */
 #define VDUSE_VQ_GET_INFO	_IOWR(VDUSE_BASE, 0x15, struct vduse_vq_info)
