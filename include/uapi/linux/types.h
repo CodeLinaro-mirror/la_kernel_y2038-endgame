@@ -59,5 +59,50 @@ typedef __u32 __bitwise __wsum;
 
 typedef unsigned __bitwise __poll_t;
 
+/*
+ * Annotations for padding in uapi structures:
+ * - all architectures align 16-bit members naturally
+ * - all except m68k align 32-bit members
+ * - all 64-bit architectures and most 32-bit ones align 64-bit members
+ *
+ * structures that have holes due to natural alignment should use these
+ * helpers to insert anonymous padding on architectures that need it.
+ *
+ * architectures must override __uapi_arch_pad{16,32} to skip the
+ * padding according to their ABI.
+ */
+#define __uapi_arch_pad8	__u8 :8
+#ifndef __uapi_arch_pad16
+#define __uapi_arch_pad16	__u16 :16
+#endif
+#ifndef __uapi_arch_pad32
+#define __uapi_arch_pad32	__u32 :32
+#endif
+
+/*
+ * Padding that is different between 32-bit and 64-bit targets,
+ * resulting from sizeof(long):
+ *
+ * - between a __u32 and a long/size_t/pointer
+ * - between a long and a __u64
+ * - between a long and an __aligned_u64
+ */
+#if __BITS_PER_LONG == 64
+#define __uapi_arch_pad_long			__uapi_arch_pad32
+#define __uapi_arch_pad_long_to_u64
+#define __uapi_arch_pad_long_to_aligned_u64
+#else
+#define __uapi_arch_pad_long
+#define __uapi_arch_pad_long_to_u64		__uapi_arch_pad32
+#define __uapi_arch_pad_long_to_aligned_u64	__u32 :32
+#endif
+
+#ifndef __uapi_arch_align
+#if 0
+#define __uapi_arch_align __attribute__((aligned(sizeof(__u32))))
+#endif
+#define __uapi_arch_align
+#endif
+
 #endif /*  __ASSEMBLY__ */
 #endif /* _UAPI_LINUX_TYPES_H */
