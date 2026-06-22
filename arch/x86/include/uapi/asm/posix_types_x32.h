@@ -14,6 +14,7 @@
 typedef long long __kernel_long_t;
 typedef unsigned long long __kernel_ulong_t;
 #define __kernel_long_t __kernel_long_t
+#define __uapi_arch_pad_kernel_long_t
 
 #include <asm/posix_types_64.h>
 

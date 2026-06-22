@@ -14,6 +14,7 @@
 #ifndef __kernel_long_t
 typedef long		__kernel_long_t;
 typedef unsigned long	__kernel_ulong_t;
+#define __uapi_arch_pad_kernel_long_t	__uapi_arch_pad_long
 #endif
 
 #ifndef __kernel_ino_t

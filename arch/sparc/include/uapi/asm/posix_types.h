@@ -22,6 +22,7 @@ typedef int		       __kernel_suseconds_t;
 typedef long		__kernel_long_t;
 typedef unsigned long	__kernel_ulong_t;
 #define __kernel_long_t __kernel_long_t
+#define __uapi_arch_pad_kernel_long_t __uapi_arch_pad_long
 
 struct __kernel_old_timeval {
 	__kernel_long_t tv_sec;
