@@ -43,6 +43,13 @@ struct statfs {
 #define ARCH_PACK_STATFS64
 #endif
 
+/*
+ * 32-bit architectures and alpha have 32-bit extra padding
+ */
+#ifndef __uapi_arch_pad_statfs64
+#define __uapi_arch_pad_statfs64 __uapi_arch_pad_long_to_u64
+#endif
+
 struct statfs64 {
 	__statfs_word f_type;
 	__statfs_word f_bsize;
@@ -56,6 +63,7 @@ struct statfs64 {
 	__statfs_word f_frsize;
 	__statfs_word f_flags;
 	__statfs_word f_spare[4];
+	__uapi_arch_pad_statfs64;
 } ARCH_PACK_STATFS64;
 
 /* 
@@ -64,6 +72,9 @@ struct statfs64 {
  */
 #ifndef ARCH_PACK_COMPAT_STATFS64
 #define ARCH_PACK_COMPAT_STATFS64
+#define __uapi_arch_pad_compat_statfs64 __uapi_arch_pad32
+#else
+#define __uapi_arch_pad_compat_statfs64
 #endif
 
 struct compat_statfs64 {
@@ -79,6 +90,9 @@ struct compat_statfs64 {
 	__u32 f_frsize;
 	__u32 f_flags;
 	__u32 f_spare[4];
+	__uapi_arch_pad_compat_statfs64;
 } ARCH_PACK_COMPAT_STATFS64;
+
+#undef __compat_statfs64_pad
 
 #endif /* _UAPI_GENERIC_STATFS_H */
