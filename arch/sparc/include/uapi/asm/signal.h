@@ -2,6 +2,7 @@
 #ifndef _UAPI__SPARC_SIGNAL_H
 #define _UAPI__SPARC_SIGNAL_H
 
+#include <linux/types.h>
 #include <asm/sigcontext.h>
 #include <linux/compiler.h>
 
@@ -118,7 +119,8 @@ struct sigstack {
 	/* XXX 32-bit pointers pinhead XXX */
 	char *the_stack;
 	int   cur_status;
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 /* Sigvec flags */
 #define _SV_SSTACK    1u    /* This signal handler should use sig-stack */
@@ -172,8 +174,9 @@ struct __old_sigaction {
 typedef struct sigaltstack {
 	void			__user *ss_sp;
 	int			ss_flags;
+	__uapi_arch_pad_long;
 	__kernel_size_t		ss_size;
-} stack_t;
+} __uapi_arch_align stack_t;
 
 
 #endif /* !(__ASSEMBLER__) */
