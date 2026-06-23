@@ -126,10 +126,11 @@ struct snd_hwdep_dsp_status {
 struct snd_hwdep_dsp_image {
 	unsigned int index;		/* W: DSP index */
 	unsigned char name[64];		/* W: ID (e.g. file name) */
+	__uapi_arch_pad_long;
 	unsigned char __user *image;	/* W: binary image */
-	size_t length;			/* W: size of image in bytes */
+	__kernel_size_t length;		/* W: size of image in bytes */
 	unsigned long driver_data;	/* W: driver-specific data */
-};
+} __uapi_arch_align;
 
 #define SNDRV_HWDEP_IOCTL_PVERSION	_IOR ('H', 0x00, int)
 #define SNDRV_HWDEP_IOCTL_INFO		_IOR ('H', 0x01, struct snd_hwdep_info)
@@ -397,7 +398,10 @@ struct snd_interval {
 		     openmax:1,
 		     integer:1,
 		     empty:1;
-};
+	unsigned int :4;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #define SNDRV_MASK_MAX	256
 
@@ -422,7 +426,7 @@ struct snd_pcm_hw_params {
 	snd_pcm_uframes_t fifo_size;	/* R: chip FIFO size in frames */
 	unsigned char sync[16];		/* R: synchronization ID (perfect sync - one clock source) */
 	unsigned char reserved[48];	/* reserved for future */
-};
+} __uapi_arch_align;
 
 enum {
 	SNDRV_PCM_TSTAMP_NONE = 0,
@@ -434,6 +438,7 @@ struct snd_pcm_sw_params {
 	int tstamp_mode;			/* timestamp mode */
 	unsigned int period_step;
 	unsigned int sleep_min;			/* min ticks to sleep */
+	__uapi_arch_pad_long;
 	snd_pcm_uframes_t avail_min;		/* min avail frames for wakeup */
 	snd_pcm_uframes_t xfer_align;		/* obsolete: xfer size need to be a multiple */
 	snd_pcm_uframes_t start_threshold;	/* min hw_avail frames for automatic start */
@@ -449,14 +454,15 @@ struct snd_pcm_sw_params {
 	unsigned int proto;			/* protocol version */
 	unsigned int tstamp_type;		/* timestamp type (req. proto >= 2.0.12) */
 	unsigned char reserved[56];		/* reserved for future */
-};
+} __uapi_arch_align;
 
 struct snd_pcm_channel_info {
 	unsigned int channel;
+	__uapi_arch_pad_long;
 	__kernel_off_t offset;		/* mmap offset */
 	unsigned int first;		/* offset to first sample in bits */
 	unsigned int step;		/* samples distance in bits */
-};
+} __uapi_arch_align;
 
 enum {
 	/*
@@ -528,12 +534,17 @@ struct __snd_timespec64 {
 
 #endif
 
+#define __snd_pad_long_to_timespec	__uapi_arch_pad_long_to_u64
+#define __snd_pad_int_to_timespec	__uapi_arch_pad32
+
 struct __snd_pcm_mmap_status {
 	snd_pcm_state_t state;		/* RO: state - SNDRV_PCM_STATE_XXXX */
 	int pad1;			/* Needed for 64 bit alignment */
 	snd_pcm_uframes_t hw_ptr;	/* RO: hw ptr (0...boundary-1) */
+	__snd_pad_long_to_timespec;
 	struct __snd_timespec tstamp;	/* Timestamp */
 	snd_pcm_state_t suspended_state; /* RO: suspended stream state */
+	__snd_pad_int_to_timespec;
 	struct __snd_timespec audio_tstamp; /* from sample counter or wall clock */
 };
 
@@ -548,6 +559,7 @@ struct __snd_pcm_mmap_control {
 
 struct __snd_pcm_sync_ptr {
 	unsigned int flags;
+	__uapi_arch_pad32;
 	union {
 		struct __snd_pcm_mmap_status status;
 		unsigned char reserved[64];
@@ -583,8 +595,8 @@ struct __snd_pcm_mmap_status64 {
 struct __snd_pcm_mmap_control64 {
 	__pad_before_uframe __pad1;
 	snd_pcm_uframes_t appl_ptr;	 /* RW: appl ptr (0...boundary-1) */
-	__pad_before_uframe __pad2;	 // This should be __pad_after_uframe, but binary
-					 // backwards compatibility constraints prevent a fix.
+	__pad_before_uframe __pad2;	 /* This should be __pad_after_uframe, but binary
+					   backwards compatibility constraints prevent a fix. */
 
 	__pad_before_uframe __pad3;
 	snd_pcm_uframes_t  avail_min;	 /* RW: min available frames for wakeup */
@@ -774,20 +786,25 @@ struct snd_rawmidi_framing_tstamp {
 
 struct snd_rawmidi_params {
 	int stream;
-	size_t buffer_size;		/* queue size in bytes */
-	size_t avail_min;		/* minimum avail bytes for wakeup */
+	__uapi_arch_pad_long;
+	__kernel_size_t buffer_size;	/* queue size in bytes */
+	__kernel_size_t avail_min;	/* minimum avail bytes for wakeup */
 	unsigned int no_active_sensing: 1; /* do not send active sensing byte in close() */
+	unsigned int :7;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	unsigned int mode;		/* For input data only, frame incoming data */
 	unsigned char reserved[12];	/* reserved for future use */
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 #ifndef __KERNEL__
 struct snd_rawmidi_status {
 	int stream;
 	__time_pad pad1;
 	struct timespec tstamp;		/* Timestamp */
-	size_t avail;			/* available bytes */
-	size_t xruns;			/* count of overruns since last status (in bytes) */
+	__kernel_size_t avail;		/* available bytes */
+	__kernel_size_t xruns;		/* count of overruns since last status (in bytes) */
 	unsigned char reserved[16];	/* reserved for future use */
 };
 #endif
@@ -917,28 +934,32 @@ struct snd_timer_ginfo {
 	int card;			/* card number */
 	unsigned char id[64];		/* timer identification */
 	unsigned char name[80];		/* timer name */
+	__uapi_arch_pad_long;
 	unsigned long reserved0;	/* reserved for future use */
 	unsigned long resolution;	/* average period resolution in ns */
 	unsigned long resolution_min;	/* minimal period resolution in ns */
 	unsigned long resolution_max;	/* maximal period resolution in ns */
 	unsigned int clients;		/* active timer clients */
 	unsigned char reserved[32];
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 struct snd_timer_gparams {
 	struct snd_timer_id tid;	/* requested timer ID */
+	__uapi_arch_pad_long;
 	unsigned long period_num;	/* requested precise period duration (in seconds) - numerator */
 	unsigned long period_den;	/* requested precise period duration (in seconds) - denominator */
 	unsigned char reserved[32];
-};
+} __uapi_arch_align;
 
 struct snd_timer_gstatus {
 	struct snd_timer_id tid;	/* requested timer ID */
+	__uapi_arch_pad_long;
 	unsigned long resolution;	/* current period resolution in ns */
 	unsigned long resolution_num;	/* precise current period resolution (in seconds) - numerator */
 	unsigned long resolution_den;	/* precise current period resolution (in seconds) - denominator */
 	unsigned char reserved[32];
-};
+} __uapi_arch_align;
 
 struct snd_timer_select {
 	struct snd_timer_id id;	/* bind to timer ID */
@@ -1134,7 +1155,9 @@ struct snd_ctl_elem_list {
 	unsigned int count;		/* R: count of all elements */
 	struct snd_ctl_elem_id __user *pids; /* R: IDs */
 	unsigned char reserved[50];
-};
+	__uapi_arch_pad16;
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 struct snd_ctl_elem_info {
 	struct snd_ctl_elem_id id;	/* W: element ID */
@@ -1159,6 +1182,7 @@ struct snd_ctl_elem_info {
 			char name[64];		/* R: value name */
 			__u64 names_ptr;	/* W: names list (ELEM_ADD only) */
 			unsigned int names_length;
+			__uapi_arch_pad32;
 		} enumerated;
 		unsigned char reserved[128];
 	} value;
@@ -1168,6 +1192,10 @@ struct snd_ctl_elem_info {
 struct snd_ctl_elem_value {
 	struct snd_ctl_elem_id id;	/* W: element ID */
 	unsigned int indirect: 1;	/* W: indirect access - obsoleted */
+	unsigned int :7;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	__uapi_arch_pad32;
 	union {
 		union {
 			long value[128];
@@ -1188,7 +1216,7 @@ struct snd_ctl_elem_value {
 		struct snd_aes_iec958 iec958;
 	} value;		/* RO */
 	unsigned char reserved[128];
-};
+} __uapi_arch_align;
 
 struct snd_ctl_tlv {
 	unsigned int numid;	/* control element numeric identification */
