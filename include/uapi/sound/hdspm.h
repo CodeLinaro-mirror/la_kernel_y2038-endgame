@@ -39,8 +39,10 @@ struct hdspm_peak_rms {
 	__u64 output_rms[64];
 
 	__u8 speed; /* enum {ss, ds, qs} */
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	int status2;
-};
+} __uapi_arch_align;
 
 #define SNDRV_HDSPM_IOCTL_GET_PEAK_RMS \
 	_IOR('H', 0x42, struct hdspm_peak_rms)
@@ -51,6 +53,7 @@ struct hdspm_config {
 	unsigned char pref_sync_ref;
 	unsigned char wordclock_sync_check;
 	unsigned char madi_sync_check;
+	__uapi_arch_pad8;
 	unsigned int system_sample_rate;
 	unsigned int autosync_sample_rate;
 	unsigned char system_clock_mode;
@@ -59,7 +62,7 @@ struct hdspm_config {
 	unsigned char line_out;
 	unsigned int passthru;
 	unsigned int analog_out;
-};
+} __uapi_arch_align;
 
 #define SNDRV_HDSPM_IOCTL_GET_CONFIG \
 	_IOR('H', 0x41, struct hdspm_config)
@@ -140,6 +143,8 @@ enum hdspm_syncsource {
 
 struct hdspm_status {
 	__u8 card_type; /* enum hdspm_io_type */
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	enum hdspm_syncsource autosync_source;
 
 	__u64 card_clock;
@@ -156,7 +161,9 @@ struct hdspm_status {
 			__u8 frame_format; /* enum hdspm_madi_frame_format */
 		} madi;
 	} card_specific;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 #define SNDRV_HDSPM_IOCTL_GET_STATUS \
 	_IOR('H', 0x47, struct hdspm_status)
@@ -170,10 +177,13 @@ struct hdspm_status {
 struct hdspm_version {
 	__u8 card_type; /* enum hdspm_io_type */
 	char cardname[20];
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	unsigned int serial;
 	unsigned short firmware_rev;
+	__uapi_arch_pad16;
 	int addons;
-};
+} __uapi_arch_align;
 
 #define SNDRV_HDSPM_IOCTL_GET_VERSION _IOR('H', 0x48, struct hdspm_version)
 

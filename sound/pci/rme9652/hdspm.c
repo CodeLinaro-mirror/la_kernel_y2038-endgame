@@ -6082,6 +6082,31 @@ static int snd_hdspm_hwdep_dummy_op(struct snd_hwdep *hw, struct file *file)
 	return 0;
 }
 
+struct compat_hdspm_status {
+	__u8 card_type; /* enum hdspm_io_type */
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	enum hdspm_syncsource autosync_source;
+
+	compat_u64 card_clock;
+	__u32 master_period;
+
+	union {
+		struct {
+			__u8 sync_wc; /* enum hdspm_sync */
+			__u8 sync_madi; /* enum hdspm_sync */
+			__u8 sync_tco; /* enum hdspm_sync */
+			__u8 sync_in; /* enum hdspm_sync */
+			__u8 madi_input; /* enum hdspm_madi_input */
+			__u8 channel_format; /* enum hdspm_madi_channel_format */
+			__u8 frame_format; /* enum hdspm_madi_frame_format */
+		} madi;
+	} card_specific;
+	__uapi_arch_pad8;
+	/* x86-32 does not have padding here */
+};
+#define COMPAT_SNDRV_HDSPM_IOCTL_GET_STATUS _IOR('H', 0x47, struct compat_hdspm_status)
+
 static int snd_hdspm_hwdep_ioctl(struct snd_hwdep *hw, struct file *file,
 		unsigned int cmd, unsigned long arg)
 {
@@ -6095,6 +6120,7 @@ static int snd_hdspm_hwdep_ioctl(struct snd_hwdep *hw, struct file *file,
 	struct hdspm_ltc ltc;
 	unsigned int statusregister;
 	long unsigned int s;
+	int len;
 	int i = 0;
 
 	switch (cmd) {
@@ -6213,6 +6239,11 @@ static int snd_hdspm_hwdep_ioctl(struct snd_hwdep *hw, struct file *file,
 		break;
 
 	case SNDRV_HDSPM_IOCTL_GET_STATUS:
+#ifdef CONFIG_X86_64
+	case COMPAT_SNDRV_HDSPM_IOCTL_GET_STATUS:
+#endif
+		len = _IOC_SIZE(cmd);
+
 		memset(&status, 0, sizeof(status));
 
 		status.card_type = hdspm->io_type;
@@ -6248,7 +6279,7 @@ static int snd_hdspm_hwdep_ioctl(struct snd_hwdep *hw, struct file *file,
 			break;
 		}
 
-		if (copy_to_user(argp, &status, sizeof(status)))
+		if (copy_to_user(argp, &status, len))
 			return -EFAULT;
 
 
