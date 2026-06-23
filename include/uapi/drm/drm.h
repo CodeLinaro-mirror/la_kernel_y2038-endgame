@@ -251,7 +251,12 @@ struct drm_stats {
 	unsigned long count;
 	struct {
 		unsigned long value;
+#ifdef __hexagon__
+		/* hexagon uses short enums */
+		__u32 type;
+#else
 		enum drm_stat_type type;
+#endif
 	} data[15];
 };
 

@@ -226,7 +226,12 @@ struct drm_vmw_surface_create_req {
 
 struct drm_vmw_surface_arg {
 	__s32 sid;
+#ifdef __hexagon__
+	/* hexagon uses short enums */
+	__u32 handle_type;
+#else
 	enum drm_vmw_handle_type handle_type;
+#endif
 };
 
 /**
@@ -864,7 +869,11 @@ enum drm_vmw_shader_type {
  * Input / Output argument to the DRM_VMW_CREATE_SHADER Ioctl.
  */
 struct drm_vmw_shader_create_arg {
+#ifdef __hexagon__
+	__u32 shader_type;
+#else
 	enum drm_vmw_shader_type shader_type;
+#endif
 	__u32 size;
 	__u32 buffer_handle;
 	__u32 shader_handle;
@@ -940,7 +949,11 @@ struct drm_vmw_gb_surface_create_req {
 	__u32 svga3d_flags;
 	__u32 format;
 	__u32 mip_levels;
+#ifdef __hexagon__
+	__u32 drm_surface_flags;
+#else
 	enum drm_vmw_surface_flags drm_surface_flags;
+#endif
 	__u32 multisample_count;
 	__u32 autogen_filter;
 	__u32 buffer_handle;
@@ -1169,7 +1182,11 @@ enum drm_vmw_surface_version {
  */
 struct drm_vmw_gb_surface_create_ext_req {
 	struct drm_vmw_gb_surface_create_req base;
+#ifdef __hexagon__
+	__u32 version;
+#else
 	enum drm_vmw_surface_version version;
+#endif
 	__u32 svga3d_flags_upper_32_bits;
 	__u32 multisample_pattern;
 	__u32 quality_level;

@@ -1010,7 +1010,12 @@ typedef enum fe_delivery_system fe_delivery_system_t;
 
 struct dvb_qpsk_parameters {
 	__u32		symbol_rate;  /* symbol rate in Symbols per second */
+#ifdef __hexagon__
+	/* hexagon uses short enums */
+	__u32		fec_inner;
+#else
 	fe_code_rate_t	fec_inner;    /* forward error correction (see above) */
+#endif
 };
 
 struct dvb_qam_parameters {
