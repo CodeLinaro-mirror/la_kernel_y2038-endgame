@@ -1100,7 +1100,7 @@ struct sctp_paddrthlds {
 	struct sockaddr_storage spt_address;
 	__u16 spt_pathmaxrxt;
 	__u16 spt_pathpfthld;
-};
+} __uapi_arch_align;
 
 /* Use a new structure with spt_pathcpthld for back compatibility */
 struct sctp_paddrthlds_v2 {
@@ -1237,6 +1237,6 @@ struct sctp_probeinterval {
 	sctp_assoc_t spi_assoc_id;
 	struct sockaddr_storage spi_address;
 	__u32 spi_interval;
-};
+} __uapi_arch_align;
 
 #endif /* _UAPI_SCTP_H */
