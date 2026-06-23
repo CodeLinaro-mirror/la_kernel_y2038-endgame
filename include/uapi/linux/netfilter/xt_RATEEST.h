@@ -14,6 +14,7 @@ struct xt_rateest_target_info {
 
 	/* Used internally by the kernel */
 	struct xt_rateest	*est __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 
 #endif /* _XT_RATEEST_TARGET_H */

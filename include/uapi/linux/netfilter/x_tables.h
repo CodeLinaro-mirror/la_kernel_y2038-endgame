@@ -19,10 +19,12 @@ struct xt_entry_match {
 		} user;
 		struct {
 			__u16 match_size;
+			__uapi_arch_pad16;
+			__uapi_arch_pad_long;
 
 			/* Used inside the kernel */
 			struct xt_match *match;
-		} kernel;
+		} __uapi_arch_align kernel;
 
 		/* Total length */
 		__u16 match_size;
@@ -42,10 +44,12 @@ struct xt_entry_target {
 		} user;
 		struct {
 			__u16 target_size;
+			__uapi_arch_pad16;
+			__uapi_arch_pad_long;
 
 			/* Used inside the kernel */
 			struct xt_target *target;
-		} kernel;
+		} __uapi_arch_align kernel;
 
 		/* Total length */
 		__u16 target_size;

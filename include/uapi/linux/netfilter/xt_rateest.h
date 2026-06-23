@@ -34,7 +34,9 @@ struct xt_rateest_match_info {
 
 	/* Used internally by the kernel */
 	struct xt_rateest	*est1 __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 	struct xt_rateest	*est2 __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 
 #endif /* _XT_RATEEST_MATCH_H */

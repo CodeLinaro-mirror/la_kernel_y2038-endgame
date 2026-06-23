@@ -22,6 +22,7 @@ struct xt_bpf_info {
 
 	/* only used in the kernel */
 	struct bpf_prog *filter __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 } __uapi_arch_align;
 
 enum xt_bpf_modes {
@@ -42,6 +43,7 @@ struct xt_bpf_info_v1 {
 
 	/* only used in the kernel */
 	struct bpf_prog *filter __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 
 #endif /*_XT_BPF_H */

@@ -26,6 +26,7 @@ struct idletimer_tg_info {
 
 	/* for kernel module internal use only */
 	struct idletimer_tg *timer __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 
 struct idletimer_tg_info_v1 {
@@ -40,5 +41,6 @@ struct idletimer_tg_info_v1 {
 
 	/* for kernel module internal use only */
 	struct idletimer_tg *timer __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 #endif

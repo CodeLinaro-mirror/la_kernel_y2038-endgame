@@ -109,6 +109,7 @@ struct xt_hashlimit_mtinfo1 {
 
 	/* Used internally by the kernel */
 	struct xt_hashlimit_htable *hinfo __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 
 struct xt_hashlimit_mtinfo2 {
@@ -121,6 +122,7 @@ struct xt_hashlimit_mtinfo2 {
 
 	/* Used internally by the kernel */
 	struct xt_hashlimit_htable *hinfo __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 
 struct xt_hashlimit_mtinfo3 {
@@ -135,6 +137,7 @@ struct xt_hashlimit_mtinfo3 {
 #endif
 	/* Used internally by the kernel */
 	struct xt_hashlimit_htable *hinfo __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 
 #endif /* _UAPI_XT_HASHLIMIT_H */

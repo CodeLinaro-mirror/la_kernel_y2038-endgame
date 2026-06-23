@@ -31,7 +31,9 @@ struct xt_statistic_info {
 			__u32	count; /* unused */
 		} nth;
 	} u;
+	/* Used internally by the kernel */
 	struct xt_statistic_priv *master __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 
 #endif /* _XT_STATISTIC_H */

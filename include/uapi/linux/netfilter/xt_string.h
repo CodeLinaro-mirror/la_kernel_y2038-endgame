@@ -31,6 +31,7 @@ struct xt_string_info {
 
 	/* Used internally by the kernel */
 	struct ts_config __attribute__((aligned(8))) *config;
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 
 #endif /*_XT_STRING_H*/

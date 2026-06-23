@@ -20,6 +20,7 @@ struct xt_cgroup_info_v1 {
 
 	/* kernel internal data */
 	void		*priv __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 
 #define XT_CGROUP_PATH_MAX	512
@@ -37,6 +38,7 @@ struct xt_cgroup_info_v2 {
 
 	/* kernel internal data */
 	void		*priv __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 
 #endif /* _UAPI_XT_CGROUP_H */

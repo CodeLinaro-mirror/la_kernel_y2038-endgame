@@ -26,6 +26,7 @@ struct xt_ct_target_info {
 
 	/* Used internally by the kernel */
 	struct nf_conn	*ct __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 
 struct xt_ct_target_info_v1 {
@@ -39,6 +40,7 @@ struct xt_ct_target_info_v1 {
 
 	/* Used internally by the kernel */
 	struct nf_conn	*ct __attribute__((aligned(8)));
+	__uapi_arch_pad_long_to_aligned_u64;
 };
 
 #endif /* _XT_CT_H */
