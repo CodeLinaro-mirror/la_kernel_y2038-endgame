@@ -7304,6 +7304,12 @@ static int sctp_getsockopt_assoc_stats(struct sock *sk, int len,
 	if (len < sizeof(sctp_assoc_t))
 		return -EINVAL;
 
+#ifdef CONFIG_X86_64
+	/* FIXME: need to convert sctp_assoc_stats layout */
+	if (in_ia32_syscall())
+		return -ENOSYS;
+#endif
+
 	/* Allow the struct to grow and fill in as much as possible */
 	len = min_t(size_t, len, sizeof(sas));
 

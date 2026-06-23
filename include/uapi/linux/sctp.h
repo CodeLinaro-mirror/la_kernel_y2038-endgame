@@ -213,13 +213,14 @@ struct sctp_sndrcvinfo {
 	__u16 sinfo_stream;
 	__u16 sinfo_ssn;
 	__u16 sinfo_flags;
+	__uapi_arch_pad16;
 	__u32 sinfo_ppid;
 	__u32 sinfo_context;
 	__u32 sinfo_timetolive;
 	__u32 sinfo_tsn;
 	__u32 sinfo_cumtsn;
 	sctp_assoc_t sinfo_assoc_id;
-};
+} __uapi_arch_align;
 
 /* 5.3.4 SCTP Send Information Structure (SCTP_SNDINFO)
  *
@@ -250,12 +251,13 @@ struct sctp_rcvinfo {
 	__u16 rcv_sid;
 	__u16 rcv_ssn;
 	__u16 rcv_flags;
+	__uapi_arch_pad16;
 	__u32 rcv_ppid;
 	__u32 rcv_tsn;
 	__u32 rcv_cumtsn;
 	__u32 rcv_context;
 	sctp_assoc_t rcv_assoc_id;
-};
+} __uapi_arch_align;
 
 /* 5.3.6 SCTP Next Receive Information Structure (SCTP_NXTINFO)
  *
@@ -286,8 +288,9 @@ struct sctp_nxtinfo {
  */
 struct sctp_prinfo {
 	__u16 pr_policy;
+	__uapi_arch_pad16;
 	__u32 pr_value;
-};
+} __uapi_arch_align;
 
 /* 5.3.8 SCTP AUTH Information Structure (SCTP_AUTHINFO)
  *
@@ -435,9 +438,10 @@ struct sctp_remote_error {
 	__u16 sre_flags;
 	__u32 sre_length;
 	__be16 sre_error;
+	__uapi_arch_pad16;
 	sctp_assoc_t sre_assoc_id;
 	__u8 sre_data[];
-};
+} __uapi_arch_align;
 
 
 /*
@@ -454,7 +458,7 @@ struct sctp_send_failed {
 	struct sctp_sndrcvinfo ssf_info;
 	sctp_assoc_t ssf_assoc_id;
 	__u8 ssf_data[];
-};
+} __uapi_arch_align;
 
 struct sctp_send_failed_event {
 	__u16 ssf_type;
@@ -813,6 +817,7 @@ struct sctp_paddrparams {
 	__u32			spp_flags;
 	__u32			spp_ipv6_flowlabel;
 	__u8			spp_dscp;
+	__u8			:8;
 } __attribute__((packed, aligned(4)));
 
 /*
@@ -844,8 +849,11 @@ enum {
 
 struct sctp_hmacalgo {
 	__u32		shmac_num_idents;
-	__u16		shmac_idents[];
-};
+	union {
+		__uapi_arch_pad32;
+		__DECLARE_FLEX_ARRAY(__u16, shmac_idents);
+	};
+} __uapi_arch_align;
 
 /* Sadly, user and kernel space have different names for
  * this structure member, so this is to not break anything.
@@ -875,7 +883,8 @@ struct sctp_authkey {
 struct sctp_authkeyid {
 	sctp_assoc_t	scact_assoc_id;
 	__u16		scact_keynumber;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 
 /*
@@ -1036,11 +1045,14 @@ struct sctp_getaddrs {
  * association stats. All stats are counts except sas_maxrto and
  * sas_obs_rto_ipaddr. maxrto is the max observed rto + transport since
  * the last call. Will return 0 when RTO was not update since last call
+ *
+ * FIXME: this needs compat sockopt support on x86-64
  */
 struct sctp_assoc_stats {
 	sctp_assoc_t	sas_assoc_id;    /* Input */
 					 /* Transport of observed max RTO */
 	struct sockaddr_storage sas_obs_rto_ipaddr;
+	__uapi_arch_pad32;		 /* pad to alignof(u64) */
 	__u64		sas_maxrto;      /* Maximum Observed RTO for period */
 	__u64		sas_isacks;	 /* SACKs received */
 	__u64		sas_osacks;	 /* SACKs sent */
@@ -1056,7 +1068,7 @@ struct sctp_assoc_stats {
 	__u64		sas_iodchunks;	 /* Ordered data chunks received */
 	__u64		sas_octrlchunks; /* Control chunks sent */
 	__u64		sas_ictrlchunks; /* Control chunks received */
-};
+} __uapi_arch_align;
 
 /*
  * 8.1 sctp_bindx()
@@ -1097,7 +1109,8 @@ struct sctp_paddrthlds_v2 {
 	__u16 spt_pathmaxrxt;
 	__u16 spt_pathpfthld;
 	__u16 spt_pathcpthld;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /*
  * Socket Option for Getting the Association/Stream-Specific PR-SCTP Status
@@ -1114,7 +1127,8 @@ struct sctp_default_prinfo {
 	sctp_assoc_t pr_assoc_id;
 	__u32 pr_value;
 	__u16 pr_policy;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct sctp_info {
 	__u32	sctpi_tag;
@@ -1197,13 +1211,15 @@ struct sctp_event {
 	sctp_assoc_t se_assoc_id;
 	uint16_t se_type;
 	uint8_t se_on;
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 struct sctp_udpencaps {
 	sctp_assoc_t sue_assoc_id;
 	struct sockaddr_storage sue_address;
 	uint16_t sue_port;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* SCTP Stream schedulers */
 enum sctp_sched_type {
