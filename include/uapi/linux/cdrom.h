@@ -213,9 +213,11 @@ struct cdrom_subchnl
 	__u8	cdsc_ctrl:	4;
 	__u8	cdsc_trk;
 	__u8	cdsc_ind;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	union cdrom_addr cdsc_absaddr;
 	union cdrom_addr cdsc_reladdr;
-};
+} __uapi_arch_align;
 
 
 /* This struct is used by the CDROMREADTOCENTRY ioctl */
@@ -225,26 +227,34 @@ struct cdrom_tocentry
 	__u8	cdte_adr	:4;
 	__u8	cdte_ctrl	:4;
 	__u8	cdte_format;
+	__uapi_arch_pad8;
 	union cdrom_addr cdte_addr;
 	__u8	cdte_datamode;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
-/* This struct is used by the CDROMREADMODE1, and CDROMREADMODE2 ioctls */
+/* This struct was never used */
 struct cdrom_read      
 {
 	int	cdread_lba;
+	__uapi_arch_pad_long;
 	char 	*cdread_bufaddr;
 	int	cdread_buflen;
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 
 /* This struct is used by the CDROMREADAUDIO ioctl */
 struct cdrom_read_audio
 {
 	union cdrom_addr addr; /* frame address */
 	__u8 addr_format;      /* CDROM_LBA or CDROM_MSF */
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	int nframes;           /* number of 2352-byte-frames to read at once */
+	__uapi_arch_pad_long;
 	__u8 __user *buf;      /* frame buffer (size: nframes*2352 bytes) */
-};
+} __uapi_arch_align;
 
 /* This struct is used with the CDROMMULTISESSION ioctl */
 struct cdrom_multisession
@@ -254,7 +264,8 @@ struct cdrom_multisession
 	                           if the "xa_flag" is true. */
 	__u8 xa_flag;        /* 1: "is XA disk" */
 	__u8 addr_format;    /* CDROM_LBA or CDROM_MSF */
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* This struct is used with the CDROM_GET_MCN ioctl.  
  * Very few audio discs actually have Universal Product Code information, 
@@ -271,7 +282,8 @@ struct cdrom_blk
 {
 	unsigned from;
 	unsigned short len;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #define CDROM_PACKET_SIZE	12
 
@@ -280,22 +292,26 @@ struct cdrom_blk
 #define CGC_DATA_READ		2
 #define CGC_DATA_NONE		3
 
-/* for CDROM_PACKET_COMMAND ioctl */
+/* for CDROM_SEND_PACKET ioctl */
 struct cdrom_generic_command
 {
 	unsigned char 		cmd[CDROM_PACKET_SIZE];
+	__uapi_arch_pad_long;
 	unsigned char		__user *buffer;
 	unsigned int 		buflen;
 	int			stat;
 	struct request_sense	__user *sense;
 	unsigned char		data_direction;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	int			quiet;
 	int			timeout;
+	__uapi_arch_pad_long;
 	union {
 		void		__user *reserved[1];	/* unused, actually */
 		void            __user *unused;
 	};
-};
+} __uapi_arch_align;
 
 /* This struct is used by CDROM_TIMED_MEDIA_CHANGE */
 struct cdrom_timed_media_change_info {
