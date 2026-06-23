@@ -2,6 +2,8 @@
 #ifndef __LINUX_BRIDGE_EBT_MARK_T_H
 #define __LINUX_BRIDGE_EBT_MARK_T_H
 
+#include <linux/types.h>
+
 /* The target member is reused for adding new actions, the
  * value of the real target is -1 to -NUM_STANDARD_TARGETS.
  * For backward compatibility, the 4 lsb (2 would be enough,
@@ -18,7 +20,8 @@ struct ebt_mark_t_info {
 	unsigned long mark;
 	/* EBT_ACCEPT, EBT_DROP, EBT_CONTINUE or EBT_RETURN */
 	int target;
-};
+	__uapi_arch_pad_long;
+} __uapi_arch_align;
 #define EBT_MARK_TARGET "mark"
 
 #endif

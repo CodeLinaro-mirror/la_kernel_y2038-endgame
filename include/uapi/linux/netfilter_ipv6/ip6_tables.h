@@ -122,19 +122,21 @@ struct ip6t_entry {
 
 	/* Back pointer */
 	unsigned int comefrom;
+	__uapi_arch_pad32;
 
 	/* Packet and byte counters. */
 	struct xt_counters counters;
 
 	/* The matches (if any), then the target. */
 	unsigned char elems[0];
-};
+} __uapi_arch_align;
 
 /* Standard entry */
 struct ip6t_standard {
 	struct ip6t_entry entry;
 	struct xt_standard_target target;
-};
+	__uapi_arch_pad_long_to_u64;
+} __uapi_arch_align;
 
 struct ip6t_error {
 	struct ip6t_entry entry;
@@ -243,10 +245,11 @@ struct ip6t_replace {
 	unsigned int num_counters;
 	/* The old entries' counters. */
 	struct xt_counters __user *counters;
+	__uapi_arch_pad_long_to_u64;
 
 	/* The entries (hang off end: not really an array). */
 	struct ip6t_entry entries[];
-};
+} __uapi_arch_align;
 
 /* The argument to IP6T_SO_GET_ENTRIES. */
 struct ip6t_get_entries {
@@ -255,10 +258,11 @@ struct ip6t_get_entries {
 
 	/* User fills this in: total entry size. */
 	unsigned int size;
+	__uapi_arch_pad32;
 
 	/* The entries. */
 	struct ip6t_entry entrytable[];
-};
+} __uapi_arch_align;;
 
 /* Helper functions */
 static __inline__ struct xt_entry_target *

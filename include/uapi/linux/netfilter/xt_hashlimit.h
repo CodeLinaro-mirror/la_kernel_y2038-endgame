@@ -44,6 +44,7 @@ struct hashlimit_cfg {
 struct xt_hashlimit_info {
 	char name [IFNAMSIZ];		/* name */
 	struct hashlimit_cfg cfg;
+	__uapi_arch_pad_long;
 
 	/* Used internally by the kernel */
 	struct xt_hashlimit_htable *hinfo;
