@@ -7,6 +7,7 @@
 struct xt_length_info {
     __u16	min, max;
     __u8	invert;
-};
+    __uapi_arch_pad8;
+} __uapi_arch_align;
 
 #endif /*_XT_LENGTH_H*/

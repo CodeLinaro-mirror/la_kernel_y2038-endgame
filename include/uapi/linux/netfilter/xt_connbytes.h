@@ -23,5 +23,9 @@ struct xt_connbytes_info {
 	} count;
 	__u8 what;		/* ipt_connbytes_what */
 	__u8 direction;	/* ipt_connbytes_direction */
+
+	/* pad to 64-bit alignment */
+	__u16 :16;
+	__u32 :32;
 };
 #endif

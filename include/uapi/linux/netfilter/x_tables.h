@@ -70,7 +70,8 @@ struct xt_standard_target {
 struct xt_error_target {
 	struct xt_entry_target target;
 	char errorname[XT_FUNCTION_MAXNAMELEN];
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* The argument to IPT_SO_GET_REVISION_*.  Returns highest revision
  * kernel supports, if >= revision. */
@@ -92,10 +93,11 @@ struct xt_get_revision {
  */
 struct _xt_align {
 	__u8 u8;
+	__uapi_arch_pad8;
 	__u16 u16;
 	__u32 u32;
 	__u64 u64;
-};
+} __uapi_arch_align;
 
 #define XT_ALIGN(s) __ALIGN_KERNEL((s), __alignof__(struct _xt_align))
 

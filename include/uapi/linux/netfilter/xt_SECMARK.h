@@ -16,14 +16,18 @@
 
 struct xt_secmark_target_info {
 	__u8 mode;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	__u32 secid;
 	char secctx[SECMARK_SECCTX_MAX];
-};
+} __uapi_arch_align;
 
 struct xt_secmark_target_info_v1 {
 	__u8 mode;
 	char secctx[SECMARK_SECCTX_MAX];
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 	__u32 secid;
-};
+} __uapi_arch_align;
 
 #endif /*_XT_SECMARK_H_target */

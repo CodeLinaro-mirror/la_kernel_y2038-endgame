@@ -7,7 +7,9 @@
 struct ipt_ah {
 	__u32 spis[2];			/* Security Parameter Index */
 	__u8  invflags;			/* Inverse flags */
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 
 

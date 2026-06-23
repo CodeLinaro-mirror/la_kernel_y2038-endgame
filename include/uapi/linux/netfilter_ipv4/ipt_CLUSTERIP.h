@@ -28,11 +28,12 @@ struct ipt_clusterip_tgt_info {
 	__u16 num_total_nodes;
 	__u16 num_local_nodes;
 	__u16 local_nodes[CLUSTERIP_MAX_NODES];
+	__uapi_arch_pad16;
 	__u32 hash_mode;
 	__u32 hash_initval;
 
 	/* Used internally by the kernel */
 	struct clusterip_config *config;
-};
+} __uapi_arch_align;
 
 #endif /*_IPT_CLUSTERIP_H_target*/

@@ -44,9 +44,10 @@ struct xt_hmark_info {
 	union hmark_ports	port_set;
 	__u32			flags;
 	__u16			proto_mask;
+	__uapi_arch_pad16;
 	__u32			hashrnd;
 	__u32			hmodulus;
 	__u32			hoffset;	/* Mark offset to start from */
-};
+} __uapi_arch_align;
 
 #endif /* XT_HMARK_H_ */

@@ -30,6 +30,7 @@ struct xt_rateest_match_info {
 	__u32		pps1;
 	__u32		bps2;
 	__u32		pps2;
+	__u32		:32;
 
 	/* Used internally by the kernel */
 	struct xt_rateest	*est1 __attribute__((aligned(8)));

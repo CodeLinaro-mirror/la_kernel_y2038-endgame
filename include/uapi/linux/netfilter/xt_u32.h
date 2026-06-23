@@ -14,7 +14,9 @@ enum xt_u32_ops {
 struct xt_u32_location_element {
 	__u32 number;
 	__u8 nextop;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct xt_u32_value_element {
 	__u32 min;
@@ -32,12 +34,14 @@ struct xt_u32_test {
 	struct xt_u32_value_element value[XT_U32_MAXSIZE+1];
 	__u8 nnums;
 	__u8 nvalues;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct xt_u32 {
 	struct xt_u32_test tests[XT_U32_MAXSIZE+1];
 	__u8 ntests;
 	__u8 invert;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #endif /* _XT_U32_H */

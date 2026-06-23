@@ -9,6 +9,8 @@ struct xt_rateest_target_info {
 	char			name[IFNAMSIZ];
 	__s8			interval;
 	__u8		ewma_log;
+	__u16 :16;
+	__u32 :32;
 
 	/* Used internally by the kernel */
 	struct xt_rateest	*est __attribute__((aligned(8)));

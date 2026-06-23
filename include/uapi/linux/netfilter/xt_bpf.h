@@ -13,11 +13,16 @@ struct bpf_prog;
 
 struct xt_bpf_info {
 	__u16 bpf_program_num_elem;
+	__uapi_arch_pad16;
 	struct sock_filter bpf_program[XT_BPF_MAX_NUM_INSTR];
+#ifdef __m68k__
+	__u16 :16;
+#endif
+	__u32 :32;
 
 	/* only used in the kernel */
 	struct bpf_prog *filter __attribute__((aligned(8)));
-};
+} __uapi_arch_align;
 
 enum xt_bpf_modes {
 	XT_BPF_MODE_BYTECODE,

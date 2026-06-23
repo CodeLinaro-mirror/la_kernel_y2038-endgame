@@ -13,13 +13,15 @@ struct xt_tproxy_target_info {
 	__u32 mark_value;
 	__be32 laddr;
 	__be16 lport;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct xt_tproxy_target_info_v1 {
 	__u32 mark_mask;
 	__u32 mark_value;
 	union nf_inet_addr laddr;
 	__be16 lport;
-};
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 #endif /* _XT_TPROXY_H */

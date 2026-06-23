@@ -85,7 +85,9 @@ struct ip6t_ip6 {
 	__u8 flags;
 	/* Inverse flags */
 	__u8 invflags;
-};
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 /* Values for "flag" field in struct ip6t_ip6 (general ip6 structure). */
 #define IP6T_F_PROTO		0x01	/* Set if rule cares about upper 

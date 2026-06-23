@@ -33,6 +33,7 @@ struct xt_cgroup_info_v2 {
 		char	path[XT_CGROUP_PATH_MAX];
 		__u32	classid;
 	};
+	__u32		:32;
 
 	/* kernel internal data */
 	void		*priv __attribute__((aligned(8)));

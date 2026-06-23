@@ -20,7 +20,8 @@ struct xt_dccp_info {
 
 	__u16 typemask;
 	__u8 option;
-};
+	__uapi_arch_pad8;
+} __uapi_arch_align;
 
 #endif /* _XT_DCCP_H_ */
 

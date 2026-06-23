@@ -182,6 +182,7 @@ struct ebt_entry {
 	unsigned char sourcemsk[ETH_ALEN];
 	unsigned char destmac[ETH_ALEN];
 	unsigned char destmsk[ETH_ALEN];
+	__uapi_arch_pad16;
 	__struct_group(/* no tag */, offsets, /* no attrs */,
 		/* sizeof ebt_entry + matches */
 		unsigned int watchers_offset;
@@ -191,7 +192,7 @@ struct ebt_entry {
 		unsigned int next_offset;
 	);
 	unsigned char elems[] __attribute__ ((aligned (__alignof__(struct ebt_replace))));
-};
+} __uapi_arch_align;
 
 static __inline__ struct ebt_entry_target *
 ebt_get_target(struct ebt_entry *e)
