@@ -8,6 +8,7 @@
 #ifndef _UAPI__SOUND_SB16_CSP_H
 #define _UAPI__SOUND_SB16_CSP_H
 
+#include <linux/types.h>
 
 /* CSP modes */
 #define SNDRV_SB_CSP_MODE_NONE		0x00
@@ -70,6 +71,7 @@ struct snd_sb_csp_start {
 struct snd_sb_csp_info {
 	char codec_name[16];		/* id name of codec */
 	unsigned short func_nr;		/* function number */
+	__uapi_arch_pad16;
 	unsigned int acc_format;	/* accepted PCM formats */
 	unsigned short acc_channels;	/* accepted channels */
 	unsigned short acc_width;	/* accepted sample width */
@@ -79,7 +81,7 @@ struct snd_sb_csp_info {
 	unsigned short run_width;	/* current sample width */
 	unsigned short version;		/* version id: 0x10 - 0x1f */
 	unsigned short state;		/* state bits */
-};
+} __uapi_arch_align;
 
 /* HWDEP controls */
 /* get CSP information */

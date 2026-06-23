@@ -360,6 +360,7 @@ struct snd_dec_opus {
 		__u8 coupled_count;
 		__u8 channel_map[8];
 	} chan_map;
+	__u8 :8, :8, :8;
 } __attribute__((packed, aligned(4)));
 
 union snd_codec_options {
