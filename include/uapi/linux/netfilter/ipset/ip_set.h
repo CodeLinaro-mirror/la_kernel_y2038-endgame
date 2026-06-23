@@ -268,8 +268,11 @@ enum {
 /* Backward compatibility for set match v3 */
 struct ip_set_counter_match0 {
 	__u8 op;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+	__uapi_arch_pad32;
 	__u64 value;
-};
+} __uapi_arch_align;
 
 struct ip_set_counter_match {
 	__aligned_u64 value;

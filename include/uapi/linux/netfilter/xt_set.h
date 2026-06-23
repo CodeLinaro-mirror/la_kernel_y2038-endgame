@@ -67,12 +67,15 @@ struct xt_set_info_target_v2 {
 
 /* Revision 3 match */
 
+/* Note: there is no compat handler on x86_64, use v4 instead */
 struct xt_set_info_match_v3 {
 	struct xt_set_info match_set;
+	__uapi_arch_pad32;
 	struct ip_set_counter_match0 packets;
 	struct ip_set_counter_match0 bytes;
 	__u32 flags;
-};
+	__uapi_arch_pad32;
+} __uapi_arch_align;
 
 /* Revision 3 target */
 
