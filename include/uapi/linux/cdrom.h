@@ -567,24 +567,38 @@ struct dvd_layer {
 	__u8 book_type		: 4;
 	__u8 min_rate		: 4;
 	__u8 disc_size		: 4;
+
 	__u8 layer_type		: 4;
 	__u8 track_path		: 1;
 	__u8 nlayers		: 2;
+#ifndef __m68k__
+	/* padding starting with gcc-4.4, but not on m68k */
+	__u8			: 1;
+#endif
+
 	__u8 track_density	: 4;
 	__u8 linear_density	: 4;
+
 	__u8 bca		: 1;
+#ifndef __m68k__
+	__u8			: 7;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+#endif
+
 	__u32 start_sector;
 	__u32 end_sector;
 	__u32 end_sector_l0;
-};
+} __uapi_arch_align;
 
 #define DVD_LAYERS	4
 
 struct dvd_physical {
 	__u8 type;
 	__u8 layer_num;
+	__uapi_arch_pad16;
 	struct dvd_layer layer[DVD_LAYERS];
-};
+} __uapi_arch_align;
 
 struct dvd_copyright {
 	__u8 type;
@@ -598,23 +612,32 @@ struct dvd_disckey {
 	__u8 type;
 
 	unsigned agid		: 2;
+	unsigned		: 6;
 	__u8 value[2048];
-};
+	/*
+	 *  the 'unsigned agid' type makes the structure alignment
+	 * 32-bit on all architectures other than m68k
+	 */
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct dvd_bca {
 	__u8 type;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
 
 	int len;
 	__u8 value[188];
-};
+} __uapi_arch_align;
 
 struct dvd_manufact {
 	__u8 type;
 
 	__u8 layer_num;
+	__uapi_arch_pad16;
 	int len;
 	__u8 value[2048];
-};
+} __uapi_arch_align;
 
 typedef union {
 	__u8 type;
@@ -655,25 +678,33 @@ typedef __u8 dvd_challenge[10];	/* 80-bit value, MSB is first elem. */
 struct dvd_lu_send_agid {
 	__u8 type;
 	unsigned agid		: 2;
-};
+	__u8			: 6;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct dvd_host_send_challenge {
 	__u8 type;
 	unsigned agid		: 2;
+	unsigned :6;
 
 	dvd_challenge chal;
-};
+} __uapi_arch_align;
 
 struct dvd_send_key {
 	__u8 type;
 	unsigned agid		: 2;
+	unsigned :6;
 
 	dvd_key key;
+#ifndef __m68k__
+	__uapi_arch_pad8;
+#endif
 };
 
 struct dvd_lu_send_challenge {
 	__u8 type;
 	unsigned agid		: 2;
+	unsigned :6;
 
 	dvd_challenge chal;
 };
@@ -691,20 +722,28 @@ struct dvd_lu_send_challenge {
 struct dvd_lu_send_title_key {
 	__u8 type;
 	unsigned agid		: 2;
+	unsigned		: 6;
 
 	dvd_key title_key;
+	__uapi_arch_pad8;
 	int lba;
 	unsigned cpm		: 1;
 	unsigned cp_sec		: 1;
 	unsigned cgms		: 2;
-};
+	unsigned		: 4;
+	__uapi_arch_pad8;
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct dvd_lu_send_asf {
 	__u8 type;
 	unsigned agid		: 2;
 
 	unsigned asf		: 1;
-};
+	unsigned		: 5;
+
+	__uapi_arch_pad16;
+} __uapi_arch_align;
 
 struct dvd_host_send_rpcstate {
 	__u8 type;
@@ -889,7 +928,8 @@ typedef struct {
 	__u8 disc_bar_code[8];
 	__u8 reserved3;
 	__u8 n_opc;
-} disc_information;
+	__uapi_arch_pad16;
+} __uapi_arch_align disc_information;
 
 typedef struct {
 	__be16 track_information_length;
