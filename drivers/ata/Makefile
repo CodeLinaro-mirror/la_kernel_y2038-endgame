@@ -111,8 +111,6 @@ obj-$(CONFIG_PATA_OF_PLATFORM)	+= pata_of_platform.o
 obj-$(CONFIG_PATA_RB532)	+= pata_rb532_cf.o
 obj-$(CONFIG_PATA_RZ1000)	+= pata_rz1000.o
 
-obj-$(CONFIG_PATA_PXA)		+= pata_pxa.o
-
 obj-$(CONFIG_PATA_PARPORT)	+= pata_parport/
 
 # Should be last but two libata driver
