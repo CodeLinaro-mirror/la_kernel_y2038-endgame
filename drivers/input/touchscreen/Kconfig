@@ -970,18 +970,6 @@ config TOUCHSCREEN_MX25
 	  To compile this driver as a module, choose M here: the
 	  module will be called fsl-imx25-tcq.
 
-config TOUCHSCREEN_MC13783
-	tristate "Freescale MC13783 touchscreen input driver"
-	depends on MFD_MC13XXX
-	help
-	  Say Y here if you have an Freescale MC13783 PMIC on your
-	  board and want to use its touchscreen
-
-	  If unsure, say N.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called mc13783_ts.
-
 config TOUCHSCREEN_USB_EGALAX
 	default y
 	bool "eGalax, eTurboTouch CT-410/510/700 device support" if EXPERT
