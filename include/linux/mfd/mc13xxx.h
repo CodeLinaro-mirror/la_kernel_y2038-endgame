@@ -70,23 +70,6 @@ int mc13xxx_irq_unmask(struct mc13xxx *mc13xxx, int irq);
 #define MC13XXX_IRQ_THWARNH	37
 #define MC13XXX_IRQ_CLK		38
 
-#define MC13783_BUTTON_DBNC_0MS		0
-#define MC13783_BUTTON_DBNC_30MS	1
-#define MC13783_BUTTON_DBNC_150MS	2
-#define MC13783_BUTTON_DBNC_750MS	3
-#define MC13783_BUTTON_ENABLE		(1 << 2)
-#define MC13783_BUTTON_POL_INVERT	(1 << 3)
-#define MC13783_BUTTON_RESET_EN		(1 << 4)
-
-struct mc13xxx_buttons_platform_data {
-	int b1on_flags;
-	unsigned short b1on_key;
-	int b2on_flags;
-	unsigned short b2on_key;
-	int b3on_flags;
-	unsigned short b3on_key;
-};
-
 #define MC13783_TS_ATO_FIRST	false
 #define MC13783_TS_ATO_EACH	true
 
