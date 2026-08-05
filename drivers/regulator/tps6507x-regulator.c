@@ -14,7 +14,6 @@
 #include <linux/platform_device.h>
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
-#include <linux/regulator/tps6507x.h>
 #include <linux/of.h>
 #include <linux/slab.h>
 #include <linux/mfd/tps6507x.h>
@@ -371,20 +370,9 @@ static int tps6507x_pmic_probe(struct platform_device *pdev)
 	struct tps6507x_dev *tps6507x_dev = dev_get_drvdata(pdev->dev.parent);
 	struct tps_info *info = &tps6507x_pmic_regs[0];
 	struct regulator_config config = { };
-	struct regulator_init_data *init_data = NULL;
 	struct regulator_dev *rdev;
 	struct tps6507x_pmic *tps;
-	struct tps6507x_board *tps_board;
 	int i;
-
-	/**
-	 * tps_board points to pmic related constants
-	 * coming from the board-evm file.
-	 */
-
-	tps_board = dev_get_platdata(tps6507x_dev->dev);
-	if (tps_board)
-		init_data = tps_board->tps6507x_pmic_init_data;
 
 	tps = devm_kzalloc(&pdev->dev, sizeof(*tps), GFP_KERNEL);
 	if (!tps)
@@ -398,12 +386,6 @@ static int tps6507x_pmic_probe(struct platform_device *pdev)
 	for (i = 0; i < TPS6507X_NUM_REGULATOR; i++, info++) {
 		/* Register the regulators */
 		tps->info[i] = info;
-		if (init_data && init_data[i].driver_data) {
-			struct tps6507x_reg_platform_data *data =
-					init_data[i].driver_data;
-			info->defdcdc_default = data->defdcdc_default;
-		}
-
 		tps->desc[i].name = info->name;
 		tps->desc[i].of_match = of_match_ptr(info->name);
 		tps->desc[i].regulators_node = of_match_ptr("regulators");
@@ -416,7 +398,6 @@ static int tps6507x_pmic_probe(struct platform_device *pdev)
 		tps->desc[i].owner = THIS_MODULE;
 
 		config.dev = tps6507x_dev->dev;
-		config.init_data = init_data;
 		config.driver_data = tps;
 
 		rdev = devm_regulator_register(&pdev->dev, &tps->desc[i],
