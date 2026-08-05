@@ -142,7 +142,6 @@
 
 struct tps6507x_board {
 	struct regulator_init_data *tps6507x_pmic_init_data;
-	struct touchscreen_init_data *tps6507x_ts_init_data;
 };
 
 /**
