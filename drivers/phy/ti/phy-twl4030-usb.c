@@ -143,6 +143,11 @@ static inline bool cable_present(enum musb_vbus_id_status stat)
 		stat == MUSB_ID_GROUND;
 }
 
+enum twl4030_usb_mode {
+	T2_USB_MODE_ULPI = 1,
+	T2_USB_MODE_CEA2011_3PIN = 2,
+};
+
 struct twl4030_usb {
 	struct usb_phy		phy;
 	struct device		*dev;
@@ -682,7 +687,6 @@ static const struct dev_pm_ops twl4030_usb_pm_ops = {
 
 static int twl4030_usb_probe(struct platform_device *pdev)
 {
-	struct twl4030_usb_data *pdata = dev_get_platdata(&pdev->dev);
 	struct twl4030_usb	*twl;
 	struct phy		*phy;
 	int			status, err;
@@ -694,15 +698,8 @@ static int twl4030_usb_probe(struct platform_device *pdev)
 	if (!twl)
 		return -ENOMEM;
 
-	if (np)
-		of_property_read_u32(np, "usb_mode",
-				(enum twl4030_usb_mode *)&twl->usb_mode);
-	else if (pdata) {
-		twl->usb_mode = pdata->usb_mode;
-	} else {
-		dev_err(&pdev->dev, "twl4030 initialized without pdata\n");
-		return -EINVAL;
-	}
+	of_property_read_u32(np, "usb_mode",
+			     (enum twl4030_usb_mode *)&twl->usb_mode);
 
 	otg = devm_kzalloc(&pdev->dev, sizeof(*otg), GFP_KERNEL);
 	if (!otg)
@@ -776,11 +773,6 @@ static int twl4030_usb_probe(struct platform_device *pdev)
 		return status;
 	}
 
-	if (pdata)
-		err = phy_create_lookup(phy, "usb", "musb-hdrc.0");
-	if (err)
-		return err;
-
 	pm_runtime_mark_last_busy(&pdev->dev);
 	pm_runtime_put_autosuspend(twl->dev);
 
@@ -823,13 +815,11 @@ static void twl4030_usb_remove(struct platform_device *pdev)
 	twl4030_usb_clear_bits(twl, POWER_CTRL, POWER_CTRL_OTG_ENAB);
 }
 
-#ifdef CONFIG_OF
 static const struct of_device_id twl4030_usb_id_table[] = {
 	{ .compatible = "ti,twl4030-usb" },
 	{}
 };
 MODULE_DEVICE_TABLE(of, twl4030_usb_id_table);
-#endif
 
 static struct platform_driver twl4030_usb_driver = {
 	.probe		= twl4030_usb_probe,
@@ -837,7 +827,7 @@ static struct platform_driver twl4030_usb_driver = {
 	.driver		= {
 		.name	= "twl4030_usb",
 		.pm	= &twl4030_usb_pm_ops,
-		.of_match_table = of_match_ptr(twl4030_usb_id_table),
+		.of_match_table = twl4030_usb_id_table,
 	},
 };
 

@@ -745,16 +745,10 @@ static int twl4030_madc_set_power(struct twl4030_madc_data *madc, int on)
 static int twl4030_madc_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
-	struct twl4030_madc_platform_data *pdata = dev_get_platdata(dev);
 	struct twl4030_madc_data *madc;
 	int irq, ret;
 	u8 regval;
 	struct iio_dev *iio_dev = NULL;
-
-	if (!pdata && !dev_fwnode(dev)) {
-		dev_err(&pdev->dev, "neither platform data nor Device Tree node available\n");
-		return -EINVAL;
-	}
 
 	iio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*madc));
 	if (!iio_dev)
@@ -774,11 +768,8 @@ static int twl4030_madc_probe(struct platform_device *pdev)
 	 * the OMAP. The other one can be connected to the other processor such
 	 * as modem. Hence two separate ISR and IMR registers.
 	 */
-	if (pdata)
-		madc->use_second_irq = (pdata->irq_line != 1);
-	else
-		madc->use_second_irq = device_property_read_bool(dev,
-				       "ti,system-uses-second-madc-irq");
+	madc->use_second_irq = device_property_read_bool(dev,
+			       "ti,system-uses-second-madc-irq");
 
 	madc->imr = madc->use_second_irq ? TWL4030_MADC_IMR2 :
 					   TWL4030_MADC_IMR1;

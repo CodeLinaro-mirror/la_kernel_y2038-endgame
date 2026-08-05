@@ -30,6 +30,40 @@
 #include <linux/property.h>
 #include <linux/of.h>
 
+struct twl4030_ins {
+	u16 pmb_message;
+	u8 delay;
+};
+
+struct twl4030_script {
+	struct twl4030_ins *script;
+	unsigned size;
+	u8 flags;
+#define TWL4030_WRST_SCRIPT	(1<<0)
+#define TWL4030_WAKEUP12_SCRIPT	(1<<1)
+#define TWL4030_WAKEUP3_SCRIPT	(1<<2)
+#define TWL4030_SLEEP_SCRIPT	(1<<3)
+};
+
+struct twl4030_resconfig {
+	u8 resource;
+	u8 devgroup;	/* Processor group that Power resource belongs to */
+	u8 type;	/* Power resource addressed, 6 / broadcast message */
+	u8 type2;	/* Power resource addressed, 3 / broadcast message */
+	u8 remap_off;	/* off state remapping */
+	u8 remap_sleep;	/* sleep state remapping */
+};
+
+struct twl4030_power_data {
+	struct twl4030_script **scripts;
+	unsigned num;
+	struct twl4030_resconfig *resource_config;
+	struct twl4030_resconfig *board_config;
+#define TWL4030_RESCONFIG_UNDEF	((u8)-1)
+	bool ac_charger_quirk;	/* Disable AC charger on board */
+};
+
+
 static u8 twl4030_start_script_address = 0x2b;
 
 /* Register bits for P1, P2 and P3_SW_EVENTS */
@@ -675,9 +709,6 @@ void twl4030_power_off(void)
 static bool twl4030_power_use_poweroff(const struct twl4030_power_data *pdata,
 					struct device_node *node)
 {
-	if (pdata && pdata->use_poweroff)
-		return true;
-
 	if (of_property_read_bool(node, "ti,system-power-controller"))
 		return true;
 
@@ -689,8 +720,6 @@ static bool twl4030_power_use_poweroff(const struct twl4030_power_data *pdata,
 
 	return false;
 }
-
-#ifdef CONFIG_OF
 
 /* Generic warm reset configuration for omap3 */
 
@@ -878,20 +907,14 @@ static const struct of_device_id twl4030_power_of_match[] = {
 	{ },
 };
 MODULE_DEVICE_TABLE(of, twl4030_power_of_match);
-#endif	/* CONFIG_OF */
 
 static int twl4030_power_probe(struct platform_device *pdev)
 {
-	const struct twl4030_power_data *pdata = dev_get_platdata(&pdev->dev);
+	const struct twl4030_power_data *pdata;
 	struct device_node *node = pdev->dev.of_node;
 	int err = 0;
 	int err2 = 0;
 	u8 val;
-
-	if (!pdata && !node) {
-		dev_err(&pdev->dev, "Platform data is missing\n");
-		return -EINVAL;
-	}
 
 	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, TWL4030_PM_MASTER_KEY_CFG1,
 			       TWL4030_PM_MASTER_PROTECT_KEY);
@@ -904,9 +927,7 @@ static int twl4030_power_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	if (node)
-		pdata = device_get_match_data(&pdev->dev);
-
+	pdata = device_get_match_data(&pdev->dev);
 	if (pdata) {
 		err = twl4030_power_configure_scripts(pdata);
 		if (err) {
@@ -954,7 +975,7 @@ relock:
 static struct platform_driver twl4030_power_driver = {
 	.driver = {
 		.name	= "twl4030_power",
-		.of_match_table = of_match_ptr(twl4030_power_of_match),
+		.of_match_table = twl4030_power_of_match,
 	},
 	.probe		= twl4030_power_probe,
 };

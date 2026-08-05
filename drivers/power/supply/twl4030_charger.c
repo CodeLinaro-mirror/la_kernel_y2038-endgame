@@ -924,7 +924,13 @@ static enum power_supply_property twl4030_charger_props[] = {
 	POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT,
 };
 
-#ifdef CONFIG_OF
+struct twl4030_bci_platform_data {
+	int *battery_tmp_tbl;
+	unsigned int tblsize;
+	int	bb_uvolt;	/* voltage to charge backup battery */
+	int	bb_uamp;	/* current for backup battery charging */
+};
+
 static const struct twl4030_bci_platform_data *
 twl4030_bci_parse_dt(struct device *dev)
 {
@@ -944,13 +950,6 @@ twl4030_bci_parse_dt(struct device *dev)
 		pdata->bb_uamp = num;
 	return pdata;
 }
-#else
-static inline const struct twl4030_bci_platform_data *
-twl4030_bci_parse_dt(struct device *dev)
-{
-	return NULL;
-}
-#endif
 
 static const struct power_supply_desc twl4030_bci_ac_desc = {
 	.name		= "twl4030_ac",
@@ -975,7 +974,7 @@ static const struct power_supply_desc twl4030_bci_usb_desc = {
 static int twl4030_bci_probe(struct platform_device *pdev)
 {
 	struct twl4030_bci *bci;
-	const struct twl4030_bci_platform_data *pdata = pdev->dev.platform_data;
+	const struct twl4030_bci_platform_data *pdata;
 	int ret;
 	u32 reg;
 
@@ -983,8 +982,9 @@ static int twl4030_bci_probe(struct platform_device *pdev)
 	if (bci == NULL)
 		return -ENOMEM;
 
+	pdata = twl4030_bci_parse_dt(&pdev->dev);
 	if (!pdata)
-		pdata = twl4030_bci_parse_dt(&pdev->dev);
+		return -ENOMEM;
 
 	bci->ichg_eoc = 80100; /* Stop charging when current drops to here */
 	bci->ichg_lo = 241000; /* Low threshold */
@@ -1100,11 +1100,8 @@ static int twl4030_bci_probe(struct platform_device *pdev)
 				    NULL);
 	else
 		twl4030_charger_enable_usb(bci, false);
-	if (pdata)
-		twl4030_charger_enable_backup(pdata->bb_uvolt,
-					      pdata->bb_uamp);
-	else
-		twl4030_charger_enable_backup(0, 0);
+	twl4030_charger_enable_backup(pdata->bb_uvolt,
+				      pdata->bb_uamp);
 
 	return 0;
 }
@@ -1137,7 +1134,7 @@ static struct platform_driver twl4030_bci_driver = {
 	.remove = twl4030_bci_remove,
 	.driver	= {
 		.name	= "twl4030_bci",
-		.of_match_table = of_match_ptr(twl_bci_of_match),
+		.of_match_table = twl_bci_of_match,
 	},
 };
 module_platform_driver(twl4030_bci_driver);
