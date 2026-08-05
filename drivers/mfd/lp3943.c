@@ -115,7 +115,6 @@ static int lp3943_probe(struct i2c_client *cl)
 	if (IS_ERR(lp3943->regmap))
 		return PTR_ERR(lp3943->regmap);
 
-	lp3943->pdata = dev_get_platdata(dev);
 	lp3943->dev = dev;
 	lp3943->mux_cfg = lp3943_mux_cfg;
 	i2c_set_clientdata(cl, lp3943);
@@ -131,19 +130,17 @@ static const struct i2c_device_id lp3943_ids[] = {
 };
 MODULE_DEVICE_TABLE(i2c, lp3943_ids);
 
-#ifdef CONFIG_OF
 static const struct of_device_id lp3943_of_match[] = {
 	{ .compatible = "ti,lp3943", },
 	{ }
 };
 MODULE_DEVICE_TABLE(of, lp3943_of_match);
-#endif
 
 static struct i2c_driver lp3943_driver = {
 	.probe = lp3943_probe,
 	.driver = {
 		.name = "lp3943",
-		.of_match_table = of_match_ptr(lp3943_of_match),
+		.of_match_table = lp3943_of_match,
 	},
 	.id_table = lp3943_ids,
 };

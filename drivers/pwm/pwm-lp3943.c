@@ -19,9 +19,40 @@
 #define LP3943_MIN_PERIOD		6250
 #define LP3943_MAX_PERIOD		1600000
 
+enum lp3943_pwm_output {
+	LP3943_PWM_OUT0,
+	LP3943_PWM_OUT1,
+	LP3943_PWM_OUT2,
+	LP3943_PWM_OUT3,
+	LP3943_PWM_OUT4,
+	LP3943_PWM_OUT5,
+	LP3943_PWM_OUT6,
+	LP3943_PWM_OUT7,
+	LP3943_PWM_OUT8,
+	LP3943_PWM_OUT9,
+	LP3943_PWM_OUT10,
+	LP3943_PWM_OUT11,
+	LP3943_PWM_OUT12,
+	LP3943_PWM_OUT13,
+	LP3943_PWM_OUT14,
+	LP3943_PWM_OUT15,
+};
+
+/*
+ * struct lp3943_pwm_map
+ * @output: Output pins which are mapped to each PWM channel
+ * @num_outputs: Number of outputs
+ */
+struct lp3943_pwm_map {
+	enum lp3943_pwm_output *output;
+	int num_outputs;
+};
+
 struct lp3943_pwm {
 	struct lp3943 *lp3943;
-	struct lp3943_platform_data *pdata;
+	struct lp3943_platform_data {
+		struct lp3943_pwm_map *pwms[LP3943_NUM_PWMS];
+	} *pdata;
 	struct lp3943_pwm_map pwm_map[LP3943_NUM_PWMS];
 };
 
@@ -280,16 +311,9 @@ static int lp3943_pwm_probe(struct platform_device *pdev)
 		return PTR_ERR(chip);
 	lp3943_pwm = to_lp3943_pwm(chip);
 
-	lp3943_pwm->pdata = lp3943->pdata;
-	if (!lp3943_pwm->pdata) {
-		if (IS_ENABLED(CONFIG_OF))
-			ret = lp3943_pwm_parse_dt(&pdev->dev, lp3943_pwm);
-		else
-			ret = -ENODEV;
-
-		if (ret)
-			return ret;
-	}
+	ret = lp3943_pwm_parse_dt(&pdev->dev, lp3943_pwm);
+	if (ret)
+		return ret;
 
 	lp3943_pwm->lp3943 = lp3943;
 	chip->ops = &lp3943_pwm_ops;
@@ -297,19 +321,17 @@ static int lp3943_pwm_probe(struct platform_device *pdev)
 	return devm_pwmchip_add(&pdev->dev, chip);
 }
 
-#ifdef CONFIG_OF
 static const struct of_device_id lp3943_pwm_of_match[] = {
 	{ .compatible = "ti,lp3943-pwm" },
 	{ }
 };
 MODULE_DEVICE_TABLE(of, lp3943_pwm_of_match);
-#endif
 
 static struct platform_driver lp3943_pwm_driver = {
 	.probe = lp3943_pwm_probe,
 	.driver = {
 		.name = "lp3943-pwm",
-		.of_match_table = of_match_ptr(lp3943_pwm_of_match),
+		.of_match_table = lp3943_pwm_of_match,
 	},
 };
 module_platform_driver(lp3943_pwm_driver);
