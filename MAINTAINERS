@@ -23381,10 +23381,6 @@ F:	drivers/media/i2c/max9271.c
 F:	drivers/media/i2c/max9271.h
 F:	drivers/media/i2c/rdacm21.c
 
-RDC R-321X SoC
-M:	Florian Fainelli <florian@openwrt.org>
-S:	Maintained
-
 RDC R6040 FAST ETHERNET DRIVER
 M:	Florian Fainelli <f.fainelli@gmail.com>
 L:	netdev@vger.kernel.org

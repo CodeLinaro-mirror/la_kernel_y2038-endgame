@@ -2003,14 +2003,6 @@ config GPIO_PCIE_IDIO_24
 	  Input filter control is not supported by this driver, and the input
 	  filters are deactivated by this driver.
 
-config GPIO_RDC321X
-	tristate "RDC R-321x GPIO support"
-	select MFD_CORE
-	select MFD_RDC321X
-	help
-	  Support for the RDC R321x SoC GPIOs over southbridge
-	  PCI configuration space.
-
 config GPIO_SODAVILLE
 	bool "Intel Sodaville GPIO support"
 	depends on X86 && OF

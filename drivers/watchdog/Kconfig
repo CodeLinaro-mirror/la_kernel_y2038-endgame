@@ -1572,17 +1572,6 @@ config NV_TCO
 	  To compile this driver as a module, choose M here: the
 	  module will be called nv_tco.
 
-config RDC321X_WDT
-	tristate "RDC R-321x SoC watchdog"
-	depends on X86_32 || COMPILE_TEST
-	depends on PCI
-	help
-	  This is the driver for the built in hardware watchdog
-	  in the RDC R-321x SoC.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called rdc321x_wdt.
-
 config 60XX_WDT
 	tristate "SBC-60XX Watchdog Timer"
 	depends on (X86 || COMPILE_TEST) && HAS_IOPORT
