@@ -23,6 +23,12 @@ struct tps65217_bl {
 	bool is_enabled;
 };
 
+struct tps65217_bl_pdata {
+	enum tps65217_bl_isel isel;
+	enum tps65217_bl_fdim fdim;
+	int dft_brightness;
+};
+
 static int tps65217_bl_enable(struct tps65217_bl *tps65217_bl)
 {
 	int rc;
@@ -162,7 +168,6 @@ static int tps65217_bl_hw_init(struct tps65217_bl *tps65217_bl,
 	return 0;
 }
 
-#ifdef CONFIG_OF
 static struct tps65217_bl_pdata *
 tps65217_bl_parse_dt(struct platform_device *pdev)
 {
@@ -241,13 +246,6 @@ err:
 
 	return err;
 }
-#else
-static struct tps65217_bl_pdata *
-tps65217_bl_parse_dt(struct platform_device *pdev)
-{
-	return NULL;
-}
-#endif
 
 static int tps65217_bl_probe(struct platform_device *pdev)
 {
@@ -294,19 +292,17 @@ static int tps65217_bl_probe(struct platform_device *pdev)
 	return 0;
 }
 
-#ifdef CONFIG_OF
 static const struct of_device_id tps65217_bl_of_match[] = {
 	{ .compatible = "ti,tps65217-bl", },
 	{ /* sentinel */ },
 };
 MODULE_DEVICE_TABLE(of, tps65217_bl_of_match);
-#endif
 
 static struct platform_driver tps65217_bl_driver = {
 	.probe		= tps65217_bl_probe,
 	.driver		= {
 		.name	= "tps65217-bl",
-		.of_match_table = of_match_ptr(tps65217_bl_of_match),
+		.of_match_table = tps65217_bl_of_match,
 	},
 };
 

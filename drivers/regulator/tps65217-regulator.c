@@ -213,7 +213,6 @@ static const struct regulator_desc regulators[] = {
 static int tps65217_regulator_probe(struct platform_device *pdev)
 {
 	struct tps65217 *tps = dev_get_drvdata(pdev->dev.parent);
-	struct tps65217_board *pdata = dev_get_platdata(tps->dev);
 	struct regulator_dev *rdev;
 	struct regulator_config config = { };
 	int i, ret;
@@ -231,8 +230,6 @@ static int tps65217_regulator_probe(struct platform_device *pdev)
 	for (i = 0; i < TPS65217_NUM_REGULATOR; i++) {
 		/* Register the regulators */
 		config.dev = tps->dev;
-		if (pdata)
-			config.init_data = pdata->tps65217_init_data[i];
 		config.driver_data = tps;
 		config.regmap = tps->regmap;
 
