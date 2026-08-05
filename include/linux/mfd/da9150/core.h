@@ -46,17 +46,6 @@
 /* I2C sub-device address */
 #define DA9150_QIF_I2C_ADDR_LSB		0x5
 
-struct da9150_fg_pdata {
-	u32 update_interval;	/* msecs */
-	u8 warn_soc_lvl;	/* % value */
-	u8 crit_soc_lvl;	/* % value */
-};
-
-struct da9150_pdata {
-	int irq_base;
-	struct da9150_fg_pdata *fg_pdata;
-};
-
 struct da9150 {
 	struct device *dev;
 	struct regmap *regmap;

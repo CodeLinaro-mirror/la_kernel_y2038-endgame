@@ -415,6 +415,12 @@ static irqreturn_t da9150_fg_irq(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
+struct da9150_fg_pdata {
+	u32 update_interval;	/* msecs */
+	u8 warn_soc_lvl;	/* % value */
+	u8 crit_soc_lvl;	/* % value */
+};
+
 static struct da9150_fg_pdata *da9150_fg_dt_pdata(struct device *dev)
 {
 	struct device_node *fg_node = dev->of_node;
@@ -446,7 +452,7 @@ static int da9150_fg_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 	struct da9150 *da9150 = dev_get_drvdata(dev->parent);
-	struct da9150_fg_pdata *fg_pdata = dev_get_platdata(dev);
+	struct da9150_fg_pdata *fg_pdata;
 	struct da9150_fg *fg;
 	int ver, irq, ret = 0;
 
@@ -475,28 +481,23 @@ static int da9150_fg_probe(struct platform_device *pdev)
 	dev_info(dev, "Version: 0x%x\n", ver);
 
 	/* Handle DT data if provided */
-	if (dev->of_node) {
-		fg_pdata = da9150_fg_dt_pdata(dev);
-		dev->platform_data = fg_pdata;
-	}
+	fg_pdata = da9150_fg_dt_pdata(dev);
+	if (!fg_pdata)
+		return -ENOMEM;
 
 	/* Handle any pdata provided */
-	if (fg_pdata) {
-		fg->interval = fg_pdata->update_interval;
+	fg->interval = fg_pdata->update_interval;
 
-		if (fg_pdata->warn_soc_lvl > 100)
-			dev_warn(dev, "Invalid SOC warning level provided, Ignoring");
-		else
-			fg->warn_soc = fg_pdata->warn_soc_lvl;
+	if (fg_pdata->warn_soc_lvl > 100)
+		dev_warn(dev, "Invalid SOC warning level provided, Ignoring");
+	else
+		fg->warn_soc = fg_pdata->warn_soc_lvl;
 
-		if ((fg_pdata->crit_soc_lvl > 100) ||
-		    (fg_pdata->crit_soc_lvl >= fg_pdata->warn_soc_lvl))
-			dev_warn(dev, "Invalid SOC critical level provided, Ignoring");
-		else
-			fg->crit_soc = fg_pdata->crit_soc_lvl;
-
-
-	}
+	if ((fg_pdata->crit_soc_lvl > 100) ||
+	    (fg_pdata->crit_soc_lvl >= fg_pdata->warn_soc_lvl))
+		dev_warn(dev, "Invalid SOC critical level provided, Ignoring");
+	else
+		fg->crit_soc = fg_pdata->crit_soc_lvl;
 
 	/* Configure initial SOC level events */
 	da9150_fg_soc_event_config(fg);

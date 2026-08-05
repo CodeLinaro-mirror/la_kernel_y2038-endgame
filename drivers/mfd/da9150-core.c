@@ -395,7 +395,6 @@ static struct mfd_cell da9150_devs[] = {
 static int da9150_probe(struct i2c_client *client)
 {
 	struct da9150 *da9150;
-	struct da9150_pdata *pdata = dev_get_platdata(&client->dev);
 	int qif_addr;
 	int ret;
 
@@ -427,19 +426,9 @@ static int da9150_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(da9150->core_qif, da9150);
 
-	if (pdata) {
-		da9150->irq_base = pdata->irq_base;
-
-		da9150_devs[DA9150_FG_IDX].platform_data = pdata->fg_pdata;
-		da9150_devs[DA9150_FG_IDX].pdata_size =
-			sizeof(struct da9150_fg_pdata);
-	} else {
-		da9150->irq_base = -1;
-	}
-
 	ret = regmap_add_irq_chip(da9150->regmap, da9150->irq,
 				  IRQF_TRIGGER_LOW | IRQF_ONESHOT,
-				  da9150->irq_base, &da9150_regmap_irq_chip,
+				  -1, &da9150_regmap_irq_chip,
 				  &da9150->regmap_irq_data);
 	if (ret) {
 		dev_err(da9150->dev, "Failed to add regmap irq chip: %d\n",
