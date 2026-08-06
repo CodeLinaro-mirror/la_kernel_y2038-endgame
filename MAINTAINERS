@@ -568,7 +568,6 @@ L:	linux-media@vger.kernel.org
 S:	Maintained
 F:	Documentation/devicetree/bindings/media/i2c/adi,adp1653.txt
 F:	drivers/media/i2c/adp1653.c
-F:	include/media/i2c/adp1653.h
 
 ADP5585 GPIO EXPANDER, PWM AND KEYPAD CONTROLLER DRIVER
 M:	Laurent Pinchart <laurent.pinchart@ideasonboard.com>
