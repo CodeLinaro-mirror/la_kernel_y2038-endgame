@@ -96,22 +96,6 @@ static struct atmel_ssc_platform_data at91sam9g45_config = {
 	.has_fslen_ext = 1,
 };
 
-static const struct platform_device_id atmel_ssc_devtypes[] = {
-	{
-		.name = "at91rm9200_ssc",
-		.driver_data = (unsigned long) &at91rm9200_config,
-	}, {
-		.name = "at91sam9rl_ssc",
-		.driver_data = (unsigned long) &at91sam9rl_config,
-	}, {
-		.name = "at91sam9g45_ssc",
-		.driver_data = (unsigned long) &at91sam9g45_config,
-	}, {
-		/* sentinel */
-	}
-};
-
-#ifdef CONFIG_OF
 static const struct of_device_id atmel_ssc_dt_ids[] = {
 	{
 		.compatible = "atmel,at91rm9200-ssc",
@@ -127,21 +111,15 @@ static const struct of_device_id atmel_ssc_dt_ids[] = {
 	}
 };
 MODULE_DEVICE_TABLE(of, atmel_ssc_dt_ids);
-#endif
 
-static inline const struct atmel_ssc_platform_data *
+static inline struct atmel_ssc_platform_data *
 	atmel_ssc_get_driver_data(struct platform_device *pdev)
 {
-	if (pdev->dev.of_node) {
-		const struct of_device_id *match;
-		match = of_match_node(atmel_ssc_dt_ids, pdev->dev.of_node);
-		if (match == NULL)
-			return NULL;
-		return match->data;
-	}
-
-	return (struct atmel_ssc_platform_data *)
-		platform_get_device_id(pdev)->driver_data;
+	const struct of_device_id *match;
+	match = of_match_node(atmel_ssc_dt_ids, pdev->dev.of_node);
+	if (match == NULL)
+		return NULL;
+	return (struct atmel_ssc_platform_data *)match->data;
 }
 
 #ifdef CONFIG_SND_ATMEL_SOC_SSC
@@ -191,7 +169,7 @@ static int ssc_probe(struct platform_device *pdev)
 {
 	struct resource *regs;
 	struct ssc_device *ssc;
-	const struct atmel_ssc_platform_data *plat_dat;
+	struct device_node *np = pdev->dev.of_node;
 
 	ssc = devm_kzalloc(&pdev->dev, sizeof(struct ssc_device), GFP_KERNEL);
 	if (!ssc) {
@@ -200,17 +178,12 @@ static int ssc_probe(struct platform_device *pdev)
 	}
 
 	ssc->pdev = pdev;
-
-	plat_dat = atmel_ssc_get_driver_data(pdev);
-	if (!plat_dat)
+	ssc->pdata = atmel_ssc_get_driver_data(pdev);
+	if (!ssc->pdata)
 		return -ENODEV;
-	ssc->pdata = (struct atmel_ssc_platform_data *)plat_dat;
 
-	if (pdev->dev.of_node) {
-		struct device_node *np = pdev->dev.of_node;
-		ssc->clk_from_rk_pin =
-			of_property_read_bool(np, "atmel,clk-from-rk-pin");
-	}
+	ssc->clk_from_rk_pin =
+		of_property_read_bool(np, "atmel,clk-from-rk-pin");
 
 	ssc->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &regs);
 	if (IS_ERR(ssc->regs))
@@ -265,9 +238,8 @@ static void ssc_remove(struct platform_device *pdev)
 static struct platform_driver ssc_driver = {
 	.driver		= {
 		.name		= "ssc",
-		.of_match_table	= of_match_ptr(atmel_ssc_dt_ids),
+		.of_match_table	= atmel_ssc_dt_ids,
 	},
-	.id_table	= atmel_ssc_devtypes,
 	.probe		= ssc_probe,
 	.remove		= ssc_remove,
 };
