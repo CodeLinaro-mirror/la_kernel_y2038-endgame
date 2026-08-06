@@ -15136,7 +15136,6 @@ M:	Viresh Kumar <vireshk@kernel.org>
 L:	linux-ide@vger.kernel.org
 S:	Maintained
 F:	drivers/ata/pata_arasan_cf.c
-F:	include/linux/pata_arasan_cf_data.h
 
 LIBATA PATA FARADAY FTIDE010 AND GEMINI SATA BRIDGE DRIVERS
 M:	Linus Walleij <linusw@kernel.org>

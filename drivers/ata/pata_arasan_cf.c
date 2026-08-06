@@ -32,7 +32,6 @@
 #include <linux/libata.h>
 #include <linux/module.h>
 #include <linux/of.h>
-#include <linux/pata_arasan_cf_data.h>
 #include <linux/platform_device.h>
 #include <linux/pm.h>
 #include <linux/slab.h>
@@ -182,6 +181,22 @@
 	#define GIRQ_CF		(1)
 	#define GIRQ_XD		(1 << 1)
 
+#define CF_IF_CLK_100M		(0x0)
+#define CF_IF_CLK_75M		(0x1)
+#define CF_IF_CLK_66M		(0x2)
+#define CF_IF_CLK_50M		(0x3)
+#define CF_IF_CLK_40M		(0x4)
+#define CF_IF_CLK_33M		(0x5)
+#define CF_IF_CLK_25M		(0x6)
+#define CF_IF_CLK_125M		(0x7)
+#define CF_IF_CLK_150M		(0x8)
+#define CF_IF_CLK_166M		(0x9)
+#define CF_IF_CLK_200M		(0xA)
+
+#define CF_BROKEN_PIO		(1)
+#define CF_BROKEN_MWDMA		(1 << 1)
+#define CF_BROKEN_UDMA		(1 << 2)
+
 /* Compact Flash Controller Dev Structure */
 struct arasan_cf_dev {
 	/* pointer to ata_host structure */
@@ -305,7 +320,6 @@ static void cf_card_detect(struct arasan_cf_dev *acdev, bool hotplugged)
 
 static int cf_init(struct arasan_cf_dev *acdev)
 {
-	struct arasan_cf_pdata *pdata = dev_get_platdata(acdev->host->dev);
 	unsigned int if_clk;
 	unsigned long flags;
 	int ret = 0;
@@ -327,8 +341,6 @@ static int cf_init(struct arasan_cf_dev *acdev)
 	/* configure CF interface clock */
 	/* TODO: read from device tree */
 	if_clk = CF_IF_CLK_166M;
-	if (pdata && pdata->cf_if_clk <= CF_IF_CLK_200M)
-		if_clk = pdata->cf_if_clk;
 
 	writel(if_clk, acdev->vbase + CLK_CFG);
 
@@ -796,7 +808,6 @@ static struct ata_port_operations arasan_cf_ops = {
 static int arasan_cf_probe(struct platform_device *pdev)
 {
 	struct arasan_cf_dev *acdev;
-	struct arasan_cf_pdata *pdata = dev_get_platdata(&pdev->dev);
 	struct ata_host *host;
 	struct ata_port *ap;
 	struct resource *res;
@@ -808,10 +819,7 @@ static int arasan_cf_probe(struct platform_device *pdev)
 	if (!acdev)
 		return -ENOMEM;
 
-	if (pdata)
-		quirk = pdata->quirk;
-	else
-		quirk = CF_BROKEN_UDMA; /* as it is on spear1340 */
+	quirk = CF_BROKEN_UDMA; /* as it is on spear1340 */
 
 	/*
 	 * If there's an error getting IRQ (or we do get IRQ0),
@@ -943,13 +951,11 @@ static int arasan_cf_resume(struct device *dev)
 
 static SIMPLE_DEV_PM_OPS(arasan_cf_pm_ops, arasan_cf_suspend, arasan_cf_resume);
 
-#ifdef CONFIG_OF
 static const struct of_device_id arasan_cf_id_table[] = {
 	{ .compatible = "arasan,cf-spear1340" },
 	{}
 };
 MODULE_DEVICE_TABLE(of, arasan_cf_id_table);
-#endif
 
 static struct platform_driver arasan_cf_driver = {
 	.probe		= arasan_cf_probe,
@@ -957,7 +963,7 @@ static struct platform_driver arasan_cf_driver = {
 	.driver		= {
 		.name	= DRIVER_NAME,
 		.pm	= &arasan_cf_pm_ops,
-		.of_match_table = of_match_ptr(arasan_cf_id_table),
+		.of_match_table = arasan_cf_id_table,
 	},
 };
 
