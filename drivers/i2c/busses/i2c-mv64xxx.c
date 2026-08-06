@@ -15,7 +15,6 @@
 #include <linux/spinlock.h>
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
-#include <linux/mv643xx_i2c.h>
 #include <linux/platform_device.h>
 #include <linux/pinctrl/consumer.h>
 #include <linux/pm_runtime.h>
@@ -26,6 +25,8 @@
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/delay.h>
+
+#define MV64XXX_I2C_CTLR_NAME	"mv64xxx_i2c"
 
 #define MV64XXX_I2C_BAUD_DIV_N(val)			(val & 0x7)
 #define MV64XXX_I2C_BAUD_DIV_M(val)			((val & 0xf) << 3)
@@ -812,7 +813,6 @@ static const struct of_device_id mv64xxx_i2c_of_match_table[] = {
 };
 MODULE_DEVICE_TABLE(of, mv64xxx_i2c_of_match_table);
 
-#ifdef CONFIG_OF
 static int
 mv64xxx_calc_freq(struct mv64xxx_i2c_data *drv_data,
 		  const int tclk, const int n, const int m)
@@ -919,14 +919,6 @@ mv64xxx_of_config(struct mv64xxx_i2c_data *drv_data,
 out:
 	return rc;
 }
-#else /* CONFIG_OF */
-static int
-mv64xxx_of_config(struct mv64xxx_i2c_data *drv_data,
-		  struct device *dev)
-{
-	return -ENODEV;
-}
-#endif /* CONFIG_OF */
 
 static int mv64xxx_i2c_init_recovery_info(struct mv64xxx_i2c_data *drv_data,
 					  struct device *dev)
@@ -977,11 +969,7 @@ static int
 mv64xxx_i2c_probe(struct platform_device *pd)
 {
 	struct mv64xxx_i2c_data		*drv_data;
-	struct mv64xxx_i2c_pdata	*pdata = dev_get_platdata(&pd->dev);
 	int	rc;
-
-	if ((!pdata && !pd->dev.of_node))
-		return -ENODEV;
 
 	drv_data = devm_kzalloc(&pd->dev, sizeof(struct mv64xxx_i2c_data),
 				GFP_KERNEL);
@@ -1017,17 +1005,9 @@ mv64xxx_i2c_probe(struct platform_device *pd)
 	if (drv_data->irq < 0)
 		return drv_data->irq;
 
-	if (pdata) {
-		drv_data->freq_m = pdata->freq_m;
-		drv_data->freq_n = pdata->freq_n;
-		drv_data->adapter.timeout = msecs_to_jiffies(pdata->timeout);
-		drv_data->offload_enabled = false;
-		memcpy(&drv_data->reg_offsets, &mv64xxx_i2c_regs_mv64xxx, sizeof(drv_data->reg_offsets));
-	} else if (pd->dev.of_node) {
-		rc = mv64xxx_of_config(drv_data, &pd->dev);
-		if (rc)
-			return rc;
-	}
+	rc = mv64xxx_of_config(drv_data, &pd->dev);
+	if (rc)
+		return rc;
 
 	rc = mv64xxx_i2c_init_recovery_info(drv_data, &pd->dev);
 	if (rc == -EPROBE_DEFER)
