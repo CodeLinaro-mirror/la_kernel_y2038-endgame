@@ -31,7 +31,6 @@
 #include <linux/of_device.h>
 #include <linux/pinctrl/consumer.h>
 #include <linux/platform_device.h>
-#include <linux/platform_data/i2c-pxa.h>
 #include <linux/property.h>
 #include <linux/slab.h>
 
@@ -1266,36 +1265,18 @@ static int i2c_pxa_probe_dt(struct platform_device *pdev, struct pxa_i2c *i2c,
 	struct device_node *np = pdev->dev.of_node;
 
 	if (!pdev->dev.of_node)
-		return 1;
+		return -ENXIO;
 
 	/* For device tree we always use the dynamic or alias-assigned ID */
 	i2c->adap.nr = -1;
 
 	i2c->use_pio = of_property_read_bool(np, "mrvl,i2c-polling");
-	i2c->fast_mode = of_property_read_bool(np, "mrvl,i2c-fast-mode");
+	/* PXA uses mrvl,i2c-fast-mode, Intel CE4100 uses fast-mode */
+	i2c->fast_mode = of_property_read_bool(np, "mrvl,i2c-fast-mode") ||
+			 of_property_read_bool(np, "fast-mode");
 
 	*i2c_types = (kernel_ulong_t)device_get_match_data(&pdev->dev);
 
-	return 0;
-}
-
-static int i2c_pxa_probe_pdata(struct platform_device *pdev,
-			       struct pxa_i2c *i2c,
-			       enum pxa_i2c_types *i2c_types)
-{
-	struct i2c_pxa_platform_data *plat = dev_get_platdata(&pdev->dev);
-	const struct platform_device_id *id = platform_get_device_id(pdev);
-
-	*i2c_types = id->driver_data;
-	if (plat) {
-		i2c->use_pio = plat->use_pio;
-		i2c->fast_mode = plat->fast_mode;
-		i2c->high_mode = plat->high_mode;
-		i2c->master_code = plat->master_code;
-		if (!i2c->master_code)
-			i2c->master_code = 0xe;
-		i2c->rate = plat->rate;
-	}
 	return 0;
 }
 
@@ -1426,7 +1407,6 @@ static int i2c_pxa_init_recovery(struct pxa_i2c *i2c)
 
 static int i2c_pxa_probe(struct platform_device *dev)
 {
-	struct i2c_pxa_platform_data *plat = dev_get_platdata(&dev->dev);
 	enum pxa_i2c_types i2c_type;
 	struct pxa_i2c *i2c;
 	struct resource *res;
@@ -1442,10 +1422,7 @@ static int i2c_pxa_probe(struct platform_device *dev)
 	i2c->adap.retries = 5;
 	i2c->adap.algo_data = i2c;
 	i2c->adap.dev.parent = &dev->dev;
-#ifdef CONFIG_OF
 	i2c->adap.dev.of_node = dev->dev.of_node;
-#endif
-
 	i2c->reg_base = devm_platform_get_and_ioremap_resource(dev, 0, &res);
 	if (IS_ERR(i2c->reg_base))
 		return PTR_ERR(i2c->reg_base);
@@ -1459,9 +1436,7 @@ static int i2c_pxa_probe(struct platform_device *dev)
 		return ret;
 
 	ret = i2c_pxa_probe_dt(dev, i2c, &i2c_type);
-	if (ret > 0)
-		ret = i2c_pxa_probe_pdata(dev, i2c, &i2c_type);
-	if (ret < 0)
+	if (ret)
 		return ret;
 
 	spin_lock_init(&i2c->lock);
@@ -1500,10 +1475,6 @@ static int i2c_pxa_probe(struct platform_device *dev)
 
 	i2c->slave_addr = I2C_PXA_SLAVE_ADDR;
 	i2c->highmode_enter = false;
-
-	if (plat) {
-		i2c->adap.class = plat->class;
-	}
 
 	if (i2c->high_mode) {
 		if (i2c->rate) {

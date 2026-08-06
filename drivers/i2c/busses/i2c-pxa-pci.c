@@ -10,7 +10,6 @@
 #include <linux/init.h>
 #include <linux/pci.h>
 #include <linux/platform_device.h>
-#include <linux/platform_data/i2c-pxa.h>
 #include <linux/of.h>
 #include <linux/of_address.h>
 
@@ -23,13 +22,11 @@ struct ce4100_devices {
 static struct platform_device *add_i2c_device(struct pci_dev *dev, int bar)
 {
 	struct platform_device *pdev;
-	struct i2c_pxa_platform_data pdata;
 	struct resource res[2];
 	struct device_node *child;
 	static int devnum;
 	int ret;
 
-	memset(&pdata, 0, sizeof(struct i2c_pxa_platform_data));
 	memset(&res, 0, sizeof(res));
 
 	res[0].flags = IORESOURCE_MEM;
@@ -41,7 +38,6 @@ static struct platform_device *add_i2c_device(struct pci_dev *dev, int bar)
 	res[1].end = dev->irq;
 
 	for_each_child_of_node(dev->dev.of_node, child) {
-		const void *prop;
 		struct resource r;
 		int ret;
 
@@ -54,10 +50,6 @@ static struct platform_device *add_i2c_device(struct pci_dev *dev, int bar)
 			continue;
 		if (r.flags != res[0].flags)
 			continue;
-
-		prop = of_get_property(child, "fast-mode", NULL);
-		if (prop)
-			pdata.fast_mode = 1;
 
 		break;
 	}
@@ -80,10 +72,6 @@ static struct platform_device *add_i2c_device(struct pci_dev *dev, int bar)
 	platform_device_set_of_node(pdev, child);
 
 	ret = platform_device_add_resources(pdev, res, ARRAY_SIZE(res));
-	if (ret)
-		goto err;
-
-	ret = platform_device_add_data(pdev, &pdata, sizeof(pdata));
 	if (ret)
 		goto err;
 
