@@ -17,7 +17,60 @@
 #include <linux/uaccess.h>
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
-#include <linux/platform_data/lp8755.h>
+#include <linux/regulator/consumer.h>
+
+#define LP8755_NAME "lp8755-regulator"
+
+/*
+ *PWR FAULT : power fault detected
+ *OCP : over current protect activated
+ *OVP : over voltage protect activated
+ *TEMP_WARN : thermal warning
+ *TEMP_SHDN : thermal shutdonw detected
+ *I_LOAD : current measured
+ */
+#define LP8755_EVENT_PWR_FAULT REGULATOR_EVENT_FAIL
+#define LP8755_EVENT_OCP REGULATOR_EVENT_OVER_CURRENT
+#define LP8755_EVENT_OVP 0x10000
+#define LP8755_EVENT_TEMP_WARN 0x2000
+#define LP8755_EVENT_TEMP_SHDN REGULATOR_EVENT_OVER_TEMP
+#define LP8755_EVENT_I_LOAD	0x40000
+
+enum lp8755_bucks {
+	LP8755_BUCK0 = 0,
+	LP8755_BUCK1,
+	LP8755_BUCK2,
+	LP8755_BUCK3,
+	LP8755_BUCK4,
+	LP8755_BUCK5,
+	LP8755_BUCK_MAX,
+};
+
+/*
+ * multiphase configuration options
+ */
+enum lp8755_mphase_config {
+	MPHASE_CONF0,
+	MPHASE_CONF1,
+	MPHASE_CONF2,
+	MPHASE_CONF3,
+	MPHASE_CONF4,
+	MPHASE_CONF5,
+	MPHASE_CONF6,
+	MPHASE_CONF7,
+	MPHASE_CONF8,
+	MPHASE_CONF_MAX
+};
+
+/**
+ * struct lp8755_platform_data
+ * @mphase	: Multiphase Switcher Configurations.
+ * @buck_data	: buck0~6 init voltage in uV
+ */
+struct lp8755_platform_data {
+	int mphase;
+	struct regulator_init_data *buck_data[LP8755_BUCK_MAX];
+};
 
 #define LP8755_REG_BUCK0	0x00
 #define LP8755_REG_BUCK1	0x03
@@ -360,7 +413,6 @@ static int lp8755_probe(struct i2c_client *client)
 {
 	int ret, icnt;
 	struct lp8755_chip *pchip;
-	struct lp8755_platform_data *pdata = dev_get_platdata(&client->dev);
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
 		dev_err(&client->dev, "i2c functionality check fail.\n");
@@ -381,20 +433,15 @@ static int lp8755_probe(struct i2c_client *client)
 	}
 	i2c_set_clientdata(client, pchip);
 
-	if (pdata != NULL) {
-		pchip->pdata = pdata;
-		pchip->mphase = pdata->mphase;
-	} else {
-		pchip->pdata = devm_kzalloc(pchip->dev,
-					    sizeof(struct lp8755_platform_data),
-					    GFP_KERNEL);
-		if (!pchip->pdata)
-			return -ENOMEM;
-		ret = lp8755_init_data(pchip);
-		if (ret < 0) {
-			dev_err(&client->dev, "fail to initialize chip\n");
-			return ret;
-		}
+	pchip->pdata = devm_kzalloc(pchip->dev,
+				    sizeof(struct lp8755_platform_data),
+				    GFP_KERNEL);
+	if (!pchip->pdata)
+		return -ENOMEM;
+	ret = lp8755_init_data(pchip);
+	if (ret < 0) {
+		dev_err(&client->dev, "fail to initialize chip\n");
+		return ret;
 	}
 
 	ret = lp8755_regulator_init(pchip);
