@@ -654,14 +654,6 @@ config REGULATOR_MAX77857
 	  converters with input voltage range (2.5V to 16V). Say Y here to
 	  enable the regulator driver
 
-config REGULATOR_MAX8649
-	tristate "Maxim 8649 voltage regulator"
-	depends on I2C
-	select REGMAP_I2C
-	help
-	  This driver controls a Maxim 8649 voltage output regulator via
-	  I2C bus.
-
 config REGULATOR_MAX8660
 	tristate "Maxim 8660/8661 voltage regulator"
 	depends on I2C
