@@ -21,6 +21,8 @@
 #include "firmware.h"
 #include "chip.h"
 
+#define BRCMFMAC_PDATA_NAME		"brcmfmac"
+
 MODULE_AUTHOR("Broadcom Corporation");
 MODULE_DESCRIPTION("Broadcom 802.11 wireless LAN fullmac driver.");
 MODULE_LICENSE("Dual BSD/GPL");
@@ -74,7 +76,6 @@ module_param_named(ignore_probe_fail, brcmf_ignore_probe_fail, int, 0);
 MODULE_PARM_DESC(ignore_probe_fail, "always succeed probe for debugging");
 #endif
 
-static struct brcmfmac_platform_data *brcmfmac_pdata;
 struct brcmf_mp_global_t brcmf_mp_global;
 
 void brcmf_c_set_joinpref_default(struct brcmf_if *ifp)
@@ -501,12 +502,6 @@ static void brcmf_mp_attach(void)
 	 */
 	strscpy(brcmf_mp_global.firmware_path, brcmf_firmware_path,
 		BRCMF_FW_ALTPATH_LEN);
-	if ((brcmfmac_pdata) && (brcmfmac_pdata->fw_alternative_path) &&
-	    (brcmf_mp_global.firmware_path[0] == '\0')) {
-		strscpy(brcmf_mp_global.firmware_path,
-			brcmfmac_pdata->fw_alternative_path,
-			BRCMF_FW_ALTPATH_LEN);
-	}
 }
 
 struct brcmf_mp_device *brcmf_get_module_param(struct device *dev,
@@ -514,9 +509,6 @@ struct brcmf_mp_device *brcmf_get_module_param(struct device *dev,
 					       u32 chip, u32 chiprev)
 {
 	struct brcmf_mp_device *settings;
-	struct brcmfmac_pd_device *device_pd;
-	bool found;
-	int i;
 
 	brcmf_dbg(INFO, "Enter, bus=%d, chip=%d, rev=%d\n", bus_type, chip,
 		  chiprev);
@@ -537,36 +529,13 @@ struct brcmf_mp_device *brcmf_get_module_param(struct device *dev,
 	if (bus_type == BRCMF_BUSTYPE_SDIO)
 		settings->bus.sdio.txglomsz = brcmf_sdiod_txglomsz;
 
-	/* See if there is any device specific platform data configured */
-	found = false;
-	if (brcmfmac_pdata) {
-		for (i = 0; i < brcmfmac_pdata->device_count; i++) {
-			device_pd = &brcmfmac_pdata->devices[i];
-			if ((device_pd->bus_type == bus_type) &&
-			    (device_pd->id == chip) &&
-			    ((device_pd->rev == chiprev) ||
-			     (device_pd->rev == -1))) {
-				brcmf_dbg(INFO, "Platform data for device found\n");
-				settings->country_codes =
-						device_pd->country_codes;
-				if (device_pd->bus_type == BRCMF_BUSTYPE_SDIO)
-					memcpy(&settings->bus.sdio,
-					       &device_pd->bus.sdio,
-					       sizeof(settings->bus.sdio));
-				found = true;
-				break;
-			}
-		}
+	brcmf_dmi_probe(settings, chip, chiprev);
+	if (brcmf_of_probe(dev, bus_type, settings) == -EPROBE_DEFER) {
+		kfree(settings);
+		return ERR_PTR(-EPROBE_DEFER);
 	}
-	if (!found) {
-		/* No platform data for this device, try OF and DMI data */
-		brcmf_dmi_probe(settings, chip, chiprev);
-		if (brcmf_of_probe(dev, bus_type, settings) == -EPROBE_DEFER) {
-			kfree(settings);
-			return ERR_PTR(-EPROBE_DEFER);
-		}
-		brcmf_acpi_probe(dev, bus_type, settings);
-	}
+	brcmf_acpi_probe(dev, bus_type, settings);
+
 	return settings;
 }
 
@@ -579,20 +548,12 @@ static int __init brcmf_common_pd_probe(struct platform_device *pdev)
 {
 	brcmf_dbg(INFO, "Enter\n");
 
-	brcmfmac_pdata = dev_get_platdata(&pdev->dev);
-
-	if (brcmfmac_pdata->power_on)
-		brcmfmac_pdata->power_on();
-
 	return 0;
 }
 
 static void brcmf_common_pd_remove(struct platform_device *pdev)
 {
 	brcmf_dbg(INFO, "Enter\n");
-
-	if (brcmfmac_pdata->power_off)
-		brcmfmac_pdata->power_off();
 }
 
 static struct platform_driver brcmf_pd = {
@@ -616,10 +577,7 @@ static int __init brcmfmac_module_init(void)
 
 	/* Continue the initialization by registering the different busses */
 	err = brcmf_core_init();
-	if (err) {
-		if (brcmfmac_pdata)
-			platform_driver_unregister(&brcmf_pd);
-	}
+		platform_driver_unregister(&brcmf_pd);
 
 	return err;
 }
@@ -627,8 +585,7 @@ static int __init brcmfmac_module_init(void)
 static void __exit brcmfmac_module_exit(void)
 {
 	brcmf_core_exit();
-	if (brcmfmac_pdata)
-		platform_driver_unregister(&brcmf_pd);
+	platform_driver_unregister(&brcmf_pd);
 }
 
 module_init(brcmfmac_module_init);

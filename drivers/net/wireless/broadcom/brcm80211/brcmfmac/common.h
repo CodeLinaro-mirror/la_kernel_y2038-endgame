@@ -6,10 +6,83 @@
 #define BRCMFMAC_COMMON_H
 
 #include <linux/platform_device.h>
-#include <linux/platform_data/brcmfmac.h>
 #include "fwil_types.h"
 
 #define BRCMF_FW_ALTPATH_LEN			256
+
+#define BRCMFMAC_COUNTRY_BUF_SZ		4
+
+/**
+ * enum brcmf_bus_type - Bus type identifier. Currently SDIO, USB and PCIE are
+ *			 supported.
+ */
+enum brcmf_bus_type {
+	BRCMF_BUSTYPE_SDIO,
+	BRCMF_BUSTYPE_USB,
+	BRCMF_BUSTYPE_PCIE
+};
+
+
+/**
+ * struct brcmfmac_sdio_pd - SDIO Device specific platform data.
+ *
+ * @txglomsz:		SDIO txglom size. Use 0 if default of driver is to be
+ *			used.
+ * @drive_strength:	is the preferred drive_strength to be used for the SDIO
+ *			pins. If 0 then a default value will be used. This is
+ *			the target drive strength, the exact drive strength
+ *			which will be used depends on the capabilities of the
+ *			device.
+ * @oob_irq_supported:	does the board have support for OOB interrupts. SDIO
+ *			in-band interrupts are relatively slow and for having
+ *			less overhead on interrupt processing an out of band
+ *			interrupt can be used. If the HW supports this then
+ *			enable this by setting this field to true and configure
+ *			the oob related fields.
+ * @oob_irq_nr,
+ * @oob_irq_flags:	the OOB interrupt information. The values are used for
+ *			registering the irq using request_irq function.
+ * @sd_head_align:	alignment requirement for start of data buffer.
+ * @sd_sgentry_align:	length alignment requirement for each sg entry.
+ */
+struct brcmfmac_sdio_pd {
+	int		txglomsz;
+	unsigned int	drive_strength;
+	bool		oob_irq_supported;
+	unsigned int	oob_irq_nr;
+	unsigned long	oob_irq_flags;
+	unsigned short	sd_head_align;
+	unsigned short	sd_sgentry_align;
+};
+
+/**
+ * struct brcmfmac_pd_cc_entry - Struct for translating user space country code
+ *				 (iso3166) to firmware country code and
+ *				 revision.
+ *
+ * @iso3166:	iso3166 alpha 2 country code string.
+ * @cc:		firmware country code string.
+ * @rev:	firmware country code revision.
+ */
+struct brcmfmac_pd_cc_entry {
+	char	iso3166[BRCMFMAC_COUNTRY_BUF_SZ];
+	char	cc[BRCMFMAC_COUNTRY_BUF_SZ];
+	s32	rev;
+};
+
+/**
+ * struct brcmfmac_pd_cc - Struct for translating country codes as set by user
+ *			   space to a country code and rev which can be used by
+ *			   firmware.
+ *
+ * @table_size:	number of entries in table (> 0)
+ * @table:	array of 1 or more elements with translation information.
+ */
+struct brcmfmac_pd_cc {
+	int				table_size;
+	struct brcmfmac_pd_cc_entry	table[];
+};
+
 
 /* Definitions for the module global and device specific settings are defined
  * here. Two structs are used for them. brcmf_mp_global_t and brcmf_mp_device.

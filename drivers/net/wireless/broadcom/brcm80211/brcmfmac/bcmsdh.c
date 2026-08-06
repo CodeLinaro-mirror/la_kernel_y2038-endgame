@@ -380,10 +380,10 @@ static int brcmf_sdiod_sglist_rw(struct brcmf_sdio_dev *sdiodev,
 				 struct sk_buff_head *pktlist)
 {
 	unsigned int req_sz, func_blk_sz, sg_cnt, sg_data_sz, pkt_offset;
-	unsigned int max_req_sz, src_offset, dst_offset;
-	unsigned char *pkt_data, *orig_data, *dst_data;
+	unsigned int max_req_sz;
+	unsigned char *pkt_data;
 	struct sk_buff_head local_list, *target_list;
-	struct sk_buff *pkt_next = NULL, *src;
+	struct sk_buff *pkt_next = NULL;
 	unsigned short max_seg_cnt;
 	struct mmc_request mmc_req;
 	struct mmc_command mmc_cmd;
@@ -397,28 +397,6 @@ static int brcmf_sdiod_sglist_rw(struct brcmf_sdio_dev *sdiodev,
 	target_list = pktlist;
 	/* for host with broken sg support, prepare a page aligned list */
 	__skb_queue_head_init(&local_list);
-	if (!write && sdiodev->settings->bus.sdio.broken_sg_support) {
-		req_sz = 0;
-		skb_queue_walk(pktlist, pkt_next)
-			req_sz += pkt_next->len;
-		req_sz = ALIGN(req_sz, func->cur_blksize);
-		while (req_sz > PAGE_SIZE) {
-			pkt_next = brcmu_pkt_buf_get_skb(PAGE_SIZE);
-			if (pkt_next == NULL) {
-				ret = -ENOMEM;
-				goto exit;
-			}
-			__skb_queue_tail(&local_list, pkt_next);
-			req_sz -= PAGE_SIZE;
-		}
-		pkt_next = brcmu_pkt_buf_get_skb(req_sz);
-		if (pkt_next == NULL) {
-			ret = -ENOMEM;
-			goto exit;
-		}
-		__skb_queue_tail(&local_list, pkt_next);
-		target_list = &local_list;
-	}
 
 	func_blk_sz = func->cur_blksize;
 	max_req_sz = sdiodev->max_request_size;
@@ -471,7 +449,7 @@ static int brcmf_sdiod_sglist_rw(struct brcmf_sdio_dev *sdiodev,
 						     sg_cnt, req_sz, func_blk_sz,
 						     &addr, sdiodev, func, write);
 				if (ret)
-					goto exit_queue_walk;
+					goto exit;
 				req_sz = 0;
 				sg_cnt = 0;
 				sgl = sdiodev->sgtable.sgl;
@@ -482,37 +460,6 @@ static int brcmf_sdiod_sglist_rw(struct brcmf_sdio_dev *sdiodev,
 		ret = mmc_submit_one(&mmc_dat, &mmc_req, &mmc_cmd,
 				     sg_cnt, req_sz, func_blk_sz,
 				     &addr, sdiodev, func, write);
-exit_queue_walk:
-	if (!write && sdiodev->settings->bus.sdio.broken_sg_support) {
-		src = __skb_peek(&local_list);
-		src_offset = 0;
-		skb_queue_walk(pktlist, pkt_next) {
-			dst_offset = 0;
-
-			/* This is safe because we must have enough SKB data
-			 * in the local list to cover everything in pktlist.
-			 */
-			while (1) {
-				req_sz = pkt_next->len - dst_offset;
-				if (req_sz > src->len - src_offset)
-					req_sz = src->len - src_offset;
-
-				orig_data = src->data + src_offset;
-				dst_data = pkt_next->data + dst_offset;
-				memcpy(dst_data, orig_data, req_sz);
-
-				src_offset += req_sz;
-				if (src_offset == src->len) {
-					src_offset = 0;
-					src = skb_peek_next(src, &local_list);
-				}
-				dst_offset += req_sz;
-				if (dst_offset == pkt_next->len)
-					break;
-			}
-		}
-	}
-
 exit:
 	sg_init_table(sdiodev->sgtable.sgl, sdiodev->sgtable.orig_nents);
 	while ((pkt_next = __skb_dequeue(&local_list)) != NULL)
