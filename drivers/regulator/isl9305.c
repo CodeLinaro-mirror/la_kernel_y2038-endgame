@@ -11,11 +11,15 @@
 #include <linux/err.h>
 #include <linux/i2c.h>
 #include <linux/of.h>
-#include <linux/platform_data/isl9305.h>
 #include <linux/regmap.h>
 #include <linux/regulator/driver.h>
 #include <linux/regulator/of_regulator.h>
 #include <linux/slab.h>
+
+#define ISL9305_DCD1 0
+#define ISL9305_DCD2 1
+#define ISL9305_LDO1 2
+#define ISL9305_LDO2 3
 
 /*
  * Registers
@@ -140,7 +144,6 @@ static const struct regmap_config isl9305_regmap = {
 static int isl9305_i2c_probe(struct i2c_client *i2c)
 {
 	struct regulator_config config = { };
-	struct isl9305_pdata *pdata = i2c->dev.platform_data;
 	struct regulator_dev *rdev;
 	struct regmap *regmap;
 	int i, ret;
@@ -155,11 +158,6 @@ static int isl9305_i2c_probe(struct i2c_client *i2c)
 	config.dev = &i2c->dev;
 
 	for (i = 0; i < ARRAY_SIZE(isl9305_regulators); i++) {
-		if (pdata)
-			config.init_data = pdata->init_data[i];
-		else
-			config.init_data = NULL;
-
 		rdev = devm_regulator_register(&i2c->dev,
 					       &isl9305_regulators[i],
 					       &config);
@@ -174,7 +172,6 @@ static int isl9305_i2c_probe(struct i2c_client *i2c)
 	return 0;
 }
 
-#ifdef CONFIG_OF
 static const struct of_device_id isl9305_dt_ids[] = {
 	{ .compatible = "isl,isl9305" }, /* for backward compat., don't use */
 	{ .compatible = "isil,isl9305" },
@@ -183,7 +180,6 @@ static const struct of_device_id isl9305_dt_ids[] = {
 	{},
 };
 MODULE_DEVICE_TABLE(of, isl9305_dt_ids);
-#endif
 
 static const struct i2c_device_id isl9305_i2c_id[] = {
 	{ .name = "isl9305" },
@@ -196,7 +192,7 @@ static struct i2c_driver isl9305_regulator_driver = {
 	.driver = {
 		.name = "isl9305",
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
-		.of_match_table	= of_match_ptr(isl9305_dt_ids),
+		.of_match_table	= isl9305_dt_ids,
 	},
 	.probe = isl9305_i2c_probe,
 	.id_table = isl9305_i2c_id,
