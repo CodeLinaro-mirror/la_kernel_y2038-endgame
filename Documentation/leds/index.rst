@@ -19,7 +19,6 @@ LEDs
    leds-blinkm
    leds-cht-wcove
    leds-el15203000
-   leds-lm3556
    leds-lp5521
    leds-lp5523
    leds-lp5562
