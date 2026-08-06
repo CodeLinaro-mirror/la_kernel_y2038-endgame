@@ -3,8 +3,6 @@
  *  OMAP GPMC (General Purpose Memory Controller) defines
  */
 
-#include <linux/platform_data/gpmc-omap.h>
-
 #define GPMC_CONFIG_WP		0x00000005
 
 /* IRQ numbers in GPMC IRQ domain for legacy boot use */
@@ -59,24 +57,3 @@ int gpmc_omap_onenand_set_timings(struct device *dev, int cs, int freq,
 	return -EINVAL;
 }
 #endif /* CONFIG_OMAP_GPMC */
-
-extern int gpmc_calc_timings(struct gpmc_timings *gpmc_t,
-			     struct gpmc_settings *gpmc_s,
-			     struct gpmc_device_timings *dev_t);
-
-struct device_node;
-
-extern void gpmc_cs_write_reg(int cs, int idx, u32 val);
-extern int gpmc_calc_divider(unsigned int sync_clk);
-extern int gpmc_cs_set_timings(int cs, const struct gpmc_timings *t,
-			       const struct gpmc_settings *s);
-extern int gpmc_cs_program_settings(int cs, struct gpmc_settings *p);
-extern int gpmc_cs_request(int cs, unsigned long size, unsigned long *base);
-extern void gpmc_cs_free(int cs);
-extern int gpmc_configure(int cmd, int wval);
-extern void gpmc_read_settings_dt(struct device_node *np,
-				  struct gpmc_settings *p);
-
-struct gpmc_timings;
-struct omap_nand_platform_data;
-struct omap_onenand_platform_data;
