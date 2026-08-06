@@ -24,10 +24,10 @@
 #include <linux/of.h>
 #include <linux/of_platform.h>
 
-#include <linux/platform_data/elm.h>
-
 #include <linux/omap-gpmc.h>
 #include <linux/platform_data/mtd-nand-omap2.h>
+
+#include "omap_elm.h"
 
 #define	DRIVER_NAME	"omap2-nand"
 #define	OMAP_NAND_TIMEOUT_MS	5000

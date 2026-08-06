@@ -14,7 +14,8 @@
 #include <linux/of.h>
 #include <linux/sched.h>
 #include <linux/pm_runtime.h>
-#include <linux/platform_data/elm.h>
+
+#include "omap_elm.h"
 
 #define ELM_SYSCONFIG			0x010
 #define ELM_IRQSTATUS			0x018
@@ -544,19 +545,17 @@ static int elm_resume(struct device *dev)
 
 static SIMPLE_DEV_PM_OPS(elm_pm_ops, elm_suspend, elm_resume);
 
-#ifdef CONFIG_OF
 static const struct of_device_id elm_of_match[] = {
 	{ .compatible = "ti,am3352-elm" },
 	{ .compatible = "ti,am64-elm" },
 	{},
 };
 MODULE_DEVICE_TABLE(of, elm_of_match);
-#endif
 
 static struct platform_driver elm_driver = {
 	.driver	= {
 		.name	= DRIVER_NAME,
-		.of_match_table = of_match_ptr(elm_of_match),
+		.of_match_table = elm_of_match,
 		.pm	= &elm_pm_ops,
 	},
 	.probe	= elm_probe,
