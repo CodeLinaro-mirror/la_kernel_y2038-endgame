@@ -1394,7 +1394,7 @@ static ssize_t inv_attr_show(struct device *dev, struct device_attribute *attr,
 {
 	struct inv_mpu6050_state *st = iio_priv(dev_to_iio_dev(dev));
 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-	s8 *m;
+	const char **m;
 
 	switch (this_attr->address) {
 	/*
@@ -1403,9 +1403,9 @@ static ssize_t inv_attr_show(struct device *dev, struct device_attribute *attr,
 	 */
 	case ATTR_GYRO_MATRIX:
 	case ATTR_ACCL_MATRIX:
-		m = st->plat_data.orientation;
+		m = st->orientation.rotation;
 
-		return sysfs_emit(buf, "%d, %d, %d; %d, %d, %d; %d, %d, %d\n",
+		return sysfs_emit(buf, "%s, %s, %s; %s, %s, %s; %s, %s, %s\n",
 			m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8]);
 	default:
 		return -EINVAL;
@@ -1886,7 +1886,6 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
 {
 	struct inv_mpu6050_state *st;
 	struct iio_dev *indio_dev;
-	struct inv_mpu6050_platform_data *pdata;
 	struct device *dev = regmap_get_device(regmap);
 	int result;
 	int irq_type;
@@ -1909,16 +1908,12 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
 
 	st->level_shifter = device_property_read_bool(dev,
 						      "invensense,level-shifter");
-	pdata = dev_get_platdata(dev);
-	if (!pdata) {
-		result = iio_read_mount_matrix(dev, &st->orientation);
-		if (result) {
-			dev_err(dev, "Failed to retrieve mounting matrix %d\n",
-				result);
-			return result;
-		}
-	} else {
-		st->plat_data = *pdata;
+
+	result = iio_read_mount_matrix(dev, &st->orientation);
+	if (result) {
+		dev_err(dev, "Failed to retrieve mounting matrix %d\n",
+			result);
+		return result;
 	}
 
 	if (irq > 0) {

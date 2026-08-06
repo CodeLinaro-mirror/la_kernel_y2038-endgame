@@ -9,7 +9,6 @@
 #include <linux/i2c.h>
 #include <linux/i2c-mux.h>
 #include <linux/mutex.h>
-#include <linux/platform_data/invensense_mpu6050.h>
 #include <linux/regmap.h>
 
 #include <linux/iio/buffer.h>
@@ -175,7 +174,6 @@ struct inv_mpu6050_hw {
  *  @reg:		Map of important registers.
  *  @hw:		Other hardware-specific information.
  *  @chip_type:		chip type.
- *  @plat_data:		platform data (deprecated in favor of @orientation).
  *  @orientation:	sensor chip orientation relative to main hardware.
  *  @map		regmap pointer.
  *  @irq		interrupt number.
@@ -199,7 +197,6 @@ struct inv_mpu6050_state {
 	enum   inv_devices chip_type;
 	struct i2c_mux_core *muxc;
 	struct i2c_client *mux_client;
-	struct inv_mpu6050_platform_data plat_data;
 	struct iio_mount_matrix orientation;
 	struct regmap *map;
 	int irq;
