@@ -15,7 +15,6 @@
 #include <linux/gpio/consumer.h>
 #include <linux/pinctrl/consumer.h>
 #include <linux/platform_device.h>
-#include <linux/platform_data/spi-mt65xx.h>
 #include <linux/pm_runtime.h>
 #include <linux/spi/spi.h>
 #include <linux/spi/spi-mem.h>
@@ -228,10 +227,12 @@ static const struct mtk_spi_compatible mt6991_compat = {
 	.ipm_design = true,
 };
 
-/*
- * A piece of default chip info unless the platform
- * supplies it.
- */
+/* formerly board specific platform_data, now always zero */
+struct mtk_chip_config {
+	u32 sample_sel;
+	u32 tick_delay;
+};
+
 static const struct mtk_chip_config mtk_default_chip_info = {
 	.sample_sel = 0,
 	.tick_delay = 0,
