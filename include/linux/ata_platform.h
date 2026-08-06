@@ -22,11 +22,4 @@ extern int __pata_platform_probe(struct device *dev,
 				 const struct scsi_host_template *sht,
 				 bool use16bit);
 
-/*
- * Marvell SATA private data
- */
-struct mv_sata_platform_data {
-	int	n_ports; /* number of sata ports */
-};
-
 #endif /* __LINUX_ATA_PLATFORM_H */

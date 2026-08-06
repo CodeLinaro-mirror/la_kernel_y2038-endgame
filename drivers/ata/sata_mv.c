@@ -4015,7 +4015,6 @@ static void mv_conf_mbus_windows(struct mv_host_priv *hpriv,
  */
 static int mv_platform_probe(struct platform_device *pdev)
 {
-	const struct mv_sata_platform_data *mv_platform_data;
 	const struct mbus_dram_target_info *dram;
 	const struct ata_port_info *ppi[] =
 	    { &mv_port_info[chip_soc], NULL };
@@ -4044,23 +4043,18 @@ static int mv_platform_probe(struct platform_device *pdev)
 		return -EINVAL;
 
 	/* allocate host */
-	if (pdev->dev.of_node) {
-		rc = of_property_read_u32(pdev->dev.of_node, "nr-ports",
-					   &n_ports);
-		if (rc) {
-			dev_err(&pdev->dev,
-				"error parsing nr-ports property: %d\n", rc);
-			return rc;
-		}
+	rc = of_property_read_u32(pdev->dev.of_node, "nr-ports",
+				   &n_ports);
+	if (rc) {
+		dev_err(&pdev->dev,
+			"error parsing nr-ports property: %d\n", rc);
+		return rc;
+	}
 
-		if (n_ports <= 0) {
-			dev_err(&pdev->dev, "nr-ports must be positive: %d\n",
-				n_ports);
-			return -EINVAL;
-		}
-	} else {
-		mv_platform_data = dev_get_platdata(&pdev->dev);
-		n_ports = mv_platform_data->n_ports;
+	if (n_ports <= 0) {
+		dev_err(&pdev->dev, "nr-ports must be positive: %d\n",
+			n_ports);
+		return -EINVAL;
 	}
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
@@ -4225,14 +4219,12 @@ static int mv_platform_resume(struct platform_device *pdev)
 #define mv_platform_resume NULL
 #endif
 
-#ifdef CONFIG_OF
 static const struct of_device_id mv_sata_dt_ids[] = {
 	{ .compatible = "marvell,armada-370-sata", },
 	{ .compatible = "marvell,orion-sata", },
 	{ /* sentinel */ }
 };
 MODULE_DEVICE_TABLE(of, mv_sata_dt_ids);
-#endif
 
 static struct platform_driver mv_platform_driver = {
 	.probe		= mv_platform_probe,
@@ -4241,7 +4233,7 @@ static struct platform_driver mv_platform_driver = {
 	.resume		= mv_platform_resume,
 	.driver		= {
 		.name = DRV_NAME,
-		.of_match_table = of_match_ptr(mv_sata_dt_ids),
+		.of_match_table = mv_sata_dt_ids,
 	},
 };
 
