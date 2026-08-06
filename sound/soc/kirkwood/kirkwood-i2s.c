@@ -17,7 +17,6 @@
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
 #include <sound/soc.h>
-#include <linux/platform_data/asoc-kirkwood.h>
 #include <linux/of.h>
 
 #include "kirkwood.h"
@@ -646,7 +645,6 @@ static struct snd_soc_dai_driver kirkwood_i2s_dai_extclk[2] = {
 
 static int kirkwood_i2s_dev_probe(struct platform_device *pdev)
 {
-	struct kirkwood_asoc_platform_data *data = pdev->dev.platform_data;
 	struct snd_soc_dai_driver *soc_dai = kirkwood_i2s_dai;
 	struct kirkwood_dma_data *priv;
 	struct device_node *np = pdev->dev.of_node;
@@ -677,15 +675,7 @@ static int kirkwood_i2s_dev_probe(struct platform_device *pdev)
 		armada_38x_set_pll(priv->pll_config, 44100);
 	}
 
-	if (np) {
-		priv->burst = 128;		/* might be 32 or 128 */
-	} else if (data) {
-		priv->burst = data->burst;
-	} else {
-		dev_err(&pdev->dev, "no DT nor platform data ?!\n");
-		return -EINVAL;
-	}
-
+	priv->burst = 128;		/* might be 32 or 128 */
 	priv->clk = devm_clk_get(&pdev->dev, np ? "internal" : NULL);
 	if (IS_ERR(priv->clk)) {
 		dev_err(&pdev->dev, "no clock\n");
@@ -753,7 +743,6 @@ static void kirkwood_i2s_dev_remove(struct platform_device *pdev)
 	clk_disable_unprepare(priv->clk);
 }
 
-#ifdef CONFIG_OF
 static const struct of_device_id mvebu_audio_of_match[] = {
 	{ .compatible = "marvell,kirkwood-audio" },
 	{ .compatible = "marvell,dove-audio" },
@@ -762,14 +751,13 @@ static const struct of_device_id mvebu_audio_of_match[] = {
 	{ }
 };
 MODULE_DEVICE_TABLE(of, mvebu_audio_of_match);
-#endif
 
 static struct platform_driver kirkwood_i2s_driver = {
 	.probe  = kirkwood_i2s_dev_probe,
 	.remove = kirkwood_i2s_dev_remove,
 	.driver = {
 		.name = DRV_NAME,
-		.of_match_table = of_match_ptr(mvebu_audio_of_match),
+		.of_match_table = mvebu_audio_of_match,
 	},
 };
 

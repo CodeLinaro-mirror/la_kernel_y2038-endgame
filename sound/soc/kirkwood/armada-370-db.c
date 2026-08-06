@@ -12,7 +12,6 @@
 #include <linux/slab.h>
 #include <sound/soc.h>
 #include <linux/of.h>
-#include <linux/platform_data/asoc-kirkwood.h>
 #include "../codecs/cs42l51.h"
 
 static int a370db_hw_params(struct snd_pcm_substream *substream,
@@ -143,7 +142,7 @@ MODULE_DEVICE_TABLE(of, a370db_dt_ids);
 static struct platform_driver a370db_driver = {
 	.driver		= {
 		.name	= "a370db-audio",
-		.of_match_table = of_match_ptr(a370db_dt_ids),
+		.of_match_table = a370db_dt_ids,
 	},
 	.probe		= a370db_probe,
 };
