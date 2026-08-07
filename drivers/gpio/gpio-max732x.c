@@ -19,7 +19,6 @@
 #include <linux/interrupt.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
-#include <linux/platform_data/max732x.h>
 #include <linux/slab.h>
 #include <linux/string.h>
 
@@ -551,8 +550,7 @@ static int max732x_irq_setup(struct max732x_chip *chip,
 #endif
 
 static int max732x_setup_gpio(struct max732x_chip *chip,
-					const struct i2c_device_id *id,
-					unsigned gpio_start)
+					const struct i2c_device_id *id)
 {
 	struct gpio_chip *gc = &chip->gpio_chip;
 	uint32_t id_data = (uint32_t)max732x_features[id->driver_data];
@@ -591,7 +589,7 @@ static int max732x_setup_gpio(struct max732x_chip *chip,
 	gc->get = max732x_gpio_get_value;
 	gc->can_sleep = true;
 
-	gc->base = gpio_start;
+	gc->base = -1;
 	gc->ngpio = port;
 	gc->label = chip->client->name;
 	gc->parent = &chip->client->dev;
@@ -600,46 +598,23 @@ static int max732x_setup_gpio(struct max732x_chip *chip,
 	return port;
 }
 
-static struct max732x_platform_data *of_gpio_max732x(struct device *dev)
-{
-	struct max732x_platform_data *pdata;
-
-	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
-	if (!pdata)
-		return NULL;
-
-	pdata->gpio_base = -1;
-
-	return pdata;
-}
-
 static int max732x_probe(struct i2c_client *client)
 {
 	const struct i2c_device_id *id = i2c_client_get_device_id(client);
-	struct max732x_platform_data *pdata;
 	struct device_node *node;
 	struct max732x_chip *chip;
 	struct i2c_client *c;
 	uint16_t addr_a, addr_b;
 	int ret, nr_port;
 
-	pdata = dev_get_platdata(&client->dev);
 	node = client->dev.of_node;
-
-	if (!pdata && node)
-		pdata = of_gpio_max732x(&client->dev);
-
-	if (!pdata) {
-		dev_dbg(&client->dev, "no platform data\n");
-		return -EINVAL;
-	}
 
 	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
 	if (chip == NULL)
 		return -ENOMEM;
 	chip->client = client;
 
-	nr_port = max732x_setup_gpio(chip, id, pdata->gpio_base);
+	nr_port = max732x_setup_gpio(chip, id);
 	chip->gpio_chip.parent = &client->dev;
 
 	addr_a = (client->addr & 0x0f) | 0x60;
