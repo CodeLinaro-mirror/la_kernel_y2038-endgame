@@ -12,7 +12,6 @@
 #include <linux/mfd/da8xx-cfgchip.h>
 #include <linux/mfd/syscon.h>
 #include <linux/of.h>
-#include <linux/platform_data/clk-da8xx-cfgchip.h>
 #include <linux/platform_device.h>
 #include <linux/property.h>
 #include <linux/regmap.h>
@@ -742,7 +741,6 @@ typedef int (*da8xx_cfgchip_init)(struct device *dev, struct regmap *regmap);
 static int da8xx_cfgchip_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
-	struct da8xx_cfgchip_clk_platform_data *pdata = dev->platform_data;
 	da8xx_cfgchip_init clk_init = NULL;
 	struct regmap *regmap = NULL;
 
@@ -751,9 +749,6 @@ static int da8xx_cfgchip_probe(struct platform_device *pdev)
 		struct device_node *parent __free(device_node) = of_get_parent(dev->of_node);
 
 		regmap = syscon_node_to_regmap(parent);
-	} else if (pdev->id_entry && pdata) {
-		clk_init = (void *)pdev->id_entry->driver_data;
-		regmap = pdata->cfgchip;
 	}
 
 	if (!clk_init) {
