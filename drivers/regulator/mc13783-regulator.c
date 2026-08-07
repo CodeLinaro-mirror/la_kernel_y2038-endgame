@@ -392,16 +392,11 @@ static int mc13783_regulator_probe(struct platform_device *pdev)
 {
 	struct mc13xxx_regulator_priv *priv;
 	struct mc13xxx *mc13783 = dev_get_drvdata(pdev->dev.parent);
-	struct mc13xxx_regulator_platform_data *pdata =
-		dev_get_platdata(&pdev->dev);
 	struct mc13xxx_regulator_init_data *mc13xxx_data;
 	struct regulator_config config = { };
 	int i, num_regulators;
 
 	num_regulators = mc13xxx_get_num_regulators_dt(pdev);
-
-	if (num_regulators <= 0 && pdata)
-		num_regulators = pdata->num_regulators;
 	if (num_regulators <= 0)
 		return -EINVAL;
 
@@ -418,6 +413,8 @@ static int mc13783_regulator_probe(struct platform_device *pdev)
 
 	mc13xxx_data = mc13xxx_parse_regulators_dt(pdev, mc13783_regulators,
 					ARRAY_SIZE(mc13783_regulators));
+	if (!mc13xxx_data)
+		return -ENOMEM;
 
 	for (i = 0; i < priv->num_regulators; i++) {
 		struct regulator_init_data *init_data;
@@ -425,14 +422,9 @@ static int mc13783_regulator_probe(struct platform_device *pdev)
 		struct device_node *node = NULL;
 		int id;
 
-		if (mc13xxx_data) {
-			id = mc13xxx_data[i].id;
-			init_data = mc13xxx_data[i].init_data;
-			node = mc13xxx_data[i].node;
-		} else {
-			id = pdata->regulators[i].id;
-			init_data = pdata->regulators[i].init_data;
-		}
+		id = mc13xxx_data[i].id;
+		init_data = mc13xxx_data[i].init_data;
+		node = mc13xxx_data[i].node;
 		desc = &mc13783_regulators[id].desc;
 
 		config.dev = &pdev->dev;

@@ -136,7 +136,6 @@ const struct regulator_ops mc13xxx_fixed_regulator_ops = {
 };
 EXPORT_SYMBOL_GPL(mc13xxx_fixed_regulator_ops);
 
-#ifdef CONFIG_OF
 int mc13xxx_get_num_regulators_dt(struct platform_device *pdev)
 {
 	struct device_node *parent;
@@ -212,7 +211,6 @@ struct mc13xxx_regulator_init_data *mc13xxx_parse_regulators_dt(
 	return data;
 }
 EXPORT_SYMBOL_GPL(mc13xxx_parse_regulators_dt);
-#endif
 
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Yong Shen <yong.shen@linaro.org>");

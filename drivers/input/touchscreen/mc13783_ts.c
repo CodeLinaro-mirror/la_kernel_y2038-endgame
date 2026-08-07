@@ -30,6 +30,15 @@ MODULE_PARM_DESC(sample_tolerance,
 		"is supposed to be wrong and is discarded.  Set to 0 to "
 		"disable this check.");
 
+struct mc13xxx_ts_platform_data {
+	/* Delay between Touchscreen polarization and ADC Conversion.
+	 * Given in clock ticks of a 32 kHz clock which gives a granularity of
+	 * about 30.5ms */
+	u8 ato;
+	/* Use the ATO delay only for the first conversion or for each one */
+	bool atox;
+};
+
 struct mc13783_ts_priv {
 	struct input_dev *idev;
 	struct mc13xxx *mc13xxx;

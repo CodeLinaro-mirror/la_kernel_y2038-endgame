@@ -20,6 +20,96 @@
 #include <linux/of.h>
 #include <linux/mfd/mc13xxx.h>
 
+enum {
+	/* MC13783 LED IDs */
+	MC13783_LED_MD,
+	MC13783_LED_AD,
+	MC13783_LED_KP,
+	MC13783_LED_R1,
+	MC13783_LED_G1,
+	MC13783_LED_B1,
+	MC13783_LED_R2,
+	MC13783_LED_G2,
+	MC13783_LED_B2,
+	MC13783_LED_R3,
+	MC13783_LED_G3,
+	MC13783_LED_B3,
+	/* MC13892 LED IDs */
+	MC13892_LED_MD,
+	MC13892_LED_AD,
+	MC13892_LED_KP,
+	MC13892_LED_R,
+	MC13892_LED_G,
+	MC13892_LED_B,
+	/* MC34708 LED IDs */
+	MC34708_LED_R,
+	MC34708_LED_G,
+};
+
+struct mc13xxx_led_platform_data {
+	int id;
+	const char *name;
+	const char *default_trigger;
+};
+
+#define MAX_LED_CONTROL_REGS	6
+
+/* MC13783 LED Control 0 */
+#define MC13783_LED_C0_ENABLE		(1 << 0)
+#define MC13783_LED_C0_TRIODE_MD	(1 << 7)
+#define MC13783_LED_C0_TRIODE_AD	(1 << 8)
+#define MC13783_LED_C0_TRIODE_KP	(1 << 9)
+#define MC13783_LED_C0_BOOST		(1 << 10)
+#define MC13783_LED_C0_ABMODE(x)	(((x) & 0x7) << 11)
+#define MC13783_LED_C0_ABREF(x)		(((x) & 0x3) << 14)
+/* MC13783 LED Control 1 */
+#define MC13783_LED_C1_TC1HALF		(1 << 18)
+#define MC13783_LED_C1_SLEWLIM		(1 << 23)
+/* MC13783 LED Control 2 */
+#define MC13783_LED_C2_CURRENT_MD(x)	(((x) & 0x7) << 0)
+#define MC13783_LED_C2_CURRENT_AD(x)	(((x) & 0x7) << 3)
+#define MC13783_LED_C2_CURRENT_KP(x)	(((x) & 0x7) << 6)
+#define MC13783_LED_C2_PERIOD(x)	(((x) & 0x3) << 21)
+#define MC13783_LED_C2_SLEWLIM		(1 << 23)
+/* MC13783 LED Control 3 */
+#define MC13783_LED_C3_CURRENT_R1(x)	(((x) & 0x3) << 0)
+#define MC13783_LED_C3_CURRENT_G1(x)	(((x) & 0x3) << 2)
+#define MC13783_LED_C3_CURRENT_B1(x)	(((x) & 0x3) << 4)
+#define MC13783_LED_C3_PERIOD(x)	(((x) & 0x3) << 21)
+#define MC13783_LED_C3_TRIODE_TC1	(1 << 23)
+/* MC13783 LED Control 4 */
+#define MC13783_LED_C4_CURRENT_R2(x)	(((x) & 0x3) << 0)
+#define MC13783_LED_C4_CURRENT_G2(x)	(((x) & 0x3) << 2)
+#define MC13783_LED_C4_CURRENT_B2(x)	(((x) & 0x3) << 4)
+#define MC13783_LED_C4_PERIOD(x)	(((x) & 0x3) << 21)
+#define MC13783_LED_C4_TRIODE_TC2	(1 << 23)
+/* MC13783 LED Control 5 */
+#define MC13783_LED_C5_CURRENT_R3(x)	(((x) & 0x3) << 0)
+#define MC13783_LED_C5_CURRENT_G3(x)	(((x) & 0x3) << 2)
+#define MC13783_LED_C5_CURRENT_B3(x)	(((x) & 0x3) << 4)
+#define MC13783_LED_C5_PERIOD(x)	(((x) & 0x3) << 21)
+#define MC13783_LED_C5_TRIODE_TC3	(1 << 23)
+/* MC13892 LED Control 0 */
+#define MC13892_LED_C0_CURRENT_MD(x)	(((x) & 0x7) << 9)
+#define MC13892_LED_C0_CURRENT_AD(x)	(((x) & 0x7) << 21)
+/* MC13892 LED Control 1 */
+#define MC13892_LED_C1_CURRENT_KP(x)	(((x) & 0x7) << 9)
+/* MC13892 LED Control 2 */
+#define MC13892_LED_C2_CURRENT_R(x)	(((x) & 0x7) << 9)
+#define MC13892_LED_C2_CURRENT_G(x)	(((x) & 0x7) << 21)
+/* MC13892 LED Control 3 */
+#define MC13892_LED_C3_CURRENT_B(x)	(((x) & 0x7) << 9)
+/* MC34708 LED Control 0 */
+#define MC34708_LED_C0_CURRENT_R(x)	(((x) & 0x3) << 9)
+#define MC34708_LED_C0_CURRENT_G(x)	(((x) & 0x3) << 21)
+
+struct mc13xxx_leds_platform_data {
+	struct mc13xxx_led_platform_data *led;
+	int num_leds;
+	u32 led_control[MAX_LED_CONTROL_REGS];
+};
+
+
 struct mc13xxx_led_devtype {
 	int	led_min;
 	int	led_max;
@@ -108,7 +198,6 @@ static int mc13xxx_led_set(struct led_classdev *led_cdev,
 			value << shift);
 }
 
-#ifdef CONFIG_OF
 static struct mc13xxx_leds_platform_data __init *mc13xxx_led_probe_dt(
 	struct platform_device *pdev)
 {
@@ -163,18 +252,11 @@ static struct mc13xxx_leds_platform_data __init *mc13xxx_led_probe_dt(
 
 	return pdata;
 }
-#else
-static inline struct mc13xxx_leds_platform_data __init *mc13xxx_led_probe_dt(
-	struct platform_device *pdev)
-{
-	return ERR_PTR(-ENOSYS);
-}
-#endif
 
 static int __init mc13xxx_led_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
-	struct mc13xxx_leds_platform_data *pdata = dev_get_platdata(dev);
+	struct mc13xxx_leds_platform_data *pdata;
 	struct mc13xxx *mcdev = dev_get_drvdata(dev->parent);
 	struct mc13xxx_led_devtype *devtype =
 		(struct mc13xxx_led_devtype *)pdev->id_entry->driver_data;
@@ -190,12 +272,9 @@ static int __init mc13xxx_led_probe(struct platform_device *pdev)
 	leds->master = mcdev;
 	platform_set_drvdata(pdev, leds);
 
-	if (dev_of_node(dev->parent)) {
-		pdata = mc13xxx_led_probe_dt(pdev);
-		if (IS_ERR(pdata))
-			return PTR_ERR(pdata);
-	} else if (!pdata)
-		return -ENODATA;
+	pdata = mc13xxx_led_probe_dt(pdev);
+	if (IS_ERR(pdata))
+		return PTR_ERR(pdata);
 
 	leds->num_leds = pdata->num_leds;
 

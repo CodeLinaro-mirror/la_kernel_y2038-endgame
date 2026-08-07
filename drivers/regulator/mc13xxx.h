@@ -30,24 +30,17 @@ struct mc13xxx_regulator_priv {
 extern int mc13xxx_fixed_regulator_set_voltage(struct regulator_dev *rdev,
 		int min_uV, int max_uV, unsigned *selector);
 
-#ifdef CONFIG_OF
 extern int mc13xxx_get_num_regulators_dt(struct platform_device *pdev);
+
+struct mc13xxx_regulator_init_data {
+	int id;
+	struct regulator_init_data *init_data;
+	struct device_node *node;
+};
+
 extern struct mc13xxx_regulator_init_data *mc13xxx_parse_regulators_dt(
 	struct platform_device *pdev, struct mc13xxx_regulator *regulators,
 	int num_regulators);
-#else
-static inline int mc13xxx_get_num_regulators_dt(struct platform_device *pdev)
-{
-	return -ENODEV;
-}
-
-static inline struct mc13xxx_regulator_init_data *mc13xxx_parse_regulators_dt(
-	struct platform_device *pdev, struct mc13xxx_regulator *regulators,
-	int num_regulators)
-{
-	return NULL;
-}
-#endif
 
 extern const struct regulator_ops mc13xxx_regulator_ops;
 extern const struct regulator_ops mc13xxx_fixed_regulator_ops;
