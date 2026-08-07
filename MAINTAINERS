@@ -20981,7 +20981,6 @@ Q:	http://patchwork.linuxtv.org/project/linux-media/list/
 T:	git git://linuxtv.org/mhadli/v4l-dvb-davinci_devices.git
 F:	Documentation/devicetree/bindings/media/i2c/ovti,ov2659.txt
 F:	drivers/media/i2c/ov2659.c
-F:	include/media/i2c/ov2659.h
 
 OVERLAY FILESYSTEM
 M:	Miklos Szeredi <miklos@szeredi.hu>

@@ -16,7 +16,6 @@
 #include <linux/of_graph.h>
 #include <linux/pm_runtime.h>
 
-#include <media/i2c/ov2659.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-event.h>
 #include <media/v4l2-fwnode.h>
@@ -194,12 +193,16 @@ struct pll_ctrl_reg {
 	unsigned char reg;
 };
 
+struct ov2659_platform_data {
+	s64 link_frequency;
+};
+
 struct ov2659 {
 	struct v4l2_subdev sd;
 	struct media_pad pad;
 	struct v4l2_mbus_framefmt format;
 	unsigned int xvclk_frequency;
-	const struct ov2659_platform_data *pdata;
+	struct ov2659_platform_data pdata;
 	struct mutex lock;
 	struct i2c_client *client;
 	struct v4l2_ctrl_handler ctrls;
@@ -890,7 +893,7 @@ static int ov2659_write_array(struct i2c_client *client,
 
 static void ov2659_pll_calc_params(struct ov2659 *ov2659)
 {
-	const struct ov2659_platform_data *pdata = ov2659->pdata;
+	const struct ov2659_platform_data *pdata = &ov2659->pdata;
 	u8 ctrl1_reg = 0, ctrl2_reg = 0, ctrl3_reg = 0;
 	struct i2c_client *client = ov2659->client;
 	unsigned int desired = pdata->link_frequency;
@@ -1126,9 +1129,9 @@ static int ov2659_set_fmt(struct v4l2_subdev *sd,
 			ov2659_formats[index].format_ctrl_regs;
 
 		if (ov2659->format.code != MEDIA_BUS_FMT_SBGGR8_1X8)
-			val = ov2659->pdata->link_frequency / 2;
+			val = ov2659->pdata.link_frequency / 2;
 		else
-			val = ov2659->pdata->link_frequency;
+			val = ov2659->pdata.link_frequency;
 
 		ret = v4l2_ctrl_s_ctrl_int64(ov2659->link_frequency, val);
 		if (ret < 0)
@@ -1378,56 +1381,48 @@ static int ov2659_detect(struct v4l2_subdev *sd)
 	return ret;
 }
 
-static struct ov2659_platform_data *
-ov2659_get_pdata(struct i2c_client *client)
+static u64 ov2659_get_link_frequency(struct i2c_client *client)
 {
-	struct ov2659_platform_data *pdata;
 	struct v4l2_fwnode_endpoint bus_cfg = { .bus_type = 0 };
 	struct device_node *endpoint;
+	u64 link_frequency;
 	int ret;
-
-	if (!IS_ENABLED(CONFIG_OF) || !client->dev.of_node)
-		return client->dev.platform_data;
 
 	endpoint = of_graph_get_endpoint_by_regs(client->dev.of_node, 0, -1);
 	if (!endpoint)
-		return NULL;
+		return 0;
 
 	ret = v4l2_fwnode_endpoint_alloc_parse(of_fwnode_handle(endpoint),
 					       &bus_cfg);
 	if (ret) {
-		pdata = NULL;
+		link_frequency = 0;
 		goto done;
 	}
-
-	pdata = devm_kzalloc(&client->dev, sizeof(*pdata), GFP_KERNEL);
-	if (!pdata)
-		goto done;
 
 	if (!bus_cfg.nr_of_link_frequencies) {
 		dev_err(&client->dev,
 			"link-frequencies property not found or too many\n");
-		pdata = NULL;
+		link_frequency = 0;
 		goto done;
 	}
 
-	pdata->link_frequency = bus_cfg.link_frequencies[0];
+	link_frequency = bus_cfg.link_frequencies[0];
 
 done:
 	v4l2_fwnode_endpoint_free(&bus_cfg);
 	of_node_put(endpoint);
-	return pdata;
+	return link_frequency;
 }
 
 static int ov2659_probe(struct i2c_client *client)
 {
-	const struct ov2659_platform_data *pdata = ov2659_get_pdata(client);
+	u64 link_frequency = ov2659_get_link_frequency(client);
 	struct v4l2_subdev *sd;
 	struct ov2659 *ov2659;
 	int ret;
 
-	if (!pdata) {
-		dev_err(&client->dev, "platform data not specified\n");
+	if (!link_frequency) {
+		dev_err(&client->dev, "link frequencies not specified\n");
 		return -EINVAL;
 	}
 
@@ -1435,7 +1430,7 @@ static int ov2659_probe(struct i2c_client *client)
 	if (!ov2659)
 		return -ENOMEM;
 
-	ov2659->pdata = pdata;
+	ov2659->pdata.link_frequency = link_frequency;
 	ov2659->client = client;
 
 	ov2659->clk = devm_v4l2_sensor_clk_get(&client->dev, "xvclk");
@@ -1464,9 +1459,9 @@ static int ov2659_probe(struct i2c_client *client)
 	ov2659->link_frequency =
 			v4l2_ctrl_new_std(&ov2659->ctrls, &ov2659_ctrl_ops,
 					  V4L2_CID_PIXEL_RATE,
-					  pdata->link_frequency / 2,
-					  pdata->link_frequency, 1,
-					  pdata->link_frequency);
+					  link_frequency / 2,
+					  link_frequency, 1,
+					  link_frequency);
 	v4l2_ctrl_new_std_menu_items(&ov2659->ctrls, &ov2659_ctrl_ops,
 				     V4L2_CID_TEST_PATTERN,
 				     ARRAY_SIZE(ov2659_test_pattern_menu) - 1,
@@ -1559,19 +1554,17 @@ static const struct i2c_device_id ov2659_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, ov2659_id);
 
-#if IS_ENABLED(CONFIG_OF)
 static const struct of_device_id ov2659_of_match[] = {
 	{ .compatible = "ovti,ov2659", },
 	{ /* sentinel */ },
 };
 MODULE_DEVICE_TABLE(of, ov2659_of_match);
-#endif
 
 static struct i2c_driver ov2659_i2c_driver = {
 	.driver = {
 		.name	= DRIVER_NAME,
 		.pm	= &ov2659_pm_ops,
-		.of_match_table = of_match_ptr(ov2659_of_match),
+		.of_match_table = ov2659_of_match,
 	},
 	.probe		= ov2659_probe,
 	.remove		= ov2659_remove,
