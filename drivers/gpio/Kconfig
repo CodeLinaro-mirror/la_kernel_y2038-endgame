@@ -614,6 +614,7 @@ config GPIO_PPC44X
 config GPIO_PXA
 	bool "PXA GPIO support"
 	depends on ARCH_PXA || ARCH_MMP || COMPILE_TEST
+	depends on OF
 	select GPIOLIB_IRQCHIP
 	help
 	  Say yes here to support the PXA GPIO device.

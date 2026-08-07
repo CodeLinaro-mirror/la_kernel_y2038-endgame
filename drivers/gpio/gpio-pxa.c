@@ -325,7 +325,6 @@ static int pxa_gpio_set(struct gpio_chip *chip, unsigned int offset, int value)
 	return 0;
 }
 
-#ifdef CONFIG_OF_GPIO
 static int pxa_gpio_of_xlate(struct gpio_chip *gc,
 			     const struct of_phandle_args *gpiospec,
 			     u32 *flags)
@@ -338,7 +337,6 @@ static int pxa_gpio_of_xlate(struct gpio_chip *gc,
 
 	return gpiospec->args[0];
 }
-#endif
 
 static int pxa_init_gpio_chip(struct pxa_gpio_chip *pchip, int ngpio, void __iomem *regbase)
 {
@@ -360,11 +358,8 @@ static int pxa_init_gpio_chip(struct pxa_gpio_chip *pchip, int ngpio, void __iom
 	pchip->chip.ngpio = ngpio;
 	pchip->chip.request = gpiochip_generic_request;
 	pchip->chip.free = gpiochip_generic_free;
-
-#ifdef CONFIG_OF_GPIO
 	pchip->chip.of_xlate = pxa_gpio_of_xlate;
 	pchip->chip.of_gpio_n_cells = 2;
-#endif
 
 	for (i = 0, gpio = 0; i < nbanks; i++, gpio += 32) {
 		bank = pchip->banks + i;
@@ -531,31 +526,6 @@ static struct irq_chip pxa_muxed_gpio_chip = {
 	.irq_set_wake	= pxa_gpio_set_wake,
 };
 
-static int pxa_gpio_nums(struct platform_device *pdev)
-{
-	const struct platform_device_id *id = platform_get_device_id(pdev);
-	struct pxa_gpio_id *pxa_id = (struct pxa_gpio_id *)id->driver_data;
-	int count = 0;
-
-	switch (pxa_id->type) {
-	case PXA25X_GPIO:
-	case PXA26X_GPIO:
-	case PXA27X_GPIO:
-	case PXA3XX_GPIO:
-	case PXA93X_GPIO:
-	case MMP_GPIO:
-	case MMP2_GPIO:
-	case PXA1928_GPIO:
-		gpio_type = pxa_id->type;
-		count = pxa_id->gpio_nums - 1;
-		break;
-	default:
-		count = -EINVAL;
-		break;
-	}
-	return count;
-}
-
 static int pxa_irq_domain_map(struct irq_domain *d, unsigned int irq,
 			      irq_hw_number_t hw)
 {
@@ -571,7 +541,6 @@ static const struct irq_domain_ops pxa_irq_domain_ops = {
 	.xlate	= irq_domain_xlate_twocell,
 };
 
-#ifdef CONFIG_OF
 static const struct of_device_id pxa_gpio_dt_ids[] = {
 	{ .compatible = "intel,pxa25x-gpio",	.data = &pxa25x_id, },
 	{ .compatible = "intel,pxa26x-gpio",	.data = &pxa26x_id, },
@@ -603,16 +572,12 @@ static int pxa_gpio_probe_dt(struct platform_device *pdev,
 	}
 	return irq_base;
 }
-#else
-#define pxa_gpio_probe_dt(pdev, pchip)		(-1)
-#endif
 
 static int pxa_gpio_probe(struct platform_device *pdev)
 {
 	struct pxa_gpio_chip *pchip;
 	struct pxa_gpio_bank *c;
 	struct clk *clk;
-	struct pxa_gpio_platform_data *info;
 	void __iomem *gpio_reg_base;
 	int gpio, ret;
 	int irq0 = 0, irq1 = 0, irq_mux;
@@ -622,18 +587,9 @@ static int pxa_gpio_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	pchip->dev = &pdev->dev;
 
-	info = dev_get_platdata(&pdev->dev);
-	if (info) {
-		irq_base = info->irq_base;
-		if (irq_base <= 0)
-			return -EINVAL;
-		pxa_last_gpio = pxa_gpio_nums(pdev);
-		pchip->set_wake = info->gpio_set_wake;
-	} else {
-		irq_base = pxa_gpio_probe_dt(pdev, pchip);
-		if (irq_base < 0)
-			return -EINVAL;
-	}
+	irq_base = pxa_gpio_probe_dt(pdev, pchip);
+	if (irq_base < 0)
+		return -EINVAL;
 
 	if (!pxa_last_gpio)
 		return -EINVAL;
@@ -723,7 +679,7 @@ static struct platform_driver pxa_gpio_driver = {
 	.probe		= pxa_gpio_probe,
 	.driver		= {
 		.name	= "pxa-gpio",
-		.of_match_table = of_match_ptr(pxa_gpio_dt_ids),
+		.of_match_table = pxa_gpio_dt_ids,
 	},
 	.id_table	= gpio_id_table,
 };
