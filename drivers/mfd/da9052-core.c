@@ -17,7 +17,6 @@
 #include <linux/property.h>
 
 #include <linux/mfd/da9052/da9052.h>
-#include <linux/mfd/da9052/pdata.h>
 #include <linux/mfd/da9052/reg.h>
 
 static bool da9052_reg_readable(struct device *dev, unsigned int reg)
@@ -591,7 +590,6 @@ static int da9052_clear_fault_log(struct da9052 *da9052)
 
 int da9052_device_init(struct da9052 *da9052, u8 chip_id)
 {
-	struct da9052_pdata *pdata = dev_get_platdata(da9052->dev);
 	int ret;
 
 	mutex_init(&da9052->auxadc_lock);
@@ -600,9 +598,6 @@ int da9052_device_init(struct da9052 *da9052, u8 chip_id)
 	ret = da9052_clear_fault_log(da9052);
 	if (ret < 0)
 		dev_warn(da9052->dev, "Cannot clear FAULT_LOG\n");
-
-	if (pdata && pdata->init != NULL)
-		pdata->init(da9052);
 
 	da9052->chip_id = chip_id;
 

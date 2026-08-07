@@ -78,8 +78,6 @@ enum da9052_chip_id {
 	DA9053_BC,
 };
 
-struct da9052_pdata;
-
 struct da9052 {
 	struct device *dev;
 	struct regmap *regmap;

@@ -112,7 +112,6 @@ static const struct i2c_device_id da9052_i2c_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, da9052_i2c_id);
 
-#ifdef CONFIG_OF
 static const struct of_device_id dialog_dt_ids[] = {
 	{ .compatible = "dlg,da9052", .data = &da9052_i2c_id[0] },
 	{ .compatible = "dlg,da9053-aa", .data = &da9052_i2c_id[1] },
@@ -121,7 +120,6 @@ static const struct of_device_id dialog_dt_ids[] = {
 	{ .compatible = "dlg,da9053-bc", .data = &da9052_i2c_id[4] },
 	{ /* sentinel */ }
 };
-#endif
 
 static int da9052_i2c_probe(struct i2c_client *client)
 {
@@ -151,10 +149,8 @@ static int da9052_i2c_probe(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-#ifdef CONFIG_OF
 	if (!id)
 		id = of_device_get_match_data(&client->dev);
-#endif
 
 	if (!id) {
 		ret = -ENODEV;
@@ -178,9 +174,7 @@ static struct i2c_driver da9052_i2c_driver = {
 	.id_table = da9052_i2c_id,
 	.driver = {
 		.name = "da9052",
-#ifdef CONFIG_OF
 		.of_match_table = dialog_dt_ids,
-#endif
 	},
 };
 

@@ -15,7 +15,6 @@
 
 #include <linux/mfd/da9052/reg.h>
 #include <linux/mfd/da9052/da9052.h>
-#include <linux/mfd/da9052/pdata.h>
 
 #define DA9052_OPENDRAIN_OUTPUT	2
 #define DA9052_SET_HIGH_LVL_OUTPUT	(1 << 3)
@@ -85,6 +84,10 @@ static int da9052_configure_leds(struct da9052 *da9052)
 
 	return error;
 }
+
+struct da9052_pdata {
+	struct led_platform_data *pled;
+};
 
 static int da9052_led_probe(struct platform_device *pdev)
 {

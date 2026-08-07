@@ -18,7 +18,6 @@
 
 #include <linux/mfd/da9052/da9052.h>
 #include <linux/mfd/da9052/reg.h>
-#include <linux/mfd/da9052/pdata.h>
 
 /* Buck step size */
 #define DA9052_BUCK_PERI_3uV_STEP		100000
@@ -396,7 +395,6 @@ static int da9052_regulator_probe(struct platform_device *pdev)
 	struct regulator_config config = { };
 	struct da9052_regulator *regulator;
 	struct da9052 *da9052;
-	struct da9052_pdata *pdata;
 
 	regulator = devm_kzalloc(&pdev->dev, sizeof(struct da9052_regulator),
 				 GFP_KERNEL);
@@ -404,7 +402,6 @@ static int da9052_regulator_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	da9052 = dev_get_drvdata(pdev->dev.parent);
-	pdata = dev_get_platdata(da9052->dev);
 	regulator->da9052 = da9052;
 
 	regulator->info = find_regulator_info(regulator->da9052->chip_id,
@@ -417,8 +414,6 @@ static int da9052_regulator_probe(struct platform_device *pdev)
 	config.dev = da9052->dev;
 	config.driver_data = regulator;
 	config.regmap = da9052->regmap;
-	if (pdata)
-		config.init_data = pdata->regulators[cell->id];
 
 	regulator->rdev = devm_regulator_register(&pdev->dev,
 						  &regulator->info->reg_desc,

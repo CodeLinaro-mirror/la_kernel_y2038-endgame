@@ -14,7 +14,6 @@
 #include <linux/uaccess.h>
 
 #include <linux/mfd/da9052/da9052.h>
-#include <linux/mfd/da9052/pdata.h>
 #include <linux/mfd/da9052/reg.h>
 
 #define DA9052_INPUT				1
@@ -184,18 +183,13 @@ static const struct gpio_chip reference_gp = {
 static int da9052_gpio_probe(struct platform_device *pdev)
 {
 	struct da9052_gpio *gpio;
-	struct da9052_pdata *pdata;
 
 	gpio = devm_kzalloc(&pdev->dev, sizeof(*gpio), GFP_KERNEL);
 	if (!gpio)
 		return -ENOMEM;
 
 	gpio->da9052 = dev_get_drvdata(pdev->dev.parent);
-	pdata = dev_get_platdata(gpio->da9052->dev);
-
 	gpio->gp = reference_gp;
-	if (pdata && pdata->gpio_base)
-		gpio->gp.base = pdata->gpio_base;
 
 	return devm_gpiochip_add_data(&pdev->dev, &gpio->gp, gpio);
 }

@@ -18,7 +18,6 @@
 #include <linux/power_supply.h>
 
 #include <linux/mfd/da9052/da9052.h>
-#include <linux/mfd/da9052/pdata.h>
 #include <linux/mfd/da9052/reg.h>
 
 /* STATIC CONFIGURATION */
@@ -584,7 +583,6 @@ static int da9052_bat_irq_bits[] = {
 
 static s32 da9052_bat_probe(struct platform_device *pdev)
 {
-	struct da9052_pdata *pdata;
 	struct da9052_battery *bat;
 	struct power_supply_config psy_cfg = {};
 	int ret;
@@ -602,12 +600,7 @@ static s32 da9052_bat_probe(struct platform_device *pdev)
 	bat->status = POWER_SUPPLY_STATUS_UNKNOWN;
 	bat->health = POWER_SUPPLY_HEALTH_UNKNOWN;
 	bat->nb.notifier_call = da9052_USB_current_notifier;
-
-	pdata = bat->da9052->dev->platform_data;
-	if (pdata != NULL && pdata->use_for_apm)
-		psy_desc.use_for_apm = pdata->use_for_apm;
-	else
-		psy_desc.use_for_apm = 1;
+	psy_desc.use_for_apm = 1;
 
 	for (i = 0; i < ARRAY_SIZE(da9052_bat_irqs); i++) {
 		ret = da9052_request_irq(bat->da9052,
