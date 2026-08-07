@@ -63,8 +63,6 @@
 #include <linux/usb/hcd.h>
 #include <linux/of.h>
 
-#include <linux/platform_data/max3421-hcd.h>
-
 #define DRIVER_DESC	"MAX3421 USB Host-Controller Driver"
 #define DRIVER_VERSION	"1.0"
 
@@ -112,6 +110,19 @@ enum {
 
 struct max3421_dma_buf {
 	u8 data[2];
+};
+
+/*
+ * This structure defines the mapping of certain auxiliary functions to the
+ * MAX3421E GPIO pins.  The chip has eight GP inputs and eight GP outputs.
+ * A value of 0 indicates that the pin is not used/wired to anything.
+ *
+ * At this point, the only control the max3421-hcd driver cares about is
+ * to control Vbus (5V to the peripheral).
+ */
+struct max3421_hcd_platform_data {
+	u8 vbus_gpout;			/* pin controlling Vbus */
+	u8 vbus_active_level;		/* level that turns on power */
 };
 
 struct max3421_hcd {
@@ -1831,7 +1842,7 @@ max3421_probe(struct spi_device *spi)
 	struct device *dev = &spi->dev;
 	struct max3421_hcd *max3421_hcd;
 	struct usb_hcd *hcd = NULL;
-	struct max3421_hcd_platform_data *pdata = NULL;
+	struct max3421_hcd_platform_data *pdata;
 	int retval;
 
 	if (spi_setup(spi) < 0) {
@@ -1844,25 +1855,17 @@ max3421_probe(struct spi_device *spi)
 		return -EFAULT;
 	}
 
-	if (IS_ENABLED(CONFIG_OF) && dev->of_node) {
-		pdata = devm_kzalloc(&spi->dev, sizeof(*pdata), GFP_KERNEL);
-		if (!pdata) {
-			retval = -ENOMEM;
-			goto error;
-		}
-		retval = max3421_of_vbus_en_pin(dev, pdata);
-		if (retval)
-			goto error;
-
-		spi->dev.platform_data = pdata;
-	}
-
-	pdata = spi->dev.platform_data;
+	pdata = devm_kzalloc(&spi->dev, sizeof(*pdata), GFP_KERNEL);
 	if (!pdata) {
-		dev_err(&spi->dev, "driver configuration data is not provided\n");
-		retval = -EFAULT;
+		retval = -ENOMEM;
 		goto error;
 	}
+	retval = max3421_of_vbus_en_pin(dev, pdata);
+	if (retval)
+		goto error;
+
+	spi->dev.platform_data = pdata;
+
 	if (pdata->vbus_active_level > 1) {
 		dev_err(&spi->dev, "vbus active level value %d is out of range (0/1)\n", pdata->vbus_active_level);
 		retval = -EINVAL;
@@ -1916,7 +1919,7 @@ max3421_probe(struct spi_device *spi)
 	return 0;
 
 error:
-	if (IS_ENABLED(CONFIG_OF) && dev->of_node && pdata) {
+	if (pdata) {
 		devm_kfree(&spi->dev, pdata);
 		spi->dev.platform_data = NULL;
 	}
