@@ -11,13 +11,13 @@
 #include <linux/io.h>
 #include <linux/usb.h>
 #include <linux/usb/hcd.h>
-#include <linux/usb/chipidea.h>
 #include <linux/regulator/consumer.h>
 #include <linux/string_choices.h>
 #include <linux/pinctrl/consumer.h>
 
 #include "../host/ehci.h"
 
+#include "chipidea.h"
 #include "ci.h"
 #include "bits.h"
 #include "host.h"

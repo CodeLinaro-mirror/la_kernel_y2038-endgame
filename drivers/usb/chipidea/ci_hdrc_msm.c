@@ -4,7 +4,6 @@
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
-#include <linux/usb/chipidea.h>
 #include <linux/clk.h>
 #include <linux/reset.h>
 #include <linux/mfd/syscon.h>
@@ -14,6 +13,7 @@
 #include <linux/extcon.h>
 #include <linux/of.h>
 
+#include "chipidea.h"
 #include "ci.h"
 
 #define HS_PHY_AHB_MODE			0x0098

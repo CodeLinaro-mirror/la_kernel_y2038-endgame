@@ -12,8 +12,9 @@
 #include <linux/pci.h>
 #include <linux/interrupt.h>
 #include <linux/usb/gadget.h>
-#include <linux/usb/chipidea.h>
 #include <linux/usb/usb_phy_generic.h>
+
+#include "chipidea.h"
 
 /* driver name */
 #define UDC_DRIVER_NAME   "ci_hdrc_pci"

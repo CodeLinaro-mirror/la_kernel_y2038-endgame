@@ -12,7 +12,6 @@
 #include <linux/reset.h>
 
 #include <linux/usb.h>
-#include <linux/usb/chipidea.h>
 #include <linux/usb/hcd.h>
 #include <linux/usb/of.h>
 #include <linux/usb/phy.h>
@@ -21,6 +20,7 @@
 
 #include "../host/ehci.h"
 
+#include "chipidea.h"
 #include "ci.h"
 
 struct tegra_usb {

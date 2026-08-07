@@ -19,9 +19,9 @@
 #include <linux/usb/otg.h>
 #include <linux/usb/gadget.h>
 #include <linux/usb/hcd.h>
-#include <linux/usb/chipidea.h>
 #include <linux/regulator/consumer.h>
 
+#include "chipidea.h"
 #include "ci.h"
 #include "bits.h"
 #include "otg.h"

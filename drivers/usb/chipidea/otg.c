@@ -14,8 +14,8 @@
 
 #include <linux/usb/otg.h>
 #include <linux/usb/gadget.h>
-#include <linux/usb/chipidea.h>
 
+#include "chipidea.h"
 #include "ci.h"
 #include "bits.h"
 #include "otg.h"

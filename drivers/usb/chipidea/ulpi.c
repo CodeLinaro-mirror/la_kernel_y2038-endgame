@@ -4,9 +4,9 @@
  */
 
 #include <linux/device.h>
-#include <linux/usb/chipidea.h>
 #include <linux/ulpi/interface.h>
 
+#include "chipidea.h"
 #include "ci.h"
 
 #define ULPI_WAKEUP		BIT(31)

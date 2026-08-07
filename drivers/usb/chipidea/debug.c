@@ -11,8 +11,8 @@
 #include <linux/usb/phy.h>
 #include <linux/usb/otg.h>
 #include <linux/usb/otg-fsm.h>
-#include <linux/usb/chipidea.h>
 
+#include "chipidea.h"
 #include "ci.h"
 #include "udc.h"
 #include "bits.h"

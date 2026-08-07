@@ -4,12 +4,12 @@
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
-#include <linux/usb/chipidea.h>
 #include <linux/clk.h>
 #include <linux/io.h>
 #include <linux/reset-controller.h>
 #include <linux/of.h>
 
+#include "chipidea.h"
 #include "ci.h"
 
 struct npcm_udc_data {

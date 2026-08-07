@@ -20,8 +20,8 @@
 #include <linux/usb/ch9.h>
 #include <linux/usb/gadget.h>
 #include <linux/usb/otg-fsm.h>
-#include <linux/usb/chipidea.h>
 
+#include "chipidea.h"
 #include "ci.h"
 #include "udc.h"
 #include "bits.h"

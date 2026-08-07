@@ -32,12 +32,12 @@
 #include <linux/usb/ch9.h>
 #include <linux/usb/gadget.h>
 #include <linux/usb/otg.h>
-#include <linux/usb/chipidea.h>
 #include <linux/usb/of.h>
 #include <linux/of.h>
 #include <linux/regulator/consumer.h>
 #include <linux/usb/ehci_def.h>
 
+#include "chipidea.h"
 #include "ci.h"
 #include "udc.h"
 #include "bits.h"

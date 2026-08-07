@@ -12,10 +12,11 @@
 #include <linux/phy/phy.h>
 #include <linux/platform_device.h>
 #include <linux/property.h>
-#include <linux/usb/chipidea.h>
+#include <linux/usb.h>
 #include <linux/usb/hcd.h>
 #include <linux/usb/ulpi.h>
 
+#include "chipidea.h"
 #include "ci.h"
 
 struct ci_hdrc_usb2_priv {
@@ -50,16 +51,14 @@ static int ci_hdrc_usb2_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 	struct ci_hdrc_usb2_priv *priv;
-	struct ci_hdrc_platform_data *ci_pdata = dev_get_platdata(dev);
+	struct ci_hdrc_platform_data *ci_pdata;
 	const struct ci_hdrc_platform_data *data;
 	int ret;
 
-	if (!ci_pdata) {
-		ci_pdata = devm_kmalloc(dev, sizeof(*ci_pdata), GFP_KERNEL);
-		if (!ci_pdata)
-			return -ENOMEM;
-		*ci_pdata = ci_default_pdata;	/* struct copy */
-	}
+	ci_pdata = devm_kmalloc(dev, sizeof(*ci_pdata), GFP_KERNEL);
+	if (!ci_pdata)
+		return -ENOMEM;
+	*ci_pdata = ci_default_pdata;	/* struct copy */
 
 	data = device_get_match_data(&pdev->dev);
 	if (data)
