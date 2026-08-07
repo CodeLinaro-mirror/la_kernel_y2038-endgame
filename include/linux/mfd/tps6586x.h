@@ -72,28 +72,6 @@ enum {
 	TPS6586X_INT_RTC_ALM2,
 };
 
-struct tps6586x_settings {
-	int slew_rate;
-};
-
-struct tps6586x_subdev_info {
-	int		id;
-	const char	*name;
-	void		*platform_data;
-	struct device_node *of_node;
-};
-
-struct tps6586x_platform_data {
-	int num_subdevs;
-	struct tps6586x_subdev_info *subdevs;
-
-	int gpio_base;
-	int irq_base;
-	bool pm_off;
-
-	struct regulator_init_data *reg_init_data[TPS6586X_ID_MAX_REGULATOR];
-};
-
 /*
  * NOTE: the functions below are not intended for use outside
  * of the TPS6586X sub-device drivers

@@ -300,6 +300,10 @@ static inline int tps6586x_regulator_preinit(struct device *parent,
 				 1 << ri->enable_bit[1]);
 }
 
+struct tps6586x_settings {
+	int slew_rate;
+};
+
 static int tps6586x_regulator_set_slew_rate(struct platform_device *pdev,
 			int id, struct regulator_init_data *p)
 {
@@ -371,7 +375,6 @@ static struct tps6586x_regulator *find_regulator_info(int id, int version)
 	return NULL;
 }
 
-#ifdef CONFIG_OF
 static struct of_regulator_match tps6586x_matches[] = {
 	{ .name = "sys",     .driver_data = (void *)TPS6586X_ID_SYS     },
 	{ .name = "sm0",     .driver_data = (void *)TPS6586X_ID_SM_0    },
@@ -388,6 +391,10 @@ static struct of_regulator_match tps6586x_matches[] = {
 	{ .name = "ldo8",    .driver_data = (void *)TPS6586X_ID_LDO_8   },
 	{ .name = "ldo9",    .driver_data = (void *)TPS6586X_ID_LDO_9   },
 	{ .name = "ldo_rtc", .driver_data = (void *)TPS6586X_ID_LDO_RTC },
+};
+
+struct tps6586x_platform_data {
+	struct regulator_init_data *reg_init_data[TPS6586X_ID_MAX_REGULATOR];
 };
 
 static struct tps6586x_platform_data *tps6586x_parse_regulator_dt(
@@ -435,15 +442,6 @@ static struct tps6586x_platform_data *tps6586x_parse_regulator_dt(
 	*tps6586x_reg_matches = tps6586x_matches;
 	return pdata;
 }
-#else
-static struct tps6586x_platform_data *tps6586x_parse_regulator_dt(
-		struct platform_device *pdev,
-		struct of_regulator_match **tps6586x_reg_matches)
-{
-	*tps6586x_reg_matches = NULL;
-	return NULL;
-}
-#endif
 
 static int tps6586x_regulator_probe(struct platform_device *pdev)
 {
@@ -459,11 +457,7 @@ static int tps6586x_regulator_probe(struct platform_device *pdev)
 
 	dev_dbg(&pdev->dev, "Probing regulator\n");
 
-	pdata = dev_get_platdata(pdev->dev.parent);
-	if ((!pdata) && (pdev->dev.parent->of_node))
-		pdata = tps6586x_parse_regulator_dt(pdev,
-					&tps6586x_reg_matches);
-
+	pdata = tps6586x_parse_regulator_dt(pdev, &tps6586x_reg_matches);
 	if (!pdata) {
 		dev_err(&pdev->dev, "Platform data not available, exiting\n");
 		return -ENODEV;

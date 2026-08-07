@@ -128,7 +128,6 @@ struct tps6586x {
 	int			irq;
 	struct irq_chip		irq_chip;
 	struct mutex		irq_lock;
-	int			irq_base;
 	u32			irq_en;
 	u8			mask_reg[5];
 	struct irq_domain	*irq_domain;
@@ -334,12 +333,10 @@ static irqreturn_t tps6586x_irq(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-static int tps6586x_irq_init(struct tps6586x *tps6586x, int irq,
-				       int irq_base)
+static int tps6586x_irq_init(struct tps6586x *tps6586x, int irq)
 {
 	int i, ret;
 	u8 tmp[4];
-	int new_irq_base;
 	int irq_num = ARRAY_SIZE(tps6586x_irqs);
 
 	tps6586x->irq = irq;
@@ -351,20 +348,8 @@ static int tps6586x_irq_init(struct tps6586x *tps6586x, int irq,
 	}
 
 	tps6586x_reads(tps6586x->dev, TPS6586X_INT_ACK1, sizeof(tmp), tmp);
-
-	if  (irq_base > 0) {
-		new_irq_base = irq_alloc_descs(irq_base, 0, irq_num, -1);
-		if (new_irq_base < 0) {
-			dev_err(tps6586x->dev,
-				"Failed to alloc IRQs: %d\n", new_irq_base);
-			return new_irq_base;
-		}
-	} else {
-		new_irq_base = 0;
-	}
-
 	tps6586x->irq_domain = irq_domain_create_simple(dev_fwnode(tps6586x->dev), irq_num,
-							new_irq_base, &tps6586x_domain_ops,
+							0, &tps6586x_domain_ops,
 							tps6586x);
 	if (!tps6586x->irq_domain) {
 		dev_err(tps6586x->dev, "Failed to create IRQ domain\n");
@@ -379,68 +364,10 @@ static int tps6586x_irq_init(struct tps6586x *tps6586x, int irq,
 	return ret;
 }
 
-static int tps6586x_add_subdevs(struct tps6586x *tps6586x,
-					  struct tps6586x_platform_data *pdata)
-{
-	struct tps6586x_subdev_info *subdev;
-	struct platform_device *pdev;
-	int i, ret = 0;
-
-	for (i = 0; i < pdata->num_subdevs; i++) {
-		subdev = &pdata->subdevs[i];
-
-		pdev = platform_device_alloc(subdev->name, subdev->id);
-		if (!pdev) {
-			ret = -ENOMEM;
-			goto failed;
-		}
-
-		pdev->dev.parent = tps6586x->dev;
-		pdev->dev.platform_data = subdev->platform_data;
-		platform_device_set_of_node(pdev, subdev->of_node);
-
-		ret = platform_device_add(pdev);
-		if (ret) {
-			platform_device_put(pdev);
-			goto failed;
-		}
-	}
-	return 0;
-
-failed:
-	tps6586x_remove_subdevs(tps6586x);
-	return ret;
-}
-
-#ifdef CONFIG_OF
-static struct tps6586x_platform_data *tps6586x_parse_dt(struct i2c_client *client)
-{
-	struct device_node *np = client->dev.of_node;
-	struct tps6586x_platform_data *pdata;
-
-	pdata = devm_kzalloc(&client->dev, sizeof(*pdata), GFP_KERNEL);
-	if (!pdata)
-		return NULL;
-
-	pdata->num_subdevs = 0;
-	pdata->subdevs = NULL;
-	pdata->gpio_base = -1;
-	pdata->irq_base = -1;
-	pdata->pm_off = of_property_read_bool(np, "ti,system-power-controller");
-
-	return pdata;
-}
-
 static const struct of_device_id tps6586x_of_match[] = {
 	{ .compatible = "ti,tps6586x", },
 	{ },
 };
-#else
-static struct tps6586x_platform_data *tps6586x_parse_dt(struct i2c_client *client)
-{
-	return NULL;
-}
-#endif
 
 static bool is_volatile_reg(struct device *dev, unsigned int reg)
 {
@@ -520,18 +447,10 @@ static void tps6586x_print_version(struct i2c_client *client, int version)
 
 static int tps6586x_i2c_probe(struct i2c_client *client)
 {
-	struct tps6586x_platform_data *pdata = dev_get_platdata(&client->dev);
+	struct device_node *np = client->dev.of_node;
 	struct tps6586x *tps6586x;
 	int ret;
 	int version;
-
-	if (!pdata && client->dev.of_node)
-		pdata = tps6586x_parse_dt(client);
-
-	if (!pdata) {
-		dev_err(&client->dev, "tps6586x requires platform data\n");
-		return -ENOTSUPP;
-	}
 
 	version = i2c_smbus_read_byte_data(client, TPS6586X_VERSIONCRC);
 	if (version < 0) {
@@ -560,8 +479,7 @@ static int tps6586x_i2c_probe(struct i2c_client *client)
 
 
 	if (client->irq) {
-		ret = tps6586x_irq_init(tps6586x, client->irq,
-					pdata->irq_base);
+		ret = tps6586x_irq_init(tps6586x, client->irq);
 		if (ret) {
 			dev_err(&client->dev, "IRQ init failed: %d\n", ret);
 			return ret;
@@ -576,13 +494,7 @@ static int tps6586x_i2c_probe(struct i2c_client *client)
 		goto err_mfd_add;
 	}
 
-	ret = tps6586x_add_subdevs(tps6586x, pdata);
-	if (ret) {
-		dev_err(&client->dev, "add devices failed: %d\n", ret);
-		goto err_add_devs;
-	}
-
-	if (pdata->pm_off) {
+	if (of_property_read_bool(np, "ti,system-power-controller")) {
 		ret = devm_register_power_off_handler(&client->dev, &tps6586x_power_off_handler,
 						      NULL);
 		if (ret) {
@@ -650,7 +562,7 @@ MODULE_DEVICE_TABLE(i2c, tps6586x_id_table);
 static struct i2c_driver tps6586x_driver = {
 	.driver	= {
 		.name	= "tps6586x",
-		.of_match_table = of_match_ptr(tps6586x_of_match),
+		.of_match_table = tps6586x_of_match,
 		.pm	= pm_sleep_ptr(&tps6586x_pm_ops),
 	},
 	.probe		= tps6586x_i2c_probe,
