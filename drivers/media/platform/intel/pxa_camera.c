@@ -42,7 +42,6 @@
 
 #include <linux/videodev2.h>
 
-#include <linux/platform_data/media/camera-pxa.h>
 #include <linux/workqueue.h>
 
 #define PXA_CAM_VERSION "0.0.6"
@@ -50,6 +49,18 @@
 
 #define DEFAULT_WIDTH	640
 #define DEFAULT_HEIGHT	480
+
+#define PXA_CAMERA_MASTER	1
+#define PXA_CAMERA_DATAWIDTH_4	2
+#define PXA_CAMERA_DATAWIDTH_5	4
+#define PXA_CAMERA_DATAWIDTH_8	8
+#define PXA_CAMERA_DATAWIDTH_9	0x10
+#define PXA_CAMERA_DATAWIDTH_10	0x20
+#define PXA_CAMERA_PCLK_EN	0x40
+#define PXA_CAMERA_MCLK_EN	0x80
+#define PXA_CAMERA_PCP		0x100
+#define PXA_CAMERA_HSP		0x200
+#define PXA_CAMERA_VSP		0x400
 
 /* Camera Interface */
 #define CICR0		0x0000
@@ -669,7 +680,6 @@ struct pxa_camera_dev {
 	int			channels;
 	struct dma_chan		*dma_chans[3];
 
-	struct pxacamera_platform_data *pdata;
 	struct resource		*res;
 	unsigned long		platform_flags;
 	unsigned long		ciclk;
@@ -2303,23 +2313,7 @@ static int pxa_camera_probe(struct platform_device *pdev)
 
 	v4l2_async_nf_init(&pcdev->notifier, &pcdev->v4l2_dev);
 	pcdev->res = res;
-	pcdev->pdata = pdev->dev.platform_data;
-	if (pcdev->pdata) {
-		struct v4l2_async_connection *asd;
-
-		pcdev->platform_flags = pcdev->pdata->flags;
-		pcdev->mclk = pcdev->pdata->mclk_10khz * 10000;
-		asd = v4l2_async_nf_add_i2c(&pcdev->notifier,
-					    pcdev->pdata->sensor_i2c_adapter_id,
-					    pcdev->pdata->sensor_i2c_address,
-					    struct v4l2_async_connection);
-		if (IS_ERR(asd))
-			err = PTR_ERR(asd);
-	} else if (pdev->dev.of_node) {
-		err = pxa_camera_pdata_from_dt(&pdev->dev, pcdev);
-	} else {
-		err = -ENODEV;
-	}
+	err = pxa_camera_pdata_from_dt(&pdev->dev, pcdev);
 	if (err < 0)
 		goto exit_v4l2_device_unregister;
 
