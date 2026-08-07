@@ -323,15 +323,10 @@ static struct regulator_init_data preg_init_data = {
 	.consumer_supplies	= &preg_supply[0],
 };
 
-static struct charger_regulator chg_desc_regulator_data[] = {
-	{ .regulator_name = "preg", },
-};
-
 static struct mfd_cell power_devs[] = {
 	{"88pm860x-battery", -1,},
 	{"88pm860x-charger", -1,},
 	{"88pm860x-preg",    -1,},
-	{"charger-manager", -1,},
 };
 
 static struct mfd_cell rtc_devs[] = {
@@ -564,8 +559,7 @@ static const struct irq_domain_ops pm860x_irq_domain_ops = {
 	.xlate	= irq_domain_xlate_onetwocell,
 };
 
-static int device_irq_init(struct pm860x_chip *chip,
-				     struct pm860x_platform_data *pdata)
+static int device_irq_init(struct pm860x_chip *chip)
 {
 	struct i2c_client *i2c = (chip->id == CHIP_PM8607) ?
 		chip->client : chip->companion;
@@ -577,15 +571,13 @@ static int device_irq_init(struct pm860x_chip *chip,
 	mask = PM8607_B0_MISC1_INV_INT | PM8607_B0_MISC1_INT_CLEAR
 		| PM8607_B0_MISC1_INT_MASK;
 	data = 0;
-	chip->irq_mode = 0;
-	if (pdata && pdata->irq_mode) {
+	if (chip->irq_mode) {
 		/*
 		 * irq_mode defines the way of clearing interrupt. If it's 1,
 		 * clear IRQ by write. Otherwise, clear it by read.
 		 * This control bit is valid from 88PM8607 B0 steping.
 		 */
 		data |= PM8607_B0_MISC1_INT_CLEAR;
-		chip->irq_mode = 1;
 	}
 	ret = pm860x_set_bits(i2c, PM8607_B0_MISC1, mask, data);
 	if (ret < 0)
@@ -613,8 +605,6 @@ static int device_irq_init(struct pm860x_chip *chip,
 
 	mutex_init(&chip->irq_lock);
 
-	if (pdata && pdata->irq_base)
-		irq_base = pdata->irq_base;
 	nr_irqs = ARRAY_SIZE(pm860x_irqs);
 	chip->irq_base = irq_alloc_descs(irq_base, 0, nr_irqs, 0);
 	if (chip->irq_base < 0) {
@@ -745,40 +735,20 @@ static void device_osc_init(struct i2c_client *i2c)
 	chip->osc_status = PM8606_REF_GP_OSC_OFF;
 }
 
-static void device_bk_init(struct pm860x_chip *chip,
-				     struct pm860x_platform_data *pdata)
+static void device_bk_init(struct pm860x_chip *chip)
 {
-	int ret, i;
+	int ret;
 
-	if (pdata && pdata->backlight) {
-		if (pdata->num_backlights > ARRAY_SIZE(bk_devs))
-			pdata->num_backlights = ARRAY_SIZE(bk_devs);
-		for (i = 0; i < pdata->num_backlights; i++) {
-			bk_devs[i].platform_data = &pdata->backlight[i];
-			bk_devs[i].pdata_size =
-				sizeof(struct pm860x_backlight_pdata);
-		}
-	}
 	ret = mfd_add_devices(chip->dev, 0, bk_devs,
 			      ARRAY_SIZE(bk_devs), NULL, 0, NULL);
 	if (ret < 0)
 		dev_err(chip->dev, "Failed to add backlight subdev\n");
 }
 
-static void device_led_init(struct pm860x_chip *chip,
-				      struct pm860x_platform_data *pdata)
+static void device_led_init(struct pm860x_chip *chip)
 {
-	int ret, i;
+	int ret;
 
-	if (pdata && pdata->led) {
-		if (pdata->num_leds > ARRAY_SIZE(led_devs))
-			pdata->num_leds = ARRAY_SIZE(led_devs);
-		for (i = 0; i < pdata->num_leds; i++) {
-			led_devs[i].platform_data = &pdata->led[i];
-			led_devs[i].pdata_size =
-				sizeof(struct pm860x_led_pdata);
-		}
-	}
 	ret = mfd_add_devices(chip->dev, 0, led_devs,
 			      ARRAY_SIZE(led_devs), NULL, 0, NULL);
 	if (ret < 0) {
@@ -787,77 +757,10 @@ static void device_led_init(struct pm860x_chip *chip,
 	}
 }
 
-static void device_regulator_init(struct pm860x_chip *chip,
-					    struct pm860x_platform_data *pdata)
+static void device_regulator_init(struct pm860x_chip *chip)
 {
 	int ret;
 
-	if (pdata == NULL)
-		return;
-	if (pdata->buck1) {
-		reg_devs[0].platform_data = pdata->buck1;
-		reg_devs[0].pdata_size = sizeof(struct regulator_init_data);
-	}
-	if (pdata->buck2) {
-		reg_devs[1].platform_data = pdata->buck2;
-		reg_devs[1].pdata_size = sizeof(struct regulator_init_data);
-	}
-	if (pdata->buck3) {
-		reg_devs[2].platform_data = pdata->buck3;
-		reg_devs[2].pdata_size = sizeof(struct regulator_init_data);
-	}
-	if (pdata->ldo1) {
-		reg_devs[3].platform_data = pdata->ldo1;
-		reg_devs[3].pdata_size = sizeof(struct regulator_init_data);
-	}
-	if (pdata->ldo2) {
-		reg_devs[4].platform_data = pdata->ldo2;
-		reg_devs[4].pdata_size = sizeof(struct regulator_init_data);
-	}
-	if (pdata->ldo3) {
-		reg_devs[5].platform_data = pdata->ldo3;
-		reg_devs[5].pdata_size = sizeof(struct regulator_init_data);
-	}
-	if (pdata->ldo4) {
-		reg_devs[6].platform_data = pdata->ldo4;
-		reg_devs[6].pdata_size = sizeof(struct regulator_init_data);
-	}
-	if (pdata->ldo5) {
-		reg_devs[7].platform_data = pdata->ldo5;
-		reg_devs[7].pdata_size = sizeof(struct regulator_init_data);
-	}
-	if (pdata->ldo6) {
-		reg_devs[8].platform_data = pdata->ldo6;
-		reg_devs[8].pdata_size = sizeof(struct regulator_init_data);
-	}
-	if (pdata->ldo7) {
-		reg_devs[9].platform_data = pdata->ldo7;
-		reg_devs[9].pdata_size = sizeof(struct regulator_init_data);
-	}
-	if (pdata->ldo8) {
-		reg_devs[10].platform_data = pdata->ldo8;
-		reg_devs[10].pdata_size = sizeof(struct regulator_init_data);
-	}
-	if (pdata->ldo9) {
-		reg_devs[11].platform_data = pdata->ldo9;
-		reg_devs[11].pdata_size = sizeof(struct regulator_init_data);
-	}
-	if (pdata->ldo10) {
-		reg_devs[12].platform_data = pdata->ldo10;
-		reg_devs[12].pdata_size = sizeof(struct regulator_init_data);
-	}
-	if (pdata->ldo12) {
-		reg_devs[13].platform_data = pdata->ldo12;
-		reg_devs[13].pdata_size = sizeof(struct regulator_init_data);
-	}
-	if (pdata->ldo_vibrator) {
-		reg_devs[14].platform_data = pdata->ldo_vibrator;
-		reg_devs[14].pdata_size = sizeof(struct regulator_init_data);
-	}
-	if (pdata->ldo14) {
-		reg_devs[15].platform_data = pdata->ldo14;
-		reg_devs[15].pdata_size = sizeof(struct regulator_init_data);
-	}
 	ret = mfd_add_devices(chip->dev, 0, reg_devs,
 			      ARRAY_SIZE(reg_devs), NULL, 0, NULL);
 	if (ret < 0) {
@@ -866,16 +769,10 @@ static void device_regulator_init(struct pm860x_chip *chip,
 	}
 }
 
-static void device_rtc_init(struct pm860x_chip *chip,
-				      struct pm860x_platform_data *pdata)
+static void device_rtc_init(struct pm860x_chip *chip)
 {
 	int ret;
 
-	if (!pdata)
-		return;
-
-	rtc_devs[0].platform_data = pdata->rtc;
-	rtc_devs[0].pdata_size = sizeof(struct pm860x_rtc_pdata);
 	rtc_devs[0].num_resources = ARRAY_SIZE(rtc_resources);
 	rtc_devs[0].resources = &rtc_resources[0];
 	ret = mfd_add_devices(chip->dev, 0, &rtc_devs[0],
@@ -885,16 +782,10 @@ static void device_rtc_init(struct pm860x_chip *chip,
 		dev_err(chip->dev, "Failed to add rtc subdev\n");
 }
 
-static void device_touch_init(struct pm860x_chip *chip,
-					struct pm860x_platform_data *pdata)
+static void device_touch_init(struct pm860x_chip *chip)
 {
 	int ret;
 
-	if (pdata == NULL)
-		return;
-
-	touch_devs[0].platform_data = pdata->touch;
-	touch_devs[0].pdata_size = sizeof(struct pm860x_touch_pdata);
 	touch_devs[0].num_resources = ARRAY_SIZE(touch_resources);
 	touch_devs[0].resources = &touch_resources[0];
 	ret = mfd_add_devices(chip->dev, 0, &touch_devs[0],
@@ -904,16 +795,10 @@ static void device_touch_init(struct pm860x_chip *chip,
 		dev_err(chip->dev, "Failed to add touch subdev\n");
 }
 
-static void device_power_init(struct pm860x_chip *chip,
-					struct pm860x_platform_data *pdata)
+static void device_power_init(struct pm860x_chip *chip)
 {
 	int ret;
 
-	if (pdata == NULL)
-		return;
-
-	power_devs[0].platform_data = pdata->power;
-	power_devs[0].pdata_size = sizeof(struct pm860x_power_pdata);
 	power_devs[0].num_resources = ARRAY_SIZE(battery_resources);
 	power_devs[0].resources = &battery_resources[0];
 	ret = mfd_add_devices(chip->dev, 0, &power_devs[0], 1,
@@ -921,8 +806,6 @@ static void device_power_init(struct pm860x_chip *chip,
 	if (ret < 0)
 		dev_err(chip->dev, "Failed to add battery subdev\n");
 
-	power_devs[1].platform_data = pdata->power;
-	power_devs[1].pdata_size = sizeof(struct pm860x_power_pdata);
 	power_devs[1].num_resources = ARRAY_SIZE(charger_resources);
 	power_devs[1].resources = &charger_resources[0];
 	ret = mfd_add_devices(chip->dev, 0, &power_devs[1], 1,
@@ -936,23 +819,9 @@ static void device_power_init(struct pm860x_chip *chip,
 			      NULL, chip->irq_base, NULL);
 	if (ret < 0)
 		dev_err(chip->dev, "Failed to add preg subdev\n");
-
-	if (pdata->chg_desc) {
-		pdata->chg_desc->charger_regulators =
-			&chg_desc_regulator_data[0];
-		pdata->chg_desc->num_charger_regulators	=
-			ARRAY_SIZE(chg_desc_regulator_data);
-		power_devs[3].platform_data = pdata->chg_desc;
-		power_devs[3].pdata_size = sizeof(*pdata->chg_desc);
-		ret = mfd_add_devices(chip->dev, 0, &power_devs[3], 1,
-				      NULL, chip->irq_base, NULL);
-		if (ret < 0)
-			dev_err(chip->dev, "Failed to add chg-manager subdev\n");
-	}
 }
 
-static void device_onkey_init(struct pm860x_chip *chip,
-					struct pm860x_platform_data *pdata)
+static void device_onkey_init(struct pm860x_chip *chip)
 {
 	int ret;
 
@@ -965,8 +834,7 @@ static void device_onkey_init(struct pm860x_chip *chip,
 		dev_err(chip->dev, "Failed to add onkey subdev\n");
 }
 
-static void device_codec_init(struct pm860x_chip *chip,
-					struct pm860x_platform_data *pdata)
+static void device_codec_init(struct pm860x_chip *chip)
 {
 	int ret;
 
@@ -980,8 +848,7 @@ static void device_codec_init(struct pm860x_chip *chip,
 }
 
 static void device_8607_init(struct pm860x_chip *chip,
-				       struct i2c_client *i2c,
-				       struct pm860x_platform_data *pdata)
+				       struct i2c_client *i2c)
 {
 	int data, ret;
 
@@ -1017,60 +884,55 @@ static void device_8607_init(struct pm860x_chip *chip,
 		goto out;
 	}
 
-	if (pdata && (pdata->i2c_port == PI2C_PORT))
-		data = PM8607_B0_MISC1_PI2C;
-	else
-		data = 0;
+	data = 0;
 	ret = pm860x_set_bits(i2c, PM8607_B0_MISC1, PM8607_B0_MISC1_PI2C, data);
 	if (ret < 0) {
 		dev_err(chip->dev, "Failed to access MISC1:%d\n", ret);
 		goto out;
 	}
 
-	ret = device_irq_init(chip, pdata);
+	ret = device_irq_init(chip);
 	if (ret < 0)
 		goto out;
 
-	device_regulator_init(chip, pdata);
-	device_rtc_init(chip, pdata);
-	device_onkey_init(chip, pdata);
-	device_touch_init(chip, pdata);
-	device_power_init(chip, pdata);
-	device_codec_init(chip, pdata);
+	device_regulator_init(chip);
+	device_rtc_init(chip);
+	device_onkey_init(chip);
+	device_touch_init(chip);
+	device_power_init(chip);
+	device_codec_init(chip);
 out:
 	return;
 }
 
 static void device_8606_init(struct pm860x_chip *chip,
-				       struct i2c_client *i2c,
-				       struct pm860x_platform_data *pdata)
+				       struct i2c_client *i2c)
 {
 	device_osc_init(i2c);
-	device_bk_init(chip, pdata);
-	device_led_init(chip, pdata);
+	device_bk_init(chip);
+	device_led_init(chip);
 }
 
-static int pm860x_device_init(struct pm860x_chip *chip,
-					struct pm860x_platform_data *pdata)
+static int pm860x_device_init(struct pm860x_chip *chip)
 {
 	chip->core_irq = 0;
 
 	switch (chip->id) {
 	case CHIP_PM8606:
-		device_8606_init(chip, chip->client, pdata);
+		device_8606_init(chip, chip->client);
 		break;
 	case CHIP_PM8607:
-		device_8607_init(chip, chip->client, pdata);
+		device_8607_init(chip, chip->client);
 		break;
 	}
 
 	if (chip->companion) {
 		switch (chip->id) {
 		case CHIP_PM8607:
-			device_8606_init(chip, chip->companion, pdata);
+			device_8606_init(chip, chip->companion);
 			break;
 		case CHIP_PM8606:
-			device_8607_init(chip, chip->companion, pdata);
+			device_8607_init(chip, chip->companion);
 			break;
 		}
 	}
@@ -1110,43 +972,19 @@ static const struct regmap_config pm860x_regmap_config = {
 	.val_bits = 8,
 };
 
-static int pm860x_dt_init(struct device_node *np,
-				    struct device *dev,
-				    struct pm860x_platform_data *pdata)
-{
-	int ret;
-
-	pdata->irq_mode = of_property_read_bool(np, "marvell,88pm860x-irq-read-clr");
-	ret = of_property_read_u32(np, "marvell,88pm860x-slave-addr",
-				   &pdata->companion_addr);
-	if (ret) {
-		dev_err(dev,
-			"Not found \"marvell,88pm860x-slave-addr\" property\n");
-		pdata->companion_addr = 0;
-	}
-	return 0;
-}
-
 static int pm860x_probe(struct i2c_client *client)
 {
-	struct pm860x_platform_data *pdata = dev_get_platdata(&client->dev);
 	struct device_node *node = client->dev.of_node;
 	struct pm860x_chip *chip;
+	int companion_addr;
 	int ret;
 
-	if (node && !pdata) {
-		/* parse DT to get platform data */
-		pdata = devm_kzalloc(&client->dev,
-				     sizeof(struct pm860x_platform_data),
-				     GFP_KERNEL);
-		if (!pdata)
-			return -ENOMEM;
-		ret = pm860x_dt_init(node, &client->dev, pdata);
-		if (ret)
-			return ret;
-	} else if (!pdata) {
-		pr_info("No platform data in %s!\n", __func__);
-		return -EINVAL;
+	ret = of_property_read_u32(node, "marvell,88pm860x-slave-addr",
+				   &companion_addr);
+	if (ret) {
+		dev_err(&client->dev,
+			"Not found \"marvell,88pm860x-slave-addr\" property\n");
+		companion_addr = 0;
 	}
 
 	chip = devm_kzalloc(&client->dev,
@@ -1162,19 +1000,20 @@ static int pm860x_probe(struct i2c_client *client)
 				ret);
 		return ret;
 	}
+	chip->irq_mode = of_property_read_bool(node, "marvell,88pm860x-irq-read-clr");
 	chip->client = client;
 	i2c_set_clientdata(client, chip);
 	chip->dev = &client->dev;
 
 	/*
 	 * Both client and companion client shares same platform driver.
-	 * Driver distinguishes them by pdata->companion_addr.
-	 * pdata->companion_addr is only assigned if companion chip exists.
+	 * Driver distinguishes them by companion_addr.
+	 * companion_addr is only assigned if companion chip exists.
 	 * At the same time, the companion_addr shouldn't equal to client
 	 * address.
 	 */
-	if (pdata->companion_addr && (pdata->companion_addr != client->addr)) {
-		chip->companion_addr = pdata->companion_addr;
+	if (companion_addr && (companion_addr != client->addr)) {
+		chip->companion_addr = companion_addr;
 		chip->companion = i2c_new_dummy_device(chip->client->adapter,
 						chip->companion_addr);
 		if (IS_ERR(chip->companion)) {
@@ -1194,7 +1033,7 @@ static int pm860x_probe(struct i2c_client *client)
 		i2c_set_clientdata(chip->companion, chip);
 	}
 
-	pm860x_device_init(chip, pdata);
+	pm860x_device_init(chip);
 	return 0;
 }
 

@@ -400,69 +400,6 @@ enum {
 	PI2C_PORT,
 };
 
-struct pm860x_backlight_pdata {
-	int		pwm;
-	int		iset;
-};
-
-struct pm860x_led_pdata {
-	int		iset;
-};
-
-struct pm860x_rtc_pdata {
-	int		(*sync)(unsigned int ticks);
-	int		vrtc;
-};
-
-struct pm860x_touch_pdata {
-	int		gpadc_prebias;
-	int		slot_cycle;
-	int		off_scale;
-	int		sw_cal;
-	int		tsi_prebias;	/* time, slot */
-	int		pen_prebias;	/* time, slot */
-	int		pen_prechg;	/* time, slot */
-	int		res_x;		/* resistor of Xplate */
-	unsigned long	flags;
-};
-
-struct pm860x_power_pdata {
-	int		max_capacity;
-	int		resistor;
-};
-
-struct pm860x_platform_data {
-	struct pm860x_backlight_pdata	*backlight;
-	struct pm860x_led_pdata		*led;
-	struct pm860x_rtc_pdata		*rtc;
-	struct pm860x_touch_pdata	*touch;
-	struct pm860x_power_pdata	*power;
-	struct regulator_init_data	*buck1;
-	struct regulator_init_data	*buck2;
-	struct regulator_init_data	*buck3;
-	struct regulator_init_data	*ldo1;
-	struct regulator_init_data	*ldo2;
-	struct regulator_init_data	*ldo3;
-	struct regulator_init_data	*ldo4;
-	struct regulator_init_data	*ldo5;
-	struct regulator_init_data	*ldo6;
-	struct regulator_init_data	*ldo7;
-	struct regulator_init_data	*ldo8;
-	struct regulator_init_data	*ldo9;
-	struct regulator_init_data	*ldo10;
-	struct regulator_init_data	*ldo12;
-	struct regulator_init_data	*ldo_vibrator;
-	struct regulator_init_data	*ldo14;
-	struct charger_desc		*chg_desc;
-
-	int 		companion_addr;	/* I2C address of companion chip */
-	int		i2c_port;	/* Controlled by GI2C or PI2C */
-	int		irq_mode;	/* Clear interrupt by read/write(0/1) */
-	int		irq_base;	/* IRQ base number of 88pm860x */
-	int		num_leds;
-	int		num_backlights;
-};
-
 extern int pm8606_osc_enable(struct pm860x_chip *, unsigned short);
 extern int pm8606_osc_disable(struct pm860x_chip *, unsigned short);
 

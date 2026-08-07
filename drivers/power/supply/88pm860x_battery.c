@@ -913,7 +913,6 @@ static int pm860x_battery_probe(struct platform_device *pdev)
 {
 	struct pm860x_chip *chip = dev_get_drvdata(pdev->dev.parent);
 	struct pm860x_battery_info *info;
-	struct pm860x_power_pdata *pdata;
 	int ret;
 
 	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
@@ -933,21 +932,14 @@ static int pm860x_battery_probe(struct platform_device *pdev)
 	    (chip->id == CHIP_PM8607) ? chip->client : chip->companion;
 	info->dev = &pdev->dev;
 	info->status = POWER_SUPPLY_STATUS_UNKNOWN;
-	pdata = pdev->dev.platform_data;
 
 	mutex_init(&info->lock);
 	platform_set_drvdata(pdev, info);
 
 	pm860x_init_battery(info);
 
-	if (pdata && pdata->max_capacity)
-		info->max_capacity = pdata->max_capacity;
-	else
-		info->max_capacity = 1500;	/* set default capacity */
-	if (pdata && pdata->resistor)
-		info->resistor = pdata->resistor;
-	else
-		info->resistor = 300;	/* set default internal resistor */
+	info->max_capacity = 1500;	/* set default capacity */
+	info->resistor = 300;	/* set default internal resistor */
 
 	info->battery = devm_power_supply_register(&pdev->dev,
 						   &pm860x_battery_desc,

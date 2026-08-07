@@ -145,7 +145,6 @@ static const struct backlight_ops pm860x_backlight_ops = {
 	.get_brightness	= pm860x_backlight_get_brightness,
 };
 
-#ifdef CONFIG_OF
 static int pm860x_backlight_dt_init(struct platform_device *pdev,
 				    struct pm860x_backlight_data *data,
 				    char *name)
@@ -171,14 +170,10 @@ static int pm860x_backlight_dt_init(struct platform_device *pdev,
 	of_node_put(nproot);
 	return 0;
 }
-#else
-#define pm860x_backlight_dt_init(x, y, z)	(-1)
-#endif
 
 static int pm860x_backlight_probe(struct platform_device *pdev)
 {
 	struct pm860x_chip *chip = dev_get_drvdata(pdev->dev.parent);
-	struct pm860x_backlight_pdata *pdata = dev_get_platdata(&pdev->dev);
 	struct pm860x_backlight_data *data;
 	struct backlight_device *bl;
 	struct resource *res;
@@ -215,12 +210,7 @@ static int pm860x_backlight_probe(struct platform_device *pdev)
 	data->chip = chip;
 	data->i2c = (chip->id == CHIP_PM8606) ? chip->client : chip->companion;
 	data->current_brightness = MAX_BRIGHTNESS;
-	if (pm860x_backlight_dt_init(pdev, data, name)) {
-		if (pdata) {
-			data->pwm = pdata->pwm;
-			data->iset = pdata->iset;
-		}
-	}
+	pm860x_backlight_dt_init(pdev, data, name);
 
 	memset(&props, 0, sizeof(struct backlight_properties));
 	props.type = BACKLIGHT_RAW;

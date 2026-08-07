@@ -111,7 +111,6 @@ static int pm860x_led_set(struct led_classdev *cdev,
 	return 0;
 }
 
-#ifdef CONFIG_OF
 static int pm860x_led_dt_init(struct platform_device *pdev,
 			      struct pm860x_led *data)
 {
@@ -136,14 +135,10 @@ static int pm860x_led_dt_init(struct platform_device *pdev,
 	of_node_put(nproot);
 	return 0;
 }
-#else
-#define pm860x_led_dt_init(x, y)	(-1)
-#endif
 
 static int pm860x_led_probe(struct platform_device *pdev)
 {
 	struct pm860x_chip *chip = dev_get_drvdata(pdev->dev.parent);
-	struct pm860x_led_pdata *pdata = dev_get_platdata(&pdev->dev);
 	struct pm860x_led *data;
 	struct resource *res;
 	int ret = 0;
@@ -193,9 +188,7 @@ static int pm860x_led_probe(struct platform_device *pdev)
 	data->chip = chip;
 	data->i2c = (chip->id == CHIP_PM8606) ? chip->client : chip->companion;
 	data->port = pdev->id;
-	if (pm860x_led_dt_init(pdev, data))
-		if (pdata)
-			data->iset = pdata->iset;
+	pm860x_led_dt_init(pdev, data);
 
 	data->current_brightness = 0;
 	data->cdev.name = data->name;

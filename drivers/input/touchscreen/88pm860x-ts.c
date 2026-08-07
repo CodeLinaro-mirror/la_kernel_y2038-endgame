@@ -112,7 +112,6 @@ static void pm860x_touch_close(struct input_dev *dev)
 	pm860x_set_bits(touch->i2c, MEAS_EN3, data, 0);
 }
 
-#ifdef CONFIG_OF
 static int pm860x_touch_dt_init(struct platform_device *pdev,
 					  struct pm860x_chip *chip,
 					  int *res_x)
@@ -165,67 +164,21 @@ static int pm860x_touch_dt_init(struct platform_device *pdev,
 
 	return 0;
 }
-#else
-#define pm860x_touch_dt_init(x, y, z)	(-1)
-#endif
 
 static int pm860x_touch_probe(struct platform_device *pdev)
 {
 	struct pm860x_chip *chip = dev_get_drvdata(pdev->dev.parent);
-	struct pm860x_touch_pdata *pdata = dev_get_platdata(&pdev->dev);
 	struct pm860x_touch *touch;
 	struct i2c_client *i2c = (chip->id == CHIP_PM8607) ? chip->client \
 				 : chip->companion;
-	int irq, ret, res_x = 0, data = 0;
+	int irq, ret, res_x = 0;
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return -EINVAL;
 
-	if (pm860x_touch_dt_init(pdev, chip, &res_x)) {
-		if (pdata) {
-			/* set GPADC MISC1 register */
-			data = 0;
-			data |= (pdata->gpadc_prebias << 1)
-				& PM8607_GPADC_PREBIAS_MASK;
-			data |= (pdata->slot_cycle << 3)
-				& PM8607_GPADC_SLOT_CYCLE_MASK;
-			data |= (pdata->off_scale << 5)
-				& PM8607_GPADC_OFF_SCALE_MASK;
-			data |= (pdata->sw_cal << 7)
-				& PM8607_GPADC_SW_CAL_MASK;
-			if (data) {
-				ret = pm860x_reg_write(i2c,
-					PM8607_GPADC_MISC1, data);
-				if (ret < 0)
-					return -EINVAL;
-			}
-			/* set tsi prebias time */
-			if (pdata->tsi_prebias) {
-				data = pdata->tsi_prebias;
-				ret = pm860x_reg_write(i2c,
-					PM8607_TSI_PREBIAS, data);
-				if (ret < 0)
-					return -EINVAL;
-			}
-			/* set prebias & prechg time of pen detect */
-			data = 0;
-			data |= pdata->pen_prebias
-				& PM8607_PD_PREBIAS_MASK;
-			data |= (pdata->pen_prechg << 5)
-				& PM8607_PD_PRECHG_MASK;
-			if (data) {
-				ret = pm860x_reg_write(i2c,
-					PM8607_PD_PREBIAS, data);
-				if (ret < 0)
-					return -EINVAL;
-			}
-			res_x = pdata->res_x;
-		} else {
-			dev_err(&pdev->dev, "failed to get platform data\n");
-			return -EINVAL;
-		}
-	}
+	pm860x_touch_dt_init(pdev, chip, &res_x);
+
 	/* enable GPADC */
 	ret = pm860x_set_bits(i2c, PM8607_GPADC_MISC1, PM8607_GPADC_EN,
 			      PM8607_GPADC_EN);
