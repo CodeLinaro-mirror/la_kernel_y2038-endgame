@@ -19755,7 +19755,6 @@ F:	drivers/power/supply/bq27xxx_battery.c
 F:	drivers/power/supply/bq27xxx_battery_i2c.c
 F:	drivers/power/supply/isp1704_charger.c
 F:	drivers/power/supply/rx51_battery.c
-F:	include/linux/power/bq2415x_charger.h
 F:	include/linux/power/bq27xxx_battery.h
 
 NOLIBC HEADER FILE

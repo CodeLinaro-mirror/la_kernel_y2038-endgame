@@ -28,8 +28,6 @@
 #include <linux/slab.h>
 #include <linux/acpi.h>
 
-#include <linux/power/bq2415x_charger.h>
-
 /* timeout for resetting chip timer */
 #define BQ2415X_TIMER_TIMEOUT		10
 
@@ -155,9 +153,43 @@ static char *bq2415x_chip_name[] = {
 	"bq24158",
 };
 
+/*
+ * This is platform data for bq2415x chip. It contains default board
+ * voltages and currents which can be also later configured via sysfs. If
+ * value is -1 then default chip value (specified in datasheet) will be
+ * used.
+ *
+ * Value resistor_sense is needed for configuring charge and
+ * termination current. If it is less or equal to zero, configuring charge
+ * and termination current will not be possible.
+ *
+ * For automode support is needed to provide name of power supply device
+ * in value notify_device. Device driver must immediately report property
+ * POWER_SUPPLY_PROP_CURRENT_MAX when current changed.
+ */
+
+/* Supported modes with maximal current limit */
+enum bq2415x_mode {
+	BQ2415X_MODE_OFF,		/* offline mode (charger disabled) */
+	BQ2415X_MODE_NONE,		/* unknown charger (100mA) */
+	BQ2415X_MODE_HOST_CHARGER,	/* usb host/hub charger (500mA) */
+	BQ2415X_MODE_DEDICATED_CHARGER, /* dedicated charger (unlimited) */
+	BQ2415X_MODE_BOOST,		/* boost mode (charging disabled) */
+};
+
+struct bq2415x_init_data {
+	int current_limit;		/* mA */
+	int weak_battery_voltage;	/* mV */
+	int battery_regulation_voltage;	/* mV */
+	int charge_current;		/* mA */
+	int termination_current;	/* mA */
+	int resistor_sense;		/* m ohm */
+	const char *notify_device;	/* name */
+};
+
 struct bq2415x_device {
 	struct device *dev;
-	struct bq2415x_platform_data init_data;
+	struct bq2415x_init_data init_data;
 	struct power_supply *charger;
 	struct power_supply_desc charger_desc;
 	struct delayed_work work;
@@ -1548,12 +1580,11 @@ static int bq2415x_probe(struct i2c_client *client)
 	char *name = NULL;
 	struct bq2415x_device *bq;
 	struct device_node *np = client->dev.of_node;
-	struct bq2415x_platform_data *pdata = client->dev.platform_data;
 	const struct acpi_device_id *acpi_id = NULL;
 	struct power_supply *notify_psy = NULL;
 	union power_supply_propval prop;
 
-	if (!np && !pdata && !ACPI_HANDLE(&client->dev)) {
+	if (!np && !ACPI_HANDLE(&client->dev)) {
 		dev_err(&client->dev, "Neither devicetree, nor platform data, nor ACPI support\n");
 		return -ENODEV;
 	}
@@ -1638,8 +1669,6 @@ static int bq2415x_probe(struct i2c_client *client)
 		if (np)
 			bq->notify_node = of_parse_phandle(np,
 						"ti,usb-charger-detection", 0);
-	} else {
-		memcpy(&bq->init_data, pdata, sizeof(bq->init_data));
 	}
 
 	bq2415x_reset_chip(bq);
