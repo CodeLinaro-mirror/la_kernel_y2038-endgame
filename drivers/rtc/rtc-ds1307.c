@@ -14,7 +14,6 @@
 #include <linux/kstrtox.h>
 #include <linux/module.h>
 #include <linux/property.h>
-#include <linux/rtc/ds1307.h>
 #include <linux/rtc.h>
 #include <linux/slab.h>
 #include <linux/string.h>
@@ -23,6 +22,12 @@
 #include <linux/clk-provider.h>
 #include <linux/regmap.h>
 #include <linux/watchdog.h>
+
+#define DS1307_TRICKLE_CHARGER_250_OHM	0x01
+#define DS1307_TRICKLE_CHARGER_2K_OHM	0x02
+#define DS1307_TRICKLE_CHARGER_4K_OHM	0x03
+#define DS1307_TRICKLE_CHARGER_NO_DIODE	0x04
+#define DS1307_TRICKLE_CHARGER_DIODE	0x08
 
 /*
  * We can't determine type by probing, but if we expect pre-Linux code
@@ -1883,7 +1888,6 @@ static int ds1307_probe(struct i2c_client *client)
 	bool			want_irq;
 	bool			ds1307_can_wakeup_device = false;
 	unsigned char		regs[8];
-	struct ds1307_platform_data *pdata = dev_get_platdata(&client->dev);
 	u8			trickle_charger_setup = 0;
 
 	ds1307 = devm_kzalloc(&client->dev, sizeof(struct ds1307), GFP_KERNEL);
@@ -1914,10 +1918,7 @@ static int ds1307_probe(struct i2c_client *client)
 
 	want_irq = client->irq > 0 && chip->alarm;
 
-	if (!pdata)
-		trickle_charger_setup = ds1307_trickle_init(ds1307, chip);
-	else if (pdata->trickle_charger_setup)
-		trickle_charger_setup = pdata->trickle_charger_setup;
+	trickle_charger_setup = ds1307_trickle_init(ds1307, chip);
 
 	if (trickle_charger_setup && chip->trickle_charger_reg) {
 		dev_dbg(ds1307->dev,

@@ -12,7 +12,6 @@
 #include <linux/workqueue.h>
 
 #include <linux/spi/spi.h>
-#include <linux/spi/ds1305.h>
 #include <linux/module.h>
 
 
@@ -39,7 +38,6 @@
 #define DS1305_MDAY		0x04
 #define DS1305_MON		0x05
 #define DS1305_YEAR		0x06
-
 
 /* The two alarms have only sec/min/hour/wday fields (ALM_LEN).
  * DS1305_ALM_DISABLE disables a match field (some combos are bad).
@@ -73,7 +71,13 @@
 #define DS1305_STATUS		0x10
 /* status has just AEIx bits, mirrored as IRQFx */
 #define DS1305_TRICKLE		0x11
-/* trickle bits are defined in <linux/spi/ds1305.h> */
+#	define DS1305_TRICKLE_MAGIC	0xa0
+#	define DS1305_TRICKLE_DS2	0x08	/* two diodes */
+#	define DS1305_TRICKLE_DS1	0x04	/* one diode */
+#	define DS1305_TRICKLE_2K	0x01	/* 2 KOhm resistance */
+#	define DS1305_TRICKLE_4K	0x02	/* 4 KOhm resistance */
+#	define DS1305_TRICKLE_8K	0x03	/* 8 KOhm resistance */
+
 
 /* a bunch of NVRAM */
 #define DS1305_NVRAM_LEN	96		/* bytes of NVRAM */
@@ -543,7 +547,6 @@ static int ds1305_probe(struct spi_device *spi)
 	struct ds1305			*ds1305;
 	int				status;
 	u8				addr, value;
-	struct ds1305_platform_data	*pdata = dev_get_platdata(&spi->dev);
 	bool				write_ctrl = false;
 	struct nvmem_config ds1305_nvmem_cfg = {
 		.name = "ds1305_nvram",
@@ -624,31 +627,6 @@ static int ds1305_probe(struct spi_device *spi)
 	if (ds1305->ctrl[1]) {
 		ds1305->ctrl[1] = 0;
 		write_ctrl = true;
-	}
-
-	/* this may need one-time (re)init */
-	if (pdata) {
-		/* maybe enable trickle charge */
-		if (((ds1305->ctrl[2] & 0xf0) != DS1305_TRICKLE_MAGIC)) {
-			ds1305->ctrl[2] = DS1305_TRICKLE_MAGIC
-						| pdata->trickle;
-			write_ctrl = true;
-		}
-
-		/* on DS1306, configure 1 Hz signal */
-		if (pdata->is_ds1306) {
-			if (pdata->en_1hz) {
-				if (!(ds1305->ctrl[0] & DS1306_1HZ)) {
-					ds1305->ctrl[0] |= DS1306_1HZ;
-					write_ctrl = true;
-				}
-			} else {
-				if (ds1305->ctrl[0] & DS1306_1HZ) {
-					ds1305->ctrl[0] &= ~DS1306_1HZ;
-					write_ctrl = true;
-				}
-			}
-		}
 	}
 
 	if (write_ctrl) {
