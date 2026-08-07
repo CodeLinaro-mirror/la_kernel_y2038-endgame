@@ -1002,8 +1002,6 @@ L:	linux-serial@vger.kernel.org
 S:	Maintained
 F:	drivers/tty/serial/altera_jtaguart.c
 F:	drivers/tty/serial/altera_uart.c
-F:	include/linux/altera_jtaguart.h
-F:	include/linux/altera_uart.h
 
 AMAZON ANNAPURNA LABS FIC DRIVER
 M:	Talel Shenhar <talel@amazon.com>

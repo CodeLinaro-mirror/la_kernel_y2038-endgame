@@ -22,7 +22,9 @@
 #include <linux/serial_core.h>
 #include <linux/platform_device.h>
 #include <linux/io.h>
-#include <linux/altera_jtaguart.h>
+
+#define ALTERA_JTAGUART_MAJOR			204
+#define ALTERA_JTAGUART_MINOR			186
 
 /*
  * Altera JTAG UART register definitions according to the Altera JTAG UART
@@ -373,8 +375,6 @@ static struct uart_driver altera_jtaguart_driver = {
 
 static int altera_jtaguart_probe(struct platform_device *pdev)
 {
-	struct altera_jtaguart_platform_uart *platp =
-			dev_get_platdata(&pdev->dev);
 	struct uart_port *port;
 	struct resource *res_mem;
 	int i = pdev->id;
@@ -393,8 +393,6 @@ static int altera_jtaguart_probe(struct platform_device *pdev)
 	res_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (res_mem)
 		port->mapbase = res_mem->start;
-	else if (platp)
-		port->mapbase = platp->mapbase;
 	else
 		return -ENODEV;
 
@@ -403,8 +401,6 @@ static int altera_jtaguart_probe(struct platform_device *pdev)
 		return irq;
 	if (irq > 0)
 		port->irq = irq;
-	else if (platp)
-		port->irq = platp->irq;
 	else
 		return -ENODEV;
 
@@ -441,21 +437,19 @@ static void altera_jtaguart_remove(struct platform_device *pdev)
 	iounmap(port->membase);
 }
 
-#ifdef CONFIG_OF
 static const struct of_device_id altera_jtaguart_match[] = {
 	{ .compatible = "ALTR,juart-1.0", },
 	{ .compatible = "altr,juart-1.0", },
 	{},
 };
 MODULE_DEVICE_TABLE(of, altera_jtaguart_match);
-#endif /* CONFIG_OF */
 
 static struct platform_driver altera_jtaguart_platform_driver = {
 	.probe	= altera_jtaguart_probe,
 	.remove = altera_jtaguart_remove,
 	.driver	= {
 		.name		= KBUILD_MODNAME,
-		.of_match_table	= of_match_ptr(altera_jtaguart_match),
+		.of_match_table	= altera_jtaguart_match,
 	},
 };
 
