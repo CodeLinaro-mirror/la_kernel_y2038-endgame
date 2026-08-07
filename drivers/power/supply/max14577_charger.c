@@ -11,12 +11,19 @@
 #include <linux/mfd/max14577-private.h>
 #include <linux/mfd/max14577.h>
 
+struct max14577_charger_platform_data {
+	u32 constant_uvolt;
+	u32 fast_charge_uamp;
+	u32 eoc_uamp;
+	u32 ovp_uvolt;
+};
+
 struct max14577_charger {
 	struct device		*dev;
 	struct max14577		*max14577;
 	struct power_supply	*charger;
 
-	struct max14577_charger_platform_data	*pdata;
+	struct max14577_charger_platform_data	pdata;
 };
 
 /*
@@ -351,15 +358,15 @@ static int max14577_charger_reg_init(struct max14577_charger *chg)
 	reg_data = 0x0 << CHGCTRL6_AUTOSTOP_SHIFT;
 	max14577_write_reg(rmap, MAX14577_REG_CHGCTRL6, reg_data);
 
-	ret = max14577_init_constant_voltage(chg, chg->pdata->constant_uvolt);
+	ret = max14577_init_constant_voltage(chg, chg->pdata.constant_uvolt);
 	if (ret)
 		return ret;
 
-	ret = max14577_init_eoc(chg, chg->pdata->eoc_uamp);
+	ret = max14577_init_eoc(chg, chg->pdata.eoc_uamp);
 	if (ret)
 		return ret;
 
-	ret = max14577_init_fast_charge(chg, chg->pdata->fast_charge_uamp);
+	ret = max14577_init_fast_charge(chg, chg->pdata.fast_charge_uamp);
 	if (ret)
 		return ret;
 
@@ -369,18 +376,18 @@ static int max14577_charger_reg_init(struct max14577_charger *chg)
 		return ret;
 
 	/* Initialize Overvoltage-Protection Threshold */
-	switch (chg->pdata->ovp_uvolt) {
+	switch (chg->pdata.ovp_uvolt) {
 	case 7500000:
 		reg_data = 0x0;
 		break;
 	case 6000000:
 	case 6500000:
 	case 7000000:
-		reg_data = 0x1 + (chg->pdata->ovp_uvolt - 6000000) / 500000;
+		reg_data = 0x1 + (chg->pdata.ovp_uvolt - 6000000) / 500000;
 		break;
 	default:
 		dev_err(chg->dev, "Wrong value for OVP: %u\n",
-				chg->pdata->ovp_uvolt);
+				chg->pdata.ovp_uvolt);
 		return -EINVAL;
 	}
 	reg_data <<= CHGCTRL7_OTPCGHCVS_SHIFT;
@@ -452,58 +459,45 @@ static const struct power_supply_desc max14577_charger_desc = {
 	.get_property = max14577_charger_get_property,
 };
 
-#ifdef CONFIG_OF
-static struct max14577_charger_platform_data *max14577_charger_dt_init(
-		struct platform_device *pdev)
+static int max14577_charger_dt_init(struct platform_device *pdev,
+				struct max14577_charger_platform_data *pdata)
 {
-	struct max14577_charger_platform_data *pdata;
 	struct device_node *np = pdev->dev.of_node;
 	int ret;
 
 	if (!np) {
 		dev_err(&pdev->dev, "No charger OF node\n");
-		return ERR_PTR(-EINVAL);
+		return -EINVAL;
 	}
-
-	pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
-	if (!pdata)
-		return ERR_PTR(-ENOMEM);
 
 	ret = of_property_read_u32(np, "maxim,constant-uvolt",
 			&pdata->constant_uvolt);
 	if (ret) {
 		dev_err(&pdev->dev, "Cannot parse maxim,constant-uvolt field from DT\n");
-		return ERR_PTR(ret);
+		return ret;
 	}
 
 	ret = of_property_read_u32(np, "maxim,fast-charge-uamp",
 			&pdata->fast_charge_uamp);
 	if (ret) {
 		dev_err(&pdev->dev, "Cannot parse maxim,fast-charge-uamp field from DT\n");
-		return ERR_PTR(ret);
+		return ret;
 	}
 
 	ret = of_property_read_u32(np, "maxim,eoc-uamp", &pdata->eoc_uamp);
 	if (ret) {
 		dev_err(&pdev->dev, "Cannot parse maxim,eoc-uamp field from DT\n");
-		return ERR_PTR(ret);
+		return ret;
 	}
 
 	ret = of_property_read_u32(np, "maxim,ovp-uvolt", &pdata->ovp_uvolt);
 	if (ret) {
 		dev_err(&pdev->dev, "Cannot parse maxim,ovp-uvolt field from DT\n");
-		return ERR_PTR(ret);
+		return ret;
 	}
 
-	return pdata;
+	return 0;
 }
-#else /* CONFIG_OF */
-static struct max14577_charger_platform_data *max14577_charger_dt_init(
-		struct platform_device *pdev)
-{
-	return ERR_PTR(-ENODATA);
-}
-#endif /* CONFIG_OF */
 
 static ssize_t show_fast_charge_timer(struct device *dev,
 		struct device_attribute *attr, char *buf)
@@ -571,9 +565,9 @@ static int max14577_charger_probe(struct platform_device *pdev)
 	chg->dev = &pdev->dev;
 	chg->max14577 = max14577;
 
-	chg->pdata = max14577_charger_dt_init(pdev);
-	if (IS_ERR(chg->pdata))
-		return PTR_ERR(chg->pdata);
+	ret = max14577_charger_dt_init(pdev, &chg->pdata);
+	if (ret)
+		return ret;
 
 	ret = max14577_charger_reg_init(chg);
 	if (ret)

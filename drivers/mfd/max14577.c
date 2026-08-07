@@ -359,25 +359,11 @@ static void max77836_remove(struct max14577 *max14577)
 static int max14577_i2c_probe(struct i2c_client *i2c)
 {
 	struct max14577 *max14577;
-	struct max14577_platform_data *pdata = dev_get_platdata(&i2c->dev);
-	struct device_node *np = i2c->dev.of_node;
 	int ret = 0;
 	const struct regmap_irq_chip *irq_chip;
 	const struct mfd_cell *mfd_devs;
 	unsigned int mfd_devs_size;
 	int irq_flags;
-
-	if (np) {
-		pdata = devm_kzalloc(&i2c->dev, sizeof(*pdata), GFP_KERNEL);
-		if (!pdata)
-			return -ENOMEM;
-		i2c->dev.platform_data = pdata;
-	}
-
-	if (!pdata) {
-		dev_err(&i2c->dev, "No platform data found.\n");
-		return -EINVAL;
-	}
 
 	max14577 = devm_kzalloc(&i2c->dev, sizeof(*max14577), GFP_KERNEL);
 	if (!max14577)
