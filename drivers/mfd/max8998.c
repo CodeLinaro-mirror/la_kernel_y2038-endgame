@@ -16,7 +16,6 @@
 #include <linux/pm_runtime.h>
 #include <linux/mutex.h>
 #include <linux/mfd/core.h>
-#include <linux/mfd/max8998.h>
 #include <linux/mfd/max8998-private.h>
 
 #define RTC_I2C_ADDR		(0x0c >> 1)
@@ -115,46 +114,15 @@ int max8998_update_reg(struct i2c_client *i2c, u8 reg, u8 val, u8 mask)
 }
 EXPORT_SYMBOL(max8998_update_reg);
 
-#ifdef CONFIG_OF
 static const struct of_device_id max8998_dt_match[] = {
 	{ .compatible = "maxim,max8998", .data = (void *)TYPE_MAX8998 },
 	{ .compatible = "national,lp3974", .data = (void *)TYPE_LP3974 },
 	{ .compatible = "ti,lp3974", .data = (void *)TYPE_LP3974 },
 	{},
 };
-#endif
-
-/*
- * Only the common platform data elements for max8998 are parsed here from the
- * device tree. Other sub-modules of max8998 such as pmic, rtc and others have
- * to parse their own platform data elements from device tree.
- *
- * The max8998 platform data structure is instantiated here and the drivers for
- * the sub-modules need not instantiate another instance while parsing their
- * platform data.
- */
-static struct max8998_platform_data *max8998_i2c_parse_dt_pdata(
-							struct device *dev)
-{
-	struct max8998_platform_data *pd;
-
-	pd = devm_kzalloc(dev, sizeof(*pd), GFP_KERNEL);
-	if (!pd)
-		return ERR_PTR(-ENOMEM);
-
-	pd->ono = irq_of_parse_and_map(dev->of_node, 1);
-
-	/*
-	 * ToDo: the 'wakeup' member in the platform data is more of a linux
-	 * specific information. Hence, there is no binding for that yet and
-	 * not parsed here.
-	 */
-	return pd;
-}
 
 static int max8998_i2c_probe(struct i2c_client *i2c)
 {
-	struct max8998_platform_data *pdata = dev_get_platdata(&i2c->dev);
 	struct max8998_dev *max8998;
 	int ret = 0;
 
@@ -163,23 +131,14 @@ static int max8998_i2c_probe(struct i2c_client *i2c)
 	if (max8998 == NULL)
 		return -ENOMEM;
 
-	if (IS_ENABLED(CONFIG_OF) && i2c->dev.of_node) {
-		pdata = max8998_i2c_parse_dt_pdata(&i2c->dev);
-		if (IS_ERR(pdata))
-			return PTR_ERR(pdata);
-	}
-
 	i2c_set_clientdata(i2c, max8998);
 	max8998->dev = &i2c->dev;
 	max8998->i2c = i2c;
 	max8998->irq = i2c->irq;
 	max8998->type = (uintptr_t)i2c_get_match_data(i2c);
-	max8998->pdata = pdata;
-	if (pdata) {
-		max8998->ono = pdata->ono;
-		max8998->irq_base = pdata->irq_base;
-		max8998->wakeup = pdata->wakeup;
-	}
+	max8998->ono = irq_of_parse_and_map(i2c->dev.of_node, 1);
+	max8998->irq_base = 0;
+	max8998->wakeup = 0;
 	mutex_init(&max8998->iolock);
 
 	max8998->rtc = i2c_new_dummy_device(i2c->adapter, RTC_I2C_ADDR);
@@ -335,7 +294,7 @@ static struct i2c_driver max8998_i2c_driver = {
 		   .name = "max8998",
 		   .pm = &max8998_pm,
 		   .suppress_bind_attrs = true,
-		   .of_match_table = of_match_ptr(max8998_dt_match),
+		   .of_match_table = max8998_dt_match,
 	},
 	.probe = max8998_i2c_probe,
 	.id_table = max8998_i2c_id,

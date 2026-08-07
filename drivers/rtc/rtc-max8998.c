@@ -13,7 +13,6 @@
 #include <linux/irqdomain.h>
 #include <linux/rtc.h>
 #include <linux/platform_device.h>
-#include <linux/mfd/max8998.h>
 #include <linux/mfd/max8998-private.h>
 #include <linux/delay.h>
 
@@ -247,7 +246,6 @@ static const struct rtc_class_ops max8998_rtc_ops = {
 static int max8998_rtc_probe(struct platform_device *pdev)
 {
 	struct max8998_dev *max8998 = dev_get_drvdata(pdev->dev.parent);
-	struct max8998_platform_data *pdata = max8998->pdata;
 	struct max8998_rtc_info *info;
 	int ret;
 
@@ -289,11 +287,6 @@ static int max8998_rtc_probe(struct platform_device *pdev)
 
 no_irq:
 	dev_info(&pdev->dev, "RTC CHIP NAME: %s\n", pdev->id_entry->name);
-	if (pdata && pdata->rtc_delay) {
-		info->lp3974_bug_workaround = true;
-		dev_warn(&pdev->dev, "LP3974 with RTC REGERR option."
-				" RTC updates will be extremely slow.\n");
-	}
 
 	return 0;
 }

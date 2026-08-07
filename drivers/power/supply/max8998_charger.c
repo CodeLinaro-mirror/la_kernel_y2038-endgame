@@ -10,7 +10,6 @@
 #include <linux/slab.h>
 #include <linux/platform_device.h>
 #include <linux/power_supply.h>
-#include <linux/mfd/max8998.h>
 #include <linux/mfd/max8998-private.h>
 
 struct max8998_battery_data {
@@ -90,16 +89,10 @@ static const struct power_supply_desc max8998_battery_desc = {
 static int max8998_battery_probe(struct platform_device *pdev)
 {
 	struct max8998_dev *iodev = dev_get_drvdata(pdev->dev.parent);
-	struct max8998_platform_data *pdata = iodev->pdata;
 	struct power_supply_config psy_cfg = {};
 	struct max8998_battery_data *max8998;
 	struct i2c_client *i2c;
 	int ret = 0;
-
-	if (!pdata) {
-		dev_err(pdev->dev.parent, "No platform init data supplied\n");
-		return -ENODEV;
-	}
 
 	max8998 = devm_kzalloc(&pdev->dev, sizeof(struct max8998_battery_data),
 				GFP_KERNEL);
@@ -110,67 +103,6 @@ static int max8998_battery_probe(struct platform_device *pdev)
 	max8998->iodev = iodev;
 	platform_set_drvdata(pdev, max8998);
 	i2c = max8998->iodev->i2c;
-
-	/* Setup "End of Charge" */
-	/* If EOC value equals 0,
-	 * remain value set from bootloader or default value */
-	if (pdata->eoc >= 10 && pdata->eoc <= 45) {
-		max8998_update_reg(i2c, MAX8998_REG_CHGR1,
-				(pdata->eoc / 5 - 2) << 5, 0x7 << 5);
-	} else if (pdata->eoc == 0) {
-		dev_dbg(max8998->dev,
-			"EOC value not set: leave it unchanged.\n");
-	} else {
-		dev_err(max8998->dev, "Invalid EOC value\n");
-		return -EINVAL;
-	}
-
-	/* Setup Charge Restart Level */
-	switch (pdata->restart) {
-	case 100:
-		max8998_update_reg(i2c, MAX8998_REG_CHGR1, 0x1 << 3, 0x3 << 3);
-		break;
-	case 150:
-		max8998_update_reg(i2c, MAX8998_REG_CHGR1, 0x0 << 3, 0x3 << 3);
-		break;
-	case 200:
-		max8998_update_reg(i2c, MAX8998_REG_CHGR1, 0x2 << 3, 0x3 << 3);
-		break;
-	case -1:
-		max8998_update_reg(i2c, MAX8998_REG_CHGR1, 0x3 << 3, 0x3 << 3);
-		break;
-	case 0:
-		dev_dbg(max8998->dev,
-			"Restart Level not set: leave it unchanged.\n");
-		break;
-	default:
-		dev_err(max8998->dev, "Invalid Restart Level\n");
-		return -EINVAL;
-	}
-
-	/* Setup Charge Full Timeout */
-	switch (pdata->timeout) {
-	case 5:
-		max8998_update_reg(i2c, MAX8998_REG_CHGR2, 0x0 << 4, 0x3 << 4);
-		break;
-	case 6:
-		max8998_update_reg(i2c, MAX8998_REG_CHGR2, 0x1 << 4, 0x3 << 4);
-		break;
-	case 7:
-		max8998_update_reg(i2c, MAX8998_REG_CHGR2, 0x2 << 4, 0x3 << 4);
-		break;
-	case -1:
-		max8998_update_reg(i2c, MAX8998_REG_CHGR2, 0x3 << 4, 0x3 << 4);
-		break;
-	case 0:
-		dev_dbg(max8998->dev,
-			"Full Timeout not set: leave it unchanged.\n");
-		break;
-	default:
-		dev_err(max8998->dev, "Invalid Full Timeout value\n");
-		return -EINVAL;
-	}
-
 	psy_cfg.drv_data = max8998;
 
 	max8998->battery = devm_power_supply_register(max8998->dev,

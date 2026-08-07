@@ -124,7 +124,6 @@ struct irq_domain;
 /**
  * struct max8998_dev - max8998 master device for sub-drivers
  * @dev: master device of the chip (can be used to access platform data)
- * @pdata: platform data for the driver and subdrivers
  * @i2c: i2c client private data for regulator
  * @rtc: i2c client private data for rtc
  * @iolock: mutex for serializing io access
@@ -138,7 +137,6 @@ struct irq_domain;
  */
 struct max8998_dev {
 	struct device *dev;
-	struct max8998_platform_data *pdata;
 	struct i2c_client *i2c;
 	struct i2c_client *rtc;
 	struct mutex iolock;
