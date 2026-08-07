@@ -19,7 +19,6 @@
 
 #include "cw1200.h"
 #include "hwbus.h"
-#include <linux/platform_data/net-cw1200.h>
 #include "hwio.h"
 
 MODULE_AUTHOR("Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>");
@@ -28,25 +27,9 @@ MODULE_LICENSE("GPL");
 
 #define SDIO_BLOCK_SIZE (512)
 
-/* Default platform data for Sagrad modules */
-static struct cw1200_platform_data_sdio sagrad_109x_evk_platform_data = {
-	.ref_clk = 38400,
-	.have_5ghz = false,
-	.sdd_file = "sdd_sagrad_1091_1098.bin",
-};
-
-/* Allow platform data to be overridden */
-static struct cw1200_platform_data_sdio *global_plat_data = &sagrad_109x_evk_platform_data;
-
-void __init cw1200_sdio_set_platform_data(struct cw1200_platform_data_sdio *pdata)
-{
-	global_plat_data = pdata;
-}
-
 struct hwbus_priv {
 	struct sdio_func	*func;
 	struct cw1200_common	*core;
-	const struct cw1200_platform_data_sdio *pdata;
 };
 
 static const struct sdio_device_id cw1200_sdio_ids[] = {
@@ -90,73 +73,13 @@ static void cw1200_sdio_irq_handler(struct sdio_func *func)
 		cw1200_irq_handler(self->core);
 }
 
-static irqreturn_t cw1200_gpio_hardirq(int irq, void *dev_id)
-{
-	return IRQ_WAKE_THREAD;
-}
-
-static irqreturn_t cw1200_gpio_irq(int irq, void *dev_id)
-{
-	struct hwbus_priv *self = dev_id;
-
-	if (self->core) {
-		cw1200_sdio_lock(self);
-		cw1200_irq_handler(self->core);
-		cw1200_sdio_unlock(self);
-		return IRQ_HANDLED;
-	} else {
-		return IRQ_NONE;
-	}
-}
-
-static int cw1200_request_irq(struct hwbus_priv *self)
-{
-	int ret;
-	u8 cccr;
-
-	cccr = sdio_f0_readb(self->func, SDIO_CCCR_IENx, &ret);
-	if (WARN_ON(ret))
-		goto err;
-
-	/* Master interrupt enable ... */
-	cccr |= BIT(0);
-
-	/* ... for our function */
-	cccr |= BIT(self->func->num);
-
-	sdio_f0_writeb(self->func, cccr, SDIO_CCCR_IENx, &ret);
-	if (WARN_ON(ret))
-		goto err;
-
-	ret = enable_irq_wake(self->pdata->irq);
-	if (WARN_ON(ret))
-		goto err;
-
-	/* Request the IRQ */
-	ret =  request_threaded_irq(self->pdata->irq, cw1200_gpio_hardirq,
-				    cw1200_gpio_irq,
-				    IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
-				    "cw1200_wlan_irq", self);
-	if (WARN_ON(ret))
-		goto err;
-
-	return 0;
-
-err:
-	return ret;
-}
-
 static int cw1200_sdio_irq_subscribe(struct hwbus_priv *self)
 {
 	int ret = 0;
 
 	pr_debug("SW IRQ subscribe\n");
 	sdio_claim_host(self->func);
-	if (self->pdata->irq)
-		ret = cw1200_request_irq(self);
-	else
-		ret = sdio_claim_irq(self->func, cw1200_sdio_irq_handler);
-
+	ret = sdio_claim_irq(self->func, cw1200_sdio_irq_handler);
 	sdio_release_host(self->func);
 	return ret;
 }
@@ -167,14 +90,10 @@ static int cw1200_sdio_irq_unsubscribe(struct hwbus_priv *self)
 
 	pr_debug("SW IRQ unsubscribe\n");
 
-	if (self->pdata->irq) {
-		disable_irq_wake(self->pdata->irq);
-		free_irq(self->pdata->irq, self);
-	} else {
-		sdio_claim_host(self->func);
-		ret = sdio_release_irq(self->func);
-		sdio_release_host(self->func);
-	}
+	sdio_claim_host(self->func);
+	ret = sdio_release_irq(self->func);
+	sdio_release_host(self->func);
+
 	return ret;
 }
 
@@ -182,22 +101,17 @@ static int cw1200_sdio_irq_unsubscribe(struct hwbus_priv *self)
 static struct gpio_desc *cw1200_reset;
 static struct gpio_desc *cw1200_powerup;
 
-static int cw1200_sdio_off(const struct cw1200_platform_data_sdio *pdata)
+static int cw1200_sdio_off(void)
 {
 	if (cw1200_reset) {
 		gpiod_set_value(cw1200_reset, 0);
 		msleep(30); /* Min is 2 * CLK32K cycles */
 	}
 
-	if (pdata->power_ctrl)
-		pdata->power_ctrl(pdata, false);
-	if (pdata->clk_ctrl)
-		pdata->clk_ctrl(pdata, false);
-
 	return 0;
 }
 
-static int cw1200_sdio_on(const struct cw1200_platform_data_sdio *pdata)
+static int cw1200_sdio_on(void)
 {
 	/* Ensure I/Os are pulled low (reset is active low) */
 	cw1200_reset = devm_gpiod_get_optional(NULL, "reset", GPIOD_OUT_HIGH);
@@ -216,23 +130,6 @@ static int cw1200_sdio_on(const struct cw1200_platform_data_sdio *pdata)
 	if (cw1200_reset || cw1200_powerup)
 		msleep(10); /* Settle time? */
 
-	/* Enable 3v3 and 1v8 to hardware */
-	if (pdata->power_ctrl) {
-		if (pdata->power_ctrl(pdata, true)) {
-			pr_err("power_ctrl() failed!\n");
-			return -1;
-		}
-	}
-
-	/* Enable CLK32K */
-	if (pdata->clk_ctrl) {
-		if (pdata->clk_ctrl(pdata, true)) {
-			pr_err("clk_ctrl() failed!\n");
-			return -1;
-		}
-		msleep(10); /* Delay until clock is stable for 2 cycles */
-	}
-
 	/* Enable POWERUP signal */
 	if (cw1200_powerup) {
 		gpiod_set_value(cw1200_powerup, 1);
@@ -248,21 +145,12 @@ static int cw1200_sdio_on(const struct cw1200_platform_data_sdio *pdata)
 
 static size_t cw1200_sdio_align_size(struct hwbus_priv *self, size_t size)
 {
-	if (self->pdata->no_nptb)
-		size = round_up(size, SDIO_BLOCK_SIZE);
-	else
-		size = sdio_align_size(self->func, size);
-
-	return size;
+	return sdio_align_size(self->func, size);
 }
 
 static int cw1200_sdio_pm(struct hwbus_priv *self, bool suspend)
 {
-	int ret = 0;
-
-	if (self->pdata->irq)
-		ret = irq_set_irq_wake(self->pdata->irq, suspend);
-	return ret;
+	return 0;
 }
 
 static const struct hwbus_ops cw1200_sdio_hwbus_ops = {
@@ -295,7 +183,6 @@ static int cw1200_sdio_probe(struct sdio_func *func,
 
 	func->card->quirks |= MMC_QUIRK_LENIENT_FN0;
 
-	self->pdata = global_plat_data; /* FIXME */
 	self->func = func;
 	sdio_set_drvdata(func, self);
 	sdio_claim_host(func);
@@ -304,12 +191,15 @@ static int cw1200_sdio_probe(struct sdio_func *func,
 
 	status = cw1200_sdio_irq_subscribe(self);
 
+	/*
+	 * defaults for sagrad 109xevk board, missing a DT binding
+	 * to get proper settings
+	 */
 	status = cw1200_core_probe(&cw1200_sdio_hwbus_ops,
 				   self, &func->dev, &self->core,
-				   self->pdata->ref_clk,
-				   self->pdata->macaddr,
-				   self->pdata->sdd_file,
-				   self->pdata->have_5ghz);
+				   38400, NULL,
+				   "sdd_sagrad_1091_1098.bin",
+				   false);
 	if (status) {
 		cw1200_sdio_irq_unsubscribe(self);
 		sdio_claim_host(func);
@@ -387,13 +277,9 @@ static struct sdio_driver sdio_driver = {
 /* Init Module function -> Called by insmod */
 static int __init cw1200_sdio_init(void)
 {
-	const struct cw1200_platform_data_sdio *pdata;
 	int ret;
 
-	/* FIXME -- this won't support multiple devices */
-	pdata = global_plat_data;
-
-	if (cw1200_sdio_on(pdata)) {
+	if (cw1200_sdio_on()) {
 		ret = -1;
 		goto err;
 	}
@@ -405,19 +291,15 @@ static int __init cw1200_sdio_init(void)
 	return 0;
 
 err:
-	cw1200_sdio_off(pdata);
+	cw1200_sdio_off();
 	return ret;
 }
 
 /* Called at Driver Unloading */
 static void __exit cw1200_sdio_exit(void)
 {
-	const struct cw1200_platform_data_sdio *pdata;
-
-	/* FIXME -- this won't support multiple devices */
-	pdata = global_plat_data;
 	sdio_unregister_driver(&sdio_driver);
-	cw1200_sdio_off(pdata);
+	cw1200_sdio_off();
 }
 
 

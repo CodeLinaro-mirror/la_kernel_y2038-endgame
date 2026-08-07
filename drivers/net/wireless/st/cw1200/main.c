@@ -592,7 +592,6 @@ err:
 	*core = NULL;
 	return err;
 }
-EXPORT_SYMBOL_GPL(cw1200_core_probe);
 
 void cw1200_core_release(struct cw1200_common *self)
 {
@@ -606,4 +605,3 @@ void cw1200_core_release(struct cw1200_common *self)
 	cw1200_free_common(self->hw);
 	return;
 }
-EXPORT_SYMBOL_GPL(cw1200_core_release);

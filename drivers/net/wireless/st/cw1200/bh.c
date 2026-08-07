@@ -106,7 +106,6 @@ void cw1200_irq_handler(struct cw1200_common *priv)
 	if (atomic_inc_return(&priv->bh_rx) == 1)
 		wake_up(&priv->bh_wq);
 }
-EXPORT_SYMBOL_GPL(cw1200_irq_handler);
 
 void cw1200_bh_wakeup(struct cw1200_common *priv)
 {
