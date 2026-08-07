@@ -12,13 +12,13 @@
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/property.h>
+#include <linux/mbus.h>
 #include <linux/memory.h>
 #include <linux/clk.h>
 #include <linux/of.h>
 #include <linux/of_irq.h>
 #include <linux/irqdomain.h>
 #include <linux/cpumask.h>
-#include <linux/platform_data/dma-mv_xor.h>
 
 #include "dmaengine.h"
 #include "mv_xor.h"
@@ -1314,7 +1314,6 @@ static int mv_xor_probe(struct platform_device *pdev)
 {
 	const struct mbus_dram_target_info *dram;
 	struct mv_xor_device *xordev;
-	struct mv_xor_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	struct resource *res;
 	unsigned int max_engines, max_channels;
 	int i, ret;
@@ -1424,28 +1423,6 @@ static int mv_xor_probe(struct platform_device *pdev)
 			xordev->channels[i] = chan;
 			i++;
 		}
-	} else if (pdata && pdata->channels) {
-		for (i = 0; i < max_channels; i++) {
-			struct mv_xor_channel_data *cd;
-			struct mv_xor_chan *chan;
-			int irq;
-
-			cd = &pdata->channels[i];
-			irq = platform_get_irq(pdev, i);
-			if (irq < 0) {
-				ret = irq;
-				goto err_channel_add;
-			}
-
-			chan = mv_xor_channel_add(xordev, pdev, i,
-						  cd->cap_mask, irq);
-			if (IS_ERR(chan)) {
-				ret = PTR_ERR(chan);
-				goto err_channel_add;
-			}
-
-			xordev->channels[i] = chan;
-		}
 	}
 
 	return 0;
@@ -1471,7 +1448,7 @@ static struct platform_driver mv_xor_driver = {
 	.suspend        = mv_xor_suspend,
 	.resume         = mv_xor_resume,
 	.driver		= {
-		.name	        = MV_XOR_NAME,
+		.name	        = "mv_xor",
 		.of_match_table = mv_xor_dt_ids,
 	},
 };
