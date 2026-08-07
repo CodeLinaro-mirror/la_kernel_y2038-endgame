@@ -131,44 +131,25 @@ static const struct i2c_device_id max8925_id_table[] = {
 	{ }
 };
 
-static int max8925_dt_init(struct device_node *np, struct device *dev,
-			   struct max8925_platform_data *pdata)
-{
-	int ret;
-
-	ret = of_property_read_u32(np, "maxim,tsc-irq", &pdata->tsc_irq);
-	if (ret) {
-		dev_err(dev, "Not found maxim,tsc-irq property\n");
-		return -EINVAL;
-	}
-	return 0;
-}
-
 static int max8925_probe(struct i2c_client *client)
 {
-	struct max8925_platform_data *pdata = dev_get_platdata(&client->dev);
 	struct max8925_chip *chip;
 	struct device_node *node = client->dev.of_node;
-
-	if (node && !pdata) {
-		/* parse DT to get platform data */
-		pdata = devm_kzalloc(&client->dev,
-				     sizeof(struct max8925_platform_data),
-				     GFP_KERNEL);
-		if (!pdata)
-			return -ENOMEM;
-
-		if (max8925_dt_init(node, &client->dev, pdata))
-			return -EINVAL;
-	} else if (!pdata) {
-		pr_info("%s: platform data is missing\n", __func__);
-		return -EINVAL;
-	}
+	int tsc_irq;
+	int ret;
 
 	chip = devm_kzalloc(&client->dev,
 			    sizeof(struct max8925_chip), GFP_KERNEL);
 	if (chip == NULL)
 		return -ENOMEM;
+
+	/* parse DT to get platform data */
+	ret = of_property_read_u32(node, "maxim,tsc-irq", &chip->tsc_irq);
+	if (ret) {
+		dev_err(&client->dev, "Not found maxim,tsc-irq property\n");
+		return -EINVAL;
+	}
+
 	chip->i2c = client;
 	chip->dev = &client->dev;
 	i2c_set_clientdata(client, chip);
@@ -191,7 +172,7 @@ static int max8925_probe(struct i2c_client *client)
 
 	device_init_wakeup(&client->dev, 1);
 
-	max8925_device_init(chip, pdata);
+	max8925_device_init(chip, tsc_irq);
 
 	return 0;
 }

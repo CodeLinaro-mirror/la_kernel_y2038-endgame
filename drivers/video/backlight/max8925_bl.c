@@ -86,39 +86,29 @@ static const struct backlight_ops max8925_backlight_ops = {
 	.get_brightness	= max8925_backlight_get_brightness,
 };
 
-static void max8925_backlight_dt_init(struct platform_device *pdev)
+static u8
+max8925_backlight_dt_init(struct platform_device *pdev)
 {
 	struct device_node *nproot = pdev->dev.parent->of_node, *np;
-	struct max8925_backlight_pdata *pdata;
 	u32 val;
-
-	if (!nproot || !IS_ENABLED(CONFIG_OF))
-		return;
-
-	pdata = devm_kzalloc(&pdev->dev,
-			     sizeof(struct max8925_backlight_pdata),
-			     GFP_KERNEL);
-	if (!pdata)
-		return;
 
 	np = of_get_child_by_name(nproot, "backlight");
 	if (!np) {
 		dev_err(&pdev->dev, "failed to find backlight node\n");
-		return;
+		return 0;
 	}
 
-	if (!of_property_read_u32(np, "maxim,max8925-dual-string", &val))
-		pdata->dual_string = val;
+	of_property_read_u32(np, "maxim,max8925-dual-string", &val);
 
-	of_node_put(np);
+	if (val)
+		return (1 << 1);
 
-	pdev->dev.platform_data = pdata;
+	return 0;
 }
 
 static int max8925_backlight_probe(struct platform_device *pdev)
 {
 	struct max8925_chip *chip = dev_get_drvdata(pdev->dev.parent);
-	struct max8925_backlight_pdata *pdata;
 	struct max8925_backlight_data *data;
 	struct backlight_device *bl;
 	struct backlight_properties props;
@@ -161,19 +151,8 @@ static int max8925_backlight_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, bl);
 
-	value = 0;
-	if (!pdev->dev.platform_data)
-		max8925_backlight_dt_init(pdev);
+	value = max8925_backlight_dt_init(pdev);
 
-	pdata = pdev->dev.platform_data;
-	if (pdata) {
-		if (pdata->lxw_scl)
-			value |= (1 << 7);
-		if (pdata->lxw_freq)
-			value |= (LWX_FREQ(pdata->lxw_freq) << 4);
-		if (pdata->dual_string)
-			value |= (1 << 1);
-	}
 	ret = max8925_set_bits(chip->i2c, data->reg_mode_cntl, 0xfe, value);
 	if (ret < 0)
 		return ret;

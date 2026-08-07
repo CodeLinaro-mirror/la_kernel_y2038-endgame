@@ -12,57 +12,6 @@
 #include <linux/mutex.h>
 #include <linux/interrupt.h>
 
-/* Unified sub device IDs for MAX8925 */
-enum {
-	MAX8925_ID_SD1,
-	MAX8925_ID_SD2,
-	MAX8925_ID_SD3,
-	MAX8925_ID_LDO1,
-	MAX8925_ID_LDO2,
-	MAX8925_ID_LDO3,
-	MAX8925_ID_LDO4,
-	MAX8925_ID_LDO5,
-	MAX8925_ID_LDO6,
-	MAX8925_ID_LDO7,
-	MAX8925_ID_LDO8,
-	MAX8925_ID_LDO9,
-	MAX8925_ID_LDO10,
-	MAX8925_ID_LDO11,
-	MAX8925_ID_LDO12,
-	MAX8925_ID_LDO13,
-	MAX8925_ID_LDO14,
-	MAX8925_ID_LDO15,
-	MAX8925_ID_LDO16,
-	MAX8925_ID_LDO17,
-	MAX8925_ID_LDO18,
-	MAX8925_ID_LDO19,
-	MAX8925_ID_LDO20,
-	MAX8925_ID_MAX,
-};
-
-enum {
-	/*
-	 * Charging current threshold trigger going from fast charge
-	 * to TOPOFF charge. From 5% to 20% of fasting charging current.
-	 */
-	MAX8925_TOPOFF_THR_5PER,
-	MAX8925_TOPOFF_THR_10PER,
-	MAX8925_TOPOFF_THR_15PER,
-	MAX8925_TOPOFF_THR_20PER,
-};
-
-enum {
-	/* Fast charging current */
-	MAX8925_FCHG_85MA,
-	MAX8925_FCHG_300MA,
-	MAX8925_FCHG_460MA,
-	MAX8925_FCHG_600MA,
-	MAX8925_FCHG_700MA,
-	MAX8925_FCHG_800MA,
-	MAX8925_FCHG_900MA,
-	MAX8925_FCHG_1000MA,
-};
-
 /* Charger registers */
 #define MAX8925_CHG_IRQ1		(0x7e)
 #define MAX8925_CHG_IRQ2		(0x7f)
@@ -187,8 +136,6 @@ enum {
 	MAX8925_NR_IRQS,
 };
 
-
-
 struct max8925_chip {
 	struct device		*dev;
 	struct i2c_client	*i2c;
@@ -203,63 +150,6 @@ struct max8925_chip {
 	unsigned int            wakeup_flag;
 };
 
-struct max8925_backlight_pdata {
-	int	lxw_scl;	/* 0/1 -- 0.8Ohm/0.4Ohm */
-	int	lxw_freq;	/* 700KHz ~ 1400KHz */
-	int	dual_string;	/* 0/1 -- single/dual string */
-};
-
-struct max8925_touch_pdata {
-	unsigned int		flags;
-};
-
-struct max8925_power_pdata {
-	int		(*set_charger)(int);
-	unsigned	batt_detect:1;
-	unsigned	topoff_threshold:2;
-	unsigned	fast_charge:3;	/* charge current */
-	unsigned	no_temp_support:1; /* set if no temperature detect */
-	unsigned	no_insert_detect:1; /* set if no ac insert detect */
-	char		**supplied_to;
-	int		num_supplicants;
-};
-
-/*
- * irq_base: stores IRQ base number of MAX8925 in platform
- * tsc_irq: stores IRQ number of MAX8925 TSC
- */
-struct max8925_platform_data {
-	struct max8925_backlight_pdata	*backlight;
-	struct max8925_touch_pdata	*touch;
-	struct max8925_power_pdata	*power;
-	struct regulator_init_data	*sd1;
-	struct regulator_init_data	*sd2;
-	struct regulator_init_data	*sd3;
-	struct regulator_init_data	*ldo1;
-	struct regulator_init_data	*ldo2;
-	struct regulator_init_data	*ldo3;
-	struct regulator_init_data	*ldo4;
-	struct regulator_init_data	*ldo5;
-	struct regulator_init_data	*ldo6;
-	struct regulator_init_data	*ldo7;
-	struct regulator_init_data	*ldo8;
-	struct regulator_init_data	*ldo9;
-	struct regulator_init_data	*ldo10;
-	struct regulator_init_data	*ldo11;
-	struct regulator_init_data	*ldo12;
-	struct regulator_init_data	*ldo13;
-	struct regulator_init_data	*ldo14;
-	struct regulator_init_data	*ldo15;
-	struct regulator_init_data	*ldo16;
-	struct regulator_init_data	*ldo17;
-	struct regulator_init_data	*ldo18;
-	struct regulator_init_data	*ldo19;
-	struct regulator_init_data	*ldo20;
-
-	int		irq_base;
-	int		tsc_irq;
-};
-
 extern int max8925_reg_read(struct i2c_client *, int);
 extern int max8925_reg_write(struct i2c_client *, int, unsigned char);
 extern int max8925_bulk_read(struct i2c_client *, int, int, unsigned char *);
@@ -267,8 +157,7 @@ extern int max8925_bulk_write(struct i2c_client *, int, int, unsigned char *);
 extern int max8925_set_bits(struct i2c_client *, int, unsigned char,
 			unsigned char);
 
-extern int max8925_device_init(struct max8925_chip *,
-				struct max8925_platform_data *);
+extern int max8925_device_init(struct max8925_chip *, int tsc_irq);
 extern void max8925_device_exit(struct max8925_chip *);
 #endif /* __LINUX_MFD_MAX8925_H */
 

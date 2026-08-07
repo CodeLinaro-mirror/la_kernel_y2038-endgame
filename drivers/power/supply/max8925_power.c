@@ -78,24 +78,17 @@ struct max8925_power_info {
 	unsigned		fast_charge:3;
 	unsigned		no_temp_support:1;
 	unsigned		no_insert_detect:1;
-
-	int (*set_charger) (int);
 };
 
 static int __set_charger(struct max8925_power_info *info, int enable)
 {
 	struct max8925_chip *chip = info->chip;
 	if (enable) {
-		/* enable charger in platform */
-		if (info->set_charger)
-			info->set_charger(1);
 		/* enable charger */
 		max8925_set_bits(info->gpm, MAX8925_CHG_CNTL1, 1 << 7, 0);
 	} else {
 		/* disable charge */
 		max8925_set_bits(info->gpm, MAX8925_CHG_CNTL1, 1 << 7, 1 << 7);
-		if (info->set_charger)
-			info->set_charger(0);
 	}
 	dev_dbg(chip->dev, "%s\n", (enable) ? "Enable charger"
 		: "Disable charger");
@@ -449,7 +442,14 @@ static int max8925_deinit_charger(struct max8925_power_info *info)
 	return 0;
 }
 
-#ifdef CONFIG_OF
+struct max8925_power_pdata {
+	unsigned	batt_detect:1;
+	unsigned	topoff_threshold:2;
+	unsigned	fast_charge:3;	/* charge current */
+	unsigned	no_temp_support:1; /* set if no temperature detect */
+	unsigned	no_insert_detect:1; /* set if no ac insert detect */
+};
+
 static struct max8925_power_pdata *
 max8925_power_dt_init(struct platform_device *pdev)
 {
@@ -461,9 +461,6 @@ max8925_power_dt_init(struct platform_device *pdev)
 	int no_temp_support;
 	int no_insert_detect;
 	struct max8925_power_pdata *pdata;
-
-	if (!nproot)
-		return pdev->dev.platform_data;
 
 	np = of_get_child_by_name(nproot, "charger");
 	if (!np) {
@@ -493,27 +490,17 @@ ret:
 	of_node_put(np);
 	return pdata;
 }
-#else
-static struct max8925_power_pdata *
-max8925_power_dt_init(struct platform_device *pdev)
-{
-	return pdev->dev.platform_data;
-}
-#endif
 
 static int max8925_power_probe(struct platform_device *pdev)
 {
 	struct max8925_chip *chip = dev_get_drvdata(pdev->dev.parent);
 	struct power_supply_config psy_cfg = {}; /* Only for ac and usb */
-	struct max8925_power_pdata *pdata = NULL;
+	struct max8925_power_pdata *pdata;
 	struct max8925_power_info *info;
 
 	pdata = max8925_power_dt_init(pdev);
-	if (!pdata) {
-		dev_err(&pdev->dev, "platform data isn't assigned to "
-			"power supply\n");
-		return -EINVAL;
-	}
+	if (!pdata)
+		return -ENOMEM;
 
 	info = devm_kzalloc(&pdev->dev, sizeof(struct max8925_power_info),
 				GFP_KERNEL);
@@ -523,9 +510,6 @@ static int max8925_power_probe(struct platform_device *pdev)
 	info->gpm = chip->i2c;
 	info->adc = chip->adc;
 	platform_set_drvdata(pdev, info);
-
-	psy_cfg.supplied_to = pdata->supplied_to;
-	psy_cfg.num_supplicants = pdata->num_supplicants;
 
 	info->ac = devm_power_supply_register(&pdev->dev, &ac_desc, &psy_cfg);
 	if (IS_ERR(info->ac))
@@ -545,7 +529,6 @@ static int max8925_power_probe(struct platform_device *pdev)
 	info->batt_detect = pdata->batt_detect;
 	info->topoff_threshold = pdata->topoff_threshold;
 	info->fast_charge = pdata->fast_charge;
-	info->set_charger = pdata->set_charger;
 	info->no_temp_support = pdata->no_temp_support;
 	info->no_insert_detect = pdata->no_insert_detect;
 

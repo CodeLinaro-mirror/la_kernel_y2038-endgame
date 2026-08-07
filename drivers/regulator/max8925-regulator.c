@@ -17,6 +17,35 @@
 #include <linux/of.h>
 #include <linux/regulator/of_regulator.h>
 
+/* Unified sub device IDs for MAX8925 */
+enum {
+	MAX8925_ID_SD1,
+	MAX8925_ID_SD2,
+	MAX8925_ID_SD3,
+	MAX8925_ID_LDO1,
+	MAX8925_ID_LDO2,
+	MAX8925_ID_LDO3,
+	MAX8925_ID_LDO4,
+	MAX8925_ID_LDO5,
+	MAX8925_ID_LDO6,
+	MAX8925_ID_LDO7,
+	MAX8925_ID_LDO8,
+	MAX8925_ID_LDO9,
+	MAX8925_ID_LDO10,
+	MAX8925_ID_LDO11,
+	MAX8925_ID_LDO12,
+	MAX8925_ID_LDO13,
+	MAX8925_ID_LDO14,
+	MAX8925_ID_LDO15,
+	MAX8925_ID_LDO16,
+	MAX8925_ID_LDO17,
+	MAX8925_ID_LDO18,
+	MAX8925_ID_LDO19,
+	MAX8925_ID_LDO20,
+	MAX8925_ID_MAX,
+};
+
+
 #define SD1_DVM_VMIN		850000
 #define SD1_DVM_VMAX		1000000
 #define SD1_DVM_STEP		50000
@@ -218,7 +247,6 @@ static struct max8925_regulator_info max8925_regulator_info[] = {
 static int max8925_regulator_probe(struct platform_device *pdev)
 {
 	struct max8925_chip *chip = dev_get_drvdata(pdev->dev.parent);
-	struct regulator_init_data *pdata = dev_get_platdata(&pdev->dev);
 	struct regulator_config config = { };
 	struct max8925_regulator_info *ri;
 	struct resource *res;
@@ -245,9 +273,6 @@ static int max8925_regulator_probe(struct platform_device *pdev)
 
 	config.dev = chip->dev;
 	config.driver_data = ri;
-
-	if (pdata)
-		config.init_data = pdata;
 
 	rdev = devm_regulator_register(&pdev->dev, &ri->desc, &config);
 	if (IS_ERR(rdev)) {
