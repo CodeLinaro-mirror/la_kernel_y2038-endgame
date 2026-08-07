@@ -373,6 +373,21 @@ int palmas_ext_control_req_config(struct palmas *palmas,
 }
 EXPORT_SYMBOL_GPL(palmas_ext_control_req_config);
 
+struct palmas_platform_data {
+	int irq_flags;
+
+	/* bit value to be loaded to the POWER_CTRL register */
+	u8 power_ctrl;
+
+	/*
+	 * boolean to select if we want to configure muxing here
+	 * then the two value to load into the registers if true
+	 */
+	int mux_from_pdata;
+	u8 pad1, pad2;
+	bool pm_off;
+};
+
 static int palmas_set_pdata_irq_flag(struct i2c_client *i2c,
 		struct palmas_platform_data *pdata)
 {
@@ -491,19 +506,10 @@ static int palmas_i2c_probe(struct i2c_client *i2c)
 	unsigned int reg, addr;
 	int slave;
 
-	pdata = dev_get_platdata(&i2c->dev);
-
-	if (node && !pdata) {
-		pdata = devm_kzalloc(&i2c->dev, sizeof(*pdata), GFP_KERNEL);
-
-		if (!pdata)
-			return -ENOMEM;
-
-		palmas_dt_to_pdata(i2c, pdata);
-	}
-
+	pdata = devm_kzalloc(&i2c->dev, sizeof(*pdata), GFP_KERNEL);
 	if (!pdata)
-		return -EINVAL;
+		return -ENOMEM;
+	palmas_dt_to_pdata(i2c, pdata);
 
 	palmas = devm_kzalloc(&i2c->dev, sizeof(struct palmas), GFP_KERNEL);
 	if (palmas == NULL)

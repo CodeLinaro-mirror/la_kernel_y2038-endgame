@@ -162,7 +162,6 @@ MODULE_DEVICE_TABLE(of, of_palmas_gpio_match);
 static int palmas_gpio_probe(struct platform_device *pdev)
 {
 	struct palmas *palmas = dev_get_drvdata(pdev->dev.parent);
-	struct palmas_platform_data *palmas_pdata;
 	struct palmas_gpio *palmas_gpio;
 	int ret;
 	const struct palmas_device_data *dev_data;
@@ -188,12 +187,7 @@ static int palmas_gpio_probe(struct platform_device *pdev)
 	palmas_gpio->gpio_chip.set	= palmas_gpio_set;
 	palmas_gpio->gpio_chip.get	= palmas_gpio_get;
 	palmas_gpio->gpio_chip.parent = &pdev->dev;
-
-	palmas_pdata = dev_get_platdata(palmas->dev);
-	if (palmas_pdata && palmas_pdata->gpio_base)
-		palmas_gpio->gpio_chip.base = palmas_pdata->gpio_base;
-	else
-		palmas_gpio->gpio_chip.base = -1;
+	palmas_gpio->gpio_chip.base = -1;
 
 	ret = devm_gpiochip_add_data(&pdev->dev, &palmas_gpio->gpio_chip,
 				     palmas_gpio);

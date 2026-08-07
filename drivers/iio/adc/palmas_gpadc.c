@@ -27,6 +27,7 @@
 #define PALMAS_ADC_CONVERSION_TIMEOUT	(msecs_to_jiffies(5000))
 #define PALMAS_TO_BE_CALCULATED 0
 #define PALMAS_GPADC_TRIMINVALID	-1
+#define PALMAS_DATASHEET_NAME(_name)	"palmas-gpadc-chan-"#_name
 
 struct palmas_gpadc_info {
 /* calibration codes and regs */
@@ -828,6 +829,26 @@ static const struct iio_chan_spec palmas_gpadc_iio_channel[] = {
 	PALMAS_ADC_CHAN_IIO(IN15, IIO_VOLTAGE, IIO_CHAN_INFO_PROCESSED),
 };
 
+struct palmas_gpadc_platform_data {
+	/* Channel 3 current source is only enabled during conversion */
+	int ch3_current;	/* 0: off; 1: 10uA; 2: 400uA; 3: 800 uA */
+
+	/* Channel 0 current source can be used for battery detection.
+	 * If used for battery detection this will cause a permanent current
+	 * consumption depending on current level set here.
+	 */
+	int ch0_current;	/* 0: off; 1: 5uA; 2: 15uA; 3: 20 uA */
+	bool extended_delay;	/* use extended delay for conversion */
+
+	/* default BAT_REMOVAL_DAT setting on device probe */
+	int bat_removal;
+
+	/* Sets the START_POLARITY bit in the RT_CTRL register */
+	int start_polarity;
+
+	int auto_conversion_period_ms;
+};
+
 static int palmas_gpadc_get_adc_dt_data(struct platform_device *pdev,
 	struct palmas_gpadc_platform_data **gpadc_pdata)
 {
@@ -866,23 +887,13 @@ static void palmas_gpadc_reset(void *data)
 static int palmas_gpadc_probe(struct platform_device *pdev)
 {
 	struct palmas_gpadc *adc;
-	struct palmas_platform_data *pdata;
 	struct palmas_gpadc_platform_data *gpadc_pdata = NULL;
 	struct iio_dev *indio_dev;
 	int ret, i;
 
-	pdata = dev_get_platdata(pdev->dev.parent);
-
-	if (pdata && pdata->gpadc_pdata)
-		gpadc_pdata = pdata->gpadc_pdata;
-
-	if (!gpadc_pdata && pdev->dev.of_node) {
-		ret = palmas_gpadc_get_adc_dt_data(pdev, &gpadc_pdata);
-		if (ret < 0)
-			return ret;
-	}
-	if (!gpadc_pdata)
-		return -EINVAL;
+	ret = palmas_gpadc_get_adc_dt_data(pdev, &gpadc_pdata);
+	if (ret < 0)
+		return ret;
 
 	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc));
 	if (!indio_dev)

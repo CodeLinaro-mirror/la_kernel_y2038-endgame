@@ -21,6 +21,24 @@
 #include <linux/of.h>
 #include <linux/regulator/of_regulator.h>
 
+struct palmas_pmic_platform_data {
+	/* An array of pointers to regulator init data indexed by regulator
+	 * ID
+	 */
+	struct regulator_init_data *reg_data[PALMAS_NUM_REGS];
+
+	/* An array of pointers to structures containing sleep mode and DVS
+	 * configuration for regulators indexed by ID
+	 */
+	struct palmas_reg_init *reg_init[PALMAS_NUM_REGS];
+
+	/* use LDO6 for vibrator control */
+	int ldo6_vibrator;
+
+	/* Enable tracking mode of LDO8 */
+	bool enable_ldo8_tracking;
+};
+
 static const struct linear_range smps_low_ranges[] = {
 	REGULATOR_LINEAR_RANGE(0, 0x0, 0x0, 0),
 	REGULATOR_LINEAR_RANGE(500000, 0x1, 0x6, 0),

@@ -48,8 +48,6 @@ struct palmas_pmic;
 struct palmas_gpadc;
 struct palmas_resource;
 struct palmas_usb;
-struct palmas_pmic_driver_data;
-struct palmas_pmic_platform_data;
 
 enum palmas_usb_state {
 	PALMAS_USB_STATE_DISCONNECT,
@@ -106,6 +104,8 @@ struct palmas_regs_info {
 	int	sleep_id;
 };
 
+struct palmas_pmic_platform_data;
+
 struct palmas_pmic_driver_data {
 	int smps_start;
 	int smps_end;
@@ -128,25 +128,6 @@ struct palmas_pmic_driver_data {
 			    struct regulator_config config);
 };
 
-struct palmas_gpadc_platform_data {
-	/* Channel 3 current source is only enabled during conversion */
-	int ch3_current;	/* 0: off; 1: 10uA; 2: 400uA; 3: 800 uA */
-
-	/* Channel 0 current source can be used for battery detection.
-	 * If used for battery detection this will cause a permanent current
-	 * consumption depending on current level set here.
-	 */
-	int ch0_current;	/* 0: off; 1: 5uA; 2: 15uA; 3: 20 uA */
-	bool extended_delay;	/* use extended delay for conversion */
-
-	/* default BAT_REMOVAL_DAT setting on device probe */
-	int bat_removal;
-
-	/* Sets the START_POLARITY bit in the RT_CTRL register */
-	int start_polarity;
-
-	int auto_conversion_period_ms;
-};
 
 struct palmas_reg_init {
 	/* warm_rest controls the voltage levels after a warm reset
@@ -313,106 +294,6 @@ enum tps65917_external_requestor_id {
 	/* Last entry */
 	TPS65917_EXTERNAL_REQSTR_ID_MAX,
 };
-
-struct palmas_pmic_platform_data {
-	/* An array of pointers to regulator init data indexed by regulator
-	 * ID
-	 */
-	struct regulator_init_data *reg_data[PALMAS_NUM_REGS];
-
-	/* An array of pointers to structures containing sleep mode and DVS
-	 * configuration for regulators indexed by ID
-	 */
-	struct palmas_reg_init *reg_init[PALMAS_NUM_REGS];
-
-	/* use LDO6 for vibrator control */
-	int ldo6_vibrator;
-
-	/* Enable tracking mode of LDO8 */
-	bool enable_ldo8_tracking;
-};
-
-struct palmas_usb_platform_data {
-	/* Do we enable the wakeup comparator on probe */
-	int wakeup;
-};
-
-struct palmas_resource_platform_data {
-	int regen1_mode_sleep;
-	int regen2_mode_sleep;
-	int sysen1_mode_sleep;
-	int sysen2_mode_sleep;
-
-	/* bitfield to be loaded to NSLEEP_RES_ASSIGN */
-	u8 nsleep_res;
-	/* bitfield to be loaded to NSLEEP_SMPS_ASSIGN */
-	u8 nsleep_smps;
-	/* bitfield to be loaded to NSLEEP_LDO_ASSIGN1 */
-	u8 nsleep_ldo1;
-	/* bitfield to be loaded to NSLEEP_LDO_ASSIGN2 */
-	u8 nsleep_ldo2;
-
-	/* bitfield to be loaded to ENABLE1_RES_ASSIGN */
-	u8 enable1_res;
-	/* bitfield to be loaded to ENABLE1_SMPS_ASSIGN */
-	u8 enable1_smps;
-	/* bitfield to be loaded to ENABLE1_LDO_ASSIGN1 */
-	u8 enable1_ldo1;
-	/* bitfield to be loaded to ENABLE1_LDO_ASSIGN2 */
-	u8 enable1_ldo2;
-
-	/* bitfield to be loaded to ENABLE2_RES_ASSIGN */
-	u8 enable2_res;
-	/* bitfield to be loaded to ENABLE2_SMPS_ASSIGN */
-	u8 enable2_smps;
-	/* bitfield to be loaded to ENABLE2_LDO_ASSIGN1 */
-	u8 enable2_ldo1;
-	/* bitfield to be loaded to ENABLE2_LDO_ASSIGN2 */
-	u8 enable2_ldo2;
-};
-
-struct palmas_clk_platform_data {
-	int clk32kg_mode_sleep;
-	int clk32kgaudio_mode_sleep;
-};
-
-struct palmas_platform_data {
-	int irq_flags;
-	int gpio_base;
-
-	/* bit value to be loaded to the POWER_CTRL register */
-	u8 power_ctrl;
-
-	/*
-	 * boolean to select if we want to configure muxing here
-	 * then the two value to load into the registers if true
-	 */
-	int mux_from_pdata;
-	u8 pad1, pad2;
-	bool pm_off;
-
-	struct palmas_pmic_platform_data *pmic_pdata;
-	struct palmas_gpadc_platform_data *gpadc_pdata;
-	struct palmas_usb_platform_data *usb_pdata;
-	struct palmas_resource_platform_data *resource_pdata;
-	struct palmas_clk_platform_data *clk_pdata;
-};
-
-struct palmas_gpadc_calibration {
-	s32 gain;
-	s32 gain_error;
-	s32 offset_error;
-};
-
-#define PALMAS_DATASHEET_NAME(_name)	"palmas-gpadc-chan-"#_name
-
-struct palmas_gpadc_result {
-	s32 raw_code;
-	s32 corrected_code;
-	s32 result;
-};
-
-#define PALMAS_MAX_CHANNELS 16
 
 /* Define the tps65917 IRQ numbers */
 enum tps65917_irqs {
