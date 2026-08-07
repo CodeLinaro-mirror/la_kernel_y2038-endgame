@@ -22,7 +22,6 @@
 #include <linux/pm_runtime.h>
 #include <linux/of.h>
 #include <linux/of_graph.h>
-#include <linux/platform_data/davinci_asp.h>
 #include <linux/math64.h>
 #include <linux/bitmap.h>
 #include <linux/gpio/driver.h>
@@ -40,6 +39,86 @@
 #include "sdma-pcm.h"
 #include "udma-pcm.h"
 #include "davinci-mcasp.h"
+
+struct davinci_mcasp_pdata {
+	u32 tx_dma_offset;
+	u32 rx_dma_offset;
+	int asp_chan_q;	/* event queue number for ASP channel */
+	int ram_chan_q;	/* event queue number for RAM channel */
+	/*
+	 * Allowing this is more efficient and eliminates left and right swaps
+	 * caused by underruns, but will swap the left and right channels
+	 * when compared to previous behavior.
+	 */
+	unsigned enable_channel_combine:1;
+	unsigned sram_size_playback;
+	unsigned sram_size_capture;
+	struct gen_pool *sram_pool;
+
+	/*
+	 * This flag works when both clock and FS are outputs for the cpu
+	 * and makes clock more accurate (FS is not symmetrical and the
+	 * clock is very fast.
+	 * The clock becoming faster is named
+	 * i2s continuous serial clock (I2S_SCK) and it is an externally
+	 * visible bit clock.
+	 *
+	 * first line : WordSelect
+	 * second line : ContinuousSerialClock
+	 * third line: SerialData
+	 *
+	 * SYMMETRICAL APPROACH:
+	 *   _______________________          LEFT
+	 * _|         RIGHT         |______________________|
+	 *     _   _         _   _   _   _         _   _
+	 *   _| |_| |_ x16 _| |_| |_| |_| |_ x16 _| |_| |_
+	 *     _   _         _   _   _   _         _   _
+	 *   _/ \_/ \_ ... _/ \_/ \_/ \_/ \_ ... _/ \_/ \_
+	 *    \_/ \_/       \_/ \_/ \_/ \_/       \_/ \_/
+	 *
+	 * ACCURATE CLOCK APPROACH:
+	 *   ______________          LEFT
+	 * _|     RIGHT    |_______________________________|
+	 *     _         _   _         _   _   _   _   _   _
+	 *   _| |_ x16 _| |_| |_ x16 _| |_| |_| |_| |_| |_| |
+	 *     _         _   _          _      dummy cycles
+	 *   _/ \_ ... _/ \_/ \_  ... _/ \__________________
+	 *    \_/       \_/ \_/        \_/
+	 *
+	 */
+	bool i2s_accurate_sck;
+
+	/* McASP specific fields */
+	int tdm_slots_tx;
+	int tdm_slots_rx;
+	u8 op_mode;
+	u8 dismod;
+	u8 num_serializer;
+	u8 *serial_dir;
+	u8 version;
+	u8 txnumevt;
+	u8 rxnumevt;
+	int tx_dma_channel;
+	int rx_dma_channel;
+};
+/* TODO: Fix arch/arm/mach-davinci/ users and remove this define */
+#define snd_platform_data davinci_mcasp_pdata
+
+enum {
+	MCASP_VERSION_1 = 0,	/* DM646x */
+	MCASP_VERSION_2,	/* DA8xx/OMAPL1x */
+	MCASP_VERSION_3,        /* TI81xx/AM33xx */
+	MCASP_VERSION_4,	/* DRA7xxx */
+	MCASP_VERSION_OMAP,	/* OMAP4/5 */
+};
+
+#define INACTIVE_MODE	0
+#define TX_MODE		1
+#define RX_MODE		2
+
+#define DAVINCI_MCASP_IIS_MODE	0
+#define DAVINCI_MCASP_DIT_MODE	1
+
 
 #define MCASP_MAX_AFIFO_DEPTH	64
 
@@ -2293,11 +2372,7 @@ static int davinci_mcasp_get_config(struct davinci_mcasp *mcasp,
 	u32 val;
 	int i;
 
-	if (pdev->dev.platform_data) {
-		pdata = pdev->dev.platform_data;
-		pdata->dismod = DISMOD_LOW;
-		goto out;
-	} else if (match_pdata) {
+	if (match_pdata) {
 		pdata = devm_kmemdup(&pdev->dev, match_pdata, sizeof(*pdata),
 				     GFP_KERNEL);
 		if (!pdata)
