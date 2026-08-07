@@ -33,18 +33,6 @@ functions of the driver includes re-configuring AC timing
 parameters and other settings during frequency, voltage and
 temperature changes
 
-Platform Data (see include/linux/platform_data/emif_plat.h)
-===========================================================
-DDR device details and other board dependent and SoC dependent
-information can be passed through platform data (struct emif_platform_data)
-
-- DDR device details: 'struct ddr_device_info'
-- Device AC timings: 'struct lpddr2_timings' and 'struct lpddr2_min_tck'
-- Custom configurations: customizable policy options through
-  'struct emif_custom_configs'
-- IP revision
-- PHY type
-
 Interface to the external world
 ===============================
 EMIF driver registers notifiers for voltage and frequency changes
