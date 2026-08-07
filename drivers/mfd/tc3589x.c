@@ -281,10 +281,9 @@ static int tc3589x_chip_init(struct tc3589x *tc3589x)
 	return tc3589x_reg_write(tc3589x, TC3589x_RSTINTCLR, 0x1);
 }
 
-static int tc3589x_device_init(struct tc3589x *tc3589x)
+static int tc3589x_device_init(struct tc3589x *tc3589x, unsigned int blocks)
 {
 	int ret = 0;
-	unsigned int blocks = tc3589x->pdata->block;
 
 	if (blocks & TC3589x_BLOCK_GPIO) {
 		ret = mfd_add_devices(tc3589x->dev, -1, tc3589x_dev_gpio,
@@ -323,52 +322,41 @@ static const struct of_device_id tc3589x_match[] = {
 
 MODULE_DEVICE_TABLE(of, tc3589x_match);
 
-static struct tc3589x_platform_data *
-tc3589x_of_probe(struct device *dev, enum tc3589x_version *version)
+static int
+tc3589x_of_probe(struct device *dev, enum tc3589x_version *version,
+		 unsigned int *block)
 {
 	struct device_node *np = dev->of_node;
-	struct tc3589x_platform_data *pdata;
 	struct device_node *child;
 	const struct of_device_id *of_id;
 
-	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
-	if (!pdata)
-		return ERR_PTR(-ENOMEM);
-
 	of_id = of_match_device(tc3589x_match, dev);
 	if (!of_id)
-		return ERR_PTR(-ENODEV);
+		return -ENODEV;
 	*version = (uintptr_t) of_id->data;
 
+	*block = 0;
 	for_each_child_of_node(np, child) {
 		if (of_device_is_compatible(child, "toshiba,tc3589x-gpio"))
-			pdata->block |= TC3589x_BLOCK_GPIO;
+			*block |= TC3589x_BLOCK_GPIO;
 		if (of_device_is_compatible(child, "toshiba,tc3589x-keypad"))
-			pdata->block |= TC3589x_BLOCK_KEYPAD;
+			*block |= TC3589x_BLOCK_KEYPAD;
 	}
 
-	return pdata;
+	return 0;
 }
 
 static int tc3589x_probe(struct i2c_client *i2c)
 {
-	const struct i2c_device_id *id = i2c_client_get_device_id(i2c);
 	struct device_node *np = i2c->dev.of_node;
-	struct tc3589x_platform_data *pdata = dev_get_platdata(&i2c->dev);
 	struct tc3589x *tc3589x;
 	enum tc3589x_version version;
+	unsigned int block;
 	int ret;
 
-	if (!pdata) {
-		pdata = tc3589x_of_probe(&i2c->dev, &version);
-		if (IS_ERR(pdata)) {
-			dev_err(&i2c->dev, "No platform data or DT found\n");
-			return PTR_ERR(pdata);
-		}
-	} else {
-		/* When not probing from device tree we have this ID */
-		version = id->driver_data;
-	}
+	ret = tc3589x_of_probe(&i2c->dev, &version, &block);
+	if (ret)
+		return ret;
 
 	if (!i2c_check_functionality(i2c->adapter, I2C_FUNC_SMBUS_BYTE_DATA
 				     | I2C_FUNC_SMBUS_I2C_BLOCK))
@@ -383,7 +371,6 @@ static int tc3589x_probe(struct i2c_client *i2c)
 
 	tc3589x->dev = &i2c->dev;
 	tc3589x->i2c = i2c;
-	tc3589x->pdata = pdata;
 
 	switch (version) {
 	case TC3589X_TC35893:
@@ -418,7 +405,7 @@ static int tc3589x_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	ret = tc3589x_device_init(tc3589x);
+	ret = tc3589x_device_init(tc3589x, block);
 	if (ret) {
 		dev_err(tc3589x->dev, "failed to add child devices\n");
 		return ret;

@@ -125,7 +125,6 @@ struct tc3589x {
 
 	int irq_base;
 	int num_gpio;
-	struct tc3589x_platform_data *pdata;
 };
 
 extern int tc3589x_reg_write(struct tc3589x *tc3589x, u8 reg, u8 data);
@@ -144,14 +143,5 @@ extern int tc3589x_set_bits(struct tc3589x *tc3589x, u8 reg, u8 mask, u8 val);
 #define TC_KPD_COLUMNS          0x8
 #define TC_KPD_DEBOUNCE_PERIOD  0xA3
 #define TC_KPD_SETTLE_TIME      0xA3
-
-
-/**
- * struct tc3589x_platform_data - TC3589x platform data
- * @block: bitmask of blocks to enable (use TC3589x_BLOCK_*)
- */
-struct tc3589x_platform_data {
-	unsigned int block;
-};
 
 #endif
