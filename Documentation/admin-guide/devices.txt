@@ -262,7 +262,6 @@
 		 10 = /dev/adbmouse	Apple Desktop Bus mouse
 		 11 = /dev/vrtpanel	Vr41xx embedded touch panel
 		 13 = /dev/vpcmouse	Connectix Virtual PC Mouse
-		 14 = /dev/touchscreen/ucb1x00  UCB 1x00 touchscreen
 		 15 = /dev/touchscreen/mk712	MK712 touchscreen
 		128 = /dev/beep		Fancy beep device
 		129 =
