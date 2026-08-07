@@ -24,6 +24,11 @@
 #define	DEV_NAME			"max77693-muic"
 #define	DELAY_MS_DEFAULT		20000		/* unit: millisecond */
 
+struct max77693_reg_data {
+	u8 addr;
+	u8 data;
+};
+
 /*
  * Default value of MAX77693 register to bring up MUIC device.
  * If user don't set some initial value for MUIC device through platform data,
@@ -1068,7 +1073,6 @@ static void max77693_muic_detect_cable_wq(struct work_struct *work)
 static int max77693_muic_probe(struct platform_device *pdev)
 {
 	struct max77693_dev *max77693 = dev_get_drvdata(pdev->dev.parent);
-	struct max77693_platform_data *pdata = dev_get_platdata(max77693->dev);
 	struct max77693_muic_info *info;
 	struct max77693_reg_data *init_data;
 	int num_init_data;
@@ -1170,14 +1174,9 @@ static int max77693_muic_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Initialize MUIC register by using platform data or default data */
-	if (pdata && pdata->muic_data) {
-		init_data = pdata->muic_data->init_data;
-		num_init_data = pdata->muic_data->num_init_data;
-	} else {
-		init_data = default_init_data;
-		num_init_data = ARRAY_SIZE(default_init_data);
-	}
+	/* Initialize MUIC register by using default data */
+	init_data = default_init_data;
+	num_init_data = ARRAY_SIZE(default_init_data);
 
 	for (i = 0; i < num_init_data; i++) {
 		regmap_write(info->max77693->regmap_muic,
@@ -1185,38 +1184,9 @@ static int max77693_muic_probe(struct platform_device *pdev)
 				init_data[i].data);
 	}
 
-	if (pdata && pdata->muic_data) {
-		struct max77693_muic_platform_data *muic_pdata
-						   = pdata->muic_data;
-
-		/*
-		 * Default usb/uart path whether UART/USB or AUX_UART/AUX_USB
-		 * h/w path of COMP2/COMN1 on CONTROL1 register.
-		 */
-		if (muic_pdata->path_uart)
-			info->path_uart = muic_pdata->path_uart;
-		else
-			info->path_uart = MAX77693_CONTROL1_SW_UART;
-
-		if (muic_pdata->path_usb)
-			info->path_usb = muic_pdata->path_usb;
-		else
-			info->path_usb = MAX77693_CONTROL1_SW_USB;
-
-		/*
-		 * Default delay time for detecting cable state
-		 * after certain time.
-		 */
-		if (muic_pdata->detcable_delay_ms)
-			delay_jiffies =
-				msecs_to_jiffies(muic_pdata->detcable_delay_ms);
-		else
-			delay_jiffies = msecs_to_jiffies(DELAY_MS_DEFAULT);
-	} else {
-		info->path_usb = MAX77693_CONTROL1_SW_USB;
-		info->path_uart = MAX77693_CONTROL1_SW_UART;
-		delay_jiffies = msecs_to_jiffies(DELAY_MS_DEFAULT);
-	}
+	info->path_usb = MAX77693_CONTROL1_SW_USB;
+	info->path_uart = MAX77693_CONTROL1_SW_UART;
+	delay_jiffies = msecs_to_jiffies(DELAY_MS_DEFAULT);
 
 	/* Set initial path for UART when JIG is connected to get serial logs */
 	ret = regmap_bulk_read(info->max77693->regmap_muic,
