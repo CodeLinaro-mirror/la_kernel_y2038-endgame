@@ -182,14 +182,13 @@ static void shmob_drm_shutdown(struct platform_device *pdev)
 
 static int shmob_drm_probe(struct platform_device *pdev)
 {
-	struct shmob_drm_platform_data *pdata = pdev->dev.platform_data;
 	const struct shmob_drm_config *config;
 	struct shmob_drm_device *sdev;
 	struct drm_device *ddev;
 	int ret;
 
 	config = of_device_get_match_data(&pdev->dev);
-	if (!config && !pdata) {
+	if (!config) {
 		dev_err(&pdev->dev, "no platform data\n");
 		return -EINVAL;
 	}
@@ -205,13 +204,8 @@ static int shmob_drm_probe(struct platform_device *pdev)
 
 	ddev = &sdev->ddev;
 	sdev->dev = &pdev->dev;
-	if (config) {
-		sdev->config = *config;
-	} else {
-		sdev->pdata = pdata;
-		sdev->config.clk_source = pdata->clk_source;
-		sdev->config.clk_div = pdata->iface.clk_div;
-	}
+	sdev->config = *config;
+
 	spin_lock_init(&sdev->irq_lock);
 
 	platform_set_drvdata(pdev, sdev);
@@ -285,7 +279,7 @@ static struct platform_driver shmob_drm_platform_driver = {
 	.shutdown	= shmob_drm_shutdown,
 	.driver		= {
 		.name	= "shmob-drm",
-		.of_match_table = of_match_ptr(shmob_drm_of_table),
+		.of_match_table = shmob_drm_of_table,
 		.pm	= &shmob_drm_pm_ops,
 	},
 };

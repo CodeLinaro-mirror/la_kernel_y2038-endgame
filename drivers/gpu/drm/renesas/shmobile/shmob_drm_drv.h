@@ -11,7 +11,6 @@
 #define __SHMOB_DRM_DRV_H__
 
 #include <linux/kernel.h>
-#include <linux/platform_data/shmob_drm.h>
 #include <linux/spinlock.h>
 
 #include "shmob_drm_crtc.h"
@@ -19,6 +18,12 @@
 struct clk;
 struct device;
 struct drm_device;
+
+enum shmob_drm_clk_source {
+	SHMOB_DRM_CLK_BUS,
+	SHMOB_DRM_CLK_PERIPHERAL,
+	SHMOB_DRM_CLK_EXTERNAL,
+};
 
 struct shmob_drm_config {
 	enum shmob_drm_clk_source clk_source;

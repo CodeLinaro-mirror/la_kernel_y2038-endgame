@@ -479,124 +479,6 @@ int shmob_drm_encoder_create(struct shmob_drm_device *sdev)
 }
 
 /* -----------------------------------------------------------------------------
- * Legacy Connector
- */
-
-static inline struct shmob_drm_connector *to_shmob_connector(struct drm_connector *connector)
-{
-	return container_of(connector, struct shmob_drm_connector, base);
-}
-
-static int shmob_drm_connector_get_modes(struct drm_connector *connector)
-{
-	struct shmob_drm_connector *scon = to_shmob_connector(connector);
-	struct drm_display_mode *mode;
-
-	mode = drm_mode_create(connector->dev);
-	if (mode == NULL)
-		return 0;
-
-	mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
-
-	drm_display_mode_from_videomode(scon->mode, mode);
-
-	drm_mode_probed_add(connector, mode);
-
-	return 1;
-}
-
-static struct drm_encoder *
-shmob_drm_connector_best_encoder(struct drm_connector *connector)
-{
-	struct shmob_drm_connector *scon = to_shmob_connector(connector);
-
-	return scon->encoder;
-}
-
-static const struct drm_connector_helper_funcs connector_helper_funcs = {
-	.get_modes = shmob_drm_connector_get_modes,
-	.best_encoder = shmob_drm_connector_best_encoder,
-};
-
-static void shmob_drm_connector_destroy(struct drm_connector *connector)
-{
-	drm_connector_unregister(connector);
-	drm_connector_cleanup(connector);
-
-	kfree(connector);
-}
-
-static const struct drm_connector_funcs connector_funcs = {
-	.reset = drm_atomic_helper_connector_reset,
-	.fill_modes = drm_helper_probe_single_connector_modes,
-	.destroy = shmob_drm_connector_destroy,
-	.atomic_duplicate_state = drm_atomic_helper_connector_duplicate_state,
-	.atomic_destroy_state = drm_atomic_helper_connector_destroy_state,
-};
-
-static struct drm_connector *
-shmob_drm_connector_init(struct shmob_drm_device *sdev,
-			 struct drm_encoder *encoder)
-{
-	u32 bus_fmt = sdev->pdata->iface.bus_fmt;
-	struct shmob_drm_connector *scon;
-	struct drm_connector *connector;
-	struct drm_display_info *info;
-	unsigned int i;
-	int ret;
-
-	for (i = 0; i < ARRAY_SIZE(shmob_drm_bus_fmts); i++) {
-		if (shmob_drm_bus_fmts[i].fmt == bus_fmt)
-			break;
-	}
-	if (i == ARRAY_SIZE(shmob_drm_bus_fmts)) {
-		dev_err(sdev->dev, "unsupported bus format 0x%x\n", bus_fmt);
-		return ERR_PTR(-EINVAL);
-	}
-
-	scon = kzalloc_obj(*scon);
-	if (!scon)
-		return ERR_PTR(-ENOMEM);
-
-	connector = &scon->base;
-	scon->encoder = encoder;
-	scon->mode = &sdev->pdata->panel.mode;
-
-	info = &connector->display_info;
-	info->width_mm = sdev->pdata->panel.width_mm;
-	info->height_mm = sdev->pdata->panel.height_mm;
-
-	if (scon->mode->flags & DISPLAY_FLAGS_PIXDATA_POSEDGE)
-		info->bus_flags |= DRM_BUS_FLAG_PIXDATA_DRIVE_POSEDGE;
-	if (scon->mode->flags & DISPLAY_FLAGS_DE_LOW)
-		info->bus_flags |= DRM_BUS_FLAG_DE_LOW;
-
-	ret = drm_display_info_set_bus_formats(info, &bus_fmt, 1);
-	if (ret < 0) {
-		kfree(scon);
-		return ERR_PTR(ret);
-	}
-
-	ret = drm_connector_init(&sdev->ddev, connector, &connector_funcs,
-				 DRM_MODE_CONNECTOR_DPI);
-	if (ret < 0) {
-		kfree(scon);
-		return ERR_PTR(ret);
-	}
-
-	drm_connector_helper_add(connector, &connector_helper_funcs);
-
-	ret = drm_connector_attach_encoder(connector, encoder);
-	if (ret < 0) {
-		drm_connector_cleanup(connector);
-		kfree(scon);
-		return ERR_PTR(ret);
-	}
-
-	return connector;
-}
-
-/* -----------------------------------------------------------------------------
  * Connector
  */
 
@@ -605,10 +487,7 @@ int shmob_drm_connector_create(struct shmob_drm_device *sdev,
 {
 	struct drm_connector *connector;
 
-	if (sdev->pdata)
-		connector = shmob_drm_connector_init(sdev, encoder);
-	else
-		connector = drm_bridge_connector_init(&sdev->ddev, encoder);
+	connector = drm_bridge_connector_init(&sdev->ddev, encoder);
 	if (IS_ERR(connector)) {
 		dev_err(sdev->dev, "failed to created connector: %pe\n",
 			connector);
