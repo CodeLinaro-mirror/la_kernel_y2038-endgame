@@ -30543,7 +30543,6 @@ XILINX PWM DRIVER
 M:	Sean Anderson <sean.anderson@linux.dev>
 S:	Maintained
 F:	drivers/pwm/pwm-xilinx.c
-F:	include/clocksource/timer-xilinx.h
 
 XILINX SOUND DRIVERS
 M:	Vincenzo Frascino <vincenzo.frascino@arm.com>
