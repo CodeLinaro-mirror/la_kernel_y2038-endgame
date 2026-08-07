@@ -26,7 +26,6 @@
 #include <linux/of_net.h>
 #include <linux/phy.h>
 #include <linux/platform_device.h>
-#include <linux/pxa168_eth.h>
 #include <linux/tcp.h>
 #include <linux/types.h>
 #include <linux/udp.h>
@@ -239,7 +238,6 @@ struct pxa168_eth_private {
 
 	/* clock */
 	struct clk *clk;
-	struct pxa168_eth_platform_data *pd;
 	/*
 	 * Ethernet controller base address.
 	 */
@@ -1448,38 +1446,20 @@ static int pxa168_eth_probe(struct platform_device *pdev)
 	pep->rx_ring_size = NUM_RX_DESCS;
 	pep->tx_ring_size = NUM_TX_DESCS;
 
-	pep->pd = dev_get_platdata(&pdev->dev);
-	if (pep->pd) {
-		if (pep->pd->rx_queue_size)
-			pep->rx_ring_size = pep->pd->rx_queue_size;
+	of_property_read_u32(pdev->dev.of_node, "port-id",
+			     &pep->port_num);
 
-		if (pep->pd->tx_queue_size)
-			pep->tx_ring_size = pep->pd->tx_queue_size;
-
-		pep->port_num = pep->pd->port_number;
-		pep->phy_addr = pep->pd->phy_addr;
-		pep->phy_speed = pep->pd->speed;
-		pep->phy_duplex = pep->pd->duplex;
-		pep->phy_intf = pep->pd->intf;
-
-		if (pep->pd->init)
-			pep->pd->init();
-	} else if (pdev->dev.of_node) {
-		of_property_read_u32(pdev->dev.of_node, "port-id",
-				     &pep->port_num);
-
-		np = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
-		if (!np) {
-			dev_err(&pdev->dev, "missing phy-handle\n");
-			err = -EINVAL;
-			goto err_netdev;
-		}
-		of_property_read_u32(np, "reg", &pep->phy_addr);
-		of_node_put(np);
-		err = of_get_phy_mode(pdev->dev.of_node, &pep->phy_intf);
-		if (err && err != -ENODEV)
-			goto err_netdev;
+	np = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+	if (!np) {
+		dev_err(&pdev->dev, "missing phy-handle\n");
+		err = -EINVAL;
+		goto err_netdev;
 	}
+	of_property_read_u32(np, "reg", &pep->phy_addr);
+	of_node_put(np);
+	err = of_get_phy_mode(pdev->dev.of_node, &pep->phy_intf);
+	if (err && err != -ENODEV)
+		goto err_netdev;
 
 	/* Hardware supports only 3 ports */
 	BUG_ON(pep->port_num > 2);
