@@ -57,13 +57,11 @@ static int lis3_spi_init(struct lis3lv02d *lis3)
 static union axis_conversion lis3lv02d_axis_normal =
 	{ .as_array = { 1, 2, 3 } };
 
-#ifdef CONFIG_OF
 static const struct of_device_id lis302dl_spi_dt_ids[] = {
 	{ .compatible = "st,lis302dl-spi" },
 	{ }
 };
 MODULE_DEVICE_TABLE(of, lis302dl_spi_dt_ids);
-#endif
 
 static int lis302dl_spi_probe(struct spi_device *spi)
 {
@@ -81,16 +79,14 @@ static int lis302dl_spi_probe(struct spi_device *spi)
 	lis3_dev.write		= lis3_spi_write;
 	lis3_dev.irq		= spi->irq;
 	lis3_dev.ac		= lis3lv02d_axis_normal;
-	lis3_dev.pdata		= spi->dev.platform_data;
 
-#ifdef CONFIG_OF
 	if (of_match_device(lis302dl_spi_dt_ids, &spi->dev)) {
 		lis3_dev.of_node = spi->dev.of_node;
 		ret = lis3lv02d_init_dt(&lis3_dev);
 		if (ret)
 			return ret;
 	}
-#endif
+
 	spi_set_drvdata(spi, &lis3_dev);
 
 	return lis3lv02d_init_device(&lis3_dev);
@@ -134,7 +130,7 @@ static struct spi_driver lis302dl_spi_driver = {
 	.driver	 = {
 		.name   = DRV_NAME,
 		.pm	= pm_sleep_ptr(&lis3lv02d_spi_pm),
-		.of_match_table = of_match_ptr(lis302dl_spi_dt_ids),
+		.of_match_table = lis302dl_spi_dt_ids,
 	},
 	.probe	= lis302dl_spi_probe,
 	.remove	= lis302dl_spi_remove,

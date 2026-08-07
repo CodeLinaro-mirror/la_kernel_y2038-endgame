@@ -92,20 +92,17 @@ static int lis3_i2c_init(struct lis3lv02d *lis3)
 static union axis_conversion lis3lv02d_axis_map =
 	{ .as_array = { LIS3_DEV_X, LIS3_DEV_Y, LIS3_DEV_Z } };
 
-#ifdef CONFIG_OF
 static const struct of_device_id lis3lv02d_i2c_dt_ids[] = {
 	{ .compatible = "st,lis3lv02d" },
 	{ }
 };
 MODULE_DEVICE_TABLE(of, lis3lv02d_i2c_dt_ids);
-#endif
 
 static int lis3lv02d_i2c_probe(struct i2c_client *client)
 {
 	int ret = 0;
-	struct lis3lv02d_platform_data *pdata = client->dev.platform_data;
+	struct lis3lv02d_platform_data *pdata = NULL;
 
-#ifdef CONFIG_OF
 	if (of_match_device(lis3lv02d_i2c_dt_ids, &client->dev)) {
 		lis3_dev.of_node = client->dev.of_node;
 		ret = lis3lv02d_init_dt(&lis3_dev);
@@ -113,7 +110,6 @@ static int lis3lv02d_i2c_probe(struct i2c_client *client)
 			return ret;
 		pdata = lis3_dev.pdata;
 	}
-#endif
 
 	if (pdata) {
 		if ((pdata->driver_features & LIS3_USE_BLOCK_READ) &&
@@ -130,9 +126,6 @@ static int lis3lv02d_i2c_probe(struct i2c_client *client)
 		if (pdata->axis_z)
 			lis3lv02d_axis_map.z = pdata->axis_z;
 
-		if (pdata->setup_resources)
-			ret = pdata->setup_resources();
-
 		if (ret)
 			goto fail;
 	}
@@ -145,7 +138,6 @@ static int lis3lv02d_i2c_probe(struct i2c_client *client)
 	if (ret < 0)
 		goto fail;
 
-	lis3_dev.pdata	  = pdata;
 	lis3_dev.bus_priv = client;
 	lis3_dev.init	  = lis3_i2c_init;
 	lis3_dev.read	  = lis3_i2c_read;
@@ -172,18 +164,12 @@ fail2:
 	regulator_bulk_free(ARRAY_SIZE(lis3_dev.regulators),
 				lis3_dev.regulators);
 fail:
-	if (pdata && pdata->release_resources)
-		pdata->release_resources();
 	return ret;
 }
 
 static void lis3lv02d_i2c_remove(struct i2c_client *client)
 {
 	struct lis3lv02d *lis3 = i2c_get_clientdata(client);
-	struct lis3lv02d_platform_data *pdata = client->dev.platform_data;
-
-	if (pdata && pdata->release_resources)
-		pdata->release_resources();
 
 	lis3lv02d_joystick_disable(lis3);
 	lis3lv02d_remove_fs(&lis3_dev);
@@ -266,7 +252,7 @@ static struct i2c_driver lis3lv02d_i2c_driver = {
 	.driver	 = {
 		.name   = DRV_NAME,
 		.pm     = &lis3_pm_ops,
-		.of_match_table = of_match_ptr(lis3lv02d_i2c_dt_ids),
+		.of_match_table = lis3lv02d_i2c_dt_ids,
 	},
 	.probe = lis3lv02d_i2c_probe,
 	.remove	= lis3lv02d_i2c_remove,
