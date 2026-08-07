@@ -31,11 +31,20 @@
 #include <linux/serial_core.h>
 #include <linux/irq.h>
 #include <linux/pm_runtime.h>
+#include <linux/pm_qos.h>
 #include <linux/pm_wakeirq.h>
 #include <linux/of.h>
 #include <linux/of_irq.h>
 #include <linux/gpio/consumer.h>
-#include <linux/platform_data/serial-omap.h>
+
+#define OMAP_SERIAL_DRIVER_NAME	"omap_uart"
+
+/*
+ * Use tty device name as ttyO, [O -> OMAP]
+ * in bootargs we specify as console=ttyO0 if uart1
+ * is used as console uart.
+ */
+#define OMAP_SERIAL_NAME	"ttyO"
 
 #define OMAP_MAX_HSUART_PORTS	10
 
@@ -149,7 +158,6 @@ struct uart_omap_port {
 	unsigned char		msr_saved_flags;
 	char			name[20];
 	unsigned long		port_activity;
-	int			context_loss_cnt;
 	u32			errata;
 	u32			features;
 
@@ -190,29 +198,6 @@ static inline void serial_omap_clear_fifos(struct uart_omap_port *up)
 		       UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
 	serial_out(up, UART_FCR, 0);
 }
-
-#ifdef CONFIG_PM
-static int serial_omap_get_context_loss_count(struct uart_omap_port *up)
-{
-	struct omap_uart_port_info *pdata = dev_get_platdata(up->dev);
-
-	if (!pdata || !pdata->get_context_loss_count)
-		return -EINVAL;
-
-	return pdata->get_context_loss_count(up->dev);
-}
-
-/* REVISIT: Remove this when omap3 boots in device tree only mode */
-static void serial_omap_enable_wakeup(struct uart_omap_port *up, bool enable)
-{
-	struct omap_uart_port_info *pdata = dev_get_platdata(up->dev);
-
-	if (!pdata || !pdata->enable_wakeup)
-		return;
-
-	pdata->enable_wakeup(up->dev, enable);
-}
-#endif /* CONFIG_PM */
 
 /*
  * Calculate the absolute difference between the desired and actual baud
@@ -1383,20 +1368,12 @@ static int serial_omap_suspend(struct device *dev)
 	uart_suspend_port(&serial_omap_reg, &up->port);
 	flush_work(&up->qos_work);
 
-	if (device_may_wakeup(dev))
-		serial_omap_enable_wakeup(up, true);
-	else
-		serial_omap_enable_wakeup(up, false);
-
 	return 0;
 }
 
 static int serial_omap_resume(struct device *dev)
 {
 	struct uart_omap_port *up = dev_get_drvdata(dev);
-
-	if (device_may_wakeup(dev))
-		serial_omap_enable_wakeup(up, false);
 
 	uart_resume_port(&serial_omap_reg, &up->port);
 
@@ -1462,22 +1439,6 @@ static void omap_serial_fill_features_erratas(struct uart_omap_port *up)
 	}
 }
 
-static struct omap_uart_port_info *of_get_uart_port_info(struct device *dev)
-{
-	struct omap_uart_port_info *omap_up_info;
-
-	omap_up_info = devm_kzalloc(dev, sizeof(*omap_up_info), GFP_KERNEL);
-	if (!omap_up_info)
-		return NULL; /* out of memory */
-
-	of_property_read_u32(dev->of_node, "clock-frequency",
-					 &omap_up_info->uartclk);
-
-	omap_up_info->flags = UPF_BOOT_AUTOCONF;
-
-	return omap_up_info;
-}
-
 static const struct serial_rs485 serial_omap_rs485_supported = {
 	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND |
 		 SER_RS485_RX_DURING_TX,
@@ -1538,7 +1499,6 @@ static int serial_omap_probe_rs485(struct uart_omap_port *up,
 
 static int serial_omap_probe(struct platform_device *pdev)
 {
-	struct omap_uart_port_info *omap_up_info = dev_get_platdata(&pdev->dev);
 	struct uart_omap_port *up;
 	struct resource *mem;
 	void __iomem *base;
@@ -1552,8 +1512,6 @@ static int serial_omap_probe(struct platform_device *pdev)
 		if (!uartirq)
 			return -EPROBE_DEFER;
 		wakeirq = irq_of_parse_and_map(pdev->dev.of_node, 1);
-		omap_up_info = of_get_uart_port_info(&pdev->dev);
-		pdev->dev.platform_data = omap_up_info;
 	} else {
 		uartirq = platform_get_irq(pdev, 0);
 		if (uartirq < 0)
@@ -1605,8 +1563,10 @@ static int serial_omap_probe(struct platform_device *pdev)
 	sprintf(up->name, "OMAP UART%d", up->port.line);
 	up->port.mapbase = mem->start;
 	up->port.membase = base;
-	up->port.flags = omap_up_info->flags;
-	up->port.uartclk = omap_up_info->uartclk;
+	up->port.flags = UPF_BOOT_AUTOCONF;
+
+	of_property_read_u32(pdev->dev.of_node, "clock-frequency",
+					 &up->port.uartclk);
 	if (!up->port.uartclk) {
 		up->port.uartclk = DEFAULT_CLK_SPEED;
 		dev_warn(&pdev->dev,
@@ -1624,8 +1584,6 @@ static int serial_omap_probe(struct platform_device *pdev)
 	INIT_WORK(&up->qos_work, serial_omap_uart_qos_work);
 
 	platform_set_drvdata(pdev, up);
-	if (omap_up_info->autosuspend_timeout == 0)
-		omap_up_info->autosuspend_timeout = -1;
 
 	device_init_wakeup(up->dev, true);
 
@@ -1750,10 +1708,6 @@ static int serial_omap_runtime_suspend(struct device *dev)
 	    uart_console(&up->port))
 		return -EBUSY;
 
-	up->context_loss_cnt = serial_omap_get_context_loss_count(up);
-
-	serial_omap_enable_wakeup(up, true);
-
 	up->latency = PM_QOS_CPU_LATENCY_DEFAULT_VALUE;
 	schedule_work(&up->qos_work);
 
@@ -1764,17 +1718,7 @@ static int serial_omap_runtime_resume(struct device *dev)
 {
 	struct uart_omap_port *up = dev_get_drvdata(dev);
 
-	int loss_cnt = serial_omap_get_context_loss_count(up);
-
-	serial_omap_enable_wakeup(up, false);
-
-	if (loss_cnt < 0) {
-		dev_dbg(dev, "serial_omap_get_context_loss_count failed : %d\n",
-			loss_cnt);
-		serial_omap_restore_context(up);
-	} else if (up->context_loss_cnt != loss_cnt) {
-		serial_omap_restore_context(up);
-	}
+	serial_omap_restore_context(up);
 	up->latency = up->calc_latency;
 	schedule_work(&up->qos_work);
 
@@ -1790,7 +1734,6 @@ static const struct dev_pm_ops serial_omap_dev_pm_ops = {
 	.complete       = serial_omap_complete,
 };
 
-#if defined(CONFIG_OF)
 static const struct of_device_id omap_serial_of_match[] = {
 	{ .compatible = "ti,omap2-uart" },
 	{ .compatible = "ti,omap3-uart" },
@@ -1798,7 +1741,6 @@ static const struct of_device_id omap_serial_of_match[] = {
 	{},
 };
 MODULE_DEVICE_TABLE(of, omap_serial_of_match);
-#endif
 
 static struct platform_driver serial_omap_driver = {
 	.probe          = serial_omap_probe,
@@ -1806,7 +1748,7 @@ static struct platform_driver serial_omap_driver = {
 	.driver		= {
 		.name	= OMAP_SERIAL_DRIVER_NAME,
 		.pm	= &serial_omap_dev_pm_ops,
-		.of_match_table = of_match_ptr(omap_serial_of_match),
+		.of_match_table = omap_serial_of_match,
 	},
 };
 
