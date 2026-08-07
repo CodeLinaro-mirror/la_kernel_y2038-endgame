@@ -16,7 +16,6 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
-#include <clocksource/timer-davinci.h>
 
 #include <asm/mach/map.h>
 

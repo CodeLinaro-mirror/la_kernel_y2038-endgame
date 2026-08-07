@@ -17,8 +17,6 @@
 #include <linux/of_irq.h>
 #include <linux/sched_clock.h>
 
-#include <clocksource/timer-davinci.h>
-
 #define DAVINCI_TIMER_REG_TIM12			0x10
 #define DAVINCI_TIMER_REG_TIM34			0x14
 #define DAVINCI_TIMER_REG_PRD12			0x18
@@ -239,8 +237,34 @@ static void davinci_timer_init(void __iomem *base)
 	writel_relaxed(0x0, base + DAVINCI_TIMER_REG_TIM34);
 }
 
-int __init davinci_timer_register(struct clk *clk,
-				  const struct davinci_timer_cfg *timer_cfg)
+enum {
+	DAVINCI_TIMER_CLOCKEVENT_IRQ,
+	DAVINCI_TIMER_CLOCKSOURCE_IRQ,
+	DAVINCI_TIMER_NUM_IRQS,
+};
+
+/**
+ * struct davinci_timer_cfg - davinci clocksource driver configuration struct
+ * @reg:        register range resource
+ * @irq:        clockevent and clocksource interrupt resources
+ * @cmp_off:    if set - it specifies the compare register used for clockevent
+ *
+ * Note: if the compare register is specified, the driver will use the bottom
+ * clock half for both clocksource and clockevent and the compare register
+ * to generate event irqs. The user must supply the correct compare register
+ * interrupt number.
+ *
+ * This is only used by da830 the DSP of which uses the top half. The timer
+ * driver still configures the top half to run in free-run mode.
+ */
+struct davinci_timer_cfg {
+	struct resource reg;
+	struct resource irq[DAVINCI_TIMER_NUM_IRQS];
+	unsigned int cmp_off;
+};
+
+static int __init davinci_timer_register(struct clk *clk,
+			  const struct davinci_timer_cfg *timer_cfg)
 {
 	struct davinci_clockevent *clockevent;
 	unsigned int tick_rate;
