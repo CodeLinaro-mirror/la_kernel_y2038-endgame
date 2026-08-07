@@ -11,7 +11,6 @@
 #include <linux/slab.h>
 #include <linux/platform_device.h>
 #include <linux/power_supply.h>
-#include <linux/mfd/max8997.h>
 #include <linux/mfd/max8997-private.h>
 #include <linux/regulator/consumer.h>
 #include <linux/devm-helpers.h>
@@ -164,50 +163,10 @@ static int max8997_battery_probe(struct platform_device *pdev)
 	struct max8997_dev *iodev = dev_get_drvdata(pdev->dev.parent);
 	struct device_node *np = pdev->dev.of_node;
 	struct i2c_client *i2c = iodev->i2c;
-	struct max8997_platform_data *pdata = iodev->pdata;
 	struct power_supply_config psy_cfg = {};
 
-	if (!pdata) {
-		dev_err(&pdev->dev, "No platform data supplied.\n");
-		return -EINVAL;
-	}
-
-	if (pdata->eoc_mA) {
-		int val = (pdata->eoc_mA - 50) / 10;
-		if (val < 0)
-			val = 0;
-		if (val > 0xf)
-			val = 0xf;
-
-		ret = max8997_update_reg(i2c, MAX8997_REG_MBCCTRL5,
-				val << ITOPOFF_SHIFT, ITOPOFF_MASK);
-		if (ret < 0) {
-			dev_err(&pdev->dev, "Cannot use i2c bus.\n");
-			return ret;
-		}
-	}
-	switch (pdata->timeout) {
-	case 5:
-		ret = max8997_update_reg(i2c, MAX8997_REG_MBCCTRL1,
-				0x2 << TFCH_SHIFT, TFCH_MASK);
-		break;
-	case 6:
-		ret = max8997_update_reg(i2c, MAX8997_REG_MBCCTRL1,
-				0x3 << TFCH_SHIFT, TFCH_MASK);
-		break;
-	case 7:
-		ret = max8997_update_reg(i2c, MAX8997_REG_MBCCTRL1,
-				0x4 << TFCH_SHIFT, TFCH_MASK);
-		break;
-	case 0:
-		ret = max8997_update_reg(i2c, MAX8997_REG_MBCCTRL1,
-				0x7 << TFCH_SHIFT, TFCH_MASK);
-		break;
-	default:
-		dev_err(&pdev->dev, "incorrect timeout value (%d)\n",
-				pdata->timeout);
-		return -EINVAL;
-	}
+	ret = max8997_update_reg(i2c, MAX8997_REG_MBCCTRL1,
+				 0x7 << TFCH_SHIFT, TFCH_MASK);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Cannot use i2c bus.\n");
 		return ret;

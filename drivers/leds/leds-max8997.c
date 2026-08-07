@@ -10,9 +10,16 @@
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <linux/leds.h>
-#include <linux/mfd/max8997.h>
 #include <linux/mfd/max8997-private.h>
 #include <linux/platform_device.h>
+
+enum max8997_led_mode {
+	MAX8997_NONE,
+	MAX8997_FLASH_MODE,
+	MAX8997_MOVIE_MODE,
+	MAX8997_FLASH_PIN_CONTROL_MODE,
+	MAX8997_MOVIE_PIN_CONTROL_MODE,
+};
 
 #define MAX8997_LED_FLASH_SHIFT			3
 #define MAX8997_LED_FLASH_CUR_MASK		0xf8
@@ -233,7 +240,6 @@ ATTRIBUTE_GROUPS(max8997);
 static int max8997_led_probe(struct platform_device *pdev)
 {
 	struct max8997_dev *iodev = dev_get_drvdata(pdev->dev.parent);
-	struct max8997_platform_data *pdata = dev_get_platdata(iodev->dev);
 	struct max8997_led *led;
 	char name[20];
 	int ret = 0;
@@ -252,23 +258,8 @@ static int max8997_led_probe(struct platform_device *pdev)
 	led->cdev.groups = max8997_groups;
 	led->iodev = iodev;
 
-	/* initialize mode and brightness according to platform_data */
-	if (pdata && pdata->led_pdata) {
-		u8 mode = 0, brightness = 0;
-
-		mode = pdata->led_pdata->mode[led->id];
-		brightness = pdata->led_pdata->brightness[led->id];
-
-		max8997_led_set_mode(led, mode);
-
-		if (brightness > led->cdev.max_brightness)
-			brightness = led->cdev.max_brightness;
-		max8997_led_set_current(led, brightness);
-		led->cdev.brightness = brightness;
-	} else {
-		max8997_led_set_mode(led, MAX8997_NONE);
-		max8997_led_set_current(led, 0);
-	}
+	max8997_led_set_mode(led, MAX8997_NONE);
+	max8997_led_set_current(led, 0);
 
 	mutex_init(&led->mutex);
 

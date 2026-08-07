@@ -14,7 +14,6 @@
 #include <linux/err.h>
 #include <linux/platform_device.h>
 #include <linux/kobject.h>
-#include <linux/mfd/max8997.h>
 #include <linux/mfd/max8997-private.h>
 #include <linux/extcon-provider.h>
 #include <linux/irqdomain.h>
@@ -119,7 +118,6 @@ struct max8997_muic_info {
 	struct work_struct irq_work;
 	struct mutex mutex;
 
-	struct max8997_muic_platform_data *muic_pdata;
 	enum max8997_muic_charger_type pre_charger_type;
 
 	/*
@@ -632,7 +630,6 @@ static void max8997_muic_detect_cable_wq(struct work_struct *work)
 static int max8997_muic_probe(struct platform_device *pdev)
 {
 	struct max8997_dev *max8997 = dev_get_drvdata(pdev->dev.parent);
-	struct max8997_platform_data *pdata = dev_get_platdata(max8997->dev);
 	struct max8997_muic_info *info;
 	int delay_jiffies;
 	int cable_type;
@@ -691,45 +688,9 @@ static int max8997_muic_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	if (pdata && pdata->muic_pdata) {
-		struct max8997_muic_platform_data *muic_pdata
-			= pdata->muic_pdata;
-
-		/* Initialize registers according to platform data */
-		for (i = 0; i < muic_pdata->num_init_data; i++) {
-			max8997_write_reg(info->muic,
-					muic_pdata->init_data[i].addr,
-					muic_pdata->init_data[i].data);
-		}
-
-		/*
-		 * Default usb/uart path whether UART/USB or AUX_UART/AUX_USB
-		 * h/w path of COMP2/COMN1 on CONTROL1 register.
-		 */
-		if (muic_pdata->path_uart)
-			info->path_uart = muic_pdata->path_uart;
-		else
-			info->path_uart = CONTROL1_SW_UART;
-
-		if (muic_pdata->path_usb)
-			info->path_usb = muic_pdata->path_usb;
-		else
-			info->path_usb = CONTROL1_SW_USB;
-
-		/*
-		 * Default delay time for detecting cable state
-		 * after certain time.
-		 */
-		if (muic_pdata->detcable_delay_ms)
-			delay_jiffies =
-				msecs_to_jiffies(muic_pdata->detcable_delay_ms);
-		else
-			delay_jiffies = msecs_to_jiffies(DELAY_MS_DEFAULT);
-	} else {
-		info->path_uart = CONTROL1_SW_UART;
-		info->path_usb = CONTROL1_SW_USB;
-		delay_jiffies = msecs_to_jiffies(DELAY_MS_DEFAULT);
-	}
+	info->path_uart = CONTROL1_SW_UART;
+	info->path_usb = CONTROL1_SW_USB;
+	delay_jiffies = msecs_to_jiffies(DELAY_MS_DEFAULT);
 
 	/* Set initial path for UART when JIG is connected to get serial logs */
 	ret = max8997_bulk_read(info->muic, MAX8997_MUIC_REG_STATUS1,

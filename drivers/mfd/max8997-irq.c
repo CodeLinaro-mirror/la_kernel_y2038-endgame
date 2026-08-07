@@ -10,7 +10,6 @@
 #include <linux/err.h>
 #include <linux/irq.h>
 #include <linux/interrupt.h>
-#include <linux/mfd/max8997.h>
 #include <linux/mfd/max8997-private.h>
 
 static const u8 max8997_mask_reg[] = {

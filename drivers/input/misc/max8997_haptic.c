@@ -29,6 +29,52 @@
 #define MAX8997_SIG_DUTY_SHIFT		2
 #define MAX8997_PWM_DUTY_SHIFT		0
 
+enum max8997_haptic_motor_type {
+	MAX8997_HAPTIC_ERM,
+	MAX8997_HAPTIC_LRA,
+};
+
+enum max8997_haptic_pulse_mode {
+	MAX8997_EXTERNAL_MODE,
+	MAX8997_INTERNAL_MODE,
+};
+
+enum max8997_haptic_pwm_divisor {
+	MAX8997_PWM_DIVISOR_32,
+	MAX8997_PWM_DIVISOR_64,
+	MAX8997_PWM_DIVISOR_128,
+	MAX8997_PWM_DIVISOR_256,
+};
+
+/**
+ * max8997_haptic_platform_data
+ * @pwm_period: period in nano second for PWM device
+ *		valid for MAX8997_EXTERNAL_MODE
+ * @type: motor type
+ * @mode: pulse mode
+ *     MAX8997_EXTERNAL_MODE: external PWM device is used to control motor
+ *     MAX8997_INTERNAL_MODE: internal pulse generator is used to control motor
+ * @pwm_divisor: divisor for external PWM device
+ * @internal_mode_pattern: internal mode pattern for internal mode
+ *     [0 - 3]: valid pattern number
+ * @pattern_cycle: the number of cycles of the waveform
+ *		   for the internal mode pattern
+ *     [0 - 15]: available cycles
+ * @pattern_signal_period: period of the waveform for the internal mode pattern
+ *     [0 - 255]: available period
+ */
+struct max8997_haptic_platform_data {
+	unsigned int pwm_period;
+
+	enum max8997_haptic_motor_type type;
+	enum max8997_haptic_pulse_mode mode;
+	enum max8997_haptic_pwm_divisor pwm_divisor;
+
+	unsigned int internal_mode_pattern;
+	unsigned int pattern_cycle;
+	unsigned int pattern_signal_period;
+};
+
 struct max8997_haptic {
 	struct device *dev;
 	struct i2c_client *client;
@@ -232,16 +278,12 @@ static void max8997_haptic_close(struct input_dev *dev)
 static int max8997_haptic_probe(struct platform_device *pdev)
 {
 	struct max8997_dev *iodev = dev_get_drvdata(pdev->dev.parent);
-	const struct max8997_platform_data *pdata =
-					dev_get_platdata(iodev->dev);
 	const struct max8997_haptic_platform_data *haptic_pdata = NULL;
 	struct max8997_haptic *chip;
 	struct input_dev *input_dev;
 	int error;
 
-	if (pdata)
-		haptic_pdata = pdata->haptic_pdata;
-
+	/* FIXME: get platform data from DT */
 	if (!haptic_pdata) {
 		dev_err(&pdev->dev, "no haptic platform data\n");
 		return -EINVAL;

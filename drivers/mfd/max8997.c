@@ -17,7 +17,6 @@
 #include <linux/init.h>
 #include <linux/mutex.h>
 #include <linux/mfd/core.h>
-#include <linux/mfd/max8997.h>
 #include <linux/mfd/max8997-private.h>
 
 #define I2C_ADDR_PMIC	(0xCC >> 1)
@@ -36,12 +35,10 @@ static const struct mfd_cell max8997_devs[] = {
 	{ .name = "max8997-led", .id = 2 },
 };
 
-#ifdef CONFIG_OF
 static const struct of_device_id max8997_pmic_dt_match[] = {
 	{ .compatible = "maxim,max8997-pmic", .data = (void *)TYPE_MAX8997 },
 	{},
 };
-#endif
 
 int max8997_read_reg(struct i2c_client *i2c, u8 reg, u8 *dest)
 {
@@ -119,33 +116,9 @@ int max8997_update_reg(struct i2c_client *i2c, u8 reg, u8 val, u8 mask)
 }
 EXPORT_SYMBOL_GPL(max8997_update_reg);
 
-/*
- * Only the common platform data elements for max8997 are parsed here from the
- * device tree. Other sub-modules of max8997 such as pmic, rtc and others have
- * to parse their own platform data elements from device tree.
- *
- * The max8997 platform data structure is instantiated here and the drivers for
- * the sub-modules need not instantiate another instance while parsing their
- * platform data.
- */
-static struct max8997_platform_data *max8997_i2c_parse_dt_pdata(
-					struct device *dev)
-{
-	struct max8997_platform_data *pd;
-
-	pd = devm_kzalloc(dev, sizeof(*pd), GFP_KERNEL);
-	if (!pd)
-		return ERR_PTR(-ENOMEM);
-
-	pd->ono = irq_of_parse_and_map(dev->of_node, 1);
-
-	return pd;
-}
-
 static int max8997_i2c_probe(struct i2c_client *i2c)
 {
 	struct max8997_dev *max8997;
-	struct max8997_platform_data *pdata = dev_get_platdata(&i2c->dev);
 	int ret = 0;
 
 	max8997 = devm_kzalloc(&i2c->dev, sizeof(struct max8997_dev),
@@ -158,18 +131,7 @@ static int max8997_i2c_probe(struct i2c_client *i2c)
 	max8997->i2c = i2c;
 	max8997->type = (uintptr_t)i2c_get_match_data(i2c);
 	max8997->irq = i2c->irq;
-
-	if (IS_ENABLED(CONFIG_OF) && max8997->dev->of_node) {
-		pdata = max8997_i2c_parse_dt_pdata(max8997->dev);
-		if (IS_ERR(pdata))
-			return PTR_ERR(pdata);
-	}
-
-	if (!pdata)
-		return ret;
-
-	max8997->pdata = pdata;
-	max8997->ono = pdata->ono;
+	max8997->ono = irq_of_parse_and_map(i2c->dev.of_node, 1);
 
 	mutex_init(&max8997->iolock);
 
@@ -465,7 +427,7 @@ static struct i2c_driver max8997_i2c_driver = {
 		   .name = "max8997",
 		   .pm = &max8997_pm,
 		   .suppress_bind_attrs = true,
-		   .of_match_table = of_match_ptr(max8997_pmic_dt_match),
+		   .of_match_table = max8997_pmic_dt_match,
 	},
 	.probe = max8997_i2c_probe,
 	.id_table = max8997_i2c_id,
