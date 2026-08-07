@@ -109,30 +109,16 @@ static const struct regmap_config as3711_regmap_config = {
 	.cache_type = REGCACHE_MAPLE,
 };
 
-#ifdef CONFIG_OF
 static const struct of_device_id as3711_of_match[] = {
 	{.compatible = "ams,as3711",},
 	{}
 };
-#endif
 
 static int as3711_i2c_probe(struct i2c_client *client)
 {
 	struct as3711 *as3711;
-	struct as3711_platform_data *pdata;
 	unsigned int id1, id2;
 	int ret;
-
-	if (!client->dev.of_node) {
-		pdata = dev_get_platdata(&client->dev);
-		if (!pdata)
-			dev_dbg(&client->dev, "Platform data not found\n");
-	} else {
-		pdata = devm_kzalloc(&client->dev,
-				     sizeof(*pdata), GFP_KERNEL);
-		if (!pdata)
-			return -ENOMEM;
-	}
 
 	as3711 = devm_kzalloc(&client->dev, sizeof(struct as3711), GFP_KERNEL);
 	if (!as3711)
@@ -163,26 +149,6 @@ static int as3711_i2c_probe(struct i2c_client *client)
 		return -ENODEV;
 	dev_info(as3711->dev, "AS3711 detected: %x:%x\n", id1, id2);
 
-	/*
-	 * We can reuse as3711_subdevs[],
-	 * it will be copied in mfd_add_devices()
-	 */
-	if (pdata) {
-		as3711_subdevs[AS3711_REGULATOR].platform_data =
-			&pdata->regulator;
-		as3711_subdevs[AS3711_REGULATOR].pdata_size =
-			sizeof(pdata->regulator);
-		as3711_subdevs[AS3711_BACKLIGHT].platform_data =
-			&pdata->backlight;
-		as3711_subdevs[AS3711_BACKLIGHT].pdata_size =
-			sizeof(pdata->backlight);
-	} else {
-		as3711_subdevs[AS3711_REGULATOR].platform_data = NULL;
-		as3711_subdevs[AS3711_REGULATOR].pdata_size = 0;
-		as3711_subdevs[AS3711_BACKLIGHT].platform_data = NULL;
-		as3711_subdevs[AS3711_BACKLIGHT].pdata_size = 0;
-	}
-
 	ret = devm_mfd_add_devices(as3711->dev, -1, as3711_subdevs,
 				   ARRAY_SIZE(as3711_subdevs), NULL, 0, NULL);
 	if (ret < 0)
@@ -199,7 +165,7 @@ static const struct i2c_device_id as3711_i2c_id[] = {
 static struct i2c_driver as3711_i2c_driver = {
 	.driver = {
 		   .name = "as3711",
-		   .of_match_table = of_match_ptr(as3711_of_match),
+		   .of_match_table = as3711_of_match,
 	},
 	.probe = as3711_i2c_probe,
 	.id_table = as3711_i2c_id,

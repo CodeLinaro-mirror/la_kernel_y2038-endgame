@@ -119,6 +119,24 @@ static const struct linear_range as3711_dldo_ranges[] = {
 	REGULATOR_LINEAR_RANGE(1750000, 0x20, 0x3f, 50000),
 };
 
+/* Regulators */
+enum {
+	AS3711_REGULATOR_SD_1,
+	AS3711_REGULATOR_SD_2,
+	AS3711_REGULATOR_SD_3,
+	AS3711_REGULATOR_SD_4,
+	AS3711_REGULATOR_LDO_1,
+	AS3711_REGULATOR_LDO_2,
+	AS3711_REGULATOR_LDO_3,
+	AS3711_REGULATOR_LDO_4,
+	AS3711_REGULATOR_LDO_5,
+	AS3711_REGULATOR_LDO_6,
+	AS3711_REGULATOR_LDO_7,
+	AS3711_REGULATOR_LDO_8,
+
+	AS3711_REGULATOR_MAX,
+};
+
 #define AS3711_REG(_id, _en_reg, _en_bit, _vmask, _sfx)			   \
 	[AS3711_REGULATOR_ ## _id] = {					   \
 		.name = "as3711-regulator-" # _id,			   \
@@ -169,10 +187,15 @@ as3711_regulator_matches[AS3711_REGULATOR_NUM] = {
 	[AS3711_REGULATOR_LDO_8] = { .name = "ldo8" },
 };
 
+struct as3711_regulator_pdata {
+	struct regulator_init_data *init_data[AS3711_REGULATOR_MAX];
+};
+
 static int as3711_regulator_parse_dt(struct device *dev,
-				struct device_node **of_node, const int count)
+				struct device_node **of_node,
+				const int count,
+				struct as3711_regulator_pdata *pdata)
 {
-	struct as3711_regulator_pdata *pdata = dev_get_platdata(dev);
 	struct device_node *regulators =
 		of_get_child_by_name(dev->parent->of_node, "regulators");
 	struct of_regulator_match *match;
@@ -202,7 +225,7 @@ static int as3711_regulator_parse_dt(struct device *dev,
 
 static int as3711_regulator_probe(struct platform_device *pdev)
 {
-	struct as3711_regulator_pdata *pdata = dev_get_platdata(&pdev->dev);
+	struct as3711_regulator_pdata pdata;
 	struct as3711 *as3711 = dev_get_drvdata(pdev->dev.parent);
 	struct regulator_config config = {.dev = &pdev->dev,};
 	struct device_node *of_node[AS3711_REGULATOR_NUM] = {};
@@ -210,13 +233,9 @@ static int as3711_regulator_probe(struct platform_device *pdev)
 	int ret;
 	int id;
 
-	if (!pdata) {
-		dev_err(&pdev->dev, "No platform data...\n");
-		return -ENODEV;
-	}
-
 	if (pdev->dev.parent->of_node) {
-		ret = as3711_regulator_parse_dt(&pdev->dev, of_node, AS3711_REGULATOR_NUM);
+		ret = as3711_regulator_parse_dt(&pdev->dev, of_node,
+						AS3711_REGULATOR_NUM, &pdata);
 		if (ret < 0) {
 			dev_err(&pdev->dev, "DT parsing failed: %d\n", ret);
 			return ret;
@@ -224,7 +243,7 @@ static int as3711_regulator_probe(struct platform_device *pdev)
 	}
 
 	for (id = 0; id < AS3711_REGULATOR_NUM; id++) {
-		config.init_data = pdata->init_data[id];
+		config.init_data = pdata.init_data[id];
 		config.regmap = as3711->regmap;
 		config.of_node = of_node[id];
 

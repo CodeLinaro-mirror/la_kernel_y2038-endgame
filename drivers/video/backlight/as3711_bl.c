@@ -18,6 +18,21 @@
 #include <linux/regmap.h>
 #include <linux/slab.h>
 
+enum as3711_su2_feedback {
+	AS3711_SU2_VOLTAGE,
+	AS3711_SU2_CURR1,
+	AS3711_SU2_CURR2,
+	AS3711_SU2_CURR3,
+	AS3711_SU2_CURR_AUTO,
+};
+
+enum as3711_su2_fbprot {
+	AS3711_SU2_LX_SD4,
+	AS3711_SU2_GPIO2,
+	AS3711_SU2_GPIO3,
+	AS3711_SU2_GPIO4,
+};
+
 enum as3711_bl_type {
 	AS3711_BL_SU1,
 	AS3711_BL_SU2,
@@ -30,10 +45,26 @@ struct as3711_bl_data {
 	struct backlight_device *bl;
 };
 
+/*
+ * Platform data
+ */
+
+struct as3711_bl_pdata {
+	bool su1_fb;
+	int su1_max_uA;
+	bool su2_fb;
+	int su2_max_uA;
+	enum as3711_su2_feedback su2_feedback;
+	enum as3711_su2_fbprot su2_fbprot;
+	bool su2_auto_curr1;
+	bool su2_auto_curr2;
+	bool su2_auto_curr3;
+};
+
 struct as3711_bl_supply {
 	struct as3711_bl_data su1;
 	struct as3711_bl_data su2;
-	const struct as3711_bl_pdata *pdata;
+	struct as3711_bl_pdata pdata;
 	struct as3711 *as3711;
 };
 
@@ -53,7 +84,7 @@ static int as3711_set_brightness_auto_i(struct as3711_bl_data *data,
 {
 	struct as3711_bl_supply *supply = to_supply(data);
 	struct as3711 *as3711 = supply->as3711;
-	const struct as3711_bl_pdata *pdata = supply->pdata;
+	const struct as3711_bl_pdata *pdata = &supply->pdata;
 	int ret = 0;
 
 	/* Only all equal current values are supported */
@@ -85,7 +116,7 @@ static int as3711_bl_su2_reset(struct as3711_bl_supply *supply)
 {
 	struct as3711 *as3711 = supply->as3711;
 	int ret = regmap_update_bits(as3711->regmap, AS3711_STEPUP_CONTROL_5,
-				     3, supply->pdata->su2_fbprot);
+				     3, supply->pdata.su2_fbprot);
 	if (!ret)
 		ret = regmap_update_bits(as3711->regmap,
 					 AS3711_STEPUP_CONTROL_2, 1, 0);
@@ -113,7 +144,7 @@ static int as3711_bl_update_status(struct backlight_device *bl)
 		ret = as3711_set_brightness_v(as3711, brightness,
 					      AS3711_STEPUP_CONTROL_1);
 	} else {
-		const struct as3711_bl_pdata *pdata = supply->pdata;
+		const struct as3711_bl_pdata *pdata = &supply->pdata;
 
 		switch (pdata->su2_feedback) {
 		case AS3711_SU2_VOLTAGE:
@@ -173,7 +204,7 @@ static const struct backlight_ops as3711_bl_ops = {
 static int as3711_bl_init_su2(struct as3711_bl_supply *supply)
 {
 	struct as3711 *as3711 = supply->as3711;
-	const struct as3711_bl_pdata *pdata = supply->pdata;
+	const struct as3711_bl_pdata *pdata = &supply->pdata;
 	u8 ctl = 0;
 	int ret;
 
@@ -247,9 +278,9 @@ static int as3711_bl_register(struct platform_device *pdev,
 	return 0;
 }
 
-static int as3711_backlight_parse_dt(struct device *dev)
+static int as3711_backlight_parse_dt(struct device *dev,
+				     struct as3711_bl_pdata *pdata)
 {
-	struct as3711_bl_pdata *pdata = dev_get_platdata(dev);
 	struct device_node *bl, *fb;
 	int ret;
 
@@ -369,23 +400,21 @@ err_put_bl:
 
 static int as3711_backlight_probe(struct platform_device *pdev)
 {
-	struct as3711_bl_pdata *pdata = dev_get_platdata(&pdev->dev);
+	struct as3711_bl_pdata *pdata;
 	struct as3711 *as3711 = dev_get_drvdata(pdev->dev.parent);
 	struct as3711_bl_supply *supply;
 	struct as3711_bl_data *su;
 	unsigned int max_brightness;
 	int ret;
 
-	if (!pdata) {
-		dev_err(&pdev->dev, "No platform data, exiting...\n");
-		return -ENODEV;
-	}
+	supply = devm_kzalloc(&pdev->dev, sizeof(*supply), GFP_KERNEL);
+	if (!supply)
+		return -ENOMEM;
+	pdata = &supply->pdata;
 
-	if (pdev->dev.parent->of_node) {
-		ret = as3711_backlight_parse_dt(&pdev->dev);
-		if (ret < 0)
-			return dev_err_probe(&pdev->dev, ret, "DT parsing failed\n");
-	}
+	ret = as3711_backlight_parse_dt(&pdev->dev, pdata);
+	if (ret < 0)
+		return dev_err_probe(&pdev->dev, ret, "DT parsing failed\n");
 
 	if (!pdata->su1_fb && !pdata->su2_fb) {
 		dev_err(&pdev->dev, "No framebuffer specified\n");
@@ -406,12 +435,7 @@ static int as3711_backlight_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	supply = devm_kzalloc(&pdev->dev, sizeof(*supply), GFP_KERNEL);
-	if (!supply)
-		return -ENOMEM;
-
 	supply->as3711 = as3711;
-	supply->pdata = pdata;
 
 	if (pdata->su1_fb) {
 		su = &supply->su1;
