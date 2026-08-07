@@ -24,6 +24,21 @@
 /* Dummy I2C transfer length for SWCZ010 workaround */
 #define TPS65910_DUMMY_XFER_LEN 1
 
+struct tps65910_platform_data {
+	int irq;
+	int irq_base;
+};
+
+struct tps65910_board {
+	int irq;
+	int vmbch_threshold;
+	int vmbch2_threshold;
+	bool en_ck32k_xtal;
+	bool en_dev_slp;
+	bool pm_off;
+	struct tps65910_sleep_keepon_data slp_keepon;
+};
+
 static const struct resource rtc_resources[] = {
 	{
 		.start  = TPS65910_IRQ_RTC_ALARM,
@@ -222,19 +237,13 @@ static const struct regmap_irq_chip tps65910_irq_chip = {
 	.ack_base = TPS65910_INT_STS,
 };
 
-static int tps65910_irq_init(struct tps65910 *tps65910, int irq,
-		    struct tps65910_platform_data *pdata)
+static int tps65910_irq_init(struct tps65910 *tps65910, int irq)
 {
 	int ret;
 	static const struct regmap_irq_chip *tps6591x_irqs_chip;
 
 	if (!irq) {
 		dev_warn(tps65910->dev, "No interrupt support, no core IRQ\n");
-		return -EINVAL;
-	}
-
-	if (!pdata) {
-		dev_warn(tps65910->dev, "No interrupt support, no pdata\n");
 		return -EINVAL;
 	}
 
@@ -249,8 +258,7 @@ static int tps65910_irq_init(struct tps65910 *tps65910, int irq,
 
 	tps65910->chip_irq = irq;
 	ret = devm_regmap_add_irq_chip(tps65910->dev, tps65910->regmap,
-				       tps65910->chip_irq,
-				       IRQF_ONESHOT, pdata->irq_base,
+				       irq, IRQF_ONESHOT, -1,
 				       tps6591x_irqs_chip, &tps65910->irq_data);
 	if (ret < 0) {
 		dev_warn(tps65910->dev, "Failed to add irq_chip %d\n", ret);
@@ -364,7 +372,6 @@ err_sleep_init:
 	return ret;
 }
 
-#ifdef CONFIG_OF
 static const struct of_device_id tps65910_of_match[] = {
 	{ .compatible = "ti,tps65910", .data = (void *)TPS65910},
 	{ .compatible = "ti,tps65911", .data = (void *)TPS65911},
@@ -410,20 +417,11 @@ static struct tps65910_board *tps65910_parse_dt(struct i2c_client *client,
 	board_info->slp_keepon.i2chs_keepon = prop;
 
 	board_info->irq = client->irq;
-	board_info->irq_base = -1;
 	board_info->pm_off = of_property_read_bool(np,
 			"ti,system-power-controller");
 
 	return board_info;
 }
-#else
-static inline
-struct tps65910_board *tps65910_parse_dt(struct i2c_client *client,
-					 unsigned long *chip_id)
-{
-	return NULL;
-}
-#endif
 
 static struct i2c_client *tps65910_i2c_client;
 static void tps65910_power_off(void)
@@ -442,30 +440,17 @@ static int tps65910_i2c_probe(struct i2c_client *i2c)
 	const struct i2c_device_id *id = i2c_client_get_device_id(i2c);
 	struct tps65910 *tps65910;
 	struct tps65910_board *pmic_plat_data;
-	struct tps65910_board *of_pmic_plat_data = NULL;
-	struct tps65910_platform_data *init_data;
 	unsigned long chip_id = id->driver_data;
 	int ret;
 
-	pmic_plat_data = dev_get_platdata(&i2c->dev);
-
-	if (!pmic_plat_data && i2c->dev.of_node) {
-		pmic_plat_data = tps65910_parse_dt(i2c, &chip_id);
-		of_pmic_plat_data = pmic_plat_data;
-	}
-
+	pmic_plat_data = tps65910_parse_dt(i2c, &chip_id);
 	if (!pmic_plat_data)
 		return -EINVAL;
-
-	init_data = devm_kzalloc(&i2c->dev, sizeof(*init_data), GFP_KERNEL);
-	if (init_data == NULL)
-		return -ENOMEM;
 
 	tps65910 = devm_kzalloc(&i2c->dev, sizeof(*tps65910), GFP_KERNEL);
 	if (tps65910 == NULL)
 		return -ENOMEM;
 
-	tps65910->of_plat_data = of_pmic_plat_data;
 	i2c_set_clientdata(i2c, tps65910);
 	tps65910->dev = &i2c->dev;
 	tps65910->i2c_client = i2c;
@@ -494,10 +479,7 @@ static int tps65910_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	init_data->irq = pmic_plat_data->irq;
-	init_data->irq_base = pmic_plat_data->irq_base;
-
-	tps65910_irq_init(tps65910, init_data->irq, init_data);
+	tps65910_irq_init(tps65910, pmic_plat_data->irq);
 	tps65910_ck32k_init(tps65910, pmic_plat_data);
 	tps65910_sleepinit(tps65910, pmic_plat_data);
 
@@ -540,7 +522,7 @@ static const struct i2c_device_id tps65910_i2c_id[] = {
 static struct i2c_driver tps65910_i2c_driver = {
 	.driver = {
 		   .name = "tps65910",
-		   .of_match_table = of_match_ptr(tps65910_of_match),
+		   .of_match_table = tps65910_of_match,
 	},
 	.probe = tps65910_i2c_probe,
 	.id_table = tps65910_i2c_id,

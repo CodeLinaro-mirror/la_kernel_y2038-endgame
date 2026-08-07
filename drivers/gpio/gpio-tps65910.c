@@ -75,17 +75,19 @@ static int tps65910_gpio_input(struct gpio_chip *gc, unsigned offset)
 						GPIO_CFG_MASK);
 }
 
-#ifdef CONFIG_OF
+struct tps65910_board {
+	bool en_gpio_sleep[TPS6591X_MAX_NUM_GPIO];
+};
+
 static struct tps65910_board *tps65910_parse_dt_for_gpio(struct device *dev,
-		struct tps65910 *tps65910, int chip_ngpio)
+		struct tps65910 *tps65910, int chip_ngpio,
+		struct tps65910_board *tps65910_board)
 {
-	struct tps65910_board *tps65910_board = tps65910->of_plat_data;
 	unsigned int prop_array[TPS6591X_MAX_NUM_GPIO];
 	int ngpio = min(chip_ngpio, TPS6591X_MAX_NUM_GPIO);
 	int ret;
 	int idx;
 
-	tps65910_board->gpio_base = -1;
 	ret = of_property_read_u32_array(tps65910->dev->of_node,
 			"ti,en-gpio-sleep", prop_array, ngpio);
 	if (ret < 0) {
@@ -98,18 +100,11 @@ static struct tps65910_board *tps65910_parse_dt_for_gpio(struct device *dev,
 
 	return tps65910_board;
 }
-#else
-static struct tps65910_board *tps65910_parse_dt_for_gpio(struct device *dev,
-		struct tps65910 *tps65910, int chip_ngpio)
-{
-	return NULL;
-}
-#endif
 
 static int tps65910_gpio_probe(struct platform_device *pdev)
 {
 	struct tps65910 *tps65910 = dev_get_drvdata(pdev->dev.parent);
-	struct tps65910_board *pdata = dev_get_platdata(tps65910->dev);
+	struct tps65910_board pdata = {};
 	struct tps65910_gpio *tps65910_gpio;
 	int ret;
 	int i;
@@ -142,22 +137,15 @@ static int tps65910_gpio_probe(struct platform_device *pdev)
 	tps65910_gpio->gpio_chip.set	= tps65910_gpio_set;
 	tps65910_gpio->gpio_chip.get	= tps65910_gpio_get;
 	tps65910_gpio->gpio_chip.parent = &pdev->dev;
+	tps65910_gpio->gpio_chip.base = -1;
 
-	if (pdata && pdata->gpio_base)
-		tps65910_gpio->gpio_chip.base = pdata->gpio_base;
-	else
-		tps65910_gpio->gpio_chip.base = -1;
-
-	if (!pdata && tps65910->dev->of_node)
-		pdata = tps65910_parse_dt_for_gpio(&pdev->dev, tps65910,
-			tps65910_gpio->gpio_chip.ngpio);
-
-	if (!pdata)
-		goto skip_init;
+	tps65910_parse_dt_for_gpio(&pdev->dev, tps65910,
+				tps65910_gpio->gpio_chip.ngpio,
+				&pdata);
 
 	/* Configure sleep control for gpios if provided */
 	for (i = 0; i < tps65910_gpio->gpio_chip.ngpio; ++i) {
-		if (!pdata->en_gpio_sleep[i])
+		if (!pdata.en_gpio_sleep[i])
 			continue;
 
 		ret = regmap_set_bits(tps65910->regmap,
@@ -167,7 +155,6 @@ static int tps65910_gpio_probe(struct platform_device *pdev)
 				"GPIO Sleep setting failed with err %d\n", ret);
 	}
 
-skip_init:
 	return devm_gpiochip_add_data(&pdev->dev, &tps65910_gpio->gpio_chip,
 				      tps65910_gpio);
 }

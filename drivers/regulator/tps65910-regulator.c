@@ -959,8 +959,6 @@ static int tps65910_set_ext_sleep_config(struct tps65910_reg *pmic,
 	return ret;
 }
 
-#ifdef CONFIG_OF
-
 static struct of_regulator_match tps65910_matches[] = {
 	{ .name = "vrtc",	.driver_data = (void *) &tps65910_regs[0] },
 	{ .name = "vio",	.driver_data = (void *) &tps65910_regs[1] },
@@ -992,6 +990,11 @@ static struct of_regulator_match tps65911_matches[] = {
 	{ .name = "ldo6",	.driver_data = (void *) &tps65911_regs[10] },
 	{ .name = "ldo7",	.driver_data = (void *) &tps65911_regs[11] },
 	{ .name = "ldo8",	.driver_data = (void *) &tps65911_regs[12] },
+};
+
+struct tps65910_board {
+	unsigned long regulator_ext_sleep_control[TPS65910_NUM_REGS];
+	struct regulator_init_data *tps65910_pmic_init_data[TPS65910_NUM_REGS];
 };
 
 static struct tps65910_board *tps65910_parse_dt_reg_data(
@@ -1058,15 +1061,6 @@ static struct tps65910_board *tps65910_parse_dt_reg_data(
 
 	return pmic_plat_data;
 }
-#else
-static inline struct tps65910_board *tps65910_parse_dt_reg_data(
-			struct platform_device *pdev,
-			struct of_regulator_match **tps65910_reg_matches)
-{
-	*tps65910_reg_matches = NULL;
-	return NULL;
-}
-#endif
 
 static int tps65910_probe(struct platform_device *pdev)
 {

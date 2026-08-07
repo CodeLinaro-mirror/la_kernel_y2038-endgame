@@ -861,26 +861,6 @@ struct tps65910_sleep_keepon_data {
 };
 
 /**
- * struct tps65910_board
- * Board platform data may be used to initialize regulators.
- */
-
-struct tps65910_board {
-	int gpio_base;
-	int irq;
-	int irq_base;
-	int vmbch_threshold;
-	int vmbch2_threshold;
-	bool en_ck32k_xtal;
-	bool en_dev_slp;
-	bool pm_off;
-	struct tps65910_sleep_keepon_data slp_keepon;
-	bool en_gpio_sleep[TPS6591X_MAX_NUM_GPIO];
-	unsigned long regulator_ext_sleep_control[TPS65910_NUM_REGS];
-	struct regulator_init_data *tps65910_pmic_init_data[TPS65910_NUM_REGS];
-};
-
-/**
  * struct tps65910 - tps65910 sub-driver chip access routines
  */
 
@@ -890,17 +870,9 @@ struct tps65910 {
 	struct regmap *regmap;
 	unsigned long id;
 
-	/* Device node parsed board data */
-	struct tps65910_board *of_plat_data;
-
 	/* IRQ Handling */
 	int chip_irq;
 	struct regmap_irq_chip_data *irq_data;
-};
-
-struct tps65910_platform_data {
-	int irq;
-	int irq_base;
 };
 
 static inline int tps65910_chip_id(struct tps65910 *tps65910)
