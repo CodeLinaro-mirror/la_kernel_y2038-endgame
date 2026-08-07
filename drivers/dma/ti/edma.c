@@ -23,10 +23,74 @@
 #include <linux/of_address.h>
 #include <linux/pm_runtime.h>
 
-#include <linux/platform_data/edma.h>
-
 #include "../dmaengine.h"
 #include "../virt-dma.h"
+
+/*
+ * This EDMA3 programming framework exposes two basic kinds of resource:
+ *
+ *  Channel	Triggers transfers, usually from a hardware event but
+ *		also manually or by "chaining" from DMA completions.
+ *		Each channel is coupled to a Parameter RAM (PaRAM) slot.
+ *
+ *  Slot	Each PaRAM slot holds a DMA transfer descriptor (PaRAM
+ *		"set"), source and destination addresses, a link to a
+ *		next PaRAM slot (if any), options for the transfer, and
+ *		instructions for updating those addresses.  There are
+ *		more than twice as many slots as event channels.
+ *
+ * Each PaRAM set describes a sequence of transfers, either for one large
+ * buffer or for several discontiguous smaller buffers.  An EDMA transfer
+ * is driven only from a channel, which performs the transfers specified
+ * in its PaRAM slot until there are no more transfers.  When that last
+ * transfer completes, the "link" field may be used to reload the channel's
+ * PaRAM slot with a new transfer descriptor.
+ *
+ * The EDMA Channel Controller (CC) maps requests from channels into physical
+ * Transfer Controller (TC) requests when the channel triggers (by hardware
+ * or software events, or by chaining).  The two physical DMA channels provided
+ * by the TCs are thus shared by many logical channels.
+ *
+ * DaVinci hardware also has a "QDMA" mechanism which is not currently
+ * supported through this interface.  (DSP firmware uses it though.)
+ */
+
+enum dma_event_q {
+	EVENTQ_0 = 0,
+	EVENTQ_1 = 1,
+	EVENTQ_2 = 2,
+	EVENTQ_3 = 3,
+	EVENTQ_DEFAULT = -1
+};
+
+#define EDMA_CTLR_CHAN(ctlr, chan)	(((ctlr) << 16) | (chan))
+#define EDMA_CTLR(i)			((i) >> 16)
+#define EDMA_CHAN_SLOT(i)		((i) & 0xffff)
+
+struct edma_rsv_info {
+
+	const s16	(*rsv_chans)[2];
+	const s16	(*rsv_slots)[2];
+};
+
+/* platform_data for EDMA driver */
+struct edma_soc_info {
+	/*
+	 * Default queue is expected to be a low-priority queue.
+	 * This way, long transfers on the default queue started
+	 * by the codec engine will not cause audio defects.
+	 */
+	enum dma_event_q	default_queue;
+
+	/* Resource reservation for other cores */
+	struct edma_rsv_info	*rsv;
+
+	/* List of channels allocated for memcpy, terminated with -1 */
+	s32			*memcpy_channels;
+
+	s8	(*queue_priority_mapping)[2];
+	const s16	(*xbar_chans)[2];
+};
 
 /* Offsets matching "struct edmacc_param" */
 #define PARM_OPT		0x00
@@ -2083,7 +2147,6 @@ static int edma_setup_from_hw(struct device *dev, struct edma_soc_info *pdata,
 	return 0;
 }
 
-#if IS_ENABLED(CONFIG_OF)
 static int edma_xbar_event_map(struct device *dev, struct edma_soc_info *pdata,
 			       size_t sz)
 {
@@ -2267,25 +2330,10 @@ out:
 		!edma_is_memcpy_channel(i, ecc->info->memcpy_channels);
 	return dma_get_slave_channel(chan);
 }
-#else
-static struct edma_soc_info *edma_setup_info_from_dt(struct device *dev,
-						     bool legacy_mode)
-{
-	return ERR_PTR(-EINVAL);
-}
-
-static struct dma_chan *of_edma_xlate(struct of_phandle_args *dma_spec,
-				      struct of_dma *ofdma)
-{
-	return NULL;
-}
-#endif
-
-static bool edma_filter_fn(struct dma_chan *chan, void *param);
 
 static int edma_probe(struct platform_device *pdev)
 {
-	struct edma_soc_info	*info = pdev->dev.platform_data;
+	struct edma_soc_info	*info;
 	s8			(*queue_priority_mapping)[2];
 	const s16		(*reserved)[2];
 	int			i, irq;
@@ -2296,19 +2344,16 @@ static int edma_probe(struct platform_device *pdev)
 	struct edma_cc		*ecc;
 	bool			legacy_mode = true;
 	int ret;
+	const struct of_device_id *match;
 
-	if (node) {
-		const struct of_device_id *match;
+	match = of_match_node(edma_of_ids, node);
+	if (match && (*(u32 *)match->data) == EDMA_BINDING_TPCC)
+		legacy_mode = false;
 
-		match = of_match_node(edma_of_ids, node);
-		if (match && (*(u32 *)match->data) == EDMA_BINDING_TPCC)
-			legacy_mode = false;
-
-		info = edma_setup_info_from_dt(dev, legacy_mode);
-		if (IS_ERR(info)) {
-			dev_err(dev, "failed to get DT data\n");
-			return PTR_ERR(info);
-		}
+	info = edma_setup_info_from_dt(dev, legacy_mode);
+	if (IS_ERR(info)) {
+		dev_err(dev, "failed to get DT data\n");
+		return PTR_ERR(info);
 	}
 
 	if (!info)
@@ -2518,10 +2563,6 @@ static int edma_probe(struct platform_device *pdev)
 		edma_set_chmap(&ecc->slave_chans[i], ecc->dummy_slot);
 	}
 
-	ecc->dma_slave.filter.map = info->slave_map;
-	ecc->dma_slave.filter.mapcnt = info->slavecnt;
-	ecc->dma_slave.filter.fn = edma_filter_fn;
-
 	ret = dma_async_device_register(&ecc->dma_slave);
 	if (ret) {
 		dev_err(dev, "slave ddev registration failed (%d)\n", ret);
@@ -2661,22 +2702,6 @@ static struct platform_driver edma_tptc_driver = {
 		.of_match_table = edma_tptc_of_ids,
 	},
 };
-
-static bool edma_filter_fn(struct dma_chan *chan, void *param)
-{
-	bool match = false;
-
-	if (chan->device->dev->driver == &edma_driver.driver) {
-		struct edma_chan *echan = to_edma_chan(chan);
-		unsigned ch_req = *(unsigned *)param;
-		if (ch_req == echan->ch_num) {
-			/* The channel is going to be used as HW synchronized */
-			echan->hw_triggered = true;
-			match = true;
-		}
-	}
-	return match;
-}
 
 static int edma_init(void)
 {
