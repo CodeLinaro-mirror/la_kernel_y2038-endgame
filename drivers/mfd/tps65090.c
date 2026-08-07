@@ -155,28 +155,22 @@ static const struct regmap_config tps65090_regmap_config = {
 	.volatile_reg = is_volatile_reg,
 };
 
-#ifdef CONFIG_OF
 static const struct of_device_id tps65090_of_match[] = {
 	{ .compatible = "ti,tps65090",},
 	{},
 };
-#endif
 
 static int tps65090_i2c_probe(struct i2c_client *client)
 {
-	struct tps65090_platform_data *pdata = dev_get_platdata(&client->dev);
 	int irq_base = 0;
 	struct tps65090 *tps65090;
 	int ret;
 
-	if (!pdata && !client->dev.of_node) {
+	if (!client->dev.of_node) {
 		dev_err(&client->dev,
 			"tps65090 requires platform data or of_node\n");
 		return -EINVAL;
 	}
-
-	if (pdata)
-		irq_base = pdata->irq_base;
 
 	tps65090 = devm_kzalloc(&client->dev, sizeof(*tps65090), GFP_KERNEL);
 	if (!tps65090)
@@ -233,7 +227,7 @@ static struct i2c_driver tps65090_driver = {
 	.driver	= {
 		.name	= "tps65090",
 		.suppress_bind_attrs = true,
-		.of_match_table = of_match_ptr(tps65090_of_match),
+		.of_match_table = tps65090_of_match,
 	},
 	.probe		= tps65090_i2c_probe,
 	.id_table	= tps65090_id_table,

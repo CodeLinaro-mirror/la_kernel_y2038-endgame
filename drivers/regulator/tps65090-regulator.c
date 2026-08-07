@@ -47,6 +47,31 @@ struct tps65090_regulator {
 	int			overcurrent_wait;
 };
 
+/*
+ * struct tps65090_regulator_plat_data
+ *
+ * @reg_init_data: The regulator init data.
+ * @enable_ext_control: Enable extrenal control or not. Only available for
+ *     DCDC1, DCDC2 and DCDC3.
+ * @gpiod: Gpio descriptor if external control is enabled and controlled through
+ *     gpio
+ * @overcurrent_wait_valid: True if the overcurrent_wait should be applied.
+ * @overcurrent_wait: Value to set as the overcurrent wait time.  This is the
+ *     actual bitfield value, not a time in ms (valid value are 0 - 3).
+ */
+struct tps65090_regulator_plat_data {
+	struct regulator_init_data *reg_init_data;
+	bool enable_ext_control;
+	struct gpio_desc *gpiod;
+	bool overcurrent_wait_valid;
+	int overcurrent_wait;
+};
+
+struct tps65090_platform_data {
+	struct tps65090_regulator_plat_data *reg_pdata[TPS65090_REGULATOR_MAX];
+};
+
+
 static const struct regulator_ops tps65090_ext_control_ops = {
 };
 
@@ -290,7 +315,6 @@ static int tps65090_regulator_disable_ext_control(
 	return tps65090_config_ext_control(ri, false);
 }
 
-#ifdef CONFIG_OF
 static struct of_regulator_match tps65090_matches[] = {
 	{ .name = "dcdc1", },
 	{ .name = "dcdc2", },
@@ -392,15 +416,6 @@ static struct tps65090_platform_data *tps65090_parse_dt_reg_data(
 	}
 	return tps65090_pdata;
 }
-#else
-static inline struct tps65090_platform_data *tps65090_parse_dt_reg_data(
-			struct platform_device *pdev,
-			struct of_regulator_match **tps65090_reg_matches)
-{
-	*tps65090_reg_matches = NULL;
-	return NULL;
-}
-#endif
 
 static int tps65090_regulator_probe(struct platform_device *pdev)
 {
@@ -417,14 +432,10 @@ static int tps65090_regulator_probe(struct platform_device *pdev)
 
 	dev_dbg(&pdev->dev, "Probing regulator\n");
 
-	tps65090_pdata = dev_get_platdata(pdev->dev.parent);
-	if (!tps65090_pdata && tps65090_mfd->dev->of_node)
-		tps65090_pdata = tps65090_parse_dt_reg_data(pdev,
+	tps65090_pdata = tps65090_parse_dt_reg_data(pdev,
 					&tps65090_reg_matches);
-	if (IS_ERR_OR_NULL(tps65090_pdata)) {
-		dev_err(&pdev->dev, "Platform data missing\n");
-		return tps65090_pdata ? PTR_ERR(tps65090_pdata) : -EINVAL;
-	}
+	if (IS_ERR(tps65090_pdata))
+		return PTR_ERR(tps65090_pdata);
 
 	pmic = devm_kcalloc(&pdev->dev,
 			    TPS65090_REGULATOR_MAX, sizeof(*pmic),

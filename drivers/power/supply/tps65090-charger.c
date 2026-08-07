@@ -34,7 +34,7 @@ struct tps65090_charger {
 	struct task_struct	*poll_task;
 	bool			passive_mode;
 	struct power_supply	*ac;
-	struct tps65090_platform_data *pdata;
+	int enable_low_current_chrg;
 };
 
 static enum power_supply_property tps65090_ac_props[] = {
@@ -92,7 +92,7 @@ static int tps65090_config_charger(struct tps65090_charger *charger)
 	if (charger->passive_mode)
 		return 0;
 
-	if (charger->pdata->enable_low_current_chrg) {
+	if (charger->enable_low_current_chrg) {
 		ret = tps65090_low_chrg_current(charger);
 		if (ret < 0) {
 			dev_err(charger->dev,
@@ -184,28 +184,6 @@ static irqreturn_t tps65090_charger_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-static struct tps65090_platform_data *
-		tps65090_parse_dt_charger_data(struct platform_device *pdev)
-{
-	struct tps65090_platform_data *pdata;
-	struct device_node *np = pdev->dev.of_node;
-	unsigned int prop;
-
-	pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
-	if (!pdata) {
-		dev_err(&pdev->dev, "Memory alloc for tps65090_pdata failed\n");
-		return NULL;
-	}
-
-	prop = of_property_read_bool(np, "ti,enable-low-current-chrg");
-	pdata->enable_low_current_chrg = prop;
-
-	pdata->irq_base = -1;
-
-	return pdata;
-
-}
-
 static int tps65090_charger_poll_task(void *data)
 {
 	set_freezable();
@@ -229,22 +207,10 @@ static const struct power_supply_desc tps65090_charger_desc = {
 static int tps65090_charger_probe(struct platform_device *pdev)
 {
 	struct tps65090_charger *cdata;
-	struct tps65090_platform_data *pdata;
 	struct power_supply_config psy_cfg = {};
 	uint8_t status1 = 0;
 	int ret;
 	int irq;
-
-	pdata = dev_get_platdata(pdev->dev.parent);
-
-	if (IS_ENABLED(CONFIG_OF) && !pdata && pdev->dev.of_node)
-		pdata = tps65090_parse_dt_charger_data(pdev);
-
-	if (!pdata) {
-		dev_err(&pdev->dev, "%s():no platform data available\n",
-				__func__);
-		return -ENODEV;
-	}
 
 	cdata = devm_kzalloc(&pdev->dev, sizeof(*cdata), GFP_KERNEL);
 	if (!cdata) {
@@ -255,10 +221,9 @@ static int tps65090_charger_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, cdata);
 
 	cdata->dev			= &pdev->dev;
-	cdata->pdata			= pdata;
+	cdata->enable_low_current_chrg	= of_property_read_bool(pdev->dev.of_node,
+						"ti,enable-low-current-chrg");
 
-	psy_cfg.supplied_to		= pdata->supplied_to;
-	psy_cfg.num_supplicants		= pdata->num_supplicants;
 	psy_cfg.fwnode			= dev_fwnode(&pdev->dev);
 	psy_cfg.drv_data		= cdata;
 
