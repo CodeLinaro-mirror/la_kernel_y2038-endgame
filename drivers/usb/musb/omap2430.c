@@ -28,6 +28,11 @@
 #include "musb_core.h"
 #include "omap2430.h"
 
+enum musb_interface {
+	MUSB_INTERFACE_ULPI,
+	MUSB_INTERFACE_UTMI
+};
+
 struct omap2430_glue {
 	struct device		*dev;
 	struct platform_device	*musb;
@@ -184,6 +189,13 @@ static irqreturn_t omap2430_musb_interrupt(int irq, void *__hci)
 
 	return retval;
 }
+
+struct omap_musb_board_data {
+	u8	interface_type;
+	u8	mode;
+	u32	power;
+	unsigned extvbus:1;
+};
 
 static int omap2430_musb_init(struct musb *musb)
 {
@@ -592,7 +604,6 @@ static const struct dev_pm_ops omap2430_pm_ops = {
 #define DEV_PM_OPS	NULL
 #endif
 
-#ifdef CONFIG_OF
 static const struct of_device_id omap2430_id_table[] = {
 	{
 		.compatible = "ti,omap4-musb"
@@ -603,7 +614,6 @@ static const struct of_device_id omap2430_id_table[] = {
 	{},
 };
 MODULE_DEVICE_TABLE(of, omap2430_id_table);
-#endif
 
 static struct platform_driver omap2430_driver = {
 	.probe		= omap2430_probe,
@@ -611,7 +621,7 @@ static struct platform_driver omap2430_driver = {
 	.driver		= {
 		.name	= "musb-omap2430",
 		.pm	= DEV_PM_OPS,
-		.of_match_table = of_match_ptr(omap2430_id_table),
+		.of_match_table = omap2430_id_table,
 	},
 };
 

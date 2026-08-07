@@ -531,24 +531,22 @@ static const struct of_device_id usbhs_child_match_table[] = {
 static int usbhs_omap_probe(struct platform_device *pdev)
 {
 	struct device			*dev =  &pdev->dev;
-	struct usbhs_omap_platform_data	*pdata = dev_get_platdata(dev);
+	struct usbhs_omap_platform_data	*pdata;
 	struct usbhs_hcd_omap		*omap;
 	int				ret = 0;
 	int				i;
 	bool				need_logic_fck;
 
-	if (dev->of_node) {
-		/* For DT boot we populate platform data from OF node */
-		pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
-		if (!pdata)
-			return -ENOMEM;
+	/* For DT boot we populate platform data from OF node */
+	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
+	if (!pdata)
+		return -ENOMEM;
 
-		ret = usbhs_omap_get_dt_pdata(dev, pdata);
-		if (ret)
-			return ret;
+	ret = usbhs_omap_get_dt_pdata(dev, pdata);
+	if (ret)
+		return ret;
 
-		dev->platform_data = pdata;
-	}
+	dev->platform_data = pdata;
 
 	if (!pdata) {
 		dev_err(dev, "Missing platform data\n");
