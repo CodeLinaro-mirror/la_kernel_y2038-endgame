@@ -184,12 +184,9 @@ static int max8907_i2c_probe(struct i2c_client *i2c)
 {
 	struct max8907 *max8907;
 	int ret;
-	struct max8907_platform_data *pdata = dev_get_platdata(&i2c->dev);
 	bool pm_off = false;
 
-	if (pdata)
-		pm_off = pdata->pm_off;
-	else if (i2c->dev.of_node)
+	if (i2c->dev.of_node)
 		pm_off = of_property_read_bool(i2c->dev.of_node,
 					"maxim,system-power-controller");
 
@@ -291,13 +288,11 @@ static void max8907_i2c_remove(struct i2c_client *i2c)
 	i2c_unregister_device(max8907->i2c_rtc);
 }
 
-#ifdef CONFIG_OF
 static const struct of_device_id max8907_of_match[] = {
 	{ .compatible = "maxim,max8907" },
 	{ },
 };
 MODULE_DEVICE_TABLE(of, max8907_of_match);
-#endif
 
 static const struct i2c_device_id max8907_i2c_id[] = {
 	{ "max8907" },
@@ -308,7 +303,7 @@ MODULE_DEVICE_TABLE(i2c, max8907_i2c_id);
 static struct i2c_driver max8907_i2c_driver = {
 	.driver = {
 		.name = "max8907",
-		.of_match_table = of_match_ptr(max8907_of_match),
+		.of_match_table = max8907_of_match,
 	},
 	.probe = max8907_i2c_probe,
 	.remove = max8907_i2c_remove,

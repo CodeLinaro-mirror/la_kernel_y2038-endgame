@@ -178,8 +178,6 @@ static const struct regulator_desc max8907_regulators[] = {
 	REG_FIXED(VRTC, "MBATT", 3300000),
 };
 
-#ifdef CONFIG_OF
-
 #define MATCH(_name, _id) \
 	[MAX8907_##_id] = { \
 		.name = #_name, \
@@ -254,27 +252,10 @@ static inline struct device_node *match_of_node(int index)
 {
 	return max8907_matches[index].of_node;
 }
-#else
-static int max8907_regulator_parse_dt(struct platform_device *pdev)
-{
-	return 0;
-}
-
-static inline struct regulator_init_data *match_init_data(int index)
-{
-	return NULL;
-}
-
-static inline struct device_node *match_of_node(int index)
-{
-	return NULL;
-}
-#endif
 
 static int max8907_regulator_probe(struct platform_device *pdev)
 {
 	struct max8907 *max8907 = dev_get_drvdata(pdev->dev.parent);
-	struct max8907_platform_data *pdata = dev_get_platdata(max8907->dev);
 	int ret;
 	struct max8907_regulator *pmic;
 	unsigned int val;
@@ -312,9 +293,6 @@ static int max8907_regulator_probe(struct platform_device *pdev)
 		struct regulator_dev *rdev;
 
 		config.dev = pdev->dev.parent;
-		if (pdata)
-			idata = pdata->init_data[i];
-		else
 			idata = match_init_data(i);
 		config.init_data = idata;
 		config.driver_data = pmic;
