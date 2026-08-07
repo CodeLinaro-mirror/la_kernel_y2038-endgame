@@ -26,8 +26,9 @@
 
 #include <linux/usb/ehci_def.h>
 #include <linux/usb/of.h>
-#include <linux/usb/tegra_usb_phy.h>
 #include <linux/usb/ulpi.h>
+
+#include "phy-tegra-usb.h"
 
 #define USB_TXFILLTUNING			0x154
 #define USB_FIFO_TXFILL_THRES(x)		(((x) & 0x1f) << 16)

@@ -23,7 +23,6 @@
 #include <linux/serial_8250.h>
 #include <linux/slab.h>
 #include <linux/sys_soc.h>
-#include <linux/usb/tegra_usb_phy.h>
 
 #include <linux/firmware/trusted_foundations.h>
 
