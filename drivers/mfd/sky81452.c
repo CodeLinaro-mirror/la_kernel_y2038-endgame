@@ -14,7 +14,6 @@
 #include <linux/i2c.h>
 #include <linux/regmap.h>
 #include <linux/mfd/core.h>
-#include <linux/mfd/sky81452.h>
 
 static const struct regmap_config sky81452_config = {
 	.reg_bits = 8,
@@ -24,16 +23,9 @@ static const struct regmap_config sky81452_config = {
 static int sky81452_probe(struct i2c_client *client)
 {
 	struct device *dev = &client->dev;
-	const struct sky81452_platform_data *pdata = dev_get_platdata(dev);
 	struct mfd_cell cells[2];
 	struct regmap *regmap;
 	int ret;
-
-	if (!pdata) {
-		pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
-		if (!pdata)
-			return -ENOMEM;
-	}
 
 	regmap = devm_regmap_init_i2c(client, &sky81452_config);
 	if (IS_ERR(regmap)) {
@@ -47,8 +39,6 @@ static int sky81452_probe(struct i2c_client *client)
 	cells[0].name = "sky81452-backlight";
 	cells[0].of_compatible = "skyworks,sky81452-backlight";
 	cells[1].name = "sky81452-regulator";
-	cells[1].platform_data = pdata->regulator_init_data;
-	cells[1].pdata_size = sizeof(*pdata->regulator_init_data);
 
 	ret = devm_mfd_add_devices(dev, -1, cells, ARRAY_SIZE(cells),
 				   NULL, 0, NULL);
@@ -64,18 +54,16 @@ static const struct i2c_device_id sky81452_ids[] = {
 };
 MODULE_DEVICE_TABLE(i2c, sky81452_ids);
 
-#ifdef CONFIG_OF
 static const struct of_device_id sky81452_of_match[] = {
 	{ .compatible = "skyworks,sky81452", },
 	{ }
 };
 MODULE_DEVICE_TABLE(of, sky81452_of_match);
-#endif
 
 static struct i2c_driver sky81452_driver = {
 	.driver = {
 		.name = "sky81452",
-		.of_match_table = of_match_ptr(sky81452_of_match),
+		.of_match_table = sky81452_of_match,
 	},
 	.probe = sky81452_probe,
 	.id_table = sky81452_ids,
