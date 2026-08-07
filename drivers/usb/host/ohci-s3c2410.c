@@ -25,7 +25,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
-#include <linux/platform_data/usb-ohci-s3c2410.h>
 #include <linux/usb.h>
 #include <linux/usb/hcd.h>
 
@@ -44,50 +43,21 @@ static struct clk *usb_clk;
 
 static struct hc_driver __read_mostly ohci_s3c2410_hc_driver;
 
-/* forward definitions */
-
-static void s3c2410_hcd_oc(struct s3c2410_hcd_info *info, int port_oc);
-
 /* conversion functions */
-
-static struct s3c2410_hcd_info *to_s3c2410_info(struct usb_hcd *hcd)
-{
-	return dev_get_platdata(hcd->self.controller);
-}
 
 static void s3c2410_start_hc(struct platform_device *dev, struct usb_hcd *hcd)
 {
-	struct s3c2410_hcd_info *info = dev_get_platdata(&dev->dev);
-
 	dev_dbg(&dev->dev, "s3c2410_start_hc:\n");
 
 	clk_prepare_enable(usb_clk);
 	mdelay(2);			/* let the bus clock stabilise */
 
 	clk_prepare_enable(clk);
-
-	if (info != NULL) {
-		info->hcd	= hcd;
-		info->report_oc = s3c2410_hcd_oc;
-
-		if (info->enable_oc != NULL)
-			(info->enable_oc)(info, 1);
-	}
 }
 
 static void s3c2410_stop_hc(struct platform_device *dev)
 {
-	struct s3c2410_hcd_info *info = dev_get_platdata(&dev->dev);
-
 	dev_dbg(&dev->dev, "s3c2410_stop_hc:\n");
-
-	if (info != NULL) {
-		info->report_oc = NULL;
-		info->hcd	= NULL;
-
-		if (info->enable_oc != NULL)
-			(info->enable_oc)(info, 0);
-	}
 
 	clk_disable_unprepare(clk);
 	clk_disable_unprepare(usb_clk);
@@ -102,52 +72,7 @@ static void s3c2410_stop_hc(struct platform_device *dev)
 static int
 ohci_s3c2410_hub_status_data(struct usb_hcd *hcd, char *buf)
 {
-	struct s3c2410_hcd_info *info = to_s3c2410_info(hcd);
-	struct s3c2410_hcd_port *port;
-	int orig;
-	int portno;
-
-	orig = ohci_hub_status_data(hcd, buf);
-
-	if (info == NULL)
-		return orig;
-
-	port = &info->port[0];
-
-	/* mark any changed port as changed */
-
-	for (portno = 0; portno < 2; port++, portno++) {
-		if (port->oc_changed == 1 &&
-		    port->flags & S3C_HCDFLG_USED) {
-			dev_dbg(hcd->self.controller,
-				"oc change on port %d\n", portno);
-
-			if (orig < 1)
-				orig = 1;
-
-			buf[0] |= 1<<(portno+1);
-		}
-	}
-
-	return orig;
-}
-
-/* s3c2410_usb_set_power
- *
- * configure the power on a port, by calling the platform device
- * routine registered with the platform device
-*/
-
-static void s3c2410_usb_set_power(struct s3c2410_hcd_info *info,
-				  int port, int to)
-{
-	if (info == NULL)
-		return;
-
-	if (info->power_control != NULL) {
-		info->port[port-1].power = to;
-		(info->power_control)(port-1, to);
-	}
+	return ohci_hub_status_data(hcd, buf);
 }
 
 /* ohci_s3c2410_hub_control
@@ -165,11 +90,6 @@ static int ohci_s3c2410_hub_control(
 	char		*buf,
 	u16		wLength)
 {
-	struct s3c2410_hcd_info *info = to_s3c2410_info(hcd);
-	struct usb_hub_descriptor *desc;
-	int ret = -EINVAL;
-	u32 *data = (u32 *)buf;
-
 	dev_dbg(hcd->self.controller,
 		"s3c2410_hub_control(%p,0x%04x,0x%04x,0x%04x,%p,%04x)\n",
 		hcd, typeReq, wValue, wIndex, buf, wLength);
@@ -177,143 +97,8 @@ static int ohci_s3c2410_hub_control(
 	/* if we are only an humble host without any special capabilities
 	 * process the request straight away and exit */
 
-	if (info == NULL) {
-		ret = ohci_hub_control(hcd, typeReq, wValue,
-				       wIndex, buf, wLength);
-		goto out;
-	}
-
-	/* check the request to see if it needs handling */
-
-	switch (typeReq) {
-	case SetPortFeature:
-		if (wValue == USB_PORT_FEAT_POWER) {
-			dev_dbg(hcd->self.controller, "SetPortFeat: POWER\n");
-			s3c2410_usb_set_power(info, wIndex, 1);
-			goto out;
-		}
-		break;
-
-	case ClearPortFeature:
-		switch (wValue) {
-		case USB_PORT_FEAT_C_OVER_CURRENT:
-			dev_dbg(hcd->self.controller,
-				"ClearPortFeature: C_OVER_CURRENT\n");
-
-			if (valid_port(wIndex)) {
-				info->port[wIndex-1].oc_changed = 0;
-				info->port[wIndex-1].oc_status = 0;
-			}
-
-			goto out;
-
-		case USB_PORT_FEAT_OVER_CURRENT:
-			dev_dbg(hcd->self.controller,
-				"ClearPortFeature: OVER_CURRENT\n");
-
-			if (valid_port(wIndex))
-				info->port[wIndex-1].oc_status = 0;
-
-			goto out;
-
-		case USB_PORT_FEAT_POWER:
-			dev_dbg(hcd->self.controller,
-				"ClearPortFeature: POWER\n");
-
-			if (valid_port(wIndex)) {
-				s3c2410_usb_set_power(info, wIndex, 0);
-				return 0;
-			}
-		}
-		break;
-	}
-
-	ret = ohci_hub_control(hcd, typeReq, wValue, wIndex, buf, wLength);
-	if (ret)
-		goto out;
-
-	switch (typeReq) {
-	case GetHubDescriptor:
-
-		/* update the hub's descriptor */
-
-		desc = (struct usb_hub_descriptor *)buf;
-
-		if (info->power_control == NULL)
-			return ret;
-
-		dev_dbg(hcd->self.controller, "wHubCharacteristics 0x%04x\n",
-			desc->wHubCharacteristics);
-
-		/* remove the old configurations for power-switching, and
-		 * over-current protection, and insert our new configuration
-		 */
-
-		desc->wHubCharacteristics &= ~cpu_to_le16(HUB_CHAR_LPSM);
-		desc->wHubCharacteristics |= cpu_to_le16(
-			HUB_CHAR_INDV_PORT_LPSM);
-
-		if (info->enable_oc) {
-			desc->wHubCharacteristics &= ~cpu_to_le16(
-				HUB_CHAR_OCPM);
-			desc->wHubCharacteristics |=  cpu_to_le16(
-				HUB_CHAR_INDV_PORT_OCPM);
-		}
-
-		dev_dbg(hcd->self.controller, "wHubCharacteristics after 0x%04x\n",
-			desc->wHubCharacteristics);
-
-		return ret;
-
-	case GetPortStatus:
-		/* check port status */
-
-		dev_dbg(hcd->self.controller, "GetPortStatus(%d)\n", wIndex);
-
-		if (valid_port(wIndex)) {
-			if (info->port[wIndex-1].oc_changed)
-				*data |= cpu_to_le32(RH_PS_OCIC);
-
-			if (info->port[wIndex-1].oc_status)
-				*data |= cpu_to_le32(RH_PS_POCI);
-		}
-	}
-
- out:
-	return ret;
-}
-
-/* s3c2410_hcd_oc
- *
- * handle an over-current report
-*/
-
-static void s3c2410_hcd_oc(struct s3c2410_hcd_info *info, int port_oc)
-{
-	struct s3c2410_hcd_port *port;
-	unsigned long flags;
-	int portno;
-
-	if (info == NULL)
-		return;
-
-	port = &info->port[0];
-
-	local_irq_save(flags);
-
-	for (portno = 0; portno < 2; port++, portno++) {
-		if (port_oc & (1<<portno) &&
-		    port->flags & S3C_HCDFLG_USED) {
-			port->oc_status = 1;
-			port->oc_changed = 1;
-
-			/* ok, once over-current is detected,
-			   the port needs to be powered down */
-			s3c2410_usb_set_power(info, portno+1, 0);
-		}
-	}
-
-	local_irq_restore(flags);
+	return ohci_hub_control(hcd, typeReq, wValue,
+				wIndex, buf, wLength);
 }
 
 /* may be called without controller electrically present */
@@ -353,11 +138,7 @@ ohci_hcd_s3c2410_remove(struct platform_device *dev)
 static int ohci_hcd_s3c2410_probe(struct platform_device *dev)
 {
 	struct usb_hcd *hcd = NULL;
-	struct s3c2410_hcd_info *info = dev_get_platdata(&dev->dev);
 	int retval, irq;
-
-	s3c2410_usb_set_power(info, 1, 1);
-	s3c2410_usb_set_power(info, 2, 1);
 
 	hcd = usb_create_hcd(&ohci_s3c2410_hc_driver, &dev->dev, "s3c24xx");
 	if (hcd == NULL)
