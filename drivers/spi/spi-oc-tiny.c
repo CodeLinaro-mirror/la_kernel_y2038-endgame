@@ -18,7 +18,6 @@
 #include <linux/platform_device.h>
 #include <linux/spi/spi.h>
 #include <linux/spi/spi_bitbang.h>
-#include <linux/spi/spi_oc_tiny.h>
 #include <linux/io.h>
 #include <linux/of.h>
 
@@ -183,7 +182,6 @@ static irqreturn_t tiny_spi_irq(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
-#ifdef CONFIG_OF
 static int tiny_spi_of_probe(struct platform_device *pdev)
 {
 	struct tiny_spi *hw = platform_get_drvdata(pdev);
@@ -198,16 +196,9 @@ static int tiny_spi_of_probe(struct platform_device *pdev)
 		hw->baudwidth = val;
 	return 0;
 }
-#else /* !CONFIG_OF */
-static int tiny_spi_of_probe(struct platform_device *pdev)
-{
-	return 0;
-}
-#endif /* CONFIG_OF */
 
 static int tiny_spi_probe(struct platform_device *pdev)
 {
-	struct tiny_spi_platform_data *platp = dev_get_platdata(&pdev->dev);
 	struct tiny_spi *hw;
 	struct spi_controller *host;
 	int err;
@@ -244,14 +235,9 @@ static int tiny_spi_probe(struct platform_device *pdev)
 			return err;
 	}
 	/* find platform data */
-	if (platp) {
-		hw->freq = platp->freq;
-		hw->baudwidth = platp->baudwidth;
-	} else {
-		err = tiny_spi_of_probe(pdev);
-		if (err)
-			return err;
-	}
+	err = tiny_spi_of_probe(pdev);
+	if (err)
+		return err;
 
 	/* register our spi controller */
 	err = spi_bitbang_start(&hw->bitbang);
@@ -269,13 +255,11 @@ static void tiny_spi_remove(struct platform_device *pdev)
 	spi_bitbang_stop(&hw->bitbang);
 }
 
-#ifdef CONFIG_OF
 static const struct of_device_id tiny_spi_match[] = {
 	{ .compatible = "opencores,tiny-spi-rtlsvn2", },
 	{},
 };
 MODULE_DEVICE_TABLE(of, tiny_spi_match);
-#endif /* CONFIG_OF */
 
 static struct platform_driver tiny_spi_driver = {
 	.probe = tiny_spi_probe,
@@ -283,7 +267,7 @@ static struct platform_driver tiny_spi_driver = {
 	.driver = {
 		.name = DRV_NAME,
 		.pm = NULL,
-		.of_match_table = of_match_ptr(tiny_spi_match),
+		.of_match_table = tiny_spi_match,
 	},
 };
 module_platform_driver(tiny_spi_driver);
