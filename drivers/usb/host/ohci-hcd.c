@@ -1253,11 +1253,6 @@ MODULE_AUTHOR (DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE ("GPL");
 
-#if defined(CONFIG_ARCH_SA1100) && defined(CONFIG_SA1111)
-#include "ohci-sa1111.c"
-#define SA1111_DRIVER		ohci_hcd_sa1111_driver
-#endif
-
 #ifdef CONFIG_USB_OHCI_HCD_PPC_OF
 #include "ohci-ppc-of.c"
 #define OF_PLATFORM_DRIVER	ohci_hcd_ppc_of_driver
@@ -1297,12 +1292,6 @@ static int __init ohci_hcd_mod_init(void)
 		goto error_of_platform;
 #endif
 
-#ifdef SA1111_DRIVER
-	retval = sa1111_driver_register(&SA1111_DRIVER);
-	if (retval < 0)
-		goto error_sa1111;
-#endif
-
 #ifdef SM501_OHCI_DRIVER
 	retval = platform_driver_register(&SM501_OHCI_DRIVER);
 	if (retval < 0)
@@ -1315,10 +1304,6 @@ static int __init ohci_hcd_mod_init(void)
 #ifdef SM501_OHCI_DRIVER
 	platform_driver_unregister(&SM501_OHCI_DRIVER);
  error_sm501:
-#endif
-#ifdef SA1111_DRIVER
-	sa1111_driver_unregister(&SA1111_DRIVER);
- error_sa1111:
 #endif
 #ifdef OF_PLATFORM_DRIVER
 	platform_driver_unregister(&OF_PLATFORM_DRIVER);
@@ -1339,9 +1324,6 @@ static void __exit ohci_hcd_mod_exit(void)
 {
 #ifdef SM501_OHCI_DRIVER
 	platform_driver_unregister(&SM501_OHCI_DRIVER);
-#endif
-#ifdef SA1111_DRIVER
-	sa1111_driver_unregister(&SA1111_DRIVER);
 #endif
 #ifdef OF_PLATFORM_DRIVER
 	platform_driver_unregister(&OF_PLATFORM_DRIVER);
