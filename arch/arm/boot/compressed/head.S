@@ -266,7 +266,6 @@ not_angel:
 		 */
 		mov	r0, pc
 		and	r0, r0, #0xf8000000
-#ifdef CONFIG_USE_OF
 		adr	r1, LC1
 #ifdef CONFIG_ARM_APPENDED_DTB
 		/*
@@ -295,7 +294,6 @@ not_angel:
 		mov	r1, r8
 		bl	fdt_check_mem_start
 1:
-#endif /* CONFIG_USE_OF */
 		/* Determine final kernel image address. */
 		add	r4, r0, #TEXT_OFFSET
 #else

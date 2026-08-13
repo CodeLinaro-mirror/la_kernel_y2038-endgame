@@ -62,10 +62,7 @@ CFLAGS_REMOVE_atags_to_fdt.o += -Wframe-larger-than=${CONFIG_FRAME_WARN}
 CFLAGS_atags_to_fdt.o += -Wframe-larger-than=1280
 OBJS	+= $(libfdt_objs) atags_to_fdt.o
 endif
-ifeq ($(CONFIG_USE_OF),y)
 OBJS	+= $(libfdt_objs) fdt_check_mem_start.o
-endif
-
 OBJS	+= lib1funcs.o ashldi3.o bswapsdi2.o
 
 targets       := vmlinux vmlinux.lds piggy_data piggy.o \
