@@ -216,19 +216,6 @@ str_p2:	.asciz	").\n"
 ENDPROC(__error_p)
 
 __error:
-#ifdef CONFIG_ARCH_RPC
-/*
- * Turn the screen red on a error - RiscPC only.
- */
-	mov	r0, #0x02000000
-	mov	r3, #0x11
-	orr	r3, r3, r3, lsl #8
-	orr	r3, r3, r3, lsl #16
-	str	r3, [r0], #4
-	str	r3, [r0], #4
-	str	r3, [r0], #4
-	str	r3, [r0], #4
-#endif
 1:	mov	r0, r0
 	b	1b
 ENDPROC(__error)

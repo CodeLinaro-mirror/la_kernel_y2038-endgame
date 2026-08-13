@@ -347,18 +347,6 @@ __create_page_tables:
 	/* we don't need any serial debugging mappings */
 	ldr	r7, [r10, #PROCINFO_IO_MMUFLAGS] @ io_mmuflags
 #endif
-#ifdef CONFIG_ARCH_RPC
-	/*
-	 * Map in screen at 0x02000000 & SCREEN2_BASE
-	 * Similar reasons here - for debug.  This is
-	 * only for Acorn RiscPC architectures.
-	 */
-	add	r0, r4, #0x02000000 >> (SECTION_SHIFT - PMD_ENTRY_ORDER)
-	orr	r3, r7, #0x02000000
-	str	r3, [r0]
-	add	r0, r4, #0xd8000000 >> (SECTION_SHIFT - PMD_ENTRY_ORDER)
-	str	r3, [r0]
-#endif
 #endif
 #ifdef CONFIG_ARM_LPAE
 	sub	r4, r4, #0x1000		@ point to the PGD table

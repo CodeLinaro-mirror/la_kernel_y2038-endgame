@@ -53,7 +53,7 @@ config ARM
 	select ARCH_WANT_LD_ORPHAN_WARN
 	select BINFMT_FLAT_ARGVP_ENVP_ON_STACK
 	select BUILDTIME_TABLE_SORT
-	select COMMON_CLK if !ARCH_RPC
+	select COMMON_CLK
 	select CLONE_BACKWARDS
 	select CPU_PM if SUSPEND || CPU_IDLE
 	select DCACHE_WORD_ACCESS if HAVE_EFFICIENT_UNALIGNED_ACCESS
@@ -151,13 +151,13 @@ config ARM
 	select PCI_SYSCALL if PCI
 	select PERF_USE_VMALLOC
 	select RTC_LIB
-	select SPARSE_IRQ if !ARCH_RPC
+	select SPARSE_IRQ
 	select SYS_SUPPORTS_APM_EMULATION
 	select THREAD_INFO_IN_TASK
 	select TIMER_OF if OF
 	select HAVE_ARCH_VMAP_STACK if ARM_HAS_GROUP_RELOCS
 	select TRACE_IRQFLAGS_SUPPORT
-	select USE_OF if !ARCH_RPC
+	select USE_OF
 	# Above selects are sorted alphabetically; please add new ones
 	# according to that.  Thanks.
 	help
@@ -272,24 +272,10 @@ config ARM_PATCH_PHYS_VIRT
 	  this feature (eg, building a kernel for a single machine) and
 	  you need to shrink the kernel to the minimal size.
 
-config NEED_MACH_IO_H
-	bool
-	help
-	  Select this when mach/io.h is required to provide special
-	  definitions for this platform.  The need for mach/io.h should
-	  be avoided when possible.
-
-config NEED_MACH_MEMORY_H
-	bool
-	help
-	  Select this when mach/memory.h is required to provide special
-	  definitions for this platform.  The need for mach/memory.h should
-	  be avoided when possible.
-
 config PHYS_OFFSET
 	hex "Physical address of main memory"
 	depends on !ARM_PATCH_PHYS_VIRT || !AUTO_ZRELADDR
-	default 0x10000000 if ARCH_OMAP1 || ARCH_RPC
+	default 0x10000000 if ARCH_OMAP1
 	default 0xa0000000 if ARCH_PXA
 	default 0xc0000000 if ARCH_EP93XX
 	default 0
@@ -321,7 +307,6 @@ config ARCH_MMAP_RND_BITS_MAX
 
 config ARCH_MULTIPLATFORM
 	bool "Require kernel to be portable to multiple machines" if EXPERT
-	depends on !ARCH_RPC
 	default y
 	help
 	  In general, all Arm machines can be supported in a single
@@ -407,8 +392,6 @@ source "arch/arm/mach-qcom/Kconfig"
 
 source "arch/arm/mach-realtek/Kconfig"
 
-source "arch/arm/mach-rpc/Kconfig"
-
 source "arch/arm/mach-rockchip/Kconfig"
 
 source "arch/arm/mach-s3c/Kconfig"
@@ -440,9 +423,6 @@ source "arch/arm/mach-zte/Kconfig"
 source "arch/arm/mach-zynq/Kconfig"
 
 # Definitions to make life easier
-config ARCH_ACORN
-	bool
-
 config PLAT_ORION
 	bool
 	select CLKSRC_MMIO
@@ -1096,7 +1076,7 @@ config ARCH_SELECT_MEMORY_MODEL
 	def_bool y
 
 config ARCH_FLATMEM_ENABLE
-	def_bool !ARCH_RPC
+	def_bool y
 
 config ARCH_SPARSEMEM_ENABLE
 	def_bool y
@@ -1495,7 +1475,7 @@ config ARCH_DEFAULT_CRASH_DUMP
 
 config AUTO_ZRELADDR
 	bool "Auto calculation of the decompressed kernel image address" if !ARCH_MULTIPLATFORM
-	default !ARCH_RPC
+	default y
 	help
 	  ZRELADDR is the physical address where the decompressed kernel
 	  image will be placed. If AUTO_ZRELADDR is selected, the address

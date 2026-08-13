@@ -19,13 +19,11 @@ config PARTITION_ADVANCED
 
 config ACORN_PARTITION
 	bool "Acorn partition support" if PARTITION_ADVANCED
-	default y if ARCH_ACORN
 	help
 	  Support hard disks partitioned under Acorn operating systems.
 
 config ACORN_PARTITION_CUMANA
 	bool "Cumana partition support" if PARTITION_ADVANCED
-	default y if ARCH_ACORN
 	depends on ACORN_PARTITION
 	help
 	  Say Y here if you would like to use hard disks under Linux which
@@ -33,12 +31,10 @@ config ACORN_PARTITION_CUMANA
 
 config ACORN_PARTITION_EESOX
 	bool "EESOX partition support" if PARTITION_ADVANCED
-	default y if ARCH_ACORN
 	depends on ACORN_PARTITION
 
 config ACORN_PARTITION_ICS
 	bool "ICS partition support" if PARTITION_ADVANCED
-	default y if ARCH_ACORN
 	depends on ACORN_PARTITION
 	help
 	  Say Y here if you would like to use hard disks under Linux which
@@ -46,7 +42,6 @@ config ACORN_PARTITION_ICS
 
 config ACORN_PARTITION_ADFS
 	bool "Native filecore partition support" if PARTITION_ADVANCED
-	default y if ARCH_ACORN
 	depends on ACORN_PARTITION
 	help
 	  The Acorn Disc Filing System is the standard file system of the
@@ -56,7 +51,6 @@ config ACORN_PARTITION_ADFS
 
 config ACORN_PARTITION_POWERTEC
 	bool "PowerTec partition support" if PARTITION_ADVANCED
-	default y if ARCH_ACORN
 	depends on ACORN_PARTITION
 	help
 	  Support reading partition tables created on Acorn machines using
@@ -64,7 +58,6 @@ config ACORN_PARTITION_POWERTEC
 
 config ACORN_PARTITION_RISCIX
 	bool "RISCiX partition support" if PARTITION_ADVANCED
-	default y if ARCH_ACORN
 	depends on ACORN_PARTITION
 	help
 	  Once upon a time, there was a native Unix port for the Acorn series

@@ -204,19 +204,14 @@ int pci_remap_iospace(const struct resource *res, phys_addr_t phys_addr);
  */
 #define pci_remap_cfgspace pci_remap_cfgspace
 void __iomem *pci_remap_cfgspace(resource_size_t res_cookie, size_t size);
-/*
- * Now, pick up the machine-defined IO definitions
- */
-#ifdef CONFIG_NEED_MACH_IO_H
-#include <mach/io.h>
-#else
+
 #if IS_ENABLED(CONFIG_PCMCIA) || defined(CONFIG_PCI)
 #define IO_SPACE_LIMIT	((resource_size_t)0xfffff)
 #else
 #define IO_SPACE_LIMIT ((resource_size_t)0)
 #endif
+
 #define __io(a)		__typesafe_io(PCI_IO_VIRT_BASE + ((a) & IO_SPACE_LIMIT))
-#endif
 
 /*
  *  IO port access primitives

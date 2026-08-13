@@ -17,14 +17,6 @@ add_hex = $(shell printf 0x%x $$(( $(1) + $(2) )) )
 #   INITRD_PHYS must be in RAM
 
 PARAMS_PHYS := $(call add_hex, $(PHYS_OFFSET), 0x100)
-
-# guess an initrd location if possible
-initrd_offset-$(CONFIG_ARCH_RPC)	+= 0x08000000
-INITRD_OFFSET := $(initrd_offset-y)
-ifdef INITRD_OFFSET
-INITRD_PHYS := $(call add_hex, $(PHYS_OFFSET), $(INITRD_OFFSET))
-endif
-
 endif
 
 PHONY += initrd
@@ -32,7 +24,7 @@ initrd:
 	@test "$(PARAMS_PHYS)" != "" || \
 	(echo bootpImage: You must specify PHYS_OFFSET of PARAMS_PHYS ; exit -1)
 	@test "$(INITRD_PHYS)" != "" || \
-	(echo bootpImage: You must specify INITRD_OFFSET or INITRD_PHYS ; exit -1)
+	(echo bootpImage: You must specify INITRD_PHYS ; exit -1)
 	@test "$(INITRD)" != "" || \
 	(echo bootpImage: You must specify INITRD; exit -1)
 

@@ -663,14 +663,6 @@ LC1:		.word	.L_user_stack_end - LC1	@ sp
 .Linflated_image_size_offset:
 		.long	(input_data_end - 4) - .
 
-#ifdef CONFIG_ARCH_RPC
-		.globl	params
-params:		ldr	r0, =0x10000100		@ params_phys for RPC
-		mov	pc, lr
-		.ltorg
-		.align
-#endif
-
 /*
  * dcache_line_size - get the minimum D-cache line size from the CTR register
  * on ARMv7.

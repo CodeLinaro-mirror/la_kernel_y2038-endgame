@@ -1018,7 +1018,7 @@ static void __init fill_pmd_gaps(void)
 #define fill_pmd_gaps() do { } while (0)
 #endif
 
-#if defined(CONFIG_PCI) && !defined(CONFIG_NEED_MACH_IO_H)
+#if defined(CONFIG_PCI)
 static void __init pci_reserve_io(void)
 {
 	struct static_vm *svm;
@@ -1281,17 +1281,6 @@ static void __init devicemaps_init(const struct machine_desc *mdesc)
 		map.type = MT_MEMORY_RO;
 		create_mapping(&map);
 	}
-
-	/*
-	 * Map the cache flushing regions.
-	 */
-#ifdef FLUSH_BASE
-	map.pfn = __phys_to_pfn(FLUSH_BASE_PHYS);
-	map.virtual = FLUSH_BASE;
-	map.length = SZ_1M;
-	map.type = MT_CACHECLEAN;
-	create_mapping(&map);
-#endif
 
 	/*
 	 * Create a mapping for the machine vectors at the high-vectors

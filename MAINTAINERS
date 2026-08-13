@@ -2378,12 +2378,6 @@ F:	Documentation/devicetree/bindings/display/arm,malidp.yaml
 F:	Documentation/gpu/afbc.rst
 F:	drivers/gpu/drm/arm/
 
-ARM MFM AND FLOPPY DRIVERS
-M:	Ian Molton <spyro@f2s.com>
-S:	Maintained
-F:	arch/arm/include/asm/floppy.h
-F:	arch/arm/mach-rpc/floppydma.S
-
 ARM PMU PROFILING AND DEBUGGING
 M:	Will Deacon <will@kernel.org>
 M:	Mark Rutland <mark.rutland@arm.com>
@@ -3495,20 +3489,6 @@ F:	drivers/soc/renesas/
 F:	include/linux/soc/renesas/
 N:	rcar
 K:	\brenesas,
-
-ARM/RISCPC ARCHITECTURE
-M:	Russell King <linux@armlinux.org.uk>
-L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-S:	Maintained
-W:	http://www.armlinux.org.uk/
-F:	arch/arm/include/asm/hardware/ioc.h
-F:	arch/arm/include/asm/hardware/iomd.h
-F:	arch/arm/include/asm/hardware/memc.h
-F:	arch/arm/mach-rpc/
-F:	drivers/net/ethernet/8390/etherh.c
-F:	drivers/net/ethernet/i825xx/ether1*
-F:	drivers/net/ethernet/seeq/ether3*
-F:	drivers/scsi/arm/
 
 ARM/Rockchip SoC support
 M:	Heiko Stuebner <heiko@sntech.de>

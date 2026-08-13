@@ -25,10 +25,6 @@ endif
 #
 # Architecture dependencies
 #
-ifeq ($(CONFIG_ARCH_ACORN),y)
-OBJS		+= ll_char_wr.o font.o
-endif
-
 ifeq ($(CONFIG_CPU_XSCALE),y)
 OBJS		+= head-xscale.o
 endif

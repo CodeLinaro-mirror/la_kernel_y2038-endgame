@@ -20,9 +20,6 @@
 #include <linux/types.h>
 #include <linux/sizes.h>
 
-#ifdef CONFIG_NEED_MACH_MEMORY_H
-#include <mach/memory.h>
-#endif
 #include <asm/kasan_def.h>
 
 /*
