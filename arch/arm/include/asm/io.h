@@ -401,12 +401,5 @@ extern bool arch_memremap_can_ram_remap(resource_size_t offset, size_t size,
 					unsigned long flags);
 #define arch_memremap_can_ram_remap arch_memremap_can_ram_remap
 
-/*
- * Register ISA memory and port locations for glibc iopl/inb/outb
- * emulation.
- */
-extern void register_isa_ports(unsigned int mmio, unsigned int io,
-			       unsigned int io_shift);
-
 #endif	/* __KERNEL__ */
 #endif	/* __ASM_ARM_IO_H */
