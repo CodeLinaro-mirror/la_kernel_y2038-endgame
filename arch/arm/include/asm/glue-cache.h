@@ -25,8 +25,7 @@
 #endif
 
 #if defined(CONFIG_CPU_ARM920T) || defined(CONFIG_CPU_ARM922T) || \
-    defined(CONFIG_CPU_ARM925T) || defined(CONFIG_CPU_ARM1020) || \
-    defined(CONFIG_CPU_ARM1026)
+    defined(CONFIG_CPU_ARM925T)
 # define MULTI_CACHE 1
 #endif
 

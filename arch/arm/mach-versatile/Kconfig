@@ -85,30 +85,6 @@ config INTEGRATOR_CM926EJS
 	depends on ARCH_MULTI_V5
 	select CPU_ARM926T
 
-config INTEGRATOR_CM10200E_REV0
-	bool "Integrator/CM10200E rev.0 core module"
-	depends on ARCH_INTEGRATOR_AP && n
-	depends on ARCH_MULTI_V5
-	select CPU_ARM1020
-
-config INTEGRATOR_CM10200E
-	bool "Integrator/CM10200E core module"
-	depends on ARCH_INTEGRATOR_AP && n
-	depends on ARCH_MULTI_V5
-	select CPU_ARM1020E
-
-config INTEGRATOR_CM10220E
-	bool "Integrator/CM10220E core module"
-	depends on ARCH_INTEGRATOR_AP
-	depends on ARCH_MULTI_V5
-	select CPU_ARM1022
-
-config INTEGRATOR_CM1026EJS
-	bool "Integrator/CM1026EJ-S core module"
-	depends on ARCH_INTEGRATOR_AP
-	depends on ARCH_MULTI_V5
-	select CPU_ARM1026
-
 config ARCH_INTEGRATOR_CP
 	bool "Support Integrator/CP platform"
 	depends on ARCH_MULTI_V5 || ARCH_MULTI_V6

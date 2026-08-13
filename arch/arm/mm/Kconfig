@@ -120,76 +120,6 @@ config CPU_FA526
 	  Say Y if you want support for the FA526 processor.
 	  Otherwise, say N.
 
-# ARM1020 - needs validating
-config CPU_ARM1020
-	bool
-	select CPU_32v5
-	select CPU_ABRT_EV4T
-	select CPU_CACHE_V4WT
-	select CPU_CACHE_VIVT
-	select CPU_COPY_V4WB if MMU
-	select CPU_CP15_MMU
-	select CPU_PABRT_LEGACY
-	select CPU_THUMB_CAPABLE
-	select CPU_TLB_V4WBI if MMU
-	help
-	  The ARM1020 is the 32K cached version of the ARM10 processor,
-	  with an addition of a floating-point unit.
-
-	  Say Y if you want support for the ARM1020 processor.
-	  Otherwise, say N.
-
-# ARM1020E - needs validating
-config CPU_ARM1020E
-	bool
-	depends on n
-	select CPU_32v5
-	select CPU_ABRT_EV4T
-	select CPU_CACHE_V4WT
-	select CPU_CACHE_VIVT
-	select CPU_COPY_V4WB if MMU
-	select CPU_CP15_MMU
-	select CPU_PABRT_LEGACY
-	select CPU_THUMB_CAPABLE
-	select CPU_TLB_V4WBI if MMU
-
-# ARM1022E
-config CPU_ARM1022
-	bool
-	select CPU_32v5
-	select CPU_ABRT_EV4T
-	select CPU_CACHE_VIVT
-	select CPU_COPY_V4WB if MMU # can probably do better
-	select CPU_CP15_MMU
-	select CPU_PABRT_LEGACY
-	select CPU_THUMB_CAPABLE
-	select CPU_TLB_V4WBI if MMU
-	help
-	  The ARM1022E is an implementation of the ARMv5TE architecture
-	  based upon the ARM10 integer core with a 16KiB L1 Harvard cache,
-	  embedded trace macrocell, and a floating-point unit.
-
-	  Say Y if you want support for the ARM1022E processor.
-	  Otherwise, say N.
-
-# ARM1026EJ-S
-config CPU_ARM1026
-	bool
-	select CPU_32v5
-	select CPU_ABRT_EV5T # But need Jazelle, but EV5TJ ignores bit 10
-	select CPU_CACHE_VIVT
-	select CPU_COPY_V4WB if MMU # can probably do better
-	select CPU_CP15_MMU
-	select CPU_PABRT_LEGACY
-	select CPU_THUMB_CAPABLE
-	select CPU_TLB_V4WBI if MMU
-	help
-	  The ARM1026EJ-S is an implementation of the ARMv5TEJ architecture
-	  based upon the ARM10 integer core.
-
-	  Say Y if you want support for the ARM1026EJ-S processor.
-	  Otherwise, say N.
-
 # SA110
 config CPU_SA110
 	bool
@@ -730,14 +660,14 @@ config CPU_DCACHE_WRITETHROUGH
 
 config CPU_CACHE_ROUND_ROBIN
 	bool "Round robin I and D cache replacement algorithm"
-	depends on (CPU_ARM926T || CPU_ARM1020) && (!CPU_ICACHE_DISABLE || !CPU_DCACHE_DISABLE)
+	depends on CPU_ARM926T && (!CPU_ICACHE_DISABLE || !CPU_DCACHE_DISABLE)
 	help
 	  Say Y here to use the predictable round-robin cache replacement
 	  policy.  Unless you specifically require this or are unsure, say N.
 
 config CPU_BPREDICT_DISABLE
 	bool "Disable branch prediction"
-	depends on CPU_ARM1020 || CPU_V6K || CPU_MOHAWK || CPU_XSC3 || CPU_V7 || CPU_FA526 || CPU_V7M
+	depends on CPU_V6K || CPU_MOHAWK || CPU_XSC3 || CPU_V7 || CPU_FA526 || CPU_V7M
 	help
 	  Say Y here to disable branch prediction.  If unsure, say N.
 
