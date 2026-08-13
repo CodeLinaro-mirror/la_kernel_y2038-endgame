@@ -135,12 +135,6 @@ config MTD_SBC_GXX
 	  More info at
 	  <http://www.arcomcontrols.com/products/icp/pc104/processors/SBC_GX1.htm>.
 
-config MTD_PXA2XX
-	tristate "CFI Flash device mapped on Intel XScale PXA2xx based boards"
-	depends on (PXA25x || PXA27x) && MTD_CFI_INTELEXT
-	help
-	  This provides a driver for the NOR flash attached to a PXA2xx chip.
-
 config MTD_SCx200_DOCFLASH
 	tristate "Flash device mapped with DOCCS on NatSemi SCx200"
 	depends on SCx200 && MTD_CFI

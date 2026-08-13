@@ -24,8 +24,6 @@
 #include <linux/slab.h>
 #include <linux/gpio/consumer.h>
 
-#include <asm/mach/flash.h>
-
 #define DRIVER_NAME "omap2-onenand"
 
 #define ONENAND_BUFRAM_SIZE	(1024 * 5)
