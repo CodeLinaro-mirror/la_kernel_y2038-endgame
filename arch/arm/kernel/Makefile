@@ -31,7 +31,6 @@ endif
 
 obj-$(CONFIG_ATAGS)		+= atags_parse.o
 obj-$(CONFIG_ATAGS_PROC)	+= atags_proc.o
-obj-$(CONFIG_DEPRECATED_PARAM_STRUCT) += atags_compat.o
 
 obj-y		+= entry-armv.o
 

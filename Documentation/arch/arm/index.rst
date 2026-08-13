@@ -17,7 +17,6 @@ ARM Architecture
    memory
    mem_alignment
    tcm
-   setup
    swp_emulation
    uefi
    vlocks

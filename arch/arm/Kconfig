@@ -1225,13 +1225,6 @@ config ATAGS
 	  Support for ATAGS will be removed when the last machine using
 	  it is either converted to DT or removed.
 
-config DEPRECATED_PARAM_STRUCT
-	bool "Provide old way to pass kernel parameters (DEPRECATED)"
-	depends on ATAGS
-	help
-	  This was deprecated in 2001 and announced to live on for 5 years.
-	  It is now scheduled for removal in early 2027.
-
 # Compressed boot loader in ROM.  Yes, we really want to ask about
 # TEXT and BSS so we preserve their values in the config files.
 config ZBOOT_ROM_TEXT

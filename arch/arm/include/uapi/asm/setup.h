@@ -8,9 +8,6 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
- *  Structure passed to kernel to tell it about the
- *  hardware it's running on.  See Documentation/arch/arm/setup.rst
- *  for more info.
  */
 #ifndef _UAPI__ASMARM_SETUP_H
 #define _UAPI__ASMARM_SETUP_H

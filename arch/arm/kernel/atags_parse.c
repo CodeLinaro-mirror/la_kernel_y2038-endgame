@@ -182,14 +182,6 @@ setup_machine_tags(void *atags_vaddr, unsigned int machine_nr)
 	else if (mdesc->atag_offset)
 		tags = (void *)(PAGE_OFFSET + mdesc->atag_offset);
 
-#if defined(CONFIG_DEPRECATED_PARAM_STRUCT)
-	/*
-	 * If we have the old style parameters, convert them to
-	 * a tag list.
-	 */
-	if (tags->hdr.tag != ATAG_CORE)
-		convert_to_tag_list(tags);
-#endif
 	if (tags->hdr.tag != ATAG_CORE) {
 		early_print("Warning: Neither atags nor dtb found\n");
 		tags = (struct tag *)&default_tags;
