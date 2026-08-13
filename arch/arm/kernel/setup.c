@@ -63,19 +63,6 @@
 
 #include "atags.h"
 
-
-#if defined(CONFIG_FPE_NWFPE) || defined(CONFIG_FPE_FASTFPE)
-char fpe_type[8];
-
-static int __init fpe_setup(char *line)
-{
-	memcpy(fpe_type, line, 8);
-	return 1;
-}
-
-__setup("fpe=", fpe_setup);
-#endif
-
 unsigned int processor_id;
 EXPORT_SYMBOL(processor_id);
 unsigned int __machine_arch_type __read_mostly;

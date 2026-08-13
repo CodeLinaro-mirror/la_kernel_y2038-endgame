@@ -457,10 +457,6 @@ __und_usr:
 	tst	r5, #PSR_T_BIT			@ Thumb mode?
 	mov	r1, #2				@ set insn size to 2 for Thumb
 	bne	0f				@ handle as Thumb undef exception
-#ifdef CONFIG_FPE_NWFPE
-	adr	r9, ret_from_exception
-	bl	call_fpe			@ returns via R9 on success
-#endif
 	mov	r1, #4				@ set insn size to 4 for ARM
 0:	mov	r0, sp
 	uaccess_disable ip

@@ -1497,47 +1497,7 @@ source "drivers/cpuidle/Kconfig"
 
 endmenu
 
-menu "Floating point emulation"
-
-comment "At least one emulation must be selected"
-
-config FPE_NWFPE
-	bool "NWFPE math emulation (DEPRECATED)"
-	depends on (!AEABI || OABI_COMPAT) && !THUMB2_KERNEL
-	help
-	  Say Y to include the NWFPE floating point emulator in the kernel.
-
-	  This is only used on OABI userspace binaries, either using a
-	  pure OABI (!CONFIG_AEABI) kernel, or the OABI emulation.
-
-	  Support for NWFPE will be removed in the future when OABI
-	  support is removed.
-
-config FPE_NWFPE_XP
-	bool "Support extended precision"
-	depends on FPE_NWFPE
-	help
-	  Say Y to include 80-bit support in the kernel floating-point
-	  emulator.  Otherwise, only 32 and 64-bit support is compiled in.
-	  Note that gcc does not generate 80-bit operations by default,
-	  so in most cases this option only enlarges the size of the
-	  floating point emulator without any good reason.
-
-	  You almost surely want to say N here.
-
-config FPE_FASTFPE
-	bool "FastFPE math emulation (EXPERIMENTAL)"
-	depends on (!AEABI || OABI_COMPAT) && !CPU_32v3
-	help
-	  Say Y here to include the FAST floating point emulator in the kernel.
-	  This is an experimental much faster emulator which now also has full
-	  precision for the mantissa.  It does not support any exceptions.
-	  It is very simple, and approximately 3-6 times faster than NWFPE.
-
-	  It should be sufficient for most programs.  It may be not suitable
-	  for scientific calculations, but you have to check this for yourself.
-	  If you do not feel you need a faster FP emulation you should better
-	  choose NWFPE.
+menu "Floating point support"
 
 config VFP
 	bool "VFP-format floating point maths"

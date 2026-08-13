@@ -38,8 +38,6 @@ SoC-specific documents
    marvell
    microchip
 
-   nwfpe/index
-
    keystone/overview
    keystone/knav-qmss
 
