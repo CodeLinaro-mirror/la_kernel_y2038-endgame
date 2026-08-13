@@ -12,21 +12,6 @@
  */
 #include <asm/proc-fns.h>
 
-#ifdef CONFIG_CPU_ARM7TDMI
-void cpu_arm7tdmi_proc_init(void);
-__ADDRESSABLE(cpu_arm7tdmi_proc_init);
-void cpu_arm7tdmi_proc_fin(void);
-__ADDRESSABLE(cpu_arm7tdmi_proc_fin);
-void cpu_arm7tdmi_reset(unsigned long addr, bool hvc);
-__ADDRESSABLE(cpu_arm7tdmi_reset);
-int cpu_arm7tdmi_do_idle(void);
-__ADDRESSABLE(cpu_arm7tdmi_do_idle);
-void cpu_arm7tdmi_dcache_clean_area(void *addr, int size);
-__ADDRESSABLE(cpu_arm7tdmi_dcache_clean_area);
-void cpu_arm7tdmi_switch_mm(phys_addr_t pgd_phys, struct mm_struct *mm);
-__ADDRESSABLE(cpu_arm7tdmi_switch_mm);
-#endif
-
 #ifdef CONFIG_CPU_ARM720T
 void cpu_arm720_proc_init(void);
 __ADDRESSABLE(cpu_arm720_proc_init);
@@ -42,36 +27,6 @@ void cpu_arm720_switch_mm(phys_addr_t pgd_phys, struct mm_struct *mm);
 __ADDRESSABLE(cpu_arm720_switch_mm);
 void cpu_arm720_set_pte_ext(pte_t *ptep, pte_t pte, unsigned int ext);
 __ADDRESSABLE(cpu_arm720_set_pte_ext);
-#endif
-
-#ifdef CONFIG_CPU_ARM740T
-void cpu_arm740_proc_init(void);
-__ADDRESSABLE(cpu_arm740_proc_init);
-void cpu_arm740_proc_fin(void);
-__ADDRESSABLE(cpu_arm740_proc_fin);
-void cpu_arm740_reset(unsigned long addr, bool hvc);
-__ADDRESSABLE(cpu_arm740_reset);
-int cpu_arm740_do_idle(void);
-__ADDRESSABLE(cpu_arm740_do_idle);
-void cpu_arm740_dcache_clean_area(void *addr, int size);
-__ADDRESSABLE(cpu_arm740_dcache_clean_area);
-void cpu_arm740_switch_mm(phys_addr_t pgd_phys, struct mm_struct *mm);
-__ADDRESSABLE(cpu_arm740_switch_mm);
-#endif
-
-#ifdef CONFIG_CPU_ARM9TDMI
-void cpu_arm9tdmi_proc_init(void);
-__ADDRESSABLE(cpu_arm9tdmi_proc_init);
-void cpu_arm9tdmi_proc_fin(void);
-__ADDRESSABLE(cpu_arm9tdmi_proc_fin);
-void cpu_arm9tdmi_reset(unsigned long addr, bool hvc);
-__ADDRESSABLE(cpu_arm9tdmi_reset);
-int cpu_arm9tdmi_do_idle(void);
-__ADDRESSABLE(cpu_arm9tdmi_do_idle);
-void cpu_arm9tdmi_dcache_clean_area(void *addr, int size);
-__ADDRESSABLE(cpu_arm9tdmi_dcache_clean_area);
-void cpu_arm9tdmi_switch_mm(phys_addr_t pgd_phys, struct mm_struct *mm);
-__ADDRESSABLE(cpu_arm9tdmi_switch_mm);
 #endif
 
 #ifdef CONFIG_CPU_ARM920T
@@ -153,36 +108,6 @@ void cpu_arm926_do_resume(void *);
 __ADDRESSABLE(cpu_arm926_do_resume);
 #endif /* CONFIG_ARM_CPU_SUSPEND */
 #endif /* CONFIG_CPU_ARM926T */
-
-#ifdef CONFIG_CPU_ARM940T
-void cpu_arm940_proc_init(void);
-__ADDRESSABLE(cpu_arm940_proc_init);
-void cpu_arm940_proc_fin(void);
-__ADDRESSABLE(cpu_arm940_proc_fin);
-void cpu_arm940_reset(unsigned long addr, bool hvc);
-__ADDRESSABLE(cpu_arm940_reset);
-int cpu_arm940_do_idle(void);
-__ADDRESSABLE(cpu_arm940_do_idle);
-void cpu_arm940_dcache_clean_area(void *addr, int size);
-__ADDRESSABLE(cpu_arm940_dcache_clean_area);
-void cpu_arm940_switch_mm(phys_addr_t pgd_phys, struct mm_struct *mm);
-__ADDRESSABLE(cpu_arm940_switch_mm);
-#endif
-
-#ifdef CONFIG_CPU_ARM946E
-void cpu_arm946_proc_init(void);
-__ADDRESSABLE(cpu_arm946_proc_init);
-void cpu_arm946_proc_fin(void);
-__ADDRESSABLE(cpu_arm946_proc_fin);
-void cpu_arm946_reset(unsigned long addr, bool hvc);
-__ADDRESSABLE(cpu_arm946_reset);
-int cpu_arm946_do_idle(void);
-__ADDRESSABLE(cpu_arm946_do_idle);
-void cpu_arm946_dcache_clean_area(void *addr, int size);
-__ADDRESSABLE(cpu_arm946_dcache_clean_area);
-void cpu_arm946_switch_mm(phys_addr_t pgd_phys, struct mm_struct *mm);
-__ADDRESSABLE(cpu_arm946_switch_mm);
-#endif
 
 #ifdef CONFIG_CPU_FA526
 void cpu_fa526_proc_init(void);

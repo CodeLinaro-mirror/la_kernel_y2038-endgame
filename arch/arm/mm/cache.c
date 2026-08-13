@@ -465,60 +465,6 @@ struct cpu_cache_fns arm926_cache_fns __initconst = {
 };
 #endif
 
-#ifdef CONFIG_CPU_ARM940T
-void arm940_flush_icache_all(void);
-void arm940_flush_kern_cache_all(void);
-void arm940_flush_user_cache_all(void);
-void arm940_flush_user_cache_range(unsigned long, unsigned long, unsigned int);
-void arm940_coherent_kern_range(unsigned long, unsigned long);
-int arm940_coherent_user_range(unsigned long, unsigned long);
-void arm940_flush_kern_dcache_area(void *, size_t);
-void arm940_dma_map_area(const void *, size_t, int);
-void arm940_dma_unmap_area(const void *, size_t, int);
-void arm940_dma_flush_range(const void *, const void *);
-
-struct cpu_cache_fns arm940_cache_fns __initconst = {
-	.flush_icache_all = arm940_flush_icache_all,
-	.flush_kern_all = arm940_flush_kern_cache_all,
-	.flush_kern_louis = arm940_flush_kern_cache_all,
-	.flush_user_all = arm940_flush_user_cache_all,
-	.flush_user_range = arm940_flush_user_cache_range,
-	.coherent_kern_range = arm940_coherent_kern_range,
-	.coherent_user_range = arm940_coherent_user_range,
-	.flush_kern_dcache_area = arm940_flush_kern_dcache_area,
-	.dma_map_area = arm940_dma_map_area,
-	.dma_unmap_area = arm940_dma_unmap_area,
-	.dma_flush_range = arm940_dma_flush_range,
-};
-#endif
-
-#ifdef CONFIG_CPU_ARM946E
-void arm946_flush_icache_all(void);
-void arm946_flush_kern_cache_all(void);
-void arm946_flush_user_cache_all(void);
-void arm946_flush_user_cache_range(unsigned long, unsigned long, unsigned int);
-void arm946_coherent_kern_range(unsigned long, unsigned long);
-int arm946_coherent_user_range(unsigned long, unsigned long);
-void arm946_flush_kern_dcache_area(void *, size_t);
-void arm946_dma_map_area(const void *, size_t, int);
-void arm946_dma_unmap_area(const void *, size_t, int);
-void arm946_dma_flush_range(const void *, const void *);
-
-struct cpu_cache_fns arm946_cache_fns __initconst = {
-	.flush_icache_all = arm946_flush_icache_all,
-	.flush_kern_all = arm946_flush_kern_cache_all,
-	.flush_kern_louis = arm946_flush_kern_cache_all,
-	.flush_user_all = arm946_flush_user_cache_all,
-	.flush_user_range = arm946_flush_user_cache_range,
-	.coherent_kern_range = arm946_coherent_kern_range,
-	.coherent_user_range = arm946_coherent_user_range,
-	.flush_kern_dcache_area = arm946_flush_kern_dcache_area,
-	.dma_map_area = arm946_dma_map_area,
-	.dma_unmap_area = arm946_dma_unmap_area,
-	.dma_flush_range = arm946_dma_flush_range,
-};
-#endif
-
 #ifdef CONFIG_CPU_XSCALE
 void xscale_flush_icache_all(void);
 void xscale_flush_kern_cache_all(void);
