@@ -58,18 +58,9 @@ struct fp_soft_struct {
 	unsigned int save[FP_SOFT_SIZE];		/* undefined information */
 };
 
-#define IWMMXT_SIZE	0x98
-
-struct iwmmxt_struct {
-	unsigned int save[IWMMXT_SIZE / sizeof(unsigned int)];
-};
-
 union fp_state {
 	struct fp_hard_struct	hard;
 	struct fp_soft_struct	soft;
-#ifdef CONFIG_IWMMXT
-	struct iwmmxt_struct	iwmmxt;
-#endif
 };
 
 #define FP_SIZE (sizeof(union fp_state) / sizeof(int))

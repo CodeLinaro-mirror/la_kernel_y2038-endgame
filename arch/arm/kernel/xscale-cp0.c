@@ -2,7 +2,8 @@
 /*
  * linux/arch/arm/kernel/xscale-cp0.c
  *
- * XScale DSP and iWMMXt coprocessor context switching and handling
+ * XScale DSP coprocessor context switching and handling
+ * Formerly this also handled iwmmxt.
  */
 
 #include <linux/types.h>
@@ -52,40 +53,6 @@ static int dsp_do(struct notifier_block *self, unsigned long cmd, void *t)
 static struct notifier_block dsp_notifier_block = {
 	.notifier_call	= dsp_do,
 };
-
-
-#ifdef CONFIG_IWMMXT
-static int iwmmxt_do(struct notifier_block *self, unsigned long cmd, void *t)
-{
-	struct thread_info *thread = t;
-
-	switch (cmd) {
-	case THREAD_NOTIFY_FLUSH:
-		/*
-		 * flush_thread() zeroes thread->fpstate, so no need
-		 * to do anything here.
-		 *
-		 * FALLTHROUGH: Ensure we don't try to overwrite our newly
-		 * initialised state information on the first fault.
-		 */
-
-	case THREAD_NOTIFY_EXIT:
-		iwmmxt_task_release(thread);
-		break;
-
-	case THREAD_NOTIFY_SWITCH:
-		iwmmxt_task_switch(thread);
-		break;
-	}
-
-	return NOTIFY_DONE;
-}
-
-static struct notifier_block iwmmxt_notifier_block = {
-	.notifier_call	= iwmmxt_do,
-};
-#endif
-
 
 static u32 __init xscale_cp_access_read(void)
 {
@@ -141,12 +108,9 @@ static int __init cpu_has_iwmmxt(void)
 
 
 /*
- * If we detect that the CPU has iWMMXt (and CONFIG_IWMMXT=y), we
- * disable CP0/CP1 on boot, and let call_fpe() and the iWMMXt lazy
- * switch code handle iWMMXt context switching.  If on the other
- * hand the CPU has a DSP coprocessor, we keep access to CP0 enabled
- * all the time, and save/restore acc0 on context switch in non-lazy
- * fashion.
+ * iWMMXt support is gone, but on CPUs that have the DSP coprocessor,
+ * we keep access to CP0 enabled all the time, and save/restore acc0
+ * on context switch in non-lazy fashion.
  */
 static int __init xscale_cp0_init(void)
 {
@@ -159,16 +123,7 @@ static int __init xscale_cp0_init(void)
 	cp_access = xscale_cp_access_read() & ~3;
 	xscale_cp_access_write(cp_access | 1);
 
-	if (cpu_has_iwmmxt()) {
-#ifndef CONFIG_IWMMXT
-		pr_warn("CAUTION: XScale iWMMXt coprocessor detected, but kernel support is missing.\n");
-#else
-		pr_info("XScale iWMMXt coprocessor detected.\n");
-		elf_hwcap |= HWCAP_IWMMXT;
-		thread_register_notifier(&iwmmxt_notifier_block);
-		register_iwmmxt_undef_handler();
-#endif
-	} else {
+	if (!cpu_has_iwmmxt()) {
 		pr_info("XScale DSP coprocessor detected.\n");
 		thread_register_notifier(&dsp_notifier_block);
 		cp_access |= 1;

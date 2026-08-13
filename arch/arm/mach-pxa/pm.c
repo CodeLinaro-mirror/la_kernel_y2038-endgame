@@ -26,12 +26,6 @@ int pxa_pm_enter(suspend_state_t state)
 	unsigned long sleep_save_checksum = 0, checksum = 0;
 	int i;
 
-#ifdef CONFIG_IWMMXT
-	/* force any iWMMXt context to ram **/
-	if (elf_hwcap & HWCAP_IWMMXT)
-		iwmmxt_task_disable(NULL);
-#endif
-
 	/* skip registers saving for standby */
 	if (state != PM_SUSPEND_STANDBY && pxa_cpu_pm_fns->save) {
 		pxa_cpu_pm_fns->save(sleep_save);

@@ -61,19 +61,6 @@ void elf_set_personality(const struct elf32_hdr *x)
 		personality |= ADDR_LIMIT_32BIT;
 
 	set_personality(personality);
-
-	/*
-	 * Since the FPA coprocessor uses CP1 and CP2, and iWMMXt uses CP0
-	 * and CP1, we only enable access to the iWMMXt coprocessor if the
-	 * binary is EABI or softfloat (and thus, guaranteed not to use
-	 * FPA instructions.)
-	 */
-	if (elf_hwcap & HWCAP_IWMMXT &&
-	    eflags & (EF_ARM_EABI_MASK | EF_ARM_SOFT_FLOAT)) {
-		set_thread_flag(TIF_USING_IWMMXT);
-	} else {
-		clear_thread_flag(TIF_USING_IWMMXT);
-	}
 }
 EXPORT_SYMBOL(elf_set_personality);
 

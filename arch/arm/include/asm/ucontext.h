@@ -43,18 +43,6 @@ struct ucontext {
  */
 #define DUMMY_MAGIC		0xb0d9ed01
 
-#ifdef CONFIG_IWMMXT
-/* iwmmxt_area is 0x98 bytes long, preceded by 8 bytes of signature */
-#define IWMMXT_MAGIC		0x12ef842a
-#define IWMMXT_STORAGE_SIZE	(IWMMXT_SIZE + 8)
-
-struct iwmmxt_sigframe {
-	unsigned long	magic;
-	unsigned long	size;
-	struct iwmmxt_struct storage;
-} __attribute__((__aligned__(8)));
-#endif /* CONFIG_IWMMXT */
-
 #ifdef CONFIG_VFP
 #define VFP_MAGIC		0x56465001
 
@@ -81,9 +69,6 @@ struct vfp_sigframe
  * one of these.
  */
 struct aux_sigframe {
-#ifdef CONFIG_IWMMXT
-	struct iwmmxt_sigframe	iwmmxt;
-#endif
 #ifdef CONFIG_VFP
 	struct vfp_sigframe	vfp;
 #endif

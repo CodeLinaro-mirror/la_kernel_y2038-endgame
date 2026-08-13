@@ -99,27 +99,6 @@ static inline struct task_struct *thread_task(struct thread_info* ti)
 	((unsigned long)(task_thread_info(tsk)->cpu_context.r7))
 #endif
 
-extern void iwmmxt_task_disable(struct thread_info *);
-extern void iwmmxt_task_copy(struct thread_info *, void *);
-extern void iwmmxt_task_restore(struct thread_info *, void *);
-extern void iwmmxt_task_release(struct thread_info *);
-extern void iwmmxt_task_switch(struct thread_info *);
-
-extern int iwmmxt_undef_handler(struct pt_regs *, u32);
-
-static inline void register_iwmmxt_undef_handler(void)
-{
-	static struct undef_hook iwmmxt_undef_hook = {
-		.instr_mask	= 0x0c000e00,
-		.instr_val	= 0x0c000000,
-		.cpsr_mask	= MODE_MASK | PSR_T_BIT,
-		.cpsr_val	= USR_MODE,
-		.fn		= iwmmxt_undef_handler,
-	};
-
-	register_undef_hook(&iwmmxt_undef_hook);
-}
-
 extern void vfp_sync_hwstate(struct thread_info *);
 extern void vfp_flush_hwstate(struct thread_info *);
 
@@ -145,7 +124,6 @@ extern int vfp_restore_user_hwstate(struct user_vfp *,
 #define TIF_UPROBE		3	/* breakpointed or singlestepping */
 #define TIF_NOTIFY_SIGNAL	4	/* signal notifications exist */
 
-#define TIF_USING_IWMMXT	17
 #define TIF_MEMDIE		18	/* is terminating due to OOM killer */
 #define TIF_RESTORE_SIGMASK	19
 #define TIF_SYSCALL_TRACE	20	/* syscall trace active */
@@ -163,7 +141,6 @@ extern int vfp_restore_user_hwstate(struct user_vfp *,
 #define _TIF_SYSCALL_TRACEPOINT	(1 << TIF_SYSCALL_TRACEPOINT)
 #define _TIF_SECCOMP		(1 << TIF_SECCOMP)
 #define _TIF_NOTIFY_SIGNAL	(1 << TIF_NOTIFY_SIGNAL)
-#define _TIF_USING_IWMMXT	(1 << TIF_USING_IWMMXT)
 
 /* Checks for any syscall work in entry-common.S */
 #define _TIF_SYSCALL_WORK (_TIF_SYSCALL_TRACE | _TIF_SYSCALL_AUDIT | \

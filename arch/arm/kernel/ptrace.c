@@ -286,38 +286,6 @@ static int ptrace_write_user(struct task_struct *tsk, unsigned long off,
 	return put_user_reg(tsk, off >> 2, val);
 }
 
-#ifdef CONFIG_IWMMXT
-
-/*
- * Get the child iWMMXt state.
- */
-static int ptrace_getwmmxregs(struct task_struct *tsk, void __user *ufp)
-{
-	struct thread_info *thread = task_thread_info(tsk);
-
-	if (!test_ti_thread_flag(thread, TIF_USING_IWMMXT))
-		return -ENODATA;
-	iwmmxt_task_disable(thread);  /* force it to ram */
-	return copy_to_user(ufp, &thread->fpstate.iwmmxt, IWMMXT_SIZE)
-		? -EFAULT : 0;
-}
-
-/*
- * Set the child iWMMXt state.
- */
-static int ptrace_setwmmxregs(struct task_struct *tsk, void __user *ufp)
-{
-	struct thread_info *thread = task_thread_info(tsk);
-
-	if (!test_ti_thread_flag(thread, TIF_USING_IWMMXT))
-		return -EACCES;
-	iwmmxt_task_release(thread);  /* force a reload */
-	return copy_from_user(&thread->fpstate.iwmmxt, ufp, IWMMXT_SIZE)
-		? -EFAULT : 0;
-}
-
-#endif
-
 #ifdef CONFIG_HAVE_HW_BREAKPOINT
 /*
  * Convert a virtual register number into an index for a thread_info
@@ -764,16 +732,6 @@ long arch_ptrace(struct task_struct *child, long request,
 						    0, sizeof(union fp_state),
 						    datap);
 			break;
-
-#ifdef CONFIG_IWMMXT
-		case PTRACE_GETWMMXREGS:
-			ret = ptrace_getwmmxregs(child, datap);
-			break;
-
-		case PTRACE_SETWMMXREGS:
-			ret = ptrace_setwmmxregs(child, datap);
-			break;
-#endif
 
 		case PTRACE_GET_THREAD_AREA:
 			ret = put_user(task_thread_info(child)->tp_value[0],
