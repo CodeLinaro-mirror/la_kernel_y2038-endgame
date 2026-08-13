@@ -68,12 +68,10 @@ SYM_FUNC_END(cpu_arm720_do_idle)
  *	     the new.
  */
 SYM_TYPED_FUNC_START(cpu_arm720_switch_mm)
-#ifdef CONFIG_MMU
 		mov	r1, #0
 		mcr	p15, 0, r1, c7, c7, 0		@ invalidate cache
 		mcr	p15, 0, r0, c2, c0, 0		@ update page table ptr
 		mcr	p15, 0, r1, c8, c7, 0		@ flush TLB (v4)
-#endif
 		ret	lr
 SYM_FUNC_END(cpu_arm720_switch_mm)
 
@@ -85,9 +83,7 @@ SYM_FUNC_END(cpu_arm720_switch_mm)
  */
 	.align	5
 SYM_TYPED_FUNC_START(cpu_arm720_set_pte_ext)
-#ifdef CONFIG_MMU
 	armv3_set_pte_ext wc_disable=0
-#endif
 	ret	lr
 SYM_FUNC_END(cpu_arm720_set_pte_ext)
 
@@ -100,9 +96,7 @@ SYM_FUNC_END(cpu_arm720_set_pte_ext)
 SYM_TYPED_FUNC_START(cpu_arm720_reset)
 		mov	ip, #0
 		mcr	p15, 0, ip, c7, c7, 0		@ invalidate cache
-#ifdef CONFIG_MMU
 		mcr	p15, 0, ip, c8, c7, 0		@ flush TLB (v4)
-#endif
 		mrc	p15, 0, ip, c1, c0, 0		@ get ctrl register
 		bic	ip, ip, #0x000f			@ ............wcam
 		bic	ip, ip, #0x2100			@ ..v....s........
@@ -115,9 +109,7 @@ SYM_FUNC_END(cpu_arm720_reset)
 __arm710_setup:
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c7, 0		@ invalidate caches
-#ifdef CONFIG_MMU
 	mcr	p15, 0, r0, c8, c7, 0		@ flush TLB (v4)
-#endif
 	mrc	p15, 0, r0, c1, c0		@ get control register
 	ldr	r5, arm710_cr1_clear
 	bic	r0, r0, r5
@@ -143,9 +135,7 @@ arm710_cr1_set:
 __arm720_setup:
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c7, 0		@ invalidate caches
-#ifdef CONFIG_MMU
 	mcr	p15, 0, r0, c8, c7, 0		@ flush TLB (v4)
-#endif
 	adr	r5, arm720_crval
 	ldmia	r5, {r5, r6}
 	mrc	p15, 0, r0, c1, c0		@ get control register
@@ -162,7 +152,7 @@ __arm720_setup:
 	 */
 	.type	arm720_crval, #object
 arm720_crval:
-	crval	clear=0x00002f3f, mmuset=0x0000213d, ucset=0x00000130
+	crval	clear=0x00002f3f, mmuset=0x0000213d
 
 		__INITDATA
 	@ define struct processor (see <asm/proc-fns.h> and proc-macros.S)

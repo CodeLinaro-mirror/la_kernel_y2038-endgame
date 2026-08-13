@@ -109,9 +109,7 @@ SYM_FUNC_END(cpu_arm925_reset)
 	mov	ip, #0
 	mcr	p15, 0, ip, c7, c7, 0		@ invalidate I,D caches
 	mcr	p15, 0, ip, c7, c10, 4		@ drain WB
-#ifdef CONFIG_MMU
 	mcr	p15, 0, ip, c8, c7, 0		@ invalidate I & D TLBs
-#endif
 	mrc	p15, 0, ip, c1, c0, 0		@ ctrl register
 	bic	ip, ip, #0x000f			@ ............wcam
 	bic	ip, ip, #0x1100			@ ...i...s........
@@ -393,7 +391,6 @@ SYM_FUNC_END(cpu_arm925_dcache_clean_area)
  */
 	.align	5
 SYM_TYPED_FUNC_START(cpu_arm925_switch_mm)
-#ifdef CONFIG_MMU
 	mov	ip, #0
 #ifdef CONFIG_CPU_DCACHE_WRITETHROUGH
 	mcr	p15, 0, ip, c7, c6, 0		@ invalidate D cache
@@ -408,7 +405,6 @@ SYM_TYPED_FUNC_START(cpu_arm925_switch_mm)
 	mcr	p15, 0, ip, c7, c10, 4		@ drain WB
 	mcr	p15, 0, r0, c2, c0, 0		@ load page table pointer
 	mcr	p15, 0, ip, c8, c7, 0		@ invalidate I & D TLBs
-#endif
 	ret	lr
 SYM_FUNC_END(cpu_arm925_switch_mm)
 
@@ -419,14 +415,12 @@ SYM_FUNC_END(cpu_arm925_switch_mm)
  */
 	.align	5
 SYM_TYPED_FUNC_START(cpu_arm925_set_pte_ext)
-#ifdef CONFIG_MMU
 	armv3_set_pte_ext
 	mov	r0, r0
 #ifndef CONFIG_CPU_DCACHE_WRITETHROUGH
 	mcr	p15, 0, r0, c7, c10, 1		@ clean D entry
 #endif
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
-#endif /* CONFIG_MMU */
 	ret	lr
 SYM_FUNC_END(cpu_arm925_set_pte_ext)
 
@@ -441,9 +435,7 @@ __arm925_setup:
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c7		@ invalidate I,D caches on v4
 	mcr	p15, 0, r0, c7, c10, 4		@ drain write buffer on v4
-#ifdef CONFIG_MMU
 	mcr	p15, 0, r0, c8, c7		@ invalidate I,D TLBs on v4
-#endif
 
 #ifdef CONFIG_CPU_DCACHE_WRITETHROUGH
 	mov	r0, #4				@ disable write-back on caches explicitly
@@ -469,7 +461,7 @@ __arm925_setup:
 	 */
 	.type	arm925_crval, #object
 arm925_crval:
-	crval	clear=0x00007f3f, mmuset=0x0000313d, ucset=0x00001130
+	crval	clear=0x00007f3f, mmuset=0x0000313d
 
 	__INITDATA
 	@ define struct processor (see <asm/proc-fns.h> and proc-macros.S)

@@ -41,7 +41,6 @@
  *	If IBE is not set, the flush BTAC/BTB won't do anything.
  */
 SYM_TYPED_FUNC_START(cpu_v7_switch_mm)
-#ifdef CONFIG_MMU
 	mmid	r1, r1				@ get mm->context.id
 	ALT_SMP(orr	r0, r0, #TTB_FLAGS_SMP)
 	ALT_UP(orr	r0, r0, #TTB_FLAGS_UP)
@@ -57,7 +56,6 @@ SYM_TYPED_FUNC_START(cpu_v7_switch_mm)
 	isb
 	mcr	p15, 0, r0, c2, c0, 0		@ set TTB 0
 	isb
-#endif
 	bx	lr
 SYM_FUNC_END(cpu_v7_switch_mm)
 
@@ -72,7 +70,6 @@ SYM_FUNC_END(cpu_v7_switch_mm)
  *	- ext	- value for extended PTE bits
  */
 SYM_TYPED_FUNC_START(cpu_v7_set_pte_ext)
-#ifdef CONFIG_MMU
 	str	r1, [r0]			@ linux version
 
 	bic	r3, r1, #0x000003f0
@@ -104,7 +101,6 @@ SYM_TYPED_FUNC_START(cpu_v7_set_pte_ext)
  THUMB(	str	r3, [r0] )
 	ALT_SMP(W(nop))
 	ALT_UP (mcr	p15, 0, r0, c7, c10, 1)		@ flush_pte
-#endif
 	bx	lr
 SYM_FUNC_END(cpu_v7_set_pte_ext)
 
@@ -161,4 +157,4 @@ SYM_FUNC_END(cpu_v7_set_pte_ext)
 	.align	2
 	.type	v7_crval, #object
 v7_crval:
-	crval	clear=0x2120c302, mmuset=0x10c03c7d, ucset=0x00c01c7c
+	crval	clear=0x2120c302, mmuset=0x10c03c7d

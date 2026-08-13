@@ -490,7 +490,7 @@ __xsc3_setup:
 
 	.type	xsc3_crval, #object
 xsc3_crval:
-	crval	clear=0x04002202, mmuset=0x00003905, ucset=0x00001900
+	crval	clear=0x04002202, mmuset=0x00003905
 
 	__INITDATA
 

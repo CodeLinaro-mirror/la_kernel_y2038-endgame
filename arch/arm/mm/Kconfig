@@ -12,11 +12,11 @@ config CPU_ARM720T
 	select CPU_ABRT_LV4T
 	select CPU_CACHE_V4
 	select CPU_CACHE_VIVT
-	select CPU_COPY_V4WT if MMU
+	select CPU_COPY_V4WT
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
-	select CPU_TLB_V4WT if MMU
+	select CPU_TLB_V4WT
 	help
 	  A 32-bit RISC processor with 8kByte Cache, Write Buffer and
 	  MMU built around an ARM7TDMI core.
@@ -31,11 +31,11 @@ config CPU_ARM920T
 	select CPU_ABRT_EV4T
 	select CPU_CACHE_V4WT
 	select CPU_CACHE_VIVT
-	select CPU_COPY_V4WB if MMU
+	select CPU_COPY_V4WB
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
-	select CPU_TLB_V4WBI if MMU
+	select CPU_TLB_V4WBI
 	help
 	  The ARM920T is licensed to be produced by numerous vendors,
 	  and is used in the Cirrus EP93xx and the Samsung S3C2410.
@@ -50,11 +50,11 @@ config CPU_ARM922T
 	select CPU_ABRT_EV4T
 	select CPU_CACHE_V4WT
 	select CPU_CACHE_VIVT
-	select CPU_COPY_V4WB if MMU
+	select CPU_COPY_V4WB
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
-	select CPU_TLB_V4WBI if MMU
+	select CPU_TLB_V4WBI
 	help
 	  The ARM922T is a version of the ARM920T, but with smaller
 	  instruction and data caches. It is used in Altera's
@@ -70,11 +70,11 @@ config CPU_ARM925T
 	select CPU_ABRT_EV4T
 	select CPU_CACHE_V4WT
 	select CPU_CACHE_VIVT
-	select CPU_COPY_V4WB if MMU
+	select CPU_COPY_V4WB
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
-	select CPU_TLB_V4WBI if MMU
+	select CPU_TLB_V4WBI
  	help
  	  The ARM925T is a mix between the ARM920T and ARM926T, but with
 	  different instruction and data caches. It is used in TI's OMAP
@@ -89,11 +89,11 @@ config CPU_ARM926T
 	select CPU_32v5
 	select CPU_ABRT_EV5TJ
 	select CPU_CACHE_VIVT
-	select CPU_COPY_V4WB if MMU
+	select CPU_COPY_V4WB
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
-	select CPU_TLB_V4WBI if MMU
+	select CPU_TLB_V4WBI
 	help
 	  This is a variant of the ARM920.  It has slightly different
 	  instruction sequences for cache and TLB operations.  Curiously,
@@ -109,10 +109,10 @@ config CPU_FA526
 	select CPU_ABRT_EV4
 	select CPU_CACHE_FA
 	select CPU_CACHE_VIVT
-	select CPU_COPY_FA if MMU
+	select CPU_COPY_FA
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
-	select CPU_TLB_FA if MMU
+	select CPU_TLB_FA
 	help
 	  The FA526 is a version of the ARMv4 compatible processor with
 	  Branch Target Buffer, Unified TLB and cache line size 16.
@@ -161,7 +161,7 @@ config CPU_XSCALE
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
-	select CPU_TLB_V4WBI if MMU
+	select CPU_TLB_V4WBI
 
 # XScale Core Version 3
 config CPU_XSC3
@@ -172,7 +172,7 @@ config CPU_XSC3
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
-	select CPU_TLB_V4WBI if MMU
+	select CPU_TLB_V4WBI
 
 # Marvell PJ1 (Mohawk)
 config CPU_MOHAWK
@@ -180,11 +180,11 @@ config CPU_MOHAWK
 	select CPU_32v5
 	select CPU_ABRT_EV5T
 	select CPU_CACHE_VIVT
-	select CPU_COPY_V4WB if MMU
+	select CPU_COPY_V4WB
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
-	select CPU_TLB_V4WBI if MMU
+	select CPU_TLB_V4WBI
 
 # Feroceon
 config CPU_FEROCEON
@@ -192,11 +192,11 @@ config CPU_FEROCEON
 	select CPU_32v5
 	select CPU_ABRT_EV5T
 	select CPU_CACHE_VIVT
-	select CPU_COPY_FEROCEON if MMU
+	select CPU_COPY_FEROCEON
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
-	select CPU_TLB_FEROCEON if MMU
+	select CPU_TLB_FEROCEON
 
 config CPU_FEROCEON_OLD_ID
 	bool "Accept early Feroceon cores with an ARM926 ID"
@@ -225,12 +225,12 @@ config CPU_V6K
 	select CPU_ABRT_EV6
 	select CPU_CACHE_V6
 	select CPU_CACHE_VIPT
-	select CPU_COPY_V6 if MMU
+	select CPU_COPY_V6
 	select CPU_CP15_MMU
-	select CPU_HAS_ASID if MMU
+	select CPU_HAS_ASID
 	select CPU_PABRT_V6
 	select CPU_THUMB_CAPABLE
-	select CPU_TLB_V6 if MMU
+	select CPU_TLB_V6
 
 config CPU_ARM1136R1
 	bool
@@ -254,14 +254,13 @@ config CPU_V7
 	select CPU_ABRT_EV7
 	select CPU_CACHE_V7
 	select CPU_CACHE_VIPT
-	select CPU_COPY_V6 if MMU
-	select CPU_CP15_MMU if MMU
-	select CPU_CP15_MPU if !MMU
-	select CPU_HAS_ASID if MMU
+	select CPU_COPY_V6
+	select CPU_CP15_MMU
+	select CPU_HAS_ASID
 	select CPU_PABRT_V7
-	select CPU_SPECTRE if MMU
+	select CPU_SPECTRE
 	select CPU_THUMB_CAPABLE
-	select CPU_TLB_V7 if MMU
+	select CPU_TLB_V7
 
 config CPU_THUMB_CAPABLE
 	bool
@@ -279,23 +278,20 @@ config CPU_32v3
 
 config CPU_32v4
 	bool
-	select CPU_USE_DOMAINS if MMU
+	select CPU_USE_DOMAINS
 	select NEED_KUSER_HELPERS
-	select TLS_REG_EMUL if SMP || !MMU
 	select CPU_NO_EFFICIENT_FFS
 
 config CPU_32v4T
 	bool
-	select CPU_USE_DOMAINS if MMU
+	select CPU_USE_DOMAINS
 	select NEED_KUSER_HELPERS
-	select TLS_REG_EMUL if SMP || !MMU
 	select CPU_NO_EFFICIENT_FFS
 
 config CPU_32v5
 	bool
-	select CPU_USE_DOMAINS if MMU
+	select CPU_USE_DOMAINS
 	select NEED_KUSER_HELPERS
-	select TLS_REG_EMUL if SMP || !MMU
 
 config CPU_32v6
 	bool

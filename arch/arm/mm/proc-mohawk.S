@@ -336,13 +336,11 @@ SYM_FUNC_END(cpu_mohawk_switch_mm)
  */
 	.align	5
 SYM_TYPED_FUNC_START(cpu_mohawk_set_pte_ext)
-#ifdef CONFIG_MMU
 	armv3_set_pte_ext
 	mov	r0, r0
 	mcr	p15, 0, r0, c7, c10, 1		@ clean D entry
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
 	ret	lr
-#endif
 SYM_FUNC_END(cpu_mohawk_set_pte_ext)
 
 .globl	cpu_mohawk_suspend_size
@@ -409,7 +407,7 @@ __mohawk_setup:
 	 */
 	.type	mohawk_crval, #object
 mohawk_crval:
-	crval	clear=0x00007f3f, mmuset=0x00003905, ucset=0x00001134
+	crval	clear=0x00007f3f, mmuset=0x00003905
 
 	__INITDATA
 

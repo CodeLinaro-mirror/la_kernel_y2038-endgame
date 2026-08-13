@@ -101,7 +101,6 @@ SYM_FUNC_END(cpu_v6_dcache_clean_area)
  *	- we are not using split page tables
  */
 SYM_TYPED_FUNC_START(cpu_v6_switch_mm)
-#ifdef CONFIG_MMU
 	mov	r2, #0
 	mmid	r1, r1				@ get mm->context.id
 	ALT_SMP(orr	r0, r0, #TTB_FLAGS_SMP)
@@ -116,7 +115,6 @@ SYM_TYPED_FUNC_START(cpu_v6_switch_mm)
 	orr	r1, r1, r2			@ insert into new context ID
 #endif
 	mcr	p15, 0, r1, c13, c0, 1		@ set context ID
-#endif
 	ret	lr
 SYM_FUNC_END(cpu_v6_switch_mm)
 
@@ -133,9 +131,7 @@ SYM_FUNC_END(cpu_v6_switch_mm)
 	armv6_mt_table cpu_v6
 
 SYM_TYPED_FUNC_START(cpu_v6_set_pte_ext)
-#ifdef CONFIG_MMU
 	armv6_set_pte_ext cpu_v6
-#endif
 	ret	lr
 SYM_FUNC_END(cpu_v6_set_pte_ext)
 
@@ -146,10 +142,8 @@ SYM_FUNC_END(cpu_v6_set_pte_ext)
 SYM_TYPED_FUNC_START(cpu_v6_do_suspend)
 	stmfd	sp!, {r4 - r9, lr}
 	mrc	p15, 0, r4, c13, c0, 0	@ FCSE/PID
-#ifdef CONFIG_MMU
 	mrc	p15, 0, r5, c3, c0, 0	@ Domain ID
 	mrc	p15, 0, r6, c2, c0, 1	@ Translation table base 1
-#endif
 	mrc	p15, 0, r7, c1, c0, 1	@ auxiliary control register
 	mrc	p15, 0, r8, c1, c0, 2	@ co-processor access control
 	mrc	p15, 0, r9, c1, c0, 0	@ control register
@@ -166,14 +160,12 @@ SYM_TYPED_FUNC_START(cpu_v6_do_resume)
 	mcr	p15, 0, ip, c13, c0, 1	@ set reserved context ID
 	ldmia	r0, {r4 - r9}
 	mcr	p15, 0, r4, c13, c0, 0	@ FCSE/PID
-#ifdef CONFIG_MMU
 	mcr	p15, 0, r5, c3, c0, 0	@ Domain ID
 	ALT_SMP(orr	r1, r1, #TTB_FLAGS_SMP)
 	ALT_UP(orr	r1, r1, #TTB_FLAGS_UP)
 	mcr	p15, 0, r1, c2, c0, 0	@ Translation table base 0
 	mcr	p15, 0, r6, c2, c0, 1	@ Translation table base 1
 	mcr	p15, 0, ip, c2, c0, 2	@ TTB control register
-#endif
 	mcr	p15, 0, r7, c1, c0, 1	@ auxiliary control register
 	mcr	p15, 0, r8, c1, c0, 2	@ co-processor access control
 	mcr	p15, 0, ip, c7, c5, 4	@ ISB
@@ -214,7 +206,6 @@ __v6_setup:
 	mcr	p15, 0, r0, c7, c14, 0		@ clean+invalidate D cache
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
 	mcr	p15, 0, r0, c7, c15, 0		@ clean+invalidate cache
-#ifdef CONFIG_MMU
 	mcr	p15, 0, r0, c8, c7, 0		@ invalidate I + D TLBs
 	mcr	p15, 0, r0, c2, c0, 2		@ TTB control register
 	ALT_SMP(orr	r4, r4, #TTB_FLAGS_SMP)
@@ -222,7 +213,6 @@ __v6_setup:
 	ALT_SMP(orr	r8, r8, #TTB_FLAGS_SMP)
 	ALT_UP(orr	r8, r8, #TTB_FLAGS_UP)
 	mcr	p15, 0, r8, c2, c0, 1		@ load TTB1
-#endif /* CONFIG_MMU */
 	mcr	p15, 0, r0, c7, c10, 4		@ drain write buffer and
 						@ complete invalidations
 	adr	r5, v6_crval
@@ -241,7 +231,7 @@ __v6_setup:
 	 */
 	.type	v6_crval, #object
 v6_crval:
-	crval	clear=0x01e0fb7f, mmuset=0x00c0387d, ucset=0x00c0187c
+	crval	clear=0x01e0fb7f, mmuset=0x00c0387d
 
 	__INITDATA
 

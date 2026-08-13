@@ -43,13 +43,11 @@
  * the new TTB).
  */
 SYM_TYPED_FUNC_START(cpu_v7_switch_mm)
-#ifdef CONFIG_MMU
 	mmid	r2, r2
 	asid	r2, r2
 	orr	rpgdh, rpgdh, r2, lsl #(48 - 32)	@ upper 32-bits of pgd
 	mcrr	p15, 0, rpgdl, rpgdh, c2		@ set TTB 0
 	isb
-#endif
 	ret	lr
 SYM_FUNC_END(cpu_v7_switch_mm)
 
@@ -69,7 +67,6 @@ SYM_FUNC_END(cpu_v7_switch_mm)
  * - pte - PTE value to store (64-bit in r2 and r3)
  */
 SYM_TYPED_FUNC_START(cpu_v7_set_pte_ext)
-#ifdef CONFIG_MMU
 	tst	rl, #L_PTE_VALID
 	beq	1f
 	tst	rh, #1 << (57 - 32)		@ L_PTE_NONE
@@ -85,7 +82,6 @@ SYM_TYPED_FUNC_START(cpu_v7_set_pte_ext)
 1:	strd	r2, r3, [r0]
 	ALT_SMP(W(nop))
 	ALT_UP (mcr	p15, 0, r0, c7, c10, 1)		@ flush_pte
-#endif
 	ret	lr
 SYM_FUNC_END(cpu_v7_set_pte_ext)
 
@@ -145,4 +141,4 @@ SYM_FUNC_END(cpu_v7_set_pte_ext)
 	.align	2
 	.type	v7_crval, #object
 v7_crval:
-	crval	clear=0x0122c302, mmuset=0x30c03c7d, ucset=0x00c01c7c
+	crval	clear=0x0122c302, mmuset=0x30c03c7d

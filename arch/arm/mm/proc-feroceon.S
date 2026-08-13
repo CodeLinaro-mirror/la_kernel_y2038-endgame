@@ -97,9 +97,7 @@ SYM_TYPED_FUNC_START(cpu_feroceon_reset)
 	mov	ip, #0
 	mcr	p15, 0, ip, c7, c7, 0		@ invalidate I,D caches
 	mcr	p15, 0, ip, c7, c10, 4		@ drain WB
-#ifdef CONFIG_MMU
 	mcr	p15, 0, ip, c8, c7, 0		@ invalidate I & D TLBs
-#endif
 	mrc	p15, 0, ip, c1, c0, 0		@ ctrl register
 	bic	ip, ip, #0x000f			@ ............wcam
 	bic	ip, ip, #0x1100			@ ...i...s........
@@ -452,7 +450,6 @@ SYM_FUNC_END(cpu_feroceon_dcache_clean_area)
  */
 	.align	5
 SYM_TYPED_FUNC_START(cpu_feroceon_switch_mm)
-#ifdef CONFIG_MMU
 	/*
 	 * Note: we wish to call __flush_whole_cache but we need to preserve
 	 * lr to do so.  The only way without touching main memory is to
@@ -469,9 +466,6 @@ SYM_TYPED_FUNC_START(cpu_feroceon_switch_mm)
 	mcr	p15, 0, r0, c2, c0, 0		@ load page table pointer
 	mcr	p15, 0, ip, c8, c7, 0		@ invalidate I & D TLBs
 	ret	r2
-#else
-	ret	lr
-#endif
 SYM_FUNC_END(cpu_feroceon_switch_mm)
 
 /*
@@ -481,7 +475,6 @@ SYM_FUNC_END(cpu_feroceon_switch_mm)
  */
 	.align	5
 SYM_TYPED_FUNC_START(cpu_feroceon_set_pte_ext)
-#ifdef CONFIG_MMU
 	armv3_set_pte_ext wc_disable=0
 	mov	r0, r0
 	mcr	p15, 0, r0, c7, c10, 1		@ clean D entry
@@ -490,7 +483,6 @@ SYM_TYPED_FUNC_START(cpu_feroceon_set_pte_ext)
 	mcr	p15, 1, r0, c15, c9, 1		@ clean L2 entry
 #endif
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
-#endif
 	ret	lr
 SYM_FUNC_END(cpu_feroceon_set_pte_ext)
 
@@ -525,9 +517,7 @@ __feroceon_setup:
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c7		@ invalidate I,D caches on v4
 	mcr	p15, 0, r0, c7, c10, 4		@ drain write buffer on v4
-#ifdef CONFIG_MMU
 	mcr	p15, 0, r0, c8, c7		@ invalidate I,D TLBs on v4
-#endif
 
 	adr	r5, feroceon_crval
 	ldmia	r5, {r5, r6}
@@ -546,7 +536,7 @@ __feroceon_setup:
 	 */
 	.type	feroceon_crval, #object
 feroceon_crval:
-	crval	clear=0x0000773f, mmuset=0x00003135, ucset=0x00001134
+	crval	clear=0x0000773f, mmuset=0x00003135
 
 	__INITDATA
 

@@ -138,7 +138,6 @@ SYM_TYPED_FUNC_START(cpu_v7_do_suspend)
 	mrc	p15, 0, r4, c13, c0, 0	@ FCSE/PID
 	mrc	p15, 0, r5, c13, c0, 3	@ User r/o thread ID
 	stmia	r0!, {r4 - r5}
-#ifdef CONFIG_MMU
 	mrc	p15, 0, r6, c3, c0, 0	@ Domain ID
 #ifdef CONFIG_ARM_LPAE
 	mrrc	p15, 1, r5, r7, c2	@ TTB 1
@@ -146,7 +145,6 @@ SYM_TYPED_FUNC_START(cpu_v7_do_suspend)
 	mrc	p15, 0, r7, c2, c0, 1	@ TTB 1
 #endif
 	mrc	p15, 0, r11, c2, c0, 2	@ TTB control register
-#endif
 	mrc	p15, 0, r8, c1, c0, 0	@ Control register
 	mrc	p15, 0, r9, c1, c0, 1	@ Auxiliary control register
 	mrc	p15, 0, r10, c1, c0, 2	@ Co-processor access control
@@ -162,7 +160,6 @@ SYM_TYPED_FUNC_START(cpu_v7_do_resume)
 	mcr	p15, 0, r4, c13, c0, 0	@ FCSE/PID
 	mcr	p15, 0, r5, c13, c0, 3	@ User r/o thread ID
 	ldmia	r0, {r5 - r11}
-#ifdef CONFIG_MMU
 	mcr	p15, 0, ip, c8, c7, 0	@ invalidate TLBs
 	mcr	p15, 0, r6, c3, c0, 0	@ Domain ID
 #ifdef CONFIG_ARM_LPAE
@@ -179,7 +176,6 @@ SYM_TYPED_FUNC_START(cpu_v7_do_resume)
 	ldr	r5, =NMRR		@ NMRR
 	mcr	p15, 0, r4, c10, c2, 0	@ write PRRR
 	mcr	p15, 0, r5, c10, c2, 1	@ write NMRR
-#endif	/* CONFIG_MMU */
 	mrc	p15, 0, r4, c1, c0, 1	@ Read Auxiliary control register
 	teq	r4, r9			@ Is it already set?
 	mcrne	p15, 0, r9, c1, c0, 1	@ No, so write it
@@ -525,14 +521,12 @@ __v7_setup_cont:
 __errata_finish:
 	mov	r10, #0
 	mcr	p15, 0, r10, c7, c5, 0		@ I+BTB cache invalidate
-#ifdef CONFIG_MMU
 	mcr	p15, 0, r10, c8, c7, 0		@ invalidate I + D TLBs
 	v7_ttb_setup r10, r4, r5, r8, r3	@ TTBCR, TTBRx setup
 	ldr	r3, =PRRR			@ PRRR
 	ldr	r6, =NMRR			@ NMRR
 	mcr	p15, 0, r3, c10, c2, 0		@ write PRRR
 	mcr	p15, 0, r6, c10, c2, 1		@ write NMRR
-#endif
 	dsb					@ Complete invalidations
 #ifndef CONFIG_ARM_THUMBEE
 	mrc	p15, 0, r0, c0, c1, 0		@ read ID_PFR0 for ThumbEE
