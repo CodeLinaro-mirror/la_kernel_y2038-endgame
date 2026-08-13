@@ -293,14 +293,6 @@ THUMB(	fpreg	.req	r7	)
 	.macro		this_cpu_offset, rd:req
 #ifdef CONFIG_SMP
 ALT_SMP(mrc		p15, 0, \rd, c13, c0, 4)
-#ifdef CONFIG_CPU_V6
-ALT_UP_B(.L1_\@)
-.L0_\@:
-	.subsection	1
-.L1_\@: ldr_va		\rd, __per_cpu_offset
-	b		.L0_\@
-	.previous
-#endif
 #else
 	mov		\rd, #0
 #endif
@@ -312,14 +304,6 @@ ALT_UP_B(.L1_\@)
 	.macro		set_current, rn:req, tmp:req
 #if defined(CONFIG_CURRENT_POINTER_IN_TPIDRURO) || defined(CONFIG_SMP)
 9998:	mcr		p15, 0, \rn, c13, c0, 3		@ set TPIDRURO register
-#ifdef CONFIG_CPU_V6
-ALT_UP_B(.L0_\@)
-	.subsection	1
-.L0_\@: str_va		\rn, __current, \tmp
-	b		.L1_\@
-	.previous
-.L1_\@:
-#endif
 #else
 	str_va		\rn, __current, \tmp
 #endif
@@ -331,14 +315,6 @@ ALT_UP_B(.L0_\@)
 	.macro		get_current, rd:req
 #if defined(CONFIG_CURRENT_POINTER_IN_TPIDRURO) || defined(CONFIG_SMP)
 9998:	mrc		p15, 0, \rd, c13, c0, 3		@ get TPIDRURO register
-#ifdef CONFIG_CPU_V6
-ALT_UP_B(.L0_\@)
-	.subsection	1
-.L0_\@: ldr_va		\rd, __current
-	b		.L1_\@
-	.previous
-.L1_\@:
-#endif
 #else
 	ldr_va		\rd, __current
 #endif
@@ -350,10 +326,6 @@ ALT_UP_B(.L0_\@)
 	 */
 	.macro		reload_current, t1:req, t2:req
 #if defined(CONFIG_CURRENT_POINTER_IN_TPIDRURO) || defined(CONFIG_SMP)
-#ifdef CONFIG_CPU_V6
-ALT_SMP(nop)
-ALT_UP_B(.L0_\@)
-#endif
 	ldr_this_cpu	\t1, __entry_task, \t1, \t2
 	mcr		p15, 0, \t1, c13, c0, 3		@ store in TPIDRURO
 .L0_\@:

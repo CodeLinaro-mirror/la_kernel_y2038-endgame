@@ -38,7 +38,6 @@ config ARM
 	select ARCH_MIGHT_HAVE_PC_PARPORT
 	select ARCH_OPTIONAL_KERNEL_RWX if ARCH_HAS_STRICT_KERNEL_RWX
 	select ARCH_OPTIONAL_KERNEL_RWX_DEFAULT if CPU_V7
-	select ARCH_NEED_CMPXCHG_1_EMU if CPU_V6
 	select ARCH_SUPPORTS_ATOMIC_RMW
 	select ARCH_SUPPORTS_CFI
 	select ARCH_SUPPORTS_HUGETLBFS if ARM_LPAE
@@ -65,7 +64,7 @@ config ARM
 	select EDAC_ATOMIC_SCRUB
 	select GENERIC_ALLOCATOR
 	select GENERIC_ARCH_TOPOLOGY if ARM_CPU_TOPOLOGY
-	select GENERIC_ATOMIC64 if CPU_V7M || CPU_V6 || !CPU_32v6K || !AEABI
+	select GENERIC_ATOMIC64 if CPU_V7M || !CPU_32v6K || !AEABI
 	select GENERIC_CLOCKEVENTS_BROADCAST if SMP
 	select GENERIC_IRQ_IPI if SMP
 	select GENERIC_CPU_AUTOPROBE
@@ -107,7 +106,7 @@ config ARM
 	select HAVE_EXTRA_IPI_TRACEPOINTS
 	select HAVE_DYNAMIC_FTRACE if !XIP_KERNEL && !CPU_ENDIAN_BE32 && MMU
 	select HAVE_DYNAMIC_FTRACE_WITH_REGS if HAVE_DYNAMIC_FTRACE
-	select HAVE_EFFICIENT_UNALIGNED_ACCESS if (CPU_V6 || CPU_V6K || CPU_V7) && MMU
+	select HAVE_EFFICIENT_UNALIGNED_ACCESS if (CPU_V6K || CPU_V7) && MMU
 	select HAVE_EXIT_THREAD
 	select HAVE_GUP_FAST if ARM_LPAE
 	select HAVE_FUNCTION_ERROR_INJECTION
@@ -115,7 +114,7 @@ config ARM
 	select HAVE_FUNCTION_GRAPH_FREGS
 	select HAVE_FUNCTION_TRACER if !XIP_KERNEL
 	select HAVE_GCC_PLUGINS
-	select HAVE_HW_BREAKPOINT if PERF_EVENTS && (CPU_V6 || CPU_V6K || CPU_V7)
+	select HAVE_HW_BREAKPOINT if PERF_EVENTS && (CPU_V6K || CPU_V7)
 	select HAVE_IRQ_TIME_ACCOUNTING
 	select HAVE_KERNEL_GZIP
 	select HAVE_KERNEL_LZ4
@@ -506,18 +505,9 @@ config PJ4B_ERRATA_4742
 	  or Data Memory Barrier (DMB) command immediately after the WFI/WFE
 	  instruction
 
-config ARM_ERRATA_326103
-	bool "ARM errata: FSR write bit incorrect on a SWP to read-only memory"
-	depends on CPU_V6
-	help
-	  Executing a SWP instruction to read-only memory does not set bit 11
-	  of the FSR on the ARM 1136 prior to r1p0. This causes the kernel to
-	  treat the access as a read, preventing a COW from occurring and
-	  causing the faulting task to livelock.
-
 config ARM_ERRATA_411920
 	bool "ARM errata: Invalidation of the Instruction Cache operation can fail"
-	depends on CPU_V6 || CPU_V6K
+	depends on CPU_V6K
 	help
 	  Invalidation of the Instruction Cache operation can
 	  fail. This erratum is present in 1136 (before r1p4), 1156 and 1176.
@@ -680,18 +670,6 @@ config ARM_ERRATA_754327
 	  continuously polls a memory location waiting to observe an update.
 	  This workaround defines cpu_relax() as smp_mb(), preventing correctly
 	  written polling loops from denying visibility of updates to memory.
-
-config ARM_ERRATA_364296
-	bool "ARM errata: Possible cache data corruption with hit-under-miss enabled"
-	depends on CPU_V6
-	help
-	  This options enables the workaround for the 364296 ARM1136
-	  r0p2 erratum (possible cache data corruption with
-	  hit-under-miss enabled). It sets the undocumented bit 31 in
-	  the auxiliary control register and the FI bit in the control
-	  register, thus disabling hit-under-miss without putting the
-	  processor into full low interrupt latency mode. ARM11MPCore
-	  is not affected.
 
 config ARM_ERRATA_764369
 	bool "ARM errata: Data cache line maintenance operation by MVA may not succeed"
@@ -901,7 +879,7 @@ config SMP_ON_UP
 
 config CURRENT_POINTER_IN_TPIDRURO
 	def_bool y
-	depends on CPU_32v6K && !CPU_V6
+	depends on CPU_32v6K
 
 config IRQSTACKS
 	def_bool y
@@ -1091,7 +1069,7 @@ config SCHED_HRTICK
 
 config THUMB2_KERNEL
 	bool "Compile the kernel in Thumb-2 mode" if !CPU_THUMBONLY
-	depends on (CPU_V7 || CPU_V7M) && !CPU_V6 && !CPU_V6K
+	depends on (CPU_V7 || CPU_V7M) && !CPU_V6K
 	default y if CPU_THUMBONLY
 	select ARM_UNWIND
 	help
@@ -1312,7 +1290,7 @@ config XEN_DOM0
 config XEN
 	bool "Xen guest support on ARM"
 	depends on ARM && AEABI && OF
-	depends on CPU_V7 && !CPU_V6
+	depends on CPU_V7
 	depends on !GENERIC_ATOMIC64
 	depends on MMU
 	select ARCH_DMA_ADDR_T_64BIT
@@ -1657,7 +1635,7 @@ config FPE_FASTFPE
 
 config VFP
 	bool "VFP-format floating point maths"
-	depends on CPU_V6 || CPU_V6K || CPU_ARM926T || CPU_V7 || CPU_FEROCEON
+	depends on CPU_V6K || CPU_ARM926T || CPU_V7 || CPU_FEROCEON
 	help
 	  Say Y to include VFP support code in the kernel. This is needed
 	  if your hardware includes a VFP unit.
@@ -1705,7 +1683,7 @@ source "kernel/power/Kconfig"
 
 config ARCH_SUSPEND_POSSIBLE
 	depends on CPU_ARM920T || CPU_ARM926T || CPU_FEROCEON || CPU_SA1100 || \
-		CPU_V6 || CPU_V6K || CPU_V7 || CPU_V7M || CPU_XSC3 || CPU_XSCALE || CPU_MOHAWK
+		CPU_V6K || CPU_V7 || CPU_V7M || CPU_XSC3 || CPU_XSCALE || CPU_MOHAWK
 	def_bool y
 
 config ARM_CPU_SUSPEND

@@ -106,7 +106,6 @@ tune-$(CONFIG_CPU_SA1100)	:=-mtune=strongarm1100
 tune-$(CONFIG_CPU_XSCALE)	:=-mtune=xscale
 tune-$(CONFIG_CPU_XSC3)		:=-mtune=xscale
 tune-$(CONFIG_CPU_FEROCEON)	:=-mtune=xscale
-tune-$(CONFIG_CPU_V6)		:=-mtune=arm1136j-s
 tune-$(CONFIG_CPU_V6K)		:=-mtune=arm1136j-s
 
 ifeq ($(CONFIG_AEABI),y)

@@ -401,7 +401,7 @@ __ADDRESSABLE(cpu_feroceon_do_resume);
 #endif /* CONFIG_ARM_CPU_SUSPEND */
 #endif /* CONFIG_CPU_FEROCEON */
 
-#if defined(CONFIG_CPU_V6) || defined(CONFIG_CPU_V6K)
+#if defined(CONFIG_CPU_V6K)
 void cpu_v6_proc_init(void);
 __ADDRESSABLE(cpu_v6_proc_init);
 void cpu_v6_proc_fin(void);

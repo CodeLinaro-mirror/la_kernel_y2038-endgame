@@ -42,7 +42,6 @@ __arch_xchg(unsigned long x, volatile void *ptr, int size)
 
 	switch (size) {
 #if __LINUX_ARM_ARCH__ >= 6
-#ifndef CONFIG_CPU_V6 /* MIN ARCH >= V6K */
 	case 1:
 		asm volatile("@	__xchg1\n"
 		"1:	ldrexb	%0, [%3]\n"
@@ -63,7 +62,6 @@ __arch_xchg(unsigned long x, volatile void *ptr, int size)
 			: "r" (x), "r" (ptr)
 			: "memory", "cc");
 		break;
-#endif
 	case 4:
 		asm volatile("@	__xchg4\n"
 		"1:	ldrex	%0, [%3]\n"
@@ -163,11 +161,6 @@ static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
 	prefetchw((const void *)ptr);
 
 	switch (size) {
-#ifdef CONFIG_CPU_V6	/* ARCH == ARMv6 */
-	case 1:
-		oldval = cmpxchg_emu_u8((volatile u8 *)ptr, old, new);
-		break;
-#else /* min ARCH > ARMv6 */
 	case 1:
 		do {
 			asm volatile("@ __cmpxchg1\n"
@@ -192,7 +185,6 @@ static inline unsigned long __cmpxchg(volatile void *ptr, unsigned long old,
 				: "memory", "cc");
 		} while (res);
 		break;
-#endif
 	case 4:
 		do {
 			asm volatile("@ __cmpxchg4\n"
@@ -224,20 +216,7 @@ static inline unsigned long __cmpxchg_local(volatile void *ptr,
 					    unsigned long old,
 					    unsigned long new, int size)
 {
-	unsigned long ret;
-
-	switch (size) {
-#ifdef CONFIG_CPU_V6	/* min ARCH == ARMv6 */
-	case 1:
-	case 2:
-		ret = __generic_cmpxchg_local(ptr, old, new, size);
-		break;
-#endif
-	default:
-		ret = __cmpxchg(ptr, old, new, size);
-	}
-
-	return ret;
+	return __cmpxchg(ptr, old, new, size);
 }
 
 #define arch_cmpxchg_local(ptr, o, n) ({				\

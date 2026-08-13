@@ -64,7 +64,7 @@ config ARM_PMU
 	  systems.
 
 config ARM_V6_PMU
-	depends on ARM_PMU && (CPU_V6 || CPU_V6K)
+	depends on ARM_PMU && CPU_V6K
 	def_bool y
 
 config ARM_V7_PMU

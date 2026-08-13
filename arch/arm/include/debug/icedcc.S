@@ -10,7 +10,7 @@
 		.macro	addruart, rp, rv, tmp
 		.endm
 
-#if defined(CONFIG_CPU_V6) || defined(CONFIG_CPU_V6K) || defined(CONFIG_CPU_V7)
+#if defined(CONFIG_CPU_V6K) || defined(CONFIG_CPU_V7)
 
 		.macro	senduart, rd, rx
 		mcr	p14, 0, \rd, c0, c5, 0
@@ -92,4 +92,4 @@
 1002:
 		.endm
 
-#endif	/* CONFIG_CPU_V6 */
+#endif

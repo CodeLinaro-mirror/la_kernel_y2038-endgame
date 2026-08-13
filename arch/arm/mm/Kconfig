@@ -372,21 +372,6 @@ config CPU_PJ4B
 	bool
 	select CPU_V7
 
-# ARMv6
-config CPU_V6
-	bool
-	depends on !SMP
-	select CPU_32v6
-	select CPU_ABRT_EV6
-	select CPU_CACHE_V6
-	select CPU_CACHE_VIPT
-	select CPU_COPY_V6 if MMU
-	select CPU_CP15_MMU
-	select CPU_HAS_ASID if MMU
-	select CPU_PABRT_V6
-	select CPU_THUMB_CAPABLE
-	select CPU_TLB_V6 if MMU
-
 # ARMv6k
 config CPU_V6K
 	bool
@@ -401,16 +386,6 @@ config CPU_V6K
 	select CPU_PABRT_V6
 	select CPU_THUMB_CAPABLE
 	select CPU_TLB_V6 if MMU
-
-config CPU_ARM1136R0
-	bool
-	select CPU_V6
-	depends on !SMP
-	help
-	  These early revisions of ARM1136 lack support for the
-	  ARMv6k extensions for multiprocessing.
-	  Support for this revision is scheduled for removal
-	  from the kernel in early 2027.
 
 config CPU_ARM1136R1
 	bool
@@ -497,7 +472,6 @@ config CPU_32v5
 
 config CPU_32v6
 	bool
-	select TLS_REG_EMUL if !CPU_32v6K && !MMU
 
 config CPU_32v6K
 	bool
@@ -787,7 +761,7 @@ endchoice
 config CPU_ENDIAN_BE8
 	bool
 	depends on CPU_BIG_ENDIAN
-	default CPU_V6 || CPU_V6K || CPU_V7 || CPU_V7M
+	default CPU_V6K || CPU_V7 || CPU_V7M
 	help
 	  Support for the BE-8 (big-endian) mode on ARMv6 and ARMv7 processors.
 
@@ -861,7 +835,7 @@ config CPU_CACHE_ROUND_ROBIN
 
 config CPU_BPREDICT_DISABLE
 	bool "Disable branch prediction"
-	depends on CPU_ARM1020 || CPU_V6 || CPU_V6K || CPU_MOHAWK || CPU_XSC3 || CPU_V7 || CPU_FA526 || CPU_V7M
+	depends on CPU_ARM1020 || CPU_V6K || CPU_MOHAWK || CPU_XSC3 || CPU_V7 || CPU_FA526 || CPU_V7M
 	help
 	  Say Y here to disable branch prediction.  If unsure, say N.
 
@@ -1112,8 +1086,8 @@ config ARM_L1_CACHE_SHIFT
 	default 5
 
 config ARM_DMA_MEM_BUFFERABLE
-	bool "Use non-cacheable memory for DMA" if (CPU_V6 || CPU_V6K || CPU_V7M) && !CPU_V7
-	default y if CPU_V6 || CPU_V6K || CPU_V7 || CPU_V7M
+	bool "Use non-cacheable memory for DMA" if (CPU_V6K || CPU_V7M) && !CPU_V7
+	default y if CPU_V6K || CPU_V7 || CPU_V7M
 	help
 	  Historically, the kernel has used strongly ordered mappings to
 	  provide DMA coherent memory.  With the advent of ARMv7, mapping
