@@ -7,9 +7,6 @@
 
 #ifdef __ASSEMBLY__
 #include <asm/asm-offsets.h>
-	.macro switch_tls_none, base, tp, tpuser, tmp1, tmp2
-	.endm
-
 	.macro switch_tls_v6k, base, tp, tpuser, tmp1, tmp2
 	mrc	p15, 0, \tmp2, c13, c0, 2	@ get the user r/w register
 	@ TLS register update is deferred until return to user space
@@ -25,12 +22,7 @@
 #include <asm/smp_plat.h>
 #endif
 
-#ifdef CONFIG_TLS_REG_EMUL
-#define tls_emu		1
-#define has_tls_reg		1
-#define defer_tls_reg_update	0
-#define switch_tls	switch_tls_none
-#elif defined(CONFIG_CPU_32v6K)
+#if defined(CONFIG_CPU_32v6K)
 #define tls_emu		0
 #define has_tls_reg		1
 #define defer_tls_reg_update	1

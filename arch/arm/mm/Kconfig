@@ -655,14 +655,6 @@ config HARDEN_BRANCH_HISTORY
 	  taking an exception, a sequence of branches overwrites the branch
 	  history, or branch history is invalidated.
 
-config TLS_REG_EMUL
-	bool
-	select NEED_KUSER_HELPERS
-	help
-	  An SMP system using a pre-ARMv6 processor (there are apparently
-	  a few prototypes like that in existence) and therefore access to
-	  that required register must be emulated.
-
 config NEED_KUSER_HELPERS
 	bool
 

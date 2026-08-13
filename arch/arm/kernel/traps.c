@@ -685,44 +685,6 @@ asmlinkage int arm_syscall(int no, struct pt_regs *regs)
 	return 0;
 }
 
-#ifdef CONFIG_TLS_REG_EMUL
-
-/*
- * We might be running on an ARMv6+ processor which should have the TLS
- * register but for some reason we can't use it, or maybe an SMP system
- * using a pre-ARMv6 processor (there are apparently a few prototypes like
- * that in existence) and therefore access to that register must be
- * emulated.
- */
-
-static int get_tp_trap(struct pt_regs *regs, unsigned int instr)
-{
-	int reg = (instr >> 12) & 15;
-	if (reg == 15)
-		return 1;
-	regs->uregs[reg] = current_thread_info()->tp_value[0];
-	regs->ARM_pc += 4;
-	return 0;
-}
-
-static struct undef_hook arm_mrc_hook = {
-	.instr_mask	= 0x0fff0fff,
-	.instr_val	= 0x0e1d0f70,
-	.cpsr_mask	= PSR_T_BIT,
-	.cpsr_val	= 0,
-	.fn		= get_tp_trap,
-};
-
-static int __init arm_mrc_hook_init(void)
-{
-	register_undef_hook(&arm_mrc_hook);
-	return 0;
-}
-
-late_initcall(arm_mrc_hook_init);
-
-#endif
-
 /*
  * A data abort trap was taken, but we did not handle the instruction.
  * Try to abort the user program, or panic if it was the kernel.
