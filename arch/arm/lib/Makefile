@@ -30,11 +30,7 @@ obj-$(CONFIG_UACCESS_WITH_MEMCPY) += uaccess_with_memcpy.o
 
 lib-y += $(mmu-y)
 
-ifeq ($(CONFIG_CPU_32v3),y)
-  lib-y	+= io-readsw-armv3.o io-writesw-armv3.o
-else
-  lib-y	+= io-readsw-armv4.o io-writesw-armv4.o
-endif
+lib-y	+= io-readsw-armv4.o io-writesw-armv4.o
 
 $(obj)/csumpartialcopy.o:	$(obj)/csumpartialcopygeneric.S
 $(obj)/csumpartialcopyuser.o:	$(obj)/csumpartialcopygeneric.S

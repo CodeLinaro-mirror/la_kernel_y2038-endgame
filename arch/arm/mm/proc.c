@@ -126,46 +126,6 @@ void cpu_fa526_set_pte_ext(pte_t *ptep, pte_t pte, unsigned int ext);
 __ADDRESSABLE(cpu_fa526_set_pte_ext);
 #endif
 
-#ifdef CONFIG_CPU_SA110
-void cpu_sa110_proc_init(void);
-__ADDRESSABLE(cpu_sa110_proc_init);
-void cpu_sa110_proc_fin(void);
-__ADDRESSABLE(cpu_sa110_proc_fin);
-void cpu_sa110_reset(unsigned long addr, bool hvc);
-__ADDRESSABLE(cpu_sa110_reset);
-int cpu_sa110_do_idle(void);
-__ADDRESSABLE(cpu_sa110_do_idle);
-void cpu_sa110_dcache_clean_area(void *addr, int size);
-__ADDRESSABLE(cpu_sa110_dcache_clean_area);
-void cpu_sa110_switch_mm(phys_addr_t pgd_phys, struct mm_struct *mm);
-__ADDRESSABLE(cpu_sa110_switch_mm);
-void cpu_sa110_set_pte_ext(pte_t *ptep, pte_t pte, unsigned int ext);
-__ADDRESSABLE(cpu_sa110_set_pte_ext);
-#endif
-
-#ifdef CONFIG_CPU_SA1100
-void cpu_sa1100_proc_init(void);
-__ADDRESSABLE(cpu_sa1100_proc_init);
-void cpu_sa1100_proc_fin(void);
-__ADDRESSABLE(cpu_sa1100_proc_fin);
-void cpu_sa1100_reset(unsigned long addr, bool hvc);
-__ADDRESSABLE(cpu_sa1100_reset);
-int cpu_sa1100_do_idle(void);
-__ADDRESSABLE(cpu_sa1100_do_idle);
-void cpu_sa1100_dcache_clean_area(void *addr, int size);
-__ADDRESSABLE(cpu_sa1100_dcache_clean_area);
-void cpu_sa1100_switch_mm(phys_addr_t pgd_phys, struct mm_struct *mm);
-__ADDRESSABLE(cpu_sa1100_switch_mm);
-void cpu_sa1100_set_pte_ext(pte_t *ptep, pte_t pte, unsigned int ext);
-__ADDRESSABLE(cpu_sa1100_set_pte_ext);
-#ifdef CONFIG_ARM_CPU_SUSPEND
-void cpu_sa1100_do_suspend(void *);
-__ADDRESSABLE(cpu_sa1100_do_suspend);
-void cpu_sa1100_do_resume(void *);
-__ADDRESSABLE(cpu_sa1100_do_resume);
-#endif /* CONFIG_ARM_CPU_SUSPEND */
-#endif /* CONFIG_CPU_SA1100 */
-
 #ifdef CONFIG_CPU_XSCALE
 void cpu_xscale_proc_init(void);
 __ADDRESSABLE(cpu_xscale_proc_init);

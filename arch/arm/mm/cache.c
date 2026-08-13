@@ -34,34 +34,6 @@ struct cpu_cache_fns v4_cache_fns __initconst = {
 };
 #endif
 
-/* V4 write-back cache "V4WB" */
-#ifdef CONFIG_CPU_CACHE_V4WB
-void v4wb_flush_icache_all(void);
-void v4wb_flush_kern_cache_all(void);
-void v4wb_flush_user_cache_all(void);
-void v4wb_flush_user_cache_range(unsigned long, unsigned long, unsigned int);
-void v4wb_coherent_kern_range(unsigned long, unsigned long);
-int v4wb_coherent_user_range(unsigned long, unsigned long);
-void v4wb_flush_kern_dcache_area(void *, size_t);
-void v4wb_dma_map_area(const void *, size_t, int);
-void v4wb_dma_unmap_area(const void *, size_t, int);
-void v4wb_dma_flush_range(const void *, const void *);
-
-struct cpu_cache_fns v4wb_cache_fns __initconst = {
-	.flush_icache_all = v4wb_flush_icache_all,
-	.flush_kern_all = v4wb_flush_kern_cache_all,
-	.flush_kern_louis = v4wb_flush_kern_cache_all,
-	.flush_user_all = v4wb_flush_user_cache_all,
-	.flush_user_range = v4wb_flush_user_cache_range,
-	.coherent_kern_range = v4wb_coherent_kern_range,
-	.coherent_user_range = v4wb_coherent_user_range,
-	.flush_kern_dcache_area = v4wb_flush_kern_dcache_area,
-	.dma_map_area = v4wb_dma_map_area,
-	.dma_unmap_area = v4wb_dma_unmap_area,
-	.dma_flush_range = v4wb_dma_flush_range,
-};
-#endif
-
 /* V4 write-through cache "V4WT" */
 #ifdef CONFIG_CPU_CACHE_V4WT
 void v4wt_flush_icache_all(void);

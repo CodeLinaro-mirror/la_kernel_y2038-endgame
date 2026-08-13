@@ -63,14 +63,6 @@
 # endif
 #endif
 
-#ifdef CONFIG_CPU_SA1100
-# ifdef _USER
-#  define MULTI_USER 1
-# else
-#  define _USER v4_mc
-# endif
-#endif
-
 #ifdef CONFIG_CPU_XSCALE
 # ifdef _USER
 #  define MULTI_USER 1

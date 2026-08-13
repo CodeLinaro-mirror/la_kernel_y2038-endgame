@@ -925,18 +925,6 @@ proc_types:
 
 		@ Everything from here on will be the new ID system.
 
-		.word	0x4401a100		@ sa110 / sa1100
-		.word	0xffffffe0
-		W(b)	__armv4_mmu_cache_on
-		W(b)	__armv4_mmu_cache_off
-		W(b)	__armv4_mmu_cache_flush
-
-		.word	0x6901b110		@ sa1110
-		.word	0xfffffff0
-		W(b)	__armv4_mmu_cache_on
-		W(b)	__armv4_mmu_cache_off
-		W(b)	__armv4_mmu_cache_flush
-
 		.word	0x56056900
 		.word	0xffffff00		@ PXA9xx
 		W(b)	__armv4_mmu_cache_on

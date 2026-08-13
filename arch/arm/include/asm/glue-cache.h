@@ -45,14 +45,6 @@
 # endif
 #endif
 
-#if defined(CONFIG_CPU_CACHE_V4WB)
-# ifdef _CACHE
-#  define MULTI_CACHE 1
-# else
-#  define _CACHE v4wb
-# endif
-#endif
-
 #if defined(CONFIG_CPU_XSCALE)
 # ifdef _CACHE
 #  define MULTI_CACHE 1

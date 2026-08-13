@@ -5,10 +5,10 @@ menu "Platform selection"
 comment "CPU Core family selection"
 
 config ARCH_MULTI_V4
-	bool "ARMv4 based platforms (FA526, StrongARM)"
+	bool "ARMv4 based platforms (FA526)"
 	depends on !ARCH_MULTI_V6_V7
 	select ARCH_MULTI_V4_V5
-	select CPU_FA526 if !(CPU_SA110 || CPU_SA1100)
+	select CPU_FA526
 
 config ARCH_MULTI_V4T
 	bool "ARMv4T based platforms (ARM720T, ARM920T, ...)"

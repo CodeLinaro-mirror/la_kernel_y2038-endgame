@@ -50,26 +50,6 @@ void __raw_readsb(const volatile void __iomem *addr, void *data, int bytelen);
 void __raw_readsw(const volatile void __iomem *addr, void *data, int wordlen);
 void __raw_readsl(const volatile void __iomem *addr, void *data, int longlen);
 
-#if __LINUX_ARM_ARCH__ < 6
-/*
- * Half-word accesses are problematic with RiscPC due to limitations of
- * the bus. Rather than special-case the machine, just let the compiler
- * generate the access for CPUs prior to ARMv6.
- */
-#define __raw_writew __raw_writew
-static __no_kasan_or_inline void __raw_writew(u16 val, volatile void __iomem *addr)
-{
-	__chk_io_ptr(addr);
-	*(volatile unsigned short __force *)addr = val;
-}
-
-#define __raw_readw __raw_readw
-static __no_kasan_or_inline u16 __raw_readw(const volatile void __iomem *addr)
-{
-	__chk_io_ptr(addr);
-	return *(const volatile unsigned short __force *)addr;
-}
-#else
 /*
  * When running under a hypervisor, we want to avoid I/O accesses with
  * writeback addressing modes as these incur a significant performance
@@ -91,7 +71,6 @@ static inline u16 __raw_readw(const volatile void __iomem *addr)
 		     : "Q" (*(volatile u16 __force *)addr));
 	return val;
 }
-#endif
 
 #define __raw_writeb __raw_writeb
 static inline void __raw_writeb(u8 val, volatile void __iomem *addr)

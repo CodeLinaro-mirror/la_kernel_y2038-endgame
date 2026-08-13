@@ -114,38 +114,6 @@ config CPU_FA526
 	  Say Y if you want support for the FA526 processor.
 	  Otherwise, say N.
 
-# SA110
-config CPU_SA110
-	bool
-	select CPU_32v3 if ARCH_RPC
-	select CPU_32v4 if !ARCH_RPC
-	select CPU_ABRT_EV4
-	select CPU_CACHE_V4WB
-	select CPU_CACHE_VIVT
-	select CPU_COPY_V4WB if MMU
-	select CPU_CP15_MMU
-	select CPU_PABRT_LEGACY
-	select CPU_TLB_V4WB if MMU
-	help
-	  The Intel StrongARM(R) SA-110 is a 32-bit microprocessor and
-	  is available at five speeds ranging from 100 MHz to 233 MHz.
-	  More information is available at
-	  <http://developer.intel.com/design/strong/sa110.htm>.
-
-	  Say Y if you want support for the SA-110 processor.
-	  Otherwise, say N.
-
-# SA1100
-config CPU_SA1100
-	bool
-	select CPU_32v4
-	select CPU_ABRT_EV4
-	select CPU_CACHE_V4WB
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-	select CPU_PABRT_LEGACY
-	select CPU_TLB_V4WB if MMU
-
 # XScale
 config CPU_XSCALE
 	bool
@@ -257,13 +225,6 @@ config CPU_THUMB_CAPABLE
 
 # Figure out what processor architecture version we should be using.
 # This defines the compiler instruction set which depends on the machine type.
-config CPU_32v3
-	bool
-	select CPU_USE_DOMAINS if MMU
-	select NEED_KUSER_HELPERS
-	select TLS_REG_EMUL if SMP || !MMU
-	select CPU_NO_EFFICIENT_FFS
-
 config CPU_32v4
 	bool
 	select CPU_USE_DOMAINS
@@ -326,9 +287,6 @@ config CPU_CACHE_V4
 	bool
 
 config CPU_CACHE_V4WT
-	bool
-
-config CPU_CACHE_V4WB
 	bool
 
 config CPU_CACHE_V6
@@ -417,7 +375,7 @@ comment "Processor Features"
 
 config ARM_LPAE
 	bool "Support for the Large Physical Address Extension"
-	depends on CPU_32v7 && !CPU_32v6 && !CPU_32v5 && !CPU_32v4 && !CPU_32v3
+	depends on CPU_32v7 && !CPU_32v6 && !CPU_32v5 && !CPU_32v4
 	select PHYS_ADDR_T_64BIT
 	select SWIOTLB
 	help

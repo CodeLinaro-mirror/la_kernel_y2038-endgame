@@ -121,7 +121,7 @@ config ETM4X_IMPDEF_FEATURE
 
 config CORESIGHT_STM
 	tristate "CoreSight System Trace Macrocell driver"
-	depends on (ARM && !(CPU_32v3 || CPU_32v4 || CPU_32v4T)) || ARM64
+	depends on (ARM && !(CPU_32v4 || CPU_32v4T)) || ARM64
 	select CORESIGHT_LINKS_AND_SINKS
 	select STM
 	help
