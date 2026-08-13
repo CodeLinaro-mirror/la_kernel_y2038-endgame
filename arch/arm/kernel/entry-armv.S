@@ -152,7 +152,7 @@ ENDPROC(__und_invalid)
  * SVC mode handlers
  */
 
-#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5)
+#if __LINUX_ARM_ARCH__ >= 5
 #define SPFIX(code...) code
 #else
 #define SPFIX(code...)
@@ -353,7 +353,7 @@ ENDPROC(__fiq_abt)
  * EABI note: sp_svc is always 64-bit aligned here, so should PT_REGS_SIZE
  */
 
-#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5) && (PT_REGS_SIZE & 7)
+#if (__LINUX_ARM_ARCH__ >= 5) && (PT_REGS_SIZE & 7)
 #error "sizeof(struct pt_regs) must be a multiple of 8"
 #endif
 

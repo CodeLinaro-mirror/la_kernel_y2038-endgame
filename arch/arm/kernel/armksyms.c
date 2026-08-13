@@ -129,7 +129,6 @@ EXPORT_SYMBOL(__do_div64);
 EXPORT_SYMBOL(__bswapsi2);
 EXPORT_SYMBOL(__bswapdi2);
 
-#ifdef CONFIG_AEABI
 EXPORT_SYMBOL(__aeabi_idiv);
 EXPORT_SYMBOL(__aeabi_idivmod);
 EXPORT_SYMBOL(__aeabi_lasr);
@@ -139,7 +138,6 @@ EXPORT_SYMBOL(__aeabi_lmul);
 EXPORT_SYMBOL(__aeabi_uidiv);
 EXPORT_SYMBOL(__aeabi_uidivmod);
 EXPORT_SYMBOL(__aeabi_ulcmp);
-#endif
 
 	/* bitops */
 EXPORT_SYMBOL(_set_bit);

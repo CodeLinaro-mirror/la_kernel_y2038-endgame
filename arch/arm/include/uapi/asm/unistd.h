@@ -17,13 +17,8 @@
 #define __NR_OABI_SYSCALL_BASE	0x900000
 #define __NR_SYSCALL_MASK	0x0fffff
 
-#if defined(__thumb__) || defined(__ARM_EABI__)
 #define __NR_SYSCALL_BASE	0
 #include <asm/unistd-eabi.h>
-#else
-#define __NR_SYSCALL_BASE	__NR_OABI_SYSCALL_BASE
-#include <asm/unistd-oabi.h>
-#endif
 
 #define __NR_sync_file_range2		__NR_arm_sync_file_range
 

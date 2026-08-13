@@ -2057,6 +2057,20 @@ static int ep_modify(struct eventpoll *ep, struct epitem *epi,
 	return 0;
 }
 
+static inline struct epoll_event __user *
+epoll_put_uevent(__poll_t revents, __u64 data,
+		 struct epoll_event __user *uevent)
+{
+	scoped_user_write_access_size(uevent, sizeof(*uevent), efault) {
+		unsafe_put_user(revents, &uevent->events, efault);
+		unsafe_put_user(data, &uevent->data, efault);
+	}
+	return uevent+1;
+
+efault:
+	return NULL;
+}
+
 /*
  * Attempt to deliver one event for @epi into @*uevents.
  *
@@ -2731,8 +2745,8 @@ int do_epoll_ctl_file(struct file *f, int op, struct epoll_key *tf,
 	return error;
 }
 
-int do_epoll_ctl(int epfd, int op, int fd, struct epoll_event *epds,
-		 bool nonblock)
+static int do_epoll_ctl(int epfd, int op, int fd, struct epoll_event *epds,
+			bool nonblock)
 {
 	struct epoll_key efd;
 

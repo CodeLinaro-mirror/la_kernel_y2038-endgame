@@ -63,7 +63,7 @@ config ARM
 	select EDAC_ATOMIC_SCRUB
 	select GENERIC_ALLOCATOR
 	select GENERIC_ARCH_TOPOLOGY if ARM_CPU_TOPOLOGY
-	select GENERIC_ATOMIC64 if !CPU_32v6K || !AEABI
+	select GENERIC_ATOMIC64 if !CPU_32v6K
 	select GENERIC_CLOCKEVENTS_BROADCAST if SMP
 	select GENERIC_IRQ_IPI if SMP
 	select GENERIC_CPU_AUTOPROBE
@@ -80,7 +80,7 @@ config ARM
 	select GENERIC_SMP_IDLE_THREAD
 	select HARDIRQS_SW_RESEND
 	select HAS_IOPORT
-	select HAVE_ARCH_AUDITSYSCALL if AEABI && !OABI_COMPAT
+	select HAVE_ARCH_AUDITSYSCALL
 	select HAVE_ARCH_BITREVERSE if CPU_32v7 && !CPU_32v6 && BITREVERSE
 	select HAVE_ARCH_JUMP_LABEL if !XIP_KERNEL && !CPU_ENDIAN_BE32 && (!PREEMPT_RT || !SMP)
 	select HAVE_ARCH_KFENCE if !XIP_KERNEL
@@ -91,7 +91,7 @@ config ARM
 	select HAVE_ARCH_MMAP_RND_BITS
 	select HAVE_ARCH_PFN_VALID
 	select HAVE_ARCH_SECCOMP
-	select HAVE_ARCH_SECCOMP_FILTER if AEABI && !OABI_COMPAT
+	select HAVE_ARCH_SECCOMP_FILTER
 	select HAVE_ARCH_THREAD_STRUCT_WHITELIST
 	select HAVE_ARCH_TRACEHOOK
 	select HAVE_ARCH_TRANSPARENT_HUGEPAGE if ARM_LPAE
@@ -1039,39 +1039,6 @@ config ARM_PATCH_IDIV
 	  and less power intensive than running the original library
 	  code to do integer division.
 
-config AEABI
-	bool "Use the ARM EABI to compile the kernel" if CPU_SA110 || CPU_SA1100
-	default y
-	help
-	  The Arm EABI is the default ABI on all modern Linux
-	  distributions, replacing the obsolete and "OABI" that was
-	  commonly used on ARMv4 distributions before ca. 2013.
-
-	  Everyone should enable this, as support for OABI user space
-	  was dropped in gcc-4.8 and most distributions after ca. 2013.
-
-	  Support for OABI mode will be removed from the kernel
-	  once Intel StrongARM CPUs are phased out.
-
-config OABI_COMPAT
-	bool "Allow old ABI binaries to run with this kernel (EXPERIMENTAL)"
-	depends on AEABI && !THUMB2_KERNEL
-	depends on CPU_SA110 || CPU_SA1100
-	help
-	  This option preserves the old syscall interface along with the
-	  new (ARM EABI) one. It also provides a compatibility layer to
-	  intercept syscalls that have structure arguments which layout
-	  in memory differs between the legacy ABI and the new ARM EABI
-	  (only for non "thumb" binaries). This option adds a tiny
-	  overhead to all syscalls and produces a slightly larger kernel.
-
-	  The seccomp filter system will not be available when this is
-	  selected, since there is no way yet to sensibly distinguish
-	  between calling conventions during filtering.
-
-	  Support for OABI_COMPAT will be removed from the kernel
-	  once Intel StrongARM CPUs are phased out.
-
 config ARCH_SELECT_MEMORY_MODEL
 	def_bool y
 
@@ -1229,7 +1196,7 @@ config XEN_DOM0
 
 config XEN
 	bool "Xen guest support on ARM"
-	depends on ARM && AEABI && OF
+	depends on ARM && OF
 	depends on CPU_V7
 	depends on !GENERIC_ATOMIC64
 	select ARCH_DMA_ADDR_T_64BIT
@@ -1598,7 +1565,7 @@ config NEON
 
 config KERNEL_MODE_NEON
 	bool "Support for NEON in kernel mode"
-	depends on NEON && AEABI
+	depends on NEON
 	help
 	  Say Y to include support for NEON in kernel mode.
 

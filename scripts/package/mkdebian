@@ -55,12 +55,7 @@ set_debarch() {
 	aarch64|arm64)
 		debarch=arm64 ;;
 	arm*)
-		if is_enabled CONFIG_AEABI; then
-			debarch=arm$(if_enabled_echo CONFIG_VFP hf el)
-		else
-			debarch=arm
-		fi
-		;;
+		debarch=arm$(if_enabled_echo CONFIG_VFP hf el) ;;
 	openrisc)
 		debarch=or1k ;;
 	sh)

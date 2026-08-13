@@ -68,8 +68,6 @@ struct epoll_key {
 
 int do_epoll_ctl_file(struct file *f, int op, struct epoll_key *tf,
 		      struct epoll_event *epds, bool nonblock);
-int do_epoll_ctl(int epfd, int op, int fd, struct epoll_event *epds,
-		 bool nonblock);
 bool is_file_epoll(struct file *f);
 
 /* Tells if the epoll_ctl(2) operation needs an event copy from userspace */
@@ -82,27 +80,6 @@ static inline int ep_op_has_event(int op)
 
 static inline void eventpoll_release(struct file *file) {}
 
-#endif
-
-#if defined(CONFIG_ARM) && defined(CONFIG_OABI_COMPAT)
-/* ARM OABI has an incompatible struct layout and needs a special handler */
-extern struct epoll_event __user *
-epoll_put_uevent(__poll_t revents, __u64 data,
-		 struct epoll_event __user *uevent);
-#else
-static inline struct epoll_event __user *
-epoll_put_uevent(__poll_t revents, __u64 data,
-		 struct epoll_event __user *uevent)
-{
-	scoped_user_write_access_size(uevent, sizeof(*uevent), efault) {
-		unsafe_put_user(revents, &uevent->events, efault);
-		unsafe_put_user(data, &uevent->data, efault);
-	}
-	return uevent+1;
-
-efault:
-	return NULL;
-}
 #endif
 
 #endif /* #ifndef _LINUX_EVENTPOLL_H */

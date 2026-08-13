@@ -328,8 +328,6 @@ UNWIND(.fnstart)
 UNWIND(.fnend)
 ENDPROC(__modsi3)
 
-#ifdef CONFIG_AEABI
-
 ENTRY(__aeabi_uidivmod)
 UNWIND(.fnstart)
 UNWIND(.save {r0, r1, ip, lr}	)
@@ -356,8 +354,6 @@ UNWIND(.save {r0, r1, ip, lr}	)
 
 UNWIND(.fnend)
 ENDPROC(__aeabi_idivmod)
-
-#endif
 
 Ldiv0:
 UNWIND(.fnstart)

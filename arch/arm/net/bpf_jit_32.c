@@ -392,7 +392,7 @@ static void jit_fill_hole(void *area, unsigned int size)
 		*ptr++ = __opcode_to_mem_arm(ARM_INST_UDF);
 }
 
-#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5)
+#if __LINUX_ARM_ARCH__ >= 5
 /* EABI requires the stack to be aligned to 64-bit boundaries */
 #define STACK_ALIGNMENT	8
 #else

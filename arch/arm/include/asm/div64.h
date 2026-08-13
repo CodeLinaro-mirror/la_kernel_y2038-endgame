@@ -40,18 +40,6 @@ static inline uint32_t __div64_32(uint64_t *n, uint32_t base)
 }
 #define __div64_32 __div64_32
 
-#if !defined(CONFIG_AEABI)
-
-/*
- * In OABI configurations, some uses of the do_div function
- * cause gcc to run out of registers. To work around that,
- * we can force the use of the out-of-line version for
- * configurations that build a OABI kernel.
- */
-#define do_div(n, base) __div64_32(&(n), base)
-
-#else
-
 #ifdef CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
 static __always_inline
 #else
@@ -112,7 +100,5 @@ uint64_t __arch_xprod_64(uint64_t m, uint64_t n, bool bias)
 #define __arch_xprod_64 __arch_xprod_64
 
 #include <asm-generic/div64.h>
-
-#endif
 
 #endif

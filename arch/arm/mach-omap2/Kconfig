@@ -125,7 +125,6 @@ menu "TI OMAP3/4 Specific Features"
 config ARCH_OMAP2PLUS_TYPICAL
 	bool "Typical OMAP configuration"
 	default y
-	select AEABI
 	select HIGHMEM
 	select I2C
 	select I2C_OMAP

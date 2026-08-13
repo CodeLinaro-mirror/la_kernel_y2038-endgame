@@ -33,8 +33,6 @@ ENTRY(__ucmpdi2)
 
 ENDPROC(__ucmpdi2)
 
-#ifdef CONFIG_AEABI
-
 ENTRY(__aeabi_ulcmp)
 
 	cmp	xh, yh
@@ -45,6 +43,3 @@ ENTRY(__aeabi_ulcmp)
 	ret	lr
 
 ENDPROC(__aeabi_ulcmp)
-
-#endif
-

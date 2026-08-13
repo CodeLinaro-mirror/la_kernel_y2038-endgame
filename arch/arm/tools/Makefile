@@ -13,11 +13,9 @@ sysnr := $(src)/syscallnr.sh
 systbl := $(srctree)/scripts/syscalltbl.sh
 syscall := $(src)/syscall.tbl
 
-gen-y := $(gen)/calls-oabi.S
 gen-y += $(gen)/calls-eabi.S
 kapi-hdrs-y := $(kapi)/unistd-nr.h
 kapi-hdrs-y += $(kapi)/mach-types.h
-uapi-hdrs-y += $(uapi)/unistd-oabi.h
 uapi-hdrs-y += $(uapi)/unistd-eabi.h
 
 targets += $(addprefix ../../../,$(gen-y) $(kapi-hdrs-y) $(uapi-hdrs-y))
