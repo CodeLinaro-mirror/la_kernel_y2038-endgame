@@ -25,8 +25,6 @@
 
 #include "fault.h"
 
-#ifdef CONFIG_MMU
-
 bool copy_from_kernel_nofault_allowed(const void *unsafe_src, size_t size)
 {
 	unsigned long addr = (unsigned long)unsafe_src;
@@ -105,10 +103,6 @@ void show_pte(const char *lvl, struct mm_struct *mm, unsigned long addr)
 
 	pr_cont("\n");
 }
-#else					/* CONFIG_MMU */
-void show_pte(const char *lvl, struct mm_struct *mm, unsigned long addr)
-{ }
-#endif					/* CONFIG_MMU */
 
 static inline bool is_write_fault(unsigned int fsr)
 {
@@ -217,7 +211,6 @@ void do_bad_area(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 		__do_kernel_fault(mm, addr, fsr, regs);
 }
 
-#ifdef CONFIG_MMU
 #ifdef CONFIG_CPU_TTBR0_PAN
 static inline bool ttbr0_usermode_access_allowed(struct pt_regs *regs)
 {
@@ -516,13 +509,6 @@ no_context:
 	__do_kernel_fault(mm, addr, fsr, regs);
 	return 0;
 }
-#else					/* CONFIG_MMU */
-static int
-do_page_fault(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
-{
-	return 0;
-}
-#endif					/* CONFIG_MMU */
 
 /*
  * First Level Translation Fault Handler
@@ -544,7 +530,6 @@ do_page_fault(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
  * contain an entry for this address, so handle this via
  * do_kernel_address_page_fault().
  */
-#ifdef CONFIG_MMU
 static int __kprobes
 do_translation_fault(unsigned long addr, unsigned int fsr,
 		     struct pt_regs *regs)
@@ -559,14 +544,6 @@ do_translation_fault(unsigned long addr, unsigned int fsr,
 
 	return 0;
 }
-#else					/* CONFIG_MMU */
-static int
-do_translation_fault(unsigned long addr, unsigned int fsr,
-		     struct pt_regs *regs)
-{
-	return 0;
-}
-#endif					/* CONFIG_MMU */
 
 /*
  * Some section permission faults need to be handled gracefully.

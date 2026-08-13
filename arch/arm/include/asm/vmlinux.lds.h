@@ -18,13 +18,8 @@
 #define ARM_EXIT_DISCARD(x)	x
 #endif
 
-#ifdef CONFIG_MMU
 #define ARM_MMU_KEEP(x)		KEEP(x)
 #define ARM_MMU_DISCARD(x)
-#else
-#define ARM_MMU_KEEP(x)
-#define ARM_MMU_DISCARD(x)	x
-#endif
 
 /*
  * ld.lld does not support NOCROSSREFS:

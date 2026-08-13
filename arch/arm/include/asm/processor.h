@@ -65,8 +65,7 @@ static inline void arch_thread_struct_whitelist(unsigned long *offset,
 		regs->ARM_r8 = r8;					\
 		regs->ARM_r9 = r9;					\
 		regs->ARM_r10 = current->mm->start_data;		\
-	} else if (!IS_ENABLED(CONFIG_MMU))				\
-		regs->ARM_r10 = current->mm->start_data;		\
+	}								\
 	if (current->personality & ADDR_LIMIT_32BIT)			\
 		regs->ARM_cpsr = USR_MODE;				\
 	else								\

@@ -1,5 +1,4 @@
 /* SPDX-License-Identifier: GPL-2.0 */
-#ifdef CONFIG_MMU
 #include <linux/list.h>
 #include <linux/vmalloc.h>
 #include <linux/pgtable.h>
@@ -73,8 +72,6 @@ struct static_vm {
 extern struct list_head static_vmlist;
 extern struct static_vm *find_static_vm_vaddr(void *vaddr);
 extern __init void add_static_vm_early(struct static_vm *svm);
-
-#endif
 
 #ifdef CONFIG_ZONE_DMA
 extern phys_addr_t arm_dma_limit;

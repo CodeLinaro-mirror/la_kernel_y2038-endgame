@@ -13,7 +13,6 @@
 #include <asm/cache.h>
 #include <asm/thread_info.h>
 #include <asm/page.h>
-#include <asm/mpu.h>
 
 OUTPUT_ARCH(arm)
 ENTRY(stext)
@@ -98,9 +97,6 @@ SECTIONS
 		INIT_RAM_FS
 	}
 
-#ifdef CONFIG_ARM_MPU
-	. = ALIGN(SZ_128K);
-#endif
 	_exiprom = .;			/* End of XIP ROM area */
 
 /*
@@ -147,9 +143,6 @@ SECTIONS
 	__init_end = .;
 
 	BSS_SECTION(0, 0, 8)
-#ifdef CONFIG_ARM_MPU
-	. = ALIGN(PMSAv8_MINALIGN);
-#endif
 	_end = .;
 
 	STABS_DEBUG
@@ -176,22 +169,4 @@ ASSERT((__arch_info_end - __arch_info_begin), "no machine record defined")
  * frame is 9568 bytes. Make sure it has extra room left.
  */
 ASSERT((_end - __bss_start) >= 12288, ".bss too small for CONFIG_XIP_DEFLATED_DATA")
-#endif
-
-#if defined(CONFIG_ARM_MPU) && !defined(CONFIG_COMPILE_TEST)
-/*
- * Due to PMSAv7 restriction on base address and size we have to
- * enforce minimal alignment restrictions. It was seen that weaker
- * alignment restriction on _xiprom will likely force XIP address
- * space spawns multiple MPU regions thus it is likely we run in
- * situation when we are reprogramming MPU region we run on with
- * something which doesn't cover reprogramming code itself, so as soon
- * as we update MPU settings we'd immediately try to execute straight
- * from background region which is XN.
- * It seem that alignment in 1M should suit most users.
- * _exiprom is aligned as 1/8 of 1M so can be covered by subregion
- * disable
- */
-ASSERT(!(_xiprom & (SZ_1M - 1)), "XIP start address may cause MPU programming issues")
-ASSERT(!(_exiprom & (SZ_128K - 1)), "XIP end address may cause MPU programming issues")
 #endif

@@ -146,14 +146,12 @@ ARM_BE8(setend be)			@ ensure we are in BE mode
 	b	no_hyp
 #endif
 
-#ifdef CONFIG_MMU
 	.arm
 ENTRY(cpu_resume_arm)
  THUMB(	badr	r9, 1f		)	@ Kernel is entered in ARM.
  THUMB(	bx	r9		)	@ If this is a Thumb-2 kernel,
  THUMB(	.thumb			)	@ switch to Thumb now.
  THUMB(1:			)
-#endif
 
 ENTRY(cpu_resume)
 ARM_BE8(setend be)			@ ensure we are in BE mode
@@ -184,9 +182,8 @@ THUMB(	mov	sp, r2			)
 THUMB(	bx	r3			)
 ENDPROC(cpu_resume)
 
-#ifdef CONFIG_MMU
 ENDPROC(cpu_resume_arm)
-#endif
+
 #ifdef CONFIG_MCPM
 ENDPROC(cpu_resume_no_hyp)
 #endif

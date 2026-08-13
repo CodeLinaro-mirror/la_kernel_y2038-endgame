@@ -64,7 +64,6 @@
 
 #ifndef __ASSEMBLY__
 
-#ifdef CONFIG_CPU_CP15_MMU
 static __always_inline unsigned int get_domain(void)
 {
 	unsigned int domain;
@@ -84,16 +83,6 @@ static __always_inline void set_domain(unsigned int val)
 	  : : "r" (val) : "memory");
 	isb();
 }
-#else
-static __always_inline unsigned int get_domain(void)
-{
-	return 0;
-}
-
-static __always_inline void set_domain(unsigned int val)
-{
-}
-#endif
 
 /*
  * Generate the T (user) versions of the LDR/STR and related

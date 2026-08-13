@@ -92,7 +92,6 @@ EXPORT_SYMBOL(memchr);
 EXPORT_SYMBOL(mmioset);
 EXPORT_SYMBOL(mmiocpy);
 
-#ifdef CONFIG_MMU
 EXPORT_SYMBOL(copy_page);
 
 EXPORT_SYMBOL(arm_copy_from_user);
@@ -115,7 +114,6 @@ EXPORT_SYMBOL(__put_user_1);
 EXPORT_SYMBOL(__put_user_2);
 EXPORT_SYMBOL(__put_user_4);
 EXPORT_SYMBOL(__put_user_8);
-#endif
 
 	/* gcc lib functions */
 EXPORT_SYMBOL(__ashldi3);

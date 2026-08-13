@@ -4,15 +4,10 @@
 #
 
 obj-y				:= extable.o fault.o init.o iomap.o
-obj-y				+= dma-mapping$(MMUEXT).o
-obj-$(CONFIG_MMU)		+= fault-armv.o flush.o idmap.o ioremap.o \
+obj-y				+= dma-mapping.o
+obj-y				+= fault-armv.o flush.o idmap.o ioremap.o \
 				   mmap.o pgd.o mmu.o pageattr.o
 KASAN_SANITIZE_mmu.o		:= n
-
-ifneq ($(CONFIG_MMU),y)
-obj-y				+= nommu.o
-obj-$(CONFIG_ARM_MPU)		+= pmsa-v7.o pmsa-v8.o
-endif
 
 obj-$(CONFIG_ARM_PTDUMP_CORE)	+= dump.o
 obj-$(CONFIG_ARM_PTDUMP_DEBUGFS)	+= ptdump_debugfs.o

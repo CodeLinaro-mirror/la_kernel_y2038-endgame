@@ -169,25 +169,17 @@ void __show_regs(struct pt_regs *regs)
 		processor_modes[processor_mode(regs)],
 		isa_modes[isa_mode(regs)], segment);
 
-#ifdef CONFIG_CPU_CP15
+	buf[0] = '\0';
 	{
-		unsigned int ctrl;
-
-		buf[0] = '\0';
-#ifdef CONFIG_CPU_CP15_MMU
-		{
-			unsigned int transbase;
-			asm("mrc p15, 0, %0, c2, c0\n\t"
-			    : "=r" (transbase));
-			snprintf(buf, sizeof(buf), "  Table: %08x  DAC: %08x",
-				transbase, domain);
-		}
-#endif
-		asm("mrc p15, 0, %0, c1, c0\n" : "=r" (ctrl));
-
-		printk("Control: %08x%s\n", ctrl, buf);
+		unsigned int transbase;
+		asm("mrc p15, 0, %0, c2, c0\n\t"
+		    : "=r" (transbase));
+		snprintf(buf, sizeof(buf), "  Table: %08x  DAC: %08x",
+			transbase, domain);
 	}
-#endif
+	asm("mrc p15, 0, %0, c1, c0\n" : "=r" (ctrl));
+
+	printk("Control: %08x%s\n", ctrl, buf);
 }
 
 void show_regs(struct pt_regs * regs)
@@ -292,7 +284,6 @@ unsigned long __get_wchan(struct task_struct *p)
 	return 0;
 }
 
-#ifdef CONFIG_MMU
 #ifdef CONFIG_KUSER_HELPERS
 /*
  * The vectors page is always readable from user space for the
@@ -432,4 +423,3 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
 	mmap_write_unlock(mm);
 	return ret;
 }
-#endif

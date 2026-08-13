@@ -140,12 +140,7 @@ __mmap_switched_data:
 	.long	processor_id			@ r0
 	.long	__machine_arch_type		@ r1
 	.long	__atags_pointer			@ r2
-#ifdef CONFIG_CPU_CP15
 	.long	cr_alignment			@ r3
-#else
-M_CLASS(.long	exc_ret)			@ r3
-AR_CLASS(.long	0)				@ r3
-#endif
 	.size	__mmap_switched_data, . - __mmap_switched_data
 
 	__FINIT

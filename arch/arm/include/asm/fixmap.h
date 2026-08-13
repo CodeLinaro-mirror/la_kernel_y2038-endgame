@@ -51,16 +51,9 @@ static const enum fixed_addresses __end_of_fixed_addresses =
 
 #define __early_set_fixmap	__set_fixmap
 
-#ifdef CONFIG_MMU
-
 void __set_fixmap(enum fixed_addresses idx, phys_addr_t phys, pgprot_t prot);
 void __init early_fixmap_init(void);
 
 #include <asm-generic/fixmap.h>
 
-#else
-
-static inline void early_fixmap_init(void) { }
-
-#endif
 #endif

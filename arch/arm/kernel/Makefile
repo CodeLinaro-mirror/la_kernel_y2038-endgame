@@ -35,7 +35,7 @@ obj-$(CONFIG_DEPRECATED_PARAM_STRUCT) += atags_compat.o
 
 obj-y		+= entry-armv.o
 
-obj-$(CONFIG_MMU)		+= bugs.o
+obj-y				+= bugs.o
 obj-$(CONFIG_OF)		+= cacheinfo.o
 obj-$(CONFIG_CPU_IDLE)		+= cpuidle.o
 obj-$(CONFIG_ISA_DMA_API)	+= dma.o
@@ -46,9 +46,7 @@ obj-$(CONFIG_PCI)		+= bios32.o isa.o
 obj-$(CONFIG_ARM_CPU_SUSPEND)	+= sleep.o suspend.o
 obj-$(CONFIG_HIBERNATION)	+= hibernate.o
 obj-$(CONFIG_SMP)		+= smp.o
-ifdef CONFIG_MMU
 obj-$(CONFIG_SMP)		+= smp_tlb.o
-endif
 obj-$(CONFIG_HAVE_ARM_SCU)	+= smp_scu.o
 obj-$(CONFIG_HAVE_ARM_TWD)	+= smp_twd.o
 obj-$(CONFIG_ARM_ARCH_TIMER)	+= arch_timer.o
@@ -78,7 +76,7 @@ obj-$(CONFIG_ARM_CPU_TOPOLOGY)  += topology.o
 obj-$(CONFIG_VDSO)		+= vdso.o
 obj-$(CONFIG_EFI)		+= efi.o
 
-obj-y			+= head$(MMUEXT).o
+obj-y			+= head.o
 obj-$(CONFIG_DEBUG_LL)	+= debug.o
 obj-$(CONFIG_EARLY_PRINTK)	+= early_printk.o
 obj-$(CONFIG_ARM_PATCH_PHYS_VIRT)	+= phys2virt.o

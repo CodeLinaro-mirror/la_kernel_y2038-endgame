@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
 menu "Platform selection"
-	depends on MMU
 
 comment "CPU Core family selection"
 

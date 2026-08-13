@@ -21,7 +21,6 @@
 #include CONFIG_DEBUG_LL_INCLUDE
 #endif
 
-#ifdef CONFIG_MMU
 		.macro	addruart_current, rx, tmp1, tmp2
 		addruart	\tmp1, \tmp2, \rx
 		mrc		p15, 0, \rx, c1, c0
@@ -29,13 +28,6 @@
 		moveq		\rx, \tmp1
 		movne		\rx, \tmp2
 		.endm
-
-#else /* !CONFIG_MMU */
-		.macro	addruart_current, rx, tmp1, tmp2
-		addruart	\rx, \tmp1, \tmp2
-		.endm
-
-#endif /* CONFIG_MMU */
 
 /*
  * Useful debugging routines
@@ -113,14 +105,12 @@ ENTRY(printch)
 		b	2b
 ENDPROC(printch)
 
-#ifdef CONFIG_MMU
 ENTRY(debug_ll_addr)
 		addruart r2, r3, ip
 		str	r2, [r0]
 		str	r3, [r1]
 		ret	lr
 ENDPROC(debug_ll_addr)
-#endif
 
 #else
 

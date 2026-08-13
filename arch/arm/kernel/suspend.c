@@ -17,7 +17,6 @@
 extern int __cpu_suspend(unsigned long, int (*)(unsigned long), u32 cpuid);
 extern void cpu_resume_mmu(void);
 
-#ifdef CONFIG_MMU
 int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
 {
 	struct mm_struct *mm = current->active_mm;
@@ -60,20 +59,6 @@ int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
 
 	return ret;
 }
-#else
-int cpu_suspend(unsigned long arg, int (*fn)(unsigned long))
-{
-	u32 __mpidr = cpu_logical_map(smp_processor_id());
-	int ret;
-
-	pause_graph_tracing();
-	ret = __cpu_suspend(arg, fn, __mpidr);
-	unpause_graph_tracing();
-
-	return ret;
-}
-#define	idmap_pgd	NULL
-#endif
 
 /*
  * This is called by __cpu_suspend() to save the state, and do whatever

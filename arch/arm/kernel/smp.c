@@ -46,7 +46,6 @@
 #include <asm/smp_plat.h>
 #include <asm/virt.h>
 #include <asm/mach/arch.h>
-#include <asm/mpu.h>
 
 #include <trace/events/ipi.h>
 
@@ -144,14 +143,8 @@ int __cpu_up(unsigned int cpu, struct task_struct *idle)
 	 * its stack and the page tables.
 	 */
 	secondary_data.stack = task_stack_page(idle) + THREAD_START_SP;
-#ifdef CONFIG_ARM_MPU
-	secondary_data.mpu_rgn_info = &mpu_rgn_info;
-#endif
-
-#ifdef CONFIG_MMU
 	secondary_data.pgdir = virt_to_phys(idmap_pgd);
 	secondary_data.swapper_pg_dir = get_arch_pgd(swapper_pg_dir);
-#endif
 	secondary_data.task = idle;
 	sync_cache_w(&secondary_data);
 
@@ -425,9 +418,6 @@ asmlinkage void secondary_start_kernel(void)
 
 	cpu_init();
 
-#ifndef CONFIG_MMU
-	setup_vectors_base();
-#endif
 	pr_debug("CPU%u: Booted secondary processor\n", cpu);
 
 	trace_hardirqs_off();

@@ -139,7 +139,6 @@ extern int arm_elf_read_implies_exec(int);
 extern void elf_set_personality(const struct elf32_hdr *);
 #define SET_PERSONALITY(ex)	elf_set_personality(&(ex))
 
-#ifdef CONFIG_MMU
 #ifdef CONFIG_VDSO
 #define ARCH_DLINFO						\
 do {								\
@@ -150,6 +149,5 @@ do {								\
 #define ARCH_HAS_SETUP_ADDITIONAL_PAGES 1
 struct linux_binprm;
 int arch_setup_additional_pages(struct linux_binprm *, int);
-#endif
 
 #endif

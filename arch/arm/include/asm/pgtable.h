@@ -12,11 +12,6 @@
 
 #include <asm-generic/pgtable-nopud.h>
 
-#ifndef CONFIG_MMU
-#include <asm/pgtable-nommu.h>
-
-#else
-
 #include <asm/page.h>
 #include <asm/pgtable-hwdef.h>
 
@@ -314,7 +309,5 @@ static inline pte_t pte_swp_clear_exclusive(pte_t pte)
 #define HAVE_ARCH_UNMAPPED_AREA_TOPDOWN
 
 #endif /* !__ASSEMBLY__ */
-
-#endif /* CONFIG_MMU */
 
 #endif /* _ASMARM_PGTABLE_H */

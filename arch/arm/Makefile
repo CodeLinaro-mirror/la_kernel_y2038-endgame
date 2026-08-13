@@ -28,12 +28,6 @@ KBUILD_CFLAGS	+= $(call cc-option,-mno-fdpic)
 # This should work on most of the modern platforms
 KBUILD_DEFCONFIG := multi_v7_defconfig
 
-# defines filename extension depending memory management type.
-ifeq ($(CONFIG_MMU),)
-MMUEXT		:= -nommu
-KBUILD_CFLAGS	+= $(call cc-option,-mno-unaligned-access)
-endif
-
 ifeq ($(CONFIG_FRAME_POINTER),y)
 KBUILD_CFLAGS	+=-fno-omit-frame-pointer
 ifeq ($(CONFIG_CC_IS_GCC),y)
@@ -217,7 +211,7 @@ KBUILD_CPPFLAGS += $(patsubst %,-I$(srctree)/%/include,$(machdirs-y))
 # The byte offset of the kernel image in RAM from the start of RAM.
 TEXT_OFFSET := $(textofs-y)
 
-export	TEXT_OFFSET GZFLAGS MMUEXT
+export	TEXT_OFFSET GZFLAGS
 
 # If we have a machine-specific directory, then include it in the build.
 core-y				+= $(patsubst %,arch/arm/mach-%/,$(machine-y))

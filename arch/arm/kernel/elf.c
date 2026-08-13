@@ -98,7 +98,7 @@ int arm_elf_read_implies_exec(int executable_stack)
 }
 EXPORT_SYMBOL(arm_elf_read_implies_exec);
 
-#if defined(CONFIG_MMU) && defined(CONFIG_BINFMT_ELF_FDPIC)
+#if defined(CONFIG_BINFMT_ELF_FDPIC)
 
 void elf_fdpic_arch_lay_out_mm(struct elf_fdpic_params *exec_params,
 			       struct elf_fdpic_params *interp_params,

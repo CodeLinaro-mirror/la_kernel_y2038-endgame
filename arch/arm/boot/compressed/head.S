@@ -768,7 +768,6 @@ __arm926ejs_mmu_cache_on:
 
 __armv4_mmu_cache_on:
 		mov	r12, lr
-#ifdef CONFIG_MMU
 		mov	r6, #CB_BITS | 0x12	@ U
 		bl	__setup_mmu
 		mov	r0, #0
@@ -781,13 +780,11 @@ __armv4_mmu_cache_on:
 		bl	__common_mmu_cache_on
 		mov	r0, #0
 		mcr	p15, 0, r0, c8, c7, 0	@ flush I,D TLBs
-#endif
 		mov	pc, r12
 
 __armv7_mmu_cache_on:
 		enable_cp15_barriers	r11
 		mov	r12, lr
-#ifdef CONFIG_MMU
 		mrc	p15, 0, r11, c0, c1, 4	@ read ID_MMFR0
 		tst	r11, #0xf		@ VMSA
 		movne	r6, #CB_BITS | 0x02	@ !XN
@@ -796,7 +793,6 @@ __armv7_mmu_cache_on:
 		mcr	p15, 0, r0, c7, c10, 4	@ drain write buffer
 		tst	r11, #0xf		@ VMSA
 		mcrne	p15, 0, r0, c8, c7, 0	@ flush I,D TLBs
-#endif
 		mrc	p15, 0, r0, c1, c0, 0	@ read control reg
 		bic	r0, r0, #1 << 28	@ clear SCTLR.TRE
 		orr	r0, r0, #0x5000		@ I-cache enable, RR cache replacement
@@ -804,7 +800,6 @@ __armv7_mmu_cache_on:
 		bic	r0, r0, #2		@ A (no unaligned access fault)
 		orr	r0, r0, #1 << 22	@ U (v6 unaligned access model)
 						@ (needed for ARM1176)
-#ifdef CONFIG_MMU
  ARM_BE8(	orr	r0, r0, #1 << 25 )	@ big-endian page tables
 		mrcne   p15, 0, r6, c2, c0, 2   @ read ttb control reg
 		orrne	r0, r0, #1		@ MMU enabled
@@ -814,7 +809,6 @@ __armv7_mmu_cache_on:
 		mcrne	p15, 0, r3, c2, c0, 0	@ load page table pointer
 		mcrne	p15, 0, r1, c3, c0, 0	@ load domain access control
 		mcrne   p15, 0, r6, c2, c0, 2   @ load ttb control
-#endif
 		mcr	p15, 0, r0, c7, c5, 4	@ ISB
 		mcr	p15, 0, r0, c1, c0, 0	@ load control register
 		mrc	p15, 0, r0, c1, c0, 0	@ and read it back
@@ -869,11 +863,7 @@ __common_mmu_cache_on:
  */
 
 call_cache_fn:	adr	r12, proc_types
-#ifdef CONFIG_CPU_CP15
 		mrc	p15, 0, r9, c0, c0	@ get processor ID
-#else
-		ldr	r9, =CONFIG_PROCESSOR_ID
-#endif
 1:		ldr	r1, [r12, #0]		@ get value
 		ldr	r2, [r12, #4]		@ get mask
 		eor	r1, r1, r9		@ (real ^ match)
@@ -1055,28 +1045,20 @@ cache_off:	mov	r3, #12			@ cache_off function
 		b	call_cache_fn
 
 __armv4_mmu_cache_off:
-#ifdef CONFIG_MMU
 		mrc	p15, 0, r0, c1, c0
 		bic	r0, r0, #0x000d
 		mcr	p15, 0, r0, c1, c0	@ turn MMU and cache off
 		mov	r0, #0
 		mcr	p15, 0, r0, c7, c7	@ invalidate whole cache v4
 		mcr	p15, 0, r0, c8, c7	@ invalidate whole TLB v4
-#endif
 		mov	pc, lr
 
 __armv7_mmu_cache_off:
 		mrc	p15, 0, r0, c1, c0
-#ifdef CONFIG_MMU
 		bic	r0, r0, #0x0005
-#else
-		bic	r0, r0, #0x0004
-#endif
 		mcr	p15, 0, r0, c1, c0	@ turn MMU and cache off
 		mov	r0, #0
-#ifdef CONFIG_MMU
 		mcr	p15, 0, r0, c8, c7, 0	@ invalidate whole TLB
-#endif
 		mcr	p15, 0, r0, c7, c5, 6	@ invalidate BTC
 		mcr	p15, 0, r0, c7, c10, 4	@ DSB
 		mcr	p15, 0, r0, c7, c5, 4	@ ISB

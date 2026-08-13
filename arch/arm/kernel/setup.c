@@ -721,9 +721,7 @@ static void __init setup_processor(void)
 #ifndef CONFIG_ARM_THUMB
 	elf_hwcap &= ~(HWCAP_THUMB | HWCAP_IDIVT);
 #endif
-#ifdef CONFIG_MMU
 	init_default_cache_policy(list->__cpu_mm_mmu_flags);
-#endif
 	erratum_a15_798181_init();
 
 	elf_hwcap_fixup();
@@ -1126,9 +1124,7 @@ void __init setup_arch(char **cmdline_p)
 
 	parse_early_param();
 
-#ifdef CONFIG_MMU
 	early_mm_init(mdesc);
-#endif
 	setup_dma_zone(mdesc);
 	xen_early_init();
 	arm_efi_init();

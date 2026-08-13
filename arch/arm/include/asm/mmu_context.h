@@ -23,7 +23,6 @@
 
 void __check_vmalloc_seq(struct mm_struct *mm);
 
-#ifdef CONFIG_MMU
 static inline void check_vmalloc_seq(struct mm_struct *mm)
 {
 	if (!IS_ENABLED(CONFIG_ARM_LPAE) &&
@@ -31,7 +30,6 @@ static inline void check_vmalloc_seq(struct mm_struct *mm)
 		     atomic_read(&init_mm.context.vmalloc_seq)))
 		__check_vmalloc_seq(mm);
 }
-#endif
 
 #ifdef CONFIG_CPU_HAS_ASID
 
@@ -56,8 +54,6 @@ static inline void a15_erratum_get_cpumask(int this_cpu, struct mm_struct *mm,
 #endif /* CONFIG_ARM_ERRATA_798181 */
 
 #else	/* !CONFIG_CPU_HAS_ASID */
-
-#ifdef CONFIG_MMU
 
 static inline void check_and_switch_context(struct mm_struct *mm,
 					    struct task_struct *tsk)
@@ -101,8 +97,6 @@ static inline void finish_arch_post_lock_switch(void)
 }
 #endif /* !MODULE */
 
-#endif	/* CONFIG_MMU */
-
 #endif	/* CONFIG_CPU_HAS_ASID */
 
 #define activate_mm(prev,next)		switch_mm(prev, next, NULL)
@@ -117,7 +111,6 @@ static inline void
 switch_mm(struct mm_struct *prev, struct mm_struct *next,
 	  struct task_struct *tsk)
 {
-#ifdef CONFIG_MMU
 	unsigned int cpu = smp_processor_id();
 
 	/*
@@ -135,7 +128,6 @@ switch_mm(struct mm_struct *prev, struct mm_struct *next,
 		if (cache_is_vivt())
 			cpumask_clear_cpu(cpu, mm_cpumask(prev));
 	}
-#endif
 }
 
 #ifdef CONFIG_VMAP_STACK

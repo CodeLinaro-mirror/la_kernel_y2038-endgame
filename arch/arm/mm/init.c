@@ -42,13 +42,11 @@
 
 #include "mm.h"
 
-#ifdef CONFIG_CPU_CP15_MMU
 unsigned long __init __clear_cr(unsigned long mask)
 {
 	cr_alignment = cr_alignment & ~mask;
 	return cr_alignment;
 }
-#endif
 
 #ifdef CONFIG_BLK_DEV_INITRD
 static int __init parse_tag_initrd(const struct tag *tag)
@@ -230,10 +228,8 @@ void __init arch_mm_preinit(void)
 	 * Check boundaries twice: Some fundamental inconsistencies can
 	 * be detected at build time already.
 	 */
-#ifdef CONFIG_MMU
 	BUILD_BUG_ON(TASK_SIZE				> MODULES_VADDR);
 	BUG_ON(TASK_SIZE 				> MODULES_VADDR);
-#endif
 
 #ifdef CONFIG_HIGHMEM
 	BUILD_BUG_ON(PKMAP_BASE + LAST_PKMAP * PAGE_SIZE > PAGE_OFFSET);
@@ -440,7 +436,6 @@ void free_initrd_mem(unsigned long start, unsigned long end)
 #define MODULES_VADDR	(((unsigned long)_exiprom + ~PMD_MASK) & PMD_MASK)
 #endif
 
-#ifdef CONFIG_MMU
 static struct execmem_info execmem_info __ro_after_init;
 
 struct execmem_info __init *execmem_arch_setup(void)
@@ -467,6 +462,5 @@ struct execmem_info __init *execmem_arch_setup(void)
 
 	return &execmem_info;
 }
-#endif /* CONFIG_MMU */
 
 #endif /* CONFIG_EXECMEM */

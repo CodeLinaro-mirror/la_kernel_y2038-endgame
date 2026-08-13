@@ -24,11 +24,7 @@
 #define CR_RR	(1 << 14)	/* Round Robin cache replacement	*/
 #define CR_L4	(1 << 15)	/* LDR pc can set T bit			*/
 #define CR_DT	(1 << 16)
-#ifdef CONFIG_MMU
 #define CR_HA	(1 << 17)	/* Hardware management of Access Flag   */
-#else
-#define CR_BR	(1 << 17)	/* MPU Background region enable (PMSA)  */
-#endif
 #define CR_IT	(1 << 18)
 #define CR_ST	(1 << 19)
 #define CR_FI	(1 << 21)	/* Fast interrupt (lower latency mode)	*/
@@ -47,8 +43,6 @@
 #else
 #define vectors_high()	(0)
 #endif
-
-#ifdef CONFIG_CPU_CP15
 
 #include <asm/vdso/cp15.h>
 
@@ -100,22 +94,6 @@ static inline void set_copro_access(unsigned int val)
 	  : : "r" (val) : "cc");
 	isb();
 }
-
-#else /* ifdef CONFIG_CPU_CP15 */
-
-/*
- * cr_alignment is tightly coupled to cp15 (at least in the minds of the
- * developers). Yielding 0 for machines without a cp15 (and making it
- * read-only) is fine for most cases and saves quite some #ifdeffery.
- */
-#define cr_alignment	UL(0)
-
-static inline unsigned long get_cr(void)
-{
-	return 0;
-}
-
-#endif /* ifdef CONFIG_CPU_CP15 / else */
 
 #endif /* ifndef __ASSEMBLY__ */
 

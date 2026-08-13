@@ -97,7 +97,6 @@ static struct cachepolicy cache_policies[] __initdata = {
 	}
 };
 
-#ifdef CONFIG_CPU_CP15
 static unsigned long initial_pmd_value __initdata = 0;
 
 /*
@@ -198,24 +197,6 @@ static int __init early_ecc(char *p)
 }
 early_param("ecc", early_ecc);
 #endif
-
-#else /* ifdef CONFIG_CPU_CP15 */
-
-static int __init early_cachepolicy(char *p)
-{
-	pr_warn("cachepolicy kernel parameter not supported without cp15\n");
-	return 0;
-}
-early_param("cachepolicy", early_cachepolicy);
-
-static int __init noalign_setup(char *__unused)
-{
-	pr_warn("noalign kernel parameter not supported without cp15\n");
-	return 1;
-}
-__setup("noalign", noalign_setup);
-
-#endif /* ifdef CONFIG_CPU_CP15 / else */
 
 #define PROT_PTE_DEVICE		L_PTE_PRESENT|L_PTE_YOUNG|L_PTE_DIRTY|L_PTE_XN
 #define PROT_PTE_S2_DEVICE	PROT_PTE_DEVICE

@@ -7,8 +7,6 @@
 
 #ifndef __ASSEMBLY__
 
-#ifdef CONFIG_CPU_CP15
-
 #include <linux/stringify.h>
 
 #define __ACCESS_CP15(CRn, Op1, CRm, Op2)	\
@@ -30,8 +28,6 @@
 #define ICIALLU				__ACCESS_CP15(c7, 0, c5, 0)
 
 #define CNTVCT				__ACCESS_CP15_64(1, c14)
-
-#endif /* CONFIG_CPU_CP15 */
 
 #endif /* __ASSEMBLY__ */
 

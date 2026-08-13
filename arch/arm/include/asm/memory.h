@@ -34,8 +34,6 @@
 #define PAGE_OFFSET		UL(CONFIG_PAGE_OFFSET)
 #define KERNEL_OFFSET		(PAGE_OFFSET)
 
-#ifdef CONFIG_MMU
-
 /*
  * TASK_SIZE - the maximum size of a user space task.
  * TASK_UNMAPPED_BASE - the lower boundary of the mmap VM area
@@ -95,41 +93,6 @@
 #endif
 
 #define VECTORS_BASE		UL(0xffff0000)
-
-#else /* CONFIG_MMU */
-
-#ifndef __ASSEMBLY__
-extern unsigned long setup_vectors_base(void);
-extern unsigned long vectors_base;
-#define VECTORS_BASE		vectors_base
-#endif
-
-/*
- * The limitation of user task size can grow up to the end of free ram region.
- * It is difficult to define and perhaps will never meet the original meaning
- * of this define that was meant to.
- * Fortunately, there is no reference for this in noMMU mode, for now.
- */
-#define TASK_SIZE		UL(0xffffffff)
-
-#ifndef TASK_UNMAPPED_BASE
-#define TASK_UNMAPPED_BASE	UL(0x00000000)
-#endif
-
-#ifndef END_MEM
-#define END_MEM     		(UL(CONFIG_DRAM_BASE) + CONFIG_DRAM_SIZE)
-#endif
-
-/*
- * The module can be at any place in ram in nommu mode.
- */
-#define MODULES_END		(END_MEM)
-#define MODULES_VADDR		PAGE_OFFSET
-
-#define XIP_VIRT_ADDR(physaddr)  (physaddr)
-#define FDT_VIRT_BASE(physbase)  ((void *)(physbase))
-
-#endif /* !CONFIG_MMU */
 
 #ifdef CONFIG_XIP_KERNEL
 #define KERNEL_START		_sdata
@@ -338,14 +301,14 @@ extern long long arch_phys_to_idmap_offset;
  */
 static inline bool arm_has_idmap_alias(void)
 {
-	return IS_ENABLED(CONFIG_MMU) && arch_phys_to_idmap_offset != 0;
+	return arch_phys_to_idmap_offset != 0;
 }
 
 #define IDMAP_INVALID_ADDR ((u32)~0)
 
 static inline unsigned long phys_to_idmap(phys_addr_t addr)
 {
-	if (IS_ENABLED(CONFIG_MMU) && arch_phys_to_idmap_offset) {
+	if (arch_phys_to_idmap_offset) {
 		addr += arch_phys_to_idmap_offset;
 		if (addr > (u32)~0)
 			addr = IDMAP_INVALID_ADDR;
@@ -357,7 +320,7 @@ static inline phys_addr_t idmap_to_phys(unsigned long idmap)
 {
 	phys_addr_t addr = idmap;
 
-	if (IS_ENABLED(CONFIG_MMU) && arch_phys_to_idmap_offset)
+	if (arch_phys_to_idmap_offset)
 		addr -= arch_phys_to_idmap_offset;
 
 	return addr;

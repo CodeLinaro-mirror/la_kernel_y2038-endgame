@@ -15,17 +15,6 @@
 #define __ASMARM_TLB_H
 
 #include <asm/cacheflush.h>
-
-#ifndef CONFIG_MMU
-
-#include <linux/pagemap.h>
-
-#define tlb_flush(tlb)	((void) tlb)
-
-#include <asm-generic/tlb.h>
-
-#else /* !CONFIG_MMU */
-
 #include <asm/tlbflush.h>
 #include <asm-generic/tlb.h>
 
@@ -56,5 +45,4 @@ __pmd_free_tlb(struct mmu_gather *tlb, pmd_t *pmdp, unsigned long addr)
 #endif
 }
 
-#endif /* CONFIG_MMU */
 #endif

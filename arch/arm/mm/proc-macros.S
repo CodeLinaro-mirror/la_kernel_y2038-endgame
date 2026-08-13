@@ -249,7 +249,7 @@
 	mcr	p15, 0, ip, c7, c10, 4		@ data write barrier
 	.endm
 
-.macro define_processor_functions name:req, dabort:req, pabort:req, nommu=0, suspend=0, bugs=0
+.macro define_processor_functions name:req, dabort:req, pabort:req, suspend=0, bugs=0
 /*
  * If we are building for big.Little with branch predictor hardening,
  * we need the processor function tables to remain available after boot.
@@ -269,12 +269,7 @@ ENTRY(\name\()_processor_functions)
 	.word	cpu_\name\()_do_idle
 	.word	cpu_\name\()_dcache_clean_area
 	.word	cpu_\name\()_switch_mm
-
-	.if \nommu
-	.word	0
-	.else
 	.word	cpu_\name\()_set_pte_ext
-	.endif
 
 	.if \suspend
 	.word	cpu_\name\()_suspend_size

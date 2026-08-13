@@ -13,7 +13,6 @@ config CPU_ARM720T
 	select CPU_CACHE_V4
 	select CPU_CACHE_VIVT
 	select CPU_COPY_V4WT
-	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
 	select CPU_TLB_V4WT
@@ -32,7 +31,6 @@ config CPU_ARM920T
 	select CPU_CACHE_V4WT
 	select CPU_CACHE_VIVT
 	select CPU_COPY_V4WB
-	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
 	select CPU_TLB_V4WBI
@@ -51,7 +49,6 @@ config CPU_ARM922T
 	select CPU_CACHE_V4WT
 	select CPU_CACHE_VIVT
 	select CPU_COPY_V4WB
-	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
 	select CPU_TLB_V4WBI
@@ -71,7 +68,6 @@ config CPU_ARM925T
 	select CPU_CACHE_V4WT
 	select CPU_CACHE_VIVT
 	select CPU_COPY_V4WB
-	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
 	select CPU_TLB_V4WBI
@@ -90,7 +86,6 @@ config CPU_ARM926T
 	select CPU_ABRT_EV5TJ
 	select CPU_CACHE_VIVT
 	select CPU_COPY_V4WB
-	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
 	select CPU_TLB_V4WBI
@@ -110,7 +105,6 @@ config CPU_FA526
 	select CPU_CACHE_FA
 	select CPU_CACHE_VIVT
 	select CPU_COPY_FA
-	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_TLB_FA
 	help
@@ -158,7 +152,6 @@ config CPU_XSCALE
 	select CPU_32v5
 	select CPU_ABRT_EV5T
 	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
 	select CPU_TLB_V4WBI
@@ -169,7 +162,6 @@ config CPU_XSC3
 	select CPU_32v5
 	select CPU_ABRT_EV5T
 	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
 	select CPU_TLB_V4WBI
@@ -181,7 +173,6 @@ config CPU_MOHAWK
 	select CPU_ABRT_EV5T
 	select CPU_CACHE_VIVT
 	select CPU_COPY_V4WB
-	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
 	select CPU_TLB_V4WBI
@@ -193,7 +184,6 @@ config CPU_FEROCEON
 	select CPU_ABRT_EV5T
 	select CPU_CACHE_VIVT
 	select CPU_COPY_FEROCEON
-	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
 	select CPU_TLB_FEROCEON
@@ -226,7 +216,6 @@ config CPU_V6K
 	select CPU_CACHE_V6
 	select CPU_CACHE_VIPT
 	select CPU_COPY_V6
-	select CPU_CP15_MMU
 	select CPU_HAS_ASID
 	select CPU_PABRT_V6
 	select CPU_THUMB_CAPABLE
@@ -255,7 +244,6 @@ config CPU_V7
 	select CPU_CACHE_V7
 	select CPU_CACHE_VIPT
 	select CPU_COPY_V6
-	select CPU_CP15_MMU
 	select CPU_HAS_ASID
 	select CPU_PABRT_V7
 	select CPU_SPECTRE
@@ -358,7 +346,6 @@ config CPU_CACHE_VIPT
 config CPU_CACHE_FA
 	bool
 
-if MMU
 # The copy-page model
 config CPU_COPY_V4WT
 	bool
@@ -410,30 +397,11 @@ config CPU_TLB_V6
 config CPU_TLB_V7
 	bool
 
-endif
-
 config CPU_HAS_ASID
 	bool
 	help
 	  This indicates whether the CPU has the ASID register; used to
 	  tag TLB and possibly cache entries.
-
-config CPU_CP15
-	bool
-	help
-	  Processor has the CP15 register.
-
-config CPU_CP15_MMU
-	bool
-	select CPU_CP15
-	help
-	  Processor has the CP15 register, which has MMU related registers.
-
-config CPU_CP15_MPU
-	bool
-	select CPU_CP15
-	help
-	  Processor has the CP15 register, which has MPU related registers.
 
 config CPU_USE_DOMAINS
 	bool
@@ -449,8 +417,7 @@ comment "Processor Features"
 
 config ARM_LPAE
 	bool "Support for the Large Physical Address Extension"
-	depends on MMU && CPU_32v7 && !CPU_32v6 && !CPU_32v5 && \
-		!CPU_32v4 && !CPU_32v3
+	depends on CPU_32v7 && !CPU_32v6 && !CPU_32v5 && !CPU_32v4 && !CPU_32v3
 	select PHYS_ADDR_T_64BIT
 	select SWIOTLB
 	help
@@ -568,17 +535,6 @@ config CPU_ENDIAN_BE32
 	help
 	  Support for the BE-32 (big-endian) mode on pre-ARMv6 processors.
 
-config CPU_HIGH_VECTOR
-	depends on !MMU && CPU_CP15
-	bool "Select the High exception vector"
-	help
-	  Say Y here to select high exception vector(0xFFFF0000~).
-	  The exception vector can vary depending on the platform
-	  design in nommu mode. If your platform needs to select
-	  high exception vector, say Y.
-	  Otherwise or if you are unsure, say N, and the low exception
-	  vector (0x00000000~) will be used.
-
 config CPU_ICACHE_DISABLE
 	bool "Disable I-Cache (I-bit)"
 	depends on !(CPU_ARM720T || CPU_XSCALE || CPU_XSC3)
@@ -660,7 +616,6 @@ config NEED_KUSER_HELPERS
 
 config KUSER_HELPERS
 	bool "Enable kuser helpers in vector page" if !NEED_KUSER_HELPERS
-	depends on MMU
 	default y
 	help
 	  Warning: disabling this option may break user programs.
@@ -689,7 +644,7 @@ config KUSER_HELPERS
 
 config VDSO
 	bool "Enable VDSO for acceleration of some system calls"
-	depends on AEABI && MMU && CPU_V7
+	depends on AEABI && CPU_V7
 	default y if ARM_ARCH_TIMER
 	select GENERIC_GETTIMEOFDAY
 	help

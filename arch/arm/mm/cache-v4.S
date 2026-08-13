@@ -36,13 +36,9 @@ SYM_FUNC_ALIAS(v4_flush_user_cache_all, v4_flush_kern_cache_all)
  *	Clean and invalidate the entire cache.
  */
 SYM_TYPED_FUNC_START(v4_flush_kern_cache_all)
-#ifdef CONFIG_CPU_CP15
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c7, 0		@ flush ID cache
 	ret	lr
-#else
-	ret	lr
-#endif
 SYM_FUNC_END(v4_flush_kern_cache_all)
 
 /*
@@ -56,13 +52,9 @@ SYM_FUNC_END(v4_flush_kern_cache_all)
  *	- flags	- vma_area_struct flags describing address space
  */
 SYM_TYPED_FUNC_START(v4_flush_user_cache_range)
-#ifdef CONFIG_CPU_CP15
 	mov	ip, #0
 	mcr	p15, 0, ip, c7, c7, 0		@ flush ID cache
 	ret	lr
-#else
-	ret	lr
-#endif
 SYM_FUNC_END(v4_flush_user_cache_range)
 
 /*
@@ -118,10 +110,8 @@ SYM_FUNC_END(v4_flush_kern_dcache_area)
  *	- end	 - virtual end address
  */
 SYM_TYPED_FUNC_START(v4_dma_flush_range)
-#ifdef CONFIG_CPU_CP15
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c7, 0		@ flush ID cache
-#endif
 	ret	lr
 SYM_FUNC_END(v4_dma_flush_range)
 

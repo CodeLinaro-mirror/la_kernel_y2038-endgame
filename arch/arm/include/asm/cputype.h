@@ -98,7 +98,6 @@
 extern unsigned int processor_id;
 struct proc_info_list *lookup_processor(u32 midr);
 
-#ifdef CONFIG_CPU_CP15
 #define read_cpuid(reg)							\
 	({								\
 		unsigned int __val;					\
@@ -124,23 +123,6 @@ struct proc_info_list *lookup_processor(u32 midr);
 		__val;							\
 	})
 
-#else /* ifdef CONFIG_CPU_CP15 */
-
-/*
- * read_cpuid and read_cpuid_ext should only ever be called on machines that
- * have cp15 so warn on other usages.
- */
-#define read_cpuid(reg)							\
-	({								\
-		WARN_ON_ONCE(1);					\
-		0;							\
-	})
-
-#define read_cpuid_ext(reg) read_cpuid(reg)
-
-#endif /* ifdef CONFIG_CPU_CP15 / else */
-
-#ifdef CONFIG_CPU_CP15
 /*
  * The CPU ID never changes at run time, so we might as well tell the
  * compiler that it's constant.  Use this function to read the CPU ID
@@ -160,15 +142,6 @@ static inline unsigned int __attribute_const__ read_cpuid_mputype(void)
 {
 	return read_cpuid(CPUID_MPUIR);
 }
-
-#else /* ifdef CONFIG_CPU_CP15 */
-
-static inline unsigned int __attribute_const__ read_cpuid_id(void)
-{
-	return processor_id;
-}
-
-#endif /* ifdef CONFIG_CPU_CP15 / else */
 
 static inline unsigned int __attribute_const__ read_cpuid_implementor(void)
 {

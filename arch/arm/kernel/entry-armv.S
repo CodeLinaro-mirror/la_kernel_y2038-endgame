@@ -412,9 +412,6 @@ ENDPROC(__fiq_abt)
 
 	.macro	kuser_cmpxchg_check
 #if !defined(CONFIG_CPU_32v6K) && defined(CONFIG_KUSER_HELPERS)
-#ifndef CONFIG_MMU
-#warning "NPTL on non MMU needs fixing"
-#else
 	@ Make sure our user space atomic helper is restarted
 	@ if it was interrupted in a critical region.  Here we
 	@ perform a quick test inline since it should be false
@@ -422,7 +419,6 @@ ENDPROC(__fiq_abt)
 	ldr	r0, =TASK_SIZE
 	cmp	r4, r0
 	blhs	kuser_cmpxchg64_fixup
-#endif
 #endif
 	.endm
 
@@ -718,8 +714,6 @@ __kuser_cmpxchg64:				@ 0xffff0f60
 
 #elif !defined(CONFIG_SMP)
 
-#ifdef CONFIG_MMU
-
 	/*
 	 * The only thing that can break atomicity in this cmpxchg64
 	 * implementation is either an IRQ or a data abort exception
@@ -755,13 +749,6 @@ kuser_cmpxchg64_fixup:
 	.previous
 
 #else
-#warning "NPTL on non MMU needs fixing"
-	mov	r0, #-1
-	adds	r0, r0, #0
-	usr_ret	lr
-#endif
-
-#else
 #error "incoherent kernel configuration"
 #endif
 
@@ -776,8 +763,6 @@ __kuser_memory_barrier:				@ 0xffff0fa0
 __kuser_cmpxchg:				@ 0xffff0fc0
 
 #if __LINUX_ARM_ARCH__ < 6
-
-#ifdef CONFIG_MMU
 
 	/*
 	 * The only thing that can break atomicity in this cmpxchg
@@ -808,13 +793,6 @@ kuser_cmpxchg32_fixup:
 	strcs	r7, [sp, #S_PC]
 	ret	lr
 	.previous
-
-#else
-#warning "NPTL on non MMU needs fixing"
-	mov	r0, #-1
-	adds	r0, r0, #0
-	usr_ret	lr
-#endif
 
 #else
 

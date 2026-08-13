@@ -20,7 +20,6 @@
 #include <asm/mach/arch.h>
 #include <asm/thread_info.h>
 #include <asm/page.h>
-#include <asm/mpu.h>
 #include <asm/procinfo.h>
 #include <asm/suspend.h>
 #include <asm/hardware/cache-l2x0.h>
@@ -152,17 +151,6 @@ int main(void)
   DEFINE(CACHE_WRITEBACK_ORDER, __CACHE_WRITEBACK_ORDER);
   DEFINE(CACHE_WRITEBACK_GRANULE, __CACHE_WRITEBACK_GRANULE);
   BLANK();
-#ifdef CONFIG_ARM_MPU
-  DEFINE(MPU_RNG_INFO_RNGS,	offsetof(struct mpu_rgn_info, rgns));
-  DEFINE(MPU_RNG_INFO_USED,	offsetof(struct mpu_rgn_info, used));
-
-  DEFINE(MPU_RNG_SIZE,		sizeof(struct mpu_rgn));
-  DEFINE(MPU_RGN_DRBAR,	offsetof(struct mpu_rgn, drbar));
-  DEFINE(MPU_RGN_DRSR,	offsetof(struct mpu_rgn, drsr));
-  DEFINE(MPU_RGN_DRACR,	offsetof(struct mpu_rgn, dracr));
-  DEFINE(MPU_RGN_PRBAR,	offsetof(struct mpu_rgn, prbar));
-  DEFINE(MPU_RGN_PRLAR,	offsetof(struct mpu_rgn, prlar));
-#endif
   DEFINE(KEXEC_START_ADDR,	offsetof(struct kexec_relocate_data, kexec_start_address));
   DEFINE(KEXEC_INDIR_PAGE,	offsetof(struct kexec_relocate_data, kexec_indirection_page));
   DEFINE(KEXEC_MACH_TYPE,	offsetof(struct kexec_relocate_data, kexec_mach_type));

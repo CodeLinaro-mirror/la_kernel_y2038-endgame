@@ -11,12 +11,6 @@
 
 #ifndef __ASSEMBLY__
 
-#ifndef CONFIG_MMU
-
-#include <asm/page-nommu.h>
-
-#else
-
 #include <asm/glue.h>
 
 /*
@@ -170,8 +164,6 @@ extern void copy_page(void *to, const void *from);
 #define ARCH_PAGE_TABLE_SYNC_MASK	PGTBL_PMD_MODIFIED
 #endif
 #endif
-
-#endif /* CONFIG_MMU */
 
 typedef struct page *pgtable_t;
 

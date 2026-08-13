@@ -15,8 +15,6 @@
 #include <asm/cacheflush.h>
 #include <asm/tlbflush.h>
 
-#ifdef CONFIG_MMU
-
 #define _PAGE_USER_TABLE	(PMD_TYPE_TABLE | PMD_BIT4 | PMD_DOMAIN(DOMAIN_USER))
 #define _PAGE_KERNEL_TABLE	(PMD_TYPE_TABLE | PMD_BIT4 | PMD_DOMAIN(DOMAIN_KERNEL))
 
@@ -143,7 +141,5 @@ pmd_populate(struct mm_struct *mm, pmd_t *pmdp, pgtable_t ptep)
 
 	__pmd_populate(pmdp, page_to_phys(ptep), prot);
 }
-
-#endif /* CONFIG_MMU */
 
 #endif

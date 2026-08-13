@@ -87,8 +87,6 @@ static inline void uaccess_restore(unsigned int flags)
 extern int __get_user_bad(void);
 extern int __put_user_bad(void);
 
-#ifdef CONFIG_MMU
-
 /*
  * This is a type: either unsigned long, if the argument fits into
  * that type, or otherwise unsigned long long.
@@ -247,13 +245,6 @@ extern int __put_user_8(void *, unsigned long long);
 			: "ip", "lr", "cc");				\
 		__err = __e;						\
 	})
-
-#else /* CONFIG_MMU */
-
-#define get_user(x, p)	__get_user(x, p)
-#define __put_user_check __put_user_nocheck
-
-#endif /* CONFIG_MMU */
 
 #include <asm-generic/access_ok.h>
 
@@ -553,7 +544,6 @@ do {									\
 		goto err_label;						\
 } while (0)
 
-#ifdef CONFIG_MMU
 extern unsigned long __must_check
 arm_copy_from_user(void *to, const void __user *from, unsigned long n);
 
@@ -601,21 +591,6 @@ __clear_user(void __user *addr, unsigned long n)
 	return n;
 }
 
-#else
-static inline unsigned long
-raw_copy_from_user(void *to, const void __user *from, unsigned long n)
-{
-	memcpy(to, (const void __force *)from, n);
-	return 0;
-}
-static inline unsigned long
-raw_copy_to_user(void __user *to, const void *from, unsigned long n)
-{
-	memcpy((void __force *)to, from, n);
-	return 0;
-}
-#define __clear_user(addr, n)		(memset((void __force *)addr, 0, n), 0)
-#endif
 #define INLINE_COPY_USER
 
 static inline unsigned long __must_check clear_user(void __user *to, unsigned long n)

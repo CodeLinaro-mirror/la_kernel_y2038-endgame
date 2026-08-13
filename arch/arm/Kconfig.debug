@@ -6,7 +6,6 @@ config ARM_PTDUMP_CORE
 config ARM_PTDUMP_DEBUGFS
 	bool "Export kernel pagetable layout to userspace via debugfs"
 	depends on DEBUG_KERNEL
-	depends on MMU
 	select ARM_PTDUMP_CORE
 	select DEBUG_FS
 	help
@@ -19,7 +18,6 @@ config ARM_PTDUMP_DEBUGFS
 
 config ARM_CHECK_WX
 	bool "Warn on W+X mappings at boot"
-	depends on MMU
 	select ARM_PTDUMP_CORE
 	help
 		Generate a warning if any W+X mappings are found at boot.
@@ -1200,7 +1198,7 @@ choice
 
 	config DEBUG_VEXPRESS_UART0_DETECT
 		bool "Autodetect UART0 on Versatile Express Cortex-A core tiles"
-		depends on ARCH_VEXPRESS && CPU_CP15_MMU
+		depends on ARCH_VEXPRESS
 		help
 		  This option enables a simple heuristic which tries to determine
 		  the motherboard's memory map variant (original or RS1) and then
@@ -1225,14 +1223,6 @@ choice
 		  This option selects UART0 at 0x1c090000. This applies to most
 		  of the tiles using the RS1 memory map, including all new A-class
 		  core tiles, FPGA-based SMMs and software models.
-
-	config DEBUG_VEXPRESS_UART0_CRX
-		bool "Use PL011 UART0 at 0xb0090000 (Cortex-R compliant tiles)"
-		depends on ARCH_VEXPRESS && !MMU
-		select DEBUG_UART_PL01X
-		help
-		  This option selects UART0 at 0xb0090000. This is appropriate for
-		  Cortex-R series tiles and SMMs, such as Cortex-R5 and Cortex-R7
 
 	config DEBUG_VF_UART
 		bool "Vybrid UART"
@@ -1517,7 +1507,6 @@ config DEBUG_UART_PHYS
 	default 0x80074000 if DEBUG_IMX28_UART
 	default 0x808c0000 if DEBUG_EP93XX || ARCH_EP93XX
 	default 0x90020000 if DEBUG_NSPIRE_CLASSIC_UART || DEBUG_NSPIRE_CX_UART
-	default 0xb0090000 if DEBUG_VEXPRESS_UART0_CRX
 	default 0xc8000000 if ARCH_IXP4XX && !CPU_BIG_ENDIAN
 	default 0xc8000003 if ARCH_IXP4XX && CPU_BIG_ENDIAN
 	default 0xd0000000 if DEBUG_SPEAR3XX
@@ -1673,7 +1662,6 @@ config DEBUG_UART_VIRT
 	default 0xff0b0800 if DEBUG_OMAP1UART2
 	default 0xff0b9800 if DEBUG_OMAP1UART3
 	default 0xffd01000 if DEBUG_HIP01_UART
-	default DEBUG_UART_PHYS if !MMU
 	depends on DEBUG_LL_UART_8250 || DEBUG_LL_UART_PL01X || \
 		DEBUG_UART_8250 || DEBUG_UART_PL01X || DEBUG_MESON_UARTAO || \
 		DEBUG_QCOM_UARTDM || \

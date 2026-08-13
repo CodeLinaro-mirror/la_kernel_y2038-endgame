@@ -16,7 +16,6 @@ struct patch {
 	unsigned int insn;
 };
 
-#ifdef CONFIG_MMU
 static DEFINE_RAW_SPINLOCK(patch_lock);
 
 static void __kprobes *patch_map(void *addr, int fixmap, unsigned long *flags)
@@ -47,13 +46,6 @@ static void __kprobes patch_unmap(int fixmap, unsigned long *flags)
 	if (flags)
 		raw_spin_unlock_irqrestore(&patch_lock, *flags);
 }
-#else
-static void __kprobes *patch_map(void *addr, int fixmap, unsigned long *flags)
-{
-	return addr;
-}
-static void __kprobes patch_unmap(int fixmap, unsigned long *flags) { }
-#endif
 
 void __kprobes __patch_text_real(void *addr, unsigned int insn, bool remap)
 {
