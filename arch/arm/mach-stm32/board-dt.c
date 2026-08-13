@@ -7,9 +7,6 @@
 
 #include <linux/kernel.h>
 #include <asm/mach/arch.h>
-#ifdef CONFIG_ARM_SINGLE_ARMV7M
-#include <asm/v7m.h>
-#endif
 
 static const char *const stm32_compat[] __initconst = {
 	"st,stm32mp131",
@@ -22,7 +19,4 @@ static const char *const stm32_compat[] __initconst = {
 
 DT_MACHINE_START(STM32DT, "STM32 (Device Tree Support)")
 	.dt_compat = stm32_compat,
-#ifdef CONFIG_ARM_SINGLE_ARMV7M
-	.restart = armv7m_restart,
-#endif
 MACHINE_END

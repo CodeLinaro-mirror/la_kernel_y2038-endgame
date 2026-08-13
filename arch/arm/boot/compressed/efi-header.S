@@ -9,8 +9,7 @@
 #include <linux/sizes.h>
 
 		.macro	__nop
- AR_CLASS(	mov	r0, r0		)
-  M_CLASS(	nop.w			)
+		mov	r0, r0
 		.endm
 
 		.macro __initial_nops

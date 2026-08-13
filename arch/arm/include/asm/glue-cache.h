@@ -101,14 +101,6 @@
 # define MULTI_CACHE 1
 #endif
 
-#ifdef CONFIG_CPU_CACHE_NOP
-#  define MULTI_CACHE 1
-#endif
-
-#if defined(CONFIG_CPU_V7M)
-#  define MULTI_CACHE 1
-#endif
-
 #if !defined(_CACHE) && !defined(MULTI_CACHE)
 #error Unknown cache maintenance model
 #endif

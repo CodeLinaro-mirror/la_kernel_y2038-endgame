@@ -9,15 +9,9 @@
 /*
  * CPU interrupt mask handling.
  */
-#ifdef CONFIG_CPU_V7M
-#define IRQMASK_REG_NAME_R "primask"
-#define IRQMASK_REG_NAME_W "primask"
-#define IRQMASK_I_BIT	1
-#else
 #define IRQMASK_REG_NAME_R "cpsr"
 #define IRQMASK_REG_NAME_W "cpsr_c"
 #define IRQMASK_I_BIT	PSR_I_BIT
-#endif
 
 #if __LINUX_ARM_ARCH__ >= 6
 
@@ -56,13 +50,8 @@ static inline void arch_local_irq_disable(void)
 #define local_fiq_enable()  __asm__("cpsie f	@ __stf" : : : "memory", "cc")
 #define local_fiq_disable() __asm__("cpsid f	@ __clf" : : : "memory", "cc")
 
-#ifndef CONFIG_CPU_V7M
-#define local_abt_enable()  __asm__("cpsie a	@ __sta" : : : "memory", "cc")
-#define local_abt_disable() __asm__("cpsid a	@ __cla" : : : "memory", "cc")
-#else
 #define local_abt_enable()	do { } while (0)
 #define local_abt_disable()	do { } while (0)
-#endif
 #else
 
 /*

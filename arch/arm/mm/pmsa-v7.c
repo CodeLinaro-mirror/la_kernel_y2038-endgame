@@ -33,8 +33,6 @@ static unsigned int __initdata mpu_max_regions;
 static int __init __mpu_min_region_order(void);
 static int __init __mpu_max_regions(void);
 
-#ifndef CONFIG_CPU_V7M
-
 #define DRBAR	__ACCESS_CP15(c6, 0, c1, 0)
 #define IRBAR	__ACCESS_CP15(c6, 0, c1, 1)
 #define DRSR	__ACCESS_CP15(c6, 0, c1, 2)
@@ -97,51 +95,6 @@ static inline u32 irbar_read(void)
 {
 	return read_sysreg(IRBAR);
 }
-
-#else
-
-static inline void rgnr_write(u32 v)
-{
-	writel_relaxed(v, BASEADDR_V7M_SCB + PMSAv7_RNR);
-}
-
-/* Data-side / unified region attributes */
-
-/* Region access control register */
-static inline void dracr_write(u32 v)
-{
-	u32 rsr = readl_relaxed(BASEADDR_V7M_SCB + PMSAv7_RASR) & GENMASK(15, 0);
-
-	writel_relaxed((v << 16) | rsr, BASEADDR_V7M_SCB + PMSAv7_RASR);
-}
-
-/* Region size register */
-static inline void drsr_write(u32 v)
-{
-	u32 racr = readl_relaxed(BASEADDR_V7M_SCB + PMSAv7_RASR) & GENMASK(31, 16);
-
-	writel_relaxed(v | racr, BASEADDR_V7M_SCB + PMSAv7_RASR);
-}
-
-/* Region base address register */
-static inline void drbar_write(u32 v)
-{
-	writel_relaxed(v, BASEADDR_V7M_SCB + PMSAv7_RBAR);
-}
-
-static inline u32 drbar_read(void)
-{
-	return readl_relaxed(BASEADDR_V7M_SCB + PMSAv7_RBAR);
-}
-
-/* ARMv7-M only supports a unified MPU, so I-side operations are nop */
-
-static inline void iracr_write(u32 v) {}
-static inline void irsr_write(u32 v) {}
-static inline void irbar_write(u32 v) {}
-static inline unsigned long irbar_read(void) {return 0;}
-
-#endif
 
 static bool __init try_split_region(phys_addr_t base, phys_addr_t size, struct region *region)
 {
@@ -250,10 +203,8 @@ void __init pmsav7_adjust_lowmem_bounds(void)
 	/* We need to keep one slot for background region */
 	mem_max_regions--;
 
-#ifndef CONFIG_CPU_V7M
 	/* ... and one for vectors */
 	mem_max_regions--;
-#endif
 
 #ifdef CONFIG_XIP_KERNEL
 	/* plus some regions to cover XIP ROM */
@@ -460,11 +411,9 @@ void __init pmsav7_setup(void)
 	}
 
 	/* Vectors */
-#ifndef CONFIG_CPU_V7M
 	err |= mpu_setup_region(region++, vectors_base, ilog2(2 * PAGE_SIZE),
 				PMSAv7_AP_PL1RW_PL0NA | PMSAv7_RGN_NORMAL,
 				0, false);
-#endif
 	if (err) {
 		panic("MPU region initialization failure! %d", err);
 	} else {

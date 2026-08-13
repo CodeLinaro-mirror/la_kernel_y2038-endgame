@@ -33,11 +33,7 @@ obj-$(CONFIG_ATAGS)		+= atags_parse.o
 obj-$(CONFIG_ATAGS_PROC)	+= atags_proc.o
 obj-$(CONFIG_DEPRECATED_PARAM_STRUCT) += atags_compat.o
 
-ifeq ($(CONFIG_CPU_V7M),y)
-obj-y		+= entry-v7m.o v7m.o
-else
 obj-y		+= entry-armv.o
-endif
 
 obj-$(CONFIG_MMU)		+= bugs.o
 obj-$(CONFIG_OF)		+= cacheinfo.o

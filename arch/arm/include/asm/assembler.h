@@ -164,20 +164,12 @@ THUMB(	fpreg	.req	r7	)
  * assumes FIQs are enabled, and that the processor is in SVC mode.
  */
 	.macro	save_and_disable_irqs, oldcpsr
-#ifdef CONFIG_CPU_V7M
-	mrs	\oldcpsr, primask
-#else
 	mrs	\oldcpsr, cpsr
-#endif
 	disable_irq
 	.endm
 
 	.macro	save_and_disable_irqs_notrace, oldcpsr
-#ifdef CONFIG_CPU_V7M
-	mrs	\oldcpsr, primask
-#else
 	mrs	\oldcpsr, cpsr
-#endif
 	disable_irq_notrace
 	.endm
 
@@ -186,11 +178,7 @@ THUMB(	fpreg	.req	r7	)
  * guarantee that this will preserve the flags.
  */
 	.macro	restore_irqs_notrace, oldcpsr
-#ifdef CONFIG_CPU_V7M
-	msr	primask, \oldcpsr
-#else
 	msr	cpsr_c, \oldcpsr
-#endif
 	.endm
 
 	.macro restore_irqs, oldcpsr
@@ -384,14 +372,7 @@ ALT_SMP(mrc		p15, 0, \rd, c13, c0, 4)
 #endif
 	.endm
 
-#if defined(CONFIG_CPU_V7M)
-	/*
-	 * setmode is used to assert to be in svc mode during boot. For v7-M
-	 * this is done in __v7m_setup, so setmode can be empty here.
-	 */
-	.macro	setmode, mode, reg
-	.endm
-#elif defined(CONFIG_THUMB2_KERNEL)
+#if defined(CONFIG_THUMB2_KERNEL)
 	.macro	setmode, mode, reg
 	mov	\reg, #\mode
 	msr	cpsr_c, \reg
@@ -410,7 +391,7 @@ ALT_SMP(mrc		p15, 0, \rd, c13, c0, 4)
  * you cannot return to the original mode.
  */
 .macro safe_svcmode_maskall reg:req
-#if __LINUX_ARM_ARCH__ >= 6 && !defined(CONFIG_CPU_V7M)
+#if __LINUX_ARM_ARCH__ >= 6
 	mrs	\reg , cpsr
 	eor	\reg, \reg, #HYP_MODE
 	tst	\reg, #MODE_MASK

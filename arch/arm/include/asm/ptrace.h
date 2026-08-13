@@ -35,13 +35,9 @@ struct svc_pt_regs {
 #define thumb_mode(regs) (0)
 #endif
 
-#ifndef CONFIG_CPU_V7M
 #define isa_mode(regs) \
 	(FIELD_GET(PSR_J_BIT, (regs)->ARM_cpsr) << 1 | \
 	 FIELD_GET(PSR_T_BIT, (regs)->ARM_cpsr))
-#else
-#define isa_mode(regs) 1 /* Thumb */
-#endif
 
 #define processor_mode(regs) \
 	((regs)->ARM_cpsr & MODE_MASK)
@@ -57,7 +53,6 @@ struct svc_pt_regs {
  */
 static inline int valid_user_regs(struct pt_regs *regs)
 {
-#ifndef CONFIG_CPU_V7M
 	unsigned long mode = regs->ARM_cpsr & MODE_MASK;
 
 	/*
@@ -80,9 +75,6 @@ static inline int valid_user_regs(struct pt_regs *regs)
 		regs->ARM_cpsr |= USR_MODE;
 
 	return 0;
-#else /* ifndef CONFIG_CPU_V7M */
-	return 1;
-#endif
 }
 
 static inline long regs_return_value(struct pt_regs *regs)

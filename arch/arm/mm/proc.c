@@ -328,30 +328,3 @@ __ADDRESSABLE(cpu_pj4b_do_resume);
 #endif /* CONFIG_CPU_PJ4B */
 #endif /* CONFIG_ARM_CPU_SUSPEND */
 #endif /* CONFIG_CPU_V7 */
-
-#ifdef CONFIG_CPU_V7M
-void cpu_v7m_proc_init(void);
-__ADDRESSABLE(cpu_v7m_proc_init);
-void cpu_v7m_proc_fin(void);
-__ADDRESSABLE(cpu_v7m_proc_fin);
-void cpu_v7m_reset(unsigned long addr, bool hvc);
-__ADDRESSABLE(cpu_v7m_reset);
-int cpu_v7m_do_idle(void);
-__ADDRESSABLE(cpu_v7m_do_idle);
-void cpu_v7m_dcache_clean_area(void *addr, int size);
-__ADDRESSABLE(cpu_v7m_dcache_clean_area);
-void cpu_v7m_switch_mm(phys_addr_t pgd_phys, struct mm_struct *mm);
-__ADDRESSABLE(cpu_v7m_switch_mm);
-void cpu_v7m_set_pte_ext(pte_t *ptep, pte_t pte, unsigned int ext);
-__ADDRESSABLE(cpu_v7m_set_pte_ext);
-#ifdef CONFIG_ARM_CPU_SUSPEND
-void cpu_v7m_do_suspend(void *);
-__ADDRESSABLE(cpu_v7m_do_suspend);
-void cpu_v7m_do_resume(void *);
-__ADDRESSABLE(cpu_v7m_do_resume);
-#endif /* CONFIG_ARM_CPU_SUSPEND */
-void cpu_cm7_proc_fin(void);
-__ADDRESSABLE(cpu_cm7_proc_fin);
-void cpu_cm7_dcache_clean_area(void *addr, int size);
-__ADDRESSABLE(cpu_cm7_dcache_clean_area);
-#endif /* CONFIG_CPU_V7M */

@@ -113,8 +113,10 @@ void __show_regs(struct pt_regs *regs)
 {
 	unsigned long flags;
 	char buf[64];
-#ifndef CONFIG_CPU_V7M
 	unsigned int domain;
+	const char *segment;
+	unsigned int ctrl;
+
 #ifdef CONFIG_CPU_SW_DOMAIN_PAN
 	/*
 	 * Get the domain register for the parent context. In user
@@ -128,7 +130,6 @@ void __show_regs(struct pt_regs *regs)
 	}
 #else
 	domain = get_domain();
-#endif
 #endif
 
 	show_regs_print_info(KERN_DEFAULT);
@@ -156,25 +157,17 @@ void __show_regs(struct pt_regs *regs)
 	buf[3] = flags & PSR_V_BIT ? 'V' : 'v';
 	buf[4] = '\0';
 
-#ifndef CONFIG_CPU_V7M
-	{
-		const char *segment;
+	if ((domain & domain_mask(DOMAIN_USER)) ==
+	    domain_val(DOMAIN_USER, DOMAIN_NOACCESS))
+		segment = "none";
+	else
+		segment = "user";
 
-		if ((domain & domain_mask(DOMAIN_USER)) ==
-		    domain_val(DOMAIN_USER, DOMAIN_NOACCESS))
-			segment = "none";
-		else
-			segment = "user";
-
-		printk("Flags: %s  IRQs o%s  FIQs o%s  Mode %s  ISA %s  Segment %s\n",
-			buf, interrupts_enabled(regs) ? "n" : "ff",
-			fast_interrupts_enabled(regs) ? "n" : "ff",
-			processor_modes[processor_mode(regs)],
-			isa_modes[isa_mode(regs)], segment);
-	}
-#else
-	printk("xPSR: %08lx\n", regs->ARM_cpsr);
-#endif
+	printk("Flags: %s  IRQs o%s  FIQs o%s  Mode %s  ISA %s  Segment %s\n",
+		buf, interrupts_enabled(regs) ? "n" : "ff",
+		fast_interrupts_enabled(regs) ? "n" : "ff",
+		processor_modes[processor_mode(regs)],
+		isa_modes[isa_mode(regs)], segment);
 
 #ifdef CONFIG_CPU_CP15
 	{

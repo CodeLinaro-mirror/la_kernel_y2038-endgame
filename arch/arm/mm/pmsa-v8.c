@@ -16,8 +16,6 @@
 
 #include "mm.h"
 
-#ifndef CONFIG_CPU_V7M
-
 #define PRSEL	__ACCESS_CP15(c6, 0, c2, 1)
 #define PRBAR	__ACCESS_CP15(c6, 0, c3, 0)
 #define PRLAR	__ACCESS_CP15(c6, 0, c3, 1)
@@ -46,34 +44,6 @@ static inline void prlar_write(u32 v)
 {
 	write_sysreg(v, PRLAR);
 }
-#else
-
-static inline u32 prlar_read(void)
-{
-	return readl_relaxed(BASEADDR_V7M_SCB + PMSAv8_RLAR);
-}
-
-static inline u32 prbar_read(void)
-{
-	return readl_relaxed(BASEADDR_V7M_SCB + PMSAv8_RBAR);
-}
-
-static inline void prsel_write(u32 v)
-{
-	writel_relaxed(v, BASEADDR_V7M_SCB + PMSAv8_RNR);
-}
-
-static inline void prbar_write(u32 v)
-{
-	writel_relaxed(v, BASEADDR_V7M_SCB + PMSAv8_RBAR);
-}
-
-static inline void prlar_write(u32 v)
-{
-	writel_relaxed(v, BASEADDR_V7M_SCB + PMSAv8_RLAR);
-}
-
-#endif
 
 static struct range __initdata io[MPU_MAX_REGIONS];
 static struct range __initdata mem[MPU_MAX_REGIONS];
@@ -218,7 +188,6 @@ static int __init pmsav8_setup_fixed(unsigned int number, phys_addr_t start,phys
 	return 0;
 }
 
-#ifndef CONFIG_CPU_V7M
 static int __init pmsav8_setup_vector(unsigned int number, phys_addr_t start,phys_addr_t end)
 {
 	u32 bar, lar;
@@ -234,7 +203,6 @@ static int __init pmsav8_setup_vector(unsigned int number, phys_addr_t start,phy
 
 	return __pmsav8_setup_region(number, bar, lar);
 }
-#endif
 
 void __init pmsav8_setup(void)
 {
@@ -261,11 +229,9 @@ void __init pmsav8_setup(void)
 	subtract_range(io, ARRAY_SIZE(io), CONFIG_XIP_PHYS_ADDR, __pa(_exiprom));
 #endif
 
-#ifndef CONFIG_CPU_V7M
 	/* RAM and IO: exclude vectors */
 	subtract_range(mem, ARRAY_SIZE(mem),  vectors_base, vectors_base + 2 * PAGE_SIZE);
 	subtract_range(io, ARRAY_SIZE(io),  vectors_base, vectors_base + 2 * PAGE_SIZE);
-#endif
 	/* IO: exclude RAM */
 	for (i = 0; i < ARRAY_SIZE(mem); i++)
 		subtract_range(io, ARRAY_SIZE(io), mem[i].start, mem[i].end);
@@ -297,9 +263,7 @@ void __init pmsav8_setup(void)
 	}
 
 	/* Vectors */
-#ifndef CONFIG_CPU_V7M
 	err |= pmsav8_setup_vector(region++, vectors_base, vectors_base + 2 * PAGE_SIZE);
-#endif
 	if (err)
 		pr_warn("MPU region initialization failure! %d", err);
 	else

@@ -81,7 +81,6 @@ unsigned long setup_vectors_base(void)
 
 void __init arm_mm_memblock_reserve(void)
 {
-#ifndef CONFIG_CPU_V7M
 	vectors_base = IS_ENABLED(CONFIG_CPU_CP15) ? setup_vectors_base() : 0;
 	/*
 	 * Register the exception vector page.
@@ -89,12 +88,6 @@ void __init arm_mm_memblock_reserve(void)
 	 * alloc_page breaks with error, although it is not NULL, but "0."
 	 */
 	memblock_reserve(vectors_base, 2 * PAGE_SIZE);
-#else /* ifndef CONFIG_CPU_V7M */
-	/*
-	 * There is no dedicated vector page on V7-M. So nothing needs to be
-	 * reserved here.
-	 */
-#endif
 	/*
 	 * In any case, always ensure address 0 is never used as many things
 	 * get very confused if 0 is returned as a legitimate address.

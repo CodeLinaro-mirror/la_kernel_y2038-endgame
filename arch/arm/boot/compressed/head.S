@@ -7,7 +7,6 @@
  */
 #include <linux/linkage.h>
 #include <asm/assembler.h>
-#include <asm/v7m.h>
 
 #include "efi-header.S"
 
@@ -17,8 +16,7 @@
 #define OF_DT_MAGIC 0xedfe0dd0
 #endif
 
- AR_CLASS(	.arch	armv7-a	)
- M_CLASS(	.arch	armv7-m	)
+		.arch	armv7-a
 
 /*
  * Debugging stuff
@@ -177,7 +175,7 @@
 		 * As of today (2014) that's exactly the members of the A and R
 		 * classes.
 		 */
- AR_CLASS(	.arm	)
+		.arm
 start:
 		.type	start,#function
 		/*
@@ -199,8 +197,7 @@ start:
 #ifndef CONFIG_THUMB2_KERNEL
 		__nop
 #else
- AR_CLASS(	sub	pc, pc, #3	)	@ A/R: switch to Thumb2 mode
-  M_CLASS(	nop.w			)	@ M: already in Thumb2 mode
+		sub	pc, pc, #3		@ switch to Thumb2 mode
 		.thumb
 #endif
 		W(b)	1f
@@ -215,14 +212,13 @@ start:
 		__EFI_HEADER
 1:
  ARM_BE8(	setend	be		)	@ go BE8 if compiled for BE8
- AR_CLASS(	mrs	r9, cpsr	)
+		mrs	r9, cpsr
 #ifdef CONFIG_ARM_VIRT_EXT
 		bl	__hyp_stub_install	@ get into SVC mode, reversibly
 #endif
 		mov	r7, r1			@ save architecture ID
 		mov	r8, r2			@ save atags pointer
 
-#ifndef CONFIG_CPU_V7M
 		/*
 		 * Booting from Angel - need to enter SVC mode and disable
 		 * FIQs/IRQs (numeric definitions from angel arm.h source).
@@ -238,7 +234,6 @@ not_angel:
 		safe_svcmode_maskall r0
 		msr	spsr_cxsf, r9		@ Save the CPU boot mode in
 						@ SPSR
-#endif
 		/*
 		 * Note that some cache flushing and other stuff may
 		 * be needed here - is there an Angel SWI call for this?
@@ -681,13 +676,7 @@ params:		ldr	r0, =0x10000100		@ params_phys for RPC
  * on ARMv7.
  */
 		.macro	dcache_line_size, reg, tmp
-#ifdef CONFIG_CPU_V7M
-		movw	\tmp, #:lower16:BASEADDR_V7M_SCB + V7M_SCB_CTR
-		movt	\tmp, #:upper16:BASEADDR_V7M_SCB + V7M_SCB_CTR
-		ldr	\tmp, [\tmp]
-#else
 		mrc	p15, 0, \tmp, c0, c0, 1		@ read ctr
-#endif
 		lsr	\tmp, \tmp, #16
 		and	\tmp, \tmp, #0xf		@ cache line size encoding
 		mov	\reg, #4			@ bytes per word
@@ -882,16 +871,6 @@ __common_mmu_cache_on:
 call_cache_fn:	adr	r12, proc_types
 #ifdef CONFIG_CPU_CP15
 		mrc	p15, 0, r9, c0, c0	@ get processor ID
-#elif defined(CONFIG_CPU_V7M)
-		/*
-		 * On v7-M the processor id is located in the V7M_SCB_CPUID
-		 * register, but as cache handling is IMPLEMENTATION DEFINED on
-		 * v7-M (if existant at all) we just return early here.
-		 * If V7M_SCB_CPUID were used the cpu ID functions (i.e.
-		 * __armv7_mmu_cache_{on,off,flush}) would be selected which
-		 * use cp15 registers that are not implemented on v7-M.
-		 */
-		bx	lr
 #else
 		ldr	r9, =CONFIG_PROCESSOR_ID
 #endif
@@ -1310,7 +1289,6 @@ __enter_kernel:
 		mov	r1, r7			@ restore architecture number
 		mov	r2, r8			@ restore atags pointer
  ARM(		mov	pc, r4		)	@ call kernel
- M_CLASS(	add	r4, r4, #1	)	@ enter in Thumb mode for M class
  THUMB(		bx	r4		)	@ entry point is always ARM for A/R classes
 
 reloc_code_end:

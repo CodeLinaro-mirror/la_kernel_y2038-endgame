@@ -169,9 +169,6 @@ ENDPROC(vector_bhb_bpiall_swi)
 #endif
 	.align	5
 ENTRY(vector_swi)
-#ifdef CONFIG_CPU_V7M
-	v7m_exception_entry
-#else
 	sub	sp, sp, #PT_REGS_SIZE
 	stmia	sp, {r0 - r12}			@ Calling r0 - r12
 3:
@@ -184,7 +181,6 @@ ENTRY(vector_swi)
 	str	saved_pc, [sp, #S_PC]		@ Save calling PC
 	str	saved_psr, [sp, #S_PSR]		@ Save CPSR
 	str	r0, [sp, #S_OLD_R0]		@ Save OLD_R0
-#endif
 	reload_current r10, ip
 	zero_fp
 	alignment_trap r10, ip, cr_alignment

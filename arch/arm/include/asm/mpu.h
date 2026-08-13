@@ -69,11 +69,7 @@
 
 #define PMSAv8_MAIR(attr, mt)	((attr) << ((mt) * 8))
 
-#ifdef CONFIG_CPU_V7M
-#define PMSAv8_MINALIGN		32
-#else
 #define PMSAv8_MINALIGN		64
-#endif
 
 /* For minimal static MPU region configurations */
 #define PMSAv7_PROBE_REGION	0

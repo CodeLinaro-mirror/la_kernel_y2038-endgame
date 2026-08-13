@@ -70,7 +70,6 @@ static inline unsigned int __attribute__((pure)) cacheid_is(unsigned int mask)
 #define CSSELR_L6	(5 << 1)
 #define CSSELR_L7	(6 << 1)
 
-#ifndef CONFIG_CPU_V7M
 static inline void set_csselr(unsigned int cache_selector)
 {
 	asm volatile("mcr p15, 2, %0, c0, c0, 0" : : "r" (cache_selector));
@@ -91,24 +90,4 @@ static inline unsigned int read_clidr(void)
 	asm volatile("mrc p15, 1, %0, c0, c0, 1" : "=r" (val));
 	return val;
 }
-#else /* CONFIG_CPU_V7M */
-#include <linux/io.h>
-#include "asm/v7m.h"
-
-static inline void set_csselr(unsigned int cache_selector)
-{
-	writel(cache_selector, BASEADDR_V7M_SCB + V7M_SCB_CTR);
-}
-
-static inline unsigned int read_ccsidr(void)
-{
-	return readl(BASEADDR_V7M_SCB + V7M_SCB_CCSIDR);
-}
-
-static inline unsigned int read_clidr(void)
-{
-	return readl(BASEADDR_V7M_SCB + V7M_SCB_CLIDR);
-}
-#endif
-
 #endif

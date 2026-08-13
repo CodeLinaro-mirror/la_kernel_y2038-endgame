@@ -24,20 +24,9 @@
  * snippets.
  */
 
-/*
- * In CPU_THUMBONLY case kernel arm opcodes are not allowed.
- * Note in this case codes skips those instructions but it uses .org
- * directive to keep correct layout of sigreturn_codes array.
- */
-#ifndef CONFIG_CPU_THUMBONLY
-#define ARM_OK(code...)	code
-#else
-#define ARM_OK(code...)
-#endif
-
 	.macro arm_slot n
 	.org	sigreturn_codes + 12 * (\n)
-ARM_OK(	.arm	)
+	.arm
 	.endm
 
 	.macro thumb_slot n
@@ -47,7 +36,7 @@ ARM_OK(	.arm	)
 
 	.macro arm_fdpic_slot n
 	.org	sigreturn_codes + 24 + 20 * (\n)
-ARM_OK(	.arm	)
+	.arm
 	.endm
 
 	.macro thumb_fdpic_slot n
@@ -77,8 +66,8 @@ sigreturn_codes:
 
 	/* ARM sigreturn syscall code snippet */
 	arm_slot 0
-ARM_OK(	mov	r7, #(__NR_sigreturn - __NR_SYSCALL_BASE)	)
-ARM_OK(	swi	#(__NR_sigreturn)|(__NR_OABI_SYSCALL_BASE)	)
+	mov	r7, #(__NR_sigreturn - __NR_SYSCALL_BASE)
+	swi	#(__NR_sigreturn)|(__NR_OABI_SYSCALL_BASE)
 
 	/* Thumb sigreturn syscall code snippet */
 	thumb_slot 0
@@ -87,8 +76,8 @@ ARM_OK(	swi	#(__NR_sigreturn)|(__NR_OABI_SYSCALL_BASE)	)
 
 	/* ARM sigreturn_rt syscall code snippet */
 	arm_slot 1
-ARM_OK(	mov	r7, #(__NR_rt_sigreturn - __NR_SYSCALL_BASE)	)
-ARM_OK(	swi	#(__NR_rt_sigreturn)|(__NR_OABI_SYSCALL_BASE)	)
+	mov	r7, #(__NR_rt_sigreturn - __NR_SYSCALL_BASE)
+	swi	#(__NR_rt_sigreturn)|(__NR_OABI_SYSCALL_BASE)
 
 	/* Thumb sigreturn_rt syscall code snippet */
 	thumb_slot 1
@@ -97,12 +86,12 @@ ARM_OK(	swi	#(__NR_rt_sigreturn)|(__NR_OABI_SYSCALL_BASE)	)
 
 	/* ARM sigreturn restorer FDPIC bounce code snippet */
 	arm_fdpic_slot 0
-ARM_OK(	ldr	r3, [sp, #SIGFRAME_RC3_OFFSET] )
-ARM_OK(	ldmia	r3, {r3, r9} )
+	ldr	r3, [sp, #SIGFRAME_RC3_OFFSET]
+	ldmia	r3, {r3, r9}
 #ifdef CONFIG_ARM_THUMB
-ARM_OK(	bx	r3 )
+	bx	r3
 #else
-ARM_OK(	ret	r3 )
+	ret	r3
 #endif
 
 	/* Thumb sigreturn restorer FDPIC bounce code snippet */
@@ -114,12 +103,12 @@ ARM_OK(	ret	r3 )
 
 	/* ARM sigreturn_rt restorer FDPIC bounce code snippet */
 	arm_fdpic_slot 1
-ARM_OK(	ldr	r3, [sp, #RT_SIGFRAME_RC3_OFFSET] )
-ARM_OK(	ldmia	r3, {r3, r9} )
+	ldr	r3, [sp, #RT_SIGFRAME_RC3_OFFSET]
+	ldmia	r3, {r3, r9}
 #ifdef CONFIG_ARM_THUMB
-ARM_OK(	bx	r3 )
+	bx	r3
 #else
-ARM_OK(	ret	r3 )
+	ret	r3
 #endif
 
 	/* Thumb sigreturn_rt restorer FDPIC bounce code snippet */

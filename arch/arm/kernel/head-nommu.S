@@ -17,7 +17,6 @@
 #include <asm/page.h>
 #include <asm/cp15.h>
 #include <asm/thread_info.h>
-#include <asm/v7m.h>
 #include <asm/mpu.h>
 
 /*
@@ -35,10 +34,6 @@
 
 	__HEAD
 
-#ifdef CONFIG_CPU_THUMBONLY
-	.thumb
-ENTRY(stext)
-#else
 	.arm
 ENTRY(stext)
 
@@ -46,7 +41,6 @@ ENTRY(stext)
  THUMB(	bx	r9		)	@ If this is a Thumb-2 kernel,
  THUMB(	.thumb			)	@ switch to Thumb now.
  THUMB(1:			)
-#endif
 
 #ifdef CONFIG_ARM_VIRT_EXT
 	bl	__hyp_stub_install
@@ -56,10 +50,6 @@ ENTRY(stext)
 						@ and irqs disabled
 #if defined(CONFIG_CPU_CP15)
 	mrc	p15, 0, r9, c0, c0		@ get processor id
-#elif defined(CONFIG_CPU_V7M)
-	ldr	r9, =BASEADDR_V7M_SCB
-	ldr	r9, [r9, V7M_SCB_CPUID]
-#else
 	ldr	r9, =CONFIG_PROCESSOR_ID
 #endif
 	bl	__lookup_processor_type		@ r5=procinfo r9=cpuid
@@ -184,28 +174,7 @@ M_CLASS(streq	r3, [r12, #PMSAv8_MAIR1])
 #endif
 	mcr	p15, 0, r0, c1, c0, 0		@ write control reg
 	instr_sync
-#elif defined (CONFIG_CPU_V7M)
-#ifdef CONFIG_ARM_MPU
-	ldreq	r3, [r12, MPU_CTRL]
-	biceq	r3, #MPU_CTRL_PRIVDEFENA
-	orreq	r3, #MPU_CTRL_ENABLE
-	streq	r3, [r12, MPU_CTRL]
-	isb
-#endif
-	/* For V7M systems we want to modify the CCR similarly to the SCTLR */
-#ifdef CONFIG_CPU_DCACHE_DISABLE
-	bic	r0, r0, #V7M_SCB_CCR_DC
-#endif
-#ifdef CONFIG_CPU_BPREDICT_DISABLE
-	bic	r0, r0, #V7M_SCB_CCR_BP
-#endif
-#ifdef CONFIG_CPU_ICACHE_DISABLE
-	bic	r0, r0, #V7M_SCB_CCR_IC
-#endif
-	str	r0, [r12, V7M_SCB_CCR]
-	/* Pass exc_ret to __mmap_switched */
-	mov	r0, r10
-#endif /* CONFIG_CPU_CP15 elif CONFIG_CPU_V7M */
+#endif /* CONFIG_CPU_CP15 */
 	ret	lr
 ENDPROC(__after_proc_init)
 	.ltorg
@@ -213,7 +182,6 @@ ENDPROC(__after_proc_init)
 #ifdef CONFIG_ARM_MPU
 
 
-#ifndef CONFIG_CPU_V7M
 /* Set which MPU region should be programmed */
 .macro set_region_nr tmp, rgnr, unused
 	mov	\tmp, \rgnr			@ Use static region numbers
@@ -226,20 +194,7 @@ ENDPROC(__after_proc_init)
 	mcr	p15, 0, \acr, c6, c1, (4 + \side)	@ I/DRACR
 	mcr	p15, 0, \sr, c6, c1, (2 + \side)		@ I/DRSR
 .endm
-#else
-.macro set_region_nr tmp, rgnr, base
-	mov	\tmp, \rgnr
-	str     \tmp, [\base, #PMSAv7_RNR]
-.endm
 
-.macro setup_region bar, acr, sr, unused, base
-	lsl     \acr, \acr, #16
-	orr     \acr, \acr, \sr
-	str     \bar, [\base, #PMSAv7_RBAR]
-	str     \acr, [\base, #PMSAv7_RASR]
-.endm
-
-#endif
 /*
  * Setup the MPU and initial MPU Regions. We create the following regions:
  * Region 0: Use this for probing the MPU details, so leave disabled.
@@ -430,18 +385,8 @@ M_CLASS(str	r6, [r12, #PMSAv8_RLAR_A(3)])
 	orr	r5, r5, #(PMSAv8_AP_PL1RW_PL0NA | PMSAv8_RGN_SHARED | PMSAv8_BAR_XN)
 	orr	r6, r6, #(PMSAv8_LAR_IDX(PMSAv8_RGN_DEVICE_nGnRnE) | PMSAv8_LAR_EN)
 
-#ifdef CONFIG_CPU_V7M
-	/* There is no alias for n == 4 */
-	mov	r0, #4
-	str	r0, [r12, #PMSAv8_RNR]			@ PRSEL
-	isb
-
-	str	r5, [r12, #PMSAv8_RBAR_A(0)]
-	str	r6, [r12, #PMSAv8_RLAR_A(0)]
-#else
 	mcr	p15, 0, r5, c6, c10, 0			@ PRBAR4
 	mcr	p15, 0, r6, c6, c10, 1			@ PRLAR4
-#endif
 #endif
 	ret	lr
 ENDPROC(__setup_pmsa_v8)

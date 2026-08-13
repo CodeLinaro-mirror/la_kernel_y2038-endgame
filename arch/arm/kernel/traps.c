@@ -789,7 +789,6 @@ static inline void __init kuser_init(void *vectors)
 }
 #endif
 
-#ifndef CONFIG_CPU_V7M
 static void copy_from_lma(void *vma, void *lma_start, void *lma_end)
 {
 	memcpy(vma, lma_start, lma_end - lma_start);
@@ -869,16 +868,6 @@ void __init early_trap_init(void *vectors_base)
 
 	flush_vectors(vectors_base, 0, PAGE_SIZE * 2);
 }
-#else /* ifndef CONFIG_CPU_V7M */
-void __init early_trap_init(void *vectors_base)
-{
-	/*
-	 * on V7-M there is no need to copy the vector table to a dedicated
-	 * memory area. The address is configurable and so a table in the kernel
-	 * image can be used.
-	 */
-}
-#endif
 
 #ifdef CONFIG_VMAP_STACK
 
