@@ -17,13 +17,6 @@ config NET_VENDOR_SEEQ
 
 if NET_VENDOR_SEEQ
 
-config ARM_ETHER3
-	tristate "Acorn/ANT Ether3 support"
-	depends on ARM && ARCH_ACORN
-	help
-	  If you have an Acorn system with one of these network cards, you
-	  should say Y to this option if you wish to use it with Linux.
-
 config SGISEEQ
 	tristate "SGI Seeq ethernet controller support"
 	depends on SGI_HAS_SEEQ
