@@ -1450,16 +1450,6 @@ config I2C_VIPERBOARD
 
 comment "Other I2C/SMBus bus drivers"
 
-config I2C_ACORN
-	tristate "Acorn IOC/IOMD I2C bus support"
-	depends on ARCH_ACORN
-	default y
-	select I2C_ALGOBIT
-	help
-	  Say yes if you want to support the I2C bus on Acorn platforms.
-
-	  If you don't know, say Y.
-
 config I2C_ELEKTOR
 	tristate "Elektor ISA card"
 	depends on ISA && HAS_IOPORT_MAP
