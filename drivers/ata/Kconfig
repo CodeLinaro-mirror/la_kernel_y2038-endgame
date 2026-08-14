@@ -746,15 +746,6 @@ config PATA_HPT3X3_DMA
 	  controllers. Enable with care as there are still some
 	  problems with DMA on this chipset.
 
-config PATA_ICSIDE
-	tristate "Acorn ICS PATA support"
-	depends on ARM && ARCH_ACORN
-	select PATA_TIMINGS
-	help
-	  On Acorn systems, say Y here if you wish to use the ICS PATA
-	  interface card.  This is not required for ICS partition support.
-	  If you are unsure, say N to this.
-
 config PATA_IMX
 	tristate "PATA support for Freescale iMX"
 	depends on ARCH_MXC || COMPILE_TEST
