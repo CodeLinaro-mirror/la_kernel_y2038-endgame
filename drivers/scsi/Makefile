@@ -145,8 +145,6 @@ obj-$(CONFIG_XEN_SCSI_FRONTEND)	+= xen-scsifront.o
 obj-$(CONFIG_HYPERV_STORAGE)	+= hv_storvsc.o
 obj-$(CONFIG_SCSI_WD719X)	+= wd719x.o
 
-obj-$(CONFIG_ARM)		+= arm/
-
 obj-$(CONFIG_CHR_DEV_ST)	+= st.o
 obj-$(CONFIG_BLK_DEV_SD)	+= sd_mod.o
 obj-$(CONFIG_BLK_DEV_SR)	+= sr_mod.o

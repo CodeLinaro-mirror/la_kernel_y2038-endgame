@@ -1281,8 +1281,6 @@ config SCSI_MAC53C94
 	  To compile this driver as a module, choose M here: the
 	  module will be called mac53c94.
 
-source "drivers/scsi/arm/Kconfig"
-
 config JAZZ_ESP
 	bool "MIPS JAZZ FAS216 SCSI support"
 	depends on MACH_JAZZ && SCSI=y
