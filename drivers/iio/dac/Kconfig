@@ -466,16 +466,6 @@ config DS4424
 	  This driver can also be built as a module.  If so, the module
 	  will be called ds4424.
 
-config LPC18XX_DAC
-	tristate "NXP LPC18xx DAC driver"
-	depends on ARCH_LPC18XX || COMPILE_TEST
-	depends on HAS_IOMEM
-	help
-	  Say yes here to build support for NXP LPC18XX DAC.
-
-	  To compile this driver as a module, choose M here: the module will be
-	  called lpc18xx_dac.
-
 config LTC1660
 	tristate "Linear Technology LTC1660/LTC1665 DAC SPI driver"
 	depends on SPI
