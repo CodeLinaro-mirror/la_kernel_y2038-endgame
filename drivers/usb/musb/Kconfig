@@ -17,7 +17,7 @@ config USB_MUSB_HDRC
 	  or the USB host role, or both.
 
 	  Texas Instruments families using this IP include DaVinci
-	  (35x, 644x ...), OMAP 243x, OMAP 3, and TUSB 6010.
+	  (35x, 644x ...) and OMAP 3
 
 	  Allwinner SoCs using this IP include A10, A13, A20, ...
 
@@ -75,12 +75,6 @@ config USB_MUSB_DA8XX
 	depends on ARCH_DAVINCI_DA8XX
 	depends on NOP_USB_XCEIV
 	select PHY_DA8XX_USB
-
-config USB_MUSB_TUSB6010
-	tristate "TUSB6010"
-	depends on HAS_IOMEM
-	depends on ARCH_OMAP2PLUS || COMPILE_TEST
-	depends on NOP_USB_XCEIV!=m || USB_MUSB_HDRC=m
 
 config USB_MUSB_OMAP2PLUS
 	tristate "OMAP2430 and onwards"

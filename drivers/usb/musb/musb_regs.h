@@ -260,8 +260,6 @@
 #define MUSB_FIFOSIZE		0x0F
 #define MUSB_CONFIGDATA		MUSB_FIFOSIZE	/* Re-used for EP0 */
 
-#include "tusb6010.h"		/* Needed "only" for TUSB_EP0_CONF */
-
 #define MUSB_TXCSR_MODE			0x2000
 
 /* "bus control"/target registers, for host side multipoint (external hubs) */
