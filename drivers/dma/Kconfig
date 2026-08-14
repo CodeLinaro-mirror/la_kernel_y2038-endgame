@@ -167,16 +167,6 @@ config DMA_JZ4780
 	  If you have a board based on such a SoC and wish to use DMA for
 	  devices which can use the DMA controller, say Y or M here.
 
-config DMA_SA11X0
-	tristate "SA-11x0 DMA support"
-	depends on ARCH_SA1100 || COMPILE_TEST
-	select DMA_ENGINE
-	select DMA_VIRTUAL_CHANNELS
-	help
-	  Support the DMA engine found on Intel StrongARM SA-1100 and
-	  SA-1110 SoCs.  This DMA engine can only be used with on-chip
-	  devices.
-
 config DMA_SUN4I
 	tristate "Allwinner A10 DMA SoCs support"
 	depends on MACH_SUN4I || MACH_SUN5I || MACH_SUN7I || MACH_SUNIV
