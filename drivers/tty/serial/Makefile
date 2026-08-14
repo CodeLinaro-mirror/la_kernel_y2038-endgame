@@ -52,7 +52,6 @@ obj-$(CONFIG_SERIAL_MEN_Z135)		+= men_z135_uart.o
 obj-$(CONFIG_SERIAL_MILBEAUT_USIO)	+= milbeaut_usio.o
 obj-$(CONFIG_SERIAL_MESON)		+= meson_uart.o
 obj-$(CONFIG_SERIAL_MPC52xx)		+= mpc52xx_uart.o
-obj-$(CONFIG_SERIAL_MPS2_UART)		+= mps2-uart.o
 obj-$(CONFIG_SERIAL_MSM)		+= msm_serial.o
 obj-$(CONFIG_SERIAL_MUX)		+= mux.o
 obj-$(CONFIG_SERIAL_MVEBU_UART)		+= mvebu-uart.o
