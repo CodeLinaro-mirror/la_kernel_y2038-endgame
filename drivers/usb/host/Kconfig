@@ -639,38 +639,6 @@ config FHCI_DEBUG
 	  Say "y" to see some FHCI debug information and statistics
 	  through debugfs.
 
-config USB_SL811_HCD
-	tristate "SL811HS HCD support"
-	depends on HAS_IOMEM
-	help
-	  The SL811HS is a single-port USB controller that supports either
-	  host side or peripheral side roles.  Enable this option if your
-	  board has this chip, and you want to use it as a host controller. 
-	  If unsure, say N.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called sl811-hcd.
-
-config USB_SL811_HCD_ISO
-	bool "partial ISO support"
-	depends on USB_SL811_HCD
-	help
-	  The driver doesn't support iso_frame_desc (yet), but for some simple
-	  devices that just queue one ISO frame per URB, then ISO transfers
-	  "should" work using the normal urb status fields.
-
-	  If unsure, say N.
-
-config USB_SL811_CS
-	tristate "CF/PCMCIA support for SL811HS HCD"
-	depends on USB_SL811_HCD && PCMCIA
-	help
-	  Wraps a PCMCIA driver around the SL811HS HCD, supporting the RATOC
-	  REX-CFU1U CF card (often used with PDAs).  If unsure, say N.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called "sl811_cs".
-
 config USB_R8A66597_HCD
 	tristate "R8A66597 HCD support"
 	depends on HAS_IOMEM
