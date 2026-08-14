@@ -17,13 +17,6 @@ config NET_VENDOR_I825XX
 
 if NET_VENDOR_I825XX
 
-config ARM_ETHER1
-	tristate "Acorn Ether1 support"
-	depends on ARM && ARCH_ACORN
-	help
-	  If you have an Acorn system with one of these (AKA25) network cards,
-	  you should say Y to this option if you wish to use it with Linux.
-
 config BVME6000_NET
 	tristate "BVME6000 Ethernet support"
 	depends on BVME6000
