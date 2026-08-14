@@ -1792,16 +1792,6 @@ config VIDEO_ST_MIPID02
 	  To compile this driver as a module, choose M here: the
 	  module will be called st-mipid02.
 
-config VIDEO_THS7303
-	tristate "THS7303/53 Video Amplifier"
-	depends on VIDEO_DEV && I2C
-	select V4L2_ASYNC
-	help
-	  Support for TI THS7303/53 video amplifier
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called ths7303.
-
 endmenu
 
 #

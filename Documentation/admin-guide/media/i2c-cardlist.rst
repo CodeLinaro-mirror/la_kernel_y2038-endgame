@@ -148,7 +148,6 @@ Driver        Name
 video-i2c     I2C transport video
 m52790        Mitsubishi M52790 A/V switch
 st-mipid02    STMicroelectronics MIPID02 CSI-2 to PARALLEL bridge
-ths7303       THS7303/53 Video Amplifier
 ============  ==========================================================
 
 RDS decoders
