@@ -36,8 +36,8 @@
 #define STORE_QUEUE_MINOR	155	/* unused */
 #define LCD_MINOR		156
 #define AC_MINOR		157
-#define BUTTON_MINOR		158	/* Major 10, Minor 158, /dev/nwbutton */
-#define NWFLASH_MINOR		160	/* MAJOR is 10 - miscdevice */
+/*#define BUTTON_MINOR		158	Major 10, Minor 158, /dev/nwbutton */
+/*#define NWFLASH_MINOR		160	MAJOR is 10 - miscdevice */
 #define ENVCTRL_MINOR		162
 #define I2O_MINOR		166
 #define UCTRL_MINOR		174

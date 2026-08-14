@@ -290,9 +290,6 @@
 		154 = /dev/pmu		Macintosh PowerBook power manager
 		155 =
 		156 = /dev/lcd		Front panel LCD display
-		158 = /dev/nwbutton	Netwinder external button
-		159 = /dev/nwdebug	Netwinder debug interface
-		160 = /dev/nwflash	Netwinder flash memory
 		161 = /dev/userdma	User-space DMA access
 		162 = /dev/smbus	System Management Bus
 		163 = /dev/lik		Logitech Internet Keyboard

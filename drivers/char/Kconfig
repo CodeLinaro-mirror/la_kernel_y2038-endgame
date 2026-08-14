@@ -134,69 +134,6 @@ config POWERNV_OP_PANEL
 
 source "drivers/char/ipmi/Kconfig"
 
-config DS1620
-	tristate "NetWinder thermometer support"
-	depends on ARCH_NETWINDER
-	help
-	  Say Y here to include support for the thermal management hardware
-	  found in the NetWinder. This driver allows the user to control the
-	  temperature set points and to read the current temperature.
-
-	  It is also possible to say M here to build it as a module (ds1620)
-	  It is recommended to be used on a NetWinder, but it is not a
-	  necessity.
-
-config NWBUTTON
-	tristate "NetWinder Button"
-	depends on ARCH_NETWINDER
-	help
-	  If you say Y here and create a character device node /dev/nwbutton
-	  with major and minor numbers 10 and 158 ("man mknod"), then every
-	  time the orange button is pressed a number of times, the number of
-	  times the button was pressed will be written to that device.
-
-	  This is most useful for applications, as yet unwritten, which
-	  perform actions based on how many times the button is pressed in a
-	  row.
-
-	  Do not hold the button down for too long, as the driver does not
-	  alter the behaviour of the hardware reset circuitry attached to the
-	  button; it will still execute a hard reset if the button is held
-	  down for longer than approximately five seconds.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called nwbutton.
-
-	  Most people will answer Y to this question and "Reboot Using Button"
-	  below to be able to initiate a system shutdown from the button.
-
-config NWBUTTON_REBOOT
-	bool "Reboot Using Button"
-	depends on NWBUTTON
-	help
-	  If you say Y here, then you will be able to initiate a system
-	  shutdown and reboot by pressing the orange button a number of times.
-	  The number of presses to initiate the shutdown is two by default,
-	  but this can be altered by modifying the value of NUM_PRESSES_REBOOT
-	  in nwbutton.h and recompiling the driver or, if you compile the
-	  driver as a module, you can specify the number of presses at load
-	  time with "insmod button reboot_count=<something>".
-
-config NWFLASH
-	tristate "NetWinder flash support"
-	depends on ARCH_NETWINDER
-	help
-	  If you say Y here and create a character device /dev/flash with
-	  major 10 and minor 160 you can manipulate the flash ROM containing
-	  the NetWinder firmware. Be careful as accidentally overwriting the
-	  flash contents can render your computer unbootable. On no account
-	  allow random users access to this device. :-)
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called nwflash.
-
-	  If you're not sure, say N.
-
 source "drivers/char/hw_random/Kconfig"
 
 config XILINX_HWICAP
