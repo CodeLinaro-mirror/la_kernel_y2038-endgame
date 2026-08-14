@@ -10,36 +10,6 @@ config PINCTRL_STM32
 	select IRQ_DOMAIN_HIERARCHY
 	select MFD_SYSCON
 
-config PINCTRL_STM32F429
-	bool "STMicroelectronics STM32F429 pin control" if COMPILE_TEST && !MACH_STM32F429
-	depends on OF && HAS_IOMEM
-	default MACH_STM32F429
-	select PINCTRL_STM32
-
-config PINCTRL_STM32F469
-	bool "STMicroelectronics STM32F469 pin control" if COMPILE_TEST && !MACH_STM32F469
-	depends on OF && HAS_IOMEM
-	default MACH_STM32F469
-	select PINCTRL_STM32
-
-config PINCTRL_STM32F746
-	bool "STMicroelectronics STM32F746 pin control" if COMPILE_TEST && !MACH_STM32F746
-	depends on OF && HAS_IOMEM
-	default MACH_STM32F746
-	select PINCTRL_STM32
-
-config PINCTRL_STM32F769
-	bool "STMicroelectronics STM32F769 pin control" if COMPILE_TEST && !MACH_STM32F769
-	depends on OF && HAS_IOMEM
-	default MACH_STM32F769
-	select PINCTRL_STM32
-
-config PINCTRL_STM32H743
-	bool "STMicroelectronics STM32H743 pin control" if COMPILE_TEST && !MACH_STM32H743
-	depends on OF && HAS_IOMEM
-	default MACH_STM32H743
-	select PINCTRL_STM32
-
 config PINCTRL_STM32MP135
 	bool "STMicroelectronics STM32MP135 pin control" if COMPILE_TEST && !MACH_STM32MP13
 	depends on OF && HAS_IOMEM
@@ -61,7 +31,7 @@ config PINCTRL_STM32MP257
 config PINCTRL_STM32_HDP
 	tristate "STMicroelectronics STM32 Hardware Debug Port (HDP) pin control"
 	depends on OF && HAS_IOMEM
-	default ARCH_STM32 && !ARM_SINGLE_ARMV7M
+	default ARCH_STM32
 	select PINMUX
 	select GENERIC_PINCONF
 	select GPIOLIB

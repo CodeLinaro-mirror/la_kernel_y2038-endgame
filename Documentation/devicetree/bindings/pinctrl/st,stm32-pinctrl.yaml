@@ -19,11 +19,6 @@ description: |
 properties:
   compatible:
     enum:
-      - st,stm32f429-pinctrl
-      - st,stm32f469-pinctrl
-      - st,stm32f746-pinctrl
-      - st,stm32f769-pinctrl
-      - st,stm32h743-pinctrl
       - st,stm32mp135-pinctrl
       - st,stm32mp157-pinctrl
       - st,stm32mp157-z-pinctrl
@@ -288,77 +283,6 @@ required:
 additionalProperties: false
 
 examples:
-  - |
-    #include <dt-bindings/pinctrl/stm32-pinfunc.h>
-    #include <dt-bindings/mfd/stm32f4-rcc.h>
-    //Example 1
-      pinctrl@40020000 {
-              #address-cells = <1>;
-              #size-cells = <1>;
-              compatible = "st,stm32f429-pinctrl";
-              ranges = <0 0x40020000 0x3000>;
-
-              gpioa: gpio@0 {
-                      gpio-controller;
-                      #gpio-cells = <2>;
-                      reg = <0x0 0x400>;
-                      resets = <&reset_ahb1 0>;
-                      clocks = <&rcc 0 STM32F4_AHB1_CLOCK(GPIOA)>;
-                      st,bank-name = "GPIOA";
-              };
-       };
-
-    //Example 2 (using gpio-ranges)
-      pinctrl@50020000 {
-              #address-cells = <1>;
-              #size-cells = <1>;
-              compatible = "st,stm32f429-pinctrl";
-              ranges = <0 0x50020000 0x3000>;
-
-              gpiob: gpio@1000 {
-                      gpio-controller;
-                      #gpio-cells = <2>;
-                      reg = <0x1000 0x400>;
-                      resets = <&reset_ahb1 0>;
-                      clocks = <&rcc 0 STM32F4_AHB1_CLOCK(GPIOB)>;
-                      st,bank-name = "GPIOB";
-                      gpio-ranges = <&pinctrl 0 0 16>;
-              };
-
-              gpioc: gpio@2000 {
-                      gpio-controller;
-                      #gpio-cells = <2>;
-                      reg = <0x2000 0x400>;
-                      resets = <&reset_ahb1 0>;
-                      clocks = <&rcc 0 STM32F4_AHB1_CLOCK(GPIOC)>;
-                      st,bank-name = "GPIOC";
-                      ngpios = <5>;
-                      gpio-ranges = <&pinctrl 0 16 3>,
-                                    <&pinctrl 14 30 2>;
-              };
-      };
-
-    //Example 3 pin groups
-      pinctrl {
-        usart1_pins_a: usart1-0 {
-                pins1 {
-                        pinmux = <STM32_PINMUX('A', 9, AF7)>;
-                        bias-disable;
-                        drive-push-pull;
-                        slew-rate = <0>;
-                };
-                pins2 {
-                        pinmux = <STM32_PINMUX('A', 10, AF7)>;
-                        bias-disable;
-                };
-        };
-    };
-
-    usart1 {
-                pinctrl-0 = <&usart1_pins_a>;
-                pinctrl-names = "default";
-    };
-
   - |
     #include <dt-bindings/pinctrl/stm32-pinfunc.h>
     //Example 4 skew-delay and st,io-sync
