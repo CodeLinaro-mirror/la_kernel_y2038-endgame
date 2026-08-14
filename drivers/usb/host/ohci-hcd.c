@@ -89,18 +89,6 @@ static void io_watchdog_func(struct timer_list *t);
 #include "ohci-mem.c"
 #include "ohci-q.c"
 
-
-/*
- * On architectures with edge-triggered interrupts we must never return
- * IRQ_NONE.
- */
-#if defined(CONFIG_SA1111)  /* ... or other edge-triggered systems */
-#define IRQ_NOTMINE	IRQ_HANDLED
-#else
-#define IRQ_NOTMINE	IRQ_NONE
-#endif
-
-
 /* Some boards misreport power switching/overcurrent */
 static bool distrust_firmware;
 module_param (distrust_firmware, bool, 0);
@@ -902,7 +890,7 @@ again:
 
 	/* interrupt for some other device? */
 	if (ints == 0 || unlikely(ohci->rh_state == OHCI_RH_HALTED))
-		return IRQ_NOTMINE;
+		return IRQ_NONE;
 
 	if (ints & OHCI_INTR_UE) {
 		// e.g. due to PCI Master/Target Abort
