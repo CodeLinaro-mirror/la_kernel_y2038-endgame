@@ -19,7 +19,6 @@ obj-$(CONFIG_RTC_LIB_KUNIT_TEST)	+= test_rtc_lib.o
 
 # Keep the list ordered.
 
-obj-$(CONFIG_RTC_DRV_88PM80X)	+= rtc-88pm80x.o
 obj-$(CONFIG_RTC_DRV_88PM860X)	+= rtc-88pm860x.o
 obj-$(CONFIG_RTC_DRV_88PM886)	+= rtc-88pm886.o
 obj-$(CONFIG_RTC_DRV_AB8500)	+= rtc-ab8500.o

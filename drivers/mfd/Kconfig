@@ -872,30 +872,6 @@ config MFD_KEMPLD
 	  This driver can also be built as a module. If so, the module
 	  will be called kempld-core.
 
-config MFD_88PM800
-	tristate "Marvell 88PM800"
-	depends on I2C
-	select REGMAP_I2C
-	select REGMAP_IRQ
-	select MFD_CORE
-	help
-	  This supports for Marvell 88PM800 Power Management IC.
-	  This includes the I2C driver and the core APIs _only_, you have to
-	  select individual components like voltage regulators, RTC and
-	  battery-charger under the corresponding menus.
-
-config MFD_88PM805
-	tristate "Marvell 88PM805"
-	depends on I2C
-	select REGMAP_I2C
-	select REGMAP_IRQ
-	select MFD_CORE
-	help
-	  This supports for Marvell 88PM805 Power Management IC. This includes
-	  the I2C driver and the core APIs _only_, you have to select individual
-	  components like codec device, headset/Mic device under the
-	  corresponding menus.
-
 config MFD_88PM860X
 	bool "Marvell 88PM8606/88PM8607"
 	depends on I2C=y

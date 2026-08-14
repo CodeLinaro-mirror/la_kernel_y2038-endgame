@@ -193,16 +193,6 @@ config RTC_DRV_88PM860X
 	  This driver can also be built as a module. If so, the module
 	  will be called rtc-88pm860x.
 
-config RTC_DRV_88PM80X
-	tristate "Marvell 88PM80x"
-	depends on MFD_88PM800
-	help
-	  If you say yes here you get support for RTC function in Marvell
-	  88PM80x chips.
-
-	  This driver can also be built as a module. If so, the module
-	  will be called rtc-88pm80x.
-
 config RTC_DRV_88PM886
 	tristate "Marvell 88PM886 RTC driver"
 	depends on MFD_88PM886_PMIC
