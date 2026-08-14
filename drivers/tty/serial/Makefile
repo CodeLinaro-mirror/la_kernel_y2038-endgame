@@ -19,8 +19,6 @@ obj-$(CONFIG_SERIAL_SUNZILOG) += sunzilog.o
 obj-$(CONFIG_SERIAL_SUNSU) += sunsu.o
 obj-$(CONFIG_SERIAL_SUNSAB) += sunsab.o
 
-obj-$(CONFIG_SERIAL_21285) += 21285.o
-
 # Now bring in any enabled 8250/16450/16550 type drivers.
 obj-y += 8250/
 
