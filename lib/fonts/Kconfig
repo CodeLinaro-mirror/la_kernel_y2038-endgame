@@ -71,7 +71,6 @@ config FONT_PEARL_8x8
 config FONT_ACORN_8x8
 	bool "Acorn console 8x8 font" if FONTS
 	depends on FRAMEBUFFER_CONSOLE || DRM_PANIC
-	default y if !SPARC && !FONTS && ARM && ARCH_ACORN
 	help
 	  Small console font with PC-style control characters and high-half
 	  glyphs.

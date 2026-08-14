@@ -108,15 +108,6 @@ config FB_PM2_FIFO_DISCONNECT
 	help
 	  Support the Permedia2 FIFO disconnect feature.
 
-config FB_ACORN
-	bool "Acorn VIDC support"
-	depends on (FB = y) && ARM && ARCH_ACORN
-	select FB_IOMEM_HELPERS
-	help
-	  This is the frame buffer device driver for the Acorn VIDC graphics
-	  hardware found in Acorn RISC PCs and other ARM-based machines.  If
-	  unsure, say N.
-
 config FB_CLPS711X
 	tristate "CLPS711X LCD support"
 	depends on FB && (ARCH_CLPS711X || COMPILE_TEST)

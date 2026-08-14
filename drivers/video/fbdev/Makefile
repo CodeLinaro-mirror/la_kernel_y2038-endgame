@@ -52,7 +52,6 @@ obj-$(CONFIG_FB_CG14)             += cg14.o
 obj-$(CONFIG_FB_P9100)            += p9100.o
 obj-$(CONFIG_FB_TCX)              += tcx.o
 obj-$(CONFIG_FB_LEO)              += leo.o
-obj-$(CONFIG_FB_ACORN)            += acornfb.o
 obj-$(CONFIG_FB_ATARI)            += atafb.o c2p_iplan2.o atafb_mfb.o \
                                      atafb_iplan2p2.o atafb_iplan2p4.o atafb_iplan2p8.o
 obj-$(CONFIG_FB_MAC)              += macfb.o
