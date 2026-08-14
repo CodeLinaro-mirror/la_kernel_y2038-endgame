@@ -141,16 +141,6 @@ config BACKLIGHT_AW99706
 	  If you have a LCD backlight connected to the WLED output of AW99706
 	  WLED output, say Y here to enable this driver.
 
-config BACKLIGHT_EP93XX
-	tristate "Cirrus EP93xx Backlight Driver"
-	depends on FB_EP93XX
-	help
-	  If you have a LCD backlight connected to the BRIGHT output of
-	  the EP93xx, say Y here to enable this driver.
-
-	  To compile this driver as a module, choose M here: the module will
-	  be called ep93xx_bl.
-
 config BACKLIGHT_IPAQ_MICRO
 	tristate "iPAQ microcontroller backlight driver"
 	depends on MFD_IPAQ_MICRO
