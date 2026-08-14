@@ -191,9 +191,6 @@ config ARM_S5PV210_CPUFREQ
 
 	  If in doubt, say N.
 
-config ARM_SA1110_CPUFREQ
-	bool
-
 config ARM_SCMI_CPUFREQ
 	tristate "SCMI based CPUfreq driver"
 	depends on ARM_SCMI_PROTOCOL || COMPILE_TEST
