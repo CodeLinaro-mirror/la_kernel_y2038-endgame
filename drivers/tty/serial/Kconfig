@@ -448,32 +448,6 @@ config SERIAL_PXA_CONSOLE
 	  Unless you have a specific need, you should use SERIAL_8250_PXA
 	  and SERIAL_8250_CONSOLE instead of this.
 
-config SERIAL_SA1100
-	bool "SA1100 serial port support"
-	depends on ARCH_SA1100
-	select SERIAL_CORE
-	select SERIAL_MCTRL_GPIO if GPIOLIB
-	help
-	  If you have a machine based on a SA1100/SA1110 StrongARM(R) CPU you
-	  can enable its onboard serial port by enabling this option.
-	  Please read <file:Documentation/arch/arm/sa1100/serial_uart.rst> for
-	  further info.
-
-config SERIAL_SA1100_CONSOLE
-	bool "Console on SA1100 serial port"
-	depends on SERIAL_SA1100
-	select SERIAL_CORE_CONSOLE
-	help
-	  If you have enabled the serial port on the SA1100/SA1110 StrongARM
-	  CPU you can make it the console by answering Y to this option.
-
-	  Even if you say Y here, the currently visible virtual console
-	  (/dev/tty0) will still be used as the system console by default, but
-	  you can alter that using a kernel command line option such as
-	  "console=ttySA0". (Try "man bootparam" or see the documentation of
-	  your boot loader (lilo or loadlin) about how to pass options to the
-	  kernel at boot time.)
-
 config SERIAL_IMX
 	tristate "IMX serial port support"
 	depends on ARCH_MXC || COMPILE_TEST
