@@ -65,9 +65,6 @@ config CARDBUS
 
 	  If unsure, say Y.
 
-config PCMCIA_MAX1600
-	tristate
-
 comment "PC-card bridges"
 
 config YENTA
@@ -142,65 +139,9 @@ config PCMCIA_BCM63XX
 	tristate "bcm63xx pcmcia support"
 	depends on BCM63XX && PCMCIA
 
-config PCMCIA_SOC_COMMON
-	tristate
-
-config PCMCIA_SA11XX_BASE
-	tristate
-
-config PCMCIA_SA1100
-	tristate "SA1100 support"
-	depends on ARM && ARCH_SA1100 && PCMCIA
-	select PCMCIA_SOC_COMMON
-	select PCMCIA_SA11XX_BASE
-	help
-	  Say Y here to include support for SA11x0-based PCMCIA or CF
-	  sockets, found on HP iPAQs, Yopy, and other StrongARM(R)/
-	  Xscale(R) embedded machines.
-
-	  This driver is also available as a module called sa1100_cs.
-
-config PCMCIA_SA1111
-	tristate "SA1111 support"
-	depends on ARM && SA1111 && PCMCIA
-	select PCMCIA_SOC_COMMON
-	select PCMCIA_SA11XX_BASE
-	select PCMCIA_MAX1600 if ASSABET_NEPONSET
-	help
-	  Say Y  here to include support for SA1111-based PCMCIA or CF
-	  sockets, found on the Jornada 720, Graphicsmaster and other
-	  StrongARM(R)/Xscale(R) embedded machines.
-
-	  This driver is also available as a module called sa1111_cs.
-
-config PCMCIA_PXA2XX
-	tristate "PXA2xx support"
-	depends on ARM && ARCH_PXA && PCMCIA && PXA_SHARPSL
-	select PCMCIA_SOC_COMMON
-	help
-	  Say Y here to include support for the PXA2xx PCMCIA controller
-
-config PCMCIA_DEBUG
-	bool "Enable debugging"
-	depends on (PCMCIA_SA1111 || PCMCIA_SA1100 || PCMCIA_PXA2XX)
-	help
-	  Say Y here to enable debugging for the SoC PCMCIA layer.
-	  You will need to choose the debugging level either via the
-	  kernel command line, or module options depending whether
-	  you build the drivers as modules.
-
-	  The kernel command line options are:
-	    sa11xx_core.pc_debug=N
-	    pxa2xx_core.pc_debug=N
-
-	  The module option is called pc_debug=N
-
-	  In all the above examples, N is the debugging verbosity
-	  level.
-
 config PCMCIA_PROBE
 	bool
-	default y if ISA && !ARCH_SA1100 && !PARISC
+	default y if ISA && !PARISC
 
 config OMAP_CF
 	tristate "OMAP CompactFlash Controller"
