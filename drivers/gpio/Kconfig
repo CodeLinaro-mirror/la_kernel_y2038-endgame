@@ -646,12 +646,6 @@ config GPIO_REALTEK_OTTO
 
 	  When built as a module, the module will be called realtek_otto_gpio.
 
-config GPIO_REG
-	bool
-	help
-	  A 32-bit single register GPIO fixed in/out implementation.  This
-	  can be used to represent any register as a set of GPIO signals.
-
 config GPIO_ROCKCHIP
 	tristate "Rockchip GPIO support"
 	depends on ARCH_ROCKCHIP || COMPILE_TEST
