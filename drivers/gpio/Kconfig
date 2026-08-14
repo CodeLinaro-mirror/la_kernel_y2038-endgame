@@ -1485,14 +1485,6 @@ config GPIO_DLN2
 	  This driver can also be built as a module. If so, the module
 	  will be called gpio-dln2.
 
-config HTC_EGPIO
-	bool "HTC EGPIO support"
-	depends on ARM || COMPILE_TEST
-	help
-	  This driver supports the CPLD egpio chip present on
-	  several HTC phones.  It provides basic support for input
-	  pins, output pins, and IRQs.
-
 config GPIO_ELKHARTLAKE
 	tristate "Intel Elkhart Lake PSE GPIO support"
 	depends on INTEL_EHL_PSE_IO
