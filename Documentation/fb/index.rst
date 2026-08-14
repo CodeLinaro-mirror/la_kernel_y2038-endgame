@@ -37,7 +37,6 @@ Driver documentation
    pvr2fb
    pxafb
    s3fb
-   sa1100fb
    sh7760fb
    sisfb
    sm501

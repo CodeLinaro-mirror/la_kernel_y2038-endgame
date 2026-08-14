@@ -134,18 +134,6 @@ config FB_CLPS711X
 	  Say Y to enable the Framebuffer driver for the Cirrus Logic
 	  CLPS711X CPUs.
 
-config FB_SA1100
-	bool "SA-1100 LCD support"
-	depends on (FB = y) && ARM && ARCH_SA1100
-	select FB_IOMEM_HELPERS
-	help
-	  This is a framebuffer device for the SA-1100 LCD Controller.
-	  See <http://www.linux-fbdev.org/> for information on framebuffer
-	  devices.
-
-	  If you plan to use the LCD display with your SA-1100 system, say
-	  Y here.
-
 config FB_IMX
 	tristate "Freescale i.MX1/21/25/27 LCD support"
 	depends on FB && HAVE_CLK && HAS_IOMEM
