@@ -369,9 +369,8 @@ config COMMON_CLK_LOONGSON2
           Say Y here to support Loongson-2 SoC clock driver.
 
 config COMMON_CLK_NXP
-	def_bool COMMON_CLK && (ARCH_LPC18XX || ARCH_LPC32XX)
+	def_bool COMMON_CLK && ARCH_LPC32XX
 	select REGMAP_MMIO if ARCH_LPC32XX
-	select MFD_SYSCON if ARCH_LPC18XX
 	help
 	  Support for clock providers on NXP platforms.
 
