@@ -19,10 +19,6 @@ config CLK_IMX27
 	def_bool SOC_IMX27
 	select MXC_CLK
 
-config CLK_IMX31
-	def_bool SOC_IMX31
-	select MXC_CLK
-
 config CLK_IMX35
 	def_bool SOC_IMX35
 	select MXC_CLK

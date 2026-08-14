@@ -46,7 +46,6 @@ obj-$(CONFIG_CLK_IMX8ULP) += clk-imx8ulp-sim-lpav.o
 obj-$(CONFIG_CLK_IMX1)   += clk-imx1.o
 obj-$(CONFIG_CLK_IMX25)  += clk-imx25.o
 obj-$(CONFIG_CLK_IMX27)  += clk-imx27.o
-obj-$(CONFIG_CLK_IMX31)  += clk-imx31.o
 obj-$(CONFIG_CLK_IMX35)  += clk-imx35.o
 obj-$(CONFIG_CLK_IMX5)   += clk-imx5.o
 obj-$(CONFIG_CLK_IMX6Q)  += clk-imx6q.o
