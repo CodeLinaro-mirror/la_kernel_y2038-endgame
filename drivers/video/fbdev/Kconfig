@@ -1436,15 +1436,6 @@ config FB_68328
 	  Say Y here if you want to support the built-in frame buffer of
 	  the Motorola 68328 CPU family.
 
-config FB_PXA168
-	tristate "PXA168/910 LCD framebuffer support"
-	depends on FB && HAVE_CLK && HAS_IOMEM
-	depends on CPU_PXA168 || CPU_PXA910 || COMPILE_TEST
-	select FB_IOMEM_HELPERS
-	help
-	  Frame buffer driver for the built-in LCD controller in the Marvell
-	  MMP processor.
-
 config FB_PXA
 	tristate "PXA LCD framebuffer support"
 	depends on FB && ARCH_PXA
