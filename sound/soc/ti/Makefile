@@ -24,7 +24,6 @@ obj-$(CONFIG_SND_SOC_OMAP_MCPDM) += snd-soc-omap-mcpdm.o
 
 # Machine drivers
 snd-soc-davinci-evm-y := davinci-evm.o
-snd-soc-n810-y := n810.o
 snd-soc-rx51-y := rx51.o
 snd-soc-omap3pandora-y := omap3pandora.o
 snd-soc-omap-twl4030-y := omap-twl4030.o
@@ -35,7 +34,6 @@ snd-soc-osk5912-y := osk5912.o
 snd-soc-j721e-evm-y := j721e-evm.o
 
 obj-$(CONFIG_SND_SOC_DAVINCI_EVM) += snd-soc-davinci-evm.o
-obj-$(CONFIG_SND_SOC_NOKIA_N810) += snd-soc-n810.o
 obj-$(CONFIG_SND_SOC_NOKIA_RX51) += snd-soc-rx51.o
 obj-$(CONFIG_SND_SOC_OMAP3_PANDORA) += snd-soc-omap3pandora.o
 obj-$(CONFIG_SND_SOC_OMAP3_TWL4030) += snd-soc-omap-twl4030.o

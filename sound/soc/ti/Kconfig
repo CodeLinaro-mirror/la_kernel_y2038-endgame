@@ -65,14 +65,6 @@ config SND_SOC_OMAP_MCPDM
 	  OMAP4 and OMAP5.
 
 comment "Audio support for boards with Texas Instruments SoCs"
-config SND_SOC_NOKIA_N810
-	tristate "SoC Audio support for Nokia N810"
-	depends on MACH_NOKIA_N810 && I2C
-	select SND_SOC_OMAP_MCBSP
-	select SND_SOC_TLV320AIC3X
-	help
-	  Say Y or M if you want to add support for SoC audio on Nokia N810.
-
 config SND_SOC_NOKIA_RX51
 	tristate "SoC Audio support for Nokia RX-51"
 	depends on ARCH_OMAP3 && I2C && GPIOLIB
