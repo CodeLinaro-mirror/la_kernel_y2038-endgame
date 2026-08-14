@@ -19,10 +19,6 @@ config SND_PXA2XX_SOC_AC97
 	select SND_PXA2XX_LIB
 	select SND_PXA2XX_LIB_AC97
 
-config SND_PXA2XX_SOC_I2S
-	select SND_PXA2XX_LIB
-	tristate
-
 config SND_PXA_SOC_SSP
 	tristate "Soc Audio via PXA2xx/PXA3xx SSP ports"
 	depends on ARCH_PXA
@@ -36,15 +32,6 @@ config SND_MMP_SOC_SSPA
 	help
 	  Say Y if you want to add support for codecs attached to
 	  the MMP SSPA interface.
-
-config SND_PXA2XX_SOC_SPITZ
-	tristate "SoC Audio support for Sharp Zaurus SL-Cxx00"
-	depends on SND_PXA2XX_SOC && PXA_SHARP_Cxx00 && I2C
-	select SND_PXA2XX_SOC_I2S
-	select SND_SOC_WM8750
-	help
-	  Say Y if you want to add support for SoC audio on Sharp
-	  Zaurus SL-Cxx00 models (Spitz, Borzoi and Akita).
 
 config SND_PXA910_SOC
 	tristate "SoC Audio for Marvell PXA910 chip"
