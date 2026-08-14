@@ -427,13 +427,6 @@ config CLKSRC_ARM_GLOBAL_TIMER_SCHED_CLOCK
 	help
 	  Use ARM global timer clock source as sched_clock.
 
-config ARMV7M_SYSTICK
-	bool "Support for the ARMv7M system time" if COMPILE_TEST
-	select TIMER_OF if OF
-	select CLKSRC_MMIO
-	help
-	  This option enables support for the ARMv7M system timer unit.
-
 config ATMEL_PIT
 	bool "Atmel PIT support" if COMPILE_TEST
 	depends on HAS_IOMEM
