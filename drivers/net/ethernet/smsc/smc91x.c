@@ -1987,28 +1987,12 @@ static int smc_probe(struct net_device *dev, void __iomem *ioaddr,
 	if (retval)
 		goto err_out;
 
-#ifdef CONFIG_ARCH_PXA
-#  ifdef SMC_USE_PXA_DMA
-	lp->cfg.flags |= SMC91X_USE_DMA;
-#  endif
-	if (lp->cfg.flags & SMC91X_USE_DMA) {
-		dma_cap_mask_t mask;
-
-		dma_cap_zero(mask);
-		dma_cap_set(DMA_SLAVE, mask);
-		lp->dma_chan = dma_request_channel(mask, NULL, NULL);
-	}
-#endif
-
 	retval = register_netdev(dev);
 	if (retval == 0) {
 		/* now, print out the card info, in a short format.. */
 		netdev_info(dev, "%s (rev %d) at %p IRQ %d",
 			    version_string, revision_register & 0x0f,
 			    lp->base, dev->irq);
-
-		if (lp->dma_chan)
-			pr_cont(" DMA %p", lp->dma_chan);
 
 		pr_cont("%s%s\n",
 			lp->cfg.flags & SMC91X_NOWAIT ? " [nowait]" : "",
@@ -2032,10 +2016,6 @@ static int smc_probe(struct net_device *dev, void __iomem *ioaddr,
 	}
 
 err_out:
-#ifdef CONFIG_ARCH_PXA
-	if (retval && lp->dma_chan)
-		dma_release_channel(lp->dma_chan);
-#endif
 	return retval;
 }
 
@@ -2361,15 +2341,6 @@ static int smc_drv_probe(struct platform_device *pdev)
 		goto out_release_attrib;
 	}
 
-#ifdef CONFIG_ARCH_PXA
-	{
-		struct smc_local *lp = netdev_priv(ndev);
-		lp->device = &pdev->dev;
-		lp->physaddr = res->start;
-
-	}
-#endif
-
 	ret = smc_probe(ndev, addr, irq_flags);
 	if (ret != 0)
 		goto out_iounmap;
@@ -2402,10 +2373,6 @@ static void smc_drv_remove(struct platform_device *pdev)
 
 	free_irq(ndev->irq, ndev);
 
-#ifdef CONFIG_ARCH_PXA
-	if (lp->dma_chan)
-		dma_release_channel(lp->dma_chan);
-#endif
 	iounmap(lp->base);
 
 	smc_release_datacs(pdev,ndev);
