@@ -623,14 +623,6 @@ config LEDS_WM831X_STATUS
 	  This option enables support for the status LEDs of the WM831x
 	  series of PMICs.
 
-config LEDS_WM8350
-	tristate "LED Support for WM8350 AudioPlus PMIC"
-	depends on LEDS_CLASS
-	depends on MFD_WM8350
-	help
-	  This option enables support for LEDs driven by the Wolfson
-	  Microelectronics WM8350 AudioPlus PMIC.
-
 config LEDS_DA9052
 	tristate "Dialog DA9052/DA9053 LEDS"
 	depends on LEDS_CLASS

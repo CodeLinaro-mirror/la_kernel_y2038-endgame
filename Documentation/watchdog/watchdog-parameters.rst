@@ -701,13 +701,6 @@ wm831x_wdt:
 
 -------------------------------------------------
 
-wm8350_wdt:
-    nowayout:
-	Watchdog cannot be stopped once started
-	(default=kernel config parameter)
-
--------------------------------------------------
-
 sun4v_wdt:
     timeout_ms:
 	Watchdog timeout in milliseconds 1..180000, default=60000)

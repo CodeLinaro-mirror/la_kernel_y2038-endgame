@@ -1816,13 +1816,6 @@ config GPIO_WM831X
 	  Say yes here to access the GPIO signals of WM831x power management
 	  chips from Wolfson Microelectronics.
 
-config GPIO_WM8350
-	tristate "WM8350 GPIOs"
-	depends on MFD_WM8350
-	help
-	  Say yes here to access the GPIO signals of WM8350 power management
-	  chips from Wolfson Microelectronics.
-
 config GPIO_WM8994
 	tristate "WM8994 GPIOs"
 	depends on MFD_WM8994

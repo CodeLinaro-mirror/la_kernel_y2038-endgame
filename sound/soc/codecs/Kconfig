@@ -320,7 +320,6 @@ config SND_SOC_ALL_CODECS
 	imply SND_SOC_WM5100
 	imply SND_SOC_WM5102
 	imply SND_SOC_WM5110
-	imply SND_SOC_WM8350
 	imply SND_SOC_WM8510
 	imply SND_SOC_WM8523
 	imply SND_SOC_WM8524
@@ -2587,10 +2586,6 @@ config SND_SOC_WM5110
 	tristate
 	depends on MFD_WM5110 && MFD_ARIZONA
 	select SND_SOC_WM_ADSP
-
-config SND_SOC_WM8350
-	tristate
-	depends on MFD_WM8350
 
 config SND_SOC_WM8510
 	tristate "Wolfson Microelectronics WM8510 CODEC"

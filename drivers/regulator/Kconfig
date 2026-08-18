@@ -1850,13 +1850,6 @@ config REGULATOR_WM831X
 	  Support the voltage and current regulators of the WM831x series
 	  of PMIC devices.
 
-config REGULATOR_WM8350
-	tristate "Wolfson Microelectronics WM8350 AudioPlus PMIC"
-	depends on MFD_WM8350
-	help
-	  This driver provides support for the voltage and current regulators
-	  of the WM8350 AudioPlus PMIC.
-
 config REGULATOR_WM8994
 	tristate "Wolfson Microelectronics WM8994 CODEC"
 	depends on MFD_WM8994

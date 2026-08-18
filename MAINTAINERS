@@ -30148,7 +30148,6 @@ F:	drivers/video/backlight/wm83*_bl.c
 F:	drivers/watchdog/wm83*_wdt.c
 F:	include/linux/mfd/arizona/
 F:	include/linux/mfd/wm831x/
-F:	include/linux/mfd/wm8350/
 F:	include/linux/regulator/arizona*
 F:	include/linux/wm97xx.h
 F:	include/sound/wm????.h

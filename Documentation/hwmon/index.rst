@@ -302,7 +302,6 @@ Hardware Monitoring Kernel Drivers
    w83l785ts
    w83l786ng
    wm831x
-   wm8350
    xgene-hwmon
    xdp710
    xdpe12284
