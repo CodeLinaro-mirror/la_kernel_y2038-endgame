@@ -580,15 +580,6 @@ config RTC_DRV_BQ32K
 	  This driver can also be built as a module. If so, the module
 	  will be called rtc-bq32k.
 
-config RTC_DRV_TWL92330
-	bool "TI TWL92330/Menelaus"
-	depends on MENELAUS
-	help
-	  If you say yes here you get support for the RTC on the
-	  TWL92330 "Menelaus" power management chip, used with OMAP2
-	  platforms. The support is integrated with the rest of
-	  the Menelaus driver; it's not separate module.
-
 config RTC_DRV_TWL4030
 	tristate "TI TWL4030/TWL5030/TWL6030/TPS659x0"
 	depends on TWL4030_CORE

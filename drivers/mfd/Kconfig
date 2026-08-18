@@ -1921,16 +1921,6 @@ config TWL6040_CORE
 	  additional drivers must be enabled in order to use the
 	  functionality of the device (audio, vibra).
 
-config MENELAUS
-	bool "TI TWL92330/Menelaus PM chip"
-	depends on I2C=y && ARCH_OMAP2
-	help
-	  If you say yes here you get support for the Texas Instruments
-	  TWL92330/Menelaus Power Management chip. This include voltage
-	  regulators, Dual slot memory card transceivers, real-time clock
-	  and other features that are often used in portable devices like
-	  cell phones and PDAs.
-
 config MFD_LM3533
 	tristate "TI/National Semiconductor LM3533 Lighting Power chip"
 	depends on I2C
@@ -1943,7 +1933,6 @@ config MFD_LM3533
 	  This driver provides common support for accessing the device;
 	  additional drivers must be enabled in order to use the LED,
 	  backlight or ambient-light-sensor functionality of the device.
-
 config MFD_TIMBERDALE
 	tristate "Timberdale FPGA"
 	select MFD_CORE
