@@ -980,18 +980,6 @@ config ARM_SMC_WATCHDOG
 	  To compile this driver as a module, choose M here: the
 	  module will be called arm_smc_wdt.
 
-config LPC18XX_WATCHDOG
-	tristate "LPC18xx/43xx Watchdog"
-	depends on ARCH_LPC18XX || COMPILE_TEST
-	depends on HAS_IOMEM
-	select WATCHDOG_CORE
-	help
-	  Say Y here if to include support for the watchdog timer
-	  in NXP LPC SoCs family, which includes LPC18xx/LPC43xx
-	  processors.
-	  To compile this driver as a module, choose M here: the
-	  module will be called lpc18xx_wdt.
-
 config RENESAS_WDT
 	tristate "Renesas WDT Watchdog"
 	depends on ARCH_RENESAS || COMPILE_TEST
