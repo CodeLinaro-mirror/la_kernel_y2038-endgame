@@ -55,7 +55,6 @@ ifeq ($(CONFIG_MFD_CS47L24),y)
 arizona-objs			+= cs47l24-tables.o
 endif
 obj-$(CONFIG_MFD_WCD934X)	+= wcd934x.o
-obj-$(CONFIG_MFD_WM8400)	+= wm8400-core.o
 wm831x-objs			:= wm831x-core.o wm831x-irq.o wm831x-otp.o
 wm831x-objs			+= wm831x-auxadc.o
 obj-$(CONFIG_MFD_WM831X)	+= wm831x.o
