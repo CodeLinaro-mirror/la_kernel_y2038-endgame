@@ -142,8 +142,8 @@ enum v4l2_colorfx {
 #define V4L2_CID_USER_S2255_BASE		(V4L2_CID_USER_BASE + 0x1030)
 
 /*
- * The base for the si476x driver controls. See include/media/drv-intf/si476x.h
- * for the list of controls. Total of 16 controls is reserved for this driver
+ * Previously the base for the si476x driver controls, now removed.
+ * Total of 16 controls is reserved for this driver
  */
 #define V4L2_CID_USER_SI476X_BASE		(V4L2_CID_USER_BASE + 0x1040)
 

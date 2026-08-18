@@ -23,7 +23,6 @@ radio-sf16fmr2         SF16-FMR2/SF16-FMD2 Radio
 radio-shark            Griffin radioSHARK USB radio receiver
 shark2                 Griffin radioSHARK2 USB radio receiver
 radio-si470x-common    Silicon Labs Si470x FM Radio Receiver
-radio-si476x           Silicon Laboratories Si476x I2C FM Radio
 radio-tea5764          TEA5764 I2C FM radio
 tef6862                TEF6862 Car Radio Enhanced Selectivity Tuner
 radio-terratec         TerraTec ActiveRadio ISA Standalone

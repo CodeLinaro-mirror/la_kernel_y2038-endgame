@@ -1441,19 +1441,6 @@ config MFD_SEC_I2C
 	  on this driver so building this as a module might require proper
 	  initial ramdisk or might not boot up as well in certain scenarios.
 
-config MFD_SI476X_CORE
-	tristate "Silicon Laboratories 4761/64/68 AM/FM radio."
-	depends on I2C
-	select MFD_CORE
-	select REGMAP_I2C
-	help
-	  This is the core driver for the SI476x series of AM/FM
-	  radio. This MFD driver connects the radio-si476x V4L2 module
-	  and the si476x audio codec.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called si476x-core.
-
 config MFD_SIMPLE_MFD_I2C
 	tristate
 	depends on I2C

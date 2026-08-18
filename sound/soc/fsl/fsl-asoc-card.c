@@ -794,13 +794,6 @@ static const struct fsl_asoc_card_pdata fsl_asoc_wm8524_pdata = {
 	.num_dapm_routes = ARRAY_SIZE(audio_map_tx),
 };
 
-static const struct fsl_asoc_card_pdata fsl_asoc_si476x_pdata = {
-	.codec_dai_name  = "si476x-codec",
-	.dai_fmt         = DAI_FMT_BASE | SND_SOC_DAIFMT_CBC_CFC,
-	.dapm_routes     = audio_map_rx,
-	.num_dapm_routes = ARRAY_SIZE(audio_map_rx),
-};
-
 static const struct fsl_asoc_card_pdata fsl_asoc_wm8958_pdata = {
 	.codec_dai_name  = "wm8994-aif1",
 	.dai_fmt         = DAI_FMT_BASE | SND_SOC_DAIFMT_CBP_CFP,
@@ -1398,7 +1391,6 @@ static const struct of_device_id fsl_asoc_card_dt_ids[] = {
 	{ .compatible = "fsl,imx-audio-wm8960",         .data = &fsl_asoc_wm8960_pdata },
 	{ .compatible = "fsl,imx-audio-mqs",            .data = &fsl_asoc_mqs_pdata },
 	{ .compatible = "fsl,imx-audio-wm8524",         .data = &fsl_asoc_wm8524_pdata },
-	{ .compatible = "fsl,imx-audio-si476x",         .data = &fsl_asoc_si476x_pdata },
 	{ .compatible = "fsl,imx-audio-wm8958",         .data = &fsl_asoc_wm8958_pdata },
 	{ .compatible = "fsl,imx-audio-nau8822",        .data = &fsl_asoc_nau8822_pdata },
 	{ .compatible = "fsl,imx-audio-wm8904",         .data = &fsl_asoc_wm8904_pdata },

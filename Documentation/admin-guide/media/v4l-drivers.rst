@@ -33,7 +33,6 @@ Video4Linux (V4L) driver-specific documentation
 	saa7134
 	si470x
 	si4713
-	si476x
 	vimc
 	visl
 	vivid

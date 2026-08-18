@@ -22,7 +22,6 @@ obj-$(CONFIG_RADIO_SHARK2) += shark2.o
 obj-$(CONFIG_RADIO_SHARK) += radio-shark.o
 obj-$(CONFIG_RADIO_SI470X) += si470x/
 obj-$(CONFIG_RADIO_SI4713) += si4713/
-obj-$(CONFIG_RADIO_SI476X) += radio-si476x.o
 obj-$(CONFIG_RADIO_TEA575X) += tea575x.o
 obj-$(CONFIG_RADIO_TEA5764) += radio-tea5764.o
 obj-$(CONFIG_RADIO_TEF6862) += tef6862.o
