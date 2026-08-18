@@ -118,8 +118,6 @@ enum {
  * @prescaler_limit: max clock prescaler value
  * @cshold_bug:	set this to true if the SPI controller on your chip requires
  *		a write to CSHOLD bit in between transfers (like in DM355).
- * @dma_event_q: DMA event queue to use if SPI_IO_TYPE_DMA is used for any
- *		device on the bus.
  */
 struct davinci_spi_platform_data {
 	u8			version;
