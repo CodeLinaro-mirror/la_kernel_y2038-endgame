@@ -1,7 +1,0 @@
-# SPDX-License-Identifier: GPL-2.0-only
-config SPI_HISI_SFC
-	tristate "Hisilicon FMC SPI NOR Flash Controller(SFC)"
-	depends on ARCH_HISI || COMPILE_TEST
-	depends on HAS_IOMEM
-	help
-	  This enables support for HiSilicon FMC SPI NOR flash controller.
