@@ -16,7 +16,6 @@ allOf:
         compatible:
           contains:
             enum:
-              - st,stm32f7-i2c
               - st,stm32mp13-i2c
               - st,stm32mp15-i2c
               - st,stm32mp25-i2c
@@ -36,19 +35,6 @@ allOf:
         compatible:
           contains:
             enum:
-              - st,stm32f4-i2c
-    then:
-      properties:
-        clock-frequency:
-          enum: [100000, 400000]
-
-  - if:
-      properties:
-        compatible:
-          contains:
-            enum:
-              - st,stm32f4-i2c
-              - st,stm32f7-i2c
               - st,stm32mp13-i2c
               - st,stm32mp15-i2c
     then:
@@ -69,8 +55,6 @@ allOf:
 properties:
   compatible:
     enum:
-      - st,stm32f4-i2c
-      - st,stm32f7-i2c
       - st,stm32mp13-i2c
       - st,stm32mp15-i2c
       - st,stm32mp25-i2c
@@ -145,38 +129,6 @@ unevaluatedProperties: false
 
 examples:
   - |
-    #include <dt-bindings/mfd/stm32f7-rcc.h>
-    #include <dt-bindings/clock/stm32fx-clock.h>
-    //Example 1 (with st,stm32f4-i2c compatible)
-    i2c@40005400 {
-        compatible = "st,stm32f4-i2c";
-        reg = <0x40005400 0x400>;
-        interrupts = <31>,
-                     <32>;
-        resets = <&rcc 277>;
-        clocks = <&rcc 0 149>;
-        #address-cells = <1>;
-        #size-cells = <0>;
-    };
-
-  - |
-    #include <dt-bindings/mfd/stm32f7-rcc.h>
-    #include <dt-bindings/clock/stm32fx-clock.h>
-    //Example 2 (with st,stm32f7-i2c compatible)
-    i2c@40005800 {
-        compatible = "st,stm32f7-i2c";
-        reg = <0x40005800 0x400>;
-        interrupts = <31>,
-                     <32>;
-        resets = <&rcc STM32F7_APB1_RESET(I2C1)>;
-        clocks = <&rcc 1 CLK_I2C1>;
-        #address-cells = <1>;
-        #size-cells = <0>;
-    };
-
-  - |
-    #include <dt-bindings/mfd/stm32f7-rcc.h>
-    #include <dt-bindings/clock/stm32fx-clock.h>
     //Example 3 (with st,stm32mp15-i2c compatible on stm32mp)
     #include <dt-bindings/interrupt-controller/arm-gic.h>
     #include <dt-bindings/clock/stm32mp1-clks.h>

@@ -113,7 +113,6 @@ obj-$(CONFIG_I2C_SH_MOBILE)	+= i2c-sh_mobile.o
 obj-$(CONFIG_I2C_SIMTEC)	+= i2c-simtec.o
 obj-$(CONFIG_I2C_SPRD)		+= i2c-sprd.o
 obj-$(CONFIG_I2C_ST)		+= i2c-st.o
-obj-$(CONFIG_I2C_STM32F4)	+= i2c-stm32f4.o
 obj-$(CONFIG_I2C_STM32F7)	+= i2c-stm32f7-drv.o
 i2c-stm32f7-drv-y		:= i2c-stm32f7.o i2c-stm32.o
 obj-$(CONFIG_I2C_SUN6I_P2WI)	+= i2c-sun6i-p2wi.o
