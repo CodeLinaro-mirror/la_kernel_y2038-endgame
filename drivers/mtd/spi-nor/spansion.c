@@ -89,17 +89,11 @@ static void spansion_nor_clear_sr(struct spi_nor *nor)
 {
 	const struct spansion_nor_params *priv_params = nor->params->priv;
 	int ret;
+	struct spi_mem_op op = SPANSION_OP(priv_params->clsr);
 
-	if (nor->spimem) {
-		struct spi_mem_op op = SPANSION_OP(priv_params->clsr);
+	spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
 
-		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
-
-		ret = spi_mem_exec_op(nor->spimem, &op);
-	} else {
-		ret = spi_nor_controller_ops_write_reg(nor, SPINOR_OP_CLSR,
-						       NULL, 0);
-	}
+	ret = spi_mem_exec_op(nor->spimem, &op);
 
 	if (ret)
 		dev_dbg(nor->dev, "error %d clearing SR\n", ret);

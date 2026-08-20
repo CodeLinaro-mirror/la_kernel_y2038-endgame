@@ -705,11 +705,6 @@ void spi_nor_cache_sr_lock_bits(struct spi_nor *nor, u8 *sr);
 void spi_nor_set_mtd_locking_ops(struct spi_nor *nor);
 void spi_nor_set_mtd_otp_ops(struct spi_nor *nor);
 
-int spi_nor_controller_ops_read_reg(struct spi_nor *nor, u8 opcode,
-				    u8 *buf, size_t len);
-int spi_nor_controller_ops_write_reg(struct spi_nor *nor, u8 opcode,
-				     const u8 *buf, size_t len);
-
 int spi_nor_check_sfdp_signature(struct spi_nor *nor);
 int spi_nor_parse_sfdp(struct spi_nor *nor);
 

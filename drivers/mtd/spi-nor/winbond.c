@@ -163,20 +163,11 @@ static const struct spi_nor_fixups w25q256_fixups = {
 static int winbond_nor_select_die(struct spi_nor *nor, u8 die)
 {
 	int ret;
+	struct spi_mem_op op = WINBOND_NOR_SELDIE_OP(nor->bouncebuf);
 
 	nor->bouncebuf[0] = die;
-
-	if (nor->spimem) {
-		struct spi_mem_op op = WINBOND_NOR_SELDIE_OP(nor->bouncebuf);
-
-		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
-
-		ret = spi_mem_exec_op(nor->spimem, &op);
-	} else {
-		ret = spi_nor_controller_ops_write_reg(nor,
-						       WINBOND_NOR_OP_SELDIE,
-						       nor->bouncebuf, 1);
-	}
+	spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
+	ret = spi_mem_exec_op(nor->spimem, &op);
 
 	if (ret)
 		dev_dbg(nor->dev, "error %d selecting die %d\n", ret, die);
@@ -545,20 +536,11 @@ static const struct flash_info winbond_nor_parts[] = {
 static int winbond_nor_write_ear(struct spi_nor *nor, u8 ear)
 {
 	int ret;
+	struct spi_mem_op op = WINBOND_NOR_WREAR_OP(nor->bouncebuf);
 
 	nor->bouncebuf[0] = ear;
-
-	if (nor->spimem) {
-		struct spi_mem_op op = WINBOND_NOR_WREAR_OP(nor->bouncebuf);
-
-		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
-
-		ret = spi_mem_exec_op(nor->spimem, &op);
-	} else {
-		ret = spi_nor_controller_ops_write_reg(nor,
-						       WINBOND_NOR_OP_WREAR,
-						       nor->bouncebuf, 1);
-	}
+	spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
+	ret = spi_mem_exec_op(nor->spimem, &op);
 
 	if (ret)
 		dev_dbg(nor->dev, "error %d writing EAR\n", ret);

@@ -519,27 +519,21 @@ static const struct flash_info st_nor_parts[] = {
 static int micron_st_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
 {
 	int ret;
+	struct spi_mem_op op = MICRON_ST_RDFSR_OP(fsr);
 
-	if (nor->spimem) {
-		struct spi_mem_op op = MICRON_ST_RDFSR_OP(fsr);
-
-		if (nor->reg_proto == SNOR_PROTO_8_8_8_DTR) {
-			op.addr.nbytes = nor->params->rdsr_addr_nbytes;
-			op.dummy.nbytes = nor->params->rdsr_dummy;
-			/*
-			 * We don't want to read only one byte in DTR mode. So,
-			 * read 2 and then discard the second byte.
-			 */
-			op.data.nbytes = 2;
-		}
-
-		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
-
-		ret = spi_mem_exec_op(nor->spimem, &op);
-	} else {
-		ret = spi_nor_controller_ops_read_reg(nor, SPINOR_OP_RDFSR, fsr,
-						      1);
+	if (nor->reg_proto == SNOR_PROTO_8_8_8_DTR) {
+		op.addr.nbytes = nor->params->rdsr_addr_nbytes;
+		op.dummy.nbytes = nor->params->rdsr_dummy;
+		/*
+		 * We don't want to read only one byte in DTR mode. So,
+		 * read 2 and then discard the second byte.
+		 */
+		op.data.nbytes = 2;
 	}
+
+	spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
+
+	ret = spi_mem_exec_op(nor->spimem, &op);
 
 	if (ret)
 		dev_dbg(nor->dev, "error %d reading FSR\n", ret);
@@ -554,17 +548,11 @@ static int micron_st_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
 static void micron_st_nor_clear_fsr(struct spi_nor *nor)
 {
 	int ret;
+	struct spi_mem_op op = MICRON_ST_CLFSR_OP;
 
-	if (nor->spimem) {
-		struct spi_mem_op op = MICRON_ST_CLFSR_OP;
+	spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
 
-		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
-
-		ret = spi_mem_exec_op(nor->spimem, &op);
-	} else {
-		ret = spi_nor_controller_ops_write_reg(nor, SPINOR_OP_CLFSR,
-						       NULL, 0);
-	}
+	ret = spi_mem_exec_op(nor->spimem, &op);
 
 	if (ret)
 		dev_dbg(nor->dev, "error %d clearing FSR\n", ret);

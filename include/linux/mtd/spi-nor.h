@@ -282,37 +282,6 @@ struct spi_nor_hwcaps {
 #define SNOR_HWCAPS_ALL		(SNOR_HWCAPS_READ_MASK |	\
 				 SNOR_HWCAPS_PP_MASK)
 
-/* Forward declaration that is used in 'struct spi_nor_controller_ops' */
-struct spi_nor;
-
-/**
- * struct spi_nor_controller_ops - SPI NOR controller driver specific
- *                                 operations.
- * @prepare:		[OPTIONAL] do some preparations for the
- *			read/write/erase/lock/unlock operations.
- * @unprepare:		[OPTIONAL] do some post work after the
- *			read/write/erase/lock/unlock operations.
- * @read_reg:		read out the register.
- * @write_reg:		write data to the register.
- * @read:		read data from the SPI NOR.
- * @write:		write data to the SPI NOR.
- * @erase:		erase a sector of the SPI NOR at the offset @offs; if
- *			not provided by the driver, SPI NOR will send the erase
- *			opcode via write_reg().
- */
-struct spi_nor_controller_ops {
-	int (*prepare)(struct spi_nor *nor);
-	void (*unprepare)(struct spi_nor *nor);
-	int (*read_reg)(struct spi_nor *nor, u8 opcode, u8 *buf, size_t len);
-	int (*write_reg)(struct spi_nor *nor, u8 opcode, const u8 *buf,
-			 size_t len);
-
-	ssize_t (*read)(struct spi_nor *nor, loff_t from, size_t len, u8 *buf);
-	ssize_t (*write)(struct spi_nor *nor, loff_t to, size_t len,
-			 const u8 *buf);
-	int (*erase)(struct spi_nor *nor, loff_t offs);
-};
-
 /**
  * enum spi_nor_cmd_ext - describes the command opcode extension in DTR mode
  * @SPI_NOR_EXT_NONE: no extension. This is the default, and is used in Legacy
@@ -368,7 +337,6 @@ struct spi_nor_flash_parameter;
  * @sfdp:		the SFDP data of the flash
  * @debugfs_root:	pointer to the debugfs directory
  * @dfs_sr_cache:	Status Register cached value for debugfs use only
- * @controller_ops:	SPI NOR controller driver specific operations.
  * @params:		[FLASH-SPECIFIC] SPI NOR flash parameters and settings.
  *                      The structure includes legacy flash parameters and
  *                      settings that can be overwritten by the spi_nor_fixups
@@ -407,8 +375,6 @@ struct spi_nor {
 	struct dentry		*debugfs_root;
 	u8			dfs_sr_cache[2];
 
-	const struct spi_nor_controller_ops *controller_ops;
-
 	struct spi_nor_flash_parameter *params;
 
 	struct {
@@ -429,22 +395,5 @@ static inline struct device_node *spi_nor_get_flash_node(struct spi_nor *nor)
 {
 	return mtd_get_of_node(&nor->mtd);
 }
-
-/**
- * spi_nor_scan() - scan the SPI NOR
- * @nor:	the spi_nor structure
- * @name:	the chip type name
- * @hwcaps:	the hardware capabilities supported by the controller driver
- *
- * The drivers can use this function to scan the SPI NOR.
- * In the scanning, it will try to get all the necessary information to
- * fill the mtd_info{} and the spi_nor{}.
- *
- * The chip type name can be provided through the @name parameter.
- *
- * Return: 0 for success, others for failure.
- */
-int spi_nor_scan(struct spi_nor *nor, const char *name,
-		 const struct spi_nor_hwcaps *hwcaps);
 
 #endif
