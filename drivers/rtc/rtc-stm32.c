@@ -154,7 +154,6 @@ struct stm32_rtc_events {
 struct stm32_rtc_data {
 	const struct stm32_rtc_registers regs;
 	const struct stm32_rtc_events events;
-	void (*clear_events)(struct stm32_rtc *rtc, unsigned int flags);
 	bool has_pclk;
 	bool need_dbp;
 	bool need_accuracy;
@@ -455,8 +454,12 @@ static int stm32_rtc_wait_sync(struct stm32_rtc *rtc)
 static void stm32_rtc_clear_event_flags(struct stm32_rtc *rtc,
 					unsigned int flags)
 {
-	rtc->data->clear_events(rtc, flags);
+	struct stm32_rtc_registers regs = rtc->data->regs;
+
+	/* Flags are cleared by writing 1 in RTC_SCR */
+	writel_relaxed(flags, rtc->base + regs.scr);
 }
+
 
 static irqreturn_t stm32_rtc_alarm_irq(int irq, void *dev_id)
 {
@@ -790,77 +793,6 @@ static const struct rtc_class_ops stm32_rtc_ops = {
 	.alarm_irq_enable = stm32_rtc_alarm_irq_enable,
 };
 
-static void stm32_rtc_clear_events(struct stm32_rtc *rtc,
-				   unsigned int flags)
-{
-	const struct stm32_rtc_registers *regs = &rtc->data->regs;
-
-	/* Flags are cleared by writing 0 in RTC_ISR */
-	writel_relaxed(readl_relaxed(rtc->base + regs->isr) & ~flags,
-		       rtc->base + regs->isr);
-}
-
-static const struct stm32_rtc_data stm32_rtc_data = {
-	.has_pclk = false,
-	.need_dbp = true,
-	.need_accuracy = false,
-	.rif_protected = false,
-	.has_lsco = false,
-	.has_alarm_out = false,
-	.regs = {
-		.tr = 0x00,
-		.dr = 0x04,
-		.cr = 0x08,
-		.isr = 0x0C,
-		.prer = 0x10,
-		.alrmar = 0x1C,
-		.wpr = 0x24,
-		.sr = 0x0C, /* set to ISR offset to ease alarm management */
-		.scr = UNDEF_REG,
-		.cfgr = UNDEF_REG,
-		.verr = UNDEF_REG,
-	},
-	.events = {
-		.alra = STM32_RTC_ISR_ALRAF,
-	},
-	.clear_events = stm32_rtc_clear_events,
-};
-
-static const struct stm32_rtc_data stm32h7_rtc_data = {
-	.has_pclk = true,
-	.need_dbp = true,
-	.need_accuracy = false,
-	.rif_protected = false,
-	.has_lsco = false,
-	.has_alarm_out = false,
-	.regs = {
-		.tr = 0x00,
-		.dr = 0x04,
-		.cr = 0x08,
-		.isr = 0x0C,
-		.prer = 0x10,
-		.alrmar = 0x1C,
-		.wpr = 0x24,
-		.sr = 0x0C, /* set to ISR offset to ease alarm management */
-		.scr = UNDEF_REG,
-		.cfgr = UNDEF_REG,
-		.verr = UNDEF_REG,
-	},
-	.events = {
-		.alra = STM32_RTC_ISR_ALRAF,
-	},
-	.clear_events = stm32_rtc_clear_events,
-};
-
-static void stm32mp1_rtc_clear_events(struct stm32_rtc *rtc,
-				      unsigned int flags)
-{
-	struct stm32_rtc_registers regs = rtc->data->regs;
-
-	/* Flags are cleared by writing 1 in RTC_SCR */
-	writel_relaxed(flags, rtc->base + regs.scr);
-}
-
 static const struct stm32_rtc_data stm32mp1_data = {
 	.has_pclk = true,
 	.need_dbp = false,
@@ -884,7 +816,6 @@ static const struct stm32_rtc_data stm32mp1_data = {
 	.events = {
 		.alra = STM32_RTC_SR_ALRA,
 	},
-	.clear_events = stm32mp1_rtc_clear_events,
 };
 
 static const struct stm32_rtc_data stm32mp25_data = {
@@ -910,12 +841,9 @@ static const struct stm32_rtc_data stm32mp25_data = {
 	.events = {
 		.alra = STM32_RTC_SR_ALRA,
 	},
-	.clear_events = stm32mp1_rtc_clear_events,
 };
 
 static const struct of_device_id stm32_rtc_of_match[] = {
-	{ .compatible = "st,stm32-rtc", .data = &stm32_rtc_data },
-	{ .compatible = "st,stm32h7-rtc", .data = &stm32h7_rtc_data },
 	{ .compatible = "st,stm32mp1-rtc", .data = &stm32mp1_data },
 	{ .compatible = "st,stm32mp25-rtc", .data = &stm32mp25_data },
 	{}

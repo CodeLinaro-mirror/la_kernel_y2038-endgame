@@ -12,8 +12,6 @@ maintainers:
 properties:
   compatible:
     enum:
-      - st,stm32-rtc
-      - st,stm32h7-rtc
       - st,stm32mp1-rtc
       - st,stm32mp25-rtc
 
@@ -80,45 +78,6 @@ allOf:
       properties:
         compatible:
           contains:
-            const: st,stm32-rtc
-
-    then:
-      properties:
-        clocks:
-          minItems: 1
-          maxItems: 1
-
-        clock-names: false
-
-      patternProperties:
-        "^rtc-[a-z]+-[0-9]+$": false
-
-      required:
-        - st,syscfg
-
-  - if:
-      properties:
-        compatible:
-          contains:
-            const: st,stm32h7-rtc
-
-    then:
-      properties:
-        clocks:
-          minItems: 2
-          maxItems: 2
-
-      patternProperties:
-        "^rtc-[a-z]+-[0-9]+$": false
-
-      required:
-        - clock-names
-        - st,syscfg
-
-  - if:
-      properties:
-        compatible:
-          contains:
             enum:
               - st,stm32mp1-rtc
               - st,stm32mp25-rtc
@@ -144,20 +103,6 @@ required:
 additionalProperties: false
 
 examples:
-  - |
-    #include <dt-bindings/mfd/stm32f4-rcc.h>
-    #include <dt-bindings/clock/stm32fx-clock.h>
-    rtc@40002800 {
-      compatible = "st,stm32-rtc";
-      reg = <0x40002800 0x400>;
-      clocks = <&rcc 1 CLK_RTC>;
-      assigned-clocks = <&rcc 1 CLK_RTC>;
-      assigned-clock-parents = <&rcc 1 CLK_LSE>;
-      interrupt-parent = <&exti>;
-      interrupts = <17 1>;
-      st,syscfg = <&pwrcfg 0x00 0x100>;
-    };
-
   - |
     #include <dt-bindings/interrupt-controller/arm-gic.h>
     #include <dt-bindings/clock/stm32mp1-clks.h>
