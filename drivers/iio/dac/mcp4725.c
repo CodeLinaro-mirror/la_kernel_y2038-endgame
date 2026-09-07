@@ -21,8 +21,6 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
-#include <linux/iio/dac/mcp4725.h>
-
 #define MCP472X_REF_VDD			0x00
 #define MCP472X_REF_VREF_UNBUFFERED	0x02
 #define MCP472X_REF_VREF_BUFFERED	0x03
@@ -372,24 +370,14 @@ static const struct iio_info mcp4725_info = {
 	.attrs = &mcp4725_attribute_group,
 };
 
-static int mcp4725_probe_dt(struct device *dev,
-			    struct mcp4725_platform_data *pdata)
-{
-	/* check if is the vref-supply defined */
-	pdata->use_vref = device_property_present(dev, "vref-supply");
-	pdata->vref_buffered =
-		device_property_read_bool(dev, "microchip,vref-buffered");
-
-	return 0;
-}
-
 static int mcp4725_probe(struct i2c_client *client)
 {
 	const struct i2c_device_id *id = i2c_client_get_device_id(client);
 	const struct mcp4725_chip_info *info;
 	struct mcp4725_data *data;
 	struct iio_dev *indio_dev;
-	struct mcp4725_platform_data *pdata, pdata_dt;
+	bool use_vref;
+	bool vref_buffered;
 	u8 inbuf[4];
 	u8 pd;
 	u8 ref;
@@ -402,34 +390,27 @@ static int mcp4725_probe(struct i2c_client *client)
 	i2c_set_clientdata(client, indio_dev);
 	data->client = client;
 	info = i2c_get_match_data(client);
-	pdata = dev_get_platdata(&client->dev);
 
-	if (!pdata) {
-		err = mcp4725_probe_dt(&client->dev, &pdata_dt);
-		if (err) {
-			dev_err(&client->dev,
-				"invalid platform or devicetree data");
-			return err;
-		}
-		pdata = &pdata_dt;
-	}
+	use_vref = device_property_present(&client->dev, "vref-supply");
+	vref_buffered = device_property_read_bool(&client->dev,
+						  "microchip,vref-buffered");
 
-	if (info->use_ext_ref_voltage && pdata->use_vref) {
+	if (info->use_ext_ref_voltage && use_vref) {
 		dev_err(&client->dev,
 			"external reference is unavailable on MCP4725");
 		return -EINVAL;
 	}
 
-	if (!pdata->use_vref && pdata->vref_buffered) {
+	if (!use_vref && vref_buffered) {
 		dev_err(&client->dev,
 			"buffering is unavailable on the internal reference");
 		return -EINVAL;
 	}
 
-	if (!pdata->use_vref)
+	if (!use_vref)
 		data->ref_mode = MCP472X_REF_VDD;
 	else
-		data->ref_mode = pdata->vref_buffered ?
+		data->ref_mode = vref_buffered ?
 			MCP472X_REF_VREF_BUFFERED :
 			MCP472X_REF_VREF_UNBUFFERED;
 
@@ -441,7 +422,7 @@ static int mcp4725_probe(struct i2c_client *client)
 	if (err)
 		return err;
 
-	if (pdata->use_vref) {
+	if (use_vref) {
 		data->vref_reg = devm_regulator_get(&client->dev, "vref");
 		if (IS_ERR(data->vref_reg)) {
 			err = PTR_ERR(data->vref_reg);
