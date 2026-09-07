@@ -52,7 +52,6 @@
 #include <linux/workqueue.h>
 #include <linux/dma-mapping.h>
 #include <linux/processor.h>
-#include <linux/platform_data/xilinx-ll-temac.h>
 
 #include "ll_temac.h"
 
@@ -1382,7 +1381,6 @@ static const struct ethtool_ops temac_ethtool_ops = {
 
 static int temac_probe(struct platform_device *pdev)
 {
-	struct ll_temac_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	struct device_node *temac_np = dev_of_node(&pdev->dev), *dma_np;
 	struct temac_local *lp;
 	struct net_device *ndev;
@@ -1426,21 +1424,12 @@ static int temac_probe(struct platform_device *pdev)
 	INIT_DELAYED_WORK(&lp->restart_work, ll_temac_restart_work_func);
 
 	/* Setup mutex for synchronization of indirect register access */
-	if (pdata) {
-		if (!pdata->indirect_lock) {
-			dev_err(&pdev->dev,
-				"indirect_lock missing in platform_data\n");
-			return -EINVAL;
-		}
-		lp->indirect_lock = pdata->indirect_lock;
-	} else {
-		lp->indirect_lock = devm_kmalloc(&pdev->dev,
-						 sizeof(*lp->indirect_lock),
-						 GFP_KERNEL);
-		if (!lp->indirect_lock)
-			return -ENOMEM;
-		spin_lock_init(lp->indirect_lock);
-	}
+	lp->indirect_lock = devm_kmalloc(&pdev->dev,
+					 sizeof(*lp->indirect_lock),
+					 GFP_KERNEL);
+	if (!lp->indirect_lock)
+		return -ENOMEM;
+	spin_lock_init(lp->indirect_lock);
 
 	/* map device registers */
 	lp->regs = devm_platform_ioremap_resource(pdev, 0);
@@ -1453,10 +1442,7 @@ static int temac_probe(struct platform_device *pdev)
 	 * endianness mode.  Default for OF devices is big-endian.
 	 */
 	little_endian = false;
-	if (temac_np)
-		little_endian = of_property_read_bool(temac_np, "little-endian");
-	else if (pdata)
-		little_endian = pdata->reg_little_endian;
+	little_endian = of_property_read_bool(temac_np, "little-endian");
 
 	if (little_endian) {
 		lp->temac_ior = _temac_ior_le;
@@ -1468,19 +1454,13 @@ static int temac_probe(struct platform_device *pdev)
 
 	/* Setup checksum offload, but default to off if not specified */
 	lp->temac_features = 0;
-	if (temac_np) {
-		p = (__be32 *)of_get_property(temac_np, "xlnx,txcsum", NULL);
-		if (p && be32_to_cpu(*p))
-			lp->temac_features |= TEMAC_FEATURE_TX_CSUM;
-		p = (__be32 *)of_get_property(temac_np, "xlnx,rxcsum", NULL);
-		if (p && be32_to_cpu(*p))
-			lp->temac_features |= TEMAC_FEATURE_RX_CSUM;
-	} else if (pdata) {
-		if (pdata->txcsum)
-			lp->temac_features |= TEMAC_FEATURE_TX_CSUM;
-		if (pdata->rxcsum)
-			lp->temac_features |= TEMAC_FEATURE_RX_CSUM;
-	}
+	p = (__be32 *)of_get_property(temac_np, "xlnx,txcsum", NULL);
+	if (p && be32_to_cpu(*p))
+		lp->temac_features |= TEMAC_FEATURE_TX_CSUM;
+	p = (__be32 *)of_get_property(temac_np, "xlnx,rxcsum", NULL);
+	if (p && be32_to_cpu(*p))
+		lp->temac_features |= TEMAC_FEATURE_RX_CSUM;
+
 	if (lp->temac_features & TEMAC_FEATURE_TX_CSUM)
 		/* Can checksum TCP/UDP over IPv4. */
 		ndev->features |= NETIF_F_IP_CSUM;
@@ -1494,75 +1474,44 @@ static int temac_probe(struct platform_device *pdev)
 	lp->coalesce_count_rx = 0x07;
 
 	/* Setup LocalLink DMA */
-	if (temac_np) {
-		/* Find the DMA node, map the DMA registers, and
-		 * decode the DMA IRQs.
-		 */
-		dma_np = of_parse_phandle(temac_np, "llink-connected", 0);
-		if (!dma_np) {
-			dev_err(&pdev->dev, "could not find DMA node\n");
-			return -ENODEV;
-		}
+	/* Find the DMA node, map the DMA registers, and
+	 * decode the DMA IRQs.
+	 */
+	dma_np = of_parse_phandle(temac_np, "llink-connected", 0);
+	if (!dma_np) {
+		dev_err(&pdev->dev, "could not find DMA node\n");
+		return -ENODEV;
+	}
 
-		/* Setup the DMA register accesses, could be DCR or
-		 * memory mapped.
-		 */
-		if (temac_dcr_setup(lp, pdev, dma_np)) {
-			/* no DCR in the device tree, try non-DCR */
-			lp->sdma_regs = devm_of_iomap(&pdev->dev, dma_np, 0,
-						      NULL);
-			if (IS_ERR(lp->sdma_regs)) {
-				dev_err(&pdev->dev,
-					"unable to map DMA registers\n");
-				of_node_put(dma_np);
-				return PTR_ERR(lp->sdma_regs);
-			}
-			if (of_property_read_bool(dma_np, "little-endian")) {
-				lp->dma_in = temac_dma_in32_le;
-				lp->dma_out = temac_dma_out32_le;
-			} else {
-				lp->dma_in = temac_dma_in32_be;
-				lp->dma_out = temac_dma_out32_be;
-			}
-			dev_dbg(&pdev->dev, "MEM base: %p\n", lp->sdma_regs);
-		}
-
-		/* Get DMA RX and TX interrupts */
-		lp->rx_irq = irq_of_parse_and_map(dma_np, 0);
-		lp->tx_irq = irq_of_parse_and_map(dma_np, 1);
-
-		/* Finished with the DMA node; drop the reference */
-		of_node_put(dma_np);
-	} else if (pdata) {
-		/* 2nd memory resource specifies DMA registers */
-		lp->sdma_regs = devm_platform_ioremap_resource(pdev, 1);
+	/* Setup the DMA register accesses, could be DCR or
+	 * memory mapped.
+	 */
+	if (temac_dcr_setup(lp, pdev, dma_np)) {
+		/* no DCR in the device tree, try non-DCR */
+		lp->sdma_regs = devm_of_iomap(&pdev->dev, dma_np, 0,
+					      NULL);
 		if (IS_ERR(lp->sdma_regs)) {
 			dev_err(&pdev->dev,
-				"could not map DMA registers\n");
+				"unable to map DMA registers\n");
+			of_node_put(dma_np);
 			return PTR_ERR(lp->sdma_regs);
 		}
-		if (pdata->dma_little_endian) {
+		if (of_property_read_bool(dma_np, "little-endian")) {
 			lp->dma_in = temac_dma_in32_le;
 			lp->dma_out = temac_dma_out32_le;
 		} else {
 			lp->dma_in = temac_dma_in32_be;
 			lp->dma_out = temac_dma_out32_be;
 		}
-
-		/* Get DMA RX and TX interrupts */
-		lp->rx_irq = platform_get_irq(pdev, 0);
-		lp->tx_irq = platform_get_irq(pdev, 1);
-
-		/* IRQ delay/coalescing setup */
-		if (pdata->tx_irq_timeout || pdata->tx_irq_count) {
-			lp->coalesce_delay_tx = pdata->tx_irq_timeout;
-			lp->coalesce_count_tx = pdata->tx_irq_count;
-		}
-		if (pdata->rx_irq_timeout || pdata->rx_irq_count) {
-			lp->coalesce_delay_rx = pdata->rx_irq_timeout;
-			lp->coalesce_count_rx = pdata->rx_irq_count;
-		}
+		dev_dbg(&pdev->dev, "MEM base: %p\n", lp->sdma_regs);
 	}
+
+	/* Get DMA RX and TX interrupts */
+	lp->rx_irq = irq_of_parse_and_map(dma_np, 0);
+	lp->tx_irq = irq_of_parse_and_map(dma_np, 1);
+
+	/* Finished with the DMA node; drop the reference */
+	of_node_put(dma_np);
 
 	/* Error handle returned DMA RX and TX interrupts */
 	if (lp->rx_irq <= 0) {
@@ -1576,30 +1525,21 @@ static int temac_probe(struct platform_device *pdev)
 				     "could not get DMA TX irq\n");
 	}
 
-	if (temac_np) {
-		/* Retrieve the MAC address */
-		rc = of_get_mac_address(temac_np, addr);
-		if (rc)
-			return dev_err_probe(&pdev->dev, rc,
-					     "could not find MAC address\n");
-		temac_init_mac_address(ndev, addr);
-	} else if (pdata) {
-		temac_init_mac_address(ndev, pdata->mac_addr);
-	}
+	/* Retrieve the MAC address */
+	rc = of_get_mac_address(temac_np, addr);
+	if (rc)
+		return dev_err_probe(&pdev->dev, rc,
+				     "could not find MAC address\n");
+
+	temac_init_mac_address(ndev, addr);
 
 	rc = temac_mdio_setup(lp, pdev);
 	if (rc)
 		dev_warn(&pdev->dev, "error registering MDIO bus\n");
 
-	if (temac_np) {
-		lp->phy_node = of_parse_phandle(temac_np, "phy-handle", 0);
-		if (lp->phy_node)
-			dev_dbg(lp->dev, "using PHY node %pOF\n", lp->phy_node);
-	} else if (pdata) {
-		snprintf(lp->phy_name, sizeof(lp->phy_name),
-			 PHY_ID_FMT, lp->mii_bus->id, pdata->phy_addr);
-		lp->phy_interface = pdata->phy_interface;
-	}
+	lp->phy_node = of_parse_phandle(temac_np, "phy-handle", 0);
+	if (lp->phy_node)
+		dev_dbg(lp->dev, "using PHY node %pOF\n", lp->phy_node);
 
 	/* Add the device attributes */
 	rc = sysfs_create_group(&lp->dev->kobj, &temac_attr_group);

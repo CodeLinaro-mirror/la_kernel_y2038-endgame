@@ -14,7 +14,6 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <linux/of_mdio.h>
-#include <linux/platform_data/xilinx-ll-temac.h>
 
 #include "ll_temac.h"
 
@@ -63,7 +62,6 @@ static int temac_mdio_write(struct mii_bus *bus, int phy_id, int reg, u16 val)
 
 int temac_mdio_setup(struct temac_local *lp, struct platform_device *pdev)
 {
-	struct ll_temac_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	struct device_node *np = dev_of_node(&pdev->dev);
 	struct mii_bus *bus;
 	u32 bus_hz;
@@ -73,10 +71,7 @@ int temac_mdio_setup(struct temac_local *lp, struct platform_device *pdev)
 
 	/* Get MDIO bus frequency (if specified) */
 	bus_hz = 0;
-	if (np)
-		of_property_read_u32(np, "clock-frequency", &bus_hz);
-	else if (pdata)
-		bus_hz = pdata->mdio_clk_freq;
+	of_property_read_u32(np, "clock-frequency", &bus_hz);
 
 	/* Calculate a reasonable divisor for the clock rate */
 	clk_div = 0x3f; /* worst-case default setting */
@@ -97,14 +92,9 @@ int temac_mdio_setup(struct temac_local *lp, struct platform_device *pdev)
 	if (!bus)
 		return -ENOMEM;
 
-	if (np) {
-		of_address_to_resource(np, 0, &res);
-		snprintf(bus->id, MII_BUS_ID_SIZE, "%.8llx",
-			 (unsigned long long)res.start);
-	} else if (pdata) {
-		snprintf(bus->id, MII_BUS_ID_SIZE, "%.8llx",
-			 pdata->mdio_bus_id);
-	}
+	of_address_to_resource(np, 0, &res);
+	snprintf(bus->id, MII_BUS_ID_SIZE, "%.8llx",
+		 (unsigned long long)res.start);
 
 	bus->priv = lp;
 	bus->name = "Xilinx TEMAC MDIO";
