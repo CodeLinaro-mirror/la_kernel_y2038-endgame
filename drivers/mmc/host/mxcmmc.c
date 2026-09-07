@@ -36,7 +36,6 @@
 
 #include <asm/dma.h>
 #include <asm/irq.h>
-#include <linux/platform_data/mmc-mxcmmc.h>
 
 #include <linux/dma/imx-dma.h>
 
@@ -127,7 +126,6 @@ struct mxcmci_host {
 	int			default_irq_mask;
 	int			use_sdio;
 	unsigned int		power_mode;
-	struct imxmmc_platform_data *pdata;
 
 	struct mmc_request	*req;
 	struct mmc_command	*cmd;
@@ -150,7 +148,6 @@ struct mxcmci_host {
 	int			burstlen;
 	int			dmareq;
 	struct dma_slave_config dma_slave_config;
-	struct imx_dma_data	dma_data;
 
 	struct timer_list	watchdog;
 	enum mxcmci_type	devtype;
@@ -226,9 +223,6 @@ static void mxcmci_set_power(struct mxcmci_host *host, unsigned int vdd)
 			mmc_regulator_set_ocr(host->mmc,
 					      host->mmc->supply.vmmc, 0);
 	}
-
-	if (host->pdata && host->pdata->setpower)
-		host->pdata->setpower(mmc_dev(host->mmc), vdd);
 }
 
 static inline int mxcmci_use_dma(struct mxcmci_host *host)
@@ -881,27 +875,8 @@ static void mxcmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	host->clock = ios->clock;
 }
 
-static irqreturn_t mxcmci_detect_irq(int irq, void *data)
-{
-	struct mmc_host *mmc = data;
-
-	dev_dbg(mmc_dev(mmc), "%s\n", __func__);
-
-	mmc_detect_change(mmc, msecs_to_jiffies(250));
-	return IRQ_HANDLED;
-}
-
 static int mxcmci_get_ro(struct mmc_host *mmc)
 {
-	struct mxcmci_host *host = mmc_priv(mmc);
-
-	if (host->pdata && host->pdata->get_ro)
-		return !!host->pdata->get_ro(mmc_dev(mmc));
-	/*
-	 * If board doesn't support read only detection (no mmc_gpio
-	 * context or gpio is invalid), then let the mmc core decide
-	 * what to do.
-	 */
 	return mmc_gpio_get_ro(mmc);
 }
 
@@ -939,18 +914,6 @@ static void mxcmci_init_card(struct mmc_host *host, struct mmc_card *card)
 		host->caps &= ~MMC_CAP_4_BIT_DATA;
 	else
 		host->caps |= MMC_CAP_4_BIT_DATA;
-}
-
-static bool filter(struct dma_chan *chan, void *param)
-{
-	struct mxcmci_host *host = param;
-
-	if (!imx_dma_is_general_purpose(chan))
-		return false;
-
-	chan->private = &host->dma_data;
-
-	return true;
 }
 
 static void mxcmci_watchdog(struct timer_list *t)
@@ -996,8 +959,6 @@ static int mxcmci_probe(struct platform_device *pdev)
 	struct resource *res;
 	int ret = 0, irq;
 	bool dat3_card_detect;
-	dma_cap_mask_t mask;
-	struct imxmmc_platform_data *pdata = pdev->dev.platform_data;
 
 	pr_info("i.MX/MPC512x SDHC driver\n");
 
@@ -1021,12 +982,7 @@ static int mxcmci_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 	mmc->ops = &mxcmci_ops;
-
-	/* For devicetree parsing, the bus width is read from devicetree */
-	if (pdata)
-		mmc->caps = MMC_CAP_4_BIT_DATA | MMC_CAP_SDIO_IRQ;
-	else
-		mmc->caps |= MMC_CAP_SDIO_IRQ;
+	mmc->caps |= MMC_CAP_SDIO_IRQ;
 
 	/* MMC core transfer sizes tunable parameters */
 	mmc->max_blk_size = 2048;
@@ -1041,25 +997,17 @@ static int mxcmci_probe(struct platform_device *pdev)
 		mmc->max_segs = 64;
 
 	host->mmc = mmc;
-	host->pdata = pdata;
 	spin_lock_init(&host->lock);
 
-	if (pdata)
-		dat3_card_detect = pdata->dat3_card_detect;
-	else
-		dat3_card_detect = mmc_card_is_removable(mmc) &&
-				   !of_property_present(pdev->dev.of_node, "cd-gpios");
+	dat3_card_detect = mmc_card_is_removable(mmc) &&
+			   !of_property_present(pdev->dev.of_node, "cd-gpios");
 
 	ret = mmc_regulator_get_supply(mmc);
 	if (ret)
 		return ret;
 
-	if (!mmc->ocr_avail) {
-		if (pdata && pdata->ocr_avail)
-			mmc->ocr_avail = pdata->ocr_avail;
-		else
-			mmc->ocr_avail = MMC_VDD_32_33 | MMC_VDD_33_34;
-	}
+	if (!mmc->ocr_avail)
+		mmc->ocr_avail = MMC_VDD_32_33 | MMC_VDD_33_34;
 
 	if (dat3_card_detect)
 		host->default_irq_mask =
@@ -1101,28 +1049,15 @@ static int mxcmci_probe(struct platform_device *pdev)
 
 	mxcmci_writel(host, host->default_irq_mask, MMC_REG_INT_CNTR);
 
-	if (!host->pdata) {
-		host->dma = dma_request_chan(&pdev->dev, "rx-tx");
-		if (IS_ERR(host->dma)) {
-			if (PTR_ERR(host->dma) == -EPROBE_DEFER) {
-				ret = -EPROBE_DEFER;
-				goto out_clk_put;
-			}
+	host->dma = dma_request_chan(&pdev->dev, "rx-tx");
+	if (IS_ERR(host->dma)) {
+		if (PTR_ERR(host->dma) == -EPROBE_DEFER) {
+			ret = -EPROBE_DEFER;
+			goto out_clk_put;
+		}
 
-			/* Ignore errors to fall back to PIO mode */
-			host->dma = NULL;
-		}
-	} else {
-		res = platform_get_resource(pdev, IORESOURCE_DMA, 0);
-		if (res) {
-			host->dmareq = res->start;
-			host->dma_data.peripheral_type = IMX_DMATYPE_SDHC;
-			host->dma_data.priority = DMA_PRIO_LOW;
-			host->dma_data.dma_request = host->dmareq;
-			dma_cap_zero(mask);
-			dma_cap_set(DMA_SLAVE, mask);
-			host->dma = dma_request_channel(mask, filter, host);
-		}
+		/* Ignore errors to fall back to PIO mode */
+		host->dma = NULL;
 	}
 	if (host->dma)
 		mmc->max_seg_size = dma_get_max_seg_size(
@@ -1138,13 +1073,6 @@ static int mxcmci_probe(struct platform_device *pdev)
 		goto out_free_dma;
 
 	platform_set_drvdata(pdev, mmc);
-
-	if (host->pdata && host->pdata->init) {
-		ret = host->pdata->init(&pdev->dev, mxcmci_detect_irq,
-				host->mmc);
-		if (ret)
-			goto out_free_dma;
-	}
 
 	timer_setup(&host->watchdog, mxcmci_watchdog, 0);
 
@@ -1176,9 +1104,6 @@ static void mxcmci_remove(struct platform_device *pdev)
 	devm_free_irq(&pdev->dev, platform_get_irq(pdev, 0), host);
 	cancel_work_sync(&host->datawork);
 	timer_delete_sync(&host->watchdog);
-
-	if (host->pdata && host->pdata->exit)
-		host->pdata->exit(&pdev->dev, mmc);
 
 	if (host->dma)
 		dma_release_channel(host->dma);
