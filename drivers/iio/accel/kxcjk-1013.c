@@ -23,7 +23,6 @@
 #include <linux/iio/events.h>
 #include <linux/iio/trigger_consumer.h>
 #include <linux/iio/triggered_buffer.h>
-#include <linux/iio/accel/kxcjk_1013.h>
 
 #define KXTF9_REG_HP_XOUT_L		0x00
 #define KXTF9_REG_HP_XOUT_H		0x01
@@ -1385,7 +1384,6 @@ static int kxcjk1013_probe(struct i2c_client *client)
 	static const char * const regulator_names[] = { "vdd", "vddio" };
 	struct kxcjk1013_data *data;
 	struct iio_dev *indio_dev;
-	struct kxcjk_1013_platform_data *pdata;
 	const void *ddata = NULL;
 	const char *name;
 	int ret;
@@ -1398,19 +1396,12 @@ static int kxcjk1013_probe(struct i2c_client *client)
 	i2c_set_clientdata(client, indio_dev);
 	data->client = client;
 
-	pdata = dev_get_platdata(&client->dev);
-	if (pdata) {
-		data->active_high_intr = pdata->active_high_intr;
-		data->orientation = pdata->orientation;
-	} else {
-		data->active_high_intr = true; /* default polarity */
+	data->active_high_intr = true; /* default polarity */
 
-		if (!iio_read_acpi_mount_matrix(&client->dev, &data->orientation, "ROTM")) {
-			ret = iio_read_mount_matrix(&client->dev, &data->orientation);
-			if (ret)
-				return ret;
-		}
-
+	if (!iio_read_acpi_mount_matrix(&client->dev, &data->orientation, "ROTM")) {
+		ret = iio_read_mount_matrix(&client->dev, &data->orientation);
+		if (ret)
+			return ret;
 	}
 
 	ret = devm_regulator_bulk_get_enable(&client->dev,
