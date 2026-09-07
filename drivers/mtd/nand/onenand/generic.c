@@ -15,13 +15,6 @@
 #include <linux/mtd/partitions.h>
 #include <linux/io.h>
 
-/*
- * Note: Driver name and platform data format have been updated!
- *
- * This version of the driver is named "onenand-flash" and takes struct
- * onenand_platform_data as platform data. The old ARM-specific version
- * with the name "onenand" used to take struct flash_platform_data.
- */
 #define DRIVER_NAME	"onenand-flash"
 
 struct onenand_info {
@@ -32,7 +25,6 @@ struct onenand_info {
 static int generic_onenand_probe(struct platform_device *pdev)
 {
 	struct onenand_info *info;
-	struct onenand_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	struct resource *res = pdev->resource;
 	unsigned long size = resource_size(res);
 	int err;
@@ -52,7 +44,7 @@ static int generic_onenand_probe(struct platform_device *pdev)
 		goto out_release_mem_region;
 	}
 
-	info->onenand.mmcontrol = pdata ? pdata->mmcontrol : NULL;
+	info->onenand.mmcontrol = NULL;
 
 	err = platform_get_irq(pdev, 0);
 	if (err < 0)
@@ -68,8 +60,7 @@ static int generic_onenand_probe(struct platform_device *pdev)
 		goto out_iounmap;
 	}
 
-	err = mtd_device_register(&info->mtd, pdata ? pdata->parts : NULL,
-				  pdata ? pdata->nr_parts : 0);
+	err = mtd_device_register(&info->mtd, NULL, 0);
 
 	platform_set_drvdata(pdev, info);
 

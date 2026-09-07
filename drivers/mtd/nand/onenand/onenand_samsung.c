@@ -838,14 +838,10 @@ static void s3c_onenand_setup(struct mtd_info *mtd)
 
 static int s3c_onenand_probe(struct platform_device *pdev)
 {
-	struct onenand_platform_data *pdata;
 	struct onenand_chip *this;
 	struct mtd_info *mtd;
 	struct resource *r;
 	int size, err;
-
-	pdata = dev_get_platdata(&pdev->dev);
-	/* No need to check pdata. the platform data is optional */
 
 	size = sizeof(struct mtd_info) + sizeof(struct onenand_chip);
 	mtd = devm_kzalloc(&pdev->dev, size, GFP_KERNEL);
@@ -932,8 +928,7 @@ static int s3c_onenand_probe(struct platform_device *pdev)
 	if (s3c_read_reg(MEM_CFG_OFFSET) & ONENAND_SYS_CFG1_SYNC_READ)
 		dev_info(&onenand->pdev->dev, "OneNAND Sync. Burst Read enabled\n");
 
-	err = mtd_device_register(mtd, pdata ? pdata->parts : NULL,
-				  pdata ? pdata->nr_parts : 0);
+	err = mtd_device_register(mtd, NULL, 0);
 	if (err) {
 		dev_err(&pdev->dev, "failed to parse partitions and register the MTD device\n");
 		onenand_release(mtd);

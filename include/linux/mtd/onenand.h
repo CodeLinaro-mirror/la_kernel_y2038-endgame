@@ -229,12 +229,4 @@ int flexonenand_region(struct mtd_info *mtd, loff_t addr);
 
 struct mtd_partition;
 
-struct onenand_platform_data {
-	void		(*mmcontrol)(struct mtd_info *mtd, int sync_read);
-	int		(*read_bufferram)(struct mtd_info *mtd, int area,
-			unsigned char *buffer, int offset, size_t count);
-	struct mtd_partition *parts;
-	unsigned int	nr_parts;
-};
-
 #endif	/* __LINUX_MTD_ONENAND_H */
