@@ -273,14 +273,6 @@ config LEDS_LM3692X
 	  This option enables support for the TI LM3692x family
 	  of white LED string drivers used for backlighting.
 
-config LEDS_LOCOMO
-	tristate "LED Support for Locomo device"
-	depends on LEDS_CLASS
-	depends on SHARP_LOCOMO
-	help
-	  This option enables support for the LEDs on Sharp Locomo.
-	  Zaurus models SL-5500 and SL-5600.
-
 config LEDS_MIKROTIK_RB532
 	tristate "LED Support for Mikrotik Routerboard 532"
 	depends on LEDS_CLASS
