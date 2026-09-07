@@ -170,14 +170,6 @@ config BACKLIGHT_LM3533
 	  the ambient-light-sensor interface. The chip supports 256 brightness
 	  levels.
 
-config BACKLIGHT_LOCOMO
-	tristate "Sharp LOCOMO LCD/Backlight Driver"
-	depends on SHARP_LOCOMO
-	default y
-	help
-	  If you have a Sharp Zaurus SL-5500 (Collie) or SL-5600 (Poodle) say y to
-	  enable the LCD/backlight driver.
-
 config BACKLIGHT_OMAP1
 	tristate "OMAP1 PWL-based LCD Backlight"
 	depends on ARCH_OMAP1 || COMPILE_TEST
