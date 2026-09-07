@@ -12,7 +12,6 @@
 #include <linux/err.h>
 #include <linux/usb/otg.h>
 #include <linux/usb/of.h>
-#include <linux/platform_data/mv_usb.h>
 #include <linux/io.h>
 
 #include <linux/usb/hcd.h>
@@ -23,6 +22,11 @@
 #define U2x_CAPREGS_OFFSET       0x100
 
 #define CAPLENGTH_MASK         (0xff)
+
+enum {
+	MV_USB_MODE_OTG,
+	MV_USB_MODE_HOST,
+};
 
 #define hcd_to_ehci_hcd_mv(h) ((struct ehci_hcd_mv *)hcd_to_ehci(h)->priv)
 
@@ -102,7 +106,6 @@ static const struct ehci_driver_overrides platform_overrides __initconst = {
 
 static int mv_ehci_probe(struct platform_device *pdev)
 {
-	struct mv_usb_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	struct usb_hcd *hcd;
 	struct ehci_hcd *ehci;
 	struct ehci_hcd_mv *ehci_mv;
@@ -122,11 +125,6 @@ static int mv_ehci_probe(struct platform_device *pdev)
 	ehci_mv = hcd_to_ehci_hcd_mv(hcd);
 
 	ehci_mv->mode = MV_USB_MODE_HOST;
-	if (pdata) {
-		ehci_mv->mode = pdata->mode;
-		ehci_mv->set_vbus = pdata->set_vbus;
-	}
-
 	ehci_mv->phy = devm_phy_optional_get(&pdev->dev, "usb");
 	if (IS_ERR(ehci_mv->phy)) {
 		retval = PTR_ERR(ehci_mv->phy);
