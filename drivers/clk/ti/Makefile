@@ -8,7 +8,6 @@ clk-common				= dpll.o composite.o divider.o gate.o \
 					  clkctrl.o
 obj-$(CONFIG_SOC_AM33XX)		+= $(clk-common) clk-33xx.o dpll3xxx.o
 obj-$(CONFIG_SOC_TI81XX)		+= $(clk-common) fapll.o clk-814x.o clk-816x.o
-obj-$(CONFIG_ARCH_OMAP2)		+= $(clk-common) interface.o clk-2xxx.o
 obj-$(CONFIG_ARCH_OMAP3)		+= $(clk-common) interface.o \
 					   clk-3xxx.o dpll3xxx.o
 obj-$(CONFIG_ARCH_OMAP4)		+= $(clk-common) clk-44xx.o \

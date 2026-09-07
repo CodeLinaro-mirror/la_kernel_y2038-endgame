@@ -73,17 +73,6 @@ static const struct clk_ops dpll_no_gate_ck_ops = {};
 const struct clk_hw_omap_ops clkhwops_omap3_dpll = {};
 #endif
 
-#ifdef CONFIG_ARCH_OMAP2
-static const struct clk_ops omap2_dpll_core_ck_ops = {
-	.get_parent	= &omap2_init_dpll_parent,
-	.recalc_rate	= &omap2_dpllcore_recalc,
-	.determine_rate	= &omap2_dpll_determine_rate,
-	.set_rate	= &omap2_reprogram_dpllcore,
-};
-#else
-static const struct clk_ops omap2_dpll_core_ck_ops = {};
-#endif
-
 #ifdef CONFIG_ARCH_OMAP3
 static const struct clk_ops omap3_dpll_core_ck_ops = {
 	.get_parent	= &omap2_init_dpll_parent,
@@ -318,10 +307,6 @@ static void __init of_ti_dpll_setup(struct device_node *node,
 	if (!dd->idlest_mask) {
 		if (ti_clk_get_reg_addr(node, 1, &dd->mult_div1_reg))
 			goto cleanup;
-#ifdef CONFIG_ARCH_OMAP2
-		clk_hw->ops = &clkhwops_omap2xxx_dpll;
-		omap2xxx_clkt_dpllcore_init(&clk_hw->hw);
-#endif
 	} else {
 		if (ti_clk_get_reg_addr(node, 1, &dd->idlest_reg))
 			goto cleanup;
@@ -701,18 +686,3 @@ static void __init of_ti_am3_core_dpll_setup(struct device_node *node)
 }
 CLK_OF_DECLARE(ti_am3_core_dpll_clock, "ti,am3-dpll-core-clock",
 	       of_ti_am3_core_dpll_setup);
-
-static void __init of_ti_omap2_core_dpll_setup(struct device_node *node)
-{
-	const struct dpll_data dd = {
-		.enable_mask = 0x3,
-		.mult_mask = 0x3ff << 12,
-		.div1_mask = 0xf << 8,
-		.max_divider = 16,
-		.min_divider = 1,
-	};
-
-	of_ti_dpll_setup(node, &omap2_dpll_core_ck_ops, &dd);
-}
-CLK_OF_DECLARE(ti_omap2_core_dpll_clock, "ti,omap2-dpll-core-clock",
-	       of_ti_omap2_core_dpll_setup);
