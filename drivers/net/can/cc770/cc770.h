@@ -85,13 +85,26 @@ struct cc770_regs {
 #define STAT_WARN	0x40	/* Warning Status */
 #define STAT_BOFF	0x80	/* Bus Off Status */
 
-/*
- * CPU Interface Register (0x02)
- * Clock Out Register (0x1f)
- * Bus Configuration Register (0x2f)
- *
- * see include/linux/can/platform/cc770.h
- */
+/* CPU Interface Register (0x02) */
+#define CPUIF_CEN	0x01	/* Clock Out Enable */
+#define CPUIF_MUX	0x04	/* Multiplex */
+#define CPUIF_SLP	0x08	/* Sleep */
+#define CPUIF_PWD	0x10	/* Power Down Mode */
+#define CPUIF_DMC	0x20	/* Divide Memory Clock */
+#define CPUIF_DSC	0x40	/* Divide System Clock */
+#define CPUIF_RST	0x80	/* Hardware Reset Status */
+
+/* Clock Out Register (0x1f) */
+#define CLKOUT_CD_MASK  0x0f	/* Clock Divider mask */
+#define CLKOUT_SL_MASK	0x30	/* Slew Rate mask */
+#define CLKOUT_SL_SHIFT	4
+
+/* Bus Configuration Register (0x2f) */
+#define BUSCFG_DR0	0x01	/* Disconnect RX0 Input / Select RX input */
+#define BUSCFG_DR1	0x02	/* Disconnect RX1 Input / Silent mode */
+#define BUSCFG_DT1	0x08	/* Disconnect TX1 Output */
+#define BUSCFG_POL	0x20	/* Polarity dominant or recessive */
+#define BUSCFG_CBY	0x40	/* Input Comparator Bypass */
 
 /* Message Control Register 0 (Base Address + 0x0) */
 #define INTPND_RES	0x01	/* No Interrupt pending */

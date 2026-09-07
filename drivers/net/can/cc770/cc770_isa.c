@@ -51,7 +51,6 @@
 #include <linux/io.h>
 #include <linux/can.h>
 #include <linux/can/dev.h>
-#include <linux/can/platform/cc770.h>
 
 #include "cc770.h"
 

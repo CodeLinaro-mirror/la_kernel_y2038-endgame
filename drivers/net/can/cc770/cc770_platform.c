@@ -6,19 +6,6 @@
  */
 
 /*
- * If platform data are used you should have similar definitions
- * in your board-specific code:
- *
- *   static struct cc770_platform_data myboard_cc770_pdata = {
- *           .osc_freq = 16000000,
- *           .cir = 0x41,
- *           .cor = 0x20,
- *           .bcr = 0x40,
- *   };
- *
- * Please see include/linux/can/platform/cc770.h for description of
- * above fields.
- *
  * If the device tree is used, you need a CAN node definition in your
  * DTS file similar to:
  *
@@ -43,7 +30,6 @@
 #include <linux/of.h>
 #include <linux/can.h>
 #include <linux/can/dev.h>
-#include <linux/can/platform/cc770.h>
 
 #include "cc770.h"
 
@@ -130,22 +116,6 @@ static int cc770_get_of_node_data(struct platform_device *pdev,
 	return 0;
 }
 
-static int cc770_get_platform_data(struct platform_device *pdev,
-				   struct cc770_priv *priv)
-{
-
-	struct cc770_platform_data *pdata = dev_get_platdata(&pdev->dev);
-
-	priv->can.clock.freq = pdata->osc_freq;
-	if (priv->cpu_interface & CPUIF_DSC)
-		priv->can.clock.freq /= 2;
-	priv->clkout = pdata->cor;
-	priv->bus_config = pdata->bcr;
-	priv->cpu_interface = pdata->cir;
-
-	return 0;
-}
-
 static int cc770_platform_probe(struct platform_device *pdev)
 {
 	struct net_device *dev;
@@ -183,12 +153,7 @@ static int cc770_platform_probe(struct platform_device *pdev)
 	priv->irq_flags = IRQF_SHARED;
 	priv->reg_base = base;
 
-	if (pdev->dev.of_node)
-		err = cc770_get_of_node_data(pdev, priv);
-	else if (dev_get_platdata(&pdev->dev))
-		err = cc770_get_platform_data(pdev, priv);
-	else
-		err = -ENODEV;
+	err = cc770_get_of_node_data(pdev, priv);
 	if (err)
 		goto exit_free_cc770;
 
