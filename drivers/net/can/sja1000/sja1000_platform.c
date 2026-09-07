@@ -108,32 +108,6 @@ static void sp_rzn1_init(struct sja1000_priv *priv, struct device_node *of)
 	priv->flags = SJA1000_QUIRK_NO_CDR_REG | SJA1000_QUIRK_RESET_ON_OVERRUN;
 }
 
-static void sp_populate(struct sja1000_priv *priv,
-			struct sja1000_platform_data *pdata,
-			unsigned long resource_mem_flags)
-{
-	/* The CAN clock frequency is half the oscillator clock frequency */
-	priv->can.clock.freq = pdata->osc_freq / 2;
-	priv->ocr = pdata->ocr;
-	priv->cdr = pdata->cdr;
-
-	switch (resource_mem_flags & IORESOURCE_MEM_TYPE_MASK) {
-	case IORESOURCE_MEM_32BIT:
-		priv->read_reg = sp_read_reg32;
-		priv->write_reg = sp_write_reg32;
-		break;
-	case IORESOURCE_MEM_16BIT:
-		priv->read_reg = sp_read_reg16;
-		priv->write_reg = sp_write_reg16;
-		break;
-	case IORESOURCE_MEM_8BIT:
-	default:
-		priv->read_reg = sp_read_reg8;
-		priv->write_reg = sp_write_reg8;
-		break;
-	}
-}
-
 static void sp_populate_of(struct sja1000_priv *priv, struct device_node *of)
 {
 	int err;
@@ -218,17 +192,10 @@ static int sp_probe(struct platform_device *pdev)
 	struct net_device *dev;
 	struct sja1000_priv *priv;
 	struct resource *res_mem, *res_irq = NULL;
-	struct sja1000_platform_data *pdata;
 	struct device_node *of = pdev->dev.of_node;
 	const struct sja1000_of_data *of_data = NULL;
 	size_t priv_sz = 0;
 	struct clk *clk;
-
-	pdata = dev_get_platdata(&pdev->dev);
-	if (!pdata && !of) {
-		dev_err(&pdev->dev, "No platform data provided!\n");
-		return -ENODEV;
-	}
 
 	addr = devm_platform_get_and_ioremap_resource(pdev, 0, &res_mem);
 	if (IS_ERR(addr))
@@ -273,23 +240,19 @@ static int sp_probe(struct platform_device *pdev)
 	dev->irq = irq;
 	priv->reg_base = addr;
 
-	if (of) {
-		if (clk) {
-			priv->can.clock.freq  = clk_get_rate(clk) / 2;
-			if (!priv->can.clock.freq) {
-				err = -EINVAL;
-				dev_err(&pdev->dev, "Zero CAN clk rate");
-				goto exit_free;
-			}
+	if (clk) {
+		priv->can.clock.freq  = clk_get_rate(clk) / 2;
+		if (!priv->can.clock.freq) {
+			err = -EINVAL;
+			dev_err(&pdev->dev, "Zero CAN clk rate");
+			goto exit_free;
 		}
-
-		sp_populate_of(priv, of);
-
-		if (of_data && of_data->init)
-			of_data->init(priv, of);
-	} else {
-		sp_populate(priv, pdata, res_mem->flags);
 	}
+
+	sp_populate_of(priv, of);
+
+	if (of_data && of_data->init)
+		of_data->init(priv, of);
 
 	platform_set_drvdata(pdev, dev);
 	SET_NETDEV_DEV(dev, &pdev->dev);
