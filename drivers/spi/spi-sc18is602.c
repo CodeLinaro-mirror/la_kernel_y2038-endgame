@@ -12,7 +12,6 @@
 #include <linux/i2c.h>
 #include <linux/delay.h>
 #include <linux/pm_runtime.h>
-#include <linux/platform_data/sc18is602.h>
 #include <linux/property.h>
 
 #include <linux/gpio/consumer.h>
@@ -238,7 +237,6 @@ static int sc18is602_setup(struct spi_device *spi)
 static int sc18is602_probe(struct i2c_client *client)
 {
 	struct device *dev = &client->dev;
-	struct sc18is602_platform_data *pdata = dev_get_platdata(dev);
 	struct sc18is602 *hw;
 	struct spi_controller *host;
 
@@ -272,10 +270,7 @@ static int sc18is602_probe(struct i2c_client *client)
 		break;
 	case sc18is603:
 		host->num_chipselect = 2;
-		if (pdata)
-			hw->freq = pdata->clock_frequency;
-		else
-			device_property_read_u32(dev, "clock-frequency", &hw->freq);
+		device_property_read_u32(dev, "clock-frequency", &hw->freq);
 		if (!hw->freq)
 			hw->freq = SC18IS602_CLOCK;
 		break;
