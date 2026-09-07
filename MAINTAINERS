@@ -486,13 +486,6 @@ M:	Matti Vaittinen <mazziesaccount@gmail.com>
 S:	Maintained
 F:	drivers/iio/adc/ad7476.c
 
-AD7877 TOUCHSCREEN DRIVER
-M:	Michael Hennerich <michael.hennerich@analog.com>
-S:	Supported
-W:	http://wiki.analog.com/AD7877
-W:	https://ez.analog.com/linux-software-drivers
-F:	drivers/input/touchscreen/ad7877.c
-
 AD7879 TOUCHSCREEN DRIVER (AD7879/AD7889)
 M:	Michael Hennerich <michael.hennerich@analog.com>
 S:	Supported
