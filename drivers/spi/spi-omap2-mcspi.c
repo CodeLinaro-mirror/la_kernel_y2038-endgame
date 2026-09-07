@@ -28,7 +28,21 @@
 
 #include "internals.h"
 
-#include <linux/platform_data/spi-omap2-mcspi.h>
+#define OMAP4_MCSPI_REG_OFFSET 0x100
+
+#define MCSPI_PINDIR_D0_IN_D1_OUT	0
+#define MCSPI_PINDIR_D0_OUT_D1_IN	1
+
+struct omap2_mcspi_platform_config {
+	unsigned short	num_cs;
+	unsigned int regs_offset;
+	unsigned int pin_dir:1;
+	size_t max_xfer_len;
+};
+
+struct omap2_mcspi_device_config {
+	unsigned turbo_mode:1;
+};
 
 #define OMAP2_MCSPI_MAX_FREQ		48000000
 #define OMAP2_MCSPI_MAX_DIVIDER		4096
@@ -1606,18 +1620,12 @@ static int omap2_mcspi_probe(struct platform_device *pdev)
 	mcspi->ctlr = ctlr;
 
 	pdata = of_device_get_match_data(&pdev->dev);
-	if (pdata) {
-		u32 num_cs = 1; /* default number of chipselect */
+	u32 num_cs = 1; /* default number of chipselect */
 
-		of_property_read_u32(node, "ti,spi-num-cs", &num_cs);
-		ctlr->num_chipselect = num_cs;
-		if (of_property_read_bool(node, "ti,pindir-d0-out-d1-in"))
-			mcspi->pin_dir = MCSPI_PINDIR_D0_OUT_D1_IN;
-	} else {
-		pdata = dev_get_platdata(&pdev->dev);
-		ctlr->num_chipselect = pdata->num_cs;
-		mcspi->pin_dir = pdata->pin_dir;
-	}
+	of_property_read_u32(node, "ti,spi-num-cs", &num_cs);
+	ctlr->num_chipselect = num_cs;
+	if (of_property_read_bool(node, "ti,pindir-d0-out-d1-in"))
+		mcspi->pin_dir = MCSPI_PINDIR_D0_OUT_D1_IN;
 	regs_offset = pdata->regs_offset;
 	if (pdata->max_xfer_len) {
 		mcspi->max_xfer_len = pdata->max_xfer_len;
