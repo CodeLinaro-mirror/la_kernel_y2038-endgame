@@ -12,7 +12,6 @@
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
-#include <linux/platform_data/usb3503.h>
 #include <linux/regmap.h>
 
 #define USB3503_VIDL		0x00
@@ -39,6 +38,15 @@
 #define USB3503_CLKSUSP		(1 << 7)
 
 #define USB3503_RESET		0xff
+
+#define USB3503_I2C_NAME	"usb3503"
+
+enum usb3503_mode {
+	USB3503_MODE_UNKNOWN,
+	USB3503_MODE_HUB,
+	USB3503_MODE_STANDBY,
+	USB3503_MODE_BYPASS,
+};
 
 struct usb3503 {
 	enum usb3503_mode	mode;
@@ -162,7 +170,6 @@ static const struct regmap_config usb3503_regmap_config = {
 static int usb3503_probe(struct usb3503 *hub)
 {
 	struct device *dev = hub->dev;
-	struct usb3503_platform_data *pdata = dev_get_platdata(dev);
 	struct device_node *np = dev->of_node;
 	int err;
 	bool is_clk_enabled = false;
@@ -171,72 +178,67 @@ static int usb3503_probe(struct usb3503 *hub)
 	enum gpiod_flags flags;
 	int len;
 
-	if (pdata) {
-		hub->port_off_mask	= pdata->port_off_mask;
-		hub->mode		= pdata->initial_mode;
-	} else if (np) {
-		u32 rate = 0;
-		hub->port_off_mask = 0;
+	u32 rate = 0;
+	hub->port_off_mask = 0;
 
-		if (!of_property_read_u32(np, "refclk-frequency", &rate)) {
-			switch (rate) {
-			case 38400000:
-			case 26000000:
-			case 19200000:
-			case 12000000:
-				hub->secondary_ref_clk = 0;
-				break;
-			case 24000000:
-			case 27000000:
-			case 25000000:
-			case 50000000:
-				hub->secondary_ref_clk = 1;
-				break;
-			default:
-				dev_err(dev,
-					"unsupported reference clock rate (%d)\n",
-					(int) rate);
-				return -EINVAL;
-			}
+	if (!of_property_read_u32(np, "refclk-frequency", &rate)) {
+		switch (rate) {
+		case 38400000:
+		case 26000000:
+		case 19200000:
+		case 12000000:
+			hub->secondary_ref_clk = 0;
+			break;
+		case 24000000:
+		case 27000000:
+		case 25000000:
+		case 50000000:
+			hub->secondary_ref_clk = 1;
+			break;
+		default:
+			dev_err(dev,
+				"unsupported reference clock rate (%d)\n",
+				(int) rate);
+			return -EINVAL;
 		}
+	}
 
-		hub->clk = devm_clk_get_optional(dev, "refclk");
-		if (IS_ERR(hub->clk)) {
-			dev_err(dev, "unable to request refclk (%ld)\n",
-					PTR_ERR(hub->clk));
-			return PTR_ERR(hub->clk);
-		}
+	hub->clk = devm_clk_get_optional(dev, "refclk");
+	if (IS_ERR(hub->clk)) {
+		dev_err(dev, "unable to request refclk (%ld)\n",
+				PTR_ERR(hub->clk));
+		return PTR_ERR(hub->clk);
+	}
 
-		if (rate != 0) {
-			err = clk_set_rate(hub->clk, rate);
-			if (err) {
-				dev_err(dev,
-					"unable to set reference clock rate to %d\n",
-					(int)rate);
-				return err;
-			}
-		}
-
-		err = clk_prepare_enable(hub->clk);
+	if (rate != 0) {
+		err = clk_set_rate(hub->clk, rate);
 		if (err) {
-			dev_err(dev, "unable to enable reference clock\n");
+			dev_err(dev,
+				"unable to set reference clock rate to %d\n",
+				(int)rate);
 			return err;
 		}
-
-		is_clk_enabled = true;
-		property = of_get_property(np, "disabled-ports", &len);
-		if (property && (len / sizeof(u32)) > 0) {
-			int i;
-			for (i = 0; i < len / sizeof(u32); i++) {
-				u32 port = be32_to_cpu(property[i]);
-				if ((1 <= port) && (port <= 3))
-					hub->port_off_mask |= (1 << port);
-			}
-		}
-
-		of_property_read_u32(np, "initial-mode", &mode);
-		hub->mode = mode;
 	}
+
+	err = clk_prepare_enable(hub->clk);
+	if (err) {
+		dev_err(dev, "unable to enable reference clock\n");
+		return err;
+	}
+
+	is_clk_enabled = true;
+	property = of_get_property(np, "disabled-ports", &len);
+	if (property && (len / sizeof(u32)) > 0) {
+		int i;
+		for (i = 0; i < len / sizeof(u32); i++) {
+			u32 port = be32_to_cpu(property[i]);
+			if ((1 <= port) && (port <= 3))
+				hub->port_off_mask |= (1 << port);
+		}
+	}
+
+	of_property_read_u32(np, "initial-mode", &mode);
+	hub->mode = mode;
 
 	if (hub->secondary_ref_clk)
 		flags = GPIOD_OUT_LOW;
@@ -395,7 +397,6 @@ static const struct i2c_device_id usb3503_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, usb3503_id);
 
-#ifdef CONFIG_OF
 static const struct of_device_id usb3503_of_match[] = {
 	{ .compatible = "smsc,usb3503", },
 	{ .compatible = "smsc,usb3503a", },
@@ -403,13 +404,12 @@ static const struct of_device_id usb3503_of_match[] = {
 	{},
 };
 MODULE_DEVICE_TABLE(of, usb3503_of_match);
-#endif
 
 static struct i2c_driver usb3503_i2c_driver = {
 	.driver = {
 		.name = USB3503_I2C_NAME,
 		.pm = pm_ptr(&usb3503_i2c_pm_ops),
-		.of_match_table = of_match_ptr(usb3503_of_match),
+		.of_match_table = usb3503_of_match,
 	},
 	.probe		= usb3503_i2c_probe,
 	.remove		= usb3503_i2c_remove,
@@ -419,7 +419,7 @@ static struct i2c_driver usb3503_i2c_driver = {
 static struct platform_driver usb3503_platform_driver = {
 	.driver = {
 		.name = USB3503_I2C_NAME,
-		.of_match_table = of_match_ptr(usb3503_of_match),
+		.of_match_table = usb3503_of_match,
 		.pm = pm_ptr(&usb3503_platform_pm_ops),
 	},
 	.probe		= usb3503_platform_probe,
