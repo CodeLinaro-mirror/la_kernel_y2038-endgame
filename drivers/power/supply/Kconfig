@@ -233,13 +233,6 @@ config BATTERY_S2MU005
 
 	  This driver, if built as a module, will be called s2mu005-fuel-gauge.
 
-config BATTERY_COLLIE
-	tristate "Sharp SL-5500 (collie) battery"
-	depends on SA1100_COLLIE && MCP_UCB1200
-	help
-	  Say Y to enable support for the battery on the Sharp Zaurus
-	  SL-5500 (collie) models.
-
 config BATTERY_INGENIC
 	tristate "Ingenic JZ47xx SoCs battery driver"
 	depends on MIPS || COMPILE_TEST
