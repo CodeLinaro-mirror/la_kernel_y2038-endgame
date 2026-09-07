@@ -97,17 +97,6 @@ Description:
 
 		The <ambient light zone> is device-driver specific:
 
-		For ADP5520 and ADP5501, <ambient light zone> can be:
-
-		===========  ================================================
-		Ambient      sysfs entry
-		light zone
-		===========  ================================================
-		daylight     /sys/class/backlight/<backlight>/daylight_max
-		office       /sys/class/backlight/<backlight>/office_max
-		dark         /sys/class/backlight/<backlight>/dark_max
-		===========  ================================================
-
 		For ADP8860, <ambient light zone> can be:
 
 		===========  ================================================
@@ -146,17 +135,6 @@ Description:
 		this <ambient light zone>.
 
 		The <ambient light zone> is device-driver specific:
-
-		For ADP5520 and ADP5501, <ambient light zone> can be:
-
-		===========  ================================================
-		Ambient      sysfs entry
-		light zone
-		===========  ================================================
-		daylight     /sys/class/backlight/<backlight>/daylight_dim
-		office       /sys/class/backlight/<backlight>/office_dim
-		dark         /sys/class/backlight/<backlight>/dark_dim
-		===========  ================================================
 
 		For ADP8860, <ambient light zone> can be:
 
