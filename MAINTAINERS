@@ -470,13 +470,6 @@ F:	drivers/iio/dac/ad5446-spi.c
 F:	drivers/iio/dac/ad5446.c
 F:	drivers/iio/dac/ad5446.h
 
-AD714X CAPACITANCE TOUCH SENSOR DRIVER (AD7142/3/7/8/7A)
-M:	Michael Hennerich <michael.hennerich@analog.com>
-S:	Supported
-W:	http://wiki.analog.com/AD7142
-W:	https://ez.analog.com/linux-software-drivers
-F:	drivers/input/misc/ad714x.c
-
 AD738X ADC DRIVER (AD7380/1/2/4)
 M:	Michael Hennerich <michael.hennerich@analog.com>
 M:	Nuno Sá <nuno.sa@analog.com>
