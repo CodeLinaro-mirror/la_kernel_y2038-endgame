@@ -311,16 +311,6 @@ config MOUSE_ATARI
 	  To compile this driver as a module, choose M here: the
 	  module will be called atarimouse.
 
-config MOUSE_RISCPC
-	tristate "Acorn RiscPC mouse"
-	depends on ARCH_ACORN
-	help
-	  Say Y here if you have the Acorn RiscPC computer and want its
-	  native mouse supported.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called rpcmouse.
-
 config MOUSE_VSXXXAA
 	tristate "DEC VSXXX-AA/GA mouse and VSXXX-AB tablet"
 	select SERIO
