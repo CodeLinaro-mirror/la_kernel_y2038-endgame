@@ -27,7 +27,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/of_platform.h>
-#include <linux/platform_data/usb-ohci-pxa27x.h>
 #include <linux/platform_data/pxa2xx_udc.h>
 #include <linux/platform_device.h>
 #include <linux/regulator/consumer.h>
@@ -40,6 +39,32 @@
 #include "ohci.h"
 
 #define DRIVER_DESC "OHCI PXA27x/PXA3x driver"
+
+struct pxaohci_platform_data {
+	unsigned long flags;
+#define ENABLE_PORT1		(1 << 0)
+#define ENABLE_PORT2		(1 << 1)
+#define ENABLE_PORT3		(1 << 2)
+#define ENABLE_PORT_ALL		(ENABLE_PORT1 | ENABLE_PORT2 | ENABLE_PORT3)
+
+#define POWER_SENSE_LOW		(1 << 3)
+#define POWER_CONTROL_LOW	(1 << 4)
+#define NO_OC_PROTECTION	(1 << 5)
+#define OC_MODE_GLOBAL		(0 << 6)
+#define OC_MODE_PERPORT		(1 << 6)
+
+	int power_on_delay;	/* Power On to Power Good time - in ms
+				 * HCD must wait for this duration before
+				 * accessing a powered on port
+				 */
+	int port_mode;
+#define PMM_NPS_MODE           1
+#define PMM_GLOBAL_MODE        2
+#define PMM_PERPORT_MODE       3
+
+	int power_budget;
+};
+
 
 /*
  * UHC: USB Host Controller (OHCI-like) register definitions
@@ -285,9 +310,6 @@ static int pxa27x_start_hc(struct pxa27x_ohci *pxa_ohci, struct device *dev)
 
 	pxa27x_setup_hc(pxa_ohci, inf);
 
-	if (inf->init)
-		retval = inf->init(dev);
-
 	if (retval < 0) {
 		clk_disable_unprepare(pxa_ohci->clk);
 		return retval;
@@ -309,9 +331,6 @@ static void pxa27x_stop_hc(struct pxa27x_ohci *pxa_ohci, struct device *dev)
 
 	inf = dev_get_platdata(dev);
 
-	if (inf->exit)
-		inf->exit(dev);
-
 	pxa27x_reset_hc(pxa_ohci);
 
 	/* Host Controller Reset */
@@ -322,7 +341,6 @@ static void pxa27x_stop_hc(struct pxa27x_ohci *pxa_ohci, struct device *dev)
 	clk_disable_unprepare(pxa_ohci->clk);
 }
 
-#ifdef CONFIG_OF
 static const struct of_device_id pxa_ohci_dt_ids[] = {
 	{ .compatible = "marvell,pxa-ohci" },
 	{ }
@@ -377,12 +395,6 @@ static int ohci_pxa_of_init(struct platform_device *pdev)
 
 	return 0;
 }
-#else
-static int ohci_pxa_of_init(struct platform_device *pdev)
-{
-	return 0;
-}
-#endif
 
 /*-------------------------------------------------------------------------*/
 
@@ -416,7 +428,6 @@ static int ohci_hcd_pxa27x_probe(struct platform_device *pdev)
 		return retval;
 
 	inf = dev_get_platdata(&pdev->dev);
-
 	if (!inf)
 		return -ENODEV;
 
@@ -573,7 +584,7 @@ static struct platform_driver ohci_hcd_pxa27x_driver = {
 	.shutdown	= usb_hcd_platform_shutdown,
 	.driver		= {
 		.name	= "pxa27x-ohci",
-		.of_match_table = of_match_ptr(pxa_ohci_dt_ids),
+		.of_match_table = pxa_ohci_dt_ids,
 #ifdef CONFIG_PM
 		.pm	= &ohci_hcd_pxa27x_pm_ops,
 #endif
