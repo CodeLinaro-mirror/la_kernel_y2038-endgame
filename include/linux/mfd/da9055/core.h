@@ -22,8 +22,6 @@
 #define DA9055_IRQ_REGULATOR	0x0B
 #define DA9055_IRQ_HWMON	0x03
 
-struct da9055_pdata;
-
 struct da9055 {
 	struct regmap *regmap;
 	struct regmap_irq_chip_data *irq_data;

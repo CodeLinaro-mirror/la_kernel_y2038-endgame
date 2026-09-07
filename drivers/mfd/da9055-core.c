@@ -15,7 +15,6 @@
 
 #include <linux/mfd/core.h>
 #include <linux/mfd/da9055/core.h>
-#include <linux/mfd/da9055/pdata.h>
 #include <linux/mfd/da9055/reg.h>
 
 #define DA9055_IRQ_NONKEY_MASK		0x01
@@ -353,17 +352,8 @@ static const struct regmap_irq_chip da9055_regmap_irq_chip = {
 
 int da9055_device_init(struct da9055 *da9055)
 {
-	struct da9055_pdata *pdata = dev_get_platdata(da9055->dev);
 	int ret;
 	uint8_t clear_events[3] = {0xFF, 0xFF, 0xFF};
-
-	if (pdata && pdata->init != NULL)
-		pdata->init(da9055);
-
-	if (!pdata || !pdata->irq_base)
-		da9055->irq_base = -1;
-	else
-		da9055->irq_base = pdata->irq_base;
 
 	ret = da9055_group_write(da9055, DA9055_REG_EVENT_A, 3, clear_events);
 	if (ret < 0)
@@ -371,7 +361,7 @@ int da9055_device_init(struct da9055 *da9055)
 
 	ret = regmap_add_irq_chip(da9055->regmap, da9055->chip_irq,
 				  IRQF_TRIGGER_LOW | IRQF_ONESHOT,
-				  da9055->irq_base, &da9055_regmap_irq_chip,
+				  -1, &da9055_regmap_irq_chip,
 				  &da9055->irq_data);
 	if (ret < 0)
 		return ret;

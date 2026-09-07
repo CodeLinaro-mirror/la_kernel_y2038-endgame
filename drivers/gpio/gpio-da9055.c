@@ -12,7 +12,6 @@
 
 #include <linux/mfd/da9055/core.h>
 #include <linux/mfd/da9055/reg.h>
-#include <linux/mfd/da9055/pdata.h>
 
 #define DA9055_VDD_IO			0x0
 #define DA9055_PUSH_PULL		0x3
@@ -128,18 +127,13 @@ static const struct gpio_chip reference_gp = {
 static int da9055_gpio_probe(struct platform_device *pdev)
 {
 	struct da9055_gpio *gpio;
-	struct da9055_pdata *pdata;
 
 	gpio = devm_kzalloc(&pdev->dev, sizeof(*gpio), GFP_KERNEL);
 	if (!gpio)
 		return -ENOMEM;
 
 	gpio->da9055 = dev_get_drvdata(pdev->dev.parent);
-	pdata = dev_get_platdata(gpio->da9055->dev);
-
 	gpio->gp = reference_gp;
-	if (pdata && pdata->gpio_base)
-		gpio->gp.base = pdata->gpio_base;
 
 	return devm_gpiochip_add_data(&pdev->dev, &gpio->gp, gpio);
 }

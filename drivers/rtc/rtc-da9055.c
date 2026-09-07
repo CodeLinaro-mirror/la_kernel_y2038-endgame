@@ -13,7 +13,6 @@
 
 #include <linux/mfd/da9055/core.h>
 #include <linux/mfd/da9055/reg.h>
-#include <linux/mfd/da9055/pdata.h>
 
 struct da9055_rtc {
 	struct rtc_device *rtc;
@@ -223,8 +222,7 @@ static const struct rtc_class_ops da9055_rtc_ops = {
 	.alarm_irq_enable = da9055_rtc_alarm_irq_enable,
 };
 
-static int da9055_rtc_device_init(struct da9055 *da9055,
-					struct da9055_pdata *pdata)
+static int da9055_rtc_device_init(struct da9055 *da9055)
 {
 	int ret;
 
@@ -244,16 +242,6 @@ static int da9055_rtc_device_init(struct da9055 *da9055,
 	if (ret < 0)
 		return ret;
 
-	/* Enable RTC in Reset mode */
-	if (pdata && pdata->reset_enable) {
-		ret = da9055_reg_update(da9055, DA9055_REG_CONTROL_B,
-					DA9055_RTC_MODE_SD,
-					DA9055_RTC_MODE_SD <<
-					DA9055_RTC_MODE_SD_SHIFT);
-		if (ret < 0)
-			return ret;
-	}
-
 	/* Disable the RTC TICK ALM */
 	ret = da9055_reg_update(da9055, DA9055_REG_ALARM_MO,
 				DA9055_RTC_TICK_WAKE_MASK, 0);
@@ -266,7 +254,6 @@ static int da9055_rtc_device_init(struct da9055 *da9055,
 static int da9055_rtc_probe(struct platform_device *pdev)
 {
 	struct da9055_rtc *rtc;
-	struct da9055_pdata *pdata = NULL;
 	int ret, alm_irq;
 
 	rtc = devm_kzalloc(&pdev->dev, sizeof(struct da9055_rtc), GFP_KERNEL);
@@ -274,10 +261,9 @@ static int da9055_rtc_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	rtc->da9055 = dev_get_drvdata(pdev->dev.parent);
-	pdata = dev_get_platdata(rtc->da9055->dev);
 	platform_set_drvdata(pdev, rtc);
 
-	ret = da9055_rtc_device_init(rtc->da9055, pdata);
+	ret = da9055_rtc_device_init(rtc->da9055);
 	if (ret < 0)
 		goto err_rtc;
 

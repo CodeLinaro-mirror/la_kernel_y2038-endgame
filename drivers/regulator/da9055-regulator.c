@@ -18,7 +18,6 @@
 
 #include <linux/mfd/da9055/core.h>
 #include <linux/mfd/da9055/reg.h>
-#include <linux/mfd/da9055/pdata.h>
 
 #define DA9055_MIN_UA		0
 #define DA9055_MAX_UA		3
@@ -69,6 +68,12 @@ struct da9055_regulator_info {
 	struct da9055_conf_reg conf;
 	struct da9055_volt_reg volt;
 	struct da9055_mode_reg mode;
+};
+
+enum gpio_select {
+	NO_GPIO = 0,
+	GPIO_1,
+	GPIO_2
 };
 
 struct da9055_regulator {
@@ -415,9 +420,8 @@ static const struct da9055_regulator_info da9055_regulator_info[] = {
 static int da9055_gpio_init(struct device *dev,
 			    struct da9055_regulator *regulator,
 			    struct regulator_config *config,
-			    struct da9055_pdata *pdata, int id)
+			    int id)
 {
-	const struct da9055_regulator_info *info = regulator->info;
 	struct gpio_desc *ren;
 	struct gpio_desc *ena;
 	struct gpio_desc *rsel;
@@ -442,6 +446,9 @@ static int da9055_gpio_init(struct device *dev,
 		 */
 		gpiod_set_consumer_name(ren, "DA9055 ren GPI");
 
+#if 0
+		/* FIXME: reg_ren[] unknown for DT probing */
+
 		/*
 		 * Let the regulator know that its state is controlled
 		 * through GPI.
@@ -452,6 +459,7 @@ static int da9055_gpio_init(struct device *dev,
 					<< DA9055_E_GPI_SHIFT);
 		if (ret < 0)
 			return ret;
+#endif
 	}
 
 	/* Look for "regulator-select-gpios" GPIOs in the regulator node */
@@ -459,6 +467,7 @@ static int da9055_gpio_init(struct device *dev,
 	if (IS_ERR(rsel))
 		return PTR_ERR(rsel);
 
+#if 0
 	if (rsel) {
 		regulator->reg_rselect = pdata->reg_rsel[id];
 
@@ -477,6 +486,7 @@ static int da9055_gpio_init(struct device *dev,
 					pdata->reg_rsel[id]
 					<< DA9055_V_GPI_SHIFT);
 	}
+#endif
 
 	return ret;
 }
@@ -510,7 +520,6 @@ static int da9055_regulator_probe(struct platform_device *pdev)
 	struct regulator_config config = { };
 	struct da9055_regulator *regulator;
 	struct da9055 *da9055 = dev_get_drvdata(pdev->dev.parent);
-	struct da9055_pdata *pdata = dev_get_platdata(da9055->dev);
 	int ret, irq;
 
 	regulator = devm_kzalloc(&pdev->dev, sizeof(struct da9055_regulator),
@@ -529,10 +538,7 @@ static int da9055_regulator_probe(struct platform_device *pdev)
 	config.driver_data = regulator;
 	config.regmap = da9055->regmap;
 
-	if (pdata)
-		config.init_data = pdata->regulators[pdev->id];
-
-	ret = da9055_gpio_init(&pdev->dev, regulator, &config, pdata, pdev->id);
+	ret = da9055_gpio_init(&pdev->dev, regulator, &config, pdev->id);
 	if (ret < 0)
 		return ret;
 
