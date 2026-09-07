@@ -19,8 +19,9 @@
 #include <linux/dmaengine.h>
 #include <linux/pfn.h>
 #include <linux/sizes.h>
-#include <linux/platform_data/usb-musb-ux500.h>
 #include "musb_core.h"
+
+#define UX500_MUSB_DMA_NUM_RX_TX_CHANNELS 8
 
 static const char *iep_chan_names[] = { "iep_1_9", "iep_2_10", "iep_3_11", "iep_4_12",
 					"iep_5_13", "iep_6_14", "iep_7_15", "iep_8" };
@@ -269,14 +270,12 @@ static int ux500_dma_controller_start(struct ux500_dma_controller *controller)
 	struct musb *musb = controller->private_data;
 	struct device *dev = musb->controller;
 	struct musb_hdrc_platform_data *plat = dev_get_platdata(dev);
-	struct ux500_musb_board_data *data;
 	struct dma_channel *dma_channel = NULL;
 	char **chan_names;
 	u32 ch_num;
 	u8 dir;
 	u8 is_tx = 0;
 
-	void **param_array;
 	struct ux500_dma_channel *channel_array;
 	dma_cap_mask_t mask;
 
@@ -285,14 +284,11 @@ static int ux500_dma_controller_start(struct ux500_dma_controller *controller)
 		return -EINVAL;
 	}
 
-	data = plat->board_data;
-
 	dma_cap_zero(mask);
 	dma_cap_set(DMA_SLAVE, mask);
 
 	/* Prepare the loop for RX channels */
 	channel_array = controller->rx_channel;
-	param_array = data ? data->dma_rx_param_array : NULL;
 	chan_names = (char **)iep_chan_names;
 
 	for (dir = 0; dir < 2; dir++) {
@@ -315,11 +311,7 @@ static int ux500_dma_controller_start(struct ux500_dma_controller *controller)
 			if (IS_ERR(ux500_channel->dma_chan))
 				ux500_channel->dma_chan =
 					dma_request_channel(mask,
-							    data ?
-							    data->dma_filter :
 							    NULL,
-							    param_array ?
-							    param_array[ch_num] :
 							    NULL);
 
 			if (!ux500_channel->dma_chan) {
@@ -336,7 +328,6 @@ static int ux500_dma_controller_start(struct ux500_dma_controller *controller)
 
 		/* Prepare the loop for TX channels */
 		channel_array = controller->tx_channel;
-		param_array = data ? data->dma_tx_param_array : NULL;
 		chan_names = (char **)oep_chan_names;
 		is_tx = 1;
 	}
