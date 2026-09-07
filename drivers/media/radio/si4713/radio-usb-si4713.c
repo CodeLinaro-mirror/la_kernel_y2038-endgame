@@ -23,6 +23,10 @@
 
 #include "si4713.h"
 
+/* The SI4713 I2C sensor chip has a fixed slave address of 0xc6 or 0x22. */
+#define SI4713_I2C_ADDR_BUSEN_HIGH     0x63
+#define SI4713_I2C_ADDR_BUSEN_LOW      0x11
+
 /* driver and module definitions */
 MODULE_AUTHOR("Dinesh Ram <dinesh.ram@cern.ch>");
 MODULE_DESCRIPTION("Si4713 FM Transmitter USB driver");

@@ -1431,8 +1431,6 @@ static int si4713_probe(struct i2c_client *client)
 {
 	struct si4713_device *sdev;
 	struct v4l2_ctrl_handler *hdl;
-	struct si4713_platform_data *pdata = client->dev.platform_data;
-	struct device_node *np = client->dev.of_node;
 	struct radio_si4713_platform_data si4713_pdev_pdata;
 	struct platform_device *si4713_pdev;
 	int rval;
@@ -1590,9 +1588,6 @@ static int si4713_probe(struct i2c_client *client)
 		goto free_ctrls;
 	}
 
-	if (!np && (!pdata || !pdata->is_platform_device))
-		return 0;
-
 	si4713_pdev = platform_device_alloc("radio-si4713", -1);
 	if (!si4713_pdev) {
 		rval = -ENOMEM;
@@ -1644,18 +1639,16 @@ static const struct i2c_device_id si4713_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, si4713_id);
 
-#if IS_ENABLED(CONFIG_OF)
 static const struct of_device_id si4713_of_match[] = {
 	{ .compatible = "silabs,si4713" },
 	{ },
 };
 MODULE_DEVICE_TABLE(of, si4713_of_match);
-#endif
 
 static struct i2c_driver si4713_i2c_driver = {
 	.driver		= {
 		.name	= "si4713",
-		.of_match_table = of_match_ptr(si4713_of_match),
+		.of_match_table = si4713_of_match,
 	},
 	.probe		= si4713_probe,
 	.remove         = si4713_remove,

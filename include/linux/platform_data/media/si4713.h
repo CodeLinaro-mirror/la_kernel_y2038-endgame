@@ -15,17 +15,6 @@
 #ifndef SI4713_H
 #define SI4713_H
 
-/* The SI4713 I2C sensor chip has a fixed slave address of 0xc6 or 0x22. */
-#define SI4713_I2C_ADDR_BUSEN_HIGH	0x63
-#define SI4713_I2C_ADDR_BUSEN_LOW	0x11
-
-/*
- * Platform dependent definition
- */
-struct si4713_platform_data {
-	bool is_platform_device;
-};
-
 /*
  * Structure to query for Received Noise Level (RNL).
  */
