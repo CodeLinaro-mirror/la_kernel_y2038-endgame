@@ -15,8 +15,6 @@
 #include <linux/of.h>
 #include <linux/gpio/consumer.h>
 
-#include <linux/power/gpio-charger.h>
-
 struct gpio_mapping {
 	u32 limit_ua;
 	u32 gpiodata;
@@ -276,7 +274,6 @@ static enum power_supply_property gpio_charger_properties[] = {
 static int gpio_charger_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
-	const struct gpio_charger_platform_data *pdata = dev->platform_data;
 	struct power_supply_config psy_cfg = {};
 	struct gpio_charger *gpio_charger;
 	struct power_supply_desc *charger_desc;
@@ -285,7 +282,7 @@ static int gpio_charger_probe(struct platform_device *pdev)
 	int ret;
 	int num_props = 0;
 
-	if (!pdata && !dev->of_node) {
+	if (!dev->of_node) {
 		dev_err(dev, "No platform data\n");
 		return -ENOENT;
 	}
@@ -340,15 +337,8 @@ static int gpio_charger_probe(struct platform_device *pdev)
 	psy_cfg.fwnode = dev_fwnode(dev);
 	psy_cfg.drv_data = gpio_charger;
 
-	if (pdata) {
-		charger_desc->name = pdata->name;
-		charger_desc->type = pdata->type;
-		psy_cfg.supplied_to = pdata->supplied_to;
-		psy_cfg.num_supplicants = pdata->num_supplicants;
-	} else {
-		charger_desc->name = dev->of_node->name;
-		charger_desc->type = gpio_charger_get_type(dev);
-	}
+	charger_desc->name = dev->of_node->name;
+	charger_desc->type = gpio_charger_get_type(dev);
 
 	if (!charger_desc->name)
 		charger_desc->name = pdev->name;
