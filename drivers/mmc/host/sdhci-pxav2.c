@@ -16,7 +16,6 @@
 #include <linux/io.h>
 #include <linux/mmc/card.h>
 #include <linux/mmc/host.h>
-#include <linux/platform_data/pxa_sdhci.h>
 #include <linux/slab.h>
 #include <linux/of.h>
 #include <linux/mmc/sdio.h>
@@ -42,6 +41,32 @@
 #define SD_CE_ATA_2		0xea
 #define MMC_CARD		0x1000
 #define MMC_WIDTH		0x0100
+
+/* pxa specific flag */
+/* Require clock free running */
+#define PXA_FLAG_ENABLE_CLOCK_GATING (1<<0)
+/* card always wired to host, like on-chip emmc */
+#define PXA_FLAG_CARD_PERMANENT	(1<<1)
+/* Board design supports 8-bit data on SD/SDIO BUS */
+#define PXA_FLAG_SD_8_BIT_CAPABLE_SLOT (1<<2)
+
+/*
+ * struct pxa_sdhci_platdata() - Platform device data for PXA SDHCI
+ * @flags: flags for platform requirement
+ * @clk_delay_cycles:
+ *	mmp2: each step is roughly 100ps, 5bits width
+ *	pxa910: each step is 1ns, 4bits width
+ * @clk_delay_sel: select clk_delay, used on pxa910
+ *	0: choose feedback clk
+ *	1: choose feedback clk + delay value
+ *	2: choose internal clk
+ * @quirks: quirks of platfrom
+ */
+struct sdhci_pxa_platdata {
+	unsigned int	flags;
+	unsigned int	clk_delay_cycles;
+	unsigned int	clk_delay_sel;
+};
 
 struct sdhci_pxav2_host {
 	struct mmc_request *sdio_mrq;
@@ -208,7 +233,6 @@ static const struct sdhci_pxa_variant pxav2_variant = {
 	.ops = &pxav2_sdhci_ops,
 };
 
-#ifdef CONFIG_OF
 static const struct of_device_id sdhci_pxav2_of_match[] = {
 	{ .compatible = "mrvl,pxav1-mmc", .data = &pxav1_variant, },
 	{ .compatible = "mrvl,pxav2-mmc", .data = &pxav2_variant, },
@@ -242,17 +266,11 @@ static struct sdhci_pxa_platdata *pxav2_get_mmc_pdata(struct device *dev)
 
 	return pdata;
 }
-#else
-static inline struct sdhci_pxa_platdata *pxav2_get_mmc_pdata(struct device *dev)
-{
-	return NULL;
-}
-#endif
 
 static int sdhci_pxav2_probe(struct platform_device *pdev)
 {
 	struct sdhci_pltfm_host *pltfm_host;
-	struct sdhci_pxa_platdata *pdata = pdev->dev.platform_data;
+	struct sdhci_pxa_platdata *pdata;
 	struct sdhci_pxav2_host *pxav2_host;
 	struct device *dev = &pdev->dev;
 	struct sdhci_host *host = NULL;
@@ -286,27 +304,16 @@ static int sdhci_pxav2_probe(struct platform_device *pdev)
 	variant = of_device_get_match_data(dev);
 	if (variant)
 		pdata = pxav2_get_mmc_pdata(dev);
-	else
-		variant = &pxav2_variant;
 
-	if (pdata) {
-		if (pdata->flags & PXA_FLAG_CARD_PERMANENT) {
-			/* on-chip device */
-			host->quirks |= SDHCI_QUIRK_BROKEN_CARD_DETECTION;
-			host->mmc->caps |= MMC_CAP_NONREMOVABLE;
-		}
-
-		/* If slot design supports 8 bit data, indicate this to MMC. */
-		if (pdata->flags & PXA_FLAG_SD_8_BIT_CAPABLE_SLOT)
-			host->mmc->caps |= MMC_CAP_8_BIT_DATA;
-
-		if (pdata->quirks)
-			host->quirks |= pdata->quirks;
-		if (pdata->host_caps)
-			host->mmc->caps |= pdata->host_caps;
-		if (pdata->pm_caps)
-			host->mmc->pm_caps |= pdata->pm_caps;
+	if (pdata->flags & PXA_FLAG_CARD_PERMANENT) {
+		/* on-chip device */
+		host->quirks |= SDHCI_QUIRK_BROKEN_CARD_DETECTION;
+		host->mmc->caps |= MMC_CAP_NONREMOVABLE;
 	}
+
+	/* If slot design supports 8 bit data, indicate this to MMC. */
+	if (pdata->flags & PXA_FLAG_SD_8_BIT_CAPABLE_SLOT)
+		host->mmc->caps |= MMC_CAP_8_BIT_DATA;
 
 	host->quirks |= variant->extra_quirks;
 	host->ops = variant->ops;
@@ -333,7 +340,7 @@ static struct platform_driver sdhci_pxav2_driver = {
 	.driver		= {
 		.name	= "sdhci-pxav2",
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
-		.of_match_table = of_match_ptr(sdhci_pxav2_of_match),
+		.of_match_table = sdhci_pxav2_of_match,
 		.pm	= &sdhci_pltfm_pmops,
 	},
 	.probe		= sdhci_pxav2_probe,

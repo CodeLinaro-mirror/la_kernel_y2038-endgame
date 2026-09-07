@@ -14,7 +14,6 @@
 #include <linux/io.h>
 #include <linux/mmc/card.h>
 #include <linux/mmc/host.h>
-#include <linux/platform_data/pxa_sdhci.h>
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -47,6 +46,15 @@
 #define SD_CE_ATA_2          0x10E
 #define SDCE_MISC_INT		(1<<2)
 #define SDCE_MISC_INT_EN	(1<<1)
+
+/*
+ * clk_delay_cycles:
+ *	mmp2: each step is roughly 100ps, 5bits width
+ *	pxa910: each step is 1ns, 4bits width
+ */
+struct sdhci_pxa_platdata {
+	unsigned int	clk_delay_cycles;
+};
 
 struct sdhci_pxa {
 	struct clk *clk_core;
@@ -349,7 +357,6 @@ static const struct sdhci_pltfm_data sdhci_pxav3_pdata = {
 	.ops = &pxav3_sdhci_ops,
 };
 
-#ifdef CONFIG_OF
 static const struct of_device_id sdhci_pxav3_of_match[] = {
 	{
 		.compatible = "mrvl,pxav3-mmc",
@@ -376,12 +383,6 @@ static struct sdhci_pxa_platdata *pxav3_get_mmc_pdata(struct device *dev)
 
 	return pdata;
 }
-#else
-static inline struct sdhci_pxa_platdata *pxav3_get_mmc_pdata(struct device *dev)
-{
-	return NULL;
-}
-#endif
 
 static struct pinctrl_state *pxav3_lookup_pinstate(struct device *dev, struct pinctrl *pinctrl,
 						   const char *name)
@@ -399,11 +400,10 @@ static struct pinctrl_state *pxav3_lookup_pinstate(struct device *dev, struct pi
 static int sdhci_pxav3_probe(struct platform_device *pdev)
 {
 	struct sdhci_pltfm_host *pltfm_host;
-	struct sdhci_pxa_platdata *pdata = pdev->dev.platform_data;
+	struct sdhci_pxa_platdata *pdata;
 	struct device *dev = &pdev->dev;
 	struct sdhci_host *host = NULL;
 	struct sdhci_pxa *pxa = NULL;
-	const struct of_device_id *match;
 	int ret;
 
 	host = sdhci_pltfm_init(pdev, &sdhci_pxav3_pdata, sizeof(*pxa));
@@ -440,34 +440,12 @@ static int sdhci_pxav3_probe(struct platform_device *pdev)
 			goto err_mbus_win;
 	}
 
-	match = of_match_device(of_match_ptr(sdhci_pxav3_of_match), &pdev->dev);
-	if (match) {
-		ret = mmc_of_parse(host->mmc);
-		if (ret)
-			goto err_of_parse;
-		sdhci_get_of_property(pdev);
-		pdata = pxav3_get_mmc_pdata(dev);
-		pdev->dev.platform_data = pdata;
-	} else if (pdata) {
-		/* on-chip device */
-		if (pdata->flags & PXA_FLAG_CARD_PERMANENT)
-			host->mmc->caps |= MMC_CAP_NONREMOVABLE;
-
-		/* If slot design supports 8 bit data, indicate this to MMC. */
-		if (pdata->flags & PXA_FLAG_SD_8_BIT_CAPABLE_SLOT)
-			host->mmc->caps |= MMC_CAP_8_BIT_DATA;
-
-		if (pdata->quirks)
-			host->quirks |= pdata->quirks;
-		if (pdata->quirks2)
-			host->quirks2 |= pdata->quirks2;
-		if (pdata->host_caps)
-			host->mmc->caps |= pdata->host_caps;
-		if (pdata->host_caps2)
-			host->mmc->caps2 |= pdata->host_caps2;
-		if (pdata->pm_caps)
-			host->mmc->pm_caps |= pdata->pm_caps;
-	}
+	ret = mmc_of_parse(host->mmc);
+	if (ret)
+		goto err_of_parse;
+	sdhci_get_of_property(pdev);
+	pdata = pxav3_get_mmc_pdata(dev);
+	pdev->dev.platform_data = pdata;
 
 	pxa->pinctrl = devm_pinctrl_get(dev);
 	if (!IS_ERR(pxa->pinctrl)) {
@@ -589,7 +567,7 @@ static struct platform_driver sdhci_pxav3_driver = {
 	.driver		= {
 		.name	= "sdhci-pxav3",
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
-		.of_match_table = of_match_ptr(sdhci_pxav3_of_match),
+		.of_match_table = sdhci_pxav3_of_match,
 		.pm	= pm_ptr(&sdhci_pxav3_pmops),
 	},
 	.probe		= sdhci_pxav3_probe,
