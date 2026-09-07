@@ -351,30 +351,6 @@ config BACKLIGHT_WM831X
 	  If you have a backlight driven by the ISINK and DCDC of a
 	  WM831x PMIC say y to enable the backlight driver for it.
 
-config BACKLIGHT_ADP8860
-	tristate "Backlight Driver for ADP8860/ADP8861/ADP8863 using WLED"
-	depends on I2C
-	select NEW_LEDS
-	select LEDS_CLASS
-	help
-	  If you have a LCD backlight connected to the ADP8860, ADP8861 or
-	  ADP8863 say Y here to enable this driver.
-
-	  To compile this driver as a module, choose M here: the module will
-	  be called adp8860_bl.
-
-config BACKLIGHT_ADP8870
-	tristate "Backlight Driver for ADP8870 using WLED"
-	depends on I2C
-	select NEW_LEDS
-	select LEDS_CLASS
-	help
-	  If you have a LCD backlight connected to the ADP8870,
-	  say Y here to enable this driver.
-
-	  To compile this driver as a module, choose M here: the module will
-	  be called adp8870_bl.
-
 config BACKLIGHT_88PM860X
 	tristate "Backlight Driver for 88PM8606 using WLED"
 	depends on MFD_88PM860X
