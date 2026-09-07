@@ -14,7 +14,6 @@
 #include <linux/regmap.h>
 #include <linux/gpio/consumer.h>
 #include <linux/pwm.h>
-#include <linux/platform_data/lm3630a_bl.h>
 
 #define REG_CTRL	0x00
 #define REG_BOOST	0x02
@@ -39,6 +38,61 @@
 #define LM3630A_NUM_SINKS	2
 #define LM3630A_SINK_0		0
 #define LM3630A_SINK_1		1
+
+#define LM3630A_NAME "lm3630a_bl"
+
+enum lm3630a_pwm_ctrl {
+	LM3630A_PWM_DISABLE = 0x00,
+	LM3630A_PWM_BANK_A,
+	LM3630A_PWM_BANK_B,
+	LM3630A_PWM_BANK_ALL,
+	LM3630A_PWM_BANK_A_ACT_LOW = 0x05,
+	LM3630A_PWM_BANK_B_ACT_LOW,
+	LM3630A_PWM_BANK_ALL_ACT_LOW,
+};
+
+enum lm3630a_leda_ctrl {
+	LM3630A_LEDA_DISABLE = 0x00,
+	LM3630A_LEDA_ENABLE = 0x04,
+	LM3630A_LEDA_ENABLE_LINEAR = 0x14,
+};
+
+enum lm3630a_ledb_ctrl {
+	LM3630A_LEDB_DISABLE = 0x00,
+	LM3630A_LEDB_ON_A = 0x01,
+	LM3630A_LEDB_ENABLE = 0x02,
+	LM3630A_LEDB_ENABLE_LINEAR = 0x0A,
+};
+
+#define LM3630A_MAX_BRIGHTNESS 255
+/*
+ *@leda_label    : optional led a label.
+ *@leda_init_brt : led a init brightness. 4~255
+ *@leda_max_brt  : led a max brightness.  4~255
+ *@leda_ctrl     : led a disable, enable linear, enable exponential
+ *@ledb_label    : optional led b label.
+ *@ledb_init_brt : led b init brightness. 4~255
+ *@ledb_max_brt  : led b max brightness.  4~255
+ *@ledb_ctrl     : led b disable, enable linear, enable exponential
+ *@pwm_period    : pwm period
+ *@pwm_ctrl      : pwm disable, bank a or b, active high or low
+ */
+struct lm3630a_platform_data {
+
+	/* led a config.  */
+	const char *leda_label;
+	int leda_init_brt;
+	int leda_max_brt;
+	enum lm3630a_leda_ctrl leda_ctrl;
+	/* led b config. */
+	const char *ledb_label;
+	int ledb_init_brt;
+	int ledb_max_brt;
+	enum lm3630a_ledb_ctrl ledb_ctrl;
+	/* pwm config. */
+	unsigned int pwm_period;
+	enum lm3630a_pwm_ctrl pwm_ctrl;
+};
 
 struct lm3630a_chip {
 	struct device *dev;
@@ -494,7 +548,7 @@ static int lm3630a_parse_node(struct lm3630a_chip *pchip,
 
 static int lm3630a_probe(struct i2c_client *client)
 {
-	struct lm3630a_platform_data *pdata = dev_get_platdata(&client->dev);
+	struct lm3630a_platform_data *pdata;
 	struct lm3630a_chip *pchip;
 	int rval;
 
@@ -517,24 +571,22 @@ static int lm3630a_probe(struct i2c_client *client)
 	}
 
 	i2c_set_clientdata(client, pchip);
-	if (pdata == NULL) {
-		pdata = devm_kzalloc(pchip->dev,
-				     sizeof(struct lm3630a_platform_data),
-				     GFP_KERNEL);
-		if (pdata == NULL)
-			return -ENOMEM;
+	pdata = devm_kzalloc(pchip->dev,
+			     sizeof(struct lm3630a_platform_data),
+			     GFP_KERNEL);
+	if (pdata == NULL)
+		return -ENOMEM;
 
-		/* default values */
-		pdata->leda_max_brt = LM3630A_MAX_BRIGHTNESS;
-		pdata->ledb_max_brt = LM3630A_MAX_BRIGHTNESS;
-		pdata->leda_init_brt = LM3630A_MAX_BRIGHTNESS;
-		pdata->ledb_init_brt = LM3630A_MAX_BRIGHTNESS;
+	/* default values */
+	pdata->leda_max_brt = LM3630A_MAX_BRIGHTNESS;
+	pdata->ledb_max_brt = LM3630A_MAX_BRIGHTNESS;
+	pdata->leda_init_brt = LM3630A_MAX_BRIGHTNESS;
+	pdata->ledb_init_brt = LM3630A_MAX_BRIGHTNESS;
 
-		rval = lm3630a_parse_node(pchip, pdata);
-		if (rval) {
-			dev_err(&client->dev, "fail : parse node\n");
-			return rval;
-		}
+	rval = lm3630a_parse_node(pchip, pdata);
+	if (rval) {
+		dev_err(&client->dev, "fail : parse node\n");
+		return rval;
 	}
 	pchip->pdata = pdata;
 
