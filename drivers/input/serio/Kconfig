@@ -73,17 +73,6 @@ config SERIO_PARKBD
 	  To compile this driver as a module, choose M here: the
 	  module will be called parkbd.
 
-config SERIO_RPCKBD
-	tristate "Acorn RiscPC keyboard controller"
-	depends on ARCH_ACORN
-	default y
-	help
-	  Say Y here if you have the Acorn RiscPC and want to use an AT
-	  keyboard connected to its keyboard controller.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called rpckbd.
-
 config SERIO_AMBAKMI
 	tristate "AMBA KMI keyboard controller"
 	depends on ARM_AMBA
