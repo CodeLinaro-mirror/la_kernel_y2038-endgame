@@ -557,16 +557,6 @@ config KEYBOARD_SUN4I_LRADC
 	  To compile this driver as a module, choose M here: the
 	  module will be called sun4i-lradc-keys.
 
-config KEYBOARD_IPAQ_MICRO
-	tristate "Buttons on Micro SoC (iPaq h3100,h3600,h3700)"
-	depends on MFD_IPAQ_MICRO
-	help
-	  Say Y to enable support for the buttons attached to
-	  Micro peripheral controller on iPAQ h3100/h3600/h3700
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called ipaq-micro-keys.
-
 config KEYBOARD_IQS62X
 	tristate "Azoteq IQS620A/621/622/624/625 keys and switches"
 	depends on MFD_IQS62X
