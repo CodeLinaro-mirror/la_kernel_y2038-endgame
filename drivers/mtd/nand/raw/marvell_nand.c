@@ -89,7 +89,6 @@
 #include <linux/dmaengine.h>
 #include <linux/dma-mapping.h>
 #include <linux/dma/pxa-dma.h>
-#include <linux/platform_data/mtd-nand-pxa3xx.h>
 
 /* Data FIFO granularity, FIFO reads/writes must be a multiple of this length */
 #define FIFO_DEPTH		8
@@ -2499,11 +2498,7 @@ static int marvell_nand_attach_chip(struct nand_chip *chip)
 	struct mtd_info *mtd = nand_to_mtd(chip);
 	struct marvell_nand_chip *marvell_nand = to_marvell_nand(chip);
 	struct marvell_nfc *nfc = to_marvell_nfc(chip->controller);
-	struct pxa3xx_nand_platform_data *pdata = dev_get_platdata(nfc->dev);
 	int ret;
-
-	if (pdata && pdata->flash_bbt)
-		chip->bbt_options |= NAND_BBT_USE_FLASH;
 
 	if (chip->bbt_options & NAND_BBT_USE_FLASH) {
 		/*
@@ -2544,11 +2539,6 @@ static int marvell_nand_attach_chip(struct nand_chip *chip)
 	else
 		marvell_nand->addr_cyc += 2;
 
-	if (pdata) {
-		chip->ecc.size = pdata->ecc_step_size;
-		chip->ecc.strength = pdata->ecc_strength;
-	}
-
 	ret = marvell_nand_ecc_init(mtd, &chip->ecc);
 	if (ret) {
 		dev_err(nfc->dev, "ECC init failed: %d\n", ret);
@@ -2565,7 +2555,7 @@ static int marvell_nand_attach_chip(struct nand_chip *chip)
 		chip->options |= NAND_NO_SUBPAGE_WRITE;
 	}
 
-	if (pdata || nfc->caps->legacy_of_bindings) {
+	if (nfc->caps->legacy_of_bindings) {
 		/*
 		 * We keep the MTD name unchanged to avoid breaking platforms
 		 * where the MTD cmdline parser is used and the bootloader
@@ -2604,7 +2594,6 @@ static const struct nand_controller_ops marvell_nand_controller_ops = {
 static int marvell_nand_chip_init(struct device *dev, struct marvell_nfc *nfc,
 				  struct device_node *np)
 {
-	struct pxa3xx_nand_platform_data *pdata = dev_get_platdata(dev);
 	struct marvell_nand_chip *marvell_nand;
 	struct mtd_info *mtd;
 	struct nand_chip *chip;
@@ -2620,7 +2609,7 @@ static int marvell_nand_chip_init(struct device *dev, struct marvell_nfc *nfc,
 	 * properties must be filled. For each chip, expressed as a subnode,
 	 * "reg" points to the CS lines and "nand-rb" to the RB line.
 	 */
-	if (pdata || nfc->caps->legacy_of_bindings) {
+	if (nfc->caps->legacy_of_bindings) {
 		nsels = 1;
 	} else {
 		nsels = of_property_count_elems_of_size(np, "reg", sizeof(u32));
@@ -2643,7 +2632,7 @@ static int marvell_nand_chip_init(struct device *dev, struct marvell_nfc *nfc,
 	marvell_nand->selected_die = -1;
 
 	for (i = 0; i < nsels; i++) {
-		if (pdata || nfc->caps->legacy_of_bindings) {
+		if (nfc->caps->legacy_of_bindings) {
 			/*
 			 * Legacy bindings use the CS lines in natural
 			 * order (0, 1, ...)
@@ -2693,7 +2682,7 @@ static int marvell_nand_chip_init(struct device *dev, struct marvell_nfc *nfc,
 		}
 
 		/* Retrieve RB id */
-		if (pdata || nfc->caps->legacy_of_bindings) {
+		if (nfc->caps->legacy_of_bindings) {
 			/* Legacy bindings always use RB #0 */
 			rb = 0;
 		} else {
@@ -2741,11 +2730,7 @@ static int marvell_nand_chip_init(struct device *dev, struct marvell_nfc *nfc,
 		return ret;
 	}
 
-	if (pdata)
-		/* Legacy bindings support only one chip */
-		ret = mtd_device_register(mtd, pdata->parts, pdata->nr_parts);
-	else
-		ret = mtd_device_register(mtd, NULL, 0);
+	ret = mtd_device_register(mtd, NULL, 0);
 	if (ret) {
 		dev_err(dev, "failed to register mtd device: %d\n", ret);
 		nand_cleanup(chip);
