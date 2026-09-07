@@ -21,7 +21,6 @@
 #include <linux/units.h>
 
 #include <linux/iio/buffer-dmaengine.h>
-#include <linux/iio/dac/ad5791.h>
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
@@ -475,7 +474,6 @@ static const struct spi_offload_config ad5791_offload_config = {
 
 static int ad5791_probe(struct spi_device *spi)
 {
-	const struct ad5791_platform_data *pdata = dev_get_platdata(&spi->dev);
 	struct iio_dev *indio_dev;
 	struct ad5791_state *st;
 	int ret, pos_voltage_uv = 0, neg_voltage_uv = 0;
@@ -504,10 +502,7 @@ static int ad5791_probe(struct spi_device *spi)
 	st->pwr_down = true;
 	st->spi = spi;
 
-	if (pdata)
-		use_rbuf_gain2 = pdata->use_rbuf_gain2;
-	else
-		use_rbuf_gain2 = device_property_read_bool(&spi->dev,
+	use_rbuf_gain2 = device_property_read_bool(&spi->dev,
 							   "adi,rbuf-gain2-en");
 
 	pos_voltage_uv = devm_regulator_get_enable_read_voltage(&spi->dev, "vdd");
@@ -523,9 +518,6 @@ static int ad5791_probe(struct spi_device *spi)
 	if (neg_voltage_uv >= 0 && pos_voltage_uv >= 0) {
 		st->vref_mv = (pos_voltage_uv + neg_voltage_uv) / 1000;
 		st->vref_neg_mv = neg_voltage_uv / 1000;
-	} else if (pdata) {
-		st->vref_mv = pdata->vref_pos_mv + pdata->vref_neg_mv;
-		st->vref_neg_mv = pdata->vref_neg_mv;
 	} else {
 		dev_warn(&spi->dev, "reference voltage unspecified\n");
 	}
