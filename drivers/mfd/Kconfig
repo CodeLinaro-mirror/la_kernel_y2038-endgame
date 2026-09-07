@@ -422,17 +422,6 @@ config MFD_TN48M_CPLD
 	  for the SFP slots as well as power supply related information.
 	  SFP support depends on the GPIO driver being selected.
 
-config PMIC_DA903X
-	bool "Dialog Semiconductor DA9030/DA9034 PMIC Support"
-	depends on I2C=y
-	help
-	  Say yes here to add support for Dialog Semiconductor DA9030 (a.k.a
-	  ARAVA) and DA9034 (a.k.a MICCO), these are Power Management IC
-	  usually found on PXA processors-based platforms. This includes
-	  the I2C driver and the core APIs _only_, you have to select
-	  individual components like LCD backlight, voltage regulators,
-	  LEDs and battery-charger under the corresponding menus.
-
 config PMIC_DA9052
 	bool
 	select MFD_CORE

@@ -282,19 +282,6 @@ config TOUCHSCREEN_CYTTSP5
 	  To compile this driver as a module, choose M here: the
 	  module will be called cyttsp5.
 
-config TOUCHSCREEN_DA9034
-	tristate "Touchscreen support for Dialog Semiconductor DA9034"
-	depends on PMIC_DA903X
-	default y
-	help
-	  Say Y here to enable the support for the touchscreen found
-	  on Dialog Semiconductor DA9034 PMIC.
-
-	  If unsure, say N.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called da9034-ts.
-
 config TOUCHSCREEN_DA9052
 	tristate "Dialog DA9052/DA9053 TSI"
 	depends on PMIC_DA9052

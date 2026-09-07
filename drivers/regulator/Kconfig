@@ -312,14 +312,6 @@ config REGULATOR_CROS_EC
 	  This driver can also be built as a module. If so, the module
 	  will be called cros-ec-regulator.
 
-config REGULATOR_DA903X
-	tristate "Dialog Semiconductor DA9030/DA9034 regulators"
-	depends on PMIC_DA903X
-	depends on !CC_IS_CLANG # https://llvm.org/pr38789
-	help
-	  Say y here to support the BUCKs and LDOs regulators found on
-	  Dialog Semiconductor DA9030/DA9034 PMIC.
-
 config REGULATOR_DA9052
 	tristate "Dialog Semiconductor DA9052/DA9053 regulators"
 	depends on PMIC_DA9052

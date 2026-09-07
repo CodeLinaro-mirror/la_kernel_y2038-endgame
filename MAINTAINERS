@@ -7713,7 +7713,6 @@ F:	drivers/input/misc/da72??.[ch]
 F:	drivers/input/misc/da90??_onkey.c
 F:	drivers/input/touchscreen/da9052_tsi.c
 F:	drivers/leds/leds-da90??.c
-F:	drivers/mfd/da903x.c
 F:	drivers/mfd/da90??-*.c
 F:	drivers/mfd/da91??-*.c
 F:	drivers/pinctrl/pinctrl-da90??.c
@@ -7726,7 +7725,6 @@ F:	drivers/thermal/da90??-thermal.c
 F:	drivers/video/backlight/da90??_bl.c
 F:	drivers/watchdog/da90??_wdt.c
 F:	include/dt-bindings/regulator/dlg,da9*-regulator.h
-F:	include/linux/mfd/da903x.h
 F:	include/linux/mfd/da9052/
 F:	include/linux/mfd/da9055/
 F:	include/linux/mfd/da9062/

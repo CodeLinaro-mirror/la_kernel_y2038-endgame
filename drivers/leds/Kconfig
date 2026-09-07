@@ -638,14 +638,6 @@ config LEDS_WM8350
 	  This option enables support for LEDs driven by the Wolfson
 	  Microelectronics WM8350 AudioPlus PMIC.
 
-config LEDS_DA903X
-	tristate "LED Support for DA9030/DA9034 PMIC"
-	depends on LEDS_CLASS
-	depends on PMIC_DA903X
-	help
-	  This option enables support for on-chip LED drivers found
-	  on Dialog Semiconductor DA9030/DA9034 PMICs.
-
 config LEDS_DA9052
 	tristate "Dialog DA9052/DA9053 LEDS"
 	depends on LEDS_CLASS
