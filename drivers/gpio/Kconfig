@@ -1667,15 +1667,6 @@ config GPIO_QIXIS_FPGA
 	  integrated on some NXP Layerscape boards such as LX2160ARDB and
 	  LS1046AQDS.
 
-config GPIO_RC5T583
-	bool "RICOH RC5T583 GPIO"
-	depends on MFD_RC5T583
-	help
-	  Select this option to enable GPIO driver for the Ricoh RC5T583
-	  chip family.
-	  This driver provides the support for driving/reading the GPIO pins
-	  of RC5T583 device through standard GPIO library.
-
 config GPIO_SL28CPLD
 	tristate "Kontron sl28cpld GPIO support"
 	depends on MFD_SL28CPLD || COMPILE_TEST

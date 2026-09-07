@@ -1240,16 +1240,6 @@ config REGULATOR_RASPBERRYPI_TOUCHSCREEN_V2
 	  unit. The regulator is used to enable power to the display and to
 	  control backlight PWM.
 
-config REGULATOR_RC5T583
-	tristate "RICOH RC5T583 Power regulators"
-	depends on MFD_RC5T583
-	help
-	  Select this option to enable the power regulator of RICOH
-	  PMIC RC5T583.
-	  This driver supports the control of different power rails of device
-	  through regulator interface. The device supports multiple DCDC/LDO
-	  outputs which can be controlled by i2c communication.
-
 config REGULATOR_RK808
 	tristate "Rockchip RK805/RK808/RK809/RK817/RK818 Power regulators"
 	depends on MFD_RK8XX
