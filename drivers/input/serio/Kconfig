@@ -88,10 +88,6 @@ config SERIO_AMBAKMI
 	tristate "AMBA KMI keyboard controller"
 	depends on ARM_AMBA
 
-config SERIO_SA1111
-	tristate "Intel SA1111 keyboard controller"
-	depends on SA1111
-
 config SERIO_GSCPS2
 	tristate "HP GSC PS/2 keyboard and PS/2 mouse controller"
 	depends on GSC
