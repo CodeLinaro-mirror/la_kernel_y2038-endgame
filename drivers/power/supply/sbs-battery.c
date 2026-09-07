@@ -17,7 +17,6 @@
 #include <linux/module.h>
 #include <linux/property.h>
 #include <linux/of.h>
-#include <linux/power/sbs-battery.h>
 #include <linux/power_supply.h>
 #include <linux/slab.h>
 #include <linux/stat.h>
@@ -1133,7 +1132,6 @@ static int sbs_probe(struct i2c_client *client)
 {
 	struct sbs_info *chip;
 	struct power_supply_desc *sbs_desc;
-	struct sbs_platform_data *pdata = client->dev.platform_data;
 	struct power_supply_config psy_cfg = {};
 	int rc;
 	int irq;
@@ -1160,9 +1158,6 @@ static int sbs_probe(struct i2c_client *client)
 	sbs_invalidate_cached_props(chip);
 	mutex_init(&chip->mode_lock);
 
-	/* use pdata if available, fall back to DT properties,
-	 * or hardcoded defaults if not
-	 */
 	rc = device_property_read_u32(&client->dev, "sbs,i2c-retry-count",
 				      &chip->i2c_retry_count);
 	if (rc)
@@ -1173,10 +1168,6 @@ static int sbs_probe(struct i2c_client *client)
 	if (rc)
 		chip->poll_retry_count = 0;
 
-	if (pdata) {
-		chip->poll_retry_count = pdata->poll_retry_count;
-		chip->i2c_retry_count  = pdata->i2c_retry_count;
-	}
 	chip->i2c_retry_count = chip->i2c_retry_count + 1;
 
 	chip->charger_broadcasts = !device_property_read_bool(&client->dev,
