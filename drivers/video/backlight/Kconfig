@@ -91,14 +91,6 @@ config LCD_HP700
 	  If you have an HP Jornada 700 series handheld (710/720/728)
 	  say Y to enable LCD control driver.
 
-config LCD_LMS501KF03
-	tristate "LMS501KF03 LCD Driver"
-	depends on SPI
-	default n
-	help
-	  If you have an LMS501KF03 LCD Panel, say Y to enable its
-	  LCD control driver.
-
 config LCD_HX8357
 	tristate "Himax HX-8357 LCD Driver"
 	depends on SPI
