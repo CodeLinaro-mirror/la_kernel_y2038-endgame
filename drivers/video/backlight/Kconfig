@@ -126,14 +126,6 @@ config BACKLIGHT_AW99706
 	  If you have a LCD backlight connected to the WLED output of AW99706
 	  WLED output, say Y here to enable this driver.
 
-config BACKLIGHT_IPAQ_MICRO
-	tristate "iPAQ microcontroller backlight driver"
-	depends on MFD_IPAQ_MICRO
-	default y
-	help
-	  Say y to enable the backlight driver for Compaq iPAQ handheld
-	  computers. Say yes if you have one of the h3100/h3600/h3700
-	  machines.
 
 config BACKLIGHT_KTD253
 	tristate "Backlight Driver for Kinetic KTD253"
