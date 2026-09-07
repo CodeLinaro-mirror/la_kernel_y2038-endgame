@@ -76,14 +76,6 @@ config LCD_PLATFORM
 	  This driver provides a platform-device registered LCD power
 	  control interface.
 
-config LCD_HP700
-	tristate "HP Jornada 700 series LCD Driver"
-	depends on SA1100_JORNADA720_SSP && !PREEMPTION
-	default y
-	help
-	  If you have an HP Jornada 700 series handheld (710/720/728)
-	  say Y to enable LCD control driver.
-
 config LCD_HX8357
 	tristate "Himax HX-8357 LCD Driver"
 	depends on SPI
@@ -210,14 +202,6 @@ config BACKLIGHT_HP680
 	help
 	  If you have a HP Jornada 680, say y to enable the
 	  backlight driver.
-
-config BACKLIGHT_HP700
-	tristate "HP Jornada 700 series Backlight Driver"
-	depends on SA1100_JORNADA720_SSP && !PREEMPTION
-	default y
-	help
-	  If you have an HP Jornada 700 series,
-	  say Y to include backlight control driver.
 
 config BACKLIGHT_PWM
 	tristate "Generic PWM based Backlight Driver"
