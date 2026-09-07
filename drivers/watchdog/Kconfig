@@ -531,17 +531,6 @@ config CADENCE_WATCHDOG
 	  Say Y here if you want to include support for the watchdog
 	  timer in the Xilinx Zynq.
 
-config 977_WATCHDOG
-	tristate "NetWinder WB83C977 watchdog"
-	depends on (FOOTBRIDGE && ARCH_NETWINDER) || (ARM && COMPILE_TEST)
-	depends on HAS_IOPORT
-	help
-	  Say Y here to include support for the WB977 watchdog included in
-	  NetWinder machines. Alternatively say M to compile the driver as
-	  a module, which will be called wdt977.
-
-	  Not sure? It's safe to say N.
-
 config FTWDT010_WATCHDOG
 	tristate "Faraday Technology FTWDT010 watchdog"
 	depends on ARM || COMPILE_TEST
