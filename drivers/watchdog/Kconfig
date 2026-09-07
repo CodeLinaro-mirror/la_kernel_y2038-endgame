@@ -531,20 +531,6 @@ config CADENCE_WATCHDOG
 	  Say Y here if you want to include support for the watchdog
 	  timer in the Xilinx Zynq.
 
-config 21285_WATCHDOG
-	tristate "DC21285 watchdog"
-	depends on FOOTBRIDGE
-	help
-	  The Intel Footbridge chip contains a built-in watchdog circuit. Say Y
-	  here if you wish to use this. Alternatively say M to compile the
-	  driver as a module, which will be called wdt285.
-
-	  This driver does not work on all machines. In particular, early CATS
-	  boards have hardware problems that will cause the machine to simply
-	  lock up if the watchdog fires.
-
-	  "If in doubt, leave it out" - say N.
-
 config 977_WATCHDOG
 	tristate "NetWinder WB83C977 watchdog"
 	depends on (FOOTBRIDGE && ARCH_NETWINDER) || (ARM && COMPILE_TEST)
