@@ -933,15 +933,6 @@ config IMX93_ADC
 	  This driver can also be built as a module. If so, the module will be
 	  called imx93_adc.
 
-config LP8788_ADC
-	tristate "LP8788 ADC driver"
-	depends on MFD_LP8788
-	help
-	  Say yes here to build support for TI LP8788 ADC.
-
-	  To compile this driver as a module, choose M here: the module will be
-	  called lp8788_adc.
-
 config LPC18XX_ADC
 	tristate "NXP LPC18xx ADC driver"
 	depends on ARCH_LPC18XX || COMPILE_TEST
