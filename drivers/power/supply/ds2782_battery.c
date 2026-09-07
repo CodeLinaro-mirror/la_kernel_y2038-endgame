@@ -22,7 +22,6 @@
 #include <linux/idr.h>
 #include <linux/power_supply.h>
 #include <linux/slab.h>
-#include <linux/ds2782_battery.h>
 
 #define DS2782_REG_RARC		0x06	/* Remaining active relative capacity */
 
@@ -359,10 +358,14 @@ static void ds278x_free_ida(void *data)
 	ida_free(&battery_id, num);
 }
 
+struct ds278x_platform_data {
+	int rsns;
+};
+
 static int ds278x_battery_probe(struct i2c_client *client)
 {
 	const struct i2c_device_id *id = i2c_client_get_device_id(client);
-	struct ds278x_platform_data *pdata = client->dev.platform_data;
+	struct ds278x_platform_data *pdata = NULL;
 	struct power_supply_config psy_cfg = {};
 	struct ds278x_info *info;
 	int ret;
