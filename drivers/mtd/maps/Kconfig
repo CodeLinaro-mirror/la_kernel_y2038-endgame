@@ -249,14 +249,6 @@ config MTD_SOLUTIONENGINE
 	  This enables access to the flash chips on the Hitachi SolutionEngine and
 	  similar boards. Say 'Y' if you are building a kernel for such a board.
 
-config MTD_SA1100
-	tristate "CFI Flash device mapped on StrongARM SA11x0"
-	depends on MTD_CFI && ARCH_SA1100
-	help
-	  This enables access to the flash chips on most platforms based on
-	  the SA1100 and SA1110, including the Assabet and the Compaq iPAQ.
-	  If you have such a board, say 'Y'.
-
 # This needs CFI or JEDEC, depending on the cards found.
 config MTD_PCI
 	tristate "PCI MTD driver"
