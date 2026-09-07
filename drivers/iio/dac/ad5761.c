@@ -12,7 +12,29 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 #include <linux/regulator/consumer.h>
-#include <linux/platform_data/ad5761.h>
+
+/**
+ * enum ad5761_voltage_range - Voltage range the AD5761 is configured for.
+ * @AD5761_VOLTAGE_RANGE_M10V_10V:  -10V to  10V
+ * @AD5761_VOLTAGE_RANGE_0V_10V:      0V to  10V
+ * @AD5761_VOLTAGE_RANGE_M5V_5V:     -5V to   5V
+ * @AD5761_VOLTAGE_RANGE_0V_5V:       0V to   5V
+ * @AD5761_VOLTAGE_RANGE_M2V5_7V5: -2.5V to 7.5V
+ * @AD5761_VOLTAGE_RANGE_M3V_3V:     -3V to   3V
+ * @AD5761_VOLTAGE_RANGE_0V_16V:      0V to  16V
+ * @AD5761_VOLTAGE_RANGE_0V_20V:      0V to  20V
+ */
+
+enum ad5761_voltage_range {
+	AD5761_VOLTAGE_RANGE_M10V_10V,
+	AD5761_VOLTAGE_RANGE_0V_10V,
+	AD5761_VOLTAGE_RANGE_M5V_5V,
+	AD5761_VOLTAGE_RANGE_0V_5V,
+	AD5761_VOLTAGE_RANGE_M2V5_7V5,
+	AD5761_VOLTAGE_RANGE_M3V_3V,
+	AD5761_VOLTAGE_RANGE_0V_16V,
+	AD5761_VOLTAGE_RANGE_0V_20V,
+};
 
 #define AD5761_ADDR(addr)		((addr & 0xf) << 16)
 #define AD5761_ADDR_NOOP		0x0
@@ -291,7 +313,6 @@ static int ad5761_probe(struct spi_device *spi)
 	const struct ad5761_chip_info *chip_info =
 		&ad5761_chip_infos[spi_get_device_id(spi)->driver_data];
 	enum ad5761_voltage_range voltage_range = AD5761_VOLTAGE_RANGE_0V_5V;
-	struct ad5761_platform_data *pdata = dev_get_platdata(&spi->dev);
 
 	iio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
 	if (!iio_dev)
@@ -322,9 +343,6 @@ static int ad5761_probe(struct spi_device *spi)
 		st->use_intref = false;
 		st->vref = ret / 1000;
 	}
-
-	if (pdata)
-		voltage_range = pdata->voltage_range;
 
 	mutex_init(&st->lock);
 
