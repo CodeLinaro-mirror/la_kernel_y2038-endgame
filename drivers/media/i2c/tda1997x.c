@@ -21,7 +21,6 @@
 #include <media/v4l2-dv-timings.h>
 #include <media/v4l2-event.h>
 #include <media/v4l2-fwnode.h>
-#include <media/i2c/tda1997x.h>
 
 #include <sound/core.h>
 #include <sound/pcm.h>
@@ -216,6 +215,35 @@ enum tda1997x_hdmi_pads {
 struct tda1997x_chip_info {
 	enum tda1997x_type type;
 	const char *name;
+};
+
+struct tda1997x_platform_data {
+	enum v4l2_mbus_type vidout_bus_type;
+	u32 vidout_bus_width;
+	u8 vidout_port_cfg[9];
+	/* pin polarity (1=invert) */
+	bool vidout_inv_de;
+	bool vidout_inv_hs;
+	bool vidout_inv_vs;
+	bool vidout_inv_pclk;
+	/* clock delays (0=-8, 1=-7 ... 15=+7 pixels) */
+	u8 vidout_delay_hs;
+	u8 vidout_delay_vs;
+	u8 vidout_delay_de;
+	u8 vidout_delay_pclk;
+	/* sync selections (controls how sync pins are derived) */
+	u8 vidout_sel_hs;
+	u8 vidout_sel_vs;
+	u8 vidout_sel_de;
+
+	/* Audio Port Output */
+	int audout_format;
+	u32 audout_mclk_fs;	/* clock multiplier */
+	u32 audout_width;	/* 13 or 32 bit */
+	u32 audout_layout;	/* layout0=AP0 layout1=AP0,AP1,AP2,AP3 */
+	bool audout_layoutauto;	/* audio layout dictated by pkt header */
+	bool audout_invert_clk;	/* data valid on rising edge of BCLK */
+	bool audio_auto_mute;	/* enable hardware audio auto-mute */
 };
 
 struct tda1997x_state {
@@ -2532,6 +2560,7 @@ static int tda1997x_probe(struct i2c_client *client)
 	struct v4l2_ctrl *ctrl;
 	static const struct v4l2_dv_timings cea1920x1080 =
 		V4L2_DV_BT_CEA_1920X1080P60;
+	const struct of_device_id *oid;
 	u32 *mbus_codes;
 	int i, ret;
 
@@ -2545,26 +2574,13 @@ static int tda1997x_probe(struct i2c_client *client)
 
 	state->client = client;
 	pdata = &state->pdata;
-	if (IS_ENABLED(CONFIG_OF) && client->dev.of_node) {
-		const struct of_device_id *oid;
 
-		oid = of_match_node(tda1997x_of_id, client->dev.of_node);
-		state->info = oid->data;
+	oid = of_match_node(tda1997x_of_id, client->dev.of_node);
+	state->info = oid->data;
 
-		ret = tda1997x_parse_dt(state);
-		if (ret < 0) {
-			v4l_err(client, "DT parsing error\n");
-			goto err_free_state;
-		}
-	} else if (client->dev.platform_data) {
-		struct tda1997x_platform_data *pdata =
-			client->dev.platform_data;
-		state->info =
-			(const struct tda1997x_chip_info *)id->driver_data;
-		state->pdata = *pdata;
-	} else {
-		v4l_err(client, "No platform data\n");
-		ret = -ENODEV;
+	ret = tda1997x_parse_dt(state);
+	if (ret < 0) {
+		v4l_err(client, "DT parsing error\n");
 		goto err_free_state;
 	}
 
@@ -2835,7 +2851,7 @@ static void tda1997x_remove(struct i2c_client *client)
 static struct i2c_driver tda1997x_i2c_driver = {
 	.driver = {
 		.name = "tda1997x",
-		.of_match_table = of_match_ptr(tda1997x_of_id),
+		.of_match_table = tda1997x_of_id,
 	},
 	.probe = tda1997x_probe,
 	.remove = tda1997x_remove,
