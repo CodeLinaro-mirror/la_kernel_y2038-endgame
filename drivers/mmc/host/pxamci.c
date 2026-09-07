@@ -34,8 +34,6 @@
 
 #include <linux/sizes.h>
 
-#include <linux/platform_data/mmc-pxamci.h>
-
 #include "pxamci.h"
 
 #define DRIVER_NAME	"pxa2xx-mci"
@@ -59,7 +57,6 @@ struct pxamci_host {
 	unsigned long		detect_delay_ms;
 	bool			use_ro_gpio;
 	struct gpio_desc	*power;
-	struct pxamci_platform_data *pdata;
 
 	struct mmc_request	*mrq;
 	struct mmc_command	*cmd;
@@ -83,9 +80,7 @@ static int pxamci_init_ocr(struct pxamci_host *host)
 
 	if (IS_ERR(mmc->supply.vmmc)) {
 		/* fall-back to platform data */
-		mmc->ocr_avail = host->pdata ?
-			host->pdata->ocr_mask :
-			MMC_VDD_32_33 | MMC_VDD_33_34;
+		mmc->ocr_avail = MMC_VDD_32_33 | MMC_VDD_33_34;
 	}
 
 	return 0;
@@ -100,14 +95,6 @@ static inline int pxamci_set_power(struct pxamci_host *host,
 
 	if (!IS_ERR(supply))
 		return mmc_regulator_set_ocr(mmc, supply, vdd);
-
-	if (host->power) {
-		bool on = !!((1 << vdd) & host->pdata->ocr_mask);
-		gpiod_set_value(host->power, on);
-	}
-
-	if (host->pdata && host->pdata->setpower)
-		return host->pdata->setpower(mmc_dev(host->mmc), vdd);
 
 	return 0;
 }
@@ -427,8 +414,6 @@ static int pxamci_get_ro(struct mmc_host *mmc)
 
 	if (host->use_ro_gpio)
 		return mmc_gpio_get_ro(mmc);
-	if (host->pdata && host->pdata->get_ro)
-		return !!host->pdata->get_ro(mmc_dev(mmc));
 	/*
 	 * Board doesn't support read only detection; let the mmc core
 	 * decide what to do.
@@ -557,15 +542,6 @@ out_unlock:
 	spin_unlock_irqrestore(&host->lock, flags);
 }
 
-static irqreturn_t pxamci_detect_irq(int irq, void *devid)
-{
-	struct pxamci_host *host = mmc_priv(devid);
-
-	mmc_detect_change(devid, msecs_to_jiffies(host->detect_delay_ms));
-	return IRQ_HANDLED;
-}
-
-#ifdef CONFIG_OF
 static const struct of_device_id pxa_mmc_dt_ids[] = {
         { .compatible = "marvell,pxa-mmc" },
         { }
@@ -594,13 +570,6 @@ static int pxamci_of_init(struct platform_device *pdev,
 
 	return 0;
 }
-#else
-static int pxamci_of_init(struct platform_device *pdev,
-			  struct mmc_host *mmc)
-{
-        return 0;
-}
-#endif
 
 static int pxamci_probe(struct platform_device *pdev)
 {
@@ -647,7 +616,6 @@ static int pxamci_probe(struct platform_device *pdev)
 
 	host = mmc_priv(mmc);
 	host->mmc = mmc;
-	host->pdata = pdev->dev.platform_data;
 	host->clkrt = CLKRT_OFF;
 
 	host->clk = devm_clk_get(dev, NULL);
@@ -712,43 +680,7 @@ static int pxamci_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, PTR_ERR(host->dma_chan_tx),
 					"unable to request tx dma channel\n");
 
-	if (host->pdata) {
-		host->detect_delay_ms = host->pdata->detect_delay_ms;
-
-		host->power = devm_gpiod_get_optional(dev, "power", GPIOD_OUT_LOW);
-		if (IS_ERR(host->power))
-			return dev_err_probe(dev, PTR_ERR(host->power),
-						"Failed requesting gpio_power\n");
-
-		/* FIXME: should we pass detection delay to debounce? */
-		ret = mmc_gpiod_request_cd(mmc, "cd", 0, false, 0);
-		if (ret && ret != -ENOENT)
-			return dev_err_probe(dev, ret, "Failed requesting gpio_cd\n");
-
-		if (!host->pdata->gpio_card_ro_invert)
-			mmc->caps2 |= MMC_CAP2_RO_ACTIVE_HIGH;
-
-		ret = mmc_gpiod_request_ro(mmc, "wp", 0, 0);
-		if (ret && ret != -ENOENT)
-			return dev_err_probe(dev, ret, "Failed requesting gpio_ro\n");
-
-		if (!ret)
-			host->use_ro_gpio = true;
-
-		if (host->pdata->init)
-			host->pdata->init(dev, pxamci_detect_irq, mmc);
-
-		if (host->power && host->pdata->setpower)
-			dev_warn(dev, "gpio_power and setpower() both defined\n");
-		if (host->use_ro_gpio && host->pdata->get_ro)
-			dev_warn(dev, "gpio_ro and get_ro() both defined\n");
-	}
-
 	ret = mmc_add_host(mmc);
-	if (ret) {
-		if (host->pdata && host->pdata->exit)
-			host->pdata->exit(dev, mmc);
-	}
 
 	return ret;
 }
@@ -761,9 +693,6 @@ static void pxamci_remove(struct platform_device *pdev)
 		struct pxamci_host *host = mmc_priv(mmc);
 
 		mmc_remove_host(mmc);
-
-		if (host->pdata && host->pdata->exit)
-			host->pdata->exit(&pdev->dev, mmc);
 
 		pxamci_stop_clock(host);
 		writel(TXFIFO_WR_REQ|RXFIFO_RD_REQ|CLK_IS_OFF|STOP_CMD|
@@ -781,7 +710,7 @@ static struct platform_driver pxamci_driver = {
 	.driver		= {
 		.name	= DRIVER_NAME,
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
-		.of_match_table = of_match_ptr(pxa_mmc_dt_ids),
+		.of_match_table = pxa_mmc_dt_ids,
 	},
 };
 
