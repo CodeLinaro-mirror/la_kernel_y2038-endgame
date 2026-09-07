@@ -296,14 +296,6 @@ config KEYBOARD_HP6XX
 	  To compile this driver as a module, choose M here: the
 	  module will be called jornada680_kbd.
 
-config KEYBOARD_LOCOMO
-	tristate "LoCoMo Keyboard Support"
-	depends on SHARP_LOCOMO
-	help
-	  Say Y here if you are running Linux on a Sharp Zaurus Collie or Poodle based PDA
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called locomokbd.
 
 config KEYBOARD_LPC32XX
 	tristate "LPC32XX matrix key scanner support"
