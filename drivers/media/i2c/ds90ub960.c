@@ -47,7 +47,6 @@
 #include <linux/units.h>
 #include <linux/workqueue.h>
 
-#include <media/i2c/ds90ub9xx.h>
 #include <media/mipi-csi2.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-fwnode.h>

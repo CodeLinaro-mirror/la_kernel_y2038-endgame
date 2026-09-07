@@ -20,10 +20,11 @@
 #include <linux/property.h>
 #include <linux/regmap.h>
 
-#include <media/i2c/ds90ub9xx.h>
 #include <media/v4l2-fwnode.h>
 #include <media/v4l2-mediabus.h>
 #include <media/v4l2-subdev.h>
+
+#include "ds90ub953.h"
 
 #define UB913_PAD_SINK			0
 #define UB913_PAD_SOURCE		1

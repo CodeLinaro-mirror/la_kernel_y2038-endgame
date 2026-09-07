@@ -27943,7 +27943,6 @@ L:	linux-media@vger.kernel.org
 S:	Maintained
 F:	Documentation/devicetree/bindings/media/i2c/ti,ds90*
 F:	drivers/media/i2c/ds90*
-F:	include/media/i2c/ds90*
 
 TI HDC302X HUMIDITY DRIVER
 M:	Javier Carrasco <javier.carrasco.cruz@gmail.com>
