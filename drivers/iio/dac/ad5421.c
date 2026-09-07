@@ -18,8 +18,6 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 #include <linux/iio/events.h>
-#include <linux/iio/dac/ad5421.h>
-
 
 #define AD5421_REG_DAC_DATA		0x1
 #define AD5421_REG_CTRL			0x2
@@ -54,6 +52,19 @@
 #define AD5421_FAULT_TRIGGER_IRQ \
 	(AD5421_FAULT_SPI | AD5421_FAULT_PEC | AD5421_FAULT_OVER_CURRENT | \
 	AD5421_FAULT_UNDER_CURRENT | AD5421_FAULT_TEMP_OVER_140)
+
+/**
+ * enum ad5421_current_range - Current range the AD5421 is configured for.
+ * @AD5421_CURRENT_RANGE_4mA_20mA: 4 mA to 20 mA (RANGE1,0 pins = 00)
+ * @AD5421_CURRENT_RANGE_3mA8_21mA: 3.8 mA to 21 mA (RANGE1,0 pins = x1)
+ * @AD5421_CURRENT_RANGE_3mA2_24mA: 3.2 mA to 24 mA (RANGE1,0 pins = 10)
+ */
+
+enum ad5421_current_range {
+	AD5421_CURRENT_RANGE_4mA_20mA,
+	AD5421_CURRENT_RANGE_3mA8_21mA,
+	AD5421_CURRENT_RANGE_3mA2_24mA,
+};
 
 /**
  * struct ad5421_state - driver instance specific data
@@ -471,7 +482,6 @@ static const struct iio_info ad5421_info = {
 
 static int ad5421_probe(struct spi_device *spi)
 {
-	struct ad5421_platform_data *pdata = dev_get_platdata(&spi->dev);
 	struct iio_dev *indio_dev;
 	struct ad5421_state *st;
 	int ret;
@@ -498,13 +508,7 @@ static int ad5421_probe(struct spi_device *spi)
 	st->ctrl = AD5421_CTRL_WATCHDOG_DISABLE |
 			AD5421_CTRL_AUTO_FAULT_READBACK;
 
-	if (pdata) {
-		st->current_range = pdata->current_range;
-		if (pdata->external_vref)
-			st->ctrl |= AD5421_CTRL_PWR_DOWN_INT_VREF;
-	} else {
-		st->current_range = AD5421_CURRENT_RANGE_4mA_20mA;
-	}
+	st->current_range = AD5421_CURRENT_RANGE_4mA_20mA;
 
 	/* write initial ctrl register value */
 	ad5421_update_ctrl(indio_dev, 0, 0);
