@@ -13,7 +13,6 @@
 
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
-#include <linux/iio/dac/max517.h>
 
 /* Commands */
 #define COMMAND_CHANNEL0	0x00
@@ -141,7 +140,6 @@ static const struct iio_chan_spec max517_channels[] = {
 
 static int max517_probe(struct i2c_client *client)
 {
-	const struct max517_platform_data *platform_data = dev_get_platdata(&client->dev);
 	const struct i2c_device_id *id = i2c_client_get_device_id(client);
 	struct max517_data *data;
 	struct iio_dev *indio_dev;
@@ -173,15 +171,10 @@ static int max517_probe(struct i2c_client *client)
 	indio_dev->info = &max517_info;
 
 	/*
-	 * Reference voltage on MAX518 and default is 5V, else take vref_mv
-	 * from platform_data
+	 * Reference voltage on MAX518 and default is 5V
 	 */
-	for (chan = 0; chan < indio_dev->num_channels; chan++) {
-		if (id->driver_data == ID_MAX518 || !platform_data)
-			data->vref_mv[chan] = 5000; /* mV */
-		else
-			data->vref_mv[chan] = platform_data->vref_mv[chan];
-	}
+	for (chan = 0; chan < indio_dev->num_channels; chan++)
+		data->vref_mv[chan] = 5000; /* mV */
 
 	return devm_iio_device_register(&client->dev, indio_dev);
 }
