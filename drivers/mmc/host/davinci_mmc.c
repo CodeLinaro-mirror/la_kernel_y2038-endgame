@@ -21,7 +21,6 @@
 #include <linux/mmc/mmc.h>
 #include <linux/mmc/slot-gpio.h>
 #include <linux/module.h>
-#include <linux/platform_data/mmc-davinci.h>
 #include <linux/platform_device.h>
 #include <linux/property.h>
 
@@ -162,6 +161,11 @@ MODULE_PARM_DESC(poll_loopcount,
 static unsigned use_dma = 1;
 module_param(use_dma, uint, 0);
 MODULE_PARM_DESC(use_dma, "Whether to use DMA or not. Default = 1");
+
+enum {
+	MMC_CTLR_VERSION_1 = 0,	/* DM644x and DM355 */
+	MMC_CTLR_VERSION_2,	/* DA830 */
+};
 
 struct mmc_davinci_host {
 	struct mmc_command *cmd;
@@ -676,24 +680,11 @@ static void calculate_clk_divider(struct mmc_host *mmc, struct mmc_ios *ios)
 static void mmc_davinci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 {
 	struct mmc_davinci_host *host = mmc_priv(mmc);
-	struct platform_device *pdev = to_platform_device(mmc->parent);
-	struct davinci_mmc_config *config = pdev->dev.platform_data;
 
 	dev_dbg(mmc_dev(host->mmc),
 		"clock %dHz busmode %d powermode %d Vdd %04x\n",
 		ios->clock, ios->bus_mode, ios->power_mode,
 		ios->vdd);
-
-	switch (ios->power_mode) {
-	case MMC_POWER_OFF:
-		if (config && config->set_power)
-			config->set_power(pdev->id, false);
-		break;
-	case MMC_POWER_UP:
-		if (config && config->set_power)
-			config->set_power(pdev->id, true);
-		break;
-	}
 
 	switch (ios->bus_width) {
 	case MMC_BUS_WIDTH_8:
@@ -1002,23 +993,11 @@ static irqreturn_t mmc_davinci_irq(int irq, void *dev_id)
 
 static int mmc_davinci_get_cd(struct mmc_host *mmc)
 {
-	struct platform_device *pdev = to_platform_device(mmc->parent);
-	struct davinci_mmc_config *config = pdev->dev.platform_data;
-
-	if (config && config->get_cd)
-		return config->get_cd(pdev->id);
-
 	return mmc_gpio_get_cd(mmc);
 }
 
 static int mmc_davinci_get_ro(struct mmc_host *mmc)
 {
-	struct platform_device *pdev = to_platform_device(mmc->parent);
-	struct davinci_mmc_config *config = pdev->dev.platform_data;
-
-	if (config && config->get_ro)
-		return config->get_ro(pdev->id);
-
 	return mmc_gpio_get_ro(mmc);
 }
 
@@ -1137,50 +1116,6 @@ static const struct of_device_id davinci_mmc_dt_ids[] = {
 };
 MODULE_DEVICE_TABLE(of, davinci_mmc_dt_ids);
 
-static int mmc_davinci_parse_pdata(struct mmc_host *mmc)
-{
-	struct platform_device *pdev = to_platform_device(mmc->parent);
-	struct davinci_mmc_config *pdata = pdev->dev.platform_data;
-	struct mmc_davinci_host *host;
-	int ret;
-
-	if (!pdata)
-		return -EINVAL;
-
-	host = mmc_priv(mmc);
-	if (!host)
-		return -EINVAL;
-
-	if (pdata && pdata->nr_sg)
-		host->nr_sg = pdata->nr_sg - 1;
-
-	if (pdata && (pdata->wires == 4 || pdata->wires == 0))
-		mmc->caps |= MMC_CAP_4_BIT_DATA;
-
-	if (pdata && (pdata->wires == 8))
-		mmc->caps |= (MMC_CAP_4_BIT_DATA | MMC_CAP_8_BIT_DATA);
-
-	mmc->f_min = 312500;
-	mmc->f_max = 25000000;
-	if (pdata && pdata->max_freq)
-		mmc->f_max = pdata->max_freq;
-	if (pdata && pdata->caps)
-		mmc->caps |= pdata->caps;
-
-	/* Register a cd gpio, if there is not one, enable polling */
-	ret = mmc_gpiod_request_cd(mmc, "cd", 0, false, 0);
-	if (ret == -EPROBE_DEFER)
-		return ret;
-	else if (ret)
-		mmc->caps |= MMC_CAP_NEEDS_POLL;
-
-	ret = mmc_gpiod_request_ro(mmc, "wp", 0, 0);
-	if (ret == -EPROBE_DEFER)
-		return ret;
-
-	return 0;
-}
-
 static int davinci_mmcsd_probe(struct platform_device *pdev)
 {
 	struct mmc_davinci_host *host = NULL;
@@ -1233,13 +1168,7 @@ static int davinci_mmcsd_probe(struct platform_device *pdev)
 				      "could not parse of data\n");
 			goto parse_fail;
 		}
-	} else {
-		ret = mmc_davinci_parse_pdata(mmc);
-		if (ret) {
-			dev_err(&pdev->dev,
-				"could not parse platform data: %d\n", ret);
-			goto parse_fail;
-	}	}
+	}
 
 	if (host->nr_sg > MAX_NR_SG || !host->nr_sg)
 		host->nr_sg = MAX_NR_SG;
