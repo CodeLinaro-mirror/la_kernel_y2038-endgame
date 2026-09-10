@@ -18,7 +18,6 @@
 #include <linux/platform_device.h>
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
-#include <linux/regulator/max8973-regulator.h>
 #include <linux/regulator/of_regulator.h>
 #include <linux/gpio/consumer.h>
 #include <linux/i2c.h>
@@ -27,6 +26,52 @@
 #include <linux/thermal.h>
 #include <linux/irq.h>
 #include <linux/interrupt.h>
+
+/*
+ * Control flags for configuration of the device.
+ * Client need to pass this information with ORed
+ */
+#define MAX8973_CONTROL_REMOTE_SENSE_ENABLE			0x00000001
+#define MAX8973_CONTROL_FALLING_SLEW_RATE_ENABLE		0x00000002
+#define MAX8973_CONTROL_OUTPUT_ACTIVE_DISCH_ENABLE		0x00000004
+#define MAX8973_CONTROL_BIAS_ENABLE				0x00000008
+#define MAX8973_CONTROL_PULL_DOWN_ENABLE			0x00000010
+#define MAX8973_CONTROL_FREQ_SHIFT_9PER_ENABLE			0x00000020
+
+#define MAX8973_CONTROL_CLKADV_TRIP_DISABLED			0x00000000
+#define MAX8973_CONTROL_CLKADV_TRIP_75mV_PER_US			0x00010000
+#define MAX8973_CONTROL_CLKADV_TRIP_150mV_PER_US		0x00020000
+#define MAX8973_CONTROL_CLKADV_TRIP_75mV_PER_US_HIST_DIS	0x00030000
+
+#define MAX8973_CONTROL_INDUCTOR_VALUE_NOMINAL			0x00000000
+#define MAX8973_CONTROL_INDUCTOR_VALUE_MINUS_30_PER		0x00100000
+#define MAX8973_CONTROL_INDUCTOR_VALUE_PLUS_30_PER		0x00200000
+#define MAX8973_CONTROL_INDUCTOR_VALUE_PLUS_60_PER		0x00300000
+
+/*
+ * struct max8973_regulator_platform_data - max8973 regulator platform data.
+ *
+ * @reg_init_data: The regulator init data.
+ * @control_flags: Control flags which are ORed value of above flags to
+ *		configure device.
+ * @junction_temp_warning: Junction temp in millicelcius on which warning need
+ *			   to be set. Thermal functionality is only supported on
+ *			   MAX77621. The threshold warning supported by MAX77621
+ *			   are 120C and 140C.
+ * @enable_ext_control: Enable the voltage enable/disable through external
+ *		control signal from EN input pin. If it is false then
+ *		voltage output will be enabled/disabled through EN bit of
+ *		device register.
+ * @dvs_def_state: Default state of dvs. 1 if it is high else 0.
+ */
+struct max8973_regulator_platform_data {
+	struct regulator_init_data *reg_init_data;
+	unsigned long control_flags;
+	unsigned long junction_temp_warning;
+	bool enable_ext_control;
+	unsigned dvs_def_state:1;
+};
+
 
 /* Register definitions */
 #define MAX8973_VOUT					0x0
@@ -588,21 +633,13 @@ static int max8973_probe(struct i2c_client *client)
 	struct regulator_config config = { };
 	struct regulator_dev *rdev;
 	struct max8973_chip *max;
-	bool pdata_from_dt = false;
 	unsigned int chip_id;
 	struct gpio_desc *gpiod;
 	enum gpiod_flags gflags;
 	int ret;
 
-	pdata = dev_get_platdata(&client->dev);
-
-	if (!pdata && client->dev.of_node) {
-		pdata = max8973_parse_dt(&client->dev);
-		pdata_from_dt = true;
-	}
-
+	pdata = max8973_parse_dt(&client->dev);
 	if (!pdata) {
-		dev_err(&client->dev, "No Platform data");
 		return -EIO;
 	}
 
@@ -627,7 +664,7 @@ static int max8973_probe(struct i2c_client *client)
 	if (client->dev.of_node) {
 		const struct of_device_id *match;
 
-		match = of_match_device(of_match_ptr(of_max8973_match_tbl),
+		match = of_match_device(of_max8973_match_tbl,
 				&client->dev);
 		if (!match)
 			return -ENODATA;
@@ -690,8 +727,7 @@ static int max8973_probe(struct i2c_client *client)
 		max->desc.vsel_mask = MAX8973_VOUT_MASK;
 	}
 
-	if (pdata_from_dt)
-		pdata->reg_init_data = of_get_regulator_init_data(&client->dev,
+	pdata->reg_init_data = of_get_regulator_init_data(&client->dev,
 					client->dev.of_node, &max->desc);
 
 	ridata = pdata->reg_init_data;
