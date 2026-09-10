@@ -29,11 +29,42 @@
 #include <linux/i2c.h>
 #include <linux/platform_device.h>
 #include <linux/regulator/driver.h>
+#include <linux/regulator/machine.h>
 #include <linux/slab.h>
-#include <linux/regulator/max8660.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/regulator/of_regulator.h>
+
+enum {
+	MAX8660_V3,
+	MAX8660_V4,
+	MAX8660_V5,
+	MAX8660_V6,
+	MAX8660_V7,
+	MAX8660_V_END,
+};
+
+/**
+ * max8660_subdev_data - regulator subdev data
+ * @id: regulator id
+ * @name: regulator name
+ * @platform_data: regulator init data
+ */
+struct max8660_subdev_data {
+	int				id;
+	const char			*name;
+	struct regulator_init_data	*platform_data;
+};
+
+/**
+ * max8660_platform_data - platform data for max8660
+ * @num_subdevs: number of regulators used
+ * @subdevs: pointer to regulators used
+ */
+struct max8660_platform_data {
+	int num_subdevs;
+	struct max8660_subdev_data *subdevs;
+};
 
 #define MAX8660_DCDC_MIN_UV	 725000
 #define MAX8660_DCDC_MAX_UV	1800000
@@ -307,7 +338,6 @@ enum {
 	MAX8661 = 1,
 };
 
-#ifdef CONFIG_OF
 static const struct of_device_id max8660_dt_ids[] = {
 	{ .compatible = "maxim,max8660", .data = (void *) MAX8660 },
 	{ .compatible = "maxim,max8661", .data = (void *) MAX8661 },
@@ -358,43 +388,27 @@ static int max8660_pdata_from_dt(struct device *dev,
 
 	return 0;
 }
-#else
-static inline int max8660_pdata_from_dt(struct device *dev,
-					struct device_node **of_node,
-					struct max8660_platform_data *pdata)
-{
-	return 0;
-}
-#endif
 
 static int max8660_probe(struct i2c_client *client)
 {
-	const struct i2c_device_id *i2c_id = i2c_client_get_device_id(client);
 	struct device *dev = &client->dev;
-	struct max8660_platform_data pdata_of, *pdata = dev_get_platdata(dev);
+	struct max8660_platform_data pdata_of, *pdata = &pdata_of;
 	struct regulator_config config = { };
 	struct max8660 *max8660;
 	int boot_on, i, id, ret = -EINVAL;
 	struct device_node *of_node[MAX8660_V_END];
 	unsigned long type;
+	const struct of_device_id *of_id;
 
-	if (dev->of_node && !pdata) {
-		const struct of_device_id *id;
+	of_id = of_match_device(max8660_dt_ids, dev);
+	if (!of_id)
+		return -ENODEV;
 
-		id = of_match_device(of_match_ptr(max8660_dt_ids), dev);
-		if (!id)
-			return -ENODEV;
+	ret = max8660_pdata_from_dt(dev, of_node, &pdata_of);
+	if (ret < 0)
+		return ret;
 
-		ret = max8660_pdata_from_dt(dev, of_node, &pdata_of);
-		if (ret < 0)
-			return ret;
-
-		pdata = &pdata_of;
-		type = (unsigned long) id->data;
-	} else {
-		type = i2c_id->driver_data;
-		memset(of_node, 0, sizeof(of_node));
-	}
+	type = (unsigned long) of_id->data;
 
 	if (pdata->num_subdevs > MAX8660_V_END) {
 		dev_err(dev, "Too many regulators found!\n");
@@ -407,14 +421,9 @@ static int max8660_probe(struct i2c_client *client)
 
 	max8660->client = client;
 
-	if (pdata->en34_is_high) {
-		/* Simulate always on */
-		max8660->shadow_regs[MAX8660_OVER1] = 5;
-	} else {
-		/* Otherwise devices can be toggled via software */
-		max8660_dcdc_ops.enable = max8660_dcdc_enable;
-		max8660_dcdc_ops.disable = max8660_dcdc_disable;
-	}
+	/* Otherwise devices can be toggled via software */
+	max8660_dcdc_ops.enable = max8660_dcdc_enable;
+	max8660_dcdc_ops.disable = max8660_dcdc_disable;
 
 	/*
 	 * First, set up shadow registers to prevent glitches. As some
