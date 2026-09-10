@@ -11966,7 +11966,6 @@ L:	netdev@vger.kernel.org
 S:	Maintained
 F:	Documentation/devicetree/bindings/net/dsa/hirschmann,hellcreek.yaml
 F:	drivers/net/dsa/hirschmann/*
-F:	include/linux/platform_data/hirschmann-hellcreek.h
 F:	net/dsa/tag_hellcreek.c
 
 HISILICON DMA DRIVER

@@ -16,7 +16,6 @@
 #include <linux/device.h>
 #include <linux/leds.h>
 #include <linux/mutex.h>
-#include <linux/platform_data/hirschmann-hellcreek.h>
 #include <linux/ptp_clock_kernel.h>
 #include <linux/timecounter.h>
 #include <linux/types.h>
@@ -272,6 +271,16 @@ struct hellcreek_fdb_entry {
 	u8 is_static;
 	u8 reprio_tc;
 	u8 reprio_en;
+};
+
+struct hellcreek_platform_data {
+	const char *name;	/* Switch name */
+	int num_ports;		/* Amount of switch ports */
+	int is_100_mbits;	/* Is it configured to 100 or 1000 mbit/s */
+	int qbv_support;	/* Qbv support on front TSN ports */
+	int qbv_on_cpu_port;	/* Qbv support on the CPU port */
+	int qbu_support;	/* Qbu support on front TSN ports */
+	u16 module_id;		/* Module identificaton */
 };
 
 struct hellcreek {
