@@ -25,7 +25,6 @@
 #include <linux/if_bridge.h>
 #include <linux/brcmphy.h>
 #include <linux/etherdevice.h>
-#include <linux/platform_data/b53.h>
 
 #include "bcm_sf2.h"
 #include "bcm_sf2_regs.h"
@@ -1368,7 +1367,6 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
 	struct device_node *dn = pdev->dev.of_node;
 	const struct of_device_id *of_id = NULL;
 	const struct bcm_sf2_of_data *data;
-	struct b53_platform_data *pdata;
 	struct dsa_switch_ops *ops;
 	struct device_node *ports;
 	struct bcm_sf2_priv *priv;
@@ -1389,10 +1387,6 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
 
 	dev = b53_switch_alloc(&pdev->dev, &bcm_sf2_io_ops, priv);
 	if (!dev)
-		return -ENOMEM;
-
-	pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
-	if (!pdata)
 		return -ENOMEM;
 
 	of_id = of_match_node(bcm_sf2_of_match, dn);
@@ -1418,9 +1412,7 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
 	 * provide an indication of what kind of device we are for
 	 * b53_common to work with
 	 */
-	pdata->chip_id = priv->type;
-	dev->pdata = pdata;
-
+	dev->chip_id = priv->type;
 	priv->dev = dev;
 	ds = dev->ds;
 	ds->ops = &bcm_sf2_ops;

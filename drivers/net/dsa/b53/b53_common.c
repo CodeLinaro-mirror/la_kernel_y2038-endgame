@@ -24,7 +24,6 @@
 #include <linux/math.h>
 #include <linux/minmax.h>
 #include <linux/module.h>
-#include <linux/platform_data/b53.h>
 #include <linux/phy.h>
 #include <linux/phylink.h>
 #include <linux/etherdevice.h>
@@ -3308,11 +3307,6 @@ EXPORT_SYMBOL(b53_switch_detect);
 int b53_switch_register(struct b53_device *dev)
 {
 	int ret;
-
-	if (dev->pdata) {
-		dev->chip_id = dev->pdata->chip_id;
-		dev->enabled_ports = dev->pdata->enabled_ports;
-	}
 
 	if (!dev->chip_id && b53_switch_detect(dev))
 		return -EINVAL;

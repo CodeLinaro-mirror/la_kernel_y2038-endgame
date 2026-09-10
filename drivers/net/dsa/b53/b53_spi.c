@@ -22,7 +22,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/spi/spi.h>
-#include <linux/platform_data/b53.h>
 
 #include "b53_priv.h"
 
@@ -301,9 +300,6 @@ static int b53_spi_probe(struct spi_device *spi)
 	dev = b53_switch_alloc(&spi->dev, &b53_spi_ops, spi);
 	if (!dev)
 		return -ENOMEM;
-
-	if (spi->dev.platform_data)
-		dev->pdata = spi->dev.platform_data;
 
 	ret = b53_switch_register(dev);
 	if (ret)

@@ -132,7 +132,6 @@ struct b53_vlan {
 
 struct b53_device {
 	struct dsa_switch *ds;
-	struct b53_platform_data *pdata;
 	const char *name;
 
 	struct mutex reg_mutex;

@@ -23,7 +23,6 @@
 #include <linux/io.h>
 #include <linux/mfd/syscon.h>
 #include <linux/platform_device.h>
-#include <linux/platform_data/b53.h>
 #include <linux/regmap.h>
 
 #include "b53_priv.h"
@@ -47,6 +46,7 @@ struct b53_mmap_priv {
 	struct regmap *gpio_ctrl;
 	const struct b53_phy_info *phy_info;
 	u32 phys_enabled;
+	bool big_endian;
 };
 
 static const u32 bcm6318_ephy_offsets[] = {4, 5, 6, 7};
@@ -95,7 +95,7 @@ static int b53_mmap_read16(struct b53_device *dev, u8 page, u8 reg, u16 *val)
 	if (WARN_ON(reg % 2))
 		return -EINVAL;
 
-	if (dev->pdata && dev->pdata->big_endian)
+	if (priv->big_endian)
 		*val = ioread16be(regs + (page << 8) + reg);
 	else
 		*val = readw(regs + (page << 8) + reg);
@@ -111,7 +111,7 @@ static int b53_mmap_read32(struct b53_device *dev, u8 page, u8 reg, u32 *val)
 	if (WARN_ON(reg % 4))
 		return -EINVAL;
 
-	if (dev->pdata && dev->pdata->big_endian)
+	if (priv->big_endian)
 		*val = ioread32be(regs + (page << 8) + reg);
 	else
 		*val = readl(regs + (page << 8) + reg);
@@ -131,7 +131,7 @@ static int b53_mmap_read48(struct b53_device *dev, u8 page, u8 reg, u64 *val)
 		u16 lo;
 		u32 hi;
 
-		if (dev->pdata && dev->pdata->big_endian) {
+		if (priv->big_endian) {
 			lo = ioread16be(regs + (page << 8) + reg);
 			hi = ioread32be(regs + (page << 8) + reg + 2);
 		} else {
@@ -144,7 +144,7 @@ static int b53_mmap_read48(struct b53_device *dev, u8 page, u8 reg, u64 *val)
 		u32 lo;
 		u16 hi;
 
-		if (dev->pdata && dev->pdata->big_endian) {
+		if (priv->big_endian) {
 			lo = ioread32be(regs + (page << 8) + reg);
 			hi = ioread16be(regs + (page << 8) + reg + 4);
 		} else {
@@ -167,7 +167,7 @@ static int b53_mmap_read64(struct b53_device *dev, u8 page, u8 reg, u64 *val)
 	if (WARN_ON(reg % 4))
 		return -EINVAL;
 
-	if (dev->pdata && dev->pdata->big_endian) {
+	if (priv->big_endian) {
 		lo = ioread32be(regs + (page << 8) + reg);
 		hi = ioread32be(regs + (page << 8) + reg + 4);
 	} else {
@@ -199,7 +199,7 @@ static int b53_mmap_write16(struct b53_device *dev, u8 page, u8 reg,
 	if (WARN_ON(reg % 2))
 		return -EINVAL;
 
-	if (dev->pdata && dev->pdata->big_endian)
+	if (priv->big_endian)
 		iowrite16be(value, regs + (page << 8) + reg);
 	else
 		writew(value, regs + (page << 8) + reg);
@@ -216,7 +216,7 @@ static int b53_mmap_write32(struct b53_device *dev, u8 page, u8 reg,
 	if (WARN_ON(reg % 4))
 		return -EINVAL;
 
-	if (dev->pdata && dev->pdata->big_endian)
+	if (priv->big_endian)
 		iowrite32be(value, regs + (page << 8) + reg);
 	else
 		writel(value, regs + (page << 8) + reg);
@@ -359,26 +359,11 @@ static const struct b53_io_ops b53_mmap_ops = {
 };
 
 static int b53_mmap_probe_of(struct platform_device *pdev,
-			     struct b53_platform_data **ppdata)
+			     u16 *enabled_ports)
 {
 	struct device_node *np = pdev->dev.of_node;
 	struct device_node *of_ports, *of_port;
 	struct device *dev = &pdev->dev;
-	struct b53_platform_data *pdata;
-	void __iomem *mem;
-
-	mem = devm_platform_ioremap_resource(pdev, 0);
-	if (IS_ERR(mem))
-		return PTR_ERR(mem);
-
-	pdata = devm_kzalloc(dev, sizeof(struct b53_platform_data),
-			     GFP_KERNEL);
-	if (!pdata)
-		return -ENOMEM;
-
-	pdata->regs = mem;
-	pdata->chip_id = (u32)(unsigned long)device_get_match_data(dev);
-	pdata->big_endian = of_property_read_bool(np, "big-endian");
 
 	of_ports = of_get_child_by_name(np, "ports");
 	if (!of_ports) {
@@ -393,11 +378,10 @@ static int b53_mmap_probe_of(struct platform_device *pdev,
 			continue;
 
 		if (reg < B53_N_PORTS)
-			pdata->enabled_ports |= BIT(reg);
+			*enabled_ports |= BIT(reg);
 	}
 
 	of_node_put(of_ports);
-	*ppdata = pdata;
 
 	return 0;
 }
@@ -405,37 +389,39 @@ static int b53_mmap_probe_of(struct platform_device *pdev,
 static int b53_mmap_probe(struct platform_device *pdev)
 {
 	struct device_node *np = pdev->dev.of_node;
-	struct b53_platform_data *pdata = pdev->dev.platform_data;
 	struct b53_mmap_priv *priv;
 	struct b53_device *dev;
+	u32 chip_id;
+	u16 enabled_ports;
 	int ret;
-
-	if (!pdata && np) {
-		ret = b53_mmap_probe_of(pdev, &pdata);
-		if (ret) {
-			dev_err(&pdev->dev, "OF probe error\n");
-			return ret;
-		}
-	}
-
-	if (!pdata)
-		return -EINVAL;
 
 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
 
-	priv->regs = pdata->regs;
+	chip_id = (u32)(unsigned long)device_get_match_data(&pdev->dev);
+
+	ret = b53_mmap_probe_of(pdev, &enabled_ports);
+	if (ret) {
+		dev_err(&pdev->dev, "OF probe error\n");
+		return ret;
+	}
+
+	priv->regs = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(priv->regs))
+		return PTR_ERR(priv->regs);
+
+	priv->big_endian = of_property_read_bool(np, "big-endian");
 
 	priv->gpio_ctrl = syscon_regmap_lookup_by_phandle(np, "brcm,gpio-ctrl");
 	if (!IS_ERR(priv->gpio_ctrl)) {
-		if (pdata->chip_id == BCM6318_DEVICE_ID ||
-		    pdata->chip_id == BCM6328_DEVICE_ID ||
-		    pdata->chip_id == BCM6362_DEVICE_ID)
+		if (chip_id == BCM6318_DEVICE_ID ||
+		    chip_id == BCM6328_DEVICE_ID ||
+		    chip_id == BCM6362_DEVICE_ID)
 			priv->phy_info = &bcm6318_ephy_info;
-		else if (pdata->chip_id == BCM6368_DEVICE_ID)
+		else if (chip_id == BCM6368_DEVICE_ID)
 			priv->phy_info = &bcm6368_ephy_info;
-		else if (pdata->chip_id == BCM63268_DEVICE_ID)
+		else if (chip_id == BCM63268_DEVICE_ID)
 			priv->phy_info = &bcm63268_ephy_info;
 	}
 
@@ -443,7 +429,8 @@ static int b53_mmap_probe(struct platform_device *pdev)
 	if (!dev)
 		return -ENOMEM;
 
-	dev->pdata = pdata;
+	dev->chip_id = chip_id;
+	dev->enabled_ports = enabled_ports;
 
 	platform_set_drvdata(pdev, dev);
 

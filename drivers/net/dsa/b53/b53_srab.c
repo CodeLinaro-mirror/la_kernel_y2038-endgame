@@ -21,7 +21,6 @@
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
-#include <linux/platform_data/b53.h>
 #include <linux/of.h>
 
 #include "b53_priv.h"
@@ -571,7 +570,7 @@ static void b53_srab_mux_init(struct platform_device *pdev)
 	u32 reg, off = 0;
 	int ret;
 
-	if (dev->pdata && dev->pdata->chip_id != BCM58XX_DEVICE_ID)
+	if (dev->chip_id != BCM58XX_DEVICE_ID)
 		return;
 
 	priv->mux_config = devm_platform_ioremap_resource(pdev, 1);
@@ -617,22 +616,10 @@ static void b53_srab_mux_init(struct platform_device *pdev)
 
 static int b53_srab_probe(struct platform_device *pdev)
 {
-	struct b53_platform_data *pdata = pdev->dev.platform_data;
 	struct device_node *dn = pdev->dev.of_node;
 	const struct of_device_id *of_id = NULL;
 	struct b53_srab_priv *priv;
 	struct b53_device *dev;
-
-	if (dn)
-		of_id = of_match_node(b53_srab_of_match, dn);
-
-	if (of_id) {
-		pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
-		if (!pdata)
-			return -ENOMEM;
-
-		pdata->chip_id = (u32)(unsigned long)of_id->data;
-	}
 
 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
@@ -646,8 +633,8 @@ static int b53_srab_probe(struct platform_device *pdev)
 	if (!dev)
 		return -ENOMEM;
 
-	if (pdata)
-		dev->pdata = pdata;
+	of_id = of_match_node(b53_srab_of_match, dn);
+	dev->chip_id = (u32)(unsigned long)of_id->data;
 
 	platform_set_drvdata(pdev, dev);
 
