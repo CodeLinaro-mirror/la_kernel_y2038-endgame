@@ -13,13 +13,60 @@
 #include <linux/err.h>
 #include <linux/platform_device.h>
 #include <linux/regulator/driver.h>
-#include <linux/regulator/act8865.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/power_supply.h>
 #include <linux/regulator/of_regulator.h>
 #include <linux/regmap.h>
 #include <dt-bindings/regulator/active-semi,8865-regulator.h>
+
+
+enum {
+	ACT8600_ID_DCDC1,
+	ACT8600_ID_DCDC2,
+	ACT8600_ID_DCDC3,
+	ACT8600_ID_SUDCDC4,
+	ACT8600_ID_LDO5,
+	ACT8600_ID_LDO6,
+	ACT8600_ID_LDO7,
+	ACT8600_ID_LDO8,
+	ACT8600_ID_LDO9,
+	ACT8600_ID_LDO10,
+};
+
+enum {
+	ACT8865_ID_DCDC1,
+	ACT8865_ID_DCDC2,
+	ACT8865_ID_DCDC3,
+	ACT8865_ID_LDO1,
+	ACT8865_ID_LDO2,
+	ACT8865_ID_LDO3,
+	ACT8865_ID_LDO4,
+	ACT8865_REG_NUM,
+};
+
+enum {
+	ACT8846_ID_REG1,
+	ACT8846_ID_REG2,
+	ACT8846_ID_REG3,
+	ACT8846_ID_REG4,
+	ACT8846_ID_REG5,
+	ACT8846_ID_REG6,
+	ACT8846_ID_REG7,
+	ACT8846_ID_REG8,
+	ACT8846_ID_REG9,
+	ACT8846_ID_REG10,
+	ACT8846_ID_REG11,
+	ACT8846_ID_REG12,
+	ACT8846_REG_NUM,
+};
+
+enum {
+	ACT8600,
+	ACT8865,
+	ACT8846,
+};
+
 
 /*
  * ACT8600 Global Register Map.
@@ -549,7 +596,6 @@ static const struct regulator_desc act8865_alt_regulators[] = {
 	ACT88xx_LDO("LDO_REG4", ACT8865, LDO4, VSET, "inl67"),
 };
 
-#ifdef CONFIG_OF
 static const struct of_device_id act8865_dt_ids[] = {
 	{ .compatible = "active-semi,act8600", .data = (void *)ACT8600 },
 	{ .compatible = "active-semi,act8846", .data = (void *)ACT8846 },
@@ -557,20 +603,6 @@ static const struct of_device_id act8865_dt_ids[] = {
 	{ }
 };
 MODULE_DEVICE_TABLE(of, act8865_dt_ids);
-#endif
-
-static struct act8865_regulator_data *act8865_get_regulator_data(
-		int id, struct act8865_platform_data *pdata)
-{
-	int i;
-
-	for (i = 0; i < pdata->num_regulators; i++) {
-		if (pdata->regulators[i].id == id)
-			return &pdata->regulators[i];
-	}
-
-	return NULL;
-}
 
 static struct i2c_client *act8865_i2c_client;
 static void act8865_power_off(void)
@@ -653,9 +685,7 @@ static int act8600_charger_probe(struct device *dev, struct regmap *regmap)
 
 static int act8865_pmic_probe(struct i2c_client *client)
 {
-	const struct i2c_device_id *i2c_id = i2c_client_get_device_id(client);
 	const struct regulator_desc *regulators;
-	struct act8865_platform_data *pdata = NULL;
 	struct device *dev = &client->dev;
 	int i, ret, num_regulators;
 	struct act8865 *act8865;
@@ -664,20 +694,15 @@ static int act8865_pmic_probe(struct i2c_client *client)
 	int off_reg, off_mask;
 	int voltage_select = 0;
 
-	if (dev->of_node) {
-		const struct of_device_id *id;
+	const struct of_device_id *id;
 
-		id = of_match_device(of_match_ptr(act8865_dt_ids), dev);
-		if (!id)
-			return -ENODEV;
+	id = of_match_device(of_match_ptr(act8865_dt_ids), dev);
+	if (!id)
+		return -ENODEV;
 
-		type = (unsigned long) id->data;
+	type = (unsigned long) id->data;
 
-		voltage_select = of_property_read_bool(dev->of_node, "active-semi,vsel-high");
-	} else {
-		type = i2c_id->driver_data;
-		pdata = dev_get_platdata(dev);
-	}
+	voltage_select = of_property_read_bool(dev->of_node, "active-semi,vsel-high");
 
 	switch (type) {
 	case ACT8600:
@@ -742,16 +767,6 @@ static int act8865_pmic_probe(struct i2c_client *client)
 		config.dev = dev;
 		config.driver_data = act8865;
 		config.regmap = act8865->regmap;
-
-		if (pdata) {
-			struct act8865_regulator_data *rdata;
-
-			rdata = act8865_get_regulator_data(desc->id, pdata);
-			if (rdata) {
-				config.init_data = rdata->init_data;
-				config.of_node = rdata->of_node;
-			}
-		}
 
 		rdev = devm_regulator_register(dev, desc, &config);
 		if (IS_ERR(rdev)) {
