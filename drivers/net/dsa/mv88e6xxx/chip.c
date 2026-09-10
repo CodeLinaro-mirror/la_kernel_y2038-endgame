@@ -26,7 +26,6 @@
 #include <linux/of.h>
 #include <linux/of_irq.h>
 #include <linux/of_mdio.h>
-#include <linux/platform_data/mv88e6xxx.h>
 #include <linux/property.h>
 #include <linux/netdevice.h>
 #include <linux/gpio/consumer.h>
@@ -7351,19 +7350,6 @@ static void mv88e6xxx_unregister_switch(struct mv88e6xxx_chip *chip)
 	dsa_unregister_switch(chip->ds);
 }
 
-static const void *pdata_device_get_match_data(struct device *dev)
-{
-	const struct of_device_id *matches = dev->driver->of_match_table;
-	const struct dsa_mv88e6xxx_pdata *pdata = dev->platform_data;
-
-	for (; matches->name[0] || matches->type[0] || matches->compatible[0];
-	     matches++) {
-		if (!strcmp(pdata->compatible, matches->compatible))
-			return matches->data;
-	}
-	return NULL;
-}
-
 /* There is no suspend to RAM support at DSA level yet, the switch configuration
  * would be lost after a power cycle so prevent it to be suspended.
  */
@@ -7381,36 +7367,13 @@ static SIMPLE_DEV_PM_OPS(mv88e6xxx_pm_ops, mv88e6xxx_suspend, mv88e6xxx_resume);
 
 static int mv88e6xxx_probe(struct mdio_device *mdiodev)
 {
-	struct dsa_mv88e6xxx_pdata *pdata = mdiodev->dev.platform_data;
 	const struct mv88e6xxx_info *compat_info = NULL;
 	struct device *dev = &mdiodev->dev;
 	struct device_node *np = dev->of_node;
 	struct mv88e6xxx_chip *chip;
-	int port;
 	int err;
 
-	if (!np && !pdata)
-		return -EINVAL;
-
-	if (np)
-		compat_info = of_device_get_match_data(dev);
-
-	if (pdata) {
-		compat_info = pdata_device_get_match_data(dev);
-
-		if (!pdata->netdev)
-			return -EINVAL;
-
-		for (port = 0; port < DSA_MAX_PORTS; port++) {
-			if (!(pdata->enabled_ports & (1 << port)))
-				continue;
-			if (strcmp(pdata->cd.port_names[port], "cpu"))
-				continue;
-			pdata->cd.netdev[port] = &pdata->netdev->dev;
-			break;
-		}
-	}
-
+	compat_info = of_device_get_match_data(dev);
 	if (!compat_info)
 		return -EINVAL;
 
@@ -7451,13 +7414,8 @@ static int mv88e6xxx_probe(struct mdio_device *mdiodev)
 
 	mv88e6xxx_phy_init(chip);
 
-	if (chip->info->ops->get_eeprom) {
-		if (np)
-			of_property_read_u32(np, "eeprom-length",
-					     &chip->eeprom_len);
-		else
-			chip->eeprom_len = pdata->eeprom_len;
-	}
+	if (chip->info->ops->get_eeprom)
+		of_property_read_u32(np, "eeprom-length", &chip->eeprom_len);
 
 	mv88e6xxx_reg_lock(chip);
 	err = mv88e6xxx_switch_reset(chip);
@@ -7472,9 +7430,6 @@ static int mv88e6xxx_probe(struct mdio_device *mdiodev)
 			goto out_phy;
 		}
 	}
-
-	if (pdata)
-		chip->irq = pdata->irq;
 
 	/* Has to be performed before the MDIO bus is created, because
 	 * the PHYs will link their interrupts to these interrupt
@@ -7525,9 +7480,6 @@ out_g1_irq:
 out_phy:
 	mv88e6xxx_phy_destroy(chip);
 out:
-	if (pdata)
-		dev_put(pdata->netdev);
-
 	return err;
 }
 
