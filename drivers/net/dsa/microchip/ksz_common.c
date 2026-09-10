@@ -11,7 +11,6 @@
 #include <linux/gpio/consumer.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
-#include <linux/platform_data/microchip-ksz.h>
 #include <linux/phy.h>
 #include <linux/etherdevice.h>
 #include <linux/if_bridge.h>
@@ -1928,15 +1927,8 @@ static int ksz_check_device_id(struct ksz_device *dev)
 	const struct ksz_chip_data *expected_chip_data;
 	u32 expected_chip_id;
 
-	if (dev->pdata) {
-		expected_chip_id = dev->pdata->chip_id;
-		expected_chip_data = ksz_lookup_info(expected_chip_id);
-		if (WARN_ON(!expected_chip_data))
-			return -ENODEV;
-	} else {
-		expected_chip_data = of_device_get_match_data(dev->dev);
-		expected_chip_id = expected_chip_data->chip_id;
-	}
+	expected_chip_data = of_device_get_match_data(dev->dev);
+	expected_chip_id = expected_chip_data->chip_id;
 
 	if (expected_chip_id != dev->chip_id) {
 		dev_err(dev->dev,

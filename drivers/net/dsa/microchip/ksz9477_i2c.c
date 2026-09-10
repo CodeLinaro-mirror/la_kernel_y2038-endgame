@@ -43,9 +43,6 @@ static int ksz9477_i2c_probe(struct i2c_client *i2c)
 		}
 	}
 
-	if (i2c->dev.platform_data)
-		dev->pdata = i2c->dev.platform_data;
-
 	dev->irq = i2c->irq;
 
 	ret = ksz_switch_register(dev);

@@ -182,9 +182,6 @@ static int ksz_spi_probe(struct spi_device *spi)
 		}
 	}
 
-	if (spi->dev.platform_data)
-		dev->pdata = spi->dev.platform_data;
-
 	/* setup spi */
 	if (chip->chip_id == KSZ8995XA_CHIP_ID)
 		spi->mode = SPI_MODE_0;

@@ -163,9 +163,6 @@ static int ksz8863_smi_probe(struct mdio_device *mdiodev)
 		}
 	}
 
-	if (mdiodev->dev.platform_data)
-		dev->pdata = mdiodev->dev.platform_data;
-
 	ret = ksz_switch_register(dev);
 
 	/* Main DSA driver may not be started yet. */

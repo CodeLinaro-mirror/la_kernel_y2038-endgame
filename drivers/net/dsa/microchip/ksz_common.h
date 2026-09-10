@@ -17,7 +17,6 @@
 #include <net/dsa.h>
 #include <net/pkt_cls.h>
 #include <linux/irq.h>
-#include <linux/platform_data/microchip-ksz.h>
 
 #include "ksz_ptp.h"
 
@@ -205,9 +204,34 @@ struct ksz_port {
 	bool manual_flow;
 };
 
+enum ksz_chip_id {
+	KSZ8463_CHIP_ID = 0x8463,
+	KSZ8563_CHIP_ID = 0x8563,
+	KSZ8795_CHIP_ID = 0x8795,
+	KSZ8794_CHIP_ID = 0x8794,
+	KSZ8765_CHIP_ID = 0x8765,
+	KSZ88X3_CHIP_ID = 0x8830,
+	KSZ8864_CHIP_ID = 0x8864,
+	KSZ8895_CHIP_ID = 0x8895,
+	KSZ8995XA_CHIP_ID = 0x8995,
+	KSZ9477_CHIP_ID = 0x00947700,
+	KSZ9896_CHIP_ID = 0x00989600,
+	KSZ9897_CHIP_ID = 0x00989700,
+	KSZ9897S_CHIP_ID = 0x00989701,
+	KSZ9893_CHIP_ID = 0x00989300,
+	KSZ9563_CHIP_ID = 0x00956300,
+	KSZ8567_CHIP_ID = 0x00856700,
+	KSZ9567_CHIP_ID = 0x00956700,
+	LAN9370_CHIP_ID = 0x00937000,
+	LAN9371_CHIP_ID = 0x00937100,
+	LAN9372_CHIP_ID = 0x00937200,
+	LAN9373_CHIP_ID = 0x00937300,
+	LAN9374_CHIP_ID = 0x00937400,
+	LAN9646_CHIP_ID = 0x00964600,
+};
+
 struct ksz_device {
 	struct dsa_switch *ds;
-	struct ksz_platform_data *pdata;
 	const struct ksz_chip_data *info;
 
 	struct mutex dev_mutex;		/* device access */
