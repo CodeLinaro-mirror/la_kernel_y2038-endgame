@@ -241,16 +241,6 @@ config LEDS_TURRIS_OMNIA
 	  side of CZ.NIC's Turris Omnia router. There are 12 RGB LEDs on the
 	  front panel.
 
-config LEDS_LM3530
-	tristate "LCD Backlight driver for LM3530"
-	depends on LEDS_CLASS
-	depends on I2C
-	help
-	  This option enables support for the LCD backlight using
-	  LM3530 ambient light sensor chip. This ALS chip can be
-	  controlled manually or using PWM input or using ambient
-	  light automatically.
-
 config LEDS_LM3532
 	tristate "LCD Backlight driver for LM3532"
 	select REGMAP_I2C
