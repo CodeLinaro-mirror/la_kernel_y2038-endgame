@@ -21157,7 +21157,6 @@ PCA9532 LED DRIVER
 M:	Riku Voipio <riku.voipio@iki.fi>
 S:	Maintained
 F:	drivers/leds/leds-pca9532.c
-F:	include/linux/leds-pca9532.h
 
 PCI DRIVER FOR AARDVARK (Marvell Armada 3700)
 M:	Thomas Petazzoni <thomas.petazzoni@bootlin.com>

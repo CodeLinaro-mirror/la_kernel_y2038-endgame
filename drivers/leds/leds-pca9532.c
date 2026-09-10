@@ -15,9 +15,36 @@
 #include <linux/input.h>
 #include <linux/mutex.h>
 #include <linux/workqueue.h>
-#include <linux/leds-pca9532.h>
 #include <linux/gpio/driver.h>
 #include <linux/of.h>
+#include <dt-bindings/leds/leds-pca9532.h>
+
+enum pca9532_state {
+	PCA9532_OFF  = 0x0,
+	PCA9532_ON   = 0x1,
+	PCA9532_PWM0 = 0x2,
+	PCA9532_PWM1 = 0x3,
+	PCA9532_KEEP = 0xff,
+};
+
+struct pca9532_led {
+	u8 id;
+	struct i2c_client *client;
+	const char *name;
+	const char *default_trigger;
+	struct led_classdev ldev;
+	struct work_struct work;
+	u32 type;
+	enum pca9532_state state;
+};
+
+struct pca9532_platform_data {
+	struct pca9532_led leds[16];
+	u8 pwm[2];
+	u8 psc[2];
+	int gpio_base;
+};
+
 
 /* m =  num_leds*/
 #define PCA9532_REG_INPUT(i)	((i) >> 3)
@@ -91,7 +118,6 @@ static const struct pca9532_chip_info pca9532_chip_info_tbl[] = {
 	},
 };
 
-#ifdef CONFIG_OF
 static const struct of_device_id of_pca9532_leds_match[] = {
 	{ .compatible = "nxp,pca9530", .data = (void *)pca9530 },
 	{ .compatible = "nxp,pca9531", .data = (void *)pca9531 },
@@ -101,12 +127,11 @@ static const struct of_device_id of_pca9532_leds_match[] = {
 };
 
 MODULE_DEVICE_TABLE(of, of_pca9532_leds_match);
-#endif
 
 static struct i2c_driver pca9532_driver = {
 	.driver = {
 		.name = "leds-pca953x",
-		.of_match_table = of_match_ptr(of_pca9532_leds_match),
+		.of_match_table = of_pca9532_leds_match,
 	},
 	.probe = pca9532_probe,
 	.remove = pca9532_remove,
@@ -555,27 +580,21 @@ pca9532_of_populate_pdata(struct device *dev, struct device_node *np)
 
 static int pca9532_probe(struct i2c_client *client)
 {
-	const struct i2c_device_id *id = i2c_client_get_device_id(client);
 	int devid;
 	struct pca9532_data *data = i2c_get_clientdata(client);
-	struct pca9532_platform_data *pca9532_pdata =
-			dev_get_platdata(&client->dev);
+	struct pca9532_platform_data *pca9532_pdata;
 	struct device_node *np = dev_of_node(&client->dev);
 
-	if (!pca9532_pdata) {
-		if (np) {
-			pca9532_pdata =
-				pca9532_of_populate_pdata(&client->dev, np);
-			if (IS_ERR(pca9532_pdata))
-				return PTR_ERR(pca9532_pdata);
-		} else {
-			dev_err(&client->dev, "no platform data\n");
-			return -EINVAL;
-		}
-		devid = (int)(uintptr_t)of_device_get_match_data(&client->dev);
+	if (np) {
+		pca9532_pdata =
+			pca9532_of_populate_pdata(&client->dev, np);
+		if (IS_ERR(pca9532_pdata))
+			return PTR_ERR(pca9532_pdata);
 	} else {
-		devid = id->driver_data;
+		dev_err(&client->dev, "no platform data\n");
+		return -EINVAL;
 	}
+	devid = (int)(uintptr_t)of_device_get_match_data(&client->dev);
 
 	if (!i2c_check_functionality(client->adapter,
 		I2C_FUNC_SMBUS_BYTE_DATA))
