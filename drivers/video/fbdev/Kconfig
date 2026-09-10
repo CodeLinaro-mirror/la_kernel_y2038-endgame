@@ -586,18 +586,6 @@ config FB_OPENCORES
 	  The source code and specification for the core is available at
 	  <https://opencores.org/project,vga_lcd>
 
-config FB_S1D13XXX
-	tristate "Epson S1D13XXX framebuffer support"
-	depends on FB
-	select FB_CFB_FILLRECT
-	select FB_CFB_COPYAREA
-	select FB_CFB_IMAGEBLIT
-	select FB_IOMEM_FOPS
-	help
-	  Support for S1D13XXX framebuffer device family (currently only
-	  working with S1D13806). Product specs at
-	  <https://vdc.epson.com/>
-
 config FB_ATMEL
 	tristate "AT91 LCD Controller support"
 	depends on FB && OF && HAVE_CLK && HAS_IOMEM
