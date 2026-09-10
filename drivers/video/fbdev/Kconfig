@@ -45,11 +45,6 @@ menuconfig FB
 	  (e.g. an accelerated X server) and that are not frame buffer
 	  device-aware may cause unexpected results. If unsure, say N.
 
-config FB_HECUBA
-	tristate
-	depends on FB
-	select FB_SYSMEM_HELPERS_DEFERRED
-
 config FB_SVGALIB
 	tristate
 	depends on FB
@@ -409,14 +404,6 @@ config FB_EFI
 	  This is the EFI frame buffer device driver. If the firmware on
 	  your platform is EFI 1.10 or UEFI 2.0, select Y to add support for
 	  using the EFI framebuffer as your console.
-
-config FB_N411
-	tristate "N411 Apollo/Hecuba devkit support"
-	depends on FB && X86 && MMU
-	select FB_HECUBA
-	help
-	  This enables support for the Apollo display controller in its
-	  Hecuba form using the n411 devkit.
 
 config FB_GBE
 	bool "SGI Graphics Backend frame buffer support"
