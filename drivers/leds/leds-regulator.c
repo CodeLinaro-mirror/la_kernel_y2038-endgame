@@ -11,7 +11,6 @@
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <linux/leds.h>
-#include <linux/leds-regulator.h>
 #include <linux/platform_device.h>
 #include <linux/regulator/consumer.h>
 
@@ -121,8 +120,6 @@ out:
 
 static int regulator_led_probe(struct platform_device *pdev)
 {
-	struct led_regulator_platform_data *pdata =
-			dev_get_platdata(&pdev->dev);
 	struct device *dev = &pdev->dev;
 	struct led_init_data init_data = {};
 	struct regulator_led *led;
@@ -142,17 +139,6 @@ static int regulator_led_probe(struct platform_device *pdev)
 	init_data.fwnode = dev->fwnode;
 
 	led->cdev.max_brightness = led_regulator_get_max_brightness(vcc);
-	/* Legacy platform data label assignment */
-	if (pdata) {
-		if (pdata->brightness > led->cdev.max_brightness) {
-			dev_err(dev, "Invalid default brightness %d\n",
-				pdata->brightness);
-			return -EINVAL;
-		}
-		led->cdev.brightness = pdata->brightness;
-		init_data.default_label = pdata->name;
-	}
-
 	led->cdev.brightness_set_blocking = regulator_led_brightness_set;
 	led->cdev.flags |= LED_CORE_SUSPENDRESUME;
 	led->vcc = vcc;
