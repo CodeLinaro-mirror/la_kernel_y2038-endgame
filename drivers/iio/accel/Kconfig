@@ -205,7 +205,7 @@ config ADXL380_I2C
 
 config BMA180
 	tristate "Bosch BMA023/BMA1x0/BMA250 3-Axis Accelerometer Driver"
-	depends on I2C && INPUT_BMA150=n
+	depends on I2C
 	select IIO_BUFFER
 	select IIO_TRIGGERED_BUFFER
 	help

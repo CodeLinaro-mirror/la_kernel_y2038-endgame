@@ -108,16 +108,6 @@ config INPUT_BBNSM_PWRKEY
 	  To compile this driver as a module, choose M here; the
 	  module will be called bbnsm_pwrkey.
 
-config INPUT_BMA150
-	tristate "BMA150/SMB380 acceleration sensor support"
-	depends on I2C
-	help
-	  Say Y here if you have Bosch Sensortec's BMA150 or SMB380
-	  acceleration sensor hooked to an I2C bus.
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called bma150.
-
 config INPUT_CS40L50_VIBRA
 	tristate "CS40L50 Haptic Driver support"
 	depends on MFD_CS40L50_CORE
