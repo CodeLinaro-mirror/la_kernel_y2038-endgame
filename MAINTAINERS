@@ -2222,12 +2222,6 @@ S:	Maintained
 F:	Documentation/devicetree/bindings/mtd/arasan,nand-controller.yaml
 F:	drivers/mtd/nand/raw/arasan-nand-controller.c
 
-ARC FRAMEBUFFER DRIVER
-M:	Jaya Kumar <jayalk@intworks.biz>
-S:	Maintained
-F:	drivers/video/fbdev/arcfb.c
-F:	drivers/video/fbdev/core/fb_defio.c
-
 ARC PGU DRM DRIVER
 M:	Alexey Brodkin <abrodkin@synopsys.com>
 S:	Supported
