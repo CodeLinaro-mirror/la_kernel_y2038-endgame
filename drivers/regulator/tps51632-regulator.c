@@ -21,7 +21,6 @@
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
 #include <linux/regulator/of_regulator.h>
-#include <linux/regulator/tps51632-regulator.h>
 #include <linux/slab.h>
 
 /* Register definitions */
@@ -67,6 +66,23 @@
 		(DIV_ROUND_UP(uV - TPS51632_MIN_VOLTAGE,	\
 			TPS51632_VOLTAGE_STEP_10mV) +		\
 			TPS51632_MIN_VSEL)
+
+/*
+ * struct tps51632_regulator_platform_data - tps51632 regulator platform data.
+ *
+ * @reg_init_data: The regulator init data.
+ * @enable_pwm_dvfs: Enable PWM DVFS or not.
+ * @dvfs_step_20mV: Step for DVFS is 20mV or 10mV.
+ * @max_voltage_uV: Maximum possible voltage in PWM-DVFS mode.
+ * @base_voltage_uV: Base voltage when PWM-DVFS enabled.
+ */
+struct tps51632_regulator_platform_data {
+	struct regulator_init_data *reg_init_data;
+	bool enable_pwm_dvfs;
+	bool dvfs_step_20mV;
+	int max_voltage_uV;
+	int base_voltage_uV;
+};
 
 /* TPS51632 chip information */
 struct tps51632_chip {
@@ -202,7 +218,6 @@ static const struct regmap_config tps51632_regmap_config = {
 	.cache_type		= REGCACHE_MAPLE,
 };
 
-#if defined(CONFIG_OF)
 static const struct of_device_id tps51632_of_match[] = {
 	{ .compatible = "ti,tps51632",},
 	{},
@@ -237,14 +252,6 @@ static struct tps51632_regulator_platform_data *
 					TPS51632_MAX_VOLTAGE;
 	return pdata;
 }
-#else
-static struct tps51632_regulator_platform_data *
-	of_get_tps51632_platform_data(struct device *dev,
-				      const struct regulator_desc *desc)
-{
-	return NULL;
-}
-#endif
 
 static int tps51632_probe(struct i2c_client *client)
 {
@@ -270,13 +277,9 @@ static int tps51632_probe(struct i2c_client *client)
 	tps->desc.type = REGULATOR_VOLTAGE;
 	tps->desc.owner = THIS_MODULE;
 
-	pdata = dev_get_platdata(&client->dev);
-	if (!pdata && client->dev.of_node)
-		pdata = of_get_tps51632_platform_data(&client->dev, &tps->desc);
-	if (!pdata) {
-		dev_err(&client->dev, "No Platform data\n");
+	pdata = of_get_tps51632_platform_data(&client->dev, &tps->desc);
+	if (!pdata)
 		return -EINVAL;
-	}
 
 	if (pdata->enable_pwm_dvfs) {
 		if ((pdata->base_voltage_uV < TPS51632_MIN_VOLTAGE) ||
@@ -341,7 +344,7 @@ static struct i2c_driver tps51632_i2c_driver = {
 	.driver = {
 		.name = "tps51632",
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
-		.of_match_table = of_match_ptr(tps51632_of_match),
+		.of_match_table = tps51632_of_match,
 	},
 	.probe = tps51632_probe,
 	.id_table = tps51632_id,
