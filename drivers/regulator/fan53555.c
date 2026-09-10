@@ -17,11 +17,16 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 #include <linux/regulator/driver.h>
-#include <linux/regulator/fan53555.h>
 #include <linux/regulator/machine.h>
 #include <linux/regulator/of_regulator.h>
 #include <linux/slab.h>
 #include <dt-bindings/regulator/fcs,fan53555-regulator.h>
+
+/* VSEL ID */
+enum {
+	FAN53555_VSEL_ID_0 = 0,
+	FAN53555_VSEL_ID_1,
+};
 
 /* Voltage setting */
 #define FAN53555_VSEL0		0x00
@@ -151,6 +156,8 @@ struct fan53555_device_info {
 	unsigned int n_ramp_values;
 	unsigned int enable_time;
 	unsigned int slew_rate;
+	/* Sleep VSEL ID */
+	unsigned int sleep_vsel_id;
 };
 
 static int fan53555_set_suspend_voltage(struct regulator_dev *rdev, int uV)
@@ -460,8 +467,7 @@ static int fan53526_voltages_setup_tcs(struct fan53555_device_info *di)
  * For 04 option:
  * VOUT = 0.603V + NSELx * 12.826mV, from 0.603 to 1.411V.
  * */
-static int fan53555_device_setup(struct fan53555_device_info *di,
-				struct fan53555_platform_data *pdata)
+static int fan53555_device_setup(struct fan53555_device_info *di)
 {
 	int ret = 0;
 
@@ -471,7 +477,7 @@ static int fan53555_device_setup(struct fan53555_device_info *di,
 	case FAN53555_VENDOR_FAIRCHILD:
 	case FAN53555_VENDOR_ROCKCHIP:
 	case FAN53555_VENDOR_SILERGY:
-		switch (pdata->sleep_vsel_id) {
+		switch (di->sleep_vsel_id) {
 		case FAN53555_VSEL_ID_0:
 			di->sleep_reg = FAN53555_VSEL0;
 			di->vol_reg = FAN53555_VSEL1;
@@ -488,7 +494,7 @@ static int fan53555_device_setup(struct fan53555_device_info *di,
 		di->en_reg = di->vol_reg;
 		break;
 	case RK8602_VENDOR_ROCKCHIP:
-		switch (pdata->sleep_vsel_id) {
+		switch (di->sleep_vsel_id) {
 		case FAN53555_VSEL_ID_0:
 			di->sleep_reg = RK8602_VSEL0;
 			di->vol_reg = RK8602_VSEL1;
@@ -507,7 +513,7 @@ static int fan53555_device_setup(struct fan53555_device_info *di,
 		}
 		break;
 	case FAN53526_VENDOR_TCS:
-		switch (pdata->sleep_vsel_id) {
+		switch (di->sleep_vsel_id) {
 		case FAN53555_VSEL_ID_0:
 			di->sleep_reg = TCS4525_VSEL0;
 			di->vol_reg = TCS4525_VSEL1;
@@ -533,7 +539,7 @@ static int fan53555_device_setup(struct fan53555_device_info *di,
 	case FAN53526_VENDOR_FAIRCHILD:
 		di->mode_reg = FAN53555_CONTROL;
 
-		switch (pdata->sleep_vsel_id) {
+		switch (di->sleep_vsel_id) {
 		case FAN53555_VSEL_ID_0:
 			di->mode_mask = CTL_MODE_VSEL1_MODE;
 			break;
@@ -551,7 +557,7 @@ static int fan53555_device_setup(struct fan53555_device_info *di,
 	case RK8602_VENDOR_ROCKCHIP:
 		di->mode_mask = VSEL_MODE;
 
-		switch (pdata->sleep_vsel_id) {
+		switch (di->sleep_vsel_id) {
 		case FAN53555_VSEL_ID_0:
 			di->mode_reg = FAN53555_VSEL1;
 			break;
@@ -563,7 +569,7 @@ static int fan53555_device_setup(struct fan53555_device_info *di,
 	case FAN53526_VENDOR_TCS:
 		di->mode_reg = TCS4525_COMMAND;
 
-		switch (pdata->sleep_vsel_id) {
+		switch (di->sleep_vsel_id) {
 		case FAN53555_VSEL_ID_0:
 			di->mode_mask = TCS_VSEL1_MODE;
 			break;
@@ -649,28 +655,6 @@ static const struct regmap_config fan53555_regmap_config = {
 	.val_bits = 8,
 };
 
-static struct fan53555_platform_data *fan53555_parse_dt(struct device *dev,
-					      struct device_node *np,
-					      const struct regulator_desc *desc)
-{
-	struct fan53555_platform_data *pdata;
-	int ret;
-	u32 tmp;
-
-	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
-	if (!pdata)
-		return NULL;
-
-	pdata->regulator = of_get_regulator_init_data(dev, np, desc);
-
-	ret = of_property_read_u32(np, "fcs,suspend-voltage-selector",
-				   &tmp);
-	if (!ret)
-		pdata->sleep_vsel_id = tmp;
-
-	return pdata;
-}
-
 static const struct of_device_id __maybe_unused fan53555_dt_ids[] = {
 	{
 		.compatible = "fcs,fan53526",
@@ -705,7 +689,6 @@ static int fan53555_regulator_probe(struct i2c_client *client)
 {
 	struct device_node *np = client->dev.of_node;
 	struct fan53555_device_info *di;
-	struct fan53555_platform_data *pdata;
 	struct regulator_config config = { };
 	struct regmap *regmap;
 	unsigned int val;
@@ -720,26 +703,13 @@ static int fan53555_regulator_probe(struct i2c_client *client)
 
 	fan53555_device_mode_map_setup(di);
 
-	pdata = dev_get_platdata(&client->dev);
-	if (!pdata)
-		pdata = fan53555_parse_dt(&client->dev, np, &di->desc);
-
-	if (!pdata || !pdata->regulator)
+	di->regulator = of_get_regulator_init_data(&client->dev, np, &di->desc);
+	if (!di->regulator)
 		return dev_err_probe(&client->dev, -ENODEV,
-				     "Platform data not found!\n");
+				     "Regulator init data not found!\n");
 
-	di->regulator = pdata->regulator;
-	if (!dev_fwnode(&client->dev)) {
-		/* if no ramp constraint set, get the pdata ramp_delay */
-		if (!di->regulator->constraints.ramp_delay) {
-			if (pdata->slew_rate >= ARRAY_SIZE(slew_rates))
-				return dev_err_probe(&client->dev, -EINVAL,
-						     "Invalid slew_rate\n");
-
-			di->regulator->constraints.ramp_delay
-					= slew_rates[pdata->slew_rate];
-		}
-	}
+	ret = of_property_read_u32(np, "fcs,suspend-voltage-selector",
+				   &di->sleep_vsel_id);
 
 	regmap = devm_regmap_init_i2c(client, &fan53555_regmap_config);
 	if (IS_ERR(regmap))
@@ -763,7 +733,7 @@ static int fan53555_regulator_probe(struct i2c_client *client)
 	dev_info(&client->dev, "FAN53555 Option[%d] Rev[%d] Detected!\n",
 				di->chip_id, di->chip_rev);
 	/* Device init */
-	ret = fan53555_device_setup(di, pdata);
+	ret = fan53555_device_setup(di);
 	if (ret < 0)
 		return dev_err_probe(&client->dev, ret, "Failed to setup device!\n");
 
@@ -815,7 +785,7 @@ static struct i2c_driver fan53555_regulator_driver = {
 	.driver = {
 		.name = "fan53555-regulator",
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
-		.of_match_table = of_match_ptr(fan53555_dt_ids),
+		.of_match_table = fan53555_dt_ids,
 	},
 	.probe = fan53555_regulator_probe,
 	.id_table = fan53555_id,
