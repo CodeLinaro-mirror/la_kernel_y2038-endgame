@@ -10,9 +10,46 @@
 #include <linux/platform_device.h>
 #include <linux/regulator/driver.h>
 #include <linux/slab.h>
-#include <linux/regulator/max1586.h>
 #include <linux/of.h>
 #include <linux/regulator/of_regulator.h>
+
+#define MAX1586_V3 0
+#define MAX1586_V6 1
+
+/* precalculated values for v3_gain */
+#define MAX1586_GAIN_NO_R24   1000000  /* 700000 .. 1475000 mV */
+#define MAX1586_GAIN_R24_3k32 1051098  /* 735768 .. 1550369 mV */
+#define MAX1586_GAIN_R24_5k11 1078648  /* 755053 .. 1591005 mV */
+#define MAX1586_GAIN_R24_7k5  1115432  /* 780802 .. 1645262 mV */
+
+/**
+ * max1586_subdev_data - regulator data
+ * @id: regulator Id (either MAX1586_V3 or MAX1586_V6)
+ * @name: regulator cute name (example for V3: "vcc_core")
+ * @platform_data: regulator init data (constraints, supplies, ...)
+ */
+struct max1586_subdev_data {
+	int				id;
+	const char			*name;
+	struct regulator_init_data	*platform_data;
+};
+
+/**
+ * max1586_platform_data - platform data for max1586
+ * @num_subdevs: number of regulators used (may be 1 or 2)
+ * @subdevs: regulator used
+ *           At most, there will be a regulator for V3 and one for V6 voltages.
+ * @v3_gain: gain on the V3 voltage output multiplied by 1e6.
+ *           This can be calculated as ((1 + R24/R25 + R24/185.5kOhm) * 1e6)
+ *           for an external resistor configuration as described in the
+ *           data sheet (R25=100kOhm).
+ */
+struct max1586_platform_data {
+	int num_subdevs;
+	struct max1586_subdev_data *subdevs;
+	int v3_gain;
+};
+
 
 #define MAX1586_V3_MAX_VSEL 31
 #define MAX1586_V6_MAX_VSEL 3
@@ -201,7 +238,7 @@ static int of_get_max1586_platform_data(struct device *dev,
 	return 0;
 }
 
-static const struct of_device_id __maybe_unused max1586_of_match[] = {
+static const struct of_device_id max1586_of_match[] = {
 	{ .compatible = "maxim,max1586", },
 	{},
 };
@@ -214,13 +251,10 @@ static int max1586_pmic_probe(struct i2c_client *client)
 	struct max1586_data *max1586;
 	int i, id, ret;
 
-	pdata = dev_get_platdata(&client->dev);
-	if (client->dev.of_node && !pdata) {
-		ret = of_get_max1586_platform_data(&client->dev, &pdata_of);
-		if (ret < 0)
-			return ret;
-		pdata = &pdata_of;
-	}
+	ret = of_get_max1586_platform_data(&client->dev, &pdata_of);
+	if (ret < 0)
+		return ret;
+	pdata = &pdata_of;
 
 	max1586 = devm_kzalloc(&client->dev, sizeof(struct max1586_data),
 			GFP_KERNEL);
@@ -286,7 +320,7 @@ static struct i2c_driver max1586_pmic_driver = {
 	.driver		= {
 		.name	= "max1586",
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
-		.of_match_table = of_match_ptr(max1586_of_match),
+		.of_match_table = max1586_of_match,
 	},
 	.id_table	= max1586_id,
 };
