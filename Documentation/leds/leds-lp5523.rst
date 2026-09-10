@@ -102,46 +102,5 @@ Each channel contains led current settings.
 
 Format: 10x mA i.e 10 means 1.0 mA
 
-Example platform data::
-
-	static struct lp55xx_led_config lp5523_led_config[] = {
-		{
-			.name		= "D1",
-			.chan_nr        = 0,
-			.led_current    = 50,
-			.max_current    = 130,
-		},
-	...
-		{
-			.chan_nr        = 8,
-			.led_current    = 50,
-			.max_current    = 130,
-		}
-	};
-
-	static int lp5523_setup(void)
-	{
-		/* Setup HW resources */
-	}
-
-	static void lp5523_release(void)
-	{
-		/* Release HW resources */
-	}
-
-	static void lp5523_enable(bool state)
-	{
-		/* Control chip enable signal */
-	}
-
-	static struct lp55xx_platform_data lp5523_platform_data = {
-		.led_config     = lp5523_led_config,
-		.num_channels   = ARRAY_SIZE(lp5523_led_config),
-		.clock_mode     = LP55XX_CLOCK_EXT,
-		.setup_resources   = lp5523_setup,
-		.release_resources = lp5523_release,
-		.enable            = lp5523_enable,
-	};
-
 Note
   chan_nr can have values between 0 and 8.

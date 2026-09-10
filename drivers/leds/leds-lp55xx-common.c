@@ -18,7 +18,6 @@
 #include <linux/iopoll.h>
 #include <linux/leds.h>
 #include <linux/module.h>
-#include <linux/platform_data/leds-lp55xx.h>
 #include <linux/slab.h>
 #include <linux/gpio/consumer.h>
 #include <dt-bindings/leds/leds-lp55xx.h>
@@ -1263,7 +1262,7 @@ int lp55xx_probe(struct i2c_client *client)
 	int program_length, ret;
 	struct lp55xx_chip *chip;
 	struct lp55xx_led *led;
-	struct lp55xx_platform_data *pdata = dev_get_platdata(&client->dev);
+	struct lp55xx_platform_data *pdata;
 	struct device_node *np = dev_of_node(&client->dev);
 
 	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
@@ -1272,17 +1271,9 @@ int lp55xx_probe(struct i2c_client *client)
 
 	chip->cfg = i2c_get_match_data(client);
 
-	if (!pdata) {
-		if (np) {
-			pdata = lp55xx_of_populate_pdata(&client->dev, np,
-							 chip);
-			if (IS_ERR(pdata))
-				return PTR_ERR(pdata);
-		} else {
-			dev_err(&client->dev, "no platform data\n");
-			return -EINVAL;
-		}
-	}
+	pdata = lp55xx_of_populate_pdata(&client->dev, np, chip);
+	if (IS_ERR(pdata))
+		return PTR_ERR(pdata);
 
 	/* Validate max program page */
 	program_length = LP55xx_BYTES_PER_PAGE;

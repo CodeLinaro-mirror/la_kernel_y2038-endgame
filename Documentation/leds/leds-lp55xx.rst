@@ -187,33 +187,6 @@ via the sysfs if needed.
 To use the predefined pattern concept, 'patterns' and 'num_patterns' should be
 configured.
 
-Example of predefined pattern data::
-
-  /* mode_1: blinking data */
-  static const u8 mode_1[] = {
-		0x40, 0x00, 0x60, 0x00, 0x40, 0xFF, 0x60, 0x00,
-		};
-
-  /* mode_2: always on */
-  static const u8 mode_2[] = { 0x40, 0xFF, };
-
-  struct lp55xx_predef_pattern board_led_patterns[] = {
-	{
-		.r = mode_1,
-		.size_r = ARRAY_SIZE(mode_1),
-	},
-	{
-		.b = mode_2,
-		.size_b = ARRAY_SIZE(mode_2),
-	},
-  }
-
-  struct lp55xx_platform_data lp5562_pdata = {
-  ...
-	.patterns      = board_led_patterns,
-	.num_patterns  = ARRAY_SIZE(board_led_patterns),
-  };
-
 Then, mode_1 and mode_2 can be run via through the sysfs::
 
   echo 1 > /sys/bus/i2c/devices/xxxx/led_pattern    # red blinking LED pattern

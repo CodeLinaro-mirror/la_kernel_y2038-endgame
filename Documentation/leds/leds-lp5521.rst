@@ -59,51 +59,6 @@ Each channel has its own led current settings.
 
 Format: 10x mA i.e 10 means 1.0 mA
 
-example platform data::
-
-  static struct lp55xx_led_config lp5521_led_config[] = {
-	  {
-		.name = "red",
-		  .chan_nr        = 0,
-		  .led_current    = 50,
-		.max_current    = 130,
-	  }, {
-		.name = "green",
-		  .chan_nr        = 1,
-		  .led_current    = 0,
-		.max_current    = 130,
-	  }, {
-		.name = "blue",
-		  .chan_nr        = 2,
-		  .led_current    = 0,
-		.max_current    = 130,
-	  }
-  };
-
-  static int lp5521_setup(void)
-  {
-	/* setup HW resources */
-  }
-
-  static void lp5521_release(void)
-  {
-	/* Release HW resources */
-  }
-
-  static void lp5521_enable(bool state)
-  {
-	/* Control of chip enable signal */
-  }
-
-  static struct lp55xx_platform_data lp5521_platform_data = {
-	  .led_config     = lp5521_led_config,
-	  .num_channels   = ARRAY_SIZE(lp5521_led_config),
-	  .clock_mode     = LP55XX_CLOCK_EXT,
-	  .setup_resources   = lp5521_setup,
-	  .release_resources = lp5521_release,
-	  .enable            = lp5521_enable,
-  };
-
 Note:
   chan_nr can have values between 0 and 2.
   The name of each channel can be configurable.
