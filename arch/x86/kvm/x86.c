@@ -926,7 +926,6 @@ static void update_pvclock_gtod(struct timekeeper *tk)
 
 	write_seqcount_end(&vdata->seq);
 }
-#endif
 
 static s64 get_kvmclock_base_ns(void)
 {
