@@ -18,7 +18,9 @@
  * no good way to detect the paging mode of the target kernel which will be
  * loaded for dumping.
  */
+#ifdef CONFIG_X86_64
 extern unsigned long swiotlb_size_or_default(void);
+#endif
 
 #ifdef CONFIG_X86_32
 # define CRASH_ADDR_LOW_MAX     SZ_512M
