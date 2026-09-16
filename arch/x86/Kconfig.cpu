@@ -6,9 +6,9 @@ choice
 	default M686
 	help
 	  This is the processor type of your CPU. This information is
-	  used for optimizing purposes. In order to compile a kernel
-	  that can run on all supported x86 CPU types (albeit not
-	  optimally fast), you can specify "586" here.
+	  used to pick between i586-class and i686-class processors,
+	  as well as to optimize for a particular microarchitecture
+	  within the two classes.
 
 	  Note that the 386 and 486 is no longer supported, this includes
 	  AMD/Cyrix/Intel 386DX/DXL/SL/SLC/SX, Cyrix/TI 486DLC/DLC2,
@@ -32,7 +32,6 @@ choice
 	  - "Athlon" for the AMD K7 family (Athlon/Duron/Thunderbird).
 	  - "Crusoe" for the Transmeta Crusoe series.
 	  - "Efficeon" for the Transmeta Efficeon series.
-	  - "AMD Elan" for the 32-bit AMD Elan embedded CPU.
 	  - "GeodeGX1" for Geode GX1 (Cyrix MediaGX).
 	  - "Geode GX/LX" For AMD Geode GX and LX processors.
 	  - "CyrixIII/VIA C3" for VIA Cyrix III or VIA C3.
@@ -165,24 +164,21 @@ config MCYRIXIII
 	  treat this chip as a generic 586. Whilst the CPU is 686 class,
 	  it lacks the cmov extension which gcc assumes is present when
 	  generating 686 code.
-	  Note that Nehemiah (Model 9) and above will not boot with this
-	  kernel due to them lacking the 3DNow! instructions used in earlier
-	  incarnations of the CPU.
 
 config MVIAC3_2
 	bool "VIA C3-2 (Nehemiah)"
 	depends on X86_32
 	help
-	  Select this for a VIA C3 "Nehemiah". Selecting this enables usage
-	  of SSE and tells gcc to treat the CPU as a 686.
+	  Select this for a VIA C3 "Nehemiah". Selecting tells gcc to treat
+	  the CPU as a 686.
 	  Note, this kernel will not boot on older (pre model 9) C3s.
 
 config MVIAC7
 	bool "VIA C7"
 	depends on X86_32
 	help
-	  Select this for a VIA C7.  Selecting this uses the correct cache
-	  shift and tells gcc to treat the CPU as a 686.
+	  Select this for a VIA C7.  Selecting this tells gcc to treat the
+	  CPU as a 686.
 
 config MATOM
 	bool "Intel Atom"
@@ -240,13 +236,10 @@ config X86_INTERNODE_CACHE_SHIFT
 config X86_L1_CACHE_SHIFT
 	int
 	default "7" if MPENTIUM4
-	default "6" if MK7 || MPENTIUMM || MATOM || MVIAC7 || X86_GENERIC || X86_64
-	default "4" if MGEODEGX1
-	default "5" if MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || MVIAC3_2 || MGEODE_LX
+	default "6"
 
 config X86_F00F_BUG
-	def_bool y
-	depends on M586MMX || M586TSC || M586
+	def_bool X86_MINIMUM_CPU_FAMILY=5 && CPU_SUP_INTEL
 
 config X86_ALIGNMENT_16
 	def_bool y
@@ -260,21 +253,9 @@ config X86_USE_PPRO_CHECKSUM
 	def_bool y
 	depends on MCYRIXIII || MK7 || MK6 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MVIAC3_2 || MVIAC7 || MEFFICEON || MGEODE_LX || MATOM
 
-config X86_TSC
-	def_bool y
-
 config X86_HAVE_PAE
 	def_bool y
 	depends on MCRUSOE || MEFFICEON || MCYRIXIII || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MVIAC7 || MATOM || X86_64
-
-config X86_CX8
-	def_bool y
-
-# this should be set for all -march=.. options where the compiler
-# generates cmov.
-config X86_CMOV
-	def_bool y
-	depends on (MK7 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MVIAC3_2 || MVIAC7 || MCRUSOE || MEFFICEON || MATOM || MGEODE_LX || X86_64)
 
 config X86_MINIMUM_CPU_FAMILY
 	int
@@ -284,7 +265,8 @@ config X86_MINIMUM_CPU_FAMILY
 
 config X86_DEBUGCTLMSR
 	def_bool y
-	depends on !(MK6 || MCYRIXIII || M586MMX || M586TSC || M586) && !UML
+	depends on !UML
+	depends on X86_MINIMUM_CPU_FAMILY=6
 
 config IA32_FEAT_CTL
 	def_bool y
@@ -316,7 +298,7 @@ config CPU_SUP_INTEL
 config CPU_SUP_CYRIX_32
 	default y
 	bool "Support Cyrix processors" if PROCESSOR_SELECT
-	depends on M586 || M586TSC || M586MMX || (EXPERT && !64BIT)
+	depends on X86_MINIMUM_CPU_FAMILY=5
 	help
 	  This enables detection, tunings and quirks for Cyrix processors
 
