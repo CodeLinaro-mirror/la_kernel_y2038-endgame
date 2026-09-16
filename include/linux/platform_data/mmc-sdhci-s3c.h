@@ -13,7 +13,7 @@ enum cd_types {
 };
 
 /**
- * struct s3c_sdhci_platdata() - Platform device data for Samsung SDHCI
+ * struct s3c_sdhci_platform_data() - Platform device data for Samsung SDHCI
  * @max_width: The maximum number of data bits supported.
  * @host_caps: Standard MMC host capabilities bit field.
  * @host_caps2: The second standard MMC host capabilities bit field.
@@ -36,7 +36,7 @@ enum cd_types {
  * for the device driver to use or call-back when configuring gpio or
  * card speed information.
 */
-struct s3c_sdhci_platdata {
+struct s3c_sdhci_platform_data {
 	unsigned int	max_width;
 	unsigned int	host_caps;
 	unsigned int	host_caps2;

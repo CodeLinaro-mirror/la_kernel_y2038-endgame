@@ -89,7 +89,7 @@ static struct resource m48t59_rsrc[] = {
 	DEFINE_RES_MEM(MVME147_RTC_BASE, 0x800),
 };
 
-static struct m48t59_plat_data m48t59_data = {
+static struct m48t59_platform_data m48t59_data = {
 	.type = M48T59RTC_TYPE_M48T02,
 	.yy_offset = 70,
 };

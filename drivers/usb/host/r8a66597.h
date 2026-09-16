@@ -106,7 +106,7 @@ struct r8a66597 {
 	spinlock_t lock;
 	void __iomem *reg;
 	struct clk *clk;
-	struct r8a66597_platdata	*pdata;
+	struct r8a66597_platform_data	*pdata;
 	struct r8a66597_device		device0;
 	struct r8a66597_root_hub	root_hub[R8A66597_MAX_ROOT_HUB];
 	struct list_head		pipe_queue[R8A66597_MAX_NUM_PIPE];
@@ -295,7 +295,7 @@ static inline void r8a66597_port_power(struct r8a66597 *r8a66597, int port,
 	}
 }
 
-static inline u16 get_xtal_from_pdata(struct r8a66597_platdata *pdata)
+static inline u16 get_xtal_from_pdata(struct r8a66597_platform_data *pdata)
 {
 	u16 clock = 0;
 

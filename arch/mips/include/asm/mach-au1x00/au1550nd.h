@@ -8,7 +8,7 @@
 
 #include <linux/mtd/partitions.h>
 
-struct au1550nd_platdata {
+struct au1550nd_platform_data {
 	struct mtd_partition *parts;
 	int num_parts;
 	int devwidth;	/* 0 = 8bit device, 1 = 16bit device */

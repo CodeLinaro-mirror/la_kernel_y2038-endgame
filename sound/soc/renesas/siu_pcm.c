@@ -292,7 +292,7 @@ static int siu_pcm_open(struct snd_soc_component *component,
 			struct snd_pcm_substream *ss)
 {
 	/* Playback / Capture */
-	struct siu_platform *pdata = component->dev->platform_data;
+	struct siu_platform_data *pdata = component->dev->platform_data;
 	struct siu_info *info = siu_i2s_data;
 	struct siu_port *port_info = siu_port_info(ss);
 	struct siu_stream *siu_stream;

@@ -17,7 +17,7 @@
 struct platform_lcd {
 	struct device		*us;
 	struct lcd_device	*lcd;
-	struct plat_lcd_data	*pdata;
+	struct plat_lcd_platform_data	*pdata;
 
 	unsigned int		 power;
 	unsigned int		 suspended:1;
@@ -64,7 +64,7 @@ static const struct lcd_ops platform_lcd_ops = {
 
 static int platform_lcd_probe(struct platform_device *pdev)
 {
-	struct plat_lcd_data *pdata;
+	struct plat_lcd_platform_data *pdata;
 	struct platform_lcd *plcd;
 	struct device *dev = &pdev->dev;
 	int err;

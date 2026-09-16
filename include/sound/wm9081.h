@@ -14,7 +14,7 @@ struct wm9081_retune_mobile_setting {
 	u16 config[20];
 };
 
-struct wm9081_pdata {
+struct wm9081_platform_data {
 	bool irq_high;   /* IRQ is active high */
 	bool irq_cmos;   /* IRQ is in CMOS mode */
 

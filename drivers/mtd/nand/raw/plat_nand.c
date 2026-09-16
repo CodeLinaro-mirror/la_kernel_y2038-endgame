@@ -47,7 +47,7 @@ static int plat_nand_gpio_dev_ready(struct nand_chip *chip)
  */
 static int plat_nand_probe(struct platform_device *pdev)
 {
-	struct platform_nand_data *pdata = dev_get_platdata(&pdev->dev);
+	struct nand_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	struct plat_nand_data *data;
 	struct mtd_info *mtd;
 	const char **part_types;
@@ -55,7 +55,7 @@ static int plat_nand_probe(struct platform_device *pdev)
 	int err = 0;
 
 	if (!pdata) {
-		dev_err(&pdev->dev, "platform_nand_data is missing\n");
+		dev_err(&pdev->dev, "nand_platform_data is missing\n");
 		return -EINVAL;
 	}
 
@@ -147,7 +147,7 @@ out:
 static void plat_nand_remove(struct platform_device *pdev)
 {
 	struct plat_nand_data *data = platform_get_drvdata(pdev);
-	struct platform_nand_data *pdata = dev_get_platdata(&pdev->dev);
+	struct nand_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	struct nand_chip *chip = &data->chip;
 	int ret;
 

@@ -16,6 +16,6 @@ static void sh7710_sci_init_pins(struct uart_port *port, unsigned int cflag)
 		__raw_writew(__raw_readw(PBCR) & 0xf003, PBCR);
 }
 
-struct plat_sci_port_ops sh7710_sci_port_ops = {
+struct scif_platform_data_ops sh7710_sci_port_ops = {
 	.init_pins	= sh7710_sci_init_pins,
 };

@@ -32,7 +32,7 @@ static struct mtd_partition mtd_partitions[] = {
 
 static const char *bcm63xx_part_types[] = { "bcm63xxpart", NULL };
 
-static struct physmap_flash_data flash_data = {
+static struct physmap_flash_platform_data flash_data = {
 	.width			= 2,
 	.parts			= mtd_partitions,
 	.part_probe_types	= bcm63xx_part_types,

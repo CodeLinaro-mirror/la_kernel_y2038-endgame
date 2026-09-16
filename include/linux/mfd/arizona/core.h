@@ -128,7 +128,7 @@ struct arizona {
 	struct regulator *dcvdd;
 	bool has_fully_powered_off;
 
-	struct arizona_pdata pdata;
+	struct arizona_platform_data pdata;
 
 	unsigned int external_dcvdd:1;
 

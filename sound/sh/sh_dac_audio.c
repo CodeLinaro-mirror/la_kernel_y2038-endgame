@@ -46,7 +46,7 @@ struct snd_sh_dac {
 	char *data_buffer, *buffer_begin, *buffer_end;
 	int processed; /* bytes proccesed, to compare with period_size */
 	int buffer_size;
-	struct dac_audio_pdata *pdata;
+	struct dac_audio_platform_data *pdata;
 };
 
 

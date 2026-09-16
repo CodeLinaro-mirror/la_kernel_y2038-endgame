@@ -30,7 +30,7 @@ struct orion_nand_info {
 static void orion_nand_cmd_ctrl(struct nand_chip *nc, int cmd,
 				unsigned int ctrl)
 {
-	struct orion_nand_data *board = nand_get_controller_data(nc);
+	struct orion_nand_platform_data *board = nand_get_controller_data(nc);
 	u32 offs;
 
 	if (cmd == NAND_CMD_NONE)
@@ -101,7 +101,7 @@ static int __init orion_nand_probe(struct platform_device *pdev)
 	struct orion_nand_info *info;
 	struct mtd_info *mtd;
 	struct nand_chip *nc;
-	struct orion_nand_data *board;
+	struct orion_nand_platform_data *board;
 	void __iomem *io_base;
 	int ret = 0;
 	u32 val = 0;
@@ -124,7 +124,7 @@ static int __init orion_nand_probe(struct platform_device *pdev)
 		return PTR_ERR(io_base);
 
 	if (pdev->dev.of_node) {
-		board = devm_kzalloc(&pdev->dev, sizeof(struct orion_nand_data),
+		board = devm_kzalloc(&pdev->dev, sizeof(struct orion_nand_platform_data),
 					GFP_KERNEL);
 		if (!board)
 			return -ENOMEM;

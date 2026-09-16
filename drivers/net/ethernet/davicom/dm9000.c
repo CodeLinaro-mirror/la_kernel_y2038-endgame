@@ -1380,9 +1380,9 @@ static const struct net_device_ops dm9000_netdev_ops = {
 #endif
 };
 
-static struct dm9000_plat_data *dm9000_parse_dt(struct device *dev)
+static struct dm9000_platform_data *dm9000_parse_dt(struct device *dev)
 {
-	struct dm9000_plat_data *pdata;
+	struct dm9000_platform_data *pdata;
 	struct device_node *np = dev->of_node;
 	int ret;
 
@@ -1411,7 +1411,7 @@ static struct dm9000_plat_data *dm9000_parse_dt(struct device *dev)
 static int
 dm9000_probe(struct platform_device *pdev)
 {
-	struct dm9000_plat_data *pdata = dev_get_platdata(&pdev->dev);
+	struct dm9000_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	struct board_info *db;	/* Point a board information structure */
 	struct net_device *ndev;
 	struct device *dev = &pdev->dev;

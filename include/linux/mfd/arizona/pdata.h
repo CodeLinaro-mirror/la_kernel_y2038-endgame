@@ -74,7 +74,7 @@ struct arizona_micd_range {
 	int key;  /** Key to report to input layer */
 };
 
-struct arizona_pdata {
+struct arizona_platform_data {
 	struct gpio_desc *reset;      /** GPIO controlling /RESET, if any */
 
 	/** Regulator configuration for MICVDD */

@@ -69,7 +69,7 @@ struct sa1100fb_info {
 	struct notifier_block	freq_transition;
 #endif
 
-	const struct sa1100fb_mach_info *inf;
+	const struct sa1100fb_platform_data *inf;
 	struct clk *clk;
 
 	u32 pseudo_palette[16];

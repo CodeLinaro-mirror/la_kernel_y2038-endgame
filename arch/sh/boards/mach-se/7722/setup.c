@@ -38,7 +38,7 @@ static struct platform_device heartbeat_device = {
 };
 
 /* SMC91x */
-static struct smc91x_platdata smc91x_info = {
+static struct smc91x_platform_data smc91x_info = {
 	.flags = SMC91X_USE_16BIT,
 };
 

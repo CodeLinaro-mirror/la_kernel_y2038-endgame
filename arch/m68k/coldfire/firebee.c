@@ -52,7 +52,7 @@ static struct mtd_partition firebee_flash_parts[] = {
 	},
 };
 
-static struct physmap_flash_data firebee_flash_data = {
+static struct physmap_flash_platform_data firebee_flash_data = {
 	.width		= 2,
 	.nr_parts	= ARRAY_SIZE(firebee_flash_parts),
 	.parts		= firebee_flash_parts,

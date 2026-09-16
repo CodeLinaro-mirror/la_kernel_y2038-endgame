@@ -52,7 +52,7 @@ struct uart_amba_port {
 	struct uart_port	port;
 	struct clk		*clk;
 	struct amba_device	*dev;
-	struct amba_pl010_data	*data;
+	struct amba_pl010_platform_data	*data;
 	unsigned int		old_status;
 };
 

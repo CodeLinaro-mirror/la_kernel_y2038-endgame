@@ -37,7 +37,7 @@ static struct mtd_partition sh7763rdp_nor_flash_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data sh7763rdp_nor_flash_data = {
+static struct physmap_flash_platform_data sh7763rdp_nor_flash_data = {
 	.width = 2,
 	.parts = sh7763rdp_nor_flash_partitions,
 	.nr_parts = ARRAY_SIZE(sh7763rdp_nor_flash_partitions),
@@ -82,7 +82,7 @@ static struct resource sh_eth_resources[] = {
 	},
 };
 
-static struct sh_eth_plat_data sh7763_eth_pdata = {
+static struct sh_eth_platform_data sh7763_eth_pdata = {
 	.phy = 1,
 	.phy_interface = PHY_INTERFACE_MODE_MII,
 };
@@ -122,7 +122,7 @@ static struct fb_videomode sh7763fb_videomode = {
 	.flag = FB_MODE_IS_UNKNOWN,
 };
 
-static struct sh7760fb_platdata sh7763fb_def_pdata = {
+static struct sh7760fb_platform_data sh7763fb_def_pdata = {
 	.def_mode = &sh7763fb_videomode,
 	.ldmtr = (LDMTR_TFT_COLOR_16|LDMTR_MCNT),
 	.lddfr = LDDFR_16BPP_RGB565,

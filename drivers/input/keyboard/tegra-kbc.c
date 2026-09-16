@@ -85,7 +85,7 @@ struct tegra_kbc {
 	unsigned int debounce_cnt;
 	unsigned int repeat_cnt;
 	struct tegra_kbc_pin_cfg pin_cfg[KBC_MAX_GPIO];
-	const struct matrix_keymap_data *keymap_data;
+	const struct matrix_keymap_platform_data *keymap_data;
 	bool wakeup;
 	void __iomem *mmio;
 	struct input_dev *idev;

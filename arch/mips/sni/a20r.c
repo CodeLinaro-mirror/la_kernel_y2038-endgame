@@ -26,7 +26,7 @@
 		.flags		= UPF_BOOT_AUTOCONF,	\
 	}
 
-static struct plat_serial8250_port a20r_data[] = {
+static struct serial8250_platform_data a20r_data[] = {
 	PORT(0x3f8, 4),
 	PORT(0x2f8, 3),
 	{ },
@@ -120,7 +120,7 @@ static struct resource sc26xx_rsrc[] = {
 
 #include <linux/platform_data/serial-sccnxp.h>
 
-static struct sccnxp_pdata sccnxp_data = {
+static struct sccnxp_platform_data sccnxp_data = {
 	.reg_shift	= 2,
 	.mctrl_cfg[0]	= MCTRL_SIG(DTR_OP, LINE_OP7) |
 			  MCTRL_SIG(RTS_OP, LINE_OP3) |

@@ -1003,7 +1003,7 @@ static struct fb_deferred_io broadsheetfb_defio = {
 static int broadsheetfb_probe(struct platform_device *dev)
 {
 	struct fb_info *info;
-	struct broadsheet_board *board;
+	struct broadsheet_platform_data *board;
 	int retval = -ENOMEM;
 	int videomemorysize;
 	unsigned char *videomemory;

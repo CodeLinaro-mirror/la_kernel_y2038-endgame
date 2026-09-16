@@ -10,7 +10,7 @@ struct platform_device;
 struct usb_hcd;
 
 /**
- * struct usb_ehci_pdata - platform_data for generic ehci driver
+ * struct usb_ehci_platform_data - platform_data for generic ehci driver
  *
  * @caps_offset:	offset of the EHCI Capability Registers to the start of
  *			the io memory region provided to the driver.
@@ -27,7 +27,7 @@ struct usb_hcd;
  * These are general configuration options for the EHCI controller. All of
  * these options are activating more or less workarounds for some hardware.
  */
-struct usb_ehci_pdata {
+struct usb_ehci_platform_data {
 	int		caps_offset;
 	unsigned	has_tt:1;
 	unsigned	has_synopsys_hc_bug:1;

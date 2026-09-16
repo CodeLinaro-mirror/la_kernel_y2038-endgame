@@ -25,7 +25,7 @@ static void landisk_power_off(void)
 
 static struct resource cf_ide_resources[3];
 
-static struct pata_platform_info pata_info = {
+static struct pata_platform_data pata_info = {
 	.ioport_shift	= 1,
 };
 

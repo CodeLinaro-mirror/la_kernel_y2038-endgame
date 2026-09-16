@@ -62,11 +62,11 @@ struct platform_nand_ctrl {
 };
 
 /**
- * struct platform_nand_data - container structure for platform-specific data
+ * struct nand_platform_data - container structure for platform-specific data
  * @chip: chip level chip structure
  * @ctrl: controller level device structure
  */
-struct platform_nand_data {
+struct nand_platform_data {
 	struct platform_nand_chip chip;
 	struct platform_nand_ctrl ctrl;
 };

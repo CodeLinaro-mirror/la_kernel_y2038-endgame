@@ -266,7 +266,7 @@ struct omap_dma_reg {
 struct dma_slave_map;
 
 /* System DMA platform data structure */
-struct omap_system_dma_plat_info {
+struct omap_system_dma_platform_data {
 	const struct omap_dma_reg *reg_map;
 	unsigned channel_stride;
 	struct omap_dma_dev_attr *dma_attr;
@@ -292,7 +292,7 @@ struct omap_system_dma_plat_info {
 #define dma_omap15xx()	__dma_omap15xx(d)
 #define dma_omap16xx()	__dma_omap16xx(d)
 
-extern struct omap_system_dma_plat_info *omap_get_plat_info(void);
+extern struct omap_system_dma_platform_data *omap_get_plat_info(void);
 
 #if defined(CONFIG_ARCH_OMAP1)
 extern void omap_set_dma_priority(int lch, int dst_port, int priority);

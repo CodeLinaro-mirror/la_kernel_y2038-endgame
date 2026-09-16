@@ -23,7 +23,7 @@
 
 /* platform data for platform device structure's platform_data field */
 
-struct dm9000_plat_data {
+struct dm9000_platform_data {
 	unsigned int	flags;
 	unsigned char	dev_addr[ETH_ALEN];
 

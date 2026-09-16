@@ -570,7 +570,7 @@ static struct uart_driver mcf_driver = {
 
 static int mcf_probe(struct platform_device *pdev)
 {
-	struct mcf_platform_uart *platp = dev_get_platdata(&pdev->dev);
+	struct mcf_uart_platform_data *platp = dev_get_platdata(&pdev->dev);
 	struct uart_port *port;
 	int i;
 

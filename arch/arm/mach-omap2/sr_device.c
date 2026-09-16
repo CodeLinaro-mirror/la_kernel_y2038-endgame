@@ -28,7 +28,7 @@
 
 /* Read EFUSE values from control registers for OMAP3430 */
 static void __init sr_set_nvalues(struct omap_volt_data *volt_data,
-				struct omap_sr_data *sr_data)
+				struct omap_sr_platform_data *sr_data)
 {
 	struct omap_sr_nvalue_table *nvalue_table;
 	int i, j, count = 0;
@@ -84,11 +84,11 @@ static void __init sr_set_nvalues(struct omap_volt_data *volt_data,
 	sr_data->nvalue_count = j;
 }
 
-extern struct omap_sr_data omap_sr_pdata[];
+extern struct omap_sr_platform_data omap_sr_pdata[];
 
 static int __init sr_init_by_name(const char *name, const char *voltdm)
 {
-	struct omap_sr_data *sr_data = NULL;
+	struct omap_sr_platform_data *sr_data = NULL;
 	struct omap_volt_data *volt_data;
 	static int i;
 

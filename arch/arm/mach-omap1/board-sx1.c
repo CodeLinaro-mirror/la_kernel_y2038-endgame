@@ -200,7 +200,7 @@ static struct resource sx1_kp_resources[] = {
 	},
 };
 
-static const struct matrix_keymap_data sx1_keymap_data = {
+static const struct matrix_keymap_platform_data sx1_keymap_data = {
 	.keymap		= sx1_keymap,
 	.keymap_size	= ARRAY_SIZE(sx1_keymap),
 };
@@ -255,7 +255,7 @@ static struct mtd_partition sx1_partitions[] = {
 	}
 };
 
-static struct physmap_flash_data sx1_flash_data = {
+static struct physmap_flash_platform_data sx1_flash_data = {
 	.width		= 2,
 	.set_vpp	= omap1_set_vpp,
 	.parts		= sx1_partitions,
@@ -281,7 +281,7 @@ static struct platform_device sx1_flash_device = {
 
 /*----------- USB -------------------------*/
 
-static struct omap_usb_config sx1_usb_config __initdata = {
+static struct omap_usb_platform_data sx1_usb_config __initdata = {
 	.otg		= 0,
 	.register_dev	= 1,
 	.register_host	= 0,

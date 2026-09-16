@@ -8,7 +8,7 @@
 #ifndef __RJ54N1CB0C_H__
 #define __RJ54N1CB0C_H__
 
-struct rj54n1_pdata {
+struct rj54n1_platform_data {
 	unsigned int	mclk_freq;
 	bool		ioctl_high;
 };

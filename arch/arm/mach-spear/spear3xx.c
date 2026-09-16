@@ -22,7 +22,7 @@
 #include "misc_regs.h"
 
 /* ssp device registration */
-struct pl022_ssp_controller pl022_plat_data = {
+struct pl022_ssp_platform_data pl022_plat_data = {
 	.bus_id = 0,
 	.enable_dma = 1,
 	.dma_filter = pl08x_filter_id,

@@ -16,7 +16,7 @@
 #include <linux/serial_core.h>
 #include <linux/platform_device.h>
 
-struct mcf_platform_uart {
+struct mcf_uart_platform_data {
 	unsigned long	mapbase;	/* Physical address base */
 	void __iomem	*membase;	/* Virtual address if mapped */
 	unsigned int	irq;		/* Interrupt vector */

@@ -27,7 +27,7 @@
 
 struct ak881x {
 	struct v4l2_subdev subdev;
-	struct ak881x_pdata *pdata;
+	struct ak881x_platform_data *pdata;
 	unsigned int lines;
 	char revision;	/* DEVICE_REVISION content */
 };

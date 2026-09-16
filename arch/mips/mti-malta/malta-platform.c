@@ -40,7 +40,7 @@
 
 #define CBUS_UART_FLAGS (UPF_BOOT_AUTOCONF | UPF_SKIP_TEST | UPF_IOREMAP)
 
-static struct plat_serial8250_port uart8250_data[] = {
+static struct serial8250_platform_data uart8250_data[] = {
 	SMC_PORT(0x3F8, 4),
 	SMC_PORT(0x2F8, 3),
 	{

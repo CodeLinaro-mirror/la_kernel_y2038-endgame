@@ -14,7 +14,7 @@
 #define R8A66597_PLATDATA_XTAL_24MHZ	0x02
 #define R8A66597_PLATDATA_XTAL_48MHZ	0x03
 
-struct r8a66597_platdata {
+struct r8a66597_platform_data {
 	/* This callback can control port power instead of DVSTCTR register. */
 	void (*port_power)(int port, int power);
 

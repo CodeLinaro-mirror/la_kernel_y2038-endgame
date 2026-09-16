@@ -172,8 +172,8 @@ static int wm831x_wdt_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 	struct wm831x *wm831x = dev_get_drvdata(dev->parent);
-	struct wm831x_pdata *chip_pdata = dev_get_platdata(dev->parent);
-	struct wm831x_watchdog_pdata *pdata;
+	struct wm831x_platform_data *chip_pdata = dev_get_platdata(dev->parent);
+	struct wm831x_watchdog_platform_data *pdata;
 	struct wm831x_wdt_drvdata *driver_data;
 	struct watchdog_device *wm831x_wdt;
 	int reg, ret, i;

@@ -140,7 +140,7 @@ static int matrix_keypad_parse_keymap(const char *propname,
  * Callers are expected to set up input_dev->dev.parent before calling this
  * function.
  */
-int matrix_keypad_build_keymap(const struct matrix_keymap_data *keymap_data,
+int matrix_keypad_build_keymap(const struct matrix_keymap_platform_data *keymap_data,
 			       const char *keymap_name,
 			       unsigned int rows, unsigned int cols,
 			       unsigned short *keymap,

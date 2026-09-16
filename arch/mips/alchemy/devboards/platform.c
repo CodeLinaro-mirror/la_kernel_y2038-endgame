@@ -154,7 +154,7 @@ out:
 int __init db1x_register_norflash(unsigned long size, int width,
 				  int swapped)
 {
-	struct physmap_flash_data *pfd;
+	struct physmap_flash_platform_data *pfd;
 	struct platform_device *pd;
 	struct mtd_partition *parts;
 	struct resource *res;
@@ -172,7 +172,7 @@ int __init db1x_register_norflash(unsigned long size, int width,
 	if (!res)
 		goto out1;
 
-	pfd = kzalloc_obj(struct physmap_flash_data);
+	pfd = kzalloc_obj(struct physmap_flash_platform_data);
 	if (!pfd)
 		goto out2;
 

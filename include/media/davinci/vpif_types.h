@@ -41,7 +41,7 @@ struct vpif_display_chan_config {
 	bool clip_en;
 };
 
-struct vpif_display_config {
+struct vpif_display_platform_data {
 	int (*set_clock)(int, int);
 	struct vpif_subdev_info *subdevinfo;
 	int subdev_count;
@@ -63,7 +63,7 @@ struct vpif_capture_chan_config {
 	int input_count;
 };
 
-struct vpif_capture_config {
+struct vpif_capture_platform_data {
 	int (*setup_input_channel_mode)(int);
 	int (*setup_input_path)(int, const char *);
 	struct vpif_capture_chan_config chan_config[VPIF_CAPTURE_MAX_CHANNELS];

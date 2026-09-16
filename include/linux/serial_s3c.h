@@ -280,7 +280,7 @@
  * arch/arm/mach-s3c/ directory.
 */
 
-struct s3c2410_uartcfg {
+struct s3c2410_uart_platform_data {
 	unsigned char	   hwport;	 /* hardware port number */
 	unsigned char	   unused;
 	unsigned short	   flags;

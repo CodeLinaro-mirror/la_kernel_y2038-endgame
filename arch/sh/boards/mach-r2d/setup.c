@@ -42,7 +42,7 @@ static struct resource cf_ide_resources[] = {
 #endif
 };
 
-static struct pata_platform_info pata_info = {
+static struct pata_platform_data pata_info = {
 	.ioport_shift	= 1,
 };
 
@@ -138,7 +138,7 @@ static struct fb_videomode sm501_default_mode = {
 	.sync = FB_SYNC_HOR_HIGH_ACT | FB_SYNC_VERT_HIGH_ACT,
 };
 
-static struct sm501_platdata_fbsub sm501_pdata_fbsub_pnl = {
+static struct sm501_fbsub_platform_data sm501_pdata_fbsub_pnl = {
 	.def_bpp	= 16,
 	.def_mode	= &sm501_default_mode,
 	.flags		= SM501FB_FLAG_USE_INIT_MODE |
@@ -147,7 +147,7 @@ static struct sm501_platdata_fbsub sm501_pdata_fbsub_pnl = {
 			  SM501FB_FLAG_DISABLE_AT_EXIT,
 };
 
-static struct sm501_platdata_fbsub sm501_pdata_fbsub_crt = {
+static struct sm501_fbsub_platform_data sm501_pdata_fbsub_crt = {
 	.flags		= (SM501FB_FLAG_USE_INIT_MODE |
 			   SM501FB_FLAG_USE_HWCURSOR |
 			   SM501FB_FLAG_USE_HWACCEL |
@@ -155,7 +155,7 @@ static struct sm501_platdata_fbsub sm501_pdata_fbsub_crt = {
 
 };
 
-static struct sm501_platdata_fb sm501_fb_pdata = {
+static struct sm501_fb_platform_data sm501_fb_pdata = {
 	.fb_route	= SM501_FB_OWN,
 	.fb_crt		= &sm501_pdata_fbsub_crt,
 	.fb_pnl		= &sm501_pdata_fbsub_pnl,
@@ -166,7 +166,7 @@ static struct sm501_initdata sm501_initdata = {
 	.devices	= SM501_USE_USB_HOST | SM501_USE_UART0,
 };
 
-static struct sm501_platdata sm501_platform_data = {
+static struct sm501_platform_data sm501_platform_data = {
 	.init		= &sm501_initdata,
 	.fb		= &sm501_fb_pdata,
 };
@@ -203,7 +203,7 @@ static struct mtd_partition r2d_partitions[] = {
 	}
 };
 
-static struct physmap_flash_data flash_data = {
+static struct physmap_flash_platform_data flash_data = {
 	.width		= 2,
 	.nr_parts	= ARRAY_SIZE(r2d_partitions),
 	.parts		= r2d_partitions,

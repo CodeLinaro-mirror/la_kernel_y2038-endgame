@@ -35,7 +35,7 @@ struct wm5100_jack_mode {
 
 #define WM5100_GPIO_SET 0x10000
 
-struct wm5100_pdata {
+struct wm5100_platform_data {
 	int irq_flags;
 
 	struct wm5100_jack_mode jack_modes[2];

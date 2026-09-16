@@ -17,7 +17,7 @@ static irqreturn_t psw_irq_handler(int irq, void *arg)
 {
 	struct platform_device *pdev = arg;
 	struct push_switch *psw = platform_get_drvdata(pdev);
-	struct push_switch_platform_info *psw_info = pdev->dev.platform_data;
+	struct push_switch_platform_data *psw_info = pdev->dev.platform_data;
 	unsigned int l, mask;
 	int ret = 0;
 
@@ -54,7 +54,7 @@ static struct resource psw_resources[] = {
 	},
 };
 
-static struct push_switch_platform_info s2_platform_data = {
+static struct push_switch_platform_data s2_platform_data = {
 	.name		= "s2",
 	.bit		= 6,
 	.irq_flags	= IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING |
@@ -72,7 +72,7 @@ static struct platform_device s2_switch_device = {
 	},
 };
 
-static struct push_switch_platform_info s3_platform_data = {
+static struct push_switch_platform_data s3_platform_data = {
 	.name		= "s3",
 	.bit		= 5,
 	.irq_flags	= IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING |
@@ -90,7 +90,7 @@ static struct platform_device s3_switch_device = {
 	},
 };
 
-static struct push_switch_platform_info s4_platform_data = {
+static struct push_switch_platform_data s4_platform_data = {
 	.name		= "s4",
 	.bit		= 4,
 	.irq_flags	= IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING |

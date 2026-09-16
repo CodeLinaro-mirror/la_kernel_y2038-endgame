@@ -4,8 +4,8 @@
 
 #include <linux/mtd/rawnand.h>
 
-struct gpio_nand_platdata {
-	void	(*adjust_parts)(struct gpio_nand_platdata *, size_t);
+struct gpio_nand_platform_data {
+	void	(*adjust_parts)(struct gpio_nand_platform_data *, size_t);
 	struct mtd_partition *parts;
 	unsigned int num_parts;
 	unsigned int options;

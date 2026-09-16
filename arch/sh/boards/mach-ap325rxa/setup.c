@@ -109,7 +109,7 @@ static struct mtd_partition ap325rxa_nor_flash_partitions[] = {
 	},
 };
 
-static struct physmap_flash_data ap325rxa_nor_flash_data = {
+static struct physmap_flash_platform_data ap325rxa_nor_flash_data = {
 	.width		= 2,
 	.parts		= ap325rxa_nor_flash_partitions,
 	.nr_parts	= ARRAY_SIZE(ap325rxa_nor_flash_partitions),
@@ -215,7 +215,7 @@ static const struct fb_videomode ap325rxa_lcdc_modes[] = {
 	},
 };
 
-static struct sh_mobile_lcdc_info lcdc_info = {
+static struct sh_mobile_lcdc_platform_data lcdc_info = {
 	.clock_source = LCDC_CLK_EXTERNAL,
 	.ch[0] = {
 		.chan = LCDC_CHAN_MAINLCD,

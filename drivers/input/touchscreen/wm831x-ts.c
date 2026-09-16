@@ -232,8 +232,8 @@ static int wm831x_ts_probe(struct platform_device *pdev)
 {
 	struct wm831x_ts *wm831x_ts;
 	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
-	struct wm831x_pdata *core_pdata = dev_get_platdata(pdev->dev.parent);
-	struct wm831x_touch_pdata *pdata = NULL;
+	struct wm831x_platform_data *core_pdata = dev_get_platdata(pdev->dev.parent);
+	struct wm831x_touch_platform_data *pdata = NULL;
 	struct input_dev *input_dev;
 	int error, irqf;
 

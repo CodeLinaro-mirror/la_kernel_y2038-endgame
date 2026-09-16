@@ -51,7 +51,7 @@ struct irq_domain;
 #define WM8994_IRQ_GPIO(x) (x + WM8994_IRQ_TEMP_WARN)
 
 struct wm8994 {
-	struct wm8994_pdata pdata;
+	struct wm8994_platform_data pdata;
 
 	enum wm8994_type type;
 	int revision;

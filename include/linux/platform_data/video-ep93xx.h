@@ -35,7 +35,7 @@ struct fb_info;
 					 EP93XXFB_VSYNC_ENABLE		| \
 					 EP93XXFB_PIXEL_DATA_ENABLE)
 
-struct ep93xxfb_mach_info {
+struct ep93xxfb_platform_data {
 	unsigned int			flags;
 	int	(*setup)(struct platform_device *pdev);
 	void	(*teardown)(struct platform_device *pdev);

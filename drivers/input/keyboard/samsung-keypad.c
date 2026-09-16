@@ -226,7 +226,7 @@ static void samsung_keypad_close(struct input_dev *input_dev)
 
 static int samsung_parse_verbose_keymap(struct samsung_keypad *keypad)
 {
-	struct matrix_keymap_data keymap_data = { 0 };
+	struct matrix_keymap_platform_data keymap_data = { 0 };
 	struct device *dev = &keypad->pdev->dev;
 	struct fwnode_handle *child;
 	unsigned int key_count = device_get_child_node_count(dev);
