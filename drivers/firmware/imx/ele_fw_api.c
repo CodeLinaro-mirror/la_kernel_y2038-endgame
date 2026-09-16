@@ -2,6 +2,7 @@
 /*
  * Copyright 2026 NXP
  */
+#include <linux/slab.h>
 
 #include "se_ctrl.h"
 #include "ele_common.h"
