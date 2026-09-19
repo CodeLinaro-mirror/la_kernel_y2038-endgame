@@ -3463,10 +3463,14 @@ struct drm_i915_query_perf_config {
 	 *  - &drm_i915_perf_oa_config.n_boolean_regs
 	 *  - &drm_i915_perf_oa_config.n_flex_regs
 	 */
+#ifdef __cplusplus
+	__u8 data[0];
+#else
 	union {
 		__uapi_arch_pad32; /* pad to alignof(__u64) */
 		__DECLARE_FLEX_ARRAY(__u8, data);
 	};
+#endif
 } __uapi_arch_align;
 
 /**
