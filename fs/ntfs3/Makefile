@@ -12,7 +12,6 @@ subdir-ccflags-y += -Wold-style-definition
 subdir-ccflags-y += -Wmissing-include-dirs
 condflags := \
 	$(call cc-option, -Wunused-but-set-variable)		\
-	$(call cc-option, -Wunused-const-variable)		\
 	$(call cc-option, -Wpacked-not-aligned)			\
 	$(call cc-option, -Wstringop-truncation)		\
 	$(call cc-option, -Wmaybe-uninitialized)
@@ -25,7 +24,7 @@ subdir-ccflags-y += -Wno-shift-negative-value
 
 # to check robot warnings
 ccflags-y += -Wint-to-pointer-cast \
-	$(call cc-option,-Wunused-but-set-variable,-Wunused-const-variable) \
+	$(call cc-option,-Wunused-but-set-variable) \
 	$(call cc-option,-Wold-style-declaration,-Wout-of-line-declaration)
 
 obj-$(CONFIG_NTFS3_FS) += ntfs3.o
